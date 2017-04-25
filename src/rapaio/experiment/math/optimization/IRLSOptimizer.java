@@ -118,7 +118,7 @@ public class IRLSOptimizer {
             grad.set(j, 0, gradTmp);
         }
 
-        LUDecomposition lu = new LUDecomposition(hessian);
+        LUDecomposition lu = LUDecomposition.from(hessian);
 
         //We sent a clone of the hessian b/c we make incremental updates every iteration
         if (Math.abs(lu.det()) < 1e-14) {

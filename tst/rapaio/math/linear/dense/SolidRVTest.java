@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.dense;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +32,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRV;
 
 import java.util.Arrays;

@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.dense;
 
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -30,6 +30,8 @@ import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.datasets.Datasets;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 
 import java.io.IOException;

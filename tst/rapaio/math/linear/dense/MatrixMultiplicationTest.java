@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.dense;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,6 +33,7 @@ import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.util.Util;

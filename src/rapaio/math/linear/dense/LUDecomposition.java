@@ -25,11 +25,10 @@
 package rapaio.math.linear.dense;
 
 import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 
 /**
@@ -45,84 +44,81 @@ import java.util.function.BiConsumer;
  * decomposition is in the solution of square systems of simultaneous linear
  * equations. This will fail if isNonSingular() returns false.
  */
-@Deprecated
 public class LUDecomposition implements Serializable, Printable {
 
     private static final long serialVersionUID = -4226024886673558685L;
 
-    private RM LU; // internal storage of decomposition.
-    private int m; // row dimension
-    private int n; // col dimension
-    private int pivSign; // pivot sign
-
-    private int[] piv; // internal storage for row pivot indexes
+    // internal storage of decomposition
+    private RM LU;
+    private int rowCount;
+    private int colCount;
+    // pivot sign
+    private int pivSign;
+    // internal storage for row pivot indexes
+    private int[] piv;
 
     /**
      * LU Decomposition Structure to access L, U and piv.
      *
      * @param A input matrix
      */
-    public LUDecomposition(RM A) {
-        Method.GAUSSIAN_ELIMINATION.method().accept(this, A);
+    public static LUDecomposition from(RM A) {
+        if(A.rowCount()<A.colCount())
+            throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
+        return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
-    /**
-     * LU Decomposition, computed by GaussianPdf elimination. It computes L and U
-     * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
-     */
-    public LUDecomposition(RM A, Method method) {
+    public static LUDecomposition from(RM A, Method method) {
+        if(A.rowCount()<A.colCount())
+            throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
+        return new LUDecomposition(A, method);
+    }
+
+    private LUDecomposition(RM A, Method method) {
         method.method().accept(this, A);
     }
 
     /**
-     * Is the rapaio.data.matrix nonsingular?
+     * Is the matrix nonsingular?
      *
      * @return true if U, and hence A, is nonsingular.
      */
     public boolean isNonSingular() {
-        for (int j = 0; j < n; j++) {
-            if (LU.get(j, j) == 0) {
-                return false;
-            }
+        for (int j = 0; j < colCount; j++) {
+            if (LU.get(j, j) == 0) return false;
         }
         return true;
     }
 
-    /*
-     * ------------------------ Public Methods ------------------------
-     */
-
     /**
-     * Return lower triangular factor
+     * Lower triangular factor matrix
      *
-     * @return L
+     * @return L lower triangular factor
      */
     public RM getL() {
-        RM L = SolidRM.empty(m, n);
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j <= i && j < n; j++) {
+        RM X = SolidRM.empty(rowCount, colCount);
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j <= i; j++) {
                 if (i > j) {
-                    L.set(i, j, LU.get(i, j));
-                } else {
-                    L.set(i, j, 1.0);
+                    X.set(i, j, LU.get(i, j));
+                } else if (i == j) {
+                    X.set(i, j, 1.0);
                 }
             }
         }
-        return L;
+        return X;
     }
 
     /**
-     * Return upper triangular factor
+     * Upper triangular factor matrix
      *
-     * @return U
+     * @return U upper triangular factor
      */
     public RM getU() {
-        RM U = SolidRM.empty(n, n);
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                if (i <= j) {
-                    U.set(i, j, LU.get(i, j));
-                }
+        RM U = SolidRM.empty(colCount, colCount);
+        for (int i = 0; i < colCount; i++) {
+            for (int j = i; j < colCount; j++) {
+                U.set(i, j, LU.get(i, j));
             }
         }
         return U;
@@ -134,36 +130,21 @@ public class LUDecomposition implements Serializable, Printable {
      * @return piv
      */
     public int[] getPivot() {
-        int[] p = new int[m];
-        System.arraycopy(piv, 0, p, 0, m);
-        return p;
+        return Arrays.copyOf(piv, rowCount);
     }
 
     /**
-     * Return pivot permutation var as a one-dimensional double array
-     *
-     * @return (double) piv
-     */
-    public double[] getDoublePivot() {
-        double[] vals = new double[m];
-        for (int i = 0; i < m; i++) {
-            vals[i] = (double) piv[i];
-        }
-        return vals;
-    }
-
-    /**
-     * Determinant
+     * Computes determinant
      *
      * @return det(A)
      * @throws IllegalArgumentException Matrix must be square
      */
     public double det() {
-        if (m != n) {
+        if (rowCount != colCount) {
             throw new IllegalArgumentException("Matrix must be square.");
         }
         double d = (double) pivSign;
-        for (int j = 0; j < n; j++) {
+        for (int j = 0; j < colCount; j++) {
             d *= LU.get(j, j);
         }
         return d;
@@ -178,7 +159,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws RuntimeException         Matrix is singular.
      */
     public RM solve(RM B) {
-        if (B.rowCount() != m) {
+        if (B.rowCount() != rowCount) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!this.isNonSingular()) {
@@ -191,8 +172,8 @@ public class LUDecomposition implements Serializable, Printable {
 
         // Solve L*Y = B(piv,:)
 
-        for (int k = 0; k < n; k++) {
-            for (int i = k + 1; i < n; i++) {
+        for (int k = 0; k < colCount; k++) {
+            for (int i = k + 1; i < colCount; i++) {
                 for (int j = 0; j < nx; j++) {
                     X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
                 }
@@ -201,7 +182,7 @@ public class LUDecomposition implements Serializable, Printable {
 
         // Solve U*X = Y;
 
-        for (int k = n - 1; k >= 0; k--) {
+        for (int k = colCount - 1; k >= 0; k--) {
             for (int j = 0; j < nx; j++) {
                 X.set(k, j, X.get(k, j) / LU.get(k, k));
             }
@@ -221,68 +202,64 @@ public class LUDecomposition implements Serializable, Printable {
         sb.append("LU decomposition summary\n");
         sb.append("========================\n");
 
-        sb.append("\n" +
-                "L matrix\n");
-        WS.code(sb.toString());
-
-        getL().printSummary();
-        WS.code("\n" +
-                "U matrix:\n");
-        getU().printSummary();
+        sb.append("\nL matrix\n").append(getL().summary());
+        sb.append("\nU matrix:\n").append(getU().summary());
         return sb.toString();
     }
 
     public enum Method {
 
+        /**
+         * LU Decomposition, computed by Gaussian elimination. It computes L and U
+         * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
+         **/
         CROUT {
             @Override
             BiConsumer<LUDecomposition, RM> method() {
                 return (lu, A) -> {
-
                     lu.LU = A.solidCopy();
-                    lu.m = A.rowCount();
-                    lu.n = A.colCount();
-                    lu.piv = new int[lu.m];
-                    for (int i = 0; i < lu.m; i++) {
+                    lu.rowCount = A.rowCount();
+                    lu.colCount = A.colCount();
+                    lu.piv = new int[lu.rowCount];
+                    for (int i = 0; i < lu.rowCount; i++) {
                         lu.piv[i] = i;
                     }
                     lu.pivSign = 1;
-                    RV LUrowi;
-                    RV LUcolj = SolidRV.empty(lu.m);
+                    double[] LUcolj = new double[lu.rowCount];
 
                     // Outer loop.
-                    for (int j = 0; j < lu.n; j++) {
+                    for (int j = 0; j < lu.colCount; j++) {
 
                         // Make a copy of the j-th column to localize references.
-                        for (int i = 0; i < lu.m; i++) {
-                            LUcolj.set(i, lu.LU.get(i, j));
+                        for (int i = 0; i < lu.rowCount; i++) {
+                            LUcolj[i] = lu.LU.get(i, j);
                         }
 
                         // Apply previous transformations.
-                        for (int i = 0; i < lu.m; i++) {
-                            LUrowi = lu.LU.mapRow(i);
+                        for (int i = 0; i < lu.rowCount; i++) {
+
 
                             // Most of the time is spent in the following dot product.
+
                             int kmax = Math.min(i, j);
                             double s = 0.0;
                             for (int k = 0; k < kmax; k++) {
-                                s += LUrowi.get(k) * LUcolj.get(k);
+                                s += lu.LU.get(i, k) * LUcolj[k];
                             }
-
-                            double tmp = LUcolj.get(i) - s;
-                            LUcolj.set(i, tmp);
-                            LUrowi.set(j, tmp);
+                            LUcolj[i] -= s;
+                            lu.LU.set(i, j, LUcolj[i]);
                         }
 
                         // Find pivot and exchange if necessary.
+
                         int p = j;
-                        for (int i = j + 1; i < lu.m; i++) {
-                            if (Math.abs(LUcolj.get(i)) > Math.abs(LUcolj.get(p))) {
+                        for (int i = j + 1; i < lu.LU.rowCount(); i++) {
+                            if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
                                 p = i;
                             }
                         }
                         if (p != j) {
-                            for (int k = 0; k < lu.n; k++) {
+                            for (int k = 0; k < lu.LU.colCount(); k++) {
                                 double t = lu.LU.get(p, k);
                                 lu.LU.set(p, k, lu.LU.get(j, k));
                                 lu.LU.set(j, k, t);
@@ -294,8 +271,8 @@ public class LUDecomposition implements Serializable, Printable {
                         }
 
                         // Compute multipliers.
-                        if (j < lu.m & lu.LU.get(j, j) != 0.0) {
-                            for (int i = j + 1; i < lu.m; i++) {
+                        if (j < lu.LU.rowCount() & lu.LU.get(j, j) != 0.0) {
+                            for (int i = j + 1; i < lu.LU.rowCount(); i++) {
                                 lu.LU.set(i, j, lu.LU.get(i, j) / lu.LU.get(j, j));
                             }
                         }
@@ -305,7 +282,7 @@ public class LUDecomposition implements Serializable, Printable {
         },
 
         /**
-         * LU Decomposition, computed by GaussianPdf elimination. It computes L and U
+         * LU Decomposition, computed by Gaussian elimination. It computes L and U
          * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
          */
         GAUSSIAN_ELIMINATION {
@@ -315,25 +292,25 @@ public class LUDecomposition implements Serializable, Printable {
 
                     // Initialize.
                     lu.LU = A.solidCopy();
-                    lu.m = A.rowCount();
-                    lu.n = A.colCount();
-                    lu.piv = new int[lu.m];
-                    for (int i = 0; i < lu.m; i++) {
+                    lu.rowCount = A.rowCount();
+                    lu.colCount = A.colCount();
+                    lu.piv = new int[lu.rowCount];
+                    for (int i = 0; i < lu.rowCount; i++) {
                         lu.piv[i] = i;
                     }
                     lu.pivSign = 1;
                     // Main loop.
-                    for (int k = 0; k < lu.n; k++) {
+                    for (int k = 0; k < lu.colCount; k++) {
                         // Find pivot.
                         int p = k;
-                        for (int i = k + 1; i < lu.m; i++) {
+                        for (int i = k + 1; i < lu.rowCount; i++) {
                             if (Math.abs(lu.LU.get(i, k)) > Math.abs(lu.LU.get(p, k))) {
                                 p = i;
                             }
                         }
                         // Exchange if necessary.
                         if (p != k) {
-                            for (int j = 0; j < lu.n; j++) {
+                            for (int j = 0; j < lu.colCount; j++) {
                                 double t = lu.LU.get(p, j);
                                 lu.LU.set(p, j, lu.LU.get(k, j));
                                 lu.LU.set(k, j, t);
@@ -345,9 +322,9 @@ public class LUDecomposition implements Serializable, Printable {
                         }
                         // Compute multipliers and eliminate k-th column.
                         if (lu.LU.get(k, k) != 0.0) {
-                            for (int i = k + 1; i < lu.m; i++) {
+                            for (int i = k + 1; i < lu.rowCount; i++) {
                                 lu.LU.set(i, k, lu.LU.get(i, k) / lu.LU.get(k, k));
-                                for (int j = k + 1; j < lu.n; j++) {
+                                for (int j = k + 1; j < lu.colCount; j++) {
                                     lu.LU.set(i, j, lu.LU.get(i, j) - lu.LU.get(i, k) * lu.LU.get(k, j));
                                 }
                             }

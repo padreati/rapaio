@@ -32,18 +32,14 @@ public class Sandbox {
     public static void main(String[] args) {
         WS.setPrinter(new IdeaPrinter());
 
-        double eps = 1 / 16.;
-        for (int i = 1; i < 1000; i++) {
-            double delta = Math.abs(f(i) - 3.);
-            WS.printf("%d : delta: %.6f\n", i, delta);
-            if (delta < eps) {
-                break;
-            }
-        }
+        double a = 10;
+        double b = 100;
 
-    }
+        b -= 1;
+        a=b;
 
-    static double f(double n) {
-        return (6 * n + 11) / (2 * n + 6.0);
+        System.out.println(a);
+        System.out.println(b);
+
     }
 }

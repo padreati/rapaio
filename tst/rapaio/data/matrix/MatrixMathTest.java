@@ -101,7 +101,7 @@ public class MatrixMathTest {
         RM invC = new QR(C).solve(I);
         invC.printSummary();
         C.dot(invC);
-        invC = new LUDecomposition(C).solve(I);
+        invC = LUDecomposition.from(C).solve(I);
         invC.printSummary();
         C.dot(invC);
     }

@@ -267,7 +267,9 @@ public class SolidRM implements RM {
     @Override
     public SolidRM solidCopy() {
         SolidRM copy = new SolidRM(rowCount, colCount);
-        System.arraycopy(values, 0, copy.values, 0, values.length);
+        for (int i = 0; i < rowCount; i++) {
+            System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
+        }
         return copy;
     }
 }

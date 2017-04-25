@@ -80,9 +80,9 @@ public interface RM extends Serializable, Printable {
      */
     void increment(int row, int col, double value);
 
-    RV mapCol(int i);
+    RV mapCol(int col);
 
-    RV mapRow(int i);
+    RV mapRow(int row);
 
     default RM mapRows(int... indexes) {
         return new MappedRM(this, true, indexes);
@@ -280,7 +280,6 @@ public interface RM extends Serializable, Printable {
         }
         return true;
     }
-
 
     DoubleStream valueStream();
 
