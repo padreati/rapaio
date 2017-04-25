@@ -48,7 +48,7 @@ public class RMTest {
         RM A3 = A2.solidCopy().plus(A2);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(i == j ? 2 : 0, A2.get(i, j), TOL);
+                assertEquals(i == j ? 2 : 0, A3.get(i, j), TOL);
             }
         }
 
