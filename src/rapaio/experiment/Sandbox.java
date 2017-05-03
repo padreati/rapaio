@@ -24,22 +24,27 @@
 
 package rapaio.experiment;
 
+import rapaio.data.Frame;
+import rapaio.graphics.Plotter;
+import rapaio.io.Csv;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
+
+import static rapaio.graphics.Plotter.lines;
 
 public class Sandbox {
 
     public static void main(String[] args) {
         WS.setPrinter(new IdeaPrinter());
 
-        double a = 10;
-        double b = 100;
 
-        b -= 1;
-        a=b;
+        Frame df = new Csv()
+                .withSeparatorChar(',')
+                .read("/home/ati/data/forecast/samples/US-ONLINE-GP-DETAIL-LIVE-1C.csv");
+        df.printSummary();
+        df.printLines(10);
 
-        System.out.println(a);
-        System.out.println(b);
 
+        WS.draw(lines(df.var(1)));
     }
 }

@@ -289,8 +289,6 @@ public interface RM extends Serializable, Printable {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\n");
-
         String[][] m = new String[rowCount()][colCount()];
         int max = 1;
         for (int i = 0; i < rowCount(); i++) {
