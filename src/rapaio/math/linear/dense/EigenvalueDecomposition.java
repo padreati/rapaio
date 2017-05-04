@@ -102,17 +102,7 @@ public class EigenvalueDecomposition implements Serializable {
         d = new double[n];
         e = new double[n];
 
-        issymmetric = true;
-        for (int j = 0; (j < n) & issymmetric; j++) {
-            for (int i = 0; (i < n) & issymmetric; i++) {
-                if (!(A.get(i, j) == A.get(j, i))) {
-                    issymmetric = false;
-                    break;
-                }
-            }
-        }
-
-        if (issymmetric) {
+        if (isSymmetric(A)) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     V.set(i, j, A.get(i, j));
@@ -142,6 +132,20 @@ public class EigenvalueDecomposition implements Serializable {
             hqr2();
         }
     }
+
+	private boolean isSymmetric(RM rMatrix) {
+		
+		boolean returnValue = true;
+		for (int row = 0; (row < n) & issymmetric; row++) {
+            for (int col = 0; (col < n); col++) {
+                if (!(rMatrix.get(col, row) == rMatrix.get(row, col))) {
+                    returnValue = false;
+                    break;
+                }
+            }
+        }
+		return returnValue;
+	}
 
 /* ------------------------
    Private Methods
