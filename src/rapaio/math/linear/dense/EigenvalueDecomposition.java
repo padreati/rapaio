@@ -154,8 +154,8 @@ public class EigenvalueDecomposition implements Serializable {
         //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         //  Fortran subroutine in EISPACK.
 
-        for (int j = 0; j < dimension; j++) {
-            eigenValues1[j] = eigenVectors.get(dimension - 1, j);
+        for (int col = 0; col < dimension; col++) {
+            eigenValues1[col] = eigenVectors.get(dimension - 1, col);
         }
 
         // Householder reduction to tridiagonal form.
