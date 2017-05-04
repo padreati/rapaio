@@ -39,23 +39,24 @@ public class TextTable implements Printable {
     private final int rows;
     private final int cols;
     private final String[][] values;
-    private final int[][] mergeCols;
-    private final int[][] alignCells;
+    private final int[][] mergeSizes;
+    private final int[][] alignValues;
     private int headerRows = 0;
     private int headerCols = 0;
     private int hSplitSize = -1;
     private int hMergeSize = -1;
+
     private TextTable(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         values = new String[rows][cols];
-        mergeCols = new int[rows][cols];
-        alignCells = new int[rows][cols];
+        mergeSizes = new int[rows][cols];
+        alignValues = new int[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 values[i][j] = "";
-                mergeCols[i][j] = 1;
-                alignCells[i][j] = -1;
+                mergeSizes[i][j] = 1;
+                alignValues[i][j] = -1;
             }
         }
     }
@@ -91,7 +92,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withHeaderRows(int headerRows) {
-        if (headerRows < 0)
+        if (isLeftAlign(headerRows))
             headerRows = 0;
         if (headerRows > rows) {
             throw new IllegalArgumentException("cannot set header rows greater than the number of rows");
@@ -101,7 +102,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withHeaderCols(int headerCols) {
-        if (headerCols < 0)
+        if (isLeftAlign(headerCols))
             headerCols = 0;
         if (headerCols > cols) {
             throw new IllegalArgumentException("cannot set header cols greater than the number of cols");
@@ -116,7 +117,7 @@ public class TextTable implements Printable {
 
     public void set(int row, int col, String x, int align) {
         values[row][col] = x;
-        alignCells[row][col] = align;
+        alignValues[row][col] = align;
     }
 
     public void mergeCols(int row, int col, int size) {
@@ -126,212 +127,237 @@ public class TextTable implements Printable {
         if (size + col - 1 >= cols) {
             throw new IllegalArgumentException("merge size goes outside boundaries");
         }
-        mergeCols[row][col] = size;
+        mergeSizes[row][col] = size;
     }
 
     @Override
     public String summary() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         if (hSplitSize != -1 && hMergeSize != -1) {
             throw new IllegalArgumentException("Cannot set hSplitSize >= 0 and hMergeSize >= 0 in the same time");
         }
         if (hSplitSize >= 0) {
-            summaryHSplit(sb);
+            summaryHSplit(stringBuilder);
         } else if (hMergeSize >= 0) {
-            summaryHMerge(sb);
+            summaryHMerge(stringBuilder);
         } else {
-            summarySame(sb);
+            writeToStirngBuilder(stringBuilder);
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
-    private void summaryHSplit(StringBuilder sb) {
-
-        int[] ws = computeLayout();
+    private void summaryHSplit(StringBuilder stringBuilder) {
+        int[] maxLengths = computeLayout();
         boolean[] cannotSplit = new boolean[cols];
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                for (int k = 1; k < mergeCols[i][j]; k++) {
-                    cannotSplit[j + k - 1] = true;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                for (int count = 1; count < mergeSizes[row][col]; count++) {
+                    cannotSplit[col + count - 1] = true;
                 }
             }
         }
 
-        List<List<Integer>> splits = new ArrayList<>();
+        List<List<Integer>> splitColsList = getSplitColsList(maxLengths, cannotSplit);
 
-        int s = 0;
-        int c = headerCols;
-        int w = 0;
+        for (List<Integer> indexes : splitColsList) {
+            TextTable textTable = createSplitTextTable(indexes);
+            
+            textTable.writeToStirngBuilder(stringBuilder);
+            
+            stringBuilder.append("\n");
+        }
+    }
 
-        while (c < cols) {
-            if (splits.size() < s + 1) {
-                splits.add(new ArrayList<>());
+    private List<List<Integer>> getSplitColsList(int[] maxLengths, boolean[] cannotSplit) {
+        List<List<Integer>> splitColsList = new ArrayList<>();
+
+        int splitCount = 0;
+        int splitCurrentCol = headerCols;
+        int sumOfSplitLength = 0;
+        while (splitCurrentCol < cols) {
+            if (splitColsList.size() < splitCount + 1) {
+                splitColsList.add(new ArrayList<>());
 
                 if (headerCols > 0) {
                     for (int i = 0; i < headerCols; i++) {
-                        w += ws[i];
-                        splits.get(s).add(i);
+                        sumOfSplitLength += maxLengths[i];
+                        splitColsList.get(splitCount).add(i);
                     }
                 }
             }
 
-            int wNext = 0;
-            int cc = c;
-            wNext += ws[cc];
-            cc++;
-            while (cc < cols && cannotSplit[cc]) {
-                wNext += ws[cc];
-                cc++;
+            int splitSize = maxLengths[splitCurrentCol];
+            int splitEndCol = splitCurrentCol+1;
+            while (splitEndCol < cols && cannotSplit[splitEndCol]) {
+                splitSize += maxLengths[splitEndCol];
+                splitEndCol++;
             }
 
-            if (splits.get(s).isEmpty() || w + wNext <= hSplitSize) {
-                for (int i = c; i < cc; i++) {
-                    splits.get(s).add(i);
-                    w += wNext;
+            if (splitColsList.get(splitCount).isEmpty() || sumOfSplitLength + splitSize <= hSplitSize) {
+                for (int i = splitCurrentCol; i < splitEndCol; i++) {
+                    splitColsList.get(splitCount).add(i);
+                    sumOfSplitLength += splitSize;
                 }
-                c = cc;
+                splitCurrentCol = splitEndCol;
             } else {
-                w = 0;
-                s++;
+                sumOfSplitLength = 0;
+                splitCount++;
             }
         }
+        return splitColsList;
+    }
 
-        for (List<Integer> indexes : splits) {
-            TextTable tt = new TextTable(rows, indexes.size());
-            for (int j = 0; j < rows; j++) {
-                for (int k = 0; k < indexes.size(); k++) {
-
-                    tt.set(j, k, get(j, indexes.get(k)), alignCells[j][indexes.get(k)]);
-                    tt.mergeCols(j, k, mergeCols[j][indexes.get(k)]);
-                }
+    private TextTable createSplitTextTable(List<Integer> indexes) {
+        TextTable textTable = new TextTable(rows, indexes.size());
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < indexes.size(); col++) {
+                textTable.set(row, col, get(row, indexes.get(col)), alignValues[row][indexes.get(col)]);
+                textTable.mergeCols(row, col, mergeSizes[row][indexes.get(col)]);
             }
-            tt.summarySame(sb);
-            sb.append("\n");
+        }
+        return textTable;
+    }
+
+    private void summaryHMerge(StringBuilder stringBuilder) {
+        int count = calculateCount();
+
+        if (count == 1) {
+            writeToStirngBuilder(stringBuilder);
+        } else {
+            int maxContent = getMaxContent(count);
+
+            TextTable textTable = createMergeTextTable(count, maxContent);
+
+            textTable.writeToStirngBuilder(stringBuilder);
         }
     }
 
-    private void summaryHMerge(StringBuilder sb) {
-        int[] ws = computeLayout();
-        int total = Arrays.stream(ws).sum();
-        int all = hMergeSize - total;
-        int times = 1;
-        while (all > total) {
-            times++;
-            all -= total;
-        }
-        if (times == 1) {
-            summarySame(sb);
-            return;
-        }
-
+    private int getMaxContent(int count) {
         int contentRows = rows - headerRows;
-        times = Math.min(contentRows, times);
-        int maxContent = (int) Math.ceil(1.0 * contentRows / times);
+        count = Math.min(contentRows, count);
+        return (int) Math.ceil(1.0 * contentRows / count);
+    }
 
-        TextTable tt = TextTable.newEmpty(headerRows + maxContent, cols * times);
-        tt.withHeaderRows(headerRows);
+    private int calculateCount() {
+        int time = 1;
+        int[] maxLengths = computeLayout();
+        int sumOfLength = Arrays.stream(maxLengths).sum();
+        int remainSize = hMergeSize - sumOfLength;
+        while (remainSize > sumOfLength) {
+            time++;
+            remainSize -= sumOfLength;
+        }
+        return time;
+    }
 
-        int start = headerRows;
-        for (int i = 0; i < times; i++) {
+    private TextTable createMergeTextTable(int count, int maxContent) {
+        TextTable textTable = TextTable.newEmpty(headerRows + maxContent, cols * count);
+        textTable.withHeaderRows(headerRows);
 
-            // copy header
+        for (int currentCount = 0, nextRow = headerRows; currentCount < count; currentCount++) {
+            copyHeader(textTable, currentCount);
 
-            for (int j = 0; j < headerRows; j++) {
-                for (int k = 0; k < cols; k++) {
-                    tt.set(j, i * cols + k, get(j, k), alignCells[j][k]);
-                    tt.mergeCols(j, i * cols + k, mergeCols[j][k]);
-                }
-            }
-
-            // copy content
-
-            for (int j = 0; j < maxContent; j++) {
-                for (int k = 0; k < cols; k++) {
-                    if (start < rows) {
-                        tt.set(j + headerRows, i * cols + k, get(start, k), alignCells[start][k]);
-                        tt.mergeCols(j + headerRows, i * cols + k, mergeCols[start][k]);
+            for (int content = 0; content < maxContent; content++) {
+                for (int col = 0; col < cols; col++) {
+                    if (nextRow < rows) {
+                        textTable.set(content + headerRows, currentCount * cols + col, get(nextRow, col),
+                                alignValues[nextRow][col]);
+                        textTable.mergeCols(content + headerRows, currentCount * cols + col, mergeSizes[nextRow][col]);
                     } else {
                         break;
                     }
                 }
-                start++;
+                nextRow++;
             }
-
         }
-
-        tt.summarySame(sb);
+        return textTable;
     }
 
-    private void summarySame(StringBuilder sb) {
-        int[] ws = computeLayout();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (mergeCols[i][j] > 1) {
-                    int w = 0;
-                    for (int k = j; k < j + mergeCols[i][j]; k++) {
-                        w += ws[k];
+    private void copyHeader(TextTable textTable, int time) {
+        for (int j = 0; j < headerRows; j++) {
+            for (int k = 0; k < cols; k++) {
+                textTable.set(j, time * cols + k, get(j, k), alignValues[j][k]);
+                textTable.mergeCols(j, time * cols + k, mergeSizes[j][k]);
+            }
+        }
+    }
+
+    private void writeToStirngBuilder(StringBuilder stringBuilder) {
+        int[] maxLengths = computeLayout();
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                if (mergeSizes[row][col] > 1) {
+                    int totalLength = 0;
+                    for (int count = 0; count < mergeSizes[row][col]; count++) {
+                        totalLength += maxLengths[col + count];
                     }
-                    sb.append(align(alignCells[i][j], w, values[i][j]));
-                    j += (mergeCols[i][j] - 1);
+                    stringBuilder.append(align(alignValues[row][col], totalLength, values[row][col]));
+                    col += mergeSizes[row][col] - 1;
                 } else {
-                    sb.append(" ").append(align(alignCells[i][j], ws[j] - 1, values[i][j]));
+                    stringBuilder.append(" ")
+                            .append(align(alignValues[row][col], maxLengths[col] - 1, values[row][col]));
                 }
             }
-            sb.append("\n");
+            stringBuilder.append("\n");
         }
     }
 
     private String align(int align, int width, String text) {
-        if (align < 0) {
-            if (text.length() < width) {
-                return text + spaces(width - text.length());
-            }
-        } else if (align > 0) {
-            if (text.length() < width) {
-                return spaces(width - text.length()) + text;
-            }
-        } else {
-            if (text.length() < width) {
-                int half = (width - text.length()) / 2;
-                return spaces(width - text.length() - half) + text + spaces(half);
+        if (text.length() < width) {
+            if (isLeftAlign(align)) {
+                return text + addSpaces(width - text.length());
+            } else if (isRightAlign(align)) {
+                return addSpaces(width - text.length()) + text;
+            } else {
+                int halfSpace = (width - text.length()) / 2;
+                return addSpaces(width - text.length() - halfSpace) + text + addSpaces(halfSpace);
             }
         }
         return text;
     }
 
-    private String spaces(int n) {
-        StringBuilder outputBuffer = new StringBuilder(n);
-        for (int i = 0; i < n; i++) {
+    private boolean isRightAlign(int align) {
+        return align > 0;
+    }
+
+    private boolean isLeftAlign(int align) {
+        return align < 0;
+    }
+
+    private String addSpaces(int numberOfSpace) {
+        StringBuilder outputBuffer = new StringBuilder(numberOfSpace);
+        for (int i = 0; i < numberOfSpace; i++) {
             outputBuffer.append(" ");
         }
         return outputBuffer.toString();
     }
 
     private int[] computeLayout() {
-        int[] ws = new int[cols];
-        int[] wm = new int[cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (mergeCols[i][j] > 1) {
-                    wm[j] = Math.max(values[i][j].length(), wm[j]);
-                    j += (mergeCols[i][j] - 1);
+        int[] mergeMaxValueLength = new int[cols];
+        int[] maxValueLength = new int[cols];
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                int valueLength = values[row][col].length();
+                if (mergeSizes[row][col] > 1) {
+                    maxValueLength[col] = Math.max(valueLength, maxValueLength[col]);
+                    col += (mergeSizes[row][col] - 1);
                 } else {
-                    ws[j] = Math.max(values[i][j].length() + 1, ws[j]);
+                    mergeMaxValueLength[col] = Math.max(valueLength + 1, mergeMaxValueLength[col]);
                 }
             }
         }
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (mergeCols[i][j] > 1) {
-                    int sum = 0;
-                    for (int k = j + 1; k < j + mergeCols[i][j]; k++) {
-                        sum += ws[k];
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                if (mergeSizes[row][col] > 1) {
+                    int spaceCount = 0;
+                    for (int count = 1; count < mergeSizes[row][col]; count++) {
+                        spaceCount += mergeMaxValueLength[col + count];
                     }
-                    ws[j] = Math.max(wm[j] - sum, ws[j]);
+                    mergeMaxValueLength[col] = Math.max(maxValueLength[col] - spaceCount, mergeMaxValueLength[col]);
                 }
             }
         }
-        return ws;
+        return mergeMaxValueLength;
     }
 }
