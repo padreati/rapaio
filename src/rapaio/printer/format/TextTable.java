@@ -212,7 +212,6 @@ public class TextTable implements Printable {
     }
 
     private void summaryHMerge(StringBuilder sb) {
-
         int[] ws = computeLayout();
         int total = Arrays.stream(ws).sum();
         int all = hMergeSize - total;
