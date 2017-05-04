@@ -197,7 +197,6 @@ public class TextTable implements Printable {
             }
         }
 
-        int offset = 0;
         for (List<Integer> indexes : splits) {
             TextTable tt = new TextTable(rows, indexes.size());
             for (int j = 0; j < rows; j++) {
@@ -208,13 +207,11 @@ public class TextTable implements Printable {
                 }
             }
             tt.summarySame(sb);
-            offset += indexes.size();
             sb.append("\n");
         }
     }
 
     private void summaryHMerge(StringBuilder sb) {
-
         int[] ws = computeLayout();
         int total = Arrays.stream(ws).sum();
         int all = hMergeSize - total;
