@@ -194,23 +194,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withAllowMissingTargetValues(false);
     }
 
-
-    private void convertWeightVector() {
-        double[] sparseWeights = new double[linear_weights.length];
-        int[] sparseIndices = new int[linear_weights.length];
-        int counter = 0;
-        for (int i = 0; i < linear_weights.length; i++) {
-            if (linear_weights[i] != 0.0) {
-                sparseWeights[counter] = linear_weights[i];
-                sparseIndices[counter] = i;
-                counter++;
-            }
-        }
-        this.sparseWeights = new double[counter];
-        this.sparseIndices = new int[counter];
-        System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
-        System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter); 
-    }
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
@@ -430,7 +413,21 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             // We don't need to store the class values either
             target = null;
 
-            convertWeightVector(); 
+            // Convert weight vector
+            double[] sparseWeights = new double[linear_weights.length];
+            int[] sparseIndices = new int[linear_weights.length];
+            int counter = 0;
+            for (int i = 0; i < linear_weights.length; i++) {
+                if (linear_weights[i] != 0.0) {
+                    sparseWeights[counter] = linear_weights[i];
+                    sparseIndices[counter] = i;
+                    counter++;
+                }
+            }
+            this.sparseWeights = new double[counter];
+            this.sparseIndices = new int[counter];
+            System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
+            System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
 
             // Clean out weight vector
             linear_weights = null;
