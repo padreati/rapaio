@@ -39,79 +39,77 @@ public class Range implements Serializable {
     }
 
     public Range(double x1, double y1, double x2, double y2) {
-    	xRange.setRange(x1, x2);
-    	yRange.setRange(y1, y2);
+        xRange.setRange(x1, x2);
+        yRange.setRange(y1, y2);
     }
 
     public void union(Range range) {
-    	xRange.union(range.getXRange());
-    	yRange.union(range.getYRange());
+        xRange.union(range.getXRange());
+        yRange.union(range.getYRange());
     }
 
     public void union(double x, double y) {
-    	xRange.union(x);
-    	yRange.union(y);
+        xRange.union(x);
+        yRange.union(y);
     }
 
     public boolean contains(double x, double y) {
-    	return xRange.contains(x) && yRange.contains(y);
+        return xRange.contains(x) && yRange.contains(y);
     }
 
     public double width() {
-    	return xRange.length();
+        return xRange.length();
     }
 
     public double height() {
-    	return yRange.length();
+        return yRange.length();
     }
 
     public double x1() {
-    	return xRange.getMin();
+        return xRange.getMin();
     }
 
     public double y1() {
-    	return yRange.getMin();
+        return yRange.getMin();
     }
 
     public double x2() {
-    	return xRange.getMax();
+        return xRange.getMax();
     }
 
     public double y2() {
-    	return yRange.getMax();
+        return yRange.getMax();
     }
 
     public void setX1(double x1) {
-    	xRange.setMin(x1);
-    }
-    
-    public void setX2(double x2) {
-    	xRange.setMax(x2);
-    }
-    
-    public void setY1(double y1) {
-    	yRange.setMin(y1);
-    }
-    
-    public void setY2(double y2) {
-    	yRange.setMax(y2);
+        xRange.setMin(x1);
     }
 
+    public void setX2(double x2) {
+        xRange.setMax(x2);
+    }
+
+    public void setY1(double y1) {
+        yRange.setMin(y1);
+    }
+
+    public void setY2(double y2) {
+        yRange.setMax(y2);
+    }
 
     public Range1D getXRange() {
-    	return xRange;
+        return xRange;
     }
-    
+
     public Range1D getYRange() {
-    	return yRange;
+        return yRange;
     }
-    
+
     public int getProperDecimasX() {
-    	return xRange.getProperDecimals();
+        return xRange.getProperDecimals();
     }
-    
 
     public int getProperDecimalsY() {
-    	return yRange.getProperDecimals();
+        return yRange.getProperDecimals();
     }
 }
