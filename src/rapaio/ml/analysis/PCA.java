@@ -110,8 +110,8 @@ public class PCA implements Printable {
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s, maxRuns, tol);
-        eigenValues = ep.values();
-        eigenVectors = ep.vectors();
+        eigenValues = ep.getRV();
+        eigenVectors = ep.getRM();
 
         logger.fine("sort eigen values and vectors");
 

@@ -533,12 +533,15 @@ public class MTools {
      * @return the result in a range of [0,1]
      */
     public static double betaIncReg(double x, double a, double b) {
-        if (a < 0 || b < 0) {
+    	boolean outOfRange = (a < 0 || b < 0);
+        if (outOfRange) {
             throw new IllegalArgumentException("a and b must be positive or zero");
         }
-        if (x == 0 || x == 1) {
+        boolean xIsZeroOrOne = (x == 0 || x == 1);
+        boolean xIsOutOfRange = (x < 0 || x > 1);
+        if (xIsZeroOrOne) {
             return x;
-        } else if (x < 0 || x > 1) {
+        } else if (xIsOutOfRange) {
             throw new IllegalArgumentException("x must be in the range [0,1]");
         }
 
