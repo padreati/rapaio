@@ -51,35 +51,28 @@ public class EigenvalueDecomposition implements Serializable {
      *
      * @serial matrix dimension.
      */
-    private int n;
-
-    /**
-     * Symmetry flag.
-     *
-     * @serial internal symmetry flag.
-     */
-    private boolean issymmetric;
+    private int dimension;
 
     /**
      * Arrays for internal storage of eigenvalues.
      *
      * @serial internal storage of eigenvalues.
      */
-    private double[] d, e;
+    private double[] eigenValues1, eigenValues2;
 
     /**
      * Array for internal storage of eigenvectors.
      *
      * @serial internal storage of eigenvectors.
      */
-    private RM V;
+    private RM eigenVectors;
 
     /**
      * Array for internal storage of nonsymmetric Hessenberg form.
      *
      * @serial internal storage of nonsymmetric Hessenberg form.
      */
-    private double[][] H;
+    private double[][] nonSymHessenbergForm;
 
     /**
      * Working storage for nonsymmetric algorithm.
@@ -92,20 +85,20 @@ public class EigenvalueDecomposition implements Serializable {
      * Check for symmetry, then construct the eigenvalue decomposition
      * Structure to access D and V.
      *
-     * @param Arg Square matrix
+     * @param rMatrixArg Square matrix
      */
 
-    public EigenvalueDecomposition(RM Arg) {
-        RM A = Arg.solidCopy();
-        n = Arg.colCount();
-        V = SolidRM.empty(n, n);
-        d = new double[n];
-        e = new double[n];
+    public EigenvalueDecomposition(RM rMatrixArg) {
+        RM rMatrix = rMatrixArg.solidCopy();
+        dimension = rMatrixArg.colCount();
+        eigenVectors = SolidRM.empty(dimension, dimension);
+        eigenValues1 = new double[dimension];
+        eigenValues2 = new double[dimension];
 
-        if (isSymmetric(A)) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    V.set(i, j, A.get(i, j));
+        if (isSymmetric(rMatrix)) {
+            for (int row = 0; row < dimension; row++) {
+                for (int col = 0; col < dimension; col++) {
+                    eigenVectors.set(row, col, rMatrix.get(row, col));
                 }
             }
 
@@ -116,12 +109,12 @@ public class EigenvalueDecomposition implements Serializable {
             tql2();
 
         } else {
-            H = new double[n][n];
-            ort = new double[n];
+            nonSymHessenbergForm = new double[dimension][dimension];
+            ort = new double[dimension];
 
-            for (int j = 0; j < n; j++) {
-                for (int i = 0; i < n; i++) {
-                    H[i][j] = A.get(i, j);
+            for (int col = 0; col < dimension; col++) {
+                for (int row = 0; row < dimension; row++) {
+                    nonSymHessenbergForm[row][col] = rMatrix.get(row, col);
                 }
             }
 
@@ -136,8 +129,8 @@ public class EigenvalueDecomposition implements Serializable {
 	private boolean isSymmetric(RM rMatrix) {
 		
 		boolean returnValue = true;
-		for (int row = 0; (row < n) & issymmetric; row++) {
-            for (int col = 0; (col < n); col++) {
+		for (int row = 0; (row < dimension) & returnValue; row++) {
+            for (int col = 0; (col < dimension); col++) {
                 if (!(rMatrix.get(col, row) == rMatrix.get(row, col))) {
                     returnValue = false;
                     break;
@@ -160,112 +153,112 @@ public class EigenvalueDecomposition implements Serializable {
         //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         //  Fortran subroutine in EISPACK.
 
-        for (int j = 0; j < n; j++) {
-            d[j] = V.get(n - 1, j);
+        for (int j = 0; j < dimension; j++) {
+            eigenValues1[j] = eigenVectors.get(dimension - 1, j);
         }
 
         // Householder reduction to tridiagonal form.
 
-        for (int i = n - 1; i > 0; i--) {
+        for (int i = dimension - 1; i > 0; i--) {
 
             // Scale to avoid under/overflow.
 
             double scale = 0.0;
             double h = 0.0;
             for (int k = 0; k < i; k++) {
-                scale = scale + Math.abs(d[k]);
+                scale = scale + Math.abs(eigenValues1[k]);
             }
             if (scale == 0.0) {
-                e[i] = d[i - 1];
+                eigenValues2[i] = eigenValues1[i - 1];
                 for (int j = 0; j < i; j++) {
-                    d[j] = V.get(i - 1, j);
-                    V.set(i, j, 0.0);
-                    V.set(j, i, 0.0);
+                    eigenValues1[j] = eigenVectors.get(i - 1, j);
+                    eigenVectors.set(i, j, 0.0);
+                    eigenVectors.set(j, i, 0.0);
                 }
             } else {
 
                 // Generate Householder vector.
 
                 for (int k = 0; k < i; k++) {
-                    d[k] /= scale;
-                    h += d[k] * d[k];
+                    eigenValues1[k] /= scale;
+                    h += eigenValues1[k] * eigenValues1[k];
                 }
-                double f = d[i - 1];
+                double f = eigenValues1[i - 1];
                 double g = Math.sqrt(h);
                 if (f > 0) {
                     g = -g;
                 }
-                e[i] = scale * g;
+                eigenValues2[i] = scale * g;
                 h = h - f * g;
-                d[i - 1] = f - g;
+                eigenValues1[i - 1] = f - g;
                 for (int j = 0; j < i; j++) {
-                    e[j] = 0.0;
+                    eigenValues2[j] = 0.0;
                 }
 
                 // Apply similarity transformation to remaining columns.
 
                 for (int j = 0; j < i; j++) {
-                    f = d[j];
-                    V.set(j, i, f);
-                    g = e[j] + V.get(j, j) * f;
+                    f = eigenValues1[j];
+                    eigenVectors.set(j, i, f);
+                    g = eigenValues2[j] + eigenVectors.get(j, j) * f;
                     for (int k = j + 1; k <= i - 1; k++) {
-                        g += V.get(k, j) * d[k];
-                        e[k] += V.get(k, j) * f;
+                        g += eigenVectors.get(k, j) * eigenValues1[k];
+                        eigenValues2[k] += eigenVectors.get(k, j) * f;
                     }
-                    e[j] = g;
+                    eigenValues2[j] = g;
                 }
                 f = 0.0;
                 for (int j = 0; j < i; j++) {
-                    e[j] /= h;
-                    f += e[j] * d[j];
+                    eigenValues2[j] /= h;
+                    f += eigenValues2[j] * eigenValues1[j];
                 }
                 double hh = f / (h + h);
                 for (int j = 0; j < i; j++) {
-                    e[j] -= hh * d[j];
+                    eigenValues2[j] -= hh * eigenValues1[j];
                 }
                 for (int j = 0; j < i; j++) {
-                    f = d[j];
-                    g = e[j];
+                    f = eigenValues1[j];
+                    g = eigenValues2[j];
                     for (int k = j; k <= i - 1; k++) {
-                        V.increment(k, j, -(f * e[k] + g * d[k]));
+                        eigenVectors.increment(k, j, -(f * eigenValues2[k] + g * eigenValues1[k]));
                     }
-                    d[j] = V.get(i - 1, j);
-                    V.set(i, j, 0.0);
+                    eigenValues1[j] = eigenVectors.get(i - 1, j);
+                    eigenVectors.set(i, j, 0.0);
                 }
             }
-            d[i] = h;
+            eigenValues1[i] = h;
         }
 
         // Accumulate transformations.
 
-        for (int i = 0; i < n - 1; i++) {
-            V.set(n - 1, i, V.get(i, i));
-            V.set(i, i, 1.0);
-            double h = d[i + 1];
+        for (int i = 0; i < dimension - 1; i++) {
+            eigenVectors.set(dimension - 1, i, eigenVectors.get(i, i));
+            eigenVectors.set(i, i, 1.0);
+            double h = eigenValues1[i + 1];
             if (h != 0.0) {
                 for (int k = 0; k <= i; k++) {
-                    d[k] = V.get(k, i + 1) / h;
+                    eigenValues1[k] = eigenVectors.get(k, i + 1) / h;
                 }
                 for (int j = 0; j <= i; j++) {
                     double g = 0.0;
                     for (int k = 0; k <= i; k++) {
-                        g += V.get(k, i + 1) * V.get(k, j);
+                        g += eigenVectors.get(k, i + 1) * eigenVectors.get(k, j);
                     }
                     for (int k = 0; k <= i; k++) {
-                        V.increment(k, j, -g * d[k]);
+                        eigenVectors.increment(k, j, -g * eigenValues1[k]);
                     }
                 }
             }
             for (int k = 0; k <= i; k++) {
-                V.set(k, i + 1, 0.0);
+                eigenVectors.set(k, i + 1, 0.0);
             }
         }
-        for (int j = 0; j < n; j++) {
-            d[j] = V.get(n - 1, j);
-            V.set(n - 1, j, 0.0);
+        for (int j = 0; j < dimension; j++) {
+            eigenValues1[j] = eigenVectors.get(dimension - 1, j);
+            eigenVectors.set(dimension - 1, j, 0.0);
         }
-        V.set(n - 1, n - 1, 1.0);
-        e[0] = 0.0;
+        eigenVectors.set(dimension - 1, dimension - 1, 1.0);
+        eigenValues2[0] = 0.0;
     }
 
     // Symmetric tridiagonal QL algorithm.
@@ -277,22 +270,22 @@ public class EigenvalueDecomposition implements Serializable {
         //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         //  Fortran subroutine in EISPACK.
 
-        for (int i = 1; i < n; i++) {
-            e[i - 1] = e[i];
+        for (int i = 1; i < dimension; i++) {
+            eigenValues2[i - 1] = eigenValues2[i];
         }
-        e[n - 1] = 0.0;
+        eigenValues2[dimension - 1] = 0.0;
 
         double f = 0.0;
         double tst1 = 0.0;
         double eps = Math.pow(2.0, -52.0);
-        for (int l = 0; l < n; l++) {
+        for (int l = 0; l < dimension; l++) {
 
             // Find small subdiagonal element
 
-            tst1 = Math.max(tst1, Math.abs(d[l]) + Math.abs(e[l]));
+            tst1 = Math.max(tst1, Math.abs(eigenValues1[l]) + Math.abs(eigenValues2[l]));
             int m = l;
-            while (m < n) {
-                if (Math.abs(e[m]) <= eps * tst1) {
+            while (m < dimension) {
+                if (Math.abs(eigenValues2[m]) <= eps * tst1) {
                     break;
                 }
                 m++;
@@ -308,81 +301,81 @@ public class EigenvalueDecomposition implements Serializable {
 
                     // Compute implicit shift
 
-                    double g = d[l];
-                    double p = (d[l + 1] - g) / (2.0 * e[l]);
+                    double g = eigenValues1[l];
+                    double p = (eigenValues1[l + 1] - g) / (2.0 * eigenValues2[l]);
                     double r = Math.hypot(p, 1.0);
                     if (p < 0) {
                         r = -r;
                     }
-                    d[l] = e[l] / (p + r);
-                    d[l + 1] = e[l] * (p + r);
-                    double dl1 = d[l + 1];
-                    double h = g - d[l];
-                    for (int i = l + 2; i < n; i++) {
-                        d[i] -= h;
+                    eigenValues1[l] = eigenValues2[l] / (p + r);
+                    eigenValues1[l + 1] = eigenValues2[l] * (p + r);
+                    double dl1 = eigenValues1[l + 1];
+                    double h = g - eigenValues1[l];
+                    for (int i = l + 2; i < dimension; i++) {
+                        eigenValues1[i] -= h;
                     }
                     f = f + h;
 
                     // Implicit QL transformation.
 
-                    p = d[m];
+                    p = eigenValues1[m];
                     double c = 1.0;
                     double c2 = c;
                     double c3 = c;
-                    double el1 = e[l + 1];
+                    double el1 = eigenValues2[l + 1];
                     double s = 0.0;
                     double s2 = 0.0;
                     for (int i = m - 1; i >= l; i--) {
                         c3 = c2;
                         c2 = c;
                         s2 = s;
-                        g = c * e[i];
+                        g = c * eigenValues2[i];
                         h = c * p;
-                        r = Math.hypot(p, e[i]);
-                        e[i + 1] = s * r;
-                        s = e[i] / r;
+                        r = Math.hypot(p, eigenValues2[i]);
+                        eigenValues2[i + 1] = s * r;
+                        s = eigenValues2[i] / r;
                         c = p / r;
-                        p = c * d[i] - s * g;
-                        d[i + 1] = h + s * (c * g + s * d[i]);
+                        p = c * eigenValues1[i] - s * g;
+                        eigenValues1[i + 1] = h + s * (c * g + s * eigenValues1[i]);
 
                         // Accumulate transformation.
 
-                        for (int k = 0; k < n; k++) {
-                            h = V.get(k, i + 1);
-                            V.set(k, i + 1, s * V.get(k, i) + c * h);
-                            V.set(k, i, c * V.get(k, i) - s * h);
+                        for (int k = 0; k < dimension; k++) {
+                            h = eigenVectors.get(k, i + 1);
+                            eigenVectors.set(k, i + 1, s * eigenVectors.get(k, i) + c * h);
+                            eigenVectors.set(k, i, c * eigenVectors.get(k, i) - s * h);
                         }
                     }
-                    p = -s * s2 * c3 * el1 * e[l] / dl1;
-                    e[l] = s * p;
-                    d[l] = c * p;
+                    p = -s * s2 * c3 * el1 * eigenValues2[l] / dl1;
+                    eigenValues2[l] = s * p;
+                    eigenValues1[l] = c * p;
 
                     // Check for convergence.
 
-                } while (Math.abs(e[l]) > eps * tst1);
+                } while (Math.abs(eigenValues2[l]) > eps * tst1);
             }
-            d[l] = d[l] + f;
-            e[l] = 0.0;
+            eigenValues1[l] = eigenValues1[l] + f;
+            eigenValues2[l] = 0.0;
         }
 
         // Sort eigenvalues and corresponding vectors.
 
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < dimension - 1; i++) {
             int k = i;
-            double p = d[i];
-            for (int j = i + 1; j < n; j++) {
-                if (d[j] < p) {
+            double p = eigenValues1[i];
+            for (int j = i + 1; j < dimension; j++) {
+                if (eigenValues1[j] < p) {
                     k = j;
-                    p = d[j];
+                    p = eigenValues1[j];
                 }
             }
             if (k != i) {
-                d[k] = d[i];
-                d[i] = p;
-                for (int j = 0; j < n; j++) {
-                    p = V.get(j, i);
-                    V.set(j, i, V.get(j, k));
-                    V.set(j, k, p);
+                eigenValues1[k] = eigenValues1[i];
+                eigenValues1[i] = p;
+                for (int j = 0; j < dimension; j++) {
+                    p = eigenVectors.get(j, i);
+                    eigenVectors.set(j, i, eigenVectors.get(j, k));
+                    eigenVectors.set(j, k, p);
                 }
             }
         }
@@ -398,7 +391,7 @@ public class EigenvalueDecomposition implements Serializable {
         //  Fortran subroutines in EISPACK.
 
         int low = 0;
-        int high = n - 1;
+        int high = dimension - 1;
 
         for (int m = low + 1; m <= high - 1; m++) {
 
@@ -406,7 +399,7 @@ public class EigenvalueDecomposition implements Serializable {
 
             double scale = 0.0;
             for (int i = m; i <= high; i++) {
-                scale = scale + Math.abs(H[i][m - 1]);
+                scale = scale + Math.abs(nonSymHessenbergForm[i][m - 1]);
             }
             if (scale != 0.0) {
 
@@ -414,7 +407,7 @@ public class EigenvalueDecomposition implements Serializable {
 
                 double h = 0.0;
                 for (int i = high; i >= m; i--) {
-                    ort[i] = H[i][m - 1] / scale;
+                    ort[i] = nonSymHessenbergForm[i][m - 1] / scale;
                     h += ort[i] * ort[i];
                 }
                 double g = Math.sqrt(h);
@@ -427,54 +420,54 @@ public class EigenvalueDecomposition implements Serializable {
                 // Apply Householder similarity transformation
                 // H = (I-u*u'/h)*H*(I-u*u')/h)
 
-                for (int j = m; j < n; j++) {
+                for (int j = m; j < dimension; j++) {
                     double f = 0.0;
                     for (int i = high; i >= m; i--) {
-                        f += ort[i] * H[i][j];
+                        f += ort[i] * nonSymHessenbergForm[i][j];
                     }
                     f = f / h;
                     for (int i = m; i <= high; i++) {
-                        H[i][j] -= f * ort[i];
+                        nonSymHessenbergForm[i][j] -= f * ort[i];
                     }
                 }
 
                 for (int i = 0; i <= high; i++) {
                     double f = 0.0;
                     for (int j = high; j >= m; j--) {
-                        f += ort[j] * H[i][j];
+                        f += ort[j] * nonSymHessenbergForm[i][j];
                     }
                     f = f / h;
                     for (int j = m; j <= high; j++) {
-                        H[i][j] -= f * ort[j];
+                        nonSymHessenbergForm[i][j] -= f * ort[j];
                     }
                 }
                 ort[m] = scale * ort[m];
-                H[m][m - 1] = scale * g;
+                nonSymHessenbergForm[m][m - 1] = scale * g;
             }
         }
 
         // Accumulate transformations (Algol's ortran).
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                V.set(i, j, (i == j ? 1.0 : 0.0));
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                eigenVectors.set(i, j, (i == j ? 1.0 : 0.0));
             }
         }
 
         for (int m = high - 1; m >= low + 1; m--) {
-            if (H[m][m - 1] != 0.0) {
+            if (nonSymHessenbergForm[m][m - 1] != 0.0) {
                 for (int i = m + 1; i <= high; i++) {
-                    ort[i] = H[i][m - 1];
+                    ort[i] = nonSymHessenbergForm[i][m - 1];
                 }
                 for (int j = m; j <= high; j++) {
                     double g = 0.0;
                     for (int i = m; i <= high; i++) {
-                        g += ort[i] * V.get(i, j);
+                        g += ort[i] * eigenVectors.get(i, j);
                     }
                     // Double division avoids possible underflow
-                    g = (g / ort[m]) / H[m][m - 1];
+                    g = (g / ort[m]) / nonSymHessenbergForm[m][m - 1];
                     for (int i = m; i <= high; i++) {
-                        V.increment(i, j, g * ort[i]);
+                        eigenVectors.increment(i, j, g * ort[i]);
                     }
                 }
             }
@@ -513,7 +506,7 @@ public class EigenvalueDecomposition implements Serializable {
 
         // Initialize
 
-        int nn = this.n;
+        int nn = this.dimension;
         int n = nn - 1;
         int low = 0;
         int high = nn - 1;
@@ -526,11 +519,11 @@ public class EigenvalueDecomposition implements Serializable {
         double norm = 0.0;
         for (int i = 0; i < nn; i++) {
             if (i < low | i > high) {
-                d[i] = H[i][i];
-                e[i] = 0.0;
+                eigenValues1[i] = nonSymHessenbergForm[i][i];
+                eigenValues2[i] = 0.0;
             }
             for (int j = Math.max(i - 1, 0); j < nn; j++) {
-                norm = norm + Math.abs(H[i][j]);
+                norm = norm + Math.abs(nonSymHessenbergForm[i][j]);
             }
         }
 
@@ -543,11 +536,11 @@ public class EigenvalueDecomposition implements Serializable {
 
             int l = n;
             while (l > low) {
-                s = Math.abs(H[l - 1][l - 1]) + Math.abs(H[l][l]);
+                s = Math.abs(nonSymHessenbergForm[l - 1][l - 1]) + Math.abs(nonSymHessenbergForm[l][l]);
                 if (s == 0.0) {
                     s = norm;
                 }
-                if (Math.abs(H[l][l - 1]) < eps * s) {
+                if (Math.abs(nonSymHessenbergForm[l][l - 1]) < eps * s) {
                     break;
                 }
                 l--;
@@ -557,22 +550,22 @@ public class EigenvalueDecomposition implements Serializable {
             // One root found
 
             if (l == n) {
-                H[n][n] = H[n][n] + exshift;
-                d[n] = H[n][n];
-                e[n] = 0.0;
+                nonSymHessenbergForm[n][n] = nonSymHessenbergForm[n][n] + exshift;
+                eigenValues1[n] = nonSymHessenbergForm[n][n];
+                eigenValues2[n] = 0.0;
                 n--;
                 iter = 0;
 
                 // Two roots found
 
             } else if (l == n - 1) {
-                w = H[n][n - 1] * H[n - 1][n];
-                p = (H[n - 1][n - 1] - H[n][n]) / 2.0;
+                w = nonSymHessenbergForm[n][n - 1] * nonSymHessenbergForm[n - 1][n];
+                p = (nonSymHessenbergForm[n - 1][n - 1] - nonSymHessenbergForm[n][n]) / 2.0;
                 q = p * p + w;
                 z = Math.sqrt(Math.abs(q));
-                H[n][n] = H[n][n] + exshift;
-                H[n - 1][n - 1] = H[n - 1][n - 1] + exshift;
-                x = H[n][n];
+                nonSymHessenbergForm[n][n] = nonSymHessenbergForm[n][n] + exshift;
+                nonSymHessenbergForm[n - 1][n - 1] = nonSymHessenbergForm[n - 1][n - 1] + exshift;
+                x = nonSymHessenbergForm[n][n];
 
                 // Real pair
 
@@ -582,14 +575,14 @@ public class EigenvalueDecomposition implements Serializable {
                     } else {
                         z = p - z;
                     }
-                    d[n - 1] = x + z;
-                    d[n] = d[n - 1];
+                    eigenValues1[n - 1] = x + z;
+                    eigenValues1[n] = eigenValues1[n - 1];
                     if (z != 0.0) {
-                        d[n] = x - w / z;
+                        eigenValues1[n] = x - w / z;
                     }
-                    e[n - 1] = 0.0;
-                    e[n] = 0.0;
-                    x = H[n][n - 1];
+                    eigenValues2[n - 1] = 0.0;
+                    eigenValues2[n] = 0.0;
+                    x = nonSymHessenbergForm[n][n - 1];
                     s = Math.abs(x) + Math.abs(z);
                     p = x / s;
                     q = z / s;
@@ -600,34 +593,34 @@ public class EigenvalueDecomposition implements Serializable {
                     // Row modification
 
                     for (int j = n - 1; j < nn; j++) {
-                        z = H[n - 1][j];
-                        H[n - 1][j] = q * z + p * H[n][j];
-                        H[n][j] = q * H[n][j] - p * z;
+                        z = nonSymHessenbergForm[n - 1][j];
+                        nonSymHessenbergForm[n - 1][j] = q * z + p * nonSymHessenbergForm[n][j];
+                        nonSymHessenbergForm[n][j] = q * nonSymHessenbergForm[n][j] - p * z;
                     }
 
                     // Column modification
 
                     for (int i = 0; i <= n; i++) {
-                        z = H[i][n - 1];
-                        H[i][n - 1] = q * z + p * H[i][n];
-                        H[i][n] = q * H[i][n] - p * z;
+                        z = nonSymHessenbergForm[i][n - 1];
+                        nonSymHessenbergForm[i][n - 1] = q * z + p * nonSymHessenbergForm[i][n];
+                        nonSymHessenbergForm[i][n] = q * nonSymHessenbergForm[i][n] - p * z;
                     }
 
                     // Accumulate transformations
 
                     for (int i = low; i <= high; i++) {
-                        z = V.get(i, n - 1);
-                        V.set(i, n - 1, q * z + p * V.get(i, n));
-                        V.set(i, n, q * V.get(i, n) - p * z);
+                        z = eigenVectors.get(i, n - 1);
+                        eigenVectors.set(i, n - 1, q * z + p * eigenVectors.get(i, n));
+                        eigenVectors.set(i, n, q * eigenVectors.get(i, n) - p * z);
                     }
 
                     // Complex pair
 
                 } else {
-                    d[n - 1] = x + p;
-                    d[n] = x + p;
-                    e[n - 1] = z;
-                    e[n] = -z;
+                    eigenValues1[n - 1] = x + p;
+                    eigenValues1[n] = x + p;
+                    eigenValues2[n - 1] = z;
+                    eigenValues2[n] = -z;
                 }
                 n = n - 2;
                 iter = 0;
@@ -638,12 +631,12 @@ public class EigenvalueDecomposition implements Serializable {
 
                 // Form shift
 
-                x = H[n][n];
+                x = nonSymHessenbergForm[n][n];
                 y = 0.0;
                 w = 0.0;
                 if (l < n) {
-                    y = H[n - 1][n - 1];
-                    w = H[n][n - 1] * H[n - 1][n];
+                    y = nonSymHessenbergForm[n - 1][n - 1];
+                    w = nonSymHessenbergForm[n][n - 1] * nonSymHessenbergForm[n - 1][n];
                 }
 
                 // Wilkinson's original ad hoc shift
@@ -651,9 +644,9 @@ public class EigenvalueDecomposition implements Serializable {
                 if (iter == 10) {
                     exshift += x;
                     for (int i = low; i <= n; i++) {
-                        H[i][i] -= x;
+                        nonSymHessenbergForm[i][i] -= x;
                     }
-                    s = Math.abs(H[n][n - 1]) + Math.abs(H[n - 1][n - 2]);
+                    s = Math.abs(nonSymHessenbergForm[n][n - 1]) + Math.abs(nonSymHessenbergForm[n - 1][n - 2]);
                     x = y = 0.75 * s;
                     w = -0.4375 * s * s;
                 }
@@ -670,7 +663,7 @@ public class EigenvalueDecomposition implements Serializable {
                         }
                         s = x - w / ((y - x) / 2.0 + s);
                         for (int i = low; i <= n; i++) {
-                            H[i][i] -= s;
+                            nonSymHessenbergForm[i][i] -= s;
                         }
                         exshift += s;
                         x = y = w = 0.964;
@@ -683,12 +676,12 @@ public class EigenvalueDecomposition implements Serializable {
 
                 int m = n - 2;
                 while (m >= l) {
-                    z = H[m][m];
+                    z = nonSymHessenbergForm[m][m];
                     r = x - z;
                     s = y - z;
-                    p = (r * s - w) / H[m + 1][m] + H[m][m + 1];
-                    q = H[m + 1][m + 1] - z - r - s;
-                    r = H[m + 2][m + 1];
+                    p = (r * s - w) / nonSymHessenbergForm[m + 1][m] + nonSymHessenbergForm[m][m + 1];
+                    q = nonSymHessenbergForm[m + 1][m + 1] - z - r - s;
+                    r = nonSymHessenbergForm[m + 2][m + 1];
                     s = Math.abs(p) + Math.abs(q) + Math.abs(r);
                     p = p / s;
                     q = q / s;
@@ -696,18 +689,18 @@ public class EigenvalueDecomposition implements Serializable {
                     if (m == l) {
                         break;
                     }
-                    if (Math.abs(H[m][m - 1]) * (Math.abs(q) + Math.abs(r)) <
-                            eps * (Math.abs(p) * (Math.abs(H[m - 1][m - 1]) + Math.abs(z) +
-                                    Math.abs(H[m + 1][m + 1])))) {
+                    if (Math.abs(nonSymHessenbergForm[m][m - 1]) * (Math.abs(q) + Math.abs(r)) <
+                            eps * (Math.abs(p) * (Math.abs(nonSymHessenbergForm[m - 1][m - 1]) + Math.abs(z) +
+                                    Math.abs(nonSymHessenbergForm[m + 1][m + 1])))) {
                         break;
                     }
                     m--;
                 }
 
                 for (int i = m + 2; i <= n; i++) {
-                    H[i][i - 2] = 0.0;
+                    nonSymHessenbergForm[i][i - 2] = 0.0;
                     if (i > m + 2) {
-                        H[i][i - 3] = 0.0;
+                        nonSymHessenbergForm[i][i - 3] = 0.0;
                     }
                 }
 
@@ -717,9 +710,9 @@ public class EigenvalueDecomposition implements Serializable {
                 for (int k = m; k <= n - 1; k++) {
                     boolean notlast = (k != n - 1);
                     if (k != m) {
-                        p = H[k][k - 1];
-                        q = H[k + 1][k - 1];
-                        r = (notlast ? H[k + 2][k - 1] : 0.0);
+                        p = nonSymHessenbergForm[k][k - 1];
+                        q = nonSymHessenbergForm[k + 1][k - 1];
+                        r = (notlast ? nonSymHessenbergForm[k + 2][k - 1] : 0.0);
                         x = Math.abs(p) + Math.abs(q) + Math.abs(r);
                         if (x == 0.0) {
                             continue;
@@ -735,9 +728,9 @@ public class EigenvalueDecomposition implements Serializable {
                     }
                     if (s != 0) {
                         if (k != m) {
-                            H[k][k - 1] = -s * x;
+                            nonSymHessenbergForm[k][k - 1] = -s * x;
                         } else if (l != m) {
-                            H[k][k - 1] = -H[k][k - 1];
+                            nonSymHessenbergForm[k][k - 1] = -nonSymHessenbergForm[k][k - 1];
                         }
                         p = p + s;
                         x = p / s;
@@ -749,37 +742,37 @@ public class EigenvalueDecomposition implements Serializable {
                         // Row modification
 
                         for (int j = k; j < nn; j++) {
-                            p = H[k][j] + q * H[k + 1][j];
+                            p = nonSymHessenbergForm[k][j] + q * nonSymHessenbergForm[k + 1][j];
                             if (notlast) {
-                                p = p + r * H[k + 2][j];
-                                H[k + 2][j] = H[k + 2][j] - p * z;
+                                p = p + r * nonSymHessenbergForm[k + 2][j];
+                                nonSymHessenbergForm[k + 2][j] = nonSymHessenbergForm[k + 2][j] - p * z;
                             }
-                            H[k][j] = H[k][j] - p * x;
-                            H[k + 1][j] = H[k + 1][j] - p * y;
+                            nonSymHessenbergForm[k][j] = nonSymHessenbergForm[k][j] - p * x;
+                            nonSymHessenbergForm[k + 1][j] = nonSymHessenbergForm[k + 1][j] - p * y;
                         }
 
                         // Column modification
 
                         for (int i = 0; i <= Math.min(n, k + 3); i++) {
-                            p = x * H[i][k] + y * H[i][k + 1];
+                            p = x * nonSymHessenbergForm[i][k] + y * nonSymHessenbergForm[i][k + 1];
                             if (notlast) {
-                                p = p + z * H[i][k + 2];
-                                H[i][k + 2] = H[i][k + 2] - p * r;
+                                p = p + z * nonSymHessenbergForm[i][k + 2];
+                                nonSymHessenbergForm[i][k + 2] = nonSymHessenbergForm[i][k + 2] - p * r;
                             }
-                            H[i][k] = H[i][k] - p;
-                            H[i][k + 1] = H[i][k + 1] - p * q;
+                            nonSymHessenbergForm[i][k] = nonSymHessenbergForm[i][k] - p;
+                            nonSymHessenbergForm[i][k + 1] = nonSymHessenbergForm[i][k + 1] - p * q;
                         }
 
                         // Accumulate transformations
 
                         for (int i = low; i <= high; i++) {
-                            p = x * V.get(i, k) + y * V.get(i, k + 1);
+                            p = x * eigenVectors.get(i, k) + y * eigenVectors.get(i, k + 1);
                             if (notlast) {
-                                p = p + z * V.get(i, k + 2);
-                                V.set(i, k + 2, V.get(i, k + 2) - p * r);
+                                p = p + z * eigenVectors.get(i, k + 2);
+                                eigenVectors.set(i, k + 2, eigenVectors.get(i, k + 2) - p * r);
                             }
-                            V.set(i, k, V.get(i, k) - p);
-                            V.set(i, k + 1, V.get(i, k + 1) - p * q);
+                            eigenVectors.set(i, k, eigenVectors.get(i, k) - p);
+                            eigenVectors.set(i, k + 1, eigenVectors.get(i, k + 1) - p * q);
                         }
                     }  // (s != 0)
                 }  // k loop
@@ -793,53 +786,53 @@ public class EigenvalueDecomposition implements Serializable {
         }
 
         for (n = nn - 1; n >= 0; n--) {
-            p = d[n];
-            q = e[n];
+            p = eigenValues1[n];
+            q = eigenValues2[n];
 
             // Real vector
 
             if (q == 0) {
                 int l = n;
-                H[n][n] = 1.0;
+                nonSymHessenbergForm[n][n] = 1.0;
                 for (int i = n - 1; i >= 0; i--) {
-                    w = H[i][i] - p;
+                    w = nonSymHessenbergForm[i][i] - p;
                     r = 0.0;
                     for (int j = l; j <= n; j++) {
-                        r = r + H[i][j] * H[j][n];
+                        r = r + nonSymHessenbergForm[i][j] * nonSymHessenbergForm[j][n];
                     }
-                    if (e[i] < 0.0) {
+                    if (eigenValues2[i] < 0.0) {
                         z = w;
                         s = r;
                     } else {
                         l = i;
-                        if (e[i] == 0.0) {
+                        if (eigenValues2[i] == 0.0) {
                             if (w != 0.0) {
-                                H[i][n] = -r / w;
+                                nonSymHessenbergForm[i][n] = -r / w;
                             } else {
-                                H[i][n] = -r / (eps * norm);
+                                nonSymHessenbergForm[i][n] = -r / (eps * norm);
                             }
 
                             // Solve real equations
 
                         } else {
-                            x = H[i][i + 1];
-                            y = H[i + 1][i];
-                            q = (d[i] - p) * (d[i] - p) + e[i] * e[i];
+                            x = nonSymHessenbergForm[i][i + 1];
+                            y = nonSymHessenbergForm[i + 1][i];
+                            q = (eigenValues1[i] - p) * (eigenValues1[i] - p) + eigenValues2[i] * eigenValues2[i];
                             t = (x * s - z * r) / q;
-                            H[i][n] = t;
+                            nonSymHessenbergForm[i][n] = t;
                             if (Math.abs(x) > Math.abs(z)) {
-                                H[i + 1][n] = (-r - w * t) / x;
+                                nonSymHessenbergForm[i + 1][n] = (-r - w * t) / x;
                             } else {
-                                H[i + 1][n] = (-s - y * t) / z;
+                                nonSymHessenbergForm[i + 1][n] = (-s - y * t) / z;
                             }
                         }
 
                         // Overflow control
 
-                        t = Math.abs(H[i][n]);
+                        t = Math.abs(nonSymHessenbergForm[i][n]);
                         if ((eps * t) * t > 1) {
                             for (int j = i; j <= n; j++) {
-                                H[j][n] = H[j][n] / t;
+                                nonSymHessenbergForm[j][n] = nonSymHessenbergForm[j][n] / t;
                             }
                         }
                     }
@@ -852,68 +845,68 @@ public class EigenvalueDecomposition implements Serializable {
 
                 // Last vector component imaginary so matrix is triangular
 
-                if (Math.abs(H[n][n - 1]) > Math.abs(H[n - 1][n])) {
-                    H[n - 1][n - 1] = q / H[n][n - 1];
-                    H[n - 1][n] = -(H[n][n] - p) / H[n][n - 1];
+                if (Math.abs(nonSymHessenbergForm[n][n - 1]) > Math.abs(nonSymHessenbergForm[n - 1][n])) {
+                    nonSymHessenbergForm[n - 1][n - 1] = q / nonSymHessenbergForm[n][n - 1];
+                    nonSymHessenbergForm[n - 1][n] = -(nonSymHessenbergForm[n][n] - p) / nonSymHessenbergForm[n][n - 1];
                 } else {
-                    cdiv(0.0, -H[n - 1][n], H[n - 1][n - 1] - p, q);
-                    H[n - 1][n - 1] = cdivr;
-                    H[n - 1][n] = cdivi;
+                    cdiv(0.0, -nonSymHessenbergForm[n - 1][n], nonSymHessenbergForm[n - 1][n - 1] - p, q);
+                    nonSymHessenbergForm[n - 1][n - 1] = cdivr;
+                    nonSymHessenbergForm[n - 1][n] = cdivi;
                 }
-                H[n][n - 1] = 0.0;
-                H[n][n] = 1.0;
+                nonSymHessenbergForm[n][n - 1] = 0.0;
+                nonSymHessenbergForm[n][n] = 1.0;
                 for (int i = n - 2; i >= 0; i--) {
                     double ra, sa, vr, vi;
                     ra = 0.0;
                     sa = 0.0;
                     for (int j = l; j <= n; j++) {
-                        ra = ra + H[i][j] * H[j][n - 1];
-                        sa = sa + H[i][j] * H[j][n];
+                        ra = ra + nonSymHessenbergForm[i][j] * nonSymHessenbergForm[j][n - 1];
+                        sa = sa + nonSymHessenbergForm[i][j] * nonSymHessenbergForm[j][n];
                     }
-                    w = H[i][i] - p;
+                    w = nonSymHessenbergForm[i][i] - p;
 
-                    if (e[i] < 0.0) {
+                    if (eigenValues2[i] < 0.0) {
                         z = w;
                         r = ra;
                         s = sa;
                     } else {
                         l = i;
-                        if (e[i] == 0) {
+                        if (eigenValues2[i] == 0) {
                             cdiv(-ra, -sa, w, q);
-                            H[i][n - 1] = cdivr;
-                            H[i][n] = cdivi;
+                            nonSymHessenbergForm[i][n - 1] = cdivr;
+                            nonSymHessenbergForm[i][n] = cdivi;
                         } else {
 
                             // Solve complex equations
 
-                            x = H[i][i + 1];
-                            y = H[i + 1][i];
-                            vr = (d[i] - p) * (d[i] - p) + e[i] * e[i] - q * q;
-                            vi = (d[i] - p) * 2.0 * q;
+                            x = nonSymHessenbergForm[i][i + 1];
+                            y = nonSymHessenbergForm[i + 1][i];
+                            vr = (eigenValues1[i] - p) * (eigenValues1[i] - p) + eigenValues2[i] * eigenValues2[i] - q * q;
+                            vi = (eigenValues1[i] - p) * 2.0 * q;
                             if (vr == 0.0 & vi == 0.0) {
                                 vr = eps * norm * (Math.abs(w) + Math.abs(q) +
                                         Math.abs(x) + Math.abs(y) + Math.abs(z));
                             }
                             cdiv(x * r - z * ra + q * sa, x * s - z * sa - q * ra, vr, vi);
-                            H[i][n - 1] = cdivr;
-                            H[i][n] = cdivi;
+                            nonSymHessenbergForm[i][n - 1] = cdivr;
+                            nonSymHessenbergForm[i][n] = cdivi;
                             if (Math.abs(x) > (Math.abs(z) + Math.abs(q))) {
-                                H[i + 1][n - 1] = (-ra - w * H[i][n - 1] + q * H[i][n]) / x;
-                                H[i + 1][n] = (-sa - w * H[i][n] - q * H[i][n - 1]) / x;
+                                nonSymHessenbergForm[i + 1][n - 1] = (-ra - w * nonSymHessenbergForm[i][n - 1] + q * nonSymHessenbergForm[i][n]) / x;
+                                nonSymHessenbergForm[i + 1][n] = (-sa - w * nonSymHessenbergForm[i][n] - q * nonSymHessenbergForm[i][n - 1]) / x;
                             } else {
-                                cdiv(-r - y * H[i][n - 1], -s - y * H[i][n], z, q);
-                                H[i + 1][n - 1] = cdivr;
-                                H[i + 1][n] = cdivi;
+                                cdiv(-r - y * nonSymHessenbergForm[i][n - 1], -s - y * nonSymHessenbergForm[i][n], z, q);
+                                nonSymHessenbergForm[i + 1][n - 1] = cdivr;
+                                nonSymHessenbergForm[i + 1][n] = cdivi;
                             }
                         }
 
                         // Overflow control
 
-                        t = Math.max(Math.abs(H[i][n - 1]), Math.abs(H[i][n]));
+                        t = Math.max(Math.abs(nonSymHessenbergForm[i][n - 1]), Math.abs(nonSymHessenbergForm[i][n]));
                         if ((eps * t) * t > 1) {
                             for (int j = i; j <= n; j++) {
-                                H[j][n - 1] = H[j][n - 1] / t;
-                                H[j][n] = H[j][n] / t;
+                                nonSymHessenbergForm[j][n - 1] = nonSymHessenbergForm[j][n - 1] / t;
+                                nonSymHessenbergForm[j][n] = nonSymHessenbergForm[j][n] / t;
                             }
                         }
                     }
@@ -926,7 +919,7 @@ public class EigenvalueDecomposition implements Serializable {
         for (int i = 0; i < nn; i++) {
             if (i < low | i > high) {
                 for (int j = i; j < nn; j++) {
-                    V.set(i, j, H[i][j]);
+                    eigenVectors.set(i, j, nonSymHessenbergForm[i][j]);
                 }
             }
         }
@@ -937,9 +930,9 @@ public class EigenvalueDecomposition implements Serializable {
             for (int i = low; i <= high; i++) {
                 z = 0.0;
                 for (int k = low; k <= Math.min(j, high); k++) {
-                    z = z + V.get(i, k) * H[k][j];
+                    z = z + eigenVectors.get(i, k) * nonSymHessenbergForm[k][j];
                 }
-                V.set(i, j, z);
+                eigenVectors.set(i, j, z);
             }
         }
     }
@@ -952,7 +945,7 @@ public class EigenvalueDecomposition implements Serializable {
      */
 
     public RM getV() {
-        return V;
+        return eigenVectors;
     }
 
     /**
@@ -962,7 +955,7 @@ public class EigenvalueDecomposition implements Serializable {
      */
 
     public double[] getRealEigenvalues() {
-        return d;
+        return eigenValues1;
     }
 
     /**
@@ -972,7 +965,7 @@ public class EigenvalueDecomposition implements Serializable {
      */
 
     public double[] getImagEigenvalues() {
-        return e;
+        return eigenValues2;
     }
 
     /**
@@ -982,13 +975,13 @@ public class EigenvalueDecomposition implements Serializable {
      */
 
     public RM getD() {
-        RM X = SolidRM.empty(n, n);
-        for (int i = 0; i < n; i++) {
-            X.set(i, i, d[i]);
-            if (e[i] > 0) {
-                X.set(i, i + 1, e[i]);
-            } else if (e[i] < 0) {
-                X.set(i, i - 1, e[i]);
+        RM X = SolidRM.empty(dimension, dimension);
+        for (int i = 0; i < dimension; i++) {
+            X.set(i, i, eigenValues1[i]);
+            if (eigenValues2[i] > 0) {
+                X.set(i, i + 1, eigenValues2[i]);
+            } else if (eigenValues2[i] < 0) {
+                X.set(i, i - 1, eigenValues2[i]);
             }
         }
         return X;
