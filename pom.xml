@@ -30,7 +30,7 @@
     <groupId>rapaio</groupId>
     <artifactId>rapaio</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <name>Maven Quick Start Archetype</name>
     <url>http://maven.apache.org</url>
     <dependencies>
@@ -39,11 +39,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.yannrichet</groupId>
-            <artifactId>JMathPlot</artifactId>
-            <version>1.0.1</version>
         </dependency>
     </dependencies>
     <build>

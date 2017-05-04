@@ -32,8 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at
- * 12/16/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/16/14.
  */
 public class TextTable implements Printable {
 

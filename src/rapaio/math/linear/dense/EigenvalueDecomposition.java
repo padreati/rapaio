@@ -42,6 +42,7 @@ import java.io.Serializable;
  * RV.times(D). The matrix RV may be badly conditioned, or even singular, so the
  * validity of the equation A = RV*D*inverse(RV) depends upon RV.cond().
  */
+@Deprecated
 public class EigenvalueDecomposition implements Serializable {
 
     private static final long serialVersionUID = 5064091847331016868L;
