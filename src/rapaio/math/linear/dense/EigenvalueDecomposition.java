@@ -103,11 +103,9 @@ public class EigenvalueDecomposition implements Serializable {
                 }
             }
 
-            // Tridiagonalize.
-            tred2();
+            tridiagonalize();
 
-            // Diagonalize.
-            tql2();
+            diagonalize();
 
         } else {
             nonSymHessenbergForm = new double[dimension][dimension];
@@ -119,11 +117,9 @@ public class EigenvalueDecomposition implements Serializable {
                 }
             }
 
-            // Reduce to Hessenberg form.
-            orthes();
+            reduceToHessenbergForm();
 
-            // Reduce Hessenberg to real Schur form.
-            hqr2();
+            hessenbergToRealSchurForm();
         }
     }
 
@@ -147,7 +143,7 @@ public class EigenvalueDecomposition implements Serializable {
 
     // Symmetric Householder reduction to tridiagonal form.
 
-    private void tred2() {
+    private void tridiagonalize() {
 
         //  This is derived from the Algol procedures tred2 by
         //  Bowdler, Martin, Reinsch, and Wilkinson, Handbook for
@@ -264,7 +260,7 @@ public class EigenvalueDecomposition implements Serializable {
 
     // Symmetric tridiagonal QL algorithm.
 
-    private void tql2() {
+    private void diagonalize() {
 
         //  This is derived from the Algol procedures tql2, by
         //  Bowdler, Martin, Reinsch, and Wilkinson, Handbook for
@@ -384,7 +380,7 @@ public class EigenvalueDecomposition implements Serializable {
 
     // Nonsymmetric reduction to Hessenberg form.
 
-    private void orthes() {
+    private void reduceToHessenbergForm() {
 
         //  This is derived from the Algol procedures orthes and ortran,
         //  by Martin and Wilkinson, Handbook for Auto. Comp.,
@@ -498,7 +494,7 @@ public class EigenvalueDecomposition implements Serializable {
 
     // Nonsymmetric reduction from Hessenberg to real Schur form.
 
-    private void hqr2() {
+    private void hessenbergToRealSchurForm() {
 
         //  This is derived from the Algol procedure hqr2,
         //  by Martin and Wilkinson, Handbook for Auto. Comp.,
@@ -642,20 +638,19 @@ public class EigenvalueDecomposition implements Serializable {
 
                 // Wilkinson's original ad hoc shift
 
-                if (iter == 10) {
-                    exshift += x;
+                
+                switch(iter) {
+                case 10:
+                	exshift += x;
                     for (int i = low; i <= n; i++) {
                         nonSymHessenbergForm[i][i] -= x;
                     }
                     s = Math.abs(nonSymHessenbergForm[n][n - 1]) + Math.abs(nonSymHessenbergForm[n - 1][n - 2]);
                     x = y = 0.75 * s;
                     w = -0.4375 * s * s;
-                }
-
-                // MATLAB's new ad hoc shift
-
-                if (iter == 30) {
-                    s = (y - x) / 2.0;
+                    break;
+                case 30:
+                	s = (y - x) / 2.0;
                     s = s * s + w;
                     if (s > 0) {
                         s = Math.sqrt(s);
@@ -669,9 +664,12 @@ public class EigenvalueDecomposition implements Serializable {
                         exshift += s;
                         x = y = w = 0.964;
                     }
+                	
                 }
 
-                iter = iter + 1;   // (Could check iteration count here.)
+                // MATLAB's new ad hoc shift
+
+                iter++;   // (Could check iteration count here.)
 
                 // Look for two consecutive small sub-diagonal elements
 
@@ -976,16 +974,16 @@ public class EigenvalueDecomposition implements Serializable {
      */
 
     public RM getD() {
-        RM X = SolidRM.empty(dimension, dimension);
+        RM rMatrix = SolidRM.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
-            X.set(i, i, eigenValues1[i]);
+            rMatrix.set(i, i, eigenValues1[i]);
             if (eigenValues2[i] > 0) {
-                X.set(i, i + 1, eigenValues2[i]);
+                rMatrix.set(i, i + 1, eigenValues2[i]);
             } else if (eigenValues2[i] < 0) {
-                X.set(i, i - 1, eigenValues2[i]);
+                rMatrix.set(i, i - 1, eigenValues2[i]);
             }
         }
-        return X;
+        return rMatrix;
     }
 
 }
