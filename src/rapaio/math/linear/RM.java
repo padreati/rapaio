@@ -198,7 +198,8 @@ public interface RM extends Serializable, Printable {
      *
      * @return effective numerical rank, obtained from SVD.
      */
-    default int rank() {
+    @SuppressWarnings("deprecation")
+	default int rank() {
         return new SVDecomposition(this).rank();
     }
 
