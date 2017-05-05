@@ -120,9 +120,7 @@ public class BoundFrame extends AbstractFrame {
 
         for (int i = 1; i < dfs.length; i++) {
             String[] compNames = dfs[i].varNames();
-            if (compNames.length != _names.length) {
-                throw new IllegalArgumentException("can't bind by rows frames with different variable count");
-            }
+            nameLengthComp(_names, compNames);
             for (int j = 0; j < _names.length; j++) {
                 if (!_names[j].equals(compNames[j])) {
                     throw new IllegalArgumentException("can't bind by rows frames with different variable " +
@@ -162,6 +160,12 @@ public class BoundFrame extends AbstractFrame {
 
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
     }
+
+	private static void nameLengthComp(String[] _names, String[] compNames) {
+		if (compNames.length != _names.length) {
+		    throw new IllegalArgumentException("can't bind by rows frames with different variable count");
+		}
+	}
 
     private static final long serialVersionUID = -445349340356580788L;
     private final int rowCount;
