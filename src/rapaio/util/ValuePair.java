@@ -25,18 +25,15 @@
 package rapaio.util;
 
 import java.io.Serializable;
-
+import rapaio.util.Pair;
 /**
  * Utility pair class for working with numbers
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/15.
  */
-public class ValuePair implements Serializable {
+public class ValuePair extends Pair<Double, Double> {
 
     private static final long serialVersionUID = -6294811698229236502L;
-
-    public double _1 = 0.0;
-    public double _2 = 0.0;
 
     public static ValuePair of(double _1, double _2) {
         return new ValuePair(_1, _2);
@@ -46,22 +43,18 @@ public class ValuePair implements Serializable {
         return new ValuePair(0.0, 0.0);
     }
 
+
     private ValuePair(double _1, double _2) {
-        this._1 = _1;
-        this._2 = _2;
+    	super(_1, _2);
     }
 
-    public void fill(double value) {
-        this._1 = value;
-        this._2 = value;
-    }
 
     public double sum() {
         return _1 + _2;
     }
 
     public void normalize() {
-        double sum = _1 + _2;
+        double sum = sum();
         if (sum == 0) {
             _1 = 0.0;
             _2 = 0.0;
@@ -71,14 +64,10 @@ public class ValuePair implements Serializable {
         }
     }
 
-    public void update(double _1, double _2) {
-        this._1 = _1;
-        this._2 = _2;
-    }
 
-    public void update(ValuePair p) {
-        this._1 = p._1;
-        this._2 = p._2;
+    public void fill(double value) {
+        this._1 = value;
+        this._2 = value;
     }
 
     public void increment(ValuePair p) {
