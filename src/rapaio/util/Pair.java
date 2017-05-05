@@ -38,7 +38,7 @@ public class Pair<T1, T2> implements Serializable {
     public T1 _1;
     public T2 _2;
 
-    private Pair(T1 _1, T2 _2) {
+    protected Pair(T1 _1, T2 _2) {
         this._1 = _1;
         this._2 = _2;
     }
@@ -50,5 +50,15 @@ public class Pair<T1, T2> implements Serializable {
     @Override
     public String toString() {
         return "Pair{" + _1 + ", " + _2 + "}";
+    }
+
+
+    public void update(T1 _1, T2 _2) {
+        this._1 = _1;
+        this._2 = _2;
+    }
+
+    public void update(Pair<T1, T2> p) {
+    	update(_1, _2);
     }
 }
