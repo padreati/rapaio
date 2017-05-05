@@ -121,12 +121,7 @@ public class BoundFrame extends AbstractFrame {
         for (int i = 1; i < dfs.length; i++) {
             String[] compNames = dfs[i].varNames();
             nameLengthComp(_names, compNames);
-            for (int j = 0; j < _names.length; j++) {
-                if (!_names[j].equals(compNames[j])) {
-                    throw new IllegalArgumentException("can't bind by rows frames with different variable " +
-                            "names or with different order of the variables");
-                }
-            }
+            nameValueComp(_names, compNames);
             for (String _name : _names) {
                 // throw an exception if the column does not exists
                 if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
@@ -160,6 +155,15 @@ public class BoundFrame extends AbstractFrame {
 
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
     }
+
+	private static void nameValueComp(String[] _names, String[] compNames) {
+		for (int i = 0; i < _names.length; i++) {
+		    if (!_names[i].equals(compNames[i])) {
+		        throw new IllegalArgumentException("can't bind by rows frames with different variable " +
+		                "names or with different order of the variables");
+		    }
+		}
+	}
 
 	private static void nameLengthComp(String[] _names, String[] compNames) {
 		if (compNames.length != _names.length) {
