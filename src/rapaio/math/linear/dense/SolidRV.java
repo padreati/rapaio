@@ -198,8 +198,7 @@ public class SolidRV implements RV {
         return Arrays.stream(values);
     }
 
-    @SuppressWarnings("deprecation")
-	public String summary() {
+    public String summary() {
         return Summary.headString(true, values.length, new Var[]{Numeric.wrap(values)}, new String[]{""});
     }
 

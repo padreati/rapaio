@@ -193,7 +193,7 @@ public class EigenvalueDecomposition implements Serializable {
         eigenValues2[0] = 0.0;
 	}
 
-private void reduceToTridiagonalForm() {
+	private void reduceToTridiagonalForm() {
 	for (int i = dimension - 1; i > 0; i--) {
 
 	    // Scale to avoid under/overflow.
@@ -549,18 +549,19 @@ private void reduceToTridiagonalForm() {
             }
 
             // Check for convergence
-            // One root found
 
-            if (l == n) {
+            boolean oneRootFound = (l == n);
+            boolean twoRootFound = (l == n - 1);
+            
+            if (oneRootFound) {
                 nonSymHessenbergForm[n][n] = nonSymHessenbergForm[n][n] + exshift;
                 eigenValues1[n] = nonSymHessenbergForm[n][n];
                 eigenValues2[n] = 0.0;
                 n--;
                 iter = 0;
-
-                // Two roots found
-
-            } else if (l == n - 1) {
+            } 
+            
+            else if (twoRootFound) {
                 w = nonSymHessenbergForm[n][n - 1] * nonSymHessenbergForm[n - 1][n];
                 p = (nonSymHessenbergForm[n - 1][n - 1] - nonSymHessenbergForm[n][n]) / 2.0;
                 q = p * p + w;
