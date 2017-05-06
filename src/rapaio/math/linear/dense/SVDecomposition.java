@@ -72,8 +72,7 @@ public class SVDecomposition implements java.io.Serializable {
         U = new double[m][nu];
         V = new double[n][n];
         double[] e = new double[n];
-        double[] work = new double[m];
-
+        double[] work = new double[m]; 
 
         reduceBidigonalForm(A, e, work);
 
