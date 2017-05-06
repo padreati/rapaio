@@ -492,11 +492,6 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
-    private int getNct() {
-    }
-
-    private int getNct() {
-    }
     public RM getU() {
         return SolidRM.copy(U, 0, m, 0, Math.min(m + 1, n));
     }
