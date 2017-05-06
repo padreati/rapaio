@@ -32,105 +32,84 @@ import java.io.Serializable;
 public class Range implements Serializable {
 
     private static final long serialVersionUID = -7868093307393360861L;
-
-    private double x1 = Double.NaN;
-    private double y1 = Double.NaN;
-    private double x2 = Double.NaN;
-    private double y2 = Double.NaN;
+    private Range1D xRange = new Range1D();
+    private Range1D yRange = new Range1D();
 
     public Range() {
     }
 
     public Range(double x1, double y1, double x2, double y2) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+        xRange.setRange(x1, x2);
+        yRange.setRange(y1, y2);
     }
 
     public void union(Range range) {
-        union(range.x1(), range.y1());
-        union(range.x2(), range.y2());
+        xRange.union(range.getXRange());
+        yRange.union(range.getYRange());
     }
 
     public void union(double x, double y) {
-        if(!Double.isNaN(x) && Double.isFinite(x)) {
-            x1 = Math.min(x1 != x1 ? x : x1, x);
-            x2 = Math.max(x2 != x2 ? x : x2, x);
-        }
-        if (!Double.isNaN(y) && Double.isFinite(y)) {
-            y1 = Math.min(y1 != y1 ? y : y1, y);
-            y2 = Math.max(y2 != y2 ? y : y2, y);
-        }
+        xRange.union(x);
+        yRange.union(y);
     }
 
     public boolean contains(double x, double y) {
-        return x1 <= x && x <= x2 && y1 <= y && y <= y2;
+        return xRange.contains(x) && yRange.contains(y);
     }
 
     public double width() {
-        return x2 - x1;
+        return xRange.length();
     }
 
     public double height() {
-        return y2 - y1;
+        return yRange.length();
     }
 
     public double x1() {
-        return x1;
+        return xRange.getMin();
     }
 
     public double y1() {
-        return y1;
+        return yRange.getMin();
     }
 
     public double x2() {
-        return x2;
+        return xRange.getMax();
     }
 
     public double y2() {
-        return y2;
+        return yRange.getMax();
     }
 
     public void setX1(double x1) {
-        this.x1 = x1;
-    }
-
-    public void setY1(double y1) {
-        this.y1 = y1;
+        xRange.setMin(x1);
     }
 
     public void setX2(double x2) {
-        this.x2 = x2;
+        xRange.setMax(x2);
+    }
+
+    public void setY1(double y1) {
+        yRange.setMin(y1);
     }
 
     public void setY2(double y2) {
-        this.y2 = y2;
+        yRange.setMax(y2);
     }
 
-    public int getProperDecimalsX() {
-        int decimals = 0;
-        double max = Math.abs(x2 - x1);
-        while (max <= 10.) {
-            max *= 10;
-            decimals++;
-            if (decimals > 7) {
-                return decimals;
-            }
-        }
-        return decimals;
+    public Range1D getXRange() {
+        return xRange;
+    }
+
+    public Range1D getYRange() {
+        return yRange;
+    }
+
+    public int getProperDecimasX() {
+        return xRange.getProperDecimals();
     }
 
     public int getProperDecimalsY() {
-        int decimals = 0;
-        double max = Math.abs(y2 - y1);
-        while (max <= 10.) {
-            max *= 10;
-            decimals++;
-            if (decimals > 7) {
-                return decimals;
-            }
-        }
-        return decimals;
+        return yRange.getProperDecimals();
     }
 }
