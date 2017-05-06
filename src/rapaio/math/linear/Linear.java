@@ -119,9 +119,9 @@ public final class Linear {
     }
 
     public static RM pdPower(RM s, double power, int maxRuns, double tol) {
-        EigenPair p = eigenDecomp(s, maxRuns, tol);
-        RM U = p.vectors();
-        RM lambda = p.expandedValues();
+        EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
+        RM U = eigenPair.getRM();
+        RM lambda = eigenPair.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {
             //TODO quick fix
             // this is because negative numbers can be produced for small quantities
@@ -129,8 +129,9 @@ public final class Linear {
         }
         return U.dot(lambda).dot(U.t());
     }
-
-    private static boolean inTolerance(RM s, double tol) {
+/*
+    @SuppressWarnings("unused")
+	private static boolean inTolerance(RM s, double tol) {
         for (int i = 0; i < s.rowCount(); i++) {
             for (int j = i + 1; j < s.colCount(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)
@@ -139,5 +140,5 @@ public final class Linear {
         }
         return true;
     }
-
+*/
 }

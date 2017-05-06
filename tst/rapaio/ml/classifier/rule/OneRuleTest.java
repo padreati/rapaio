@@ -117,7 +117,7 @@ public class OneRuleTest {
                 "Learned model:\n" +
                 "input vars: \n" +
                 "\n" +
-                " 0. sepal-length : NUMERIC  | 1. sepal-width : NUMERIC  | 2. petal-length : NUMERIC  | 3. petal-width : NUMERIC  |\n" +
+                " 0. sepal-length : NUMERIC  | 1. sepal-width : NUMERIC  | 2. petal-length : NUMERIC  | 3. petal-width : NUMERIC  |          \n" +
                 "\n" +
                 "target vars:\n" +
                 "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
