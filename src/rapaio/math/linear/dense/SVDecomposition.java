@@ -50,7 +50,12 @@ public class SVDecomposition implements java.io.Serializable {
     private static final long serialVersionUID = -502574786523851631L;
     private double[][] U, V;
     private double[] s;
-    private int m, n;
+    private final int m, n;
+    private final int p, pp;
+    private final int nct, nrt;
+    private final boolean wantu = true;
+    private final boolean wantv = true;
+    private int nu;
 
     public SVDecomposition(RM Arg) {
 
@@ -65,19 +70,40 @@ public class SVDecomposition implements java.io.Serializable {
          * let's not throw error. Correct fix to come later? if (m<n) { throw
          * new IllegalArgumentException("Jama SVD only works for m >= n"); }
          */
-        int nu = Math.min(m, n);
+        nu = Math.min(m, n);
         s = new double[Math.min(m + 1, n)];
         U = new double[m][nu];
         V = new double[n][n];
         double[] e = new double[n];
         double[] work = new double[m];
-        boolean wantu = true;
-        boolean wantv = true;
 
+
+        reduceBidigonalForm(A, e, work);
+
+
+        // Set up the final bidiagonal rapaio.data.matrix or order p.
+        setupFinalBidiagonalRapaio(A, e);
+
+        nct = Math.min(m - 1, n);
+        nrt = Math.max(0, Math.min(n - 2, m));
+        p = Math.min(n, m + 1);
+        pp = p - 1;
+
+        // If required, generate U.
+        generateU(e);
+
+        // If required, generate RV.
+        generateRV(e);
+
+        // Main iteration loop for the singular values.
+        computeSingularValues(e);
+    }
+
+    private void reduceBidigonalForm(RM A, double[] e, double[] work) {
         // Reduce A to bidiagonal form, storing the diagonal elements
         // in s and the super-diagonal elements in e.
-        int nct = Math.min(m - 1, n);
-        int nrt = Math.max(0, Math.min(n - 2, m));
+        final int nct = Math.min(m - 1, n);
+        final int nrt = Math.max(0, Math.min(n - 2, m));
         for (int k = 0; k < Math.max(nct, nrt); k++) {
             if (k < nct) {
 
@@ -172,9 +198,9 @@ public class SVDecomposition implements java.io.Serializable {
                 }
             }
         }
+    }
 
-        // Set up the final bidiagonal rapaio.data.matrix or order p.
-        int p = Math.min(n, m + 1);
+    private void setupFinalBidiagonalRapaio(RM A, double[] e) {
         if (nct < n) {
             s[nct] = A.get(nct, nct);
         }
@@ -185,8 +211,9 @@ public class SVDecomposition implements java.io.Serializable {
             e[nrt] = A.get(nrt, p - 1);
         }
         e[p - 1] = 0.0;
+    }
 
-        // If required, generate U.
+    private void generateU(double[] e) { 
         if (wantu) {
             for (int j = nct; j < nu; j++) {
                 for (int i = 0; i < m; i++) {
@@ -221,8 +248,9 @@ public class SVDecomposition implements java.io.Serializable {
                 }
             }
         }
+    }
 
-        // If required, generate RV.
+    private void generateRV(double[] e) {
         if (wantv) {
             for (int k = n - 1; k >= 0; k--) {
                 if ((k < nrt) & (e[k] != 0.0)) {
@@ -243,12 +271,153 @@ public class SVDecomposition implements java.io.Serializable {
                 V[k][k] = 1.0;
             }
         }
+    }
 
-        // Main iteration loop for the singular values.
-        int pp = p - 1;
-        int iter = 0;
-        double eps = Math.pow(2.0, -52.0);
-        double tiny = Math.pow(2.0, -966.0);
+    private void deflate(double[] e, final int k) {
+        double f = e[p - 2];
+        e[p - 2] = 0.0;
+        for (int j = p - 2; j >= k; j--) {
+            double t = hypot(s[j], f);
+            double cs = s[j] / t;
+            double sn = f / t;
+            s[j] = t;
+            if (j != k) {
+                f = -sn * e[j - 1];
+                e[j - 1] = cs * e[j - 1];
+            }
+            if (wantv) {
+                for (int i = 0; i < n; i++) {
+                    t = cs * V[i][j] + sn * V[i][p - 1];
+                    V[i][p - 1] = -sn * V[i][j] + cs * V[i][p - 1];
+                    V[i][j] = t;
+                }
+            }
+        }
+    }
+    private void split(double[] e, final int k) {
+        double f = e[k - 1];
+        e[k - 1] = 0.0;
+        for (int j = k; j < p; j++) {
+            double t = hypot(s[j], f);
+            double cs = s[j] / t;
+            double sn = f / t;
+            s[j] = t;
+            f = -sn * e[j];
+            e[j] = cs * e[j];
+            if (wantu) {
+                for (int i = 0; i < m; i++) {
+                    t = cs * U[i][j] + sn * U[i][k - 1];
+                    U[i][k - 1] = -sn * U[i][j] + cs * U[i][k - 1];
+                    U[i][j] = t;
+                }
+            }
+        }
+    }
+    private void oneQrStep(double[] e, final int k) {
+        // Calculate the shift.
+        double scale = Math.max(Math.max(Math.max(Math.max(
+                            Math.abs(s[p - 1]), Math.abs(s[p - 2])), Math.abs(e[p - 2])),
+                    Math.abs(s[k])
+                    ), Math.abs(e[k]));
+        double sp = s[p - 1] / scale;
+        double spm1 = s[p - 2] / scale;
+        double epm1 = e[p - 2] / scale;
+        double sk = s[k] / scale;
+        double ek = e[k] / scale;
+        double b = ((spm1 + sp) * (spm1 - sp) + epm1 * epm1) / 2.0;
+        double c = (sp * epm1) * (sp * epm1);
+        double shift = 0.0;
+        if ((b != 0.0) | (c != 0.0)) {
+            shift = Math.sqrt(b * b + c);
+            if (b < 0.0) {
+                shift = -shift;
+            }
+            shift = c / (b + shift);
+        }
+        double f = (sk + sp) * (sk - sp) + shift;
+        double g = sk * ek;
+
+        // Chase zeros.
+        for (int j = k; j < p - 1; j++) {
+            double t = hypot(f, g);
+            double cs = f / t;
+            double sn = g / t;
+            if (j != k) {
+                e[j - 1] = t;
+            }
+            f = cs * s[j] + sn * e[j];
+            e[j] = cs * e[j] - sn * s[j];
+            g = sn * s[j + 1];
+            s[j + 1] = cs * s[j + 1];
+            if (wantv) {
+                for (int i = 0; i < n; i++) {
+                    t = cs * V[i][j] + sn * V[i][j + 1];
+                    V[i][j + 1] = -sn * V[i][j] + cs * V[i][j + 1];
+                    V[i][j] = t;
+                }
+            }
+            t = hypot(f, g);
+            cs = f / t;
+            sn = g / t;
+            s[j] = t;
+            f = cs * e[j] + sn * s[j + 1];
+            s[j + 1] = -sn * e[j] + cs * s[j + 1];
+            g = sn * e[j + 1];
+            e[j + 1] = cs * e[j + 1];
+            if (wantu && (j < m - 1)) {
+                for (int i = 0; i < m; i++) {
+                    t = cs * U[i][j] + sn * U[i][j + 1];
+                    U[i][j + 1] = -sn * U[i][j] + cs * U[i][j + 1];
+                    U[i][j] = t;
+                }
+            }
+        }
+        e[p - 2] = f;
+    }
+
+    private int convergence(double[] e, int k) {
+        // Make the singular values positive.
+        if (s[k] <= 0.0) {
+            s[k] = (s[k] < 0.0 ? -s[k] : 0.0);
+            if (wantv) {
+                for (int i = 0; i <= pp; i++) {
+                    V[i][k] = -V[i][k];
+                }
+            }
+        }
+
+        // Order the singular values.
+        while (k < pp) {
+            if (s[k] >= s[k + 1]) {
+                break;
+            }
+            double t = s[k];
+            s[k] = s[k + 1];
+            s[k + 1] = t;
+            if (wantv && (k < n - 1)) {
+                for (int i = 0; i < n; i++) {
+                    t = V[i][k + 1];
+                    V[i][k + 1] = V[i][k];
+                    V[i][k] = t;
+                }
+            }
+            if (wantu && (k < m - 1)) {
+                for (int i = 0; i < m; i++) {
+                    t = U[i][k + 1];
+                    U[i][k + 1] = U[i][k];
+                    U[i][k] = t;
+                }
+            }
+            k++;
+        }
+
+        return k;
+    }
+    private void computeSingularValues(double[] e) {
+
+        final double eps = Math.pow(2.0, -52.0);
+        final double tiny = Math.pow(2.0, -966.0);
+        int p = this.p;
         while (p > 0) {
             int k, kase;
 
@@ -269,7 +438,7 @@ public class SVDecomposition implements java.io.Serializable {
                         <= tiny + eps * (Math.abs(s[k]) + Math.abs(s[k + 1]))) {
                     e[k] = 0.0;
                     break;
-                }
+                        }
             }
             if (k == p - 2) {
                 kase = 4;
@@ -280,7 +449,7 @@ public class SVDecomposition implements java.io.Serializable {
                         break;
                     }
                     double t = (ks != p ? Math.abs(e[ks]) : 0.)
-                            + (ks != k + 1 ? Math.abs(e[ks - 1]) : 0.);
+                        + (ks != k + 1 ? Math.abs(e[ks - 1]) : 0.);
                     if (Math.abs(s[ks]) <= tiny + eps * t) {
                         s[ks] = 0.0;
                         break;
@@ -302,161 +471,32 @@ public class SVDecomposition implements java.io.Serializable {
 
                 // Deflate negligible s(p).
                 case 1: {
-                    double f = e[p - 2];
-                    e[p - 2] = 0.0;
-                    for (int j = p - 2; j >= k; j--) {
-                        double t = hypot(s[j], f);
-                        double cs = s[j] / t;
-                        double sn = f / t;
-                        s[j] = t;
-                        if (j != k) {
-                            f = -sn * e[j - 1];
-                            e[j - 1] = cs * e[j - 1];
-                        }
-                        if (wantv) {
-                            for (int i = 0; i < n; i++) {
-                                t = cs * V[i][j] + sn * V[i][p - 1];
-                                V[i][p - 1] = -sn * V[i][j] + cs * V[i][p - 1];
-                                V[i][j] = t;
-                            }
-                        }
-                    }
+                    deflate(e, k);
                 }
                 break;
 
                 // Split at negligible s(k).
                 case 2: {
-                    double f = e[k - 1];
-                    e[k - 1] = 0.0;
-                    for (int j = k; j < p; j++) {
-                        double t = hypot(s[j], f);
-                        double cs = s[j] / t;
-                        double sn = f / t;
-                        s[j] = t;
-                        f = -sn * e[j];
-                        e[j] = cs * e[j];
-                        if (wantu) {
-                            for (int i = 0; i < m; i++) {
-                                t = cs * U[i][j] + sn * U[i][k - 1];
-                                U[i][k - 1] = -sn * U[i][j] + cs * U[i][k - 1];
-                                U[i][j] = t;
-                            }
-                        }
-                    }
+                    split(e, k);
                 }
                 break;
 
                 // Perform one qr step.
                 case 3: {
+                    oneQrStep(e, k);
 
-                    // Calculate the shift.
-                    double scale = Math.max(Math.max(Math.max(Math.max(
-                                    Math.abs(s[p - 1]), Math.abs(s[p - 2])), Math.abs(e[p - 2])),
-                            Math.abs(s[k])
-                    ), Math.abs(e[k]));
-                    double sp = s[p - 1] / scale;
-                    double spm1 = s[p - 2] / scale;
-                    double epm1 = e[p - 2] / scale;
-                    double sk = s[k] / scale;
-                    double ek = e[k] / scale;
-                    double b = ((spm1 + sp) * (spm1 - sp) + epm1 * epm1) / 2.0;
-                    double c = (sp * epm1) * (sp * epm1);
-                    double shift = 0.0;
-                    if ((b != 0.0) | (c != 0.0)) {
-                        shift = Math.sqrt(b * b + c);
-                        if (b < 0.0) {
-                            shift = -shift;
-                        }
-                        shift = c / (b + shift);
-                    }
-                    double f = (sk + sp) * (sk - sp) + shift;
-                    double g = sk * ek;
-
-                    // Chase zeros.
-                    for (int j = k; j < p - 1; j++) {
-                        double t = hypot(f, g);
-                        double cs = f / t;
-                        double sn = g / t;
-                        if (j != k) {
-                            e[j - 1] = t;
-                        }
-                        f = cs * s[j] + sn * e[j];
-                        e[j] = cs * e[j] - sn * s[j];
-                        g = sn * s[j + 1];
-                        s[j + 1] = cs * s[j + 1];
-                        if (wantv) {
-                            for (int i = 0; i < n; i++) {
-                                t = cs * V[i][j] + sn * V[i][j + 1];
-                                V[i][j + 1] = -sn * V[i][j] + cs * V[i][j + 1];
-                                V[i][j] = t;
-                            }
-                        }
-                        t = hypot(f, g);
-                        cs = f / t;
-                        sn = g / t;
-                        s[j] = t;
-                        f = cs * e[j] + sn * s[j + 1];
-                        s[j + 1] = -sn * e[j] + cs * s[j + 1];
-                        g = sn * e[j + 1];
-                        e[j + 1] = cs * e[j + 1];
-                        if (wantu && (j < m - 1)) {
-                            for (int i = 0; i < m; i++) {
-                                t = cs * U[i][j] + sn * U[i][j + 1];
-                                U[i][j + 1] = -sn * U[i][j] + cs * U[i][j + 1];
-                                U[i][j] = t;
-                            }
-                        }
-                    }
-                    e[p - 2] = f;
-                    iter = iter + 1;
                 }
                 break;
 
                 // Convergence.
                 case 4: {
-
-                    // Make the singular values positive.
-                    if (s[k] <= 0.0) {
-                        s[k] = (s[k] < 0.0 ? -s[k] : 0.0);
-                        if (wantv) {
-                            for (int i = 0; i <= pp; i++) {
-                                V[i][k] = -V[i][k];
-                            }
-                        }
-                    }
-
-                    // Order the singular values.
-                    while (k < pp) {
-                        if (s[k] >= s[k + 1]) {
-                            break;
-                        }
-                        double t = s[k];
-                        s[k] = s[k + 1];
-                        s[k + 1] = t;
-                        if (wantv && (k < n - 1)) {
-                            for (int i = 0; i < n; i++) {
-                                t = V[i][k + 1];
-                                V[i][k + 1] = V[i][k];
-                                V[i][k] = t;
-                            }
-                        }
-                        if (wantu && (k < m - 1)) {
-                            for (int i = 0; i < m; i++) {
-                                t = U[i][k + 1];
-                                U[i][k + 1] = U[i][k];
-                                U[i][k] = t;
-                            }
-                        }
-                        k++;
-                    }
-                    iter = 0;
+                    k = convergence(e, k);
                     p--;
                 }
                 break;
             }
         }
     }
-
     public RM getU() {
         return SolidRM.copy(U, 0, m, 0, Math.min(m + 1, n));
     }
