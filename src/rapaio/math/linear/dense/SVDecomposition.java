@@ -343,7 +343,7 @@ public class SVDecomposition implements java.io.Serializable {
                         <= tiny + eps * (Math.abs(s[k]) + Math.abs(s[k + 1]))) {
                     e[k] = 0.0;
                     break;
-                        }
+                }
             }
             if (k == p - 2) {
                 kase = 4;
@@ -492,6 +492,11 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
+    private int getNct() {
+    }
+
+    private int getNct() {
+    }
     public RM getU() {
         return SolidRM.copy(U, 0, m, 0, Math.min(m + 1, n));
     }
