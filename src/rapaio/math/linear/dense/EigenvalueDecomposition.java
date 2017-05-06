@@ -122,6 +122,7 @@ public class EigenvalueDecomposition implements Serializable {
         }
     }
 
+    
 	private boolean isSymmetric(RM rMatrix) {
 		
 		boolean returnValue = true;
@@ -135,11 +136,7 @@ public class EigenvalueDecomposition implements Serializable {
         }
 		return returnValue;
 	}
-
-/* ------------------------
-   Private Methods
- * ------------------------ */
-
+	
     // Symmetric Householder reduction to tridiagonal form.
 
     private void tridiagonalize() {
