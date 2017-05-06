@@ -34,6 +34,7 @@ import rapaio.math.linear.dense.SolidRV;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
+@SuppressWarnings("deprecation")
 public final class Linear {
 
     public static RM chol2inv(RM R) {
@@ -129,7 +130,7 @@ public final class Linear {
         }
         return U.dot(lambda).dot(U.t());
     }
-
+/*
     @SuppressWarnings("unused")
 	private static boolean inTolerance(RM s, double tol) {
         for (int i = 0; i < s.rowCount(); i++) {
@@ -140,5 +141,5 @@ public final class Linear {
         }
         return true;
     }
-
+*/
 }
