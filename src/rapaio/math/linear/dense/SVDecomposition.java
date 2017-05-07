@@ -75,103 +75,7 @@ public class SVDecomposition implements java.io.Serializable {
         boolean wantv = true;
 
         // Reduce A to bidiagonal form, storing the diagonal elements
-        // in s and the super-diagonal elements in e.
-        int nct = Math.min(m - 1, n);
-        int nrt = Math.max(0, Math.min(n - 2, m));
-        for (int k = 0; k < Math.max(nct, nrt); k++) {
-            if (k < nct) {
-
-                // Compute the transformation for the k-th column and
-                // place the k-th diagonal in s[k].
-                // Compute 2-norm of k-th column without under/overflow.
-                s[k] = 0;
-                for (int i = k; i < m; i++) {
-                    s[k] = hypot(s[k], A.get(i, k));
-                }
-                if (s[k] != 0.0) {
-                    if (A.get(k, k) < 0.0) {
-                        s[k] = -s[k];
-                    }
-                    for (int i = k; i < m; i++) {
-                        A.set(i, k, A.get(i, k) / s[k]);
-                    }
-                    A.increment(k, k, 1.0);
-                }
-                s[k] = -s[k];
-            }
-            for (int j = k + 1; j < n; j++) {
-                if ((k < nct) & (s[k] != 0.0)) {
-
-                    // Apply the transformation.
-                    double t = 0;
-                    for (int i = k; i < m; i++) {
-                        t += A.get(i, k) * A.get(i, j);
-                    }
-                    t = -t / A.get(k, k);
-                    for (int i = k; i < m; i++) {
-                        A.increment(i, j, t * A.get(i, k));
-                    }
-                }
-
-                // Place the k-th row of A into e for the
-                // subsequent calculation of the row transformation.
-                e[j] = A.get(k, j);
-            }
-            if (wantu & (k < nct)) {
-
-                // Place the transformation in U for subsequent back
-                // multiplication.
-                for (int i = k; i < m; i++) {
-                    U[i][k] = A.get(i, k);
-                }
-            }
-            if (k < nrt) {
-
-                // Compute the k-th row transformation and place the
-                // k-th super-diagonal in e[k].
-                // Compute 2-norm without under/overflow.
-                e[k] = 0;
-                for (int i = k + 1; i < n; i++) {
-                    e[k] = hypot(e[k], e[i]);
-                }
-                if (e[k] != 0.0) {
-                    if (e[k + 1] < 0.0) {
-                        e[k] = -e[k];
-                    }
-                    for (int i = k + 1; i < n; i++) {
-                        e[i] /= e[k];
-                    }
-                    e[k + 1] += 1.0;
-                }
-                e[k] = -e[k];
-                if ((k + 1 < m) & (e[k] != 0.0)) {
-
-                    // Apply the transformation.
-                    for (int i = k + 1; i < m; i++) {
-                        work[i] = 0.0;
-                    }
-                    for (int j = k + 1; j < n; j++) {
-                        for (int i = k + 1; i < m; i++) {
-                            work[i] += e[j] * A.get(i, j);
-                        }
-                    }
-                    for (int j = k + 1; j < n; j++) {
-                        double t = -e[j] / e[k + 1];
-                        for (int i = k + 1; i < m; i++) {
-                            A.increment(i, j, t * work[i]);
-                        }
-                    }
-                }
-                if (wantv) {
-
-                    // Place the transformation in RV for subsequent
-                    // back multiplication.
-                    for (int i = k + 1; i < n; i++) {
-                        V[i][k] = e[i];
-                    }
-                }
-            }
-        }
+        reduceBidigonalForm(A, e, work);
 
         // Set up the final bidiagonal rapaio.data.matrix or order p.
         int p = Math.min(n, m + 1);
@@ -457,6 +361,106 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
+    private void reduceBidigonalForm(RM A, double[] e, double[] work) {
+        // Reduce A to bidiagonal form, storing the diagonal elements
+        // in s and the super-diagonal elements in e.
+        final int nct = Math.min(m - 1, n);
+        final int nrt = Math.max(0, Math.min(n - 2, m));
+        for (int k = 0; k < Math.max(nct, nrt); k++) {
+            if (k < nct) {
+
+                // Compute the transformation for the k-th column and
+                // place the k-th diagonal in s[k].
+                // Compute 2-norm of k-th column without under/overflow.
+                s[k] = 0;
+                for (int i = k; i < m; i++) {
+                    s[k] = hypot(s[k], A.get(i, k));
+                }
+                if (s[k] != 0.0) {
+                    if (A.get(k, k) < 0.0) {
+                        s[k] = -s[k];
+                    }
+                    for (int i = k; i < m; i++) {
+                        A.set(i, k, A.get(i, k) / s[k]);
+                    }
+                    A.increment(k, k, 1.0);
+                }
+                s[k] = -s[k];
+            }
+            for (int j = k + 1; j < n; j++) {
+                if ((k < nct) & (s[k] != 0.0)) {
+
+                    // Apply the transformation.
+                    double t = 0;
+                    for (int i = k; i < m; i++) {
+                        t += A.get(i, k) * A.get(i, j);
+                    }
+                    t = -t / A.get(k, k);
+                    for (int i = k; i < m; i++) {
+                        A.increment(i, j, t * A.get(i, k));
+                    }
+                }
+
+                // Place the k-th row of A into e for the
+                // subsequent calculation of the row transformation.
+                e[j] = A.get(k, j);
+            }
+            if (wantu & (k < nct)) {
+
+                // Place the transformation in U for subsequent back
+                // multiplication.
+                for (int i = k; i < m; i++) {
+                    U[i][k] = A.get(i, k);
+                }
+            }
+            if (k < nrt) {
+
+                // Compute the k-th row transformation and place the
+                // k-th super-diagonal in e[k].
+                // Compute 2-norm without under/overflow.
+                e[k] = 0;
+                for (int i = k + 1; i < n; i++) {
+                    e[k] = hypot(e[k], e[i]);
+                }
+                if (e[k] != 0.0) {
+                    if (e[k + 1] < 0.0) {
+                        e[k] = -e[k];
+                    }
+                    for (int i = k + 1; i < n; i++) {
+                        e[i] /= e[k];
+                    }
+                    e[k + 1] += 1.0;
+                }
+                e[k] = -e[k];
+                if ((k + 1 < m) & (e[k] != 0.0)) {
+
+                    // Apply the transformation.
+                    for (int i = k + 1; i < m; i++) {
+                        work[i] = 0.0;
+                    }
+                    for (int j = k + 1; j < n; j++) {
+                        for (int i = k + 1; i < m; i++) {
+                            work[i] += e[j] * A.get(i, j);
+                        }
+                    }
+                    for (int j = k + 1; j < n; j++) {
+                        double t = -e[j] / e[k + 1];
+                        for (int i = k + 1; i < m; i++) {
+                            A.increment(i, j, t * work[i]);
+                        }
+                    }
+                }
+                if (wantv) {
+
+                    // Place the transformation in RV for subsequent
+                    // back multiplication.
+                    for (int i = k + 1; i < n; i++) {
+                        V[i][k] = e[i];
+                    }
+                }
+            }
+        }
+    }
     public RM getU() {
         return SolidRM.copy(U, 0, m, 0, Math.min(m + 1, n));
     }
