@@ -75,23 +75,18 @@ public class NaiveBayes extends AbstractClassifier {
         return priors;
     });
     private double laplaceSmoother = 1;
-    private BinaryEstimator binEstimator = new MultinomialPmf();
-    private NumericEstimator numEstimator = new GaussianPdf();
-
-    // prediction artifacts
-    private NominalEstimator nomEstimator = new MultinomialPmf();
     private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
     private Map<String, Double> priors;
-    private Map<String, NumericEstimator> numMap;
-    private Map<String, NominalEstimator> nomMap;
-    private Map<String, BinaryEstimator> binMap;
-
-    @Override
+    //private NaiveBayesData data = new NaiveBayesData(new MultinomialPmf(), new GaussianPdf(), new MultinomialPmf());
+    private NumericData numData = new NumericData(new GaussianPdf());
+    private NominalData nomData = new NominalData(new MultinomialPmf());
+    private BinaryData binData = new BinaryData(new MultinomialPmf());
+	@Override
     public NaiveBayes newInstance() {
         return new NaiveBayes()
-                .withBinEstimator(binEstimator)
-                .withNumEstimator(numEstimator)
-                .withNomEstimator(nomEstimator)
+                .withBinEstimator(binData.binEstimator)
+                .withNumEstimator(numData.numEstimator)
+                .withNomEstimator(nomData.nomEstimator)
                 .withLaplaceSmoother(laplaceSmoother)
                 .withPriorSupplier(priorSupplier);
     }
@@ -103,7 +98,7 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public String fullName() {
-        return name() + "(numEstimator=" + numEstimator.name() + ", nomEstimator=" + nomEstimator.name() + ")";
+        return name() + "(numEstimator=" + numData.numEstimator.name() + ", nomEstimator=" + nomData.nomEstimator.name() + ")";
     }
 
     @Override
@@ -118,17 +113,17 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     public NaiveBayes withBinEstimator(BinaryEstimator binEstimator) {
-        this.binEstimator = binEstimator;
+        this.binData.binEstimator = binEstimator;
         return this;
     }
 
     public NaiveBayes withNumEstimator(NumericEstimator numEstimator) {
-        this.numEstimator = numEstimator;
+        this.numData.numEstimator = numEstimator;
         return this;
     }
 
     public NaiveBayes withNomEstimator(NominalEstimator nomEstimator) {
-        this.nomEstimator = nomEstimator;
+        this.nomData.nomEstimator = nomEstimator;
         return this;
     }
 
@@ -155,9 +150,9 @@ public class NaiveBayes extends AbstractClassifier {
 
         // build conditional probabilities
 
-        nomMap = new ConcurrentHashMap<>();
-        numMap = new ConcurrentHashMap<>();
-        binMap = new ConcurrentHashMap<>();
+        nomData.nomMap = new ConcurrentHashMap<>();
+        numData.numMap = new ConcurrentHashMap<>();
+        binData.binMap = new ConcurrentHashMap<>();
 
         logger.fine("start learning...");
         Arrays.stream(df.varNames()).parallel().forEach(
@@ -166,21 +161,21 @@ public class NaiveBayes extends AbstractClassifier {
                         return;
                     }
                     if (df.var(testCol).type().isBinary()) {
-                        BinaryEstimator estimator = binEstimator.newInstance();
+                        BinaryEstimator estimator = binData.binEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
-                        binMap.put(testCol, estimator);
+                        binData.binMap.put(testCol, estimator);
                         return;
                     }
                     if (df.var(testCol).type().isNumeric()) {
-                        NumericEstimator estimator = numEstimator.newInstance();
+                        NumericEstimator estimator = numData.numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
-                        numMap.put(testCol, estimator);
+                        numData.numMap.put(testCol, estimator);
                         return;
                     }
                     if (df.var(testCol).type().isNominal()) {
-                        NominalEstimator estimator = nomEstimator.newInstance();
+                        NominalEstimator estimator = nomData.nomEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
-                        nomMap.put(testCol, estimator);
+                        nomData.nomMap.put(testCol, estimator);
                     }
                 });
         logger.fine("learning phase finished");
@@ -198,23 +193,9 @@ public class NaiveBayes extends AbstractClassifier {
                     DVector dv = DVector.empty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
-                        for (String testCol : numMap.keySet()) {
-                            if (df.missing(i, testCol))
-                                continue;
-                            sumLog += Math.log(numMap.get(testCol).cpValue(df.value(i, testCol), firstTargetLevel(j)));
-                        }
-                        for (String testCol : nomMap.keySet()) {
-                            if (df.missing(i, testCol)) {
-                                continue;
-                            }
-                            sumLog += Math.log(nomMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
-                        }
-                        for (String testCol : binMap.keySet()) {
-                            if (df.missing(i, testCol)) {
-                                continue;
-                            }
-                            sumLog += Math.log(binMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
-                        }
+                        sumLog += buildSumLog(df, i, j, numData);
+                        sumLog += buildSumLog(df, i, j, nomData);
+                        sumLog += buildSumLog(df, i, j, binData);
                         dv.increment(j, Math.exp(sumLog));
                     }
                     dv.normalize();
@@ -231,6 +212,16 @@ public class NaiveBayes extends AbstractClassifier {
         logger.fine("fitting phase finished.");
         return pred;
     }
+
+	private double buildSumLog(Frame df, int i, int j, NaiveBayesData data) {
+		double sumLog = 0.0;
+		for (String testCol : data.keySet()) {
+		    if (df.missing(i, testCol))
+		        continue;
+		    sumLog += Math.log(data.calcSumLog(testCol, df, i, firstTargetLevel(j)));
+		}
+		return sumLog;
+	}
 
     @Override
     public String summary() {
@@ -257,13 +248,13 @@ public class NaiveBayes extends AbstractClassifier {
         String targetName = firstTargetName();
         Arrays.stream(firstTargetLevels()).skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(WS.formatFlex(priors.get(label))).append("\n"));
 
-        if (!numMap.isEmpty()) {
+        if (!numData.numMap.isEmpty()) {
             sb.append("numerical estimators:\n");
-            numMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
+            numData.numMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
         }
-        if (!nomMap.isEmpty()) {
+        if (!nomData.nomMap.isEmpty()) {
             sb.append("nominal estimators:\n");
-            nomMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
+            nomData.nomMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
         }
         return sb.toString();
     }
