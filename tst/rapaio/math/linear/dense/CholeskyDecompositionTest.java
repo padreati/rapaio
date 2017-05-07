@@ -42,9 +42,9 @@ public class CholeskyDecompositionTest {
             RM b = a.t().dot(a);
 
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(b);
-            RM l = cholesky.getL();
+            RM l = cholesky.getDecompositionArray();
 
-            assertTrue(cholesky.isSPD());
+            assertTrue(cholesky.isSymAndPositive());
             assertTrue(b.isEqual(l.dot(l.t()), TOL));
         }
     }
@@ -55,7 +55,7 @@ public class CholeskyDecompositionTest {
         for (int i = 0; i < 100; i++) {
             RM a = SolidRM.random(30, 30);
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(a);
-            assertFalse(cholesky.isSPD());
+            assertFalse(cholesky.isSymAndPositive());
         }
     }
 

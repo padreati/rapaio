@@ -28,7 +28,6 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 import rapaio.printer.Summary;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
