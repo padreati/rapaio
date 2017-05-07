@@ -47,22 +47,9 @@ public class CholeskyDecomposition implements Serializable {
 
     private static final long serialVersionUID = -3047433451986241586L;
 
-    /**
-     * Array for internal storage of decomposition.
-     */
-    private final double[][] L;
+    private CholeskyDecompositionData data = new CholeskyDecompositionData();
 
-    /**
-     * Row and column dimension (square matrix).
-     */
-    private int n;
-
-    /**
-     * Symmetric and positive definite flag.
-     */
-    private boolean isspd;
-
-    /**
+	/**
      * Cholesky algorithm for symmetric and positive definite matrix.
      *
      * @param A Square, symmetric matrix.
@@ -71,32 +58,32 @@ public class CholeskyDecomposition implements Serializable {
     private CholeskyDecomposition(RM A) {
 
         // Initialize.
-        n = A.rowCount();
-        L = new double[n][n];
-        isspd = (A.colCount() == n);
+        data.setDimension(A.rowCount());
+        data.setDecompositionArray(new double[data.getDimension()][data.getDimension()]);
+        data.setSymAndPositive((A.colCount() == data.getDimension()));
 
         // Main loop.
-        for (int j = 0; j < n; j++) {
-            double[] Lrowj = L[j];
+        for (int j = 0; j < data.getDimension(); j++) {
+            double[] Lrowj = data.getDecompositionArray()[j];
             double d = 0.0;
             for (int k = 0; k < j; k++) {
-                double[] Lrowk = L[k];
+                double[] Lrowk = data.getDecompositionArray()[k];
                 double s = 0.0;
                 for (int i = 0; i < k; i++) {
                     s += Lrowk[i] * Lrowj[i];
                 }
-                Lrowj[k] = s = (A.get(j, k) - s) / L[k][k];
+                Lrowj[k] = s = (A.get(j, k) - s) / data.getDecompositionArraySelect(k, k);
                 d = d + s * s;
                 if (A.get(k, j) != A.get(j, k)) {
-                    isspd = false;
+                    data.setSymAndPositive(false);
                 }
             }
             d = A.get(j, j) - d;
             if (d <= 0.0)
-                isspd = false;
-            L[j][j] = Math.sqrt(Math.max(d, 0.0));
-            for (int k = j + 1; k < n; k++) {
-                L[j][k] = 0.0;
+                data.setSymAndPositive(false);
+            data.setDecompositionArraySelect(j, j, Math.sqrt(Math.max(d, 0.0)));
+            for (int k = j + 1; k < data.getDimension(); k++) {
+                data.setDecompositionArraySelect(j, k, 0.0);
             }
         }
     }
@@ -155,15 +142,15 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @return true if A is symmetric and positive definite.
      */
-    public boolean isSPD() {
-        return isspd;
+    public boolean isSymAndPositive() {
+        return data.isSymAndPositive();
     }
 
     /**
-     * @return L triangular factor
+     * @return decompositionArray triangular factor
      */
-    public RM getL() {
-        return SolidRM.wrap(L);
+    public RM getDecompositionArray() {
+        return SolidRM.wrap(data.getDecompositionArray());
     }
 
     /**
@@ -176,34 +163,34 @@ public class CholeskyDecomposition implements Serializable {
      */
 
     public RM solve(RM B) {
-        if (B.rowCount() != n) {
+        if (B.rowCount() != data.getDimension()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
-        if (!isspd) {
+        if (!data.isSymAndPositive()) {
             throw new IllegalArgumentException("Matrix is not symmetric positive definite.");
         }
 
         // Copy right hand side.
         RM X = B.solidCopy();
-        int nx = B.colCount();
+        int bColNum = B.colCount();
 
         // Solve L*Y = B;
-        for (int k = 0; k < n; k++) {
-            for (int j = 0; j < nx; j++) {
+        for (int k = 0; k < data.getDimension(); k++) {
+            for (int j = 0; j < bColNum; j++) {
                 for (int i = 0; i < k; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[k][i]);
+                    X.set(k, j, X.get(k, j) - X.get(i, j) * data.getDecompositionArraySelect(k,i));
                 }
-                X.set(k, j, X.get(k, j) / L[k][k]);
+                X.set(k, j, X.get(k, j) / data.getDecompositionArraySelect(k,k));
             }
         }
 
         // Solve L'*X = Y;
-        for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
-                for (int i = k + 1; i < n; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[i][k]);
+        for (int k = data.getDimension() - 1; k >= 0; k--) {
+            for (int j = 0; j < bColNum; j++) {
+                for (int i = k + 1; i < data.getDimension(); i++) {
+                    X.set(k, j, X.get(k, j) - X.get(i, j) * data.getDecompositionArraySelect(i, k));
                 }
-                X.set(k, j, X.get(k, j) / L[k][k]);
+                X.set(k, j, X.get(k, j) / data.getDecompositionArraySelect(k, k));
             }
         }
 
