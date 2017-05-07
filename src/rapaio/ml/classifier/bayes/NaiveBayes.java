@@ -193,9 +193,28 @@ public class NaiveBayes extends AbstractClassifier {
                     DVector dv = DVector.empty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
+                        for (String testCol : numData.numMap.keySet()) {
+                            if (df.missing(i, testCol))
+                                continue;
+                            sumLog += Math.log(numData.numMap.get(testCol).cpValue(df.value(i, testCol), firstTargetLevel(j)));
+                        }
+                        for (String testCol : nomData.nomMap.keySet()) {
+                            if (df.missing(i, testCol)) {
+                                continue;
+                            }
+                            sumLog += Math.log(nomData.nomMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
+                        }
+                        for (String testCol : binData.binMap.keySet()) {
+                            if (df.missing(i, testCol)) {
+                                continue;
+                            }
+                            sumLog += Math.log(binData.binMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
+                        }
+                        /*
                         sumLog += buildSumLog(df, i, j, numData);
                         sumLog += buildSumLog(df, i, j, nomData);
                         sumLog += buildSumLog(df, i, j, binData);
+                        */
                         dv.increment(j, Math.exp(sumLog));
                     }
                     dv.normalize();
