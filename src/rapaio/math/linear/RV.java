@@ -27,10 +27,8 @@ package rapaio.math.linear;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
-import rapaio.data.Var;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;

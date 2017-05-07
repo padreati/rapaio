@@ -171,7 +171,7 @@ public class BoxPlot extends HostFigure {
 
             // outliers
             double upperwhisker = q[2];
-            double lowerqhisker = q[0];
+            double lowerwhisker = q[0];
             for (int j = 0; j < v.rowCount(); j++) {
                 double point = v.value(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
@@ -195,18 +195,18 @@ public class BoxPlot extends HostFigure {
                 if ((point > upperwhisker) && (point < q[2] + innerFence)) {
                     upperwhisker = Math.max(upperwhisker, point);
                 }
-                if ((point < lowerqhisker) && (point >= q[0] - innerFence)) {
-                    lowerqhisker = Math.min(lowerqhisker, point);
+                if ((point < lowerwhisker) && (point >= q[0] - innerFence)) {
+                    lowerwhisker = Math.min(lowerwhisker, point);
                 }
             }
 
             // whiskers
             g2d.draw(new Line2D.Double(xScale(x1), yScale(upperwhisker), xScale(x3), yScale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerqhisker), xScale(x3), yScale(lowerqhisker)));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerwhisker), xScale(x3), yScale(lowerwhisker)));
 
             g2d.setStroke(new BasicStroke(options.getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
             g2d.draw(new Line2D.Double(xScale(x2), yScale(q[2]), xScale(x2), yScale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerqhisker)));
+            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerwhisker)));
         }
     }
 
