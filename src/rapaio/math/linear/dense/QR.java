@@ -98,11 +98,14 @@ public class QR implements Serializable {
      * @return true if R, and hence A, has full rank.
      */
     public boolean isFullRank() {
+    	boolean isFullRank = true;
         for (int j = 0; j < QR.colCount(); j++) {
-            if (Rdiag.get(j) == 0)
-                return false;
+            if (Rdiag.get(j) == 0) {
+                isFullRank = false;
+                break;
+            }
         }
-        return true;
+        return isFullRank;
     }
 
     /**
@@ -112,12 +115,12 @@ public class QR implements Serializable {
      */
     public RM getH() {
         RM H = SolidRM.empty(QR.rowCount(), QR.colCount());
-        for (int i = 0; i < QR.rowCount(); i++) {
-            for (int j = 0; j < QR.colCount(); j++) {
-                if (i >= j) {
-                    H.set(i, j, QR.get(i, j));
+        for (int row = 0; row < QR.rowCount(); row++) {
+            for (int col = 0; col < QR.colCount(); col++) {
+                if (row >= col) {
+                    H.set(row, col, QR.get(row, col));
                 } else {
-                    H.set(i, j, 0.0);
+                    H.set(row, col, 0.0);
                 }
             }
         }

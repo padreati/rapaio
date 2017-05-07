@@ -172,11 +172,11 @@ public class CholeskyDecomposition implements Serializable {
 
         // Copy right hand side.
         RM X = B.solidCopy();
-        int nx = B.colCount();
+        int bColNum = B.colCount();
 
         // Solve L*Y = B;
         for (int k = 0; k < data.getDimension(); k++) {
-            for (int j = 0; j < nx; j++) {
+            for (int j = 0; j < bColNum; j++) {
                 for (int i = 0; i < k; i++) {
                     X.set(k, j, X.get(k, j) - X.get(i, j) * data.getDecompositionArraySelect(k,i));
                 }
@@ -186,7 +186,7 @@ public class CholeskyDecomposition implements Serializable {
 
         // Solve L'*X = Y;
         for (int k = data.getDimension() - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
+            for (int j = 0; j < bColNum; j++) {
                 for (int i = k + 1; i < data.getDimension(); i++) {
                     X.set(k, j, X.get(k, j) - X.get(i, j) * data.getDecompositionArraySelect(i, k));
                 }
