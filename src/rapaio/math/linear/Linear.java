@@ -129,7 +129,7 @@ public final class Linear {
         }
         return U.dot(lambda).dot(U.t());
     }
-
+/*
     @SuppressWarnings("unused")
 	private static boolean inTolerance(RM s, double tol) {
         for (int i = 0; i < s.rowCount(); i++) {
@@ -140,5 +140,5 @@ public final class Linear {
         }
         return true;
     }
-
+*/
 }
