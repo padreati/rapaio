@@ -988,3 +988,4 @@ public class EigenvalueDecomposition implements Serializable {
         }
         return rMatrix;
     }
+}
