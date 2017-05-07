@@ -52,11 +52,11 @@ public class TextTable implements Printable {
         values = new String[rows][cols];
         mergeSizes = new int[rows][cols];
         alignValues = new int[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                values[i][j] = "";
-                mergeSizes[i][j] = 1;
-                alignValues[i][j] = -1;
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                values[row][col] = "";
+                mergeSizes[row][col] = 1;
+                alignValues[row][col] = -1;
             }
         }
     }
@@ -177,14 +177,7 @@ public class TextTable implements Printable {
         int sumOfSplitLength = 0;
         while (splitCurrentCol < cols) {
             if (splitColsList.size() < splitCount + 1) {
-                splitColsList.add(new ArrayList<>());
-
-                if (headerCols > 0) {
-                    for (int i = 0; i < headerCols; i++) {
-                        sumOfSplitLength += maxLengths[i];
-                        splitColsList.get(splitCount).add(i);
-                    }
-                }
+                sumOfSplitLength = addSplitColsList(maxLengths, splitColsList, splitCount, sumOfSplitLength);
             }
 
             int splitSize = maxLengths[splitCurrentCol];
@@ -207,6 +200,19 @@ public class TextTable implements Printable {
         }
         return splitColsList;
     }
+
+	private int addSplitColsList(int[] maxLengths, List<List<Integer>> splitColsList, int splitCount,
+			int sumOfSplitLength) {
+		splitColsList.add(new ArrayList<>());
+
+		if (headerCols > 0) {
+		    for (int i = 0; i < headerCols; i++) {
+		        sumOfSplitLength += maxLengths[i];
+		        splitColsList.get(splitCount).add(i);
+		    }
+		}
+		return sumOfSplitLength;
+	}
 
     private TextTable createSplitTextTable(List<Integer> indexes) {
         TextTable textTable = new TextTable(rows, indexes.size());
@@ -258,21 +264,26 @@ public class TextTable implements Printable {
         for (int currentCount = 0, nextRow = headerRows; currentCount < count; currentCount++) {
             copyHeader(textTable, currentCount);
 
-            for (int content = 0; content < maxContent; content++) {
-                for (int col = 0; col < cols; col++) {
-                    if (nextRow < rows) {
-                        textTable.set(content + headerRows, currentCount * cols + col, get(nextRow, col),
-                                alignValues[nextRow][col]);
-                        textTable.mergeCols(content + headerRows, currentCount * cols + col, mergeSizes[nextRow][col]);
-                    } else {
-                        break;
-                    }
-                }
-                nextRow++;
-            }
+            nextRow = copyContent(maxContent, textTable, currentCount, nextRow);
         }
         return textTable;
     }
+
+	private int copyContent(int maxContent, TextTable textTable, int currentCount, int nextRow) {
+		for (int content = 0; content < maxContent; content++) {
+		    for (int col = 0; col < cols; col++) {
+		        if (nextRow < rows) {
+		            textTable.set(content + headerRows, currentCount * cols + col, get(nextRow, col),
+		                    alignValues[nextRow][col]);
+		            textTable.mergeCols(content + headerRows, currentCount * cols + col, mergeSizes[nextRow][col]);
+		        } else {
+		            break;
+		        }
+		    }
+		    nextRow++;
+		}
+		return nextRow;
+	}
 
     private void copyHeader(TextTable textTable, int time) {
         for (int j = 0; j < headerRows; j++) {
