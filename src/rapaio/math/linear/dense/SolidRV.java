@@ -28,14 +28,12 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 import rapaio.printer.Summary;
-import rapaio.util.func.SFunction;
-
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
+@SuppressWarnings("deprecation")
 public class SolidRV implements RV {
 
     private static final long serialVersionUID = 5763094452899116225L;
