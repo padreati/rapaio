@@ -98,6 +98,42 @@ public class Histogram extends PlotComponent {
     }
 
     private void rebuild() {
+        getMinMax();
+
+        double step = (maxValue - minValue) / (1. * options.getBins());
+        freqTable = new double[options.getBins()];
+        double total = calcFreqTable(step);
+
+        if (options.getProb() && (total != 0)) {
+            normalizeFreqTable(step, total);
+        }
+    }
+
+    private void normalizeFreqTable(double step, double total) {
+        for (int i = 0; i < freqTable.length; i++) {
+            freqTable[i] /= (total * step);
+        }
+    }
+
+    private double calcFreqTable(double step) {
+        double total = 0;
+        for (int i = 0; i < v.rowCount(); i++) {
+            if (v.missing(i)) {
+                continue;
+            }
+            total++;
+            if (v.value(i) < minValue || v.value(i) > maxValue) {
+                continue;
+            }
+            int index = (int) ((v.value(i) - minValue) / step);
+            if (index == freqTable.length)
+                index--;
+            freqTable[index]++;
+        }
+        return total;
+    }
+
+    private void getMinMax() {
         if (minValue != minValue) {
             for (int i = 0; i < v.rowCount(); i++) {
                 if (v.missing(i)) {
@@ -113,29 +149,6 @@ public class Histogram extends PlotComponent {
                 } else {
                     maxValue = Math.max(maxValue, v.value(i));
                 }
-            }
-        }
-
-        double step = (maxValue - minValue) / (1. * options.getBins());
-        freqTable = new double[options.getBins()];
-        double total = 0;
-        for (int i = 0; i < v.rowCount(); i++) {
-            if (v.missing(i)) {
-                continue;
-            }
-            total++;
-            if (v.value(i) < minValue || v.value(i) > maxValue) {
-                continue;
-            }
-            int index = (int) ((v.value(i) - minValue) / step);
-            if (index == freqTable.length)
-                index--;
-            freqTable[index]++;
-        }
-
-        if (options.getProb() && (total != 0)) {
-            for (int i = 0; i < freqTable.length; i++) {
-                freqTable[i] /= (total * step);
             }
         }
     }
