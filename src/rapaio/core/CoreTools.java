@@ -31,6 +31,7 @@ import rapaio.core.distributions.DUniform;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
+import rapaio.core.stat.QuantilesEstimator.Type;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -82,7 +83,7 @@ public final class CoreTools {
         return Quantiles.from(var, p.stream().mapToDouble().toArray());
     }
 
-    public static Quantiles quantiles(Var var, Quantiles.Type type, Numeric p) {
+    public static Quantiles quantiles(Var var, QuantilesEstimator.Type type, Numeric p) {
         return Quantiles.from(var, type, p.stream().mapToDouble().toArray());
     }
 

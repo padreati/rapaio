@@ -107,7 +107,7 @@ public class CoreToolsTest {
             Assert.assertEquals(10, q3.values()[i], 1e-20);
         }
 
-        Quantiles q4 = quantiles(v, Quantiles.Type.R8, Numeric.seq(0, 1, 0.1));
+        Quantiles q4 = quantiles(v, QuantilesEstimator.Type.R8, Numeric.seq(0, 1, 0.1));
 
         Arrays.stream(q4.values()).forEach(val -> WS.println(WS.formatLong(val)));
         Numeric v4 = Numeric.copy(0,
