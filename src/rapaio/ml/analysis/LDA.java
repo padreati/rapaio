@@ -149,7 +149,8 @@ public class LDA implements Printable {
         }
 
         // inverse sw
-        RM swi = new QR(sw).solve(SolidRM.identity(inputNames.length));
+        @SuppressWarnings("deprecation")
+		RM swi = new QR(sw).solve(SolidRM.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
@@ -159,8 +160,8 @@ public class LDA implements Printable {
         EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.values();
-        eigenVectors = sbminus.dot(p.vectors());
+        eigenValues = p.getRV();
+        eigenVectors = sbminus.dot(p.getRM());
 //        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");
@@ -228,7 +229,8 @@ public class LDA implements Printable {
         inputNames = df.varStream().filter(v -> !v.name().equals(targetName)).map(Var::name).toArray(String[]::new);
     }
 
-    public String summary() {
+    @SuppressWarnings("deprecation")
+	public String summary() {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(

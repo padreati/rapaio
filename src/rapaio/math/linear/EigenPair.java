@@ -31,35 +31,35 @@ import rapaio.math.linear.dense.SolidRM;
  */
 public class EigenPair {
 
-    private RV values;
-    private RM vectors;
+    private RV rv;
+    private RM rm;
 
     public static EigenPair from(RV values, RM vectors) {
         return new EigenPair(values, vectors);
     }
 
     private EigenPair(RV values, RM vectors) {
-        this.values = values;
-        this.vectors = vectors;
+        this.rv = values;
+        this.rm = vectors;
     }
 
-    public RV values() {
-        return values;
+    public RV getRV() {
+        return rv;
     }
 
-    public RM vectors() {
-        return vectors;
+    public RM getRM() {
+        return rm;
     }
 
     public RM expandedValues() {
-        RM full = SolidRM.empty(values.count(), values.count());
-        for (int i = 0; i < values.count(); i++) {
-            full.set(i, i, values.get(i));
+        RM expandedRV = SolidRM.empty(rv.count(), rv.count());
+        for (int i = 0; i < rv.count(); i++) {
+            expandedRV.set(i, i, rv.get(i));
         }
-        return full;
+        return expandedRV;
     }
 
-    public RV vector(int i) {
-        return vectors.mapCol(i);
+    public RV vector(int colNum) {
+        return rm.mapCol(colNum);
     }
 }
