@@ -34,7 +34,6 @@ import rapaio.math.linear.dense.SolidRV;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-@SuppressWarnings("deprecation")
 public final class Linear {
 
     public static RM chol2inv(RM R) {
