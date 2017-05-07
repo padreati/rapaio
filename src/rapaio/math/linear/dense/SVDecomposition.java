@@ -1,5 +1,4 @@
 /*
- /*
  * Apache License
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
@@ -56,7 +55,7 @@ public class SVDecomposition implements java.io.Serializable {
     private final int nct, nrt;
     private final boolean wantu = true;
     private final boolean wantv = true;
-    private int nu;
+    private final int minCount;
 
     public SVDecomposition(RM Arg) {
 
@@ -71,7 +70,7 @@ public class SVDecomposition implements java.io.Serializable {
          * let's not throw error. Correct fix to come later? if (m<n) { throw
          * new IllegalArgumentException("Jama SVD only works for m >= n"); }
          */
-        int minCount = Math.min(rowCount, colCount);
+        minCount = Math.min(rowCount, colCount);
         s = new double[Math.min(rowCount + 1, colCount)];
         U = new double[rowCount][minCount];
         V = new double[colCount][colCount];
@@ -113,7 +112,7 @@ public class SVDecomposition implements java.io.Serializable {
     private void generateU(double[] e) {
         // If required, generate U.
         if (wantu) {
-            for (int j = nct; j < nu; j++) {
+            for (int j = nct; j < minCount; j++) {
                 for (int i = 0; i < rowCount; i++) {
                     U[i][j] = 0.0;
                 }
@@ -121,7 +120,7 @@ public class SVDecomposition implements java.io.Serializable {
             }
             for (int k = nct - 1; k >= 0; k--) {
                 if (s[k] != 0.0) {
-                    for (int j = k + 1; j < nu; j++) {
+                    for (int j = k + 1; j < minCount; j++) {
                         double t = 0;
                         for (int i = k; i < rowCount; i++) {
                             t += U[i][k] * U[i][j];
@@ -153,7 +152,7 @@ public class SVDecomposition implements java.io.Serializable {
         if (wantv) {
             for (int k = colCount - 1; k >= 0; k--) {
                 if ((k < nrt) & (e[k] != 0.0)) {
-                    for (int j = k + 1; j < nu; j++) {
+                    for (int j = k + 1; j < minCount; j++) {
                         double t = 0;
                         for (int i = k + 1; i < colCount; i++) {
                             t += V[i][k] * V[i][j];
