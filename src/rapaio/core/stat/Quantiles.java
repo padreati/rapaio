@@ -29,6 +29,8 @@ import rapaio.printer.Printable;
 
 import static rapaio.sys.WS.formatFlex;
 
+import rapaio.core.stat.QuantilesEstimator.Type;
+
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Var} of values.
@@ -51,7 +53,7 @@ public class Quantiles implements Printable {
         return new Quantiles(var, Type.R7, percentiles);
     }
 
-    public static Quantiles from(Var var, Quantiles.Type type, double...percentiles) {
+    public static Quantiles from(Var var, Type type, double...percentiles) {
         return new Quantiles(var, type, percentiles);
     }
 
@@ -60,12 +62,12 @@ public class Quantiles implements Printable {
     private final double[] quantiles;
     private int completeCount;
     private int missingCount;
-    private final Type type;
-
+    private QuantilesEstimator quantilesEstimator;
+    
     private Quantiles(Var var, Type type, double... percentiles) {
         this.varName = var.name();
         this.percentiles = percentiles;
-        this.type = type;
+        this.quantilesEstimator = QuantilesEstimator.newInstance(type);
         this.quantiles = compute(var);
     }
 
@@ -73,13 +75,7 @@ public class Quantiles implements Printable {
         Var complete = var.stream().complete().toMappedVar();
         missingCount = var.rowCount() - complete.rowCount();
         completeCount = complete.rowCount();
-
-        if (type.equals(Type.R7)) {
-            return new QuantilesEstimatorR7().estimate(complete, percentiles);
-        } else if (type.equals(Type.R8)) {
-            return new QuantilesEstimatorR8().estimate(complete, percentiles);
-        }
-        return null;
+        return quantilesEstimator.estimate(complete,  percentiles);
     }
 
     public double[] values() {
@@ -97,8 +93,5 @@ public class Quantiles implements Printable {
         return sb.toString();
     }
 
-    public enum Type {
-        R7,
-        R8
-    }
+
 }
