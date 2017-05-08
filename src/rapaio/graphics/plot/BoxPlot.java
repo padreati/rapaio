@@ -148,66 +148,104 @@ public class BoxPlot extends HostFigure {
             double x2 = i + 0.5;
             double x3 = i + 0.5 + 0.3;
 
-            // first we fill the space
+            fillSpace(g2d, i, q, x1, x3);
+            drawMedian(g2d, q, x1, x3);
+            drawBox(g2d, q, x1, x3);
 
-            g2d.setColor(options.getColor(i));
-            g2d.fill(new Rectangle2D.Double(xScale(x1), yScale(q[2]),
-                    xScale(x3) - xScale(x1), yScale(q[0]) - yScale(q[2])));
-
-            g2d.setColor(ColorPalette.STANDARD.getColor(0));
-
-            // median
-            g2d.setStroke(new BasicStroke(options.getLwd() * 2));
-            g2d.draw(new Line2D.Double(
-                    xScale(x1), yScale(q[1]), xScale(x3), yScale(q[1])));
-
-            // box
-            g2d.setStroke(new BasicStroke(options.getLwd()));
-
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x3), yScale(q[0])));
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[2]), xScale(x3), yScale(q[2])));
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x1), yScale(q[2])));
-            g2d.draw(new Line2D.Double(xScale(x3), yScale(q[0]), xScale(x3), yScale(q[2])));
-
-            // outliers
-            double upperwhisker = q[2];
-            double lowerqhisker = q[0];
-            for (int j = 0; j < v.rowCount(); j++) {
-                double point = v.value(j);
-                if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
-                    // big outlier
-                    g2d.setStroke(new BasicStroke(options.getLwd()));
-                    PchPalette.STANDARD.draw(g2d,
-                            xScale(x2),
-                            yScale(point),
-                            options.getSz(i), options.getPch(1));
-                    continue;
-                }
-                if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
-                    // outlier
-                    g2d.setStroke(new BasicStroke(options.getLwd()));
-                    PchPalette.STANDARD.draw(g2d,
-                            xScale(x2),
-                            yScale(point),
-                            options.getSz(i), options.getPch(0));
-                    continue;
-                }
-                if ((point > upperwhisker) && (point < q[2] + innerFence)) {
-                    upperwhisker = Math.max(upperwhisker, point);
-                }
-                if ((point < lowerqhisker) && (point >= q[0] - innerFence)) {
-                    lowerqhisker = Math.min(lowerqhisker, point);
-                }
-            }
-
-            // whiskers
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(upperwhisker), xScale(x3), yScale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerqhisker), xScale(x3), yScale(lowerqhisker)));
-
-            g2d.setStroke(new BasicStroke(options.getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
-            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[2]), xScale(x2), yScale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerqhisker)));
+            drawOutlier(g2d, i, v, q, innerFence, outerFence, x2);
+            double upperWhisker = getUpperWhisker(v, q, innerFence);
+            double lowerWhisker = getLowerWhisker(v, q, innerFence);
+            drawWhisker(g2d, q, x1, x2, x3, upperWhisker, lowerWhisker);
         }
+    }
+
+    private double getLowerWhisker(Var v, double[] q, double innerFence) {
+        double lowerWhisker = q[0];
+        for (int i = 0; i < v.rowCount(); i++) {
+            double point = v.value(i);
+            if ((point < lowerWhisker) && (point >= q[0] - innerFence)) {
+                lowerWhisker = Math.min(lowerWhisker, point);
+            }
+        }
+        return lowerWhisker;
+    }
+
+    private double getUpperWhisker(Var v, double[] q, double innerFence) {
+        double upperWhisker = q[2];
+        for (int i = 0; i < v.rowCount(); i++) {
+            double point = v.value(i);
+            if ((point > upperWhisker) && (point < q[2] + innerFence)) {
+                upperWhisker = Math.max(upperWhisker, point);
+            }
+        }
+        return upperWhisker;
+    }
+
+    private void drawOutlier(Graphics2D g2d, int i, Var v, double[] q, double innerFence, double outerFence,
+            double x2) {
+        for (int j = 0; j < v.rowCount(); j++) {
+            double point = v.value(j);
+            if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
+                drawBigOutlier(g2d, i, x2, point);
+            } else if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
+                drawNormalOutlier(g2d, i, x2, point);
+            }
+        }
+    }
+
+    private void drawNormalOutlier(Graphics2D g2d, int i, double x2, double point) {
+        // outlier
+        g2d.setStroke(new BasicStroke(options.getLwd()));
+        PchPalette.STANDARD.draw(g2d,
+                xScale(x2),
+                yScale(point),
+                options.getSz(i), options.getPch(0));
+    }
+
+    private void drawBigOutlier(Graphics2D g2d, int i, double x2, double point) {
+        // big outlier
+        g2d.setStroke(new BasicStroke(options.getLwd()));
+        PchPalette.STANDARD.draw(g2d,
+                xScale(x2),
+                yScale(point),
+                options.getSz(i), options.getPch(1));
+    }
+
+    private void drawWhisker(Graphics2D g2d, double[] q, double x1, double x2, double x3, double upperwhisker,
+            double lowerwhisker) {
+        // whiskers
+        g2d.draw(new Line2D.Double(xScale(x1), yScale(upperwhisker), xScale(x3), yScale(upperwhisker)));
+        g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerwhisker), xScale(x3), yScale(lowerwhisker)));
+
+        g2d.setStroke(new BasicStroke(options.getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
+        g2d.draw(new Line2D.Double(xScale(x2), yScale(q[2]), xScale(x2), yScale(upperwhisker)));
+        g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerwhisker)));
+    }
+
+    private void drawBox(Graphics2D g2d, double[] q, double x1, double x3) {
+        // box
+        g2d.setStroke(new BasicStroke(options.getLwd()));
+
+        g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x3), yScale(q[0])));
+        g2d.draw(new Line2D.Double(xScale(x1), yScale(q[2]), xScale(x3), yScale(q[2])));
+        g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x1), yScale(q[2])));
+        g2d.draw(new Line2D.Double(xScale(x3), yScale(q[0]), xScale(x3), yScale(q[2])));
+    }
+
+    private void drawMedian(Graphics2D g2d, double[] q, double x1, double x3) {
+        // median
+        g2d.setStroke(new BasicStroke(options.getLwd() * 2));
+        g2d.draw(new Line2D.Double(
+                xScale(x1), yScale(q[1]), xScale(x3), yScale(q[1])));
+    }
+
+    private void fillSpace(Graphics2D g2d, int i, double[] q, double x1, double x3) {
+        // first we fill the space
+        g2d.setColor(options.getColor(i));
+        g2d.fill(new Rectangle2D.Double(xScale(x1), yScale(q[2]),
+                xScale(x3) - xScale(x1), yScale(q[0]) - yScale(q[2])));
+
+        g2d.setColor(ColorPalette.STANDARD.getColor(0));
     }
 
 }

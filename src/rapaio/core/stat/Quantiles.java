@@ -25,12 +25,11 @@
 package rapaio.core.stat;
 
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
 import rapaio.printer.Printable;
 
-import java.util.stream.IntStream;
-
 import static rapaio.sys.WS.formatFlex;
+
+import rapaio.core.stat.QuantilesEstimator.Type;
 
 
 /**
@@ -54,7 +53,7 @@ public class Quantiles implements Printable {
         return new Quantiles(var, Type.R7, percentiles);
     }
 
-    public static Quantiles from(Var var, Quantiles.Type type, double...percentiles) {
+    public static Quantiles from(Var var, Type type, double...percentiles) {
         return new Quantiles(var, type, percentiles);
     }
 
@@ -63,12 +62,12 @@ public class Quantiles implements Printable {
     private final double[] quantiles;
     private int completeCount;
     private int missingCount;
-    private final Type type;
-
+    private QuantilesEstimator quantilesEstimator;
+    
     private Quantiles(Var var, Type type, double... percentiles) {
         this.varName = var.name();
         this.percentiles = percentiles;
-        this.type = type;
+        this.quantilesEstimator = QuantilesEstimator.newInstance(type);
         this.quantiles = compute(var);
     }
 
@@ -76,43 +75,7 @@ public class Quantiles implements Printable {
         Var complete = var.stream().complete().toMappedVar();
         missingCount = var.rowCount() - complete.rowCount();
         completeCount = complete.rowCount();
-        if (complete.rowCount() == 0) {
-            return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
-        }
-        if (complete.rowCount() == 1) {
-            double[] values = new double[percentiles.length];
-            for (int i = 0; i < values.length; i++) {
-                values[i] = complete.value(0);
-            }
-            return values;
-        }
-        Var x = new VFSort().fitApply(complete);
-        double[] values = new double[percentiles.length];
-        for (int i = 0; i < percentiles.length; i++) {
-            double p = percentiles[i];
-            if (type.equals(Type.R8)) {
-                int N = x.rowCount();
-                double h = (N + 1. / 3.) * p + 1. / 3.;
-                int hfloor = (int) StrictMath.floor(h);
-
-                if (p < (2. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.value(0);
-                    continue;
-                }
-                if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.value(x.rowCount() - 1);
-                    continue;
-                }
-                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
-            }
-            if (type.equals(Type.R7)) {
-                int N = x.rowCount();
-                double h = (N - 1.0) * p + 1;
-                int hfloor = (int) Math.min(StrictMath.floor(h), x.rowCount() - 1);
-                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
-            }
-        }
-        return values;
+        return quantilesEstimator.estimate(complete,  percentiles);
     }
 
     public double[] values() {
@@ -130,8 +93,5 @@ public class Quantiles implements Printable {
         return sb.toString();
     }
 
-    public enum Type {
-        R7,
-        R8
-    }
+
 }

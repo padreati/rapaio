@@ -66,6 +66,22 @@ public final class WeightedMean implements Printable {
         if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
+        double avg = getAvg(var, weights, total);
+        double residual = getResidual(var, weights, avg);
+        return avg + residual / total;
+    }
+
+    private double getResidual(final Var var, final Var weights, double avg) {
+        double residual = 0;
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i) || weights.missing(i))
+                continue;
+            residual += weights.value(i) * (var.value(i) - avg);
+        }
+        return residual;
+    }
+
+    private double getAvg(final Var var, final Var weights, double total) {
         double sum = 0;
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i) || weights.missing(i))
@@ -73,13 +89,7 @@ public final class WeightedMean implements Printable {
             sum += weights.value(i) * var.value(i);
         }
         double avg = sum / total;
-        double residual = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i) || weights.missing(i))
-                continue;
-            residual += weights.value(i) * (var.value(i) - avg);
-        }
-        return avg + residual / total;
+        return avg;
     }
 
     public double value() {
