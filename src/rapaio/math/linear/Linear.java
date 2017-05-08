@@ -24,7 +24,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.EigenvalueDecomposition;
+import rapaio.math.linear.dense.EigenDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 
@@ -99,7 +99,7 @@ public final class Linear {
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
 
         int n = s.colCount();
-        EigenvalueDecomposition evd = new EigenvalueDecomposition(s);
+        EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
         RM _vectors = evd.getV();

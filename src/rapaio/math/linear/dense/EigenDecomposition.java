@@ -29,82 +29,60 @@ import rapaio.math.linear.RM;
 import java.io.Serializable;
 
 /**
- * Eigenvalues and eigen vectors of a real matrix.
+ * Eigenvalues and eigenvectors of a squared real matrix.
  * <p>
- * If A is symmetric, then A = RV*D*RV' where the eigenvalue matrix D is diagonal
- * and the eigenvector matrix RV is orthogonal. I.e. A = RV.prod(D.prod(RV.t())) and RV.prod(RV.prod()) equals the
- * identity matrix.
+ * If A is symmetric, then A = V*D*V' where the eigenvalue matrix D is diagonal
+ * and the eigenvector matrix V is orthogonal. I.e. A = V.dot(D.dot(V.t())) and I = V.dot(V.t()).
  * <p>
  * If A is not symmetric, then the eigenvalue matrix D is block diagonal with
  * the real eigenvalues in 1-by-1 blocks and any complex eigenvalues, lambda +
- * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of RV represent
- * the eigenvectors in the sense that A*RV = RV*D, i.e. A.times(RV) equals
- * RV.times(D). The matrix RV may be badly conditioned, or even singular, so the
- * validity of the equation A = RV*D*inverse(RV) depends upon RV.cond().
+ * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of V represent
+ * the eigenvectors in the sense that A*V = V*D, i.e. A.dot(V) equals
+ * V.dot(D). The matrix V may be badly conditioned, or even singular, so the
+ * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
-@Deprecated
-public class EigenvalueDecomposition implements Serializable {
+public class EigenDecomposition implements Serializable {
+
+    public static EigenDecomposition from(RM a) {
+        return new EigenDecomposition(a);
+    }
 
     private static final long serialVersionUID = 5064091847331016868L;
 
-    /**
-     * Row and column dimension (square matrix).
-     *
-     * @serial matrix dimension.
-     */
+     // Row and column dimension (square matrix).
     private int dimension;
 
-    /**
-     * Arrays for internal storage of eigenvalues.
-     *
-     * @serial internal storage of eigenvalues.
-     */
+     // Arrays for internal storage of eigenvalues.
     private double[] eigenValues1, eigenValues2;
 
-    /**
-     * Array for internal storage of eigenvectors.
-     *
-     * @serial internal storage of eigenvectors.
-     */
+    // Array for internal storage of eigenvectors.
     private RM eigenVectors;
 
-    /**
-     * Array for internal storage of nonsymmetric Hessenberg form.
-     *
-     * @serial internal storage of nonsymmetric Hessenberg form.
-     */
+    //Array for internal storage of nonsymmetric Hessenberg form.
     private double[][] nonSymHessenbergForm;
 
-    /**
-     * Working storage for nonsymmetric algorithm.
-     *
-     * @serial working storage for nonsymmetric algorithm.
-     */
+    // Working storage for nonsymmetric algorithm.
     private double[] ort;
 
     /**
      * Check for symmetry, then construct the eigenvalue decomposition
      * Structure to access D and V.
      *
-     * @param rMatrixArg Square matrix
+     * @param a Square matrix
      */
-
-    public EigenvalueDecomposition(RM rMatrixArg) {
-        RM rMatrix = rMatrixArg.solidCopy();
-        dimension = rMatrixArg.colCount();
+    private EigenDecomposition(RM a) {
+        dimension = a.colCount();
         eigenVectors = SolidRM.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];
 
-        if (isSymmetric(rMatrix)) {
+        if (isSymmetric(a)) {
             for (int row = 0; row < dimension; row++) {
                 for (int col = 0; col < dimension; col++) {
-                    eigenVectors.set(row, col, rMatrix.get(row, col));
+                    eigenVectors.set(row, col, a.get(row, col));
                 }
             }
-
             tridiagonalize();
-
             diagonalize();
 
         } else {
@@ -113,22 +91,20 @@ public class EigenvalueDecomposition implements Serializable {
 
             for (int col = 0; col < dimension; col++) {
                 for (int row = 0; row < dimension; row++) {
-                    nonSymHessenbergForm[row][col] = rMatrix.get(row, col);
+                    nonSymHessenbergForm[row][col] = a.get(row, col);
                 }
             }
-
             reduceToHessenbergForm();
-
             hessenbergToRealSchurForm();
         }
     }
 
-	private boolean isSymmetric(RM rMatrix) {
+	private boolean isSymmetric(RM a) {
 		
 		boolean returnValue = true;
 		for (int row = 0; (row < dimension) & returnValue; row++) {
             for (int col = 0; (col < dimension); col++) {
-                if (!(rMatrix.get(col, row) == rMatrix.get(row, col))) {
+                if (!(a.get(col, row) == a.get(row, col))) {
                     returnValue = false;
                     break;
                 }
@@ -136,10 +112,6 @@ public class EigenvalueDecomposition implements Serializable {
         }
 		return returnValue;
 	}
-
-/* ------------------------
-   Private Methods
- * ------------------------ */
 
     // Symmetric Householder reduction to tridiagonal form.
 
@@ -936,13 +908,11 @@ public class EigenvalueDecomposition implements Serializable {
         }
     }
 
-
     /**
-     * Return the eigen vector matrix
+     * Return the eigenvector matrix
      *
      * @return V
      */
-
     public RM getV() {
         return eigenVectors;
     }
@@ -952,7 +922,6 @@ public class EigenvalueDecomposition implements Serializable {
      *
      * @return real(diag(D))
      */
-
     public double[] getRealEigenvalues() {
         return eigenValues1;
     }
@@ -962,7 +931,6 @@ public class EigenvalueDecomposition implements Serializable {
      *
      * @return imag(diag(D))
      */
-
     public double[] getImagEigenvalues() {
         return eigenValues2;
     }
@@ -970,20 +938,18 @@ public class EigenvalueDecomposition implements Serializable {
     /**
      * Return the block diagonal eigenvalue matrix
      *
-     * @return D
+     * @return D the block diagonal eigenvalue matrix
      */
-
     public RM getD() {
-        RM rMatrix = SolidRM.empty(dimension, dimension);
+        RM d = SolidRM.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
-            rMatrix.set(i, i, eigenValues1[i]);
+            d.set(i, i, eigenValues1[i]);
             if (eigenValues2[i] > 0) {
-                rMatrix.set(i, i + 1, eigenValues2[i]);
+                d.set(i, i + 1, eigenValues2[i]);
             } else if (eigenValues2[i] < 0) {
-                rMatrix.set(i, i - 1, eigenValues2[i]);
+                d.set(i, i - 1, eigenValues2[i]);
             }
         }
-        return rMatrix;
+        return d;
     }
-
 }
