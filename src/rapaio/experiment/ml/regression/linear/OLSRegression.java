@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
@@ -86,7 +86,7 @@ public class OLSRegression extends AbstractRegression {
         }
         RM X = SolidRM.copy(df.mapVars(inputNames()));
         RM Y = SolidRM.copy(df.mapVars(targetNames()));
-        beta = new QR(X).solve(Y);
+        beta = QRDecomposition.from(X).solve(Y);
         return true;
     }
 

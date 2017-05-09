@@ -22,13 +22,13 @@
  *
  */
 
-package rapaio.data.matrix;
+package rapaio.math.linear;
 
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.LUDecomposition;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.assertTrue;
@@ -98,7 +98,7 @@ public class MatrixMathTest {
 
         RM I = SolidRM.identity(3);
 
-        RM invC = new QR(C).solve(I);
+        RM invC = QRDecomposition.from(C).solve(I);
         invC.printSummary();
         C.dot(invC);
         invC = LUDecomposition.from(C).solve(I);

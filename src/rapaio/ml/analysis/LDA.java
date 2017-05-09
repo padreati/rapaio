@@ -30,7 +30,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
@@ -150,7 +150,7 @@ public class LDA implements Printable {
 
         // inverse sw
         @SuppressWarnings("deprecation")
-		RM swi = new QR(sw).solve(SolidRM.identity(inputNames.length));
+		RM swi = QRDecomposition.from(sw).solve(SolidRM.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe

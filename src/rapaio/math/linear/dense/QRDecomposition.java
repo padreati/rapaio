@@ -34,26 +34,24 @@ import java.io.Serializable;
  * QR Decomposition.
  * <p>
  * For an m-by-n matrix A with m >= n, the QR decomposition is an m-by-n
- * orthogonal matrix Q and an n-by-n upper triangular rapaio.data.matrix R so that
- * A = Q*R.
+ * orthogonal matrix Q and an n-by-n upper triangular matrix R so that A = Q*R.
  * <p>
- * The QR decompostion always exists, even if the matrix does not have
- * full rank, so the constructor will never fail.  The primary use of the
- * QR decomposition is in the least squares solution of non square systems
- * of simultaneous linear equations.  This will fail if isFullRank()
- * returns false.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * The QR decomposition always exists, even if the matrix does not have
+ * full rank.  The primary use of the QR decomposition is in the least squares solution
+ * of non square systems of simultaneous linear equations. This will fail if A is not of full rank.
  */
-@Deprecated
-public class QR implements Serializable {
+public class QRDecomposition implements Serializable {
+
+    public static QRDecomposition from(RM A) {
+        return new QRDecomposition(A);
+    }
 
     private static final long serialVersionUID = -8322866575684242727L;
 
     private RM QR;
     private RV Rdiag;
 
-    public QR(RM A) {
+    private QRDecomposition(RM A) {
         // Initialize.
         QR = A.solidCopy();
         Rdiag = SolidRV.empty(QR.colCount());
@@ -172,14 +170,6 @@ public class QR implements Serializable {
             }
         }
         return Q;
-    }
-
-    public RM getQR() {
-        return QR.solidCopy();
-    }
-
-    public Pair<RM, RM> getPairQR() {
-        return Pair.from(getQ(), getR());
     }
 
     /**

@@ -34,7 +34,7 @@ import rapaio.experiment.ml.regression.linear.OLSRegression;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 import rapaio.printer.Summary;
@@ -74,7 +74,7 @@ public class OLSRegressionTest {
         RM X = SolidRM.copy(df.mapVars(inputNames));
         RM Y = SolidRM.copy(df.mapVars(targetNames));
 
-        QR qr1 = new QR(X);
+        QRDecomposition qr1 = QRDecomposition.from(X);
         RM beta = qr1.solve(Y);
 
         Var betaTerm = Nominal.empty().withName("Term");
