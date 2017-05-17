@@ -61,9 +61,9 @@ public class CorrPearson implements Printable {
 
     private CorrPearson(Frame df) {
         List<Var> varList = df.varList();
-        this.names = df.varNames();
+        this.names = df.getVarNames();
         this.pearson = new double[varList.size()][varList.size()];
-        for (int i = 0; i < df.varCount(); i++) {
+        for (int i = 0; i < df.getVarCount(); i++) {
             pearson[i][i] = 1;
             for (int j = i + 1; j < varList.size(); j++) {
                 pearson[i][j] = compute(varList.get(i), varList.get(j));
@@ -76,7 +76,7 @@ public class CorrPearson implements Printable {
         List<Var> varList = Arrays.asList(vars);
         this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
-            names[i] = vars[i].name();
+            names[i] = vars[i].getName();
             if (names[i].isEmpty())
                 names[i] = "V" + i;
         }
@@ -93,18 +93,18 @@ public class CorrPearson implements Printable {
     private double compute(Var x, Var y) {
 
         double sum = 0;
-        int len = Math.min(x.rowCount(), y.rowCount());
+        int len = Math.min(x.getRowCount(), y.getRowCount());
 
         Mapping map = Mapping.copy(IntStream.range(0, len)
-                .filter(i -> !(x.missing(i) || y.missing(i)))
+                .filter(i -> !(x.isMissing(i) || y.isMissing(i)))
                 .toArray());
-        double xMean = Mean.from(x.mapRows(map)).value();
-        double yMean = Mean.from(y.mapRows(map)).value();
+        double xMean = Mean.from(x.mapRows(map)).getValue();
+        double yMean = Mean.from(y.mapRows(map)).getValue();
 
         double sdp = Variance.from(x.mapRows(map)).sdValue() * Variance.from(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
-            sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));
+            sum += ((x.getValue(pos) - xMean) * (y.getValue(pos) - yMean));
         }
         return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
     }
@@ -120,7 +120,7 @@ public class CorrPearson implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         switch (names.length) {
             case 1:

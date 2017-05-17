@@ -26,15 +26,15 @@ package rapaio.core.tests;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
+import rapaio.data.NominalVar;
+import rapaio.data.NumericVar;
 
 public class ChiSquareTestTest {
 
     @Test
     public void testBasicGoodness() {
 
-        Nominal x1 = Nominal.empty();
+        NominalVar x1 = NominalVar.empty();
         for (int i = 0; i < 11; i++) {
             x1.addLabel("Heavy");
         }
@@ -55,14 +55,14 @@ public class ChiSquareTestTest {
         Assert.assertEquals(0.10744287054977643, test1.chiValue(), 1e-20);
         Assert.assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        test1 = ChiSquareTest.goodnessOfFitTest(Numeric.copy(11, 189, 19, 17), 0.045, 0.795, 0.085, 0.075);
+        test1 = ChiSquareTest.goodnessOfFitTest(NumericVar.copy(11, 189, 19, 17), 0.045, 0.795, 0.085, 0.075);
         test1.printSummary();
 
         Assert.assertEquals(3.0, test1.df(), 1e-20);
         Assert.assertEquals(0.10744287054977643, test1.chiValue(), 1e-20);
         Assert.assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        Nominal x2 = Nominal.empty();
+        NominalVar x2 = NominalVar.empty();
         for (int i = 0; i < 54; i++) {
             x2.addLabel("Male");
         }

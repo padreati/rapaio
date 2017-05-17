@@ -60,13 +60,13 @@ public class CorrSpearman implements Printable {
 
         int rowCount = Integer.MAX_VALUE;
         for (Var var : vars) {
-            rowCount = Math.min(var.rowCount(), rowCount);
+            rowCount = Math.min(var.getRowCount(), rowCount);
         }
 
         Mapping map = Mapping.copy(IntStream.range(0, rowCount)
                 .filter(row -> {
                     for (Var var : vars) {
-                        if (var.missing(row))
+                        if (var.isMissing(row))
                             return false;
                     }
                     return true;
@@ -86,14 +86,14 @@ public class CorrSpearman implements Printable {
 
     private CorrSpearman(Frame df) {
 
-        Mapping map = Mapping.copy(IntStream.range(0, df.rowCount())
-                .filter(row -> !df.missing(row))
+        Mapping map = Mapping.copy(IntStream.range(0, df.getRowCount())
+                .filter(row -> !df.isMissing(row))
                 .toArray());
 
-        this.names = df.varNames();
-        this.vars = new Var[df.varCount()];
-        for (int i = 0; i < df.varCount(); i++) {
-            vars[i] = df.var(i).mapRows(map);
+        this.names = df.getVarNames();
+        this.vars = new Var[df.getVarCount()];
+        for (int i = 0; i < df.getVarCount(); i++) {
+            vars[i] = df.getVar(i).mapRows(map);
         }
         this.rho = compute();
     }
@@ -102,22 +102,22 @@ public class CorrSpearman implements Printable {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            Index index = Index.seq(vars[i].rowCount());
+            IndexVar index = IndexVar.seq(vars[i].getRowCount());
             sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
-            ranks[i] = Numeric.fill(vars[i].rowCount());
+            ranks[i] = NumericVar.fill(vars[i].getRowCount());
         }
 
         // compute ranks
         for (int i = 0; i < sorted.length; i++) {
             int start = 0;
-            while (start < sorted[i].rowCount()) {
+            while (start < sorted[i].getRowCount()) {
                 int end = start;
-                while (end < sorted[i].rowCount() - 1 && sorted[i].value(end) == sorted[i].value(end + 1)) {
+                while (end < sorted[i].getRowCount() - 1 && sorted[i].getValue(end) == sorted[i].getValue(end + 1)) {
                     end++;
                 }
                 double value = 1 + (start + end) / 2.;
                 for (int j = start; j <= end; j++) {
-                    ranks[i].setValue(sorted[i].index(j), value);
+                    ranks[i].setValue(sorted[i].getIndex(j), value);
                 }
                 start = end + 1;
             }
@@ -132,7 +132,7 @@ public class CorrSpearman implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         switch (vars.length) {
             case 1:

@@ -79,7 +79,7 @@ public class L2Regression extends AbstractRegression {
     protected boolean coreTrain(Frame df, Var weights) {
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
-            double mean = Mean.from(df.var(targetName(i))).value();
+            double mean = Mean.from(df.getVar(targetName(i))).getValue();
             means[i] = mean;
         }
         return true;
@@ -97,7 +97,7 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" Summary\n");
         sb.append("=========================\n");

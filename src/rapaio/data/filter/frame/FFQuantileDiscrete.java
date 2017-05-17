@@ -60,7 +60,7 @@ public class FFQuantileDiscrete extends AbstractFF {
         filters.clear();
         for (String varName : varNames) {
             VFQuantileDiscrete filter = new VFQuantileDiscrete(k);
-            filter.fit(df.var(varName));
+            filter.fit(df.getVar(varName));
             filters.put(varName, filter);
         }
     }
@@ -68,13 +68,13 @@ public class FFQuantileDiscrete extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
 
-        Var[] vars = new Var[df.varCount()];
+        Var[] vars = new Var[df.getVarCount()];
         int pos = 0;
-        for (String varName : df.varNames()) {
+        for (String varName : df.getVarNames()) {
             if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.var(varName));
+                vars[pos++] = filters.get(varName).apply(df.getVar(varName));
             } else {
-                vars[pos++] = df.var(varName);
+                vars[pos++] = df.getVar(varName);
             }
         }
         return BoundFrame.byVars(vars);

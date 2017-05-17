@@ -66,7 +66,7 @@ public class MappedFrame extends AbstractFrame {
     private final Var[] vars;
 
     private MappedFrame(Frame df, Mapping mapping) {
-        this(df, mapping, Arrays.asList(df.varNames()));
+        this(df, mapping, Arrays.asList(df.getVarNames()));
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
@@ -89,17 +89,17 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.byRows(this.source.var(names[i]), this.mapping).withName(names[i]);
+            vars[i] = MappedVar.byRows(this.source.getVar(names[i]), this.mapping).withName(names[i]);
         });
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return mapping.size();
     }
 
     @Override
-    public int varCount() {
+    public int getVarCount() {
         return names.length;
     }
 
@@ -112,12 +112,12 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public String[] varNames() {
+    public String[] getVarNames() {
         return names;
     }
 
     @Override
-    public int varIndex(String name) {
+    public int getVarIndex(String name) {
         if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
         }
@@ -125,13 +125,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int varIndex) {
+    public Var getVar(int varIndex) {
         return vars[varIndex];
     }
 
     @Override
-    public Var var(String varName) {
-        return var(varIndex(varName));
+    public Var getVar(String varName) {
+        return getVar(getVarIndex(varName));
     }
 
     @Override
@@ -146,7 +146,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame mapVars(VRange range) {
-        return MappedFrame.byRow(this, Mapping.range(0, this.rowCount()), range);
+        return MappedFrame.byRow(this, Mapping.range(0, this.getRowCount()), range);
     }
 
     @Override

@@ -24,9 +24,8 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
-import rapaio.data.VarType;
 import rapaio.data.stream.VSpot;
 
 import java.util.function.Function;
@@ -41,25 +40,25 @@ public class VFToNumeric extends AbstractVF {
     public static VFToNumeric byDefault() {
         return new VFToNumeric(
                 s -> {
-                    if (s.missing()) {
+                    if (s.isMissing()) {
                         return Double.NaN;
                     } else {
-                        switch (s.var().type()) {
+                        switch (s.getVar().getType()) {
                             case TEXT:
                             case NOMINAL:
                                 try {
-                                    return Double.parseDouble(s.label());
+                                    return Double.parseDouble(s.getLabel());
                                 } catch (NumberFormatException nfe) {
                                     return Double.NaN;
                                 }
                             case ORDINAL:
                             case INDEX:
                             case BINARY:
-                                return Integer.valueOf(s.index()).doubleValue();
+                                return Integer.valueOf(s.getIndex()).doubleValue();
                             case STAMP:
-                                return Long.valueOf(s.stamp()).doubleValue();
+                                return Long.valueOf(s.getStamp()).doubleValue();
                             default:
-                                return s.value();
+                                return s.getValue();
                         }
                     }
                 },
@@ -111,19 +110,19 @@ public class VFToNumeric extends AbstractVF {
         Var v = vars[0];
 
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(Numeric.collector()).withName(v.name());
+            return v.stream().map(fSpot).collect(NumericVar.collector()).withName(v.getName());
         }
         if (fValue != null) {
             return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(Numeric.collector()).withName(v.name());
+                    .map(fValue).collect(NumericVar.collector()).withName(v.getName());
         }
         if (fIndex != null) {
             return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(Numeric.collector()).withName(v.name());
+                    .map(fIndex).collect(NumericVar.collector()).withName(v.getName());
         }
         if (fLabel != null) {
             return v.stream().mapToString()
-                    .map(fLabel).collect(Numeric.collector()).withName(v.name());
+                    .map(fLabel).collect(NumericVar.collector()).withName(v.getName());
         }
         throw new RuntimeException("no transform function available");
     }

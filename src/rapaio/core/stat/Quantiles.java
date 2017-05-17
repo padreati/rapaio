@@ -66,7 +66,7 @@ public class Quantiles implements Printable {
     private final Type type;
 
     private Quantiles(Var var, Type type, double... percentiles) {
-        this.varName = var.name();
+        this.varName = var.getName();
         this.percentiles = percentiles;
         this.type = type;
         this.quantiles = compute(var);
@@ -74,15 +74,15 @@ public class Quantiles implements Printable {
 
     private double[] compute(final Var var) {
         Var complete = var.stream().complete().toMappedVar();
-        missingCount = var.rowCount() - complete.rowCount();
-        completeCount = complete.rowCount();
-        if (complete.rowCount() == 0) {
+        missingCount = var.getRowCount() - complete.getRowCount();
+        completeCount = complete.getRowCount();
+        if (complete.getRowCount() == 0) {
             return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
         }
-        if (complete.rowCount() == 1) {
+        if (complete.getRowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = complete.value(0);
+                values[i] = complete.getValue(0);
             }
             return values;
         }
@@ -91,36 +91,36 @@ public class Quantiles implements Printable {
         for (int i = 0; i < percentiles.length; i++) {
             double p = percentiles[i];
             if (type.equals(Type.R8)) {
-                int N = x.rowCount();
+                int N = x.getRowCount();
                 double h = (N + 1. / 3.) * p + 1. / 3.;
                 int hfloor = (int) StrictMath.floor(h);
 
                 if (p < (2. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.value(0);
+                    values[i] = x.getValue(0);
                     continue;
                 }
                 if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.value(x.rowCount() - 1);
+                    values[i] = x.getValue(x.getRowCount() - 1);
                     continue;
                 }
-                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
+                values[i] = x.getValue(hfloor - 1) + (h - hfloor) * (x.getValue(hfloor) - x.getValue(hfloor - 1));
             }
             if (type.equals(Type.R7)) {
-                int N = x.rowCount();
+                int N = x.getRowCount();
                 double h = (N - 1.0) * p + 1;
-                int hfloor = (int) Math.min(StrictMath.floor(h), x.rowCount() - 1);
-                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
+                int hfloor = (int) Math.min(StrictMath.floor(h), x.getRowCount() - 1);
+                values[i] = x.getValue(hfloor - 1) + (h - hfloor) * (x.getValue(hfloor) - x.getValue(hfloor - 1));
             }
         }
         return values;
     }
 
-    public double[] values() {
+    public double[] getValues() {
         return quantiles;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

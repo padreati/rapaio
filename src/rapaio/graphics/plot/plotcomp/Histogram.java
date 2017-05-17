@@ -67,7 +67,7 @@ public class Histogram extends PlotComponent {
     }
 
     private int computeFreedmanDiaconisEstimation(Var v) {
-        double[] q = Quantiles.from(v, 0, 0.25, 0.75, 1).values();
+        double[] q = Quantiles.from(v, 0, 0.25, 0.75, 1).getValues();
         double iqr = q[2] - q[1];
         return (int) Math.min(1024, Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0))));
     }
@@ -77,7 +77,7 @@ public class Histogram extends PlotComponent {
         super.initialize(parent);
 
         parent.yLab(options.getProb() ? "density" : "frequency");
-        parent.xLab(v.name());
+        parent.xLab(v.getName());
         parent.leftThick(true);
         parent.leftMarkers(true);
         parent.bottomThick(true);
@@ -99,19 +99,19 @@ public class Histogram extends PlotComponent {
 
     private void rebuild() {
         if (minValue != minValue) {
-            for (int i = 0; i < v.rowCount(); i++) {
-                if (v.missing(i)) {
+            for (int i = 0; i < v.getRowCount(); i++) {
+                if (v.isMissing(i)) {
                     continue;
                 }
                 if (minValue != minValue) {
-                    minValue = v.value(i);
+                    minValue = v.getValue(i);
                 } else {
-                    minValue = Math.min(minValue, v.value(i));
+                    minValue = Math.min(minValue, v.getValue(i));
                 }
                 if (maxValue != maxValue) {
-                    maxValue = v.value(i);
+                    maxValue = v.getValue(i);
                 } else {
-                    maxValue = Math.max(maxValue, v.value(i));
+                    maxValue = Math.max(maxValue, v.getValue(i));
                 }
             }
         }
@@ -119,15 +119,15 @@ public class Histogram extends PlotComponent {
         double step = (maxValue - minValue) / (1. * options.getBins());
         freqTable = new double[options.getBins()];
         double total = 0;
-        for (int i = 0; i < v.rowCount(); i++) {
-            if (v.missing(i)) {
+        for (int i = 0; i < v.getRowCount(); i++) {
+            if (v.isMissing(i)) {
                 continue;
             }
             total++;
-            if (v.value(i) < minValue || v.value(i) > maxValue) {
+            if (v.getValue(i) < minValue || v.getValue(i) > maxValue) {
                 continue;
             }
-            int index = (int) ((v.value(i) - minValue) / step);
+            int index = (int) ((v.getValue(i) - minValue) / step);
             if (index == freqTable.length)
                 index--;
             freqTable[index]++;

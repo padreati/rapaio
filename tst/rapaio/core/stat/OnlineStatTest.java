@@ -29,8 +29,8 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.Index;
-import rapaio.data.Numeric;
+import rapaio.data.IndexVar;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -50,38 +50,38 @@ public class OnlineStatTest {
 
         OnlineStat onlineStat = OnlineStat.empty();
 
-        Var index = Index.seq(LEN);
-        Var varLeft = Numeric.fill(LEN);
-        Var varRight = Numeric.fill(LEN);
-        Var varSum = Numeric.fill(LEN);
+        Var index = IndexVar.seq(LEN);
+        Var varLeft = NumericVar.fill(LEN);
+        Var varRight = NumericVar.fill(LEN);
+        Var varSum = NumericVar.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
-            onlineStat.update(v.value(i));
+            onlineStat.update(v.getValue(i));
             if (i > 0) {
                 varLeft.setValue(i, onlineStat.variance());
             }
         }
         onlineStat.clean();
         for (int i = LEN - 1; i >= 0; i--) {
-            onlineStat.update(v.value(i));
+            onlineStat.update(v.getValue(i));
             if (i < LEN - 1) {
                 varRight.setValue(i, onlineStat.variance());
             }
         }
         for (int i = 0; i < LEN; i++) {
-            varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
+            varSum.setValue(i, (varLeft.getValue(i) + varRight.getValue(i)) / 2);
         }
     }
 
     @Test
     public void testParallelStat() {
-        Var a = Numeric.wrap(1, 2, 3, 13, 17, 30);
-        Var b = Numeric.wrap(44, 5, 234, 12, 33, 1);
+        Var a = NumericVar.wrap(1, 2, 3, 13, 17, 30);
+        Var b = NumericVar.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
         OnlineStat soA = OnlineStat.empty();
         OnlineStat soB = OnlineStat.empty();
-        a.stream().forEach(s -> soA.update(s.value()));
-        b.stream().forEach(s -> soB.update(s.value()));
+        a.stream().forEach(s -> soA.update(s.getValue()));
+        b.stream().forEach(s -> soB.update(s.getValue()));
 
         OnlineStat soAll = OnlineStat.empty();
         soAll.update(soA);
@@ -89,8 +89,8 @@ public class OnlineStatTest {
 
         soA.update(soB);
 
-        Assert.assertEquals(soA.variance(), CoreTools.var(ab).value(), 1e-12);
-        Assert.assertEquals(soA.mean(), CoreTools.mean(ab).value(), 1e-30);
+        Assert.assertEquals(soA.variance(), CoreTools.variance(ab).getValue(), 1e-12);
+        Assert.assertEquals(soA.mean(), CoreTools.mean(ab).getValue(), 1e-30);
 
         Assert.assertEquals(soA.variance(), soAll.variance(), 1e-12);
         Assert.assertEquals(soA.mean(), soAll.mean(), 1e-30);

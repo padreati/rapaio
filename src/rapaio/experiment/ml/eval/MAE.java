@@ -69,8 +69,8 @@ public class MAE implements Printable {
         predictVars = new ArrayList<>();
 
         for (String targetName : targetNames) {
-            actualVars.add(actual.var(targetName));
-            predictVars.add(predict.var(targetName));
+            actualVars.add(actual.getVar(targetName));
+            predictVars.add(predict.getVar(targetName));
         }
 
         compute();
@@ -78,7 +78,7 @@ public class MAE implements Printable {
 
     public MAE(Var actual, Var predict) {
         targetNames = new ArrayList<>();
-        targetNames.add(actual.name());
+        targetNames.add(actual.getName());
 
         actualVars = new ArrayList<>();
         predictVars = new ArrayList<>();
@@ -94,9 +94,9 @@ public class MAE implements Printable {
         double count = 0;
 
         for (int i = 0; i < targetNames.size(); i++) {
-            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
+            for (int j = 0; j < actualVars.get(i).getRowCount(); j++) {
                 count++;
-                total += Math.abs(actualVars.get(i).value(j) - predictVars.get(i).value(j));
+                total += Math.abs(actualVars.get(i).getValue(j) - predictVars.get(i).getValue(j));
             }
         }
         value = total / count;
@@ -107,7 +107,7 @@ public class MAE implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "\n" +
                 "> mean absolute error\n" +
                 "MAE: " + formatFlex(value) + "\n";

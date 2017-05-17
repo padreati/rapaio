@@ -73,12 +73,12 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rows;
     }
 
     @Override
-    public int index(int row) {
+    public int getIndex(int row) {
         return data[row];
     }
 
@@ -93,7 +93,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
+    public double getValue(int row) {
         return data[row];
     }
 
@@ -108,7 +108,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return dict.get(data[row]);
     }
 
@@ -138,7 +138,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public String[] getLevels() {
         return dict.toArray(new String[dict.size()]);
     }
 
@@ -178,7 +178,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBinary(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
@@ -193,7 +193,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public long stamp(int row) {
+    public long getStamp(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
@@ -208,8 +208,8 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public boolean missing(int row) {
-        return missingIndex == index(row);
+    public boolean isMissing(int row) {
+        return missingIndex == getIndex(row);
     }
 
     @Override
@@ -236,12 +236,12 @@ abstract class FactorBase extends AbstractVar {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(rowCount());
+        out.writeInt(getRowCount());
         out.writeInt(dict.size());
         for (String factor : dict) {
             out.writeUTF(factor);
         }
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < getRowCount(); i++) {
             out.writeInt(data[i]);
         }
     }

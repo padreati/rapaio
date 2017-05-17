@@ -25,7 +25,7 @@
 package rapaio.experiment.ml.regression.ensemble;
 
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.Sample;
@@ -114,14 +114,14 @@ public class RForest extends AbstractRegression {
     @Override
     protected RFit coreFit(Frame df, boolean withResiduals) {
         RFit fit = RFit.build(this, df, withResiduals);
-        List<Numeric> results = regressors
+        List<NumericVar> results = regressors
                 .parallelStream()
                 .map(r -> r.fit(df, false).firstFit())
                 .collect(Collectors.toList());
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double sum = 0;
-            for (Numeric result : results) {
-                sum += result.value(i);
+            for (NumericVar result : results) {
+                sum += result.getValue(i);
             }
             fit.firstFit().setValue(i, sum / regressors.size());
         }
@@ -131,7 +131,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

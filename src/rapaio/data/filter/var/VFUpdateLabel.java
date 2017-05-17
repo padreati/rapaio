@@ -53,7 +53,7 @@ public class VFUpdateLabel extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setLabel(f.apply(s.label())));
+        vars[0].stream().forEach(s -> s.setLabel(f.apply(s.getLabel())));
         return vars[0];
     }
 }

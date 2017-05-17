@@ -68,8 +68,8 @@ public class LDATest {
         rf2.train(fit.mapVars("0,1,class"), "class");
         CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
 
-        double acc1 = new Confusion(df.var("class"), fit1.firstClasses()).accuracy();
-        double acc2 = new Confusion(df.var("class"), fit2.firstClasses()).accuracy();
+        double acc1 = new Confusion(df.getVar("class"), fit1.firstClasses()).accuracy();
+        double acc2 = new Confusion(df.getVar("class"), fit2.firstClasses()).accuracy();
 
         WS.println(acc1);
         WS.println(acc2);

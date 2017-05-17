@@ -26,7 +26,6 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.StudentT;
 import rapaio.data.Var;
-import rapaio.printer.Printable;
 
 import static rapaio.core.CoreTools.*;
 import static rapaio.sys.WS.formatFlex;
@@ -124,7 +123,7 @@ public class TTestTwoSamples implements HTest {
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
@@ -143,12 +142,12 @@ public class TTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).value();
-        xSampleSize = xComplete.rowCount();
-        xSampleSd = var(xComplete).sdValue();
-        ySampleMean = mean(yComplete).value();
-        ySampleSize = yComplete.rowCount();
-        ySampleSd = var(yComplete).sdValue();
+        xSampleMean = mean(xComplete).getValue();
+        xSampleSize = xComplete.getRowCount();
+        xSampleSd = variance(xComplete).sdValue();
+        ySampleMean = mean(yComplete).getValue();
+        ySampleSize = yComplete.getRowCount();
+        ySampleSd = variance(yComplete).sdValue();
 
         sampleMean = xSampleMean - ySampleMean;
 
@@ -254,7 +253,7 @@ public class TTestTwoSamples implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.tTestTwoSamples\n");

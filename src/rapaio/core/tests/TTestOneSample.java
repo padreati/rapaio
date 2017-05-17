@@ -27,7 +27,6 @@ package rapaio.core.tests;
 import rapaio.core.CoreTools;
 import rapaio.core.distributions.StudentT;
 import rapaio.data.Var;
-import rapaio.printer.Printable;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -154,7 +153,7 @@ public class TTestOneSample implements HTest {
         this.alt = alt;
 
         Var clean = sample.stream().complete().toMappedVar();
-        sampleSize = clean.rowCount();
+        sampleSize = clean.getRowCount();
         if (sampleSize < 1) {
             sampleMean = Double.NaN;
             sampleSd = Double.NaN;
@@ -164,8 +163,8 @@ public class TTestOneSample implements HTest {
             ciHigh = Double.NaN;
             return;
         }
-        sampleMean = CoreTools.mean(clean).value();
-        sampleSd = CoreTools.var(clean).sdValue();
+        sampleMean = CoreTools.mean(clean).getValue();
+        sampleSd = CoreTools.variance(clean).sdValue();
         compute();
     }
 
@@ -200,7 +199,7 @@ public class TTestOneSample implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> TTestOneSample\n");

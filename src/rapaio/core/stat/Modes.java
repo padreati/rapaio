@@ -45,24 +45,24 @@ public class Modes implements Printable {
     private int missingCount;
 
     private Modes(Var var, boolean includeMissing) {
-        this.varName = var.name();
+        this.varName = var.getName();
         this.includeMissing = includeMissing;
         this.modes = compute(var);
     }
 
     private String[] compute(Var var) {
-        if (!var.type().isNominal()) {
+        if (!var.getType().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
-        int[] freq = new int[var.levels().length];
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        int[] freq = new int[var.getLevels().length];
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
                 continue;
             }
-            freq[var.index(i)]++;
+            freq[var.getIndex(i)]++;
         }
-        completeCount = var.rowCount() - missingCount;
+        completeCount = var.getRowCount() - missingCount;
         int max = 0;
         int start = includeMissing ? 0 : 1;
         for (int i = start; i < freq.length; i++) {
@@ -78,18 +78,18 @@ public class Modes implements Printable {
         String[] modes = new String[count];
         for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
-                modes[pos++] = var.levels()[i];
+                modes[pos++] = var.getLevels()[i];
             }
         }
         return modes;
     }
 
-    public String[] values() {
+    public String[] getValues() {
         return modes;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > modes[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

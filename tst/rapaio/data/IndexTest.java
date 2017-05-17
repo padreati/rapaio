@@ -40,82 +40,82 @@ public class IndexTest {
 
     @Test
     public void smokeTest() {
-        Var index = Index.empty(1);
-        assertTrue(index.type().isNumeric());
-        assertFalse(index.type().isNominal());
+        Var index = IndexVar.empty(1);
+        assertTrue(index.getType().isNumeric());
+        assertFalse(index.getType().isNominal());
 
-        assertEquals(1, index.rowCount());
+        assertEquals(1, index.getRowCount());
 
         try {
-            index.levels();
+            index.getLevels();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
         }
 
         try {
-            Index.empty(-1);
+            IndexVar.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Index[name:?, rowCount:1]", Index.empty(1).toString());
+        assertEquals("Index[name:?, rowCount:1]", IndexVar.empty(1).toString());
     }
 
     @Test
     public void testEmptyIndex() {
-        Var index = Index.empty();
-        assertEquals(0, index.rowCount());
+        Var index = IndexVar.empty();
+        assertEquals(0, index.getRowCount());
 
-        index = Index.empty(10);
+        index = IndexVar.empty(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, index.index(i));
+            assertEquals(0, index.getIndex(i));
         }
     }
 
     @Test
     public void testFillVector() {
-        Var index = Index.fill(10, -1);
-        assertEquals(10, index.rowCount());
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(-1, index.index(i));
+        Var index = IndexVar.fill(10, -1);
+        assertEquals(10, index.getRowCount());
+        for (int i = 0; i < index.getRowCount(); i++) {
+            assertEquals(-1, index.getIndex(i));
         }
     }
 
     @Test
     public void testSequenceVector() {
-        Var index = Index.seq(1, 10);
-        assertEquals(10, index.rowCount());
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(i + 1, index.index(i));
+        Var index = IndexVar.seq(1, 10);
+        assertEquals(10, index.getRowCount());
+        for (int i = 0; i < index.getRowCount(); i++) {
+            assertEquals(i + 1, index.getIndex(i));
         }
     }
 
     @Test
     public void testSetterGetter() {
 
-        Var index = Index.fill(3, 0);
+        Var index = IndexVar.fill(3, 0);
 
-        assertEquals(0, index.index(0));
+        assertEquals(0, index.getIndex(0));
         index.setIndex(0, 1);
         index.setIndex(1, 3);
 
-        assertEquals(1, index.index(0));
-        assertEquals(3, index.index(1));
+        assertEquals(1, index.getIndex(0));
+        assertEquals(3, index.getIndex(1));
 
-        assertEquals(1., index.value(0), 1e-10);
-        assertEquals(3., index.value(1), 1e-10);
+        assertEquals(1., index.getValue(0), 1e-10);
+        assertEquals(3., index.getValue(1), 1e-10);
 
         index.setValue(0, 2.5);
         index.setValue(1, 7.8);
         index.setValue(2, 2.51);
 
-        assertEquals(2, index.index(0));
-        assertEquals(2., index.value(0), 1e-10);
-        assertEquals(8, index.index(1));
-        assertEquals(8., index.value(1), 1e-10);
-        assertEquals(3, index.index(2));
-        assertEquals(3., index.value(2), 1e-10);
+        assertEquals(2, index.getIndex(0));
+        assertEquals(2., index.getValue(0), 1e-10);
+        assertEquals(8, index.getIndex(1));
+        assertEquals(8., index.getValue(1), 1e-10);
+        assertEquals(3, index.getIndex(2));
+        assertEquals(3., index.getValue(2), 1e-10);
 
         boolean exceptional = false;
         try {
@@ -128,127 +128,127 @@ public class IndexTest {
 
     @Test
     public void testMissing() {
-        Var index = Index.seq(1, 10, 1);
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertTrue(!index.missing(i));
+        Var index = IndexVar.seq(1, 10, 1);
+        for (int i = 0; i < index.getRowCount(); i++) {
+            assertTrue(!index.isMissing(i));
         }
-        for (int i = 0; i < index.rowCount(); i++) {
+        for (int i = 0; i < index.getRowCount(); i++) {
             if (i % 2 == 0)
                 index.setMissing(i);
         }
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(i % 2 == 0, index.missing(i));
+        for (int i = 0; i < index.getRowCount(); i++) {
+            assertEquals(i % 2 == 0, index.isMissing(i));
         }
     }
 
     @Test
     public void testOneIndex() {
-        Var one = Index.scalar(2);
-        assertEquals(1, one.rowCount());
-        assertEquals(2, one.index(0));
+        Var one = IndexVar.scalar(2);
+        assertEquals(1, one.getRowCount());
+        assertEquals(2, one.getIndex(0));
 
-        one = Index.scalar(3);
-        assertEquals(1, one.rowCount());
-        assertEquals(3, one.index(0));
+        one = IndexVar.scalar(3);
+        assertEquals(1, one.getRowCount());
+        assertEquals(3, one.getIndex(0));
     }
 
     @Test
     public void testBuilders() {
-        Index x1 = Index.copy(1, 2, 3, 4);
+        IndexVar x1 = IndexVar.copy(1, 2, 3, 4);
         int[] wrap = new int[]{1, 2, 3, 4};
-        Index x2 = Index.wrap(wrap);
-        Index x3 = Index.seq(4);
-        Index x4 = Index.seq(1, 4);
-        Index x5 = Index.seq(1, 4, 2);
-        Index x6 = Index.empty();
+        IndexVar x2 = IndexVar.wrap(wrap);
+        IndexVar x3 = IndexVar.seq(4);
+        IndexVar x4 = IndexVar.seq(1, 4);
+        IndexVar x5 = IndexVar.seq(1, 4, 2);
+        IndexVar x6 = IndexVar.empty();
         x6.addIndex(1);
         x6.addIndex(2);
         x6.addIndex(3);
         x6.addIndex(4);
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(i + 1, x1.index(i));
-            assertEquals(i + 1, x2.index(i));
-            assertEquals(i, x3.index(i));
-            assertEquals(i + 1, x4.index(i));
-            assertEquals(i * 2 + 1, x5.index(i));
-            assertEquals(i + 1, x6.index(i));
+            assertEquals(i + 1, x1.getIndex(i));
+            assertEquals(i + 1, x2.getIndex(i));
+            assertEquals(i, x3.getIndex(i));
+            assertEquals(i + 1, x4.getIndex(i));
+            assertEquals(i * 2 + 1, x5.getIndex(i));
+            assertEquals(i + 1, x6.getIndex(i));
         }
 
         wrap[2] = 10;
 
-        assertEquals(10, x2.index(2));
+        assertEquals(10, x2.getIndex(2));
     }
 
     @Test
     public void testLabel() {
-        Index x = Index.copy(1, 2, 3);
-        assertEquals("1", x.label(0));
+        IndexVar x = IndexVar.copy(1, 2, 3);
+        assertEquals("1", x.getLabel(0));
     }
 
     @Test
     public void testAddLabel() {
-        Index x = Index.copy(1, 2, 3);
+        IndexVar x = IndexVar.copy(1, 2, 3);
         x.addLabel("10");
-        assertEquals(4, x.rowCount());
-        assertEquals("10", x.label(3));
+        assertEquals(4, x.getRowCount());
+        assertEquals("10", x.getLabel(3));
     }
 
     @Test
     public void testSetLabel() {
-        Index x = Index.copy(1, 2, 3);
+        IndexVar x = IndexVar.copy(1, 2, 3);
         x.setLabel(0, "10");
-        assertEquals(3, x.rowCount());
-        assertEquals("10", x.label(0));
+        assertEquals(3, x.getRowCount());
+        assertEquals("10", x.getLabel(0));
     }
 
     @Test
     public void testSetDictionary() {
-        Index x = Index.copy(1, 2, 3);
+        IndexVar x = IndexVar.copy(1, 2, 3);
         expected.expect(IllegalArgumentException.class);
         x.setLevels(new String[]{"x"});
     }
 
     @Test
     public void testBinary() {
-        Index x = Index.empty();
+        IndexVar x = IndexVar.empty();
         x.addBinary(true);
         x.addBinary(false);
         x.addMissing();
         x.setBinary(2, true);
 
-        assertEquals(1, x.index(0));
-        assertEquals(0, x.index(1));
-        assertEquals(1, x.index(2));
+        assertEquals(1, x.getIndex(0));
+        assertEquals(0, x.getIndex(1));
+        assertEquals(1, x.getIndex(2));
 
-        assertEquals(true, x.binary(0));
-        assertEquals(false, x.binary(1));
-        assertEquals(true, x.binary(2));
+        assertEquals(true, x.getBinary(0));
+        assertEquals(false, x.getBinary(1));
+        assertEquals(true, x.getBinary(2));
     }
 
     @Test
     public void testStamp() {
-        Index x = Index.empty();
+        IndexVar x = IndexVar.empty();
         x.addStamp(0);
         x.addMissing();
         x.setStamp(1, 100);
 
-        assertEquals(0, x.stamp(0));
-        assertEquals(100, x.stamp(1));
+        assertEquals(0, x.getStamp(0));
+        assertEquals(100, x.getStamp(1));
     }
 
     @Test
     public void testRemoveClear() {
 
-        Index x = Index.copy(1, 3, 6, 7, 9);
+        IndexVar x = IndexVar.copy(1, 3, 6, 7, 9);
         x.remove(0);
 
-        assertEquals(4, x.rowCount());
-        assertEquals(3, x.index(0));
-        assertEquals(9, x.index(3));
+        assertEquals(4, x.getRowCount());
+        assertEquals(3, x.getIndex(0));
+        assertEquals(9, x.getIndex(3));
 
         x.clear();
-        assertEquals(0, x.rowCount());
+        assertEquals(0, x.getRowCount());
 
 
         expected.expect(IndexOutOfBoundsException.class);
@@ -258,16 +258,16 @@ public class IndexTest {
     @Test
     public void testSolidCopy() {
 
-        Index x1 = Index.copy(1, 2, 3, 4, 5);
+        IndexVar x1 = IndexVar.copy(1, 2, 3, 4, 5);
         Var x2 = MappedVar.byRows(x1, 0, 1, 2);
         Var x3 = x2.solidCopy();
         Var x4 = x3.solidCopy();
         x4.addValue(8);
 
-        assertEquals(4, x4.rowCount());
-        assertEquals(1, x4.index(0));
-        assertEquals(3, x4.index(2));
-        assertEquals(8, x4.index(3));
+        assertEquals(4, x4.getRowCount());
+        assertEquals(1, x4.getIndex(0));
+        assertEquals(3, x4.getIndex(2));
+        assertEquals(8, x4.getIndex(3));
     }
 
 }

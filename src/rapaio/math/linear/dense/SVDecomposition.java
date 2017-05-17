@@ -64,8 +64,8 @@ public class SVDecomposition implements java.io.Serializable {
         // Derived from LINPACK code.
         // Initialize.
         RM A = Arg.solidCopy();
-        rowCount = Arg.rowCount();
-        colCount = Arg.colCount();
+        rowCount = Arg.getRowCount();
+        colCount = Arg.getColCount();
 
         if (rowCount < colCount) {
             throw new IllegalArgumentException("SVD only works for rowCount >= colCount");

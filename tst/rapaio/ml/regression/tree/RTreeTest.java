@@ -51,7 +51,7 @@ public class RTreeTest {
         df.printSummary();
 
         String v = "TV";
-        Frame t = new FFRefSort(df.var(v).refComparator()).fitApply(df);
+        Frame t = new FFRefSort(df.getVar(v).refComparator()).fitApply(df);
 
         RTree tree = RTree.buildCART()
                 .withMaxDepth(10)
@@ -96,7 +96,7 @@ public class RTreeTest {
                 "|   |   |   |   |TV > 218.400000  17.3857143 (35) \n" +
                 "|   |   |   |   |   |TV <= 239.300000  16.3947368 (19)  *\n" +
                 "|   |   |   |   |   |TV > 239.300000  18.5625 (16)  *\n" +
-                "|   |   |   |TV > 265.600000  20.4375 (16)  *\n", tree.summary());
+                "|   |   |   |TV > 265.600000  20.4375 (16)  *\n", tree.getSummary());
 
         RFit fit = tree.fit(t);
         fit.printSummary();

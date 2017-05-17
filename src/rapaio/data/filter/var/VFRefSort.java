@@ -57,8 +57,8 @@ public class VFRefSort extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        List<Integer> rows = new ArrayList<>(vars[0].rowCount());
-        for (int i = 0; i < vars[0].rowCount(); i++) {
+        List<Integer> rows = new ArrayList<>(vars[0].getRowCount());
+        for (int i = 0; i < vars[0].getRowCount(); i++) {
             rows.add(i);
         }
         Collections.sort(rows, aggregateComparator);

@@ -49,29 +49,29 @@ public class Sum implements Printable {
     private int missingCount;
 
     private Sum(Var var) {
-        this.varName = var.name();
+        this.varName = var.getName();
         this.value = compute(var);
     }
 
     private double compute(Var var) {
         double sum = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += var.value(i);
+                sum += var.getValue(i);
             }
         }
         return sum;
     }
 
-    public double value() {
+    public double getValue() {
         return value;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > sum['%s']\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

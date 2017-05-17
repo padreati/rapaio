@@ -224,7 +224,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         if (!oneVsAll) {
             Mapping map = df
                     .stream()
-                    .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
+                    .filter(s -> s.getIndex(firstTargetName()) == classIndex1 || s.getIndex(firstTargetName()) == classIndex2)
                     .collectMapping();
             df = df.mapRows(map);
             weights = weights.mapRows(map);
@@ -236,7 +236,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         df = sample.df;
         weights = sample.weights;
 
-        if (df.rowCount() == 0) {
+        if (df.getRowCount() == 0) {
             throw new IllegalArgumentException("After filtering other classes, there " +
                     "were no other rows remained");
         }
@@ -265,11 +265,11 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         sumOfWeights = weights.stream().mapToDouble().sum();
 
         // Set class values
-        target = new double[train.rowCount()];
+        target = new double[train.getRowCount()];
         iUp = -1;
         iLow = -1;
-        for (int i = 0; i < train.rowCount(); i++) {
-            if (df.var(firstTargetName()).index(i) == classIndex1) {
+        for (int i = 0; i < train.getRowCount(); i++) {
+            if (df.getVar(firstTargetName()).getIndex(i) == classIndex1) {
                 target[i] = -1;
                 iLow = i;
             } else {
@@ -302,7 +302,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         }
 
 
-        targetIndex = df.varIndex(firstTargetName());
+        targetIndex = df.getVarIndex(firstTargetName());
 
         // If machine is linear, reserve space for weights
 
@@ -313,15 +313,15 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         }
 
         // Initialize alpha array to zero
-        alpha = new double[df.rowCount()];
+        alpha = new double[df.getRowCount()];
 
         // Initialize sets
-        supportVectors = new BitSet(df.rowCount());
-        I0 = new BitSet(df.rowCount());
-        I1 = new BitSet(df.rowCount());
-        I2 = new BitSet(df.rowCount());
-        I3 = new BitSet(df.rowCount());
-        I4 = new BitSet(df.rowCount());
+        supportVectors = new BitSet(df.getRowCount());
+        I0 = new BitSet(df.getRowCount());
+        I1 = new BitSet(df.getRowCount());
+        I2 = new BitSet(df.getRowCount());
+        I3 = new BitSet(df.getRowCount());
+        I4 = new BitSet(df.getRowCount());
 
         // Clean out some instance variables
         sparseWeights = null;
@@ -331,12 +331,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         kernel.buildKernel(inputNames(), df);
 
         // Initialize error cache
-        fCache = new double[df.rowCount()];
+        fCache = new double[df.getRowCount()];
         fCache[iLow] = 1;
         fCache[iUp] = -1;
 
         // Build up I1 and I4
-        for (int i = 0; i < train.rowCount(); i++) {
+        for (int i = 0; i < train.getRowCount(); i++) {
             if (target[i] == 1) {
                 I1.set(i, true);
             } else {
@@ -356,11 +356,11 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             if (examineAll) {
 
                 // add random as an additional step
-                int offset = RandomSource.nextInt(train.rowCount());
-                for (int i = offset; i < train.rowCount() + offset; i++) {
+                int offset = RandomSource.nextInt(train.getRowCount());
+                for (int i = offset; i < train.getRowCount() + offset; i++) {
                     int pos = i;
-                    if (pos >= train.rowCount())
-                        pos -= train.rowCount();
+                    if (pos >= train.getRowCount())
+                        pos -= train.getRowCount();
                     if (examineExample(pos)) {
                         numChanged++;
                     }
@@ -369,14 +369,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             } else {
 
                 // This code implements Modification 1 from Keerthi et al.'s paper
-//                int offset = RandomSource.nextInt(train.rowCount());
-//                for (int i = offset; i < train.rowCount() + offset; i++) {
+//                int offset = RandomSource.nextInt(train.getRowCount());
+//                for (int i = offset; i < train.getRowCount() + offset; i++) {
 //
 //                    int pos = i;
-//                    if (pos >= train.rowCount())
-//                        pos -= train.rowCount();
+//                    if (pos >= train.getRowCount())
+//                        pos -= train.getRowCount();
 //
-//                    if (alpha[pos] > 0 && alpha[pos] < C * weights.value(pos)) {
+//                    if (alpha[pos] > 0 && alpha[pos] < C * weights.getValue(pos)) {
 //                        if (examineExample(pos)) {
 //                            numChanged++;
 //                        }
@@ -445,7 +445,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.build(this, df, withClasses, withDistributions);
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double pred = predict(df, i);
 
             // TODO generalize
@@ -485,7 +485,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 int n1 = inputNames().length;
                 for (int p = 0; p < n1; p++) {
                     if (p != targetIndex) {
-                        result += linear_weights[p] * df.value(row, p);
+                        result += linear_weights[p] * df.getValue(row, p);
                     }
                 }
             } else {
@@ -496,7 +496,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                     int ind2 = sparseIndices[p2];
                     if (ind1 == ind2) {
                         if (ind1 != targetIndex) {
-                            result += df.value(row, p1) * sparseWeights[p2];
+                            result += df.getValue(row, p1) * sparseWeights[p2];
                         }
                         p1++;
                         p2++;
@@ -603,8 +603,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         double F2 = fCache[i2];
         double s = y1 * y2;
 
-        double C1 = C * weights.value(i1);
-        double C2 = C * weights.value(i2);
+        double C1 = C * weights.getValue(i1);
+        double C2 = C * weights.getValue(i2);
 
         double L, H;
 
@@ -753,12 +753,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         if (kernel.isLinear()) {
             for (int p1 = 0; p1 < inputNames().length; p1++) {
                 if (p1 != targetIndex) {
-                    linear_weights[p1] += y1 * (a1 - alph1) * train.value(i1, p1);
+                    linear_weights[p1] += y1 * (a1 - alph1) * train.getValue(i1, p1);
                 }
             }
             for (int p2 = 0; p2 < inputNames().length; p2++) {
                 if (p2 != targetIndex) {
-                    linear_weights[p2] += y2 * (a2 - alph2) * train.value(i2, p2);
+                    linear_weights[p2] += y2 * (a2 - alph2) * train.getValue(i2, p2);
                 }
             }
         }
@@ -830,7 +830,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         int printed = 0;
 
@@ -880,7 +880,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                         }
                         sb.append(formatFlex(val)).append(" * <[");
                         for (int j = 0; j < inputNames().length; j++) {
-                            sb.append(formatFlex(train.value(i, inputNames()[j])));
+                            sb.append(formatFlex(train.getValue(i, inputNames()[j])));
                             if (j != inputNames().length - 1) {
                                 sb.append(",");
                             }

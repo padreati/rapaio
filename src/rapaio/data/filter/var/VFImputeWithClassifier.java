@@ -52,7 +52,7 @@ public class VFImputeWithClassifier extends AbstractVF {
         if (model.hasLearned())
             return;
         Frame all = BoundFrame.byVars(vars).mapVars(inputRange);
-        Frame complete = all.stream().filter(s -> !s.missing(target)).toMappedFrame();
+        Frame complete = all.stream().filter(s -> !s.isMissing(target)).toMappedFrame();
         model = model.newInstance().train(complete, target);
     }
 

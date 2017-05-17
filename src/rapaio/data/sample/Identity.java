@@ -39,7 +39,7 @@ final class Identity implements RowSampler {
 
     @Override
     public Sample nextSample(Frame df, Var weights) {
-        return new Sample(df, weights, Mapping.range(0, df.rowCount()));
+        return new Sample(df, weights, Mapping.range(0, df.getRowCount()));
     }
 
     @Override

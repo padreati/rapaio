@@ -52,7 +52,7 @@ public class FFMapVars extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount(), df);
+        checkRangeVars(0, df.getVarCount(), df);
         return df.mapVars(varNames);
     }
 }

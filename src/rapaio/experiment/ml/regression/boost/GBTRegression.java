@@ -59,8 +59,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
     double shrinkage = 1.0;
 
     // prediction
-    Numeric fitLearn;
-    Numeric fitValues;
+    NumericVar fitLearn;
+    NumericVar fitValues;
     List<BTRegression> trees;
 
     @Override
@@ -135,20 +135,20 @@ public class GBTRegression extends AbstractRegression implements Printable {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
-        Var y = df.var(firstTargetName());
+        Var y = df.getVar(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.train(df, firstTargetName());
         RFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
-        fitLearn = Numeric.fill(df.rowCount());
-        for (int i = 0; i < df.rowCount(); i++) {
-            fitLearn.setValue(i, initPred.firstFit().value(i));
+        fitLearn = NumericVar.fill(df.getRowCount());
+        for (int i = 0; i < df.getRowCount(); i++) {
+            fitLearn.setValue(i, initPred.firstFit().getValue(i));
         }
 
         for (int i = 1; i <= runs(); i++) {
-            Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
+            NumericVar gradient = lossFunction.gradient(y, fitLearn).withName("target");
 
             Frame xm = x.bindVars(gradient);
             BTRegression tree = regressor.newInstance();
@@ -174,8 +174,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
             // add next prediction to the fit values
 
             RFit treePred = tree.fit(df, false);
-            for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
+            for (int j = 0; j < df.getRowCount(); j++) {
+                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * treePred.firstFit().getValue(j));
             }
 
             // add tree in the predictors list
@@ -183,9 +183,9 @@ public class GBTRegression extends AbstractRegression implements Printable {
             trees.add(tree);
         }
 
-        fitValues = Numeric.empty();
-        for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.value(i));
+        fitValues = NumericVar.empty();
+        for (int i = 0; i < fitLearn.getRowCount(); i++) {
+            fitValues.addValue(fitLearn.getValue(i));
         }
         return true;
     }
@@ -194,13 +194,13 @@ public class GBTRegression extends AbstractRegression implements Printable {
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.build(this, df, withResiduals);
         RFit initPred = initRegression.fit(df);
-        for (int i = 0; i < df.rowCount(); i++) {
-            pred.firstFit().setValue(i, initPred.firstFit().value(i));
+        for (int i = 0; i < df.getRowCount(); i++) {
+            pred.firstFit().setValue(i, initPred.firstFit().getValue(i));
         }
         for (BTRegression tree : trees) {
             RFit treePred = tree.fit(df);
-            for (int i = 0; i < df.rowCount(); i++) {
-                pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
+            for (int i = 0; i < df.getRowCount(); i++) {
+                pred.firstFit().setValue(i, pred.firstFit().getValue(i) + shrinkage * treePred.firstFit().getValue(i));
             }
         }
         pred.buildComplete();
@@ -208,7 +208,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

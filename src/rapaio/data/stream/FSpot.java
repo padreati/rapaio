@@ -55,7 +55,7 @@ public final class FSpot implements Serializable {
      *
      * @return the underlying frame
      */
-    public Frame frame() {
+    public Frame getFrame() {
         return df;
     }
 
@@ -64,15 +64,15 @@ public final class FSpot implements Serializable {
      *
      * @return row number
      */
-    public int row() {
+    public int getRow() {
         return row;
     }
 
     /**
      * @return true if missing value on any variable, false otherwise
      */
-    public boolean missing() {
-        return df.missing(row);
+    public boolean isMissing() {
+        return df.isMissing(row);
     }
 
     /**
@@ -81,8 +81,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return true if is missing, false otherwise
      */
-    public boolean missing(int varIndex) {
-        return df.missing(row, varIndex);
+    public boolean isMissing(int varIndex) {
+        return df.isMissing(row, varIndex);
     }
 
     /**
@@ -91,8 +91,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return true is missing value, false otherwise
      */
-    public boolean missing(String varName) {
-        return df.missing(row, varName);
+    public boolean isMissing(String varName) {
+        return df.isMissing(row, varName);
     }
 
     /**
@@ -119,8 +119,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return numerical value of the given variable on the current spot
      */
-    public double value(int varIndex) {
-        return df.value(row, varIndex);
+    public double getValue(int varIndex) {
+        return df.getValue(row, varIndex);
     }
 
     /**
@@ -129,8 +129,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return numeric value of the given variable on the current spot
      */
-    public double value(String varName) {
-        return df.value(row, varName);
+    public double getValue(String varName) {
+        return df.getValue(row, varName);
     }
 
     /**
@@ -159,8 +159,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return index value of the given variable on the current spot
      */
-    public int index(int varIndex) {
-        return df.index(row, varIndex);
+    public int getIndex(int varIndex) {
+        return df.getIndex(row, varIndex);
     }
 
     /**
@@ -169,8 +169,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return index value of the given variable on the current spot
      */
-    public int index(String varName) {
-        return df.index(row, varName);
+    public int getIndex(String varName) {
+        return df.getIndex(row, varName);
     }
 
     /**
@@ -200,7 +200,7 @@ public final class FSpot implements Serializable {
      * @return label value
      */
     public String label(int varIndex) {
-        return df.label(row, varIndex);
+        return df.getLabel(row, varIndex);
     }
 
     /**
@@ -209,8 +209,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label value
      */
-    public String label(String varName) {
-        return df.label(row, varName);
+    public String getLabel(String varName) {
+        return df.getLabel(row, varName);
     }
 
     /**
@@ -239,8 +239,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label levels
      */
-    public String[] dictionary(int varIndex) {
-        return df.var(varIndex).levels();
+    public String[] getLevels(int varIndex) {
+        return df.getVar(varIndex).getLevels();
     }
 
     /**
@@ -249,11 +249,11 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label levels
      */
-    public String[] dictionary(String varName) {
-        return df.var(varName).levels();
+    public String[] getLevels(String varName) {
+        return df.getVar(varName).getLevels();
     }
 
-    public boolean binary(String name) {
-        return df.var(name).binary(row);
+    public boolean getBinary(String name) {
+        return df.getVar(name).getBinary(row);
     }
 }

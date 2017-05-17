@@ -201,7 +201,7 @@ public class RTree extends AbstractRegression implements BTRegression {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
 
-        rows = df.rowCount();
+        rows = df.getRowCount();
 
         root = new Node(null, "root", spot -> true);
         this.varSelector.withVarNames(inputNames());
@@ -215,14 +215,14 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(spot, root);
-            pred.fit(firstTargetName()).setValue(spot.row(), result._1);
+            pred.fit(firstTargetName()).setValue(spot.getRow(), result._1);
         });
         pred.buildComplete();
         return pred;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
@@ -324,14 +324,14 @@ public class RTree extends AbstractRegression implements BTRegression {
         }
 
         public void learn(RTree tree, Frame df, Var weights, int depth) {
-            value = WeightedMean.from(df.var(tree.firstTargetName()), weights).value();
+            value = WeightedMean.from(df.getVar(tree.firstTargetName()), weights).getValue();
             weight = weights.stream().complete().mapToDouble().sum();
             if (weight == 0) {
 //                WS.println("ERROR");
                 value = parent!=null ? parent.value : Double.NaN;
             }
 
-            if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
+            if (df.getRowCount() == 0 || df.getRowCount() <= tree.minCount || depth <= 1) {
                 return;
             }
 
@@ -341,7 +341,7 @@ public class RTree extends AbstractRegression implements BTRegression {
             Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
                 if (testCol.equals(tree.firstTargetName())) return;
 
-                if (df.var(testCol).type().isNumeric()) {
+                if (df.getVar(testCol).getType().isNumeric()) {
                     tree.numericMethod.computeCandidate(
                             tree, df, weights, testCol, tree.firstTargetName(), tree.function)
                             .ifPresent(candidates::add);
@@ -389,7 +389,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 for (int i = 0; i < children.size(); i++) {
                     Node child = children.get(i);
                     if (child.predicate.test(spot)) {
-                        mapping[i].add(spot.row());
+                        mapping[i].add(spot.getRow());
                         return;
                     }
                 }

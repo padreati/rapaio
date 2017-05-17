@@ -56,16 +56,16 @@ public class GeometricMean implements Printable {
     private int negativeCount = 0;
 
     private GeometricMean(Var var) {
-        this.varName = var.name();
+        this.varName = var.getName();
         double sum = 0.0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += Math.log(var.value(i));
+                sum += Math.log(var.getValue(i));
             }
-            if (var.value(i) < 0)
+            if (var.getValue(i) < 0)
                 negativeCount++;
         }
         if (negativeCount > 0 || completeCount == 0) {
@@ -80,7 +80,7 @@ public class GeometricMean implements Printable {
      *
      * @return computed mean
      */
-    public double value() {
+    public double getValue() {
         return value;
     }
 
@@ -93,7 +93,7 @@ public class GeometricMean implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "\n" +
                 "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +

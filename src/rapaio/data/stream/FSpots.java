@@ -254,7 +254,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return list of complete (non-missing) frame spots
      */
     public FSpots complete() {
-        return filter(s -> !s.missing());
+        return filter(s -> !s.isMissing());
     }
 
     /**
@@ -273,7 +273,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public List<Integer> collectRowList() {
         final List<Integer> list = new ArrayList<>();
-        forEach(spot -> list.add(spot.row()));
+        forEach(spot -> list.add(spot.getRow()));
         return list;
     }
 
@@ -283,7 +283,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public Mapping collectMapping() {
         final Mapping m = Mapping.empty();
-        forEach(s -> m.add(s.row()));
+        forEach(s -> m.add(s.getRow()));
         return m;
     }
 

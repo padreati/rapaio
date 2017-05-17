@@ -57,8 +57,8 @@ public class FFRefSort extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        List<Integer> rows = new ArrayList<>(df.rowCount());
-        for (int i = 0; i < df.rowCount(); i++) {
+        List<Integer> rows = new ArrayList<>(df.getRowCount());
+        for (int i = 0; i < df.getRowCount(); i++) {
             rows.add(i);
         }
         Collections.sort(rows, aggregateComparator);

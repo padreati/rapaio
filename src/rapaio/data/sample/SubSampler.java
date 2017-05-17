@@ -47,7 +47,7 @@ final class SubSampler implements RowSampler {
 
     @Override
     public Sample nextSample(Frame df, Var weights) {
-        Mapping map = Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), (int) (percent * df.rowCount())));
+        Mapping map = Mapping.copy(SamplingTools.sampleWOR(df.getRowCount(), (int) (percent * df.getRowCount())));
         return new Sample(df.mapRows(map), weights.mapRows(map), map);
     }
 

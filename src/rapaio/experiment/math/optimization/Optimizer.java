@@ -24,7 +24,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 
@@ -48,8 +48,8 @@ public interface Optimizer {
      * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    Numeric optimize(double eps, int iterationLimit,
-                     BiFunction<RV, RV, Double> fn,
-                     BiFunction<RV, RV, Double> fg,
-                     RV x0, List<Var> inputs, Numeric outputs);
+    NumericVar optimize(double eps, int iterationLimit,
+                        BiFunction<RV, RV, Double> fn,
+                        BiFunction<RV, RV, Double> fg,
+                        RV x0, List<Var> inputs, NumericVar outputs);
 }

@@ -51,24 +51,24 @@ public final class RowComparators implements Serializable {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
-            if (var.missing(row1) && var.missing(row2)) {
+            if (var.isMissing(row1) && var.isMissing(row2)) {
                 return 0;
             }
-            if (var.missing(row1)) {
+            if (var.isMissing(row1)) {
                 return -sign;
             }
-            if (var.missing(row2)) {
+            if (var.isMissing(row2)) {
                 return sign;
             }
-            return sign * var.label(row1).compareTo(var.label(row2));
+            return sign * var.getLabel(row1).compareTo(var.getLabel(row2));
         };
     }
 
     public static Comparator<Integer> numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            double d1 = var.value(row1);
-            double d2 = var.value(row2);
+            double d1 = var.getValue(row1);
+            double d2 = var.getValue(row2);
             if (d1 < d2)
                 return -sign;           // Neither val is NaN, thisVal is smaller
             if (d1 > d2)
@@ -86,26 +86,26 @@ public final class RowComparators implements Serializable {
 
     public static Comparator<Integer> index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (row1, row2) -> sign * Integer.compare(var.index(row1), var.index(row2));
+        return (row1, row2) -> sign * Integer.compare(var.getIndex(row1), var.getIndex(row2));
     }
 
     public static Comparator<Integer> stamp(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
-            if (var.missing(row1) && var.missing(row2)) {
+            if (var.isMissing(row1) && var.isMissing(row2)) {
                 return 0;
             }
-            if (var.missing(row1)) {
+            if (var.isMissing(row1)) {
                 return -1 * sign;
             }
-            if (var.missing(row2)) {
+            if (var.isMissing(row2)) {
                 return sign;
             }
-            if (var.stamp(row1) == var.stamp(row2)) {
+            if (var.getStamp(row1) == var.getStamp(row2)) {
                 return 0;
             }
-            return sign * (var.stamp(row1) < var.stamp(row2) ? -1 : 1);
+            return sign * (var.getStamp(row1) < var.getStamp(row2) ? -1 : 1);
         };
     }
 }

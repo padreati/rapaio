@@ -71,7 +71,7 @@ public class EigenDecomposition implements Serializable {
      * @param a Square matrix
      */
     private EigenDecomposition(RM a) {
-        dimension = a.colCount();
+        dimension = a.getColCount();
         eigenVectors = SolidRM.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];

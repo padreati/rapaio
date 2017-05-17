@@ -40,14 +40,14 @@ import java.util.stream.Collectors;
 public class SolidFrame extends AbstractFrame {
 
     public static SolidFrame byVars(List<Var> vars) {
-        int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
+        int rows = vars.stream().mapToInt(Var::getRowCount).min().orElse(0);
         return byVars(rows, vars);
     }
 
     public static SolidFrame byVars(Var... vars) {
         int rows = Integer.MAX_VALUE;
         for (Var var : vars) {
-            rows = Math.min(rows, var.rowCount());
+            rows = Math.min(rows, var.getRowCount());
         }
         if (rows == Integer.MAX_VALUE) rows = 0;
         return new SolidFrame(rows, Arrays.asList(vars));
@@ -59,7 +59,7 @@ public class SolidFrame extends AbstractFrame {
 
     public static SolidFrame byVars(int rows, List<Var> vars) {
         for (Var var : vars) {
-            rows = Math.min(rows, var.rowCount());
+            rows = Math.min(rows, var.getRowCount());
         }
         return new SolidFrame(rows, vars);
     }
@@ -73,9 +73,9 @@ public class SolidFrame extends AbstractFrame {
      * @return new instance of solid frame built according with the source frame variables
      */
     public static SolidFrame emptyFrom(Frame src, int rowCount) {
-        Var[] vars = new Var[src.varCount()];
+        Var[] vars = new Var[src.getVarCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.var(i).type().newInstance(rowCount);
+            vars[i] = src.getVar(i).getType().newInstance(rowCount);
         }
         return SolidFrame.byVars(vars);
     }
@@ -102,14 +102,14 @@ public class SolidFrame extends AbstractFrame {
      */
     public static Frame matrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        colNames.stream().forEach(n -> vars.add(Numeric.fill(rows, 0).withName(n)));
+        colNames.forEach(n -> vars.add(NumericVar.fill(rows, 0).withName(n)));
         return SolidFrame.byVars(rows, vars);
     }
 
     public static Frame matrix(RM rm, String... varNames) {
-        Frame df = matrix(rm.rowCount(), varNames);
-        for (int i = 0; i < rm.rowCount(); i++) {
-            for (int j = 0; j < rm.colCount(); j++) {
+        Frame df = matrix(rm.getRowCount(), varNames);
+        for (int i = 0; i < rm.getRowCount(); i++) {
+            for (int j = 0; j < rm.getColCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
             }
         }
@@ -138,17 +138,17 @@ public class SolidFrame extends AbstractFrame {
 
         for (int i = 0; i < vars.size(); i++) {
             this.vars[i] = vars.get(i); //.copy();
-            this.colIndex.put(this.vars[i].name(), i);
-            this.names[i] = this.vars[i].name();
+            this.colIndex.put(this.vars[i].getName(), i);
+            this.names[i] = this.vars[i].getName();
         }
     }
 
     // private constructor
 
     public static Frame matrix(RM rm, List<String> varNames) {
-        Frame df = matrix(rm.rowCount(), varNames);
-        for (int i = 0; i < rm.rowCount(); i++) {
-            for (int j = 0; j < rm.colCount(); j++) {
+        Frame df = matrix(rm.getRowCount(), varNames);
+        for (int i = 0; i < rm.getRowCount(); i++) {
+            for (int j = 0; j < rm.getColCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
             }
         }
@@ -156,22 +156,22 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rows;
     }
 
     @Override
-    public int varCount() {
+    public int getVarCount() {
         return vars.length;
     }
 
     @Override
-    public String[] varNames() {
+    public String[] getVarNames() {
         return names;
     }
 
     @Override
-    public int varIndex(String name) {
+    public int getVarIndex(String name) {
         if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException("Invalid column name: " + name);
         }
@@ -179,7 +179,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int col) {
+    public Var getVar(int col) {
         if (col >= 0 && col < vars.length) {
             return vars[col];
         }
@@ -187,8 +187,8 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(String name) {
-        return var(varIndex(name));
+    public Var getVar(String name) {
+        return getVar(getVarIndex(name));
     }
 
     @Override
@@ -204,8 +204,8 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public Frame mapVars(VRange range) {
         List<String> varNames = range.parseVarNames(this);
-        List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
-        return SolidFrame.byVars(rowCount(), vars);
+        List<Var> vars = varNames.stream().map(this::getVar).collect(Collectors.toList());
+        return SolidFrame.byVars(getRowCount(), vars);
     }
 
     @Override

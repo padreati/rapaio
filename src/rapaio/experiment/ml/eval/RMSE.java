@@ -70,8 +70,8 @@ public class RMSE implements Printable {
         predictVars = new ArrayList<>();
 
         for (String targetName : targetNames) {
-            actualVars.add(actual.var(targetName));
-            predictVars.add(predict.var(targetName));
+            actualVars.add(actual.getVar(targetName));
+            predictVars.add(predict.getVar(targetName));
         }
 
         compute();
@@ -79,7 +79,7 @@ public class RMSE implements Printable {
 
     public RMSE(Var actual, Var predict) {
         targetNames = new ArrayList<>();
-        targetNames.add(actual.name());
+        targetNames.add(actual.getName());
 
         actualVars = new ArrayList<>();
         predictVars = new ArrayList<>();
@@ -95,9 +95,9 @@ public class RMSE implements Printable {
         double count = 0;
 
         for (int i = 0; i < targetNames.size(); i++) {
-            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
+            for (int j = 0; j < actualVars.get(i).getRowCount(); j++) {
                 count++;
-                total += Math.pow(actualVars.get(i).value(j) - predictVars.get(i).value(j), 2);
+                total += Math.pow(actualVars.get(i).getValue(j) - predictVars.get(i).getValue(j), 2);
             }
         }
         value = Math.sqrt(total / count);
@@ -108,7 +108,7 @@ public class RMSE implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "\n" +
                 "> Root Mean Squared Error\n" +
                 "RMSE: " + formatFlex(value) + "\n";

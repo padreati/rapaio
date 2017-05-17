@@ -45,8 +45,8 @@ public interface Printable {
      * with {@link WS#setPrinter(rapaio.printer.Printer)}.
      */
     default void printSummary() {
-        WS.code(summary());
+        WS.code(getSummary());
     }
 
-    String summary();
+    String getSummary();
 }

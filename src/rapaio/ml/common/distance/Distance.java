@@ -42,9 +42,9 @@ public interface Distance extends Serializable {
             (Frame s, int sRow, Frame t, int tRow, String... varNames) -> {
                 double total = 0;
                 for (String varName : varNames) {
-                    if (s.missing(sRow) || t.missing(tRow))
+                    if (s.isMissing(sRow) || t.isMissing(tRow))
                         continue;
-                    total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
+                    total += Math.pow(s.getValue(sRow, varName) - t.getValue(tRow, varName), 2);
                 }
                 return Math.sqrt(total);
             });

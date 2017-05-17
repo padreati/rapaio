@@ -37,12 +37,12 @@ import rapaio.math.linear.dense.SolidRV;
 public final class Linear {
 
     public static RM chol2inv(RM R) {
-        return chol2inv(R, SolidRM.identity(R.rowCount()));
+        return chol2inv(R, SolidRM.identity(R.getRowCount()));
     }
 
     public static RM chol2inv(RM R, RM B) {
         RM ref = R.t();
-        if (B.rowCount() != R.rowCount()) {
+        if (B.getRowCount() != R.getRowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
 
@@ -50,8 +50,8 @@ public final class Linear {
         RM X = B.solidCopy();
 
         // Solve L*Y = B;
-        for (int k = 0; k < ref.rowCount(); k++) {
-            for (int j = 0; j < X.colCount(); j++) {
+        for (int k = 0; k < ref.getRowCount(); k++) {
+            for (int j = 0; j < X.getColCount(); j++) {
                 for (int i = 0; i < k; i++) {
                     X.increment(k, j, -X.get(i, j) * ref.get(k, i));
                 }
@@ -60,9 +60,9 @@ public final class Linear {
         }
 
         // Solve L'*X = Y;
-        for (int k = ref.rowCount() - 1; k >= 0; k--) {
-            for (int j = 0; j < X.colCount(); j++) {
-                for (int i = k + 1; i < ref.rowCount(); i++) {
+        for (int k = ref.getRowCount() - 1; k >= 0; k--) {
+            for (int j = 0; j < X.getColCount(); j++) {
+                for (int i = k + 1; i < ref.getRowCount(); i++) {
                     X.increment(k, j, -X.get(i, j) * ref.get(i, k));
                 }
                 X.set(k, j, X.get(k, j) / ref.get(k, k));
@@ -81,7 +81,7 @@ public final class Linear {
         // this works only for positive definite
         // here we check only symmetry
 
-        if (s.rowCount() != s.colCount())
+        if (s.getRowCount() != s.getColCount())
             throw new IllegalArgumentException("This eigen pair method works only for positive definite matrices");
         QR qr = s.qr();
         s = qr.getR().dot(qr.getQ());
@@ -98,7 +98,7 @@ public final class Linear {
 
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
 
-        int n = s.colCount();
+        int n = s.getColCount();
         EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
@@ -110,9 +110,9 @@ public final class Linear {
         for (int i = 0; i < values.count(); i++) {
             values.set(values.count() - i - 1, _values[i]);
         }
-        for (int i = 0; i < vectors.rowCount(); i++) {
-            for (int j = 0; j < vectors.colCount(); j++) {
-                vectors.set(i, vectors.colCount() - j - 1, _vectors.get(i, j));
+        for (int i = 0; i < vectors.getRowCount(); i++) {
+            for (int j = 0; j < vectors.getColCount(); j++) {
+                vectors.set(i, vectors.getColCount() - j - 1, _vectors.get(i, j));
             }
         }
         return EigenPair.from(values, vectors);
@@ -122,7 +122,7 @@ public final class Linear {
         EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
         RM U = eigenPair.getRM();
         RM lambda = eigenPair.expandedValues();
-        for (int i = 0; i < lambda.rowCount(); i++) {
+        for (int i = 0; i < lambda.getRowCount(); i++) {
             //TODO quick fix
             // this is because negative numbers can be produced for small quantities
             lambda.set(i, i, Math.pow(Math.abs(lambda.get(i, i)), power));
@@ -132,8 +132,8 @@ public final class Linear {
 
     @SuppressWarnings("unused")
 	private static boolean inTolerance(RM s, double tol) {
-        for (int i = 0; i < s.rowCount(); i++) {
-            for (int j = i + 1; j < s.colCount(); j++) {
+        for (int i = 0; i < s.getRowCount(); i++) {
+            for (int j = i + 1; j < s.getColCount(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)
                     return false;
             }

@@ -235,7 +235,7 @@ public class Csv {
                     }
                     for (String colName : names) {
                         if (template != null) {
-                            String[] vn = template.varNames();
+                            String[] vn = template.getVarNames();
                             boolean found = false;
                             for (String name : vn) {
                                 if (name.equals(colName)) {
@@ -244,7 +244,7 @@ public class Csv {
                                 }
                             }
                             if (found) {
-                                varSlots.add(new VarSlot(this, template.var(colName), 0));
+                                varSlots.add(new VarSlot(this, template.getVar(colName), 0));
                                 continue;
                             }
                         }
@@ -269,7 +269,7 @@ public class Csv {
                     // we have a value in row for which we did not defined a var slot
                     if (i >= varSlots.size()) {
                         names.add("V" + (i + 1));
-                        varSlots.add(new VarSlot(this, varSlots.get(0).var.rowCount()));
+                        varSlots.add(new VarSlot(this, varSlots.get(0).var.getRowCount()));
                         continue;
                     }
                     // we have missing values at the end of the row
@@ -395,28 +395,28 @@ public class Csv {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
             if (header) {
-                for (int i = 0; i < df.varNames().length; i++) {
+                for (int i = 0; i < df.getVarNames().length; i++) {
                     if (i != 0) {
                         writer.append(separatorChar);
                     }
-                    writer.append(df.varNames()[i]);
+                    writer.append(df.getVarNames()[i]);
                 }
                 writer.append("\n");
             }
             DecimalFormat format = new DecimalFormat("0.###############################");
-            for (int i = 0; i < df.rowCount(); i++) {
-                for (int j = 0; j < df.varCount(); j++) {
+            for (int i = 0; i < df.getRowCount(); i++) {
+                for (int j = 0; j < df.getVarCount(); j++) {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.var(j).missing(i)) {
+                    if (df.getVar(j).isMissing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.var(j).type().isNominal() || df.var(j).type().equals(VarType.TEXT)) {
-                        writer.append(unclean(df.label(i, j)));
+                    if (df.getVar(j).getType().isNominal() || df.getVar(j).getType().equals(VarType.TEXT)) {
+                        writer.append(unclean(df.getLabel(i, j)));
                     } else {
-                        writer.append(format.format(df.value(i, j)));
+                        writer.append(format.format(df.getValue(i, j)));
                     }
                 }
                 writer.append("\n");
@@ -447,7 +447,7 @@ public class Csv {
 
         private final VarType type;
         private Var var;
-        private Text text;
+        private TextVar text;
 
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
@@ -456,7 +456,7 @@ public class Csv {
             this.parent = parent;
             this.type = null;
             this.var = parent.defaultTypes[0].newInstance(rows);
-            this.text = Text.empty();
+            this.text = TextVar.empty();
         }
 
         public VarSlot(Csv parent, VarType varType, int rows) {
@@ -468,7 +468,7 @@ public class Csv {
 
         public VarSlot(Csv parent, Var template, int rows) {
             this.parent = parent;
-            this.type = template.type();
+            this.type = template.getType();
             this.var = template.newInstance(rows);
             this.text = null;
         }
@@ -492,10 +492,10 @@ public class Csv {
                         return;
                     } catch (Throwable th) {
                         // if it's the last default type, than nothing else could be done
-                        if (var.type() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
+                        if (var.getType() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
                             throw new IllegalArgumentException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
-                                            value, var.type(), th.getMessage()));
+                                            value, var.getType(), th.getMessage()));
                         }
                     }
 
@@ -503,7 +503,7 @@ public class Csv {
                     // find current default type position
                     int pos = 0;
                     for (int i = 0; i < parent.defaultTypes.length; i++) {
-                        if (!parent.defaultTypes[i].equals(var.type())) continue;
+                        if (!parent.defaultTypes[i].equals(var.getType())) continue;
                         pos = i + 1;
                         break;
                     }
@@ -512,8 +512,8 @@ public class Csv {
                     for (int i = pos; i < parent.defaultTypes.length; i++) {
                         try {
                             var = parent.defaultTypes[i].newInstance();
-                            if (text != null && text.rowCount() > 0)
-                                text.stream().forEach(s -> var.addLabel(s.label()));
+                            if (text != null && text.getRowCount() > 0)
+                                text.stream().forEach(s -> var.addLabel(s.getLabel()));
                             if (i == parent.defaultTypes.length - 1)
                                 text = null;
                             break;
@@ -521,7 +521,7 @@ public class Csv {
                             if (i == parent.defaultTypes.length - 1) {
                                 throw new IllegalArgumentException(
                                         String.format("Could not parse value %s in type %s. Error: %s",
-                                                value, var.type(), th.getMessage()));
+                                                value, var.getType(), th.getMessage()));
                             }
                         }
                     }
@@ -535,7 +535,7 @@ public class Csv {
                 } catch (Throwable th) {
                     throw new IllegalArgumentException(
                             String.format("Could not parse value %s in type %s for variable with name: %s. Error: %s",
-                                    value, var.type(), var.name(), th.getMessage()));
+                                    value, var.getType(), var.getName(), th.getMessage()));
                 }
             }
         }

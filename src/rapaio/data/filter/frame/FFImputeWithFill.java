@@ -64,12 +64,12 @@ public class FFImputeWithFill extends AbstractFF {
         Set<String> names = Arrays.stream(varNames).collect(Collectors.toSet());
 
         for (Var var : df.varList()) {
-            if (!var.type().isNumeric())
+            if (!var.getType().isNumeric())
                 continue;
-            if (!names.contains(var.name()))
+            if (!names.contains(var.getName()))
                 continue;
-            for (int i = 0; i < var.rowCount(); i++) {
-                if (var.missing(i))
+            for (int i = 0; i < var.getRowCount(); i++) {
+                if (var.isMissing(i))
                     var.setValue(i, fill);
             }
         }

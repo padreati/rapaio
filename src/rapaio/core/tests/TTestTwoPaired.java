@@ -24,14 +24,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
-import rapaio.printer.Printable;
 
 import static rapaio.core.CoreTools.mean;
-import static rapaio.core.CoreTools.var;
+import static rapaio.core.CoreTools.variance;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -90,17 +88,17 @@ public class TTestTwoPaired implements HTest {
         this.sl = sl;
         this.alt = alt;
 
-        complete = Numeric.empty();
+        complete = NumericVar.empty();
 
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (x.missing(i) || y.missing(i))
+        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+            if (x.isMissing(i) || y.isMissing(i))
                 continue;
-            complete.addValue(x.value(i) - y.value(i));
+            complete.addValue(x.getValue(i) - y.getValue(i));
         }
 
-        df = complete.rowCount()-1;
+        df = complete.getRowCount()-1;
 
-        if (complete.rowCount() < 1) {
+        if (complete.getRowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             sd = Double.NaN;
@@ -112,10 +110,10 @@ public class TTestTwoPaired implements HTest {
             return;
         }
 
-        sampleMean = mean(complete).value();
-        sd = var(complete).sdValue();
+        sampleMean = mean(complete).getValue();
+        sd = variance(complete).sdValue();
 
-        double sv = sd / Math.sqrt(complete.rowCount());
+        double sv = sd / Math.sqrt(complete.getRowCount());
 
         t = (sampleMean - mu) / sv;
 
@@ -176,14 +174,14 @@ public class TTestTwoPaired implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> TTestTwoPaired\n");
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("complete rows: ").append(complete.rowCount()).append("\n");
+        sb.append("complete rows: ").append(complete.getRowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");

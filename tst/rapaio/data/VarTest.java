@@ -42,8 +42,8 @@ public class VarTest {
 
     @Test
     public void testDictionary() {
-        Var x = Nominal.copy("x", "y", "x", "z");
-        Var y = Nominal.copy("x", "y", "x", "z");
+        Var x = NominalVar.copy("x", "y", "x", "z");
+        Var y = NominalVar.copy("x", "y", "x", "z");
 
         x.setLevels("a", "b", "c");
         List<String> dict = new ArrayList<>();
@@ -52,19 +52,19 @@ public class VarTest {
         dict.add("c");
         y.setLevels(dict);
 
-        assertEquals(4, x.rowCount());
-        assertEquals(4, y.rowCount());
+        assertEquals(4, x.getRowCount());
+        assertEquals(4, y.getRowCount());
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(x.label(i), y.label(i));
+            assertEquals(x.getLabel(i), y.getLabel(i));
         }
     }
 
     @Test
     public void testNumericCollector() {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
-        Var x = Numeric.wrap(src);
-        Var y = Arrays.stream(src).boxed().parallel().collect(Numeric.collector());
+        Var x = NumericVar.wrap(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(NumericVar.collector());
         y = new VFSort().fitApply(y);
 
         assertTrue(x.deepEquals(y));
@@ -73,8 +73,8 @@ public class VarTest {
     @Test
     public void testIndexCollector() {
         int[] src = IntStream.range(0, 100_000).toArray();
-        Var x = Index.wrap(src);
-        Var y = Arrays.stream(src).boxed().parallel().collect(Index.collector());
+        Var x = IndexVar.wrap(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(IndexVar.collector());
         y = new VFSort().fitApply(y);
 
         assertTrue(x.deepEquals(y));

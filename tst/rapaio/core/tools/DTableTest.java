@@ -44,7 +44,7 @@ public class DTableTest {
 
         Frame df = Datasets.loadPlay();
 
-        DTable id = DTable.fromCounts(df.var("outlook"), df.var("class"), false);
+        DTable id = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), false);
         assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.694, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.246, id.splitByRowInfoGain(), 1e-3);
@@ -52,7 +52,7 @@ public class DTableTest {
         assertEquals(1.577, id.splitByRowIntrinsicInfo(), 1e-3);
         assertEquals(0.156, id.splitByRowGainRatio(), 1e-3);
 
-        id = DTable.fromCounts(df.var("windy"), df.var("class"), false);
+        id = DTable.fromCounts(df.getVar("windy"), df.getVar("class"), false);
         assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.892, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.048, id.splitByRowInfoGain(), 1e-3);
@@ -65,9 +65,9 @@ public class DTableTest {
     public void testPlayWithMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
-        df.var("outlook").setMissing(5);
+        df.getVar("outlook").setMissing(5);
 
-        DTable id = DTable.fromCounts(df.var("outlook"), df.var("class"), false);
+        DTable id = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), false);
         id.printSummary();
 
         assertEquals(0.961, id.totalColEntropy(), 1e-3);
@@ -163,19 +163,19 @@ public class DTableTest {
                 "     a 0.161 0.113 0.097 0.371\n" +
                 "     b 0.129 0.306 0.194 0.629\n" +
                 " total 0.290 0.419 0.290 1.000\n" +
-                "\n", dt2.normalizeOverall().summary());
+                "\n", dt2.normalizeOverall().getSummary());
         Assert.assertEquals("" +
                 "           x     y     z total\n" +
                 "     a 0.435 0.304 0.261 1.000\n" +
                 "     b 0.205 0.487 0.308 1.000\n" +
                 " total 0.640 0.792 0.569 2.000\n" +
-                "\n", dt2.normalizeOnRows().summary());
+                "\n", dt2.normalizeOnRows().getSummary());
         Assert.assertEquals("" +
                 "           x     y     z total\n" +
                 "     a 0.556 0.269 0.333 1.158\n" +
                 "     b 0.444 0.731 0.667 1.842\n" +
                 " total 1.000 1.000 1.000 3.000\n" +
-                "\n", dt2.normalizeOnCols().summary());
+                "\n", dt2.normalizeOnCols().getSummary());
 
         dt2.withTotalSummary(false);
 
@@ -183,16 +183,16 @@ public class DTableTest {
                 "       x     y     z\n" +
                 " a 0.161 0.113 0.097\n" +
                 " b 0.129 0.306 0.194\n" +
-                "\n", dt2.normalizeOverall().summary());
+                "\n", dt2.normalizeOverall().getSummary());
         Assert.assertEquals("" +
                 "       x     y     z\n" +
                 " a 0.435 0.304 0.261\n" +
                 " b 0.205 0.487 0.308\n" +
-                "\n", dt2.normalizeOnRows().summary());
+                "\n", dt2.normalizeOnRows().getSummary());
         Assert.assertEquals("" +
                 "       x     y     z\n" +
                 " a 0.556 0.269 0.333\n" +
                 " b 0.444 0.731 0.667\n" +
-                "\n", dt2.normalizeOnCols().summary());
+                "\n", dt2.normalizeOnCols().getSummary());
     }
 }

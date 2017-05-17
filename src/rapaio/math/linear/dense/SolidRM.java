@@ -119,8 +119,8 @@ public class SolidRM implements RM {
      */
     public static SolidRM fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
         SolidRM ret = new SolidRM(rowCount, colCount);
-        for (int i = 0; i < ret.rowCount(); i++) {
-            for (int j = 0; j < ret.colCount(); j++) {
+        for (int i = 0; i < ret.getRowCount(); i++) {
+            for (int j = 0; j < ret.getColCount(); j++) {
                 ret.set(i, j, fun.apply(i, j));
             }
         }
@@ -173,10 +173,10 @@ public class SolidRM implements RM {
     }
 
     public static SolidRM copy(Frame df) {
-        SolidRM m = empty(df.rowCount(), df.varCount());
-        for (int j = 0; j < df.varCount(); j++) {
-            for (int i = 0; i < df.rowCount(); i++) {
-                m.set(i, j, df.value(i, j));
+        SolidRM m = empty(df.getRowCount(), df.getVarCount());
+        for (int j = 0; j < df.getVarCount(); j++) {
+            for (int i = 0; i < df.getRowCount(); i++) {
+                m.set(i, j, df.getValue(i, j));
             }
         }
         return m;
@@ -184,10 +184,10 @@ public class SolidRM implements RM {
 
     public static SolidRM copy(Var... vars) {
         Frame df = BoundFrame.byVars(vars);
-        SolidRM m = empty(df.rowCount(), df.varCount());
-        for (int j = 0; j < df.varCount(); j++) {
-            for (int i = 0; i < df.rowCount(); i++) {
-                m.set(i, j, df.value(i, j));
+        SolidRM m = empty(df.getRowCount(), df.getVarCount());
+        for (int j = 0; j < df.getVarCount(); j++) {
+            for (int i = 0; i < df.getRowCount(); i++) {
+                m.set(i, j, df.getValue(i, j));
             }
         }
         return m;
@@ -206,12 +206,12 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rowCount;
     }
 
     @Override
-    public int colCount() {
+    public int getColCount() {
         return colCount;
     }
 

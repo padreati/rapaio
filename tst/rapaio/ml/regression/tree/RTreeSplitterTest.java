@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.util.Pair;
@@ -47,12 +47,12 @@ public class RTreeSplitterTest {
 
     @Before
     public void setUp() throws Exception {
-        w = Numeric.empty();
-        df = SolidFrame.byVars(Numeric.empty().withName("x"));
+        w = NumericVar.empty();
+        df = SolidFrame.byVars(NumericVar.empty().withName("x"));
 
         candidate = new RTree.Candidate(0, "");
-        candidate.addGroup("x < 10", s -> s.value("x") < 10);
-        candidate.addGroup("x > 20", s -> s.value("x") > 20);
+        candidate.addGroup("x < 10", s -> s.getValue("x") < 10);
+        candidate.addGroup("x > 20", s -> s.getValue("x") > 20);
     }
 
     private void populate(int group, int count, double weight) {
@@ -67,10 +67,10 @@ public class RTreeSplitterTest {
             default:
                 u = new Uniform(11, 19);
         }
-        Numeric sample = u.sample(count);
-        for (int i = 0; i < sample.rowCount(); i++) {
+        NumericVar sample = u.sample(count);
+        for (int i = 0; i < sample.getRowCount(); i++) {
             df.addRows(1);
-            df.var("x").setValue(df.rowCount() - 1, sample.value(i));
+            df.getVar("x").setValue(df.getRowCount() - 1, sample.getValue(i));
             w.addValue(weight);
         }
     }
@@ -88,11 +88,11 @@ public class RTreeSplitterTest {
         assertEquals(2, result._1.size());
         assertEquals(2, result._2.size());
 
-        assertEquals(2, result._1.get(0).rowCount());
-        assertEquals(2, result._2.get(0).rowCount());
+        assertEquals(2, result._1.get(0).getRowCount());
+        assertEquals(2, result._2.get(0).getRowCount());
 
-        assertEquals(2, result._1.get(1).rowCount());
-        assertEquals(2, result._2.get(1).rowCount());
+        assertEquals(2, result._1.get(1).getRowCount());
+        assertEquals(2, result._2.get(1).getRowCount());
 
         assertEquals(2, result._2.get(0).stream().mapToDouble().sum(), TOL);
         assertEquals(4, result._2.get(1).stream().mapToDouble().sum(), TOL);
@@ -114,13 +114,13 @@ public class RTreeSplitterTest {
         assertEquals(2, result._2.size());
 
         // group 1
-        assertEquals(12, result._1.get(0).rowCount());
-        assertEquals(12, result._2.get(0).rowCount());
+        assertEquals(12, result._1.get(0).getRowCount());
+        assertEquals(12, result._2.get(0).getRowCount());
         assertEquals(16, result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(7, result._2.get(1).rowCount());
-        assertEquals(7, result._2.get(1).rowCount());
+        assertEquals(7, result._2.get(1).getRowCount());
+        assertEquals(7, result._2.get(1).getRowCount());
         assertEquals(14, result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 
@@ -139,13 +139,13 @@ public class RTreeSplitterTest {
         assertEquals(2, result._2.size());
 
         // group 1
-        assertEquals(12, result._1.get(0).rowCount());
-        assertEquals(12, result._2.get(0).rowCount());
+        assertEquals(12, result._1.get(0).getRowCount());
+        assertEquals(12, result._2.get(0).getRowCount());
         assertEquals(10 + 6 * 10 / 24., result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(9, result._2.get(1).rowCount());
-        assertEquals(9, result._2.get(1).rowCount());
+        assertEquals(9, result._2.get(1).getRowCount());
+        assertEquals(9, result._2.get(1).getRowCount());
         assertEquals(14 + 6 * 14 / 24., result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 
@@ -163,15 +163,15 @@ public class RTreeSplitterTest {
         assertEquals(2, result._1.size());
         assertEquals(2, result._2.size());
 
-        int g1count = result._1.get(0).rowCount();
-        int g2count = result._1.get(1).rowCount();
+        int g1count = result._1.get(0).getRowCount();
+        int g2count = result._1.get(1).getRowCount();
 
         // group 1
-        assertEquals(g1count, result._2.get(0).rowCount());
+        assertEquals(g1count, result._2.get(0).getRowCount());
         assertEquals(10 + 3 * (g1count-10), result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(g2count, result._2.get(1).rowCount());
+        assertEquals(g2count, result._2.get(1).getRowCount());
         assertEquals(14 + 3 * (g2count-7) , result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 }

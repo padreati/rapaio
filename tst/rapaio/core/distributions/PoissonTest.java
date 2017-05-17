@@ -56,33 +56,33 @@ public class PoissonTest {
 
     @Test
     public void rPdfTest() throws IOException {
-        for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_1"), pois1.pdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_5"), pois5.pdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_10"), pois10.pdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_100"), pois100.pdf(df.value(i, "x")), TOL);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_1"), pois1.pdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_5"), pois5.pdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_10"), pois10.pdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_100"), pois100.pdf(df.getValue(i, "x")), TOL);
         }
     }
 
     @Test
     public void rCdfTest() throws IOException {
-        for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_1"), pois1.cdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_5"), pois5.cdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_10"), pois10.cdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_100"), pois100.cdf(df.value(i, "x")), TOL);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_1"), pois1.cdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_5"), pois5.cdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_10"), pois10.cdf(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_100"), pois100.cdf(df.getValue(i, "x")), TOL);
         }
     }
 
     @Test
     public void rQuantileTest() throws IOException {
-        for (int i = 0; i < df.rowCount(); i++) {
-            if (df.value(i, "x") >= 1)
+        for (int i = 0; i < df.getRowCount(); i++) {
+            if (df.getValue(i, "x") >= 1)
                 break;
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_1"), pois1.quantile(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_5"), pois5.quantile(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_10"), pois10.quantile(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_100"), pois100.quantile(df.value(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_1"), pois1.quantile(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_5"), pois5.quantile(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_10"), pois10.quantile(df.getValue(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_100"), pois100.quantile(df.getValue(i, "x")), TOL);
         }
     }
 }

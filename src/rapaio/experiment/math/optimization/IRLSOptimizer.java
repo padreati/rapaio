@@ -24,7 +24,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -71,21 +71,21 @@ public class IRLSOptimizer {
      * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    public Numeric optimize(double eps, int iterationLimit, Function<Var, Double> f,
-                            Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
+    public NumericVar optimize(double eps, int iterationLimit, Function<Var, Double> f,
+                               Function<Var, Double> fd, NumericVar vars, List<Var> inputs, NumericVar outputs) {
 
-        hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
-        coef = SolidRM.empty(inputs.size(), vars.rowCount());
+        hessian = SolidRM.empty(vars.getRowCount(), vars.getRowCount());
+        coef = SolidRM.empty(inputs.size(), vars.getRowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
-            for (int j = 1; j < vars.rowCount(); j++)
-                coef.set(i, j, x_i.value(j - 1));
+            for (int j = 1; j < vars.getRowCount(); j++)
+                coef.set(i, j, x_i.getValue(j - 1));
         }
 
         derivatives = SolidRV.empty(inputs.size());
-        err = SolidRV.empty(outputs.rowCount());
-        grad = SolidRM.empty(vars.rowCount(), 1);
+        err = SolidRV.empty(outputs.getRowCount());
+        grad = SolidRM.empty(vars.getRowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -95,24 +95,24 @@ public class IRLSOptimizer {
         return vars;
     }
 
-    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
+    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, NumericVar vars, List<Var> inputs, NumericVar outputs) {
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             double y = f.apply(x_i);
-            double error = y - outputs.value(i);
+            double error = y - outputs.getValue(i);
             err.set(i, error);
             derivatives.set(i, fd.apply(x_i));
         }
 
-        for (int j = 0; j < hessian.rowCount(); j++) {
+        for (int j = 0; j < hessian.getRowCount(); j++) {
             double gradTmp = 0;
-            for (int k = 0; k < coef.rowCount(); k++) {
+            for (int k = 0; k < coef.getRowCount(); k++) {
                 double coefficient_kj = coef.get(k, j);
                 gradTmp += coefficient_kj * err.get(k);
 
                 double factor = derivatives.get(k) * coefficient_kj;
 
-                for (int i = 0; i < hessian.rowCount(); i++)
+                for (int i = 0; i < hessian.getRowCount(); i++)
                     hessian.increment(j, i, coef.get(k, i) * factor);
             }
             grad.set(j, 0, gradTmp);
@@ -127,8 +127,8 @@ public class IRLSOptimizer {
         }
         RV delta = lu.solve(grad).mapCol(0);
 
-        for (int i = 0; i < vars.rowCount(); i++)
-            vars.setValue(i, vars.value(i) - delta.get(i));
+        for (int i = 0; i < vars.getRowCount(); i++)
+            vars.setValue(i, vars.getValue(i) - delta.get(i));
 
         double max = Math.abs(delta.get(0));
         for (int i = 1; i < delta.count(); i++) {

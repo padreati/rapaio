@@ -57,7 +57,7 @@ public class FFShuffle extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {

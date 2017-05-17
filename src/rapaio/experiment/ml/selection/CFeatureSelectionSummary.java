@@ -67,7 +67,7 @@ public class CFeatureSelectionSummary implements Printable {
     }
 
     private void validate() {
-        if (!df.var(targetVar).type().isNominal()) {
+        if (!df.getVar(targetVar).getType().isNominal()) {
             throw new IllegalArgumentException("Target variable received as parameter does not have a nominal type");
         }
     }
@@ -76,15 +76,15 @@ public class CFeatureSelectionSummary implements Printable {
 
         if (usePearson) {
             df.varStream()
-                    .filter(v -> !v.name().equals(targetVar))
-                    .forEach(v -> topPearson.add(Pair.from(v.name(), CoreTools.corrPearson(df.var(targetVar), v).singleValue())));
+                    .filter(v -> !v.getName().equals(targetVar))
+                    .forEach(v -> topPearson.add(Pair.from(v.getName(), CoreTools.corrPearson(df.getVar(targetVar), v).singleValue())));
             topPearson.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 
         if (usePearson) {
             df.varStream()
-                    .filter(v -> !v.name().equals(targetVar))
-                    .forEach(v -> topSpearman.add(Pair.from(v.name(), CoreTools.corrSpearman(df.var(targetVar), v).singleValue())));
+                    .filter(v -> !v.getName().equals(targetVar))
+                    .forEach(v -> topSpearman.add(Pair.from(v.getName(), CoreTools.corrSpearman(df.getVar(targetVar), v).singleValue())));
             topSpearman.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 
@@ -92,7 +92,7 @@ public class CFeatureSelectionSummary implements Printable {
 
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("CFeatureSelection summary\n");

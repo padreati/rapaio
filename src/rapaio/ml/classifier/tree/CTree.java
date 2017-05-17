@@ -296,7 +296,7 @@ public class CTree extends AbstractClassifier {
 
         this.varSelector.withVarNames(inputNames());
 
-        int rows = df.rowCount();
+        int rows = df.getRowCount();
         root = new CTreeNode(null, "root", spot -> true);
         if (runPoolSize() == 0) {
             root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth());
@@ -324,10 +324,10 @@ public class CTree extends AbstractClassifier {
             int index = res._1;
             DVector dv = res._2;
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.row(), index);
+                prediction.firstClasses().setIndex(spot.getRow(), index);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.row(), j, dv.get(j));
+                    prediction.firstDensity().setValue(spot.getRow(), j, dv.get(j));
                 }
         });
         return prediction;
@@ -360,13 +360,13 @@ public class CTree extends AbstractClassifier {
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (customTestMap.containsKey(var.name()))
+            if (customTestMap.containsKey(var.getName()))
                 return;
-            if (testMap.containsKey(var.type()))
+            if (testMap.containsKey(var.getType()))
                 return;
             throw new IllegalArgumentException("can't train ctree with no " +
-                    "tests for given variable: " + var.name() +
-                    " [" + var.type().name() + "]");
+                    "tests for given variable: " + var.getName() +
+                    " [" + var.getType().name() + "]");
         });
     }
 
@@ -388,7 +388,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");
@@ -397,7 +397,7 @@ public class CTree extends AbstractClassifier {
         sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().summary()).append("\n");
+        sb.append(capabilities().getSummary()).append("\n");
 
         sb.append("Learned model:\n");
 

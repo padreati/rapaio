@@ -106,10 +106,10 @@ public class OLSRegression extends AbstractRegression {
 
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            for (int j = 0; j < rp.fit(target).rowCount(); j++) {
+            for (int j = 0; j < rp.fit(target).getRowCount(); j++) {
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.value(j, inputName(k));
+                    fit += beta.get(k, i) * df.getValue(j, inputName(k));
                 }
                 rp.fit(target).setValue(j, fit);
             }
@@ -120,7 +120,7 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

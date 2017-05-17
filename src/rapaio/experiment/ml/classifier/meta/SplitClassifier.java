@@ -97,11 +97,11 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
         df.stream().forEach(s -> {
             for (int i = 0; i < splits.size(); i++) {
                 if (splits.get(i).predicate.test(s)) {
-                    maps.get(i).add(s.row());
+                    maps.get(i).add(s.getRow());
                     return;
                 }
             }
-            ignored.add(s.row());
+            ignored.add(s.getRow());
         });
 
         // if we do not allow ignore uncovered values, than throw an error
@@ -129,18 +129,18 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 
-                    Frame f = MappedFrame.byRow(df, spot.row());
+                    Frame f = MappedFrame.byRow(df, spot.getRow());
                     CFit p = split.classifier.fit(f, withClasses, withDensities);
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {
-                            pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
+                            pred.classes(targetVar).setLabel(spot.getRow(), p.classes(targetVar).getLabel(0));
                         }
                     }
                     if (withDensities) {
                         for (String targetVar : targetNames()) {
                             for (int j = 0; j < targetLevels(targetVar).length; j++) {
-                                pred.densities().get(targetVar).setValue(spot.row(), targetLevels(targetVar)[j], p.densities().get(targetVar).value(0, targetLevels(targetVar)[j]));
+                                pred.densities().get(targetVar).setValue(spot.getRow(), targetLevels(targetVar)[j], p.densities().get(targetVar).getValue(0, targetLevels(targetVar)[j]));
                             }
                         }
                     }

@@ -34,9 +34,6 @@ public class Pin<T> {
 
     private T value;
 
-    public Pin() {
-    }
-
     public Pin(T value) {
         this.value = value;
     }

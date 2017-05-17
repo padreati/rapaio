@@ -63,7 +63,7 @@ public class NumericRule extends Rule {
         if (missingValue) {
             return "NumericRule {"
                     + "missing=true"
-                    + ", class=" + dv.label(targetIndex)
+                    + ", class=" + dv.getLabel(targetIndex)
                     + ", errors=" + WS.formatFlex(getErrorCount())
                     + ", total=" + WS.formatFlex(getTotalCount())
                     + ", acc=" + WS.formatFlex(getAcc())
@@ -72,7 +72,7 @@ public class NumericRule extends Rule {
         return "NumericRule {"
                 + "min=" + WS.formatFlex(minValue)
                 + ", max=" + WS.formatFlex(maxValue)
-                + ", class=" + dv.label(targetIndex)
+                + ", class=" + dv.getLabel(targetIndex)
                 + ", errors=" + WS.formatFlex(getErrorCount())
                 + ", total=" + WS.formatFlex(getTotalCount())
                 + ", acc=" + WS.formatFlex(getAcc())

@@ -52,14 +52,14 @@ public class Variance implements Printable {
     private int missingCount;
 
     private Variance(Var var) {
-        this.varName = var.name();
+        this.varName = var.getName();
         compute(var);
     }
 
     private final void compute(final Var var) {
-        double mean = mean(var).value();
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        double mean = mean(var).getValue();
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
@@ -71,27 +71,27 @@ public class Variance implements Printable {
         }
         double sum2 = 0;
         double sum3 = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 continue;
             }
-            sum2 += Math.pow(var.value(i) - mean, 2);
-            sum3 += var.value(i) - mean;
+            sum2 += Math.pow(var.getValue(i) - mean, 2);
+            sum3 += var.getValue(i) - mean;
         }
         value = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (completeCount - 1.0);
         biasedValue = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (1.0 * completeCount);
     }
 
-    public double value() {
+    public double getValue() {
         return value;
     }
 
-    public double biasedValue() {
+    public double getBiasedValue() {
         return biasedValue;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n> variance[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",

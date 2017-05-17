@@ -46,48 +46,48 @@ public final class WeightedMean implements Printable {
     private int completeCount;
 
     private WeightedMean(final Var var, final Var weights) {
-        this.varName = var.name();
+        this.varName = var.getName();
         this.mean = compute(var, weights);
     }
 
     private double compute(final Var var, final Var weights) {
-        if (var.rowCount() != weights.rowCount()) {
+        if (var.getRowCount() != weights.getRowCount()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i) || weights.missing(i)) {
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i) || weights.isMissing(i)) {
                 missingCount++;
                 continue;
             }
             completeCount++;
-            total += weights.value(i);
+            total += weights.getValue(i);
         }
         if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i) || weights.missing(i))
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i) || weights.isMissing(i))
                 continue;
-            sum += weights.value(i) * var.value(i);
+            sum += weights.getValue(i) * var.getValue(i);
         }
         double avg = sum / total;
         double residual = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i) || weights.missing(i))
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i) || weights.isMissing(i))
                 continue;
-            residual += weights.value(i) * (var.value(i) - avg);
+            residual += weights.getValue(i) * (var.getValue(i) - avg);
         }
         return avg + residual / total;
     }
 
-    public double value() {
+    public double getValue() {
         return mean;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > weightedMean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

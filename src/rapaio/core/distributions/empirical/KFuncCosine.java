@@ -54,7 +54,7 @@ public class KFuncCosine implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncCosine";
     }
 }

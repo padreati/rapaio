@@ -103,7 +103,7 @@ public class RandomValueRegression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" Summary\n");
         sb.append("=========================\n");

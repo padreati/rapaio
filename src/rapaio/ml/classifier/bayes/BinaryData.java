@@ -21,6 +21,6 @@ public class BinaryData extends NaiveBayesData implements Serializable{
 
 	@Override
 	public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
-		return binMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel);
+		return binMap.get(testCol).cpValue(df.getLabel(i, testCol), firstTargetLevel);
 	}
 }

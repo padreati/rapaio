@@ -26,7 +26,7 @@ package rapaio.experiment.sandbox;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid1D;
@@ -64,34 +64,34 @@ public class ContourSample {
     private static void drawFig(double stepMesh, double stepGrad) throws IOException {
 
         Frame xy = SolidFrame.byVars(
-                Numeric.wrap(3, -1, -2).withName("x"),
-                Numeric.wrap(3, -1, 6).withName("y")
+                NumericVar.wrap(3, -1, -2).withName("x"),
+                NumericVar.wrap(3, -1, 6).withName("y")
         );
         xy.printSummary();
         Normal d = new Normal(0, 2);
 
         BiFunction<Double, Double, Double> bi = (x, y) ->
                 IntStream.range(0, 3).mapToDouble(
-                        row -> d.pdf(Math.sqrt(Math.pow(x - xy.value(row, "x"), 2) + Math.pow(y - xy.value(row, "y"), 2)))
+                        row -> d.pdf(Math.sqrt(Math.pow(x - xy.getValue(row, "x"), 2) + Math.pow(y - xy.getValue(row, "y"), 2)))
                 ).sum();
 
-        Numeric x = Numeric.seq(-3, 10, stepMesh);
-        Numeric y = Numeric.seq(-3, 10, stepMesh);
+        NumericVar x = NumericVar.seq(-3, 10, stepMesh);
+        NumericVar y = NumericVar.seq(-3, 10, stepMesh);
 
         MeshGrid1D mg = new MeshGrid1D(x, y);
         mg.fillWithFunction(bi);
 
         Plot p = new Plot();
-        Var q = Numeric.seq(0, 1, stepGrad);
+        Var q = NumericVar.seq(0, 1, stepGrad);
         double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = 1;
         ColorGradient gradient = ColorGradient.newHueGradient(q.stream().mapToDouble().toArray());
 
-        for (int i = 0; i < q.rowCount() - 1; i++) {
+        for (int i = 0; i < q.getRowCount() - 1; i++) {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), false, true,
                     Plotter.color(gradient.getColor(i)), lwd(0.2f)));
         }
-        p.add(new Points(xy.var("x"), xy.var("y")));
+        p.add(new Points(xy.getVar("x"), xy.getVar("y")));
         draw(p);
 
         WS.saveImage(p, 800, 600, "/tmp/mesh_curve_1.png");

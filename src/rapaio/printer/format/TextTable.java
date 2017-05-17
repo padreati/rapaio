@@ -131,7 +131,7 @@ public class TextTable implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder stringBuilder = new StringBuilder();
         if (hSplitSize != -1 && hMergeSize != -1) {
             throw new IllegalArgumentException("Cannot set hSplitSize >= 0 and hMergeSize >= 0 in the same time");

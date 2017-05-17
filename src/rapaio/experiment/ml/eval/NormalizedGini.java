@@ -24,7 +24,7 @@
 
 package rapaio.experiment.ml.eval;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFCumulativeSum;
@@ -69,15 +69,15 @@ NormalizedGini <- function(solution, submission) {
         Comparator<Integer> cmp = RowComparators.numeric(submission, false);
         Var sol = new VFRefSort(cmp).fitApply(solution);
         Var sub = new VFRefSort(cmp).fitApply(submission);
-        int n = sub.rowCount();
-        Numeric rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(Numeric.collector());
+        int n = sub.getRowCount();
+        NumericVar rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(NumericVar.collector());
         double totalPos = sol.stream().mapToDouble().sum();
         Var cumPosFound = new VFCumulativeSum().fitApply(sol.solidCopy());
-        Var lorentz = cumPosFound.stream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(Numeric.collector());
-        return IntStream.range(0, n).mapToDouble(row -> lorentz.value(row) - rand.value(row)).sum();
+        Var lorentz = cumPosFound.stream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(NumericVar.collector());
+        return IntStream.range(0, n).mapToDouble(row -> lorentz.getValue(row) - rand.getValue(row)).sum();
     }
 
-    public double value() {
+    public double getValue() {
         return value;
     }
 }

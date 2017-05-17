@@ -27,7 +27,7 @@ package rapaio.ml.classifier.boost;
 import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
@@ -50,24 +50,24 @@ public class AdaBoostSAMMETest {
                 .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withMCols(5))
                 .withRuns(10);
         Frame df = Datasets.loadSpamBase();
-        int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
+        int[] rows = SamplingTools.sampleWOR(df.getRowCount(), df.getRowCount() / 2);
         Frame tr = df.mapRows(rows);
         Frame te = df.removeRows(rows);
 
         String target = "spam";
 
-        Numeric runs = Numeric.empty().withName("runs");
-        Numeric errTr = Numeric.empty().withName("tr");
-        Numeric errTe = Numeric.empty().withName("te");
+        NumericVar runs = NumericVar.empty().withName("runs");
+        NumericVar errTr = NumericVar.empty().withName("tr");
+        NumericVar errTe = NumericVar.empty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addValue(run);
-            errTr.addValue(new Confusion(tr.var(target), ab.fit(tr).classes(target)).error());
-            errTe.addValue(new Confusion(te.var(target), ab.fit(te).classes(target)).error());
+            errTr.addValue(new Confusion(tr.getVar(target), ab.fit(tr).classes(target)).error());
+            errTe.addValue(new Confusion(te.getVar(target), ab.fit(te).classes(target)).error());
         });
         ab.train(tr, target);
         ab.printSummary();
 
-        new Confusion(tr.var(target), ab.fit(tr).firstClasses()).printSummary();
+        new Confusion(tr.getVar(target), ab.fit(tr).firstClasses()).printSummary();
     }
 }

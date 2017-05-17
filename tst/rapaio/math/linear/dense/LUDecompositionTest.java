@@ -24,13 +24,11 @@
 
 package rapaio.math.linear.dense;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
 import rapaio.util.Util;
 
 import static org.junit.Assert.*;
@@ -67,8 +65,8 @@ public class LUDecompositionTest {
     public void perfTest() {
         int N = 2000;
 
-        Numeric gauss = Numeric.empty().withName("gauss");
-        Numeric crout = Numeric.empty().withName("crout");
+        NumericVar gauss = NumericVar.empty().withName("gauss");
+        NumericVar crout = NumericVar.empty().withName("crout");
         for (int i = 0; i < 10; i++) {
             RM a = SolidRM.random(N, N);
             gauss.addValue(Util.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION))._2);
