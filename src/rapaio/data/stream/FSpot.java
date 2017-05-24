@@ -199,7 +199,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label value
      */
-    public String label(int varIndex) {
+    public String getLabel(int varIndex) {
         return df.getLabel(row, varIndex);
     }
 

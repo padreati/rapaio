@@ -61,8 +61,14 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public Regression withInputFilters(FFilter... filters) {
-        inputFilters = Arrays.stream(filters).collect(Collectors.toList());
-        for (FFilter filter : inputFilters)
+        inputFilters = new ArrayList<>();
+        addInputFilters(filters);
+        return this;
+    }
+
+    @Override
+    public Regression addInputFilters(FFilter... filters) {
+        for (FFilter filter : filters)
             inputFilters.add(filter.newInstance());
         return this;
     }
@@ -139,7 +145,7 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public RFit fit(Frame df) {
-        return fit(df, true);
+        return fit(df, false);
     }
 
     @Override

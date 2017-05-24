@@ -205,7 +205,7 @@ public abstract class AbstractClassifier implements Classifier {
             tt.set(i, 4, " |", 1);
         }
         tt.withMerge();
-        sb.append("\n").append(tt.getSummary()).append("\n");
+        sb.append("\n").append(tt.getSummary());
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")

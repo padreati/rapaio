@@ -507,63 +507,6 @@ public class Summary {
             lines = vars[0].getRowCount();
         }
 
-        int[] max = new int[vars.length];
-        for (int i = 0; i < vars.length; i++) {
-            max[i] = names[i].length() + 1;
-            for (int j = 0; j < vars[i].getRowCount(); j++) {
-                if (vars[i].getType().isNominal() && max[i] < vars[i].getLabel(j).length()) {
-                    max[i] = vars[i].getLabel(j).length();
-                }
-                if (vars[i].getType().isNumeric()) {
-                    String value = vars[i].getType() == VarType.NUMERIC ?
-                            String.format("%.10f", vars[i].getValue(j)) :
-                            String.format("%d", vars[i].getIndex(j));
-                    if (max[i] < value.length()) {
-                        max[i] = value.length();
-                    }
-                }
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        int pos = 0;
-        while (pos < vars.length) {
-            int maxWidth = getPrinter().textWidth();
-            int width = 0;
-            int start = pos;
-            while ((pos < vars.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {
-                width += max[pos + 1] + 1;
-                pos++;
-            }
-
-            for (int j = start; j <= pos; j++) {
-                String value = String.format("%" + max[j] + "s", names[j]);
-                sb.append(value).append(" ");
-            }
-            sb.append("\n");
-
-            for (int i = 0; i < lines; i++) {
-                for (int j = start; j <= pos; j++) {
-                    String value;
-                    if (vars[j].getType().isNominal()) {
-                        value = String.format("%" + max[j] + "s", vars[j].getLabel(i));
-                    } else {
-                        value = String.format("%" + max[j] + "s",
-                                vars[j].getType() == VarType.NUMERIC ?
-                                        String.format("%.6f", vars[j].getValue(i)) :
-                                        String.format("%d", vars[j].getIndex(i))
-                        );
-                    }
-                    sb.append(value).append(" ");
-                }
-                sb.append("\n");
-            }
-            pos++;
-            sb.append("\n");
-        }
-//        return sb.toString();
-
         TextTable tt = TextTable.newEmpty(lines + 1, vars.length + 1);
         if (merge)
             tt.withMerge(getPrinter().textWidth());
@@ -582,6 +525,5 @@ public class Summary {
             }
         }
         return tt.getSummary();
-
     }
 }

@@ -141,12 +141,12 @@ public class TextTable implements Printable {
         } else if (hMergeSize >= 0) {
             summaryHMerge(stringBuilder);
         } else {
-            writeToStirngBuilder(stringBuilder);
+            writeToStringBuilder(stringBuilder);
         }
         return stringBuilder.toString();
     }
 
-    private void summaryHSplit(StringBuilder stringBuilder) {
+    private void summaryHSplit(StringBuilder sb) {
         int[] maxLengths = computeLayout();
         boolean[] cannotSplit = new boolean[cols];
 
@@ -162,10 +162,7 @@ public class TextTable implements Printable {
 
         for (List<Integer> indexes : splitColsList) {
             TextTable textTable = createSplitTextTable(indexes);
-            
-            textTable.writeToStirngBuilder(stringBuilder);
-            
-            stringBuilder.append("\n");
+            textTable.writeToStringBuilder(sb);
         }
     }
 
@@ -219,17 +216,16 @@ public class TextTable implements Printable {
         return textTable;
     }
 
-    private void summaryHMerge(StringBuilder stringBuilder) {
+    private void summaryHMerge(StringBuilder sb) {
         int count = calculateCount();
 
         if (count == 1) {
-            writeToStirngBuilder(stringBuilder);
+            writeToStringBuilder(sb);
         } else {
             int maxContent = getMaxContent(count);
 
-            TextTable textTable = createMergeTextTable(count, maxContent);
-
-            textTable.writeToStirngBuilder(stringBuilder);
+            TextTable tt = createMergeTextTable(count, maxContent);
+            tt.writeToStringBuilder(sb);
         }
     }
 
@@ -283,7 +279,7 @@ public class TextTable implements Printable {
         }
     }
 
-    private void writeToStirngBuilder(StringBuilder stringBuilder) {
+    private void writeToStringBuilder(StringBuilder stringBuilder) {
         int[] maxLengths = computeLayout();
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -301,6 +297,7 @@ public class TextTable implements Printable {
             }
             stringBuilder.append("\n");
         }
+        stringBuilder.append("\n");
     }
 
     private String align(int align, int width, String text) {
