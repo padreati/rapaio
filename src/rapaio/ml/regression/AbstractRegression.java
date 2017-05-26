@@ -111,7 +111,7 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public final Regression train(Frame df, Var weights, String... targetVarNames) {
-        TrainSetup setup = setupTrain(df, weights, targetVarNames);
+        TrainSetup setup = prepareTrainSetup(df, weights, targetVarNames);
         setup = prepareTraining(setup);
         hasLearned = coreTrain(setup.df, setup.w);
         return this;
@@ -136,7 +136,7 @@ public abstract class AbstractRegression implements Regression {
         return TrainSetup.valueOf(df, trainSetup.w);
     }
 
-    protected TrainSetup setupTrain(Frame df, Var weights, String... targetVarNames) {
+    protected TrainSetup prepareTrainSetup(Frame df, Var weights, String... targetVarNames) {
         return TrainSetup.valueOf(df, weights, targetVarNames);
     }
 
@@ -145,18 +145,19 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public RFit fit(Frame df) {
-        return fit(df, false);
+        return fit(df, true);
     }
 
     @Override
     public RFit fit(Frame df, boolean withResiduals) {
-        FitSetup setup = baseFit(df, withResiduals);
+        FitSetup setup = prepareFitSetup(df, withResiduals);
         setup = prepareFit(setup);
         return coreFit(setup.df, setup.withResiduals);
     }
 
     // by default do nothing, it is only for two stage training
-    protected FitSetup baseFit(Frame df, boolean withResiduals) {
+
+    protected FitSetup prepareFitSetup(Frame df, boolean withResiduals) {
         return FitSetup.valueOf(df, withResiduals);
     }
 

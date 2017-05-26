@@ -24,11 +24,10 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * A frame which is build on the base of another frame with
@@ -59,24 +58,27 @@ public class MappedFrame extends AbstractFrame {
     }
 
     private static final long serialVersionUID = 1368765233851124235L;
-    private final Mapping mapping;
     private final Frame source;
+    private final Mapping mapping;
     private final String[] names;
-    private final HashMap<String, Integer> colIndex;
-    private final Var[] vars;
+    private final HashMap<String, Integer> colReverse;
+    private final int[] colIndexes;
 
     private MappedFrame(Frame df, Mapping mapping) {
         this(df, mapping, Arrays.asList(df.getVarNames()));
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        if (mapping == null) mapping = Mapping.copy();
+        if (mapping == null)
+            mapping = Mapping.empty();
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
             this.source = mappedFrame.sourceFrame();
-            this.mapping = Mapping.wrap(mapping.rowStream()
-                    .map(row -> mappedFrame.mapping().get(row))
-                    .mapToObj(row -> row).collect(Collectors.toList()));
+            List<Integer> rows = new ArrayList<>();
+            for (int i = 0; i < mapping.size(); i++) {
+                rows.add(mappedFrame.mapping().get(mapping.get(i)));
+            }
+            this.mapping = Mapping.wrap(rows);
         } else {
             this.source = df;
             this.mapping = mapping;
@@ -85,12 +87,12 @@ public class MappedFrame extends AbstractFrame {
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);
         }
-        this.colIndex = new HashMap<>();
-        this.vars = new Var[names.length];
-        IntStream.range(0, names.length).forEach(i -> {
-            colIndex.put(names[i], i);
-            vars[i] = MappedVar.byRows(this.source.getVar(names[i]), this.mapping).withName(names[i]);
-        });
+        this.colReverse = new HashMap<>();
+        this.colIndexes = new int[columns.size()];
+        for(int i=0; i< names.length; i++) {
+            colIndexes[i] = source.getVarIndex(names[i]);
+            colReverse.put(names[i], i);
+        }
     }
 
     @Override
@@ -118,15 +120,15 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int getVarIndex(String name) {
-        if (!colIndex.containsKey(name)) {
+        if (!colReverse.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
         }
-        return colIndex.get(name);
+        return colReverse.get(name);
     }
 
     @Override
     public Var getVar(int varIndex) {
-        return vars[varIndex];
+        return MappedVar.byRows(this.source.getVar(names[varIndex]), this.mapping).withName(names[varIndex]);
     }
 
     @Override
@@ -163,4 +165,111 @@ public class MappedFrame extends AbstractFrame {
     public Frame mapRows(Mapping mapping) {
         return MappedFrame.byRow(this, mapping);
     }
+
+    @Override
+    public double getValue(int row, int col) {
+        return source.getValue(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public double getValue(int row, String varName) {
+        return source.getValue(mapping.get(row), varName);
+    }
+
+    @Override
+    public void setValue(int row, int col, double value) {
+        source.setValue(mapping.get(row), colIndexes[col], value);
+    }
+
+    @Override
+    public void setValue(int row, String varName, double value) {
+        source.setValue(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public int getIndex(int row, int col) {
+        return source.getIndex(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public int getIndex(int row, String varName) {
+        return source.getIndex(mapping.get(row), varName);
+    }
+
+    @Override
+    public void setIndex(int row, int col, int value) {
+        source.setIndex(mapping.get(row), colIndexes[col], value);
+    }
+
+    @Override
+    public void setIndex(int row, String varName, int value) {
+        source.setIndex(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public String getLabel(int row, int col) {
+        return source.getLabel(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public String getLabel(int row, String varName) {
+        return source.getLabel(mapping.get(row), varName);
+    }
+
+    @Override
+    public void setLabel(int row, int col, String value) {
+        source.setLabel(mapping.get(row), colIndexes[col], value);
+    }
+
+    @Override
+    public void setLabel(int row, String varName, String value) {
+        source.setLabel(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public boolean getBinary(int row, int col) {
+        return source.getBinary(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public boolean getBinary(int row, String varName) {
+        return source.getBinary(mapping.get(row), varName);
+    }
+
+    @Override
+    public void setBinary(int row, int col, boolean value) {
+        source.setBinary(mapping.get(row), colIndexes[col], value);
+    }
+
+    @Override
+    public void setBinary(int row, String varName, boolean value) {
+        source.setBinary(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public boolean isMissing(int row, int col) {
+        return source.isMissing(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public boolean isMissing(int row, String varName) {
+        return source.isMissing(mapping.get(row), varName);
+    }
+
+    @Override
+    public boolean isMissing(int row) {
+        return source.isMissing(mapping.get(row));
+    }
+
+    @Override
+    public void setMissing(int row, int col) {
+        source.setMissing(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public void setMissing(int row, String varName) {
+        source.setMissing(mapping.get(row), varName);
+    }
+
+
 }

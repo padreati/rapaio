@@ -28,11 +28,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filter.frame.FFRefSort;
-import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RFit;
-import rapaio.ml.regression.Regression;
-import rapaio.experiment.ml.regression.ensemble.RForest;
 
 import java.io.IOException;
 

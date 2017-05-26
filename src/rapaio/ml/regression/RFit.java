@@ -206,47 +206,33 @@ public class RFit implements Printable {
 
         sb.append("> input variables: \n");
 
-        TextTable tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
-        tt.set(0, 0, "no", 1);
-        tt.set(1, 0, "--", 1);
-        tt.set(0, 1, "name", -1);
-        tt.set(1, 1, "----", -1);
-        tt.set(0, 2, "type", 1);
-        tt.set(1, 2, "----", 1);
-
+        TextTable tt = TextTable.newEmpty(model.inputNames().length, 3);
         for (int i = 0; i < model.inputNames().length; i++) {
-            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
-            tt.set(i + 2, 1, model.inputName(i), -1);
-            tt.set(i + 2, 2, model.inputType(i).getCode(), -1);
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, model.inputName(i), -1);
+            tt.set(i, 2, model.inputType(i).getCode(), -1);
         }
 
-        tt.withHeaderRows(2);
+        tt.withHeaderRows(0);
         tt.withMerge();
 
-        sb.append(tt.getSummary()).append("\n");
+        sb.append(tt.getSummary());
 
         // targets
 
         sb.append("> target variables: \n");
 
-        tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
-        tt.set(0, 0, "no", 1);
-        tt.set(1, 0, "--", 1);
-        tt.set(0, 1, "name", -1);
-        tt.set(1, 1, "----", -1);
-        tt.set(0, 2, "type", 1);
-        tt.set(1, 2, "----", 1);
-
+        tt = TextTable.newEmpty(model.targetNames().length, 3);
         for (int i = 0; i < model.targetNames().length; i++) {
-            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
-            tt.set(i + 2, 1, model.targetName(i), -1);
-            tt.set(i + 2, 2, model.targetType(i).getCode(), -1);
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, model.targetName(i), -1);
+            tt.set(i, 2, model.targetType(i).getCode(), -1);
         }
 
-        tt.withHeaderRows(2);
+        tt.withHeaderRows(0);
         tt.withMerge();
 
-        sb.append(tt.getSummary()).append("\n");
+        sb.append(tt.getSummary());
 
         sb.append("\n");
 
@@ -254,7 +240,7 @@ public class RFit implements Printable {
         for (String target : model.targetNames()) {
             sb.append("Fit and residuals for ").append(target).append("\n");
             sb.append("======================")
-                    .append(String.join("", nCopies(target.length(), "="))).append("\n");
+                    .append(String.join("", nCopies(target.length(), "=")));
 
             String fullSummary = SolidFrame.byVars(fit(target), residual(target)).getSummary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());

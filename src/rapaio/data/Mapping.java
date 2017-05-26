@@ -26,6 +26,7 @@ package rapaio.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,11 +168,14 @@ final class ListMapping implements Mapping {
     }
 
     ListMapping(int[] rows) {
-        mapping = IntStream.of(rows).boxed().collect(Collectors.toList());
+        mapping = new ArrayList<>();
+        for (int row : rows) {
+            mapping.add(row);
+        }
     }
 
     ListMapping(List<Integer> mapping, boolean copy) {
-        this.mapping = copy ? mapping.subList(0, mapping.size()) : mapping;
+        this.mapping = copy ? new ArrayList<>(mapping) : mapping;
     }
 
     public int size() {

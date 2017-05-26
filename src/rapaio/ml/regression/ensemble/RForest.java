@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.ensemble;
+package rapaio.ml.regression.ensemble;
 
 import rapaio.data.Frame;
 import rapaio.data.NumericVar;
@@ -38,25 +38,23 @@ import rapaio.ml.regression.tree.RTree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-@Deprecated
 public class RForest extends AbstractRegression {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
-    int runs = 0;
-    Regression r = RTree.buildC45();
-    //
-    List<Regression> regressors = new ArrayList<>();
-
-    private RForest() {
-    }
+    private Regression r = RTree.buildC45();
+    private List<Regression> regressors = new ArrayList<>();
 
     public static RForest newRF() {
         return new RForest();
+    }
+
+    private RForest() {
     }
 
     @Override
@@ -75,7 +73,7 @@ public class RForest extends AbstractRegression {
         sb.append(name()).append("\n");
         sb.append("{\n");
         sb.append("r=").append(r.fullName()).append(",\n");
-        sb.append("runs=").append(runs).append(",\n");
+        sb.append("runs=").append(runs()).append(",\n");
         sb.append("}\n");
         return sb.toString();
     }
@@ -99,16 +97,20 @@ public class RForest extends AbstractRegression {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
         regressors.clear();
-        for (int i = 0; i < runs(); i++) {
-            Regression rnew = r.newInstance();
-            Sample sample = sampler().nextSample(df, weights);
-            rnew.train(sample.df, sample.weights, firstTargetName());
-            regressors.add(rnew);
-            if (runningHook() != null) {
-                runningHook().accept(this, i + 1);
-            }
-        }
+        IntStream.range(0, runs()).forEach(i -> {
+                Regression rnew = r.newInstance();
+                Sample sample = sampler().nextSample(df, weights);
+                rnew.train(sample.df, sample.weights, firstTargetName());
+                regressors.add(rnew);
+                if (runningHook() != null) {
+                    runningHook().accept(this, i + 1);
+                }
+        });
         return true;
+    }
+
+    public List<Regression> getRegressors() {
+        return regressors;
     }
 
     @Override

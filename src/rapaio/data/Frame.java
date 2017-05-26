@@ -241,11 +241,11 @@ public interface Frame extends Serializable, Printable {
      * Returns double value corresponding to given row and var index
      *
      * @param row      row number
-     * @param varIndex variable index
+     * @param col variable index
      * @return numeric value
      */
-    default double getValue(int row, int varIndex) {
-        return getVar(varIndex).getValue(row);
+    default double getValue(int row, int col) {
+        return getVar(col).getValue(row);
     }
 
     /**
@@ -263,11 +263,11 @@ public interface Frame extends Serializable, Printable {
      * Set double value for given row and var index
      *
      * @param row      row number
-     * @param varIndex var index
+     * @param col var index
      * @param value    numeric value
      */
-    default void setValue(int row, int varIndex, double value) {
-        getVar(varIndex).setValue(row, value);
+    default void setValue(int row, int col, double value) {
+        getVar(col).setValue(row, value);
     }
 
     /**
@@ -286,13 +286,13 @@ public interface Frame extends Serializable, Printable {
      * Convenient shortcut method for calling {@link Var#getIndex(int)} for a given variable.
      *
      * @param row      row number
-     * @param varIndex column number
+     * @param col column number
      * @return index value
      */
-    default int getIndex(int row, int varIndex) {
-        if (varIndex >= getVarCount())
-            throw new IllegalArgumentException("frame has " + getVarCount() + " variables, there is no var at index: " + varIndex);
-        return getVar(varIndex).getIndex(row);
+    default int getIndex(int row, int col) {
+        if (col >= getVarCount())
+            throw new IllegalArgumentException("frame has " + getVarCount() + " variables, there is no var at index: " + col);
+        return getVar(col).getIndex(row);
     }
 
     /**
@@ -310,11 +310,11 @@ public interface Frame extends Serializable, Printable {
      * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
      *
      * @param row      row number
-     * @param varIndex var index
+     * @param col var index
      * @param value    setIndex value
      */
-    default void setIndex(int row, int varIndex, int value) {
-        getVar(varIndex).setIndex(row, value);
+    default void setIndex(int row, int col, int value) {
+        getVar(col).setIndex(row, value);
     }
 
     /**
@@ -332,11 +332,11 @@ public interface Frame extends Serializable, Printable {
      * Convenient shortcut method for calling {@link Var#getLabel(int)} for given variable.
      *
      * @param row      row number
-     * @param varIndex var index
+     * @param col var index
      * @return nominal label value
      */
-    default String getLabel(int row, int varIndex) {
-        return getVar(varIndex).getLabel(row);
+    default String getLabel(int row, int col) {
+        return getVar(col).getLabel(row);
     }
 
     /**
@@ -354,11 +354,11 @@ public interface Frame extends Serializable, Printable {
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given variable.
      *
      * @param row      row number
-     * @param varIndex var index
+     * @param col var index
      * @param value    nominal label value
      */
-    default void setLabel(int row, int varIndex, String value) {
-        getVar(varIndex).setLabel(row, value);
+    default void setLabel(int row, int col, String value) {
+        getVar(col).setLabel(row, value);
     }
 
     /**
@@ -376,11 +376,11 @@ public interface Frame extends Serializable, Printable {
      * Returns binary value from the given cell
      *
      * @param row      row number
-     * @param varIndex variable index
+     * @param col variable index
      * @return binary value found
      */
-    default boolean getBinary(int row, int varIndex) {
-        return getVar(varIndex).getBinary(row);
+    default boolean getBinary(int row, int col) {
+        return getVar(col).getBinary(row);
     }
 
     /**
@@ -398,11 +398,11 @@ public interface Frame extends Serializable, Printable {
      * Binary value setter for given cell
      *
      * @param row      row number
-     * @param varIndex var index
+     * @param col var index
      * @param value    value to be set
      */
-    default void setBinary(int row, int varIndex, boolean value) {
-        getVar(varIndex).setBinary(row, value);
+    default void setBinary(int row, int col, boolean value) {
+        getVar(col).setBinary(row, value);
     }
 
     /**

@@ -103,7 +103,7 @@ public class RMSE implements Printable {
         value = Math.sqrt(total / count);
     }
 
-    public double value() {
+    public double getValue() {
         return value;
     }
 

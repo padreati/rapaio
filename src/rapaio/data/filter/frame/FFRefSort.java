@@ -26,10 +26,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
@@ -57,11 +54,11 @@ public class FFRefSort extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        List<Integer> rows = new ArrayList<>(df.getRowCount());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            rows.add(i);
+        Integer[] rowArray = new Integer[df.getRowCount()];
+        for (int i = 0; i < rowArray.length; i++) {
+            rowArray[i] = i;
         }
-        Collections.sort(rows, aggregateComparator);
-        return MappedFrame.byRow(df, Mapping.wrap(rows));
+        Arrays.sort(rowArray, aggregateComparator);
+        return MappedFrame.byRow(df, Mapping.wrap(Arrays.asList(rowArray)));
     }
 }

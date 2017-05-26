@@ -327,7 +327,6 @@ public class RTree extends AbstractRegression implements BTRegression {
             value = WeightedMean.from(df.getVar(tree.firstTargetName()), weights).getValue();
             weight = weights.stream().complete().mapToDouble().sum();
             if (weight == 0) {
-//                WS.println("ERROR");
                 value = parent!=null ? parent.value : Double.NaN;
             }
 
@@ -338,7 +337,7 @@ public class RTree extends AbstractRegression implements BTRegression {
             List<Candidate> candidateList = new ArrayList<>();
 
             ConcurrentLinkedQueue<Candidate> candidates = new ConcurrentLinkedQueue<>();
-            Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
+            Arrays.stream(tree.varSelector.nextVarNames()).forEach(testCol -> {
                 if (testCol.equals(tree.firstTargetName())) return;
 
                 if (df.getVar(testCol).getType().isNumeric()) {
