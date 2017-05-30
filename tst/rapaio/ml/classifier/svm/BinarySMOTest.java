@@ -25,7 +25,6 @@
 package rapaio.ml.classifier.svm;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
@@ -155,8 +154,8 @@ public class BinarySMOTest {
         kernels.add(new PowerKernel(2));
         kernels.add(new RationalQuadraticKernel(1));
 
-        Nominal name = Nominal.empty().withName("kernel");
-        Numeric score = Numeric.empty().withName("score");
+        NominalVar name = NominalVar.empty().withName("kernel");
+        NumericVar score = NumericVar.empty().withName("score");
 
         for (Kernel k : kernels) {
 
@@ -172,6 +171,6 @@ public class BinarySMOTest {
         }
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");
-        String out = SolidFrame.byVars(name, score).lines(name.rowCount());
+        String out = SolidFrame.byVars(name, score).lines(name.getRowCount());
     }
 }

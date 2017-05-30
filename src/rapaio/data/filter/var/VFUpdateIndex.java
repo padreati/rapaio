@@ -53,7 +53,7 @@ public class VFUpdateIndex extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.index())));
+        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.getIndex())));
         return vars[0];
     }
 }

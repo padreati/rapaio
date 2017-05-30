@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
@@ -86,7 +86,7 @@ public class OLSRegression extends AbstractRegression {
         }
         RM X = SolidRM.copy(df.mapVars(inputNames()));
         RM Y = SolidRM.copy(df.mapVars(targetNames()));
-        beta = new QR(X).solve(Y);
+        beta = QRDecomposition.from(X).solve(Y);
         return true;
     }
 
@@ -106,10 +106,10 @@ public class OLSRegression extends AbstractRegression {
 
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            for (int j = 0; j < rp.fit(target).rowCount(); j++) {
+            for (int j = 0; j < rp.fit(target).getRowCount(); j++) {
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.value(j, inputName(k));
+                    fit += beta.get(k, i) * df.getValue(j, inputName(k));
                 }
                 rp.fit(target).setValue(j, fit);
             }
@@ -120,7 +120,7 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

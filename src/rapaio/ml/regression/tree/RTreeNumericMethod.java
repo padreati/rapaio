@@ -94,30 +94,30 @@ public interface RTreeNumericMethod extends Serializable {
         @Override
         public Optional<RTree.Candidate> computeCandidate(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
-            Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
-            Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
+            Frame df = Filters.refSort(dfOld, dfOld.getVar(testVarName).refComparator());
+            Mapping cleanMapping = Mapping.wrap(df.getVar(testVarName).stream().complete().map(VSpot::getRow).collect(Collectors.toList()));
 
-            Var test = df.var(testVarName).mapRows(cleanMapping);
-            Var target = df.var(targetVarName).mapRows(cleanMapping);
+            Var test = df.getVar(testVarName).mapRows(cleanMapping);
+            Var target = df.getVar(targetVarName).mapRows(cleanMapping);
 
-            double[] leftWeight = new double[test.rowCount()];
-            double[] leftVar = new double[test.rowCount()];
-            double[] rightWeight = new double[test.rowCount()];
-            double[] rightVar = new double[test.rowCount()];
+            double[] leftWeight = new double[test.getRowCount()];
+            double[] leftVar = new double[test.getRowCount()];
+            double[] rightWeight = new double[test.getRowCount()];
+            double[] rightVar = new double[test.getRowCount()];
 
             OnlineStat so = OnlineStat.empty();
 
             double w = 0.0;
-            for (int i = 0; i < test.rowCount(); i++) {
-                so.update(target.value(i));
-                w += weights.value(i);
+            for (int i = 0; i < test.getRowCount(); i++) {
+                so.update(target.getValue(i));
+                w += weights.getValue(i);
                 leftWeight[i] = w;
                 leftVar[i] = so.variance();
             }
             w = 0.0;
-            for (int i = test.rowCount() - 1; i >= 0; i--) {
-                w += weights.value(i);
-                so.update(target.value(i));
+            for (int i = test.getRowCount() - 1; i >= 0; i--) {
+                w += weights.getValue(i);
+                so.update(target.getValue(i));
                 rightWeight[i] = w;
                 rightVar[i] += so.variance();
             }
@@ -126,10 +126,10 @@ public interface RTreeNumericMethod extends Serializable {
             double bestScore = 0.0;
 
             RTreeTestPayload p = new RTreeTestPayload(2);
-            p.totalVar = CoreTools.var(target).value();
+            p.totalVar = CoreTools.variance(target).getValue();
 
-            for (int i = c.minCount; i < test.rowCount() - c.minCount - 1; i++) {
-                if (test.value(i) == test.value(i + 1)) continue;
+            for (int i = c.minCount; i < test.getRowCount() - c.minCount - 1; i++) {
+                if (test.getValue(i) == test.getValue(i + 1)) continue;
 
                 p.splitVar[0] = leftVar[i];
                 p.splitVar[1] = rightVar[i];
@@ -140,13 +140,13 @@ public interface RTreeNumericMethod extends Serializable {
                     bestScore = value;
                     best = new RTree.Candidate(value, testVarName);
 
-                    double testValue = test.value(i);
+                    double testValue = test.getValue(i);
                     best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
-                            spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
+                            spot -> !spot.isMissing(testVarName) && spot.getValue(testVarName) <= testValue);
                     best.addGroup(
                             String.format("%s > %.6f", testVarName, testValue),
-                            spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
+                            spot -> !spot.isMissing(testVarName) && spot.getValue(testVarName) > testValue);
                 }
             }
             return (best != null) ? Optional.of(best) : Optional.empty();

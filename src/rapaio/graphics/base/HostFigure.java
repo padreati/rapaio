@@ -212,12 +212,6 @@ public abstract class HostFigure extends BaseFigure {
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildViewport(rect);
-        buildBackground(g2d, rect);
-        buildLeftPart(g2d);
-        buildBottomPart(g2d);
-    }
-
-    private void buildBackground(Graphics2D g2d, Rectangle rect) {
         setRange(buildRange());
 
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
@@ -231,9 +225,7 @@ public abstract class HostFigure extends BaseFigure {
             double titleWidth = g2d.getFontMetrics().getStringBounds(title, g2d).getWidth();
             g2d.drawString(title, (int) (rect.x + (rect.width - titleWidth) / 2), rect.y + TITLE_PAD);
         }
-    }
 
-    private void buildLeftPart(Graphics2D g2d) {
         // left part
         buildLeftMarkers();
 
@@ -273,9 +265,7 @@ public abstract class HostFigure extends BaseFigure {
             g2d.rotate(Math.PI / 2);
             g2d.translate(-xx, -yy);
         }
-    }
 
-    private void buildBottomPart(Graphics2D g2d) {
         // bottom part
         buildBottomMarkers();
 

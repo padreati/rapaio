@@ -43,14 +43,14 @@ public class BoundVar extends AbstractVar {
     }
 
     public static BoundVar from(List<Var> vars) {
-        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
+        return new BoundVar(vars.stream().map(Var::getRowCount).collect(Collectors.toList()), vars);
     }
 
     // private constructor
 
     public static BoundVar from(Var... vars) {
         return new BoundVar(
-                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
+                Arrays.stream(vars).map(Var::getRowCount).collect(Collectors.toList()),
                 Arrays.stream(vars).collect(Collectors.toList())
         );
     }
@@ -70,11 +70,11 @@ public class BoundVar extends AbstractVar {
             throw new IllegalArgumentException("List of counts is empty");
         if (vars.size() != counts.size())
             throw new IllegalArgumentException("List of counts is not equal with list of variables");
-        if (vars.stream().map(Var::type).distinct().count() != 1)
+        if (vars.stream().map(Var::getType).distinct().count() != 1)
             throw new IllegalArgumentException("It is not allowed to bind variables of different types");
 
         this.rowCount = counts.stream().mapToInt(i -> i).sum();
-        this.varType = vars.get(0).type();
+        this.varType = vars.get(0).getType();
         this.counts = new ArrayList<>();
         this.vars = new ArrayList<>();
 
@@ -91,11 +91,11 @@ public class BoundVar extends AbstractVar {
             } else {
                 this.counts.add(counts.get(i) + last);
                 this.vars.add(vars.get(i));
-                last += vars.get(i).rowCount();
+                last += vars.get(i).getRowCount();
             }
         }
 
-        this.withName(vars.get(0).name());
+        this.withName(vars.get(0).getName());
     }
 
     private int findIndex(int row) {
@@ -110,12 +110,12 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
+    public VarType getType() {
         return varType;
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rowCount;
     }
 
@@ -149,9 +149,9 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
+    public double getValue(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).value(localRow(pos, row));
+        return vars.get(pos).getValue(localRow(pos, row));
     }
 
     @Override
@@ -166,9 +166,9 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public int index(int row) {
+    public int getIndex(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).index(localRow(pos, row));
+        return vars.get(pos).getIndex(localRow(pos, row));
     }
 
     @Override
@@ -183,9 +183,9 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).label(localRow(pos, row));
+        return vars.get(pos).getLabel(localRow(pos, row));
     }
 
     @Override
@@ -200,8 +200,8 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
-        return vars.get(0).levels();
+    public String[] getLevels() {
+        return vars.get(0).getLevels();
     }
 
     @Override
@@ -210,9 +210,9 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBinary(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).binary(localRow(pos, row));
+        return vars.get(pos).getBinary(localRow(pos, row));
     }
 
     @Override
@@ -227,9 +227,9 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public long stamp(int row) {
+    public long getStamp(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).stamp(localRow(pos, row));
+        return vars.get(pos).getStamp(localRow(pos, row));
     }
 
     @Override
@@ -244,10 +244,10 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public boolean missing(int row) {
+    public boolean isMissing(int row) {
         int pos = findIndex(row);
         int localRow = localRow(pos, row);
-        return vars.get(pos).missing(localRow);
+        return vars.get(pos).isMissing(localRow);
     }
 
     @Override

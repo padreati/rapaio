@@ -46,7 +46,7 @@ public class OneRuleTest {
     private final Var heightVar;
 
     public OneRuleTest() {
-        classVar = Nominal.empty(SIZE, "False", "True").withName("class");
+        classVar = NominalVar.empty(SIZE, "False", "True").withName("class");
         classVar.setLabel(0, "True");
         classVar.setLabel(1, "True");
         classVar.setLabel(2, "True");
@@ -54,7 +54,7 @@ public class OneRuleTest {
         classVar.setLabel(4, "False");
         classVar.setLabel(5, "False");
 
-        heightVar = Numeric.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
+        heightVar = NumericVar.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class OneRuleTest {
         CFit pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            assertEquals(labels[i], pred.firstClasses().label(i));
+            assertEquals(labels[i], pred.firstClasses().getLabel(i));
         }
 
         oneRule.withMinCount(2);
@@ -77,7 +77,7 @@ public class OneRuleTest {
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            assertTrue(labels[i].contains(pred.firstClasses().label(i)));
+            assertTrue(labels[i].contains(pred.firstClasses().getLabel(i)));
         }
 
         oneRule.withMinCount(3);
@@ -85,14 +85,14 @@ public class OneRuleTest {
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            assertTrue(labels[i].equals(pred.firstClasses().label(i)));
+            assertTrue(labels[i].equals(pred.firstClasses().getLabel(i)));
         }
 
         oneRule.withMinCount(4);
         oneRule.train(df, "class");
         pred = oneRule.fit(df);
         for (int i = 1; i < SIZE; i++) {
-            assertTrue(pred.firstClasses().label(i).equals(pred.firstClasses().label(0)));
+            assertTrue(pred.firstClasses().getLabel(i).equals(pred.firstClasses().getLabel(0)));
         }
     }
 
@@ -125,7 +125,7 @@ public class OneRuleTest {
                 "> NumericRule {min=-Infinity, max=2.45, class=setosa, errors=0, total=50, acc=1 }\n" +
                 "> NumericRule {min=2.45, max=4.75, class=versicolor, errors=1, total=45, acc=0.9777778 }\n" +
                 "> NumericRule {min=4.75, max=Infinity, class=virginica, errors=6, total=55, acc=0.8909091 }\n" +
-                "\n", oneRule1.summary());
+                "\n", oneRule1.getSummary());
 
         oneRule1.printSummary();
 
@@ -171,7 +171,7 @@ public class OneRuleTest {
                 "> NominalRule {value=y, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n" +
-                "\n", oneRule2.summary());
+                "\n", oneRule2.getSummary());
     }
 
     @Test

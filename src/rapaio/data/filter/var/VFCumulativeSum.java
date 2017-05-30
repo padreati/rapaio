@@ -40,8 +40,8 @@ public class VFCumulativeSum extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        for (int i = 1; i < vars[0].rowCount(); i++) {
-            vars[0].setValue(i, vars[0].value(i - 1));
+        for (int i = 1; i < vars[0].getRowCount(); i++) {
+            vars[0].setValue(i, vars[0].getValue(i - 1));
         }
         return vars[0];
     }

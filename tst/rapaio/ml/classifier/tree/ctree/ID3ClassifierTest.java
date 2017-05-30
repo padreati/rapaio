@@ -55,8 +55,8 @@ public class ID3ClassifierTest {
         id3.fit(df);
         id3.printSummary();
 
-        DTable dtWindy = DTable.fromCounts(df.var("windy"), df.var("class"), true);
-        DTable dtOutlook = DTable.fromCounts(df.var("outlook"), df.var("class"), true);
+        DTable dtWindy = DTable.fromCounts(df.getVar("windy"), df.getVar("class"), true);
+        DTable dtOutlook = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), true);
         String splitCol = (dtWindy.splitByRowAverageEntropy() < dtOutlook.splitByRowAverageEntropy()) ? "windy" : "outlook";
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
@@ -77,8 +77,8 @@ public class ID3ClassifierTest {
         id3.fit(df);
         id3.printSummary();
 
-        DTable dtWindy = DTable.fromCounts(df.var("windy"), df.var("class"), true);
-        DTable dtOutlook = DTable.fromCounts(df.var("outlook"), df.var("class"), true);
+        DTable dtWindy = DTable.fromCounts(df.getVar("windy"), df.getVar("class"), true);
+        DTable dtOutlook = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), true);
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 

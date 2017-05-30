@@ -25,7 +25,7 @@
 package rapaio.experiment.grid;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -41,14 +41,14 @@ public class MeshGrid1D implements Serializable {
     final Var y;
     final int len;
 
-    Numeric grid;
+    NumericVar grid;
 
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.len = y.rowCount();
+        this.len = y.getRowCount();
 
-        this.grid = Numeric.empty(x.rowCount() * y.rowCount());
+        this.grid = NumericVar.empty(x.getRowCount() * y.getRowCount());
     }
 
     public Var getX() {
@@ -59,8 +59,8 @@ public class MeshGrid1D implements Serializable {
         return y;
     }
 
-    public double value(int i, int j) {
-        return grid.value(i * len + j);
+    public double getValue(int i, int j) {
+        return grid.getValue(i * len + j);
     }
 
     public void setValue(int i, int j, double value) {
@@ -71,13 +71,13 @@ public class MeshGrid1D implements Serializable {
     }
 
     public double[] quantiles(double... qs) {
-        return Quantiles.from(grid, qs).values();
+        return Quantiles.from(grid, qs).getValues();
     }
 
     public void fillWithFunction(BiFunction<Double, Double, Double> f) {
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < y.rowCount(); j++) {
-                grid.setValue(i * len + j, f.apply(x.value(i), y.value(j)));
+        for (int i = 0; i < x.getRowCount(); i++) {
+            for (int j = 0; j < y.getRowCount(); j++) {
+                grid.setValue(i * len + j, f.apply(x.getValue(i), y.getValue(j)));
             }
         }
     }
@@ -100,9 +100,9 @@ class MeshGrid1DImpl implements MeshGrid {
         this.low = low;
         this.high = high;
 
-        this.sides = new int[g.grid.rowCount()];
-        for (int i = 0; i < g.x.rowCount(); i++) {
-            for (int j = 0; j < g.y.rowCount(); j++) {
+        this.sides = new int[g.grid.getRowCount()];
+        for (int i = 0; i < g.x.getRowCount(); i++) {
+            for (int j = 0; j < g.y.getRowCount(); j++) {
                 sides[i * g.len + j] = sideCompute(i, j);
             }
         }
@@ -124,10 +124,10 @@ class MeshGrid1DImpl implements MeshGrid {
     }
 
     public int sideCompute(int i, int j) {
-        if (g.value(i, j) < low) {
+        if (g.getValue(i, j) < low) {
             return 0;
         }
-        if (g.value(i, j) > high) {
+        if (g.getValue(i, j) > high) {
             return 2;
         }
         return 1;
@@ -136,9 +136,9 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double xLow(int i, int j) {
         if ((side(i, j) == 0 && side(i + 1, j) >= 1) || (side(i, j) >= 1 && side(i + 1, j) == 0)) {
-            double value = g.x.value(i) + Math.abs(g.x.value(i + 1) - g.x.value(i)) * Math.abs(low - g.value(i, j)) / Math.abs(g.value(i + 1, j) - g.value(i, j));
-            return Math.max(g.x.value(i), Math.min(g.x.value(i + 1), value));
-//            if (value < g.x.value(i) || value > g.x.value(i + 1)) {
+            double value = g.x.getValue(i) + Math.abs(g.x.getValue(i + 1) - g.x.getValue(i)) * Math.abs(low - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
+            return Math.max(g.x.getValue(i), Math.min(g.x.getValue(i + 1), value));
+//            if (value < g.x.getValue(i) || value > g.x.getValue(i + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
 //            return value;
@@ -149,9 +149,9 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double xHigh(int i, int j) {
         if ((side(i, j) <= 1 && side(i + 1, j) == 2) || (side(i, j) == 2 && side(i + 1, j) <= 1)) {
-            double value = g.x.value(i) + Math.abs(g.x.value(i + 1) - g.x.value(i)) * Math.abs(high - g.value(i, j)) / Math.abs(g.value(i + 1, j) - g.value(i, j));
-            return Math.max(g.x.value(i), Math.min(g.x.value(i + 1), value));
-//            if (value < g.x.value(i) || value > g.x.value(i + 1)) {
+            double value = g.x.getValue(i) + Math.abs(g.x.getValue(i + 1) - g.x.getValue(i)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
+            return Math.max(g.x.getValue(i), Math.min(g.x.getValue(i + 1), value));
+//            if (value < g.x.getValue(i) || value > g.x.getValue(i + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
 //            return value;
@@ -162,9 +162,9 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double yLow(int i, int j) {
         if ((side(i, j) == 0 && side(i, j + 1) >= 1) || (side(i, j) >= 1 && side(i, j + 1) == 0)) {
-            double value = g.y.value(j) + Math.abs(g.y.value(j + 1) - g.y.value(j)) * Math.abs(g.value(i, j) - low) / Math.abs(g.value(i, j + 1) - g.value(i, j));
-            return Math.max(g.y.value(j), Math.min(g.y.value(j + 1), value));
-//            if (value < g.y.value(j) || value > g.y.value(j + 1)) {
+            double value = g.y.getValue(j) + Math.abs(g.y.getValue(j + 1) - g.y.getValue(j)) * Math.abs(g.getValue(i, j) - low) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
+            return Math.max(g.y.getValue(j), Math.min(g.y.getValue(j + 1), value));
+//            if (value < g.y.getValue(j) || value > g.y.getValue(j + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
 //            return value;
@@ -175,9 +175,9 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double yHigh(int i, int j) {
         if ((side(i, j) <= 1 && side(i, j + 1) == 2) || (side(i, j) == 2 && side(i, j + 1) <= 1)) {
-            double value = g.y.value(j) + Math.abs(g.y.value(j + 1) - g.y.value(j)) * Math.abs(high - g.value(i, j)) / Math.abs(g.value(i, j + 1) - g.value(i, j));
-            return Math.max(g.y.value(j), Math.min(g.y.value(j + 1), value));
-//            if (value < g.y.value(j) || value > g.y.value(j + 1)) {
+            double value = g.y.getValue(j) + Math.abs(g.y.getValue(j + 1) - g.y.getValue(j)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
+            return Math.max(g.y.getValue(j), Math.min(g.y.getValue(j + 1), value));
+//            if (value < g.y.getValue(j) || value > g.y.getValue(j + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
 //            return value;

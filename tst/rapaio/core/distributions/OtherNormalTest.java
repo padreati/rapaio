@@ -53,9 +53,9 @@ public class OtherNormalTest {
     @Test
     public void testStandardQuantile() {
         Normal d = new Normal(10, 2);
-        for (int i = 0; i < df.rowCount(); i++) {
-            if (df.value(i, "x") > 0 && df.value(i, "x") < 1) {
-                Assert.assertEquals(df.value(i, "quantile"), d.quantile(df.value(i, "x")), ERROR);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            if (df.getValue(i, "x") > 0 && df.getValue(i, "x") < 1) {
+                Assert.assertEquals(df.getValue(i, "quantile"), d.quantile(df.getValue(i, "x")), ERROR);
             }
         }
     }
@@ -63,16 +63,16 @@ public class OtherNormalTest {
     @Test
     public void testStandardPdf() {
         Normal d = new Normal(10, 2);
-        for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.value(i, "pdf"), d.pdf(df.value(i, "x")), ERROR);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            Assert.assertEquals(df.getValue(i, "pdf"), d.pdf(df.getValue(i, "x")), ERROR);
         }
     }
 
     @Test
     public void testStandardCdf() {
         Normal d = new Normal(10, 2);
-        for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.value(i, "cdf"), d.cdf(df.value(i, "x")), ERROR);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            Assert.assertEquals(df.getValue(i, "cdf"), d.cdf(df.getValue(i, "x")), ERROR);
         }
     }
 

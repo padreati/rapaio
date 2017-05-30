@@ -50,7 +50,7 @@ public class FFRemoveVars extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount(), df);
+        checkRangeVars(0, df.getVarCount(), df);
         return df.removeVars(varNames);
     }
 }

@@ -1,4 +1,5 @@
-/* Apache License
+/*
+ * Apache License
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
@@ -28,82 +29,60 @@ import rapaio.math.linear.RM;
 import java.io.Serializable;
 
 /**
- * Eigenvalues and eigen vectors of a real matrix.
+ * Eigenvalues and eigenvectors of a squared real matrix.
  * <p>
- * If A is symmetric, then A = RV*D*RV' where the eigenvalue matrix D is diagonal
- * and the eigenvector matrix RV is orthogonal. I.e. A = RV.prod(D.prod(RV.t())) and RV.prod(RV.prod()) equals the
- * identity matrix.
+ * If A is symmetric, then A = V*D*V' where the eigenvalue matrix D is diagonal
+ * and the eigenvector matrix V is orthogonal. I.e. A = V.dot(D.dot(V.t())) and I = V.dot(V.t()).
  * <p>
  * If A is not symmetric, then the eigenvalue matrix D is block diagonal with
  * the real eigenvalues in 1-by-1 blocks and any complex eigenvalues, lambda +
- * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of RV represent
- * the eigenvectors in the sense that A*RV = RV*D, i.e. A.times(RV) equals
- * RV.times(D). The matrix RV may be badly conditioned, or even singular, so the
- * validity of the equation A = RV*D*inverse(RV) depends upon RV.cond().
+ * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of V represent
+ * the eigenvectors in the sense that A*V = V*D, i.e. A.dot(V) equals
+ * V.dot(D). The matrix V may be badly conditioned, or even singular, so the
+ * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
+public class EigenDecomposition implements Serializable {
 
-public class EigenvalueDecomposition implements Serializable {
+    public static EigenDecomposition from(RM a) {
+        return new EigenDecomposition(a);
+    }
 
     private static final long serialVersionUID = 5064091847331016868L;
 
-    /**
-     * Row and column dimension (square matrix).
-     *
-     * @serial matrix dimension.
-     */
+     // Row and column dimension (square matrix).
     private int dimension;
 
-    /**
-     * Arrays for internal storage of eigenvalues.
-     *
-     * @serial internal storage of eigenvalues.
-     */
-    private double[] realEigenValues, imagEigenValues;
+     // Arrays for internal storage of eigenvalues.
+    private double[] eigenValues1, eigenValues2;
 
-    /**
-     * Array for internal storage of eigenvectors.
-     *
-     * @serial internal storage of eigenvectors.
-     */
+    // Array for internal storage of eigenvectors.
     private RM eigenVectors;
 
-    /**
-     * Array for internal storage of nonsymmetric Hessenberg form.
-     *
-     * @serial internal storage of nonsymmetric Hessenberg form.
-     */
+    //Array for internal storage of nonsymmetric Hessenberg form.
     private double[][] nonSymHessenbergForm;
 
-    /**
-     * Working storage for nonsymmetric algorithm.
-     *
-     * @serial working storage for nonsymmetric algorithm.
-     */
+    // Working storage for nonsymmetric algorithm.
     private double[] ort;
 
     /**
      * Check for symmetry, then construct the eigenvalue decomposition
      * Structure to access D and V.
      *
-     * @param rMatrixArg Square matrix
+     * @param a Square matrix
      */
-
-    public EigenvalueDecomposition(RM rMatrixArg) {
-        RM rMatrix = rMatrixArg.solidCopy();
-        dimension = rMatrixArg.colCount();
+    private EigenDecomposition(RM a) {
+        dimension = a.getColCount();
         eigenVectors = SolidRM.empty(dimension, dimension);
-        realEigenValues = new double[dimension];
-        imagEigenValues = new double[dimension];
+        eigenValues1 = new double[dimension];
+        eigenValues2 = new double[dimension];
 
-        if (isSymmetric(rMatrix)) {
+        if (isSymmetric(a)) {
             for (int row = 0; row < dimension; row++) {
                 for (int col = 0; col < dimension; col++) {
-                    eigenVectors.set(row, col, rMatrix.get(row, col));
+                    eigenVectors.set(row, col, a.get(row, col));
                 }
             }
-
             tridiagonalize();
-
             diagonalize();
 
         } else {
@@ -112,22 +91,20 @@ public class EigenvalueDecomposition implements Serializable {
 
             for (int col = 0; col < dimension; col++) {
                 for (int row = 0; row < dimension; row++) {
-                    nonSymHessenbergForm[row][col] = rMatrix.get(row, col);
+                    nonSymHessenbergForm[row][col] = a.get(row, col);
                 }
             }
-
             reduceToHessenbergForm();
-
             hessenbergToRealSchurForm();
         }
     }
 
-	private boolean isSymmetric(RM rMatrix) {
+	private boolean isSymmetric(RM a) {
 		
 		boolean returnValue = true;
 		for (int row = 0; (row < dimension) & returnValue; row++) {
             for (int col = 0; (col < dimension); col++) {
-                if (!(rMatrix.get(col, row) == rMatrix.get(row, col))) {
+                if (!(a.get(col, row) == a.get(row, col))) {
                     returnValue = false;
                     break;
                 }
@@ -135,10 +112,6 @@ public class EigenvalueDecomposition implements Serializable {
         }
 		return returnValue;
 	}
-
-/* ------------------------
-   Private Methods
- * ------------------------ */
 
     // Symmetric Householder reduction to tridiagonal form.
 
@@ -150,7 +123,7 @@ public class EigenvalueDecomposition implements Serializable {
         //  Fortran subroutine in EISPACK.
 
         for (int col = 0; col < dimension; col++) {
-            realEigenValues[col] = eigenVectors.get(dimension - 1, col);
+            eigenValues1[col] = eigenVectors.get(dimension - 1, col);
         }
 
         // Householder reduction to tridiagonal form.
@@ -162,12 +135,12 @@ public class EigenvalueDecomposition implements Serializable {
             double scale = 0.0;
             double h = 0.0;
             for (int k = 0; k < i; k++) {
-                scale = scale + Math.abs(realEigenValues[k]);
+                scale = scale + Math.abs(eigenValues1[k]);
             }
             if (scale == 0.0) {
-                imagEigenValues[i] = realEigenValues[i - 1];
+                eigenValues2[i] = eigenValues1[i - 1];
                 for (int j = 0; j < i; j++) {
-                    realEigenValues[j] = eigenVectors.get(i - 1, j);
+                    eigenValues1[j] = eigenVectors.get(i - 1, j);
                     eigenVectors.set(i, j, 0.0);
                     eigenVectors.set(j, i, 0.0);
                 }
@@ -176,53 +149,53 @@ public class EigenvalueDecomposition implements Serializable {
                 // Generate Householder vector.
 
                 for (int k = 0; k < i; k++) {
-                    realEigenValues[k] /= scale;
-                    h += realEigenValues[k] * realEigenValues[k];
+                    eigenValues1[k] /= scale;
+                    h += eigenValues1[k] * eigenValues1[k];
                 }
-                double f = realEigenValues[i - 1];
+                double f = eigenValues1[i - 1];
                 double g = Math.sqrt(h);
                 if (f > 0) {
                     g = -g;
                 }
-                imagEigenValues[i] = scale * g;
+                eigenValues2[i] = scale * g;
                 h = h - f * g;
-                realEigenValues[i - 1] = f - g;
+                eigenValues1[i - 1] = f - g;
                 for (int j = 0; j < i; j++) {
-                    imagEigenValues[j] = 0.0;
+                    eigenValues2[j] = 0.0;
                 }
 
                 // Apply similarity transformation to remaining columns.
 
                 for (int j = 0; j < i; j++) {
-                    f = realEigenValues[j];
+                    f = eigenValues1[j];
                     eigenVectors.set(j, i, f);
-                    g = imagEigenValues[j] + eigenVectors.get(j, j) * f;
+                    g = eigenValues2[j] + eigenVectors.get(j, j) * f;
                     for (int k = j + 1; k <= i - 1; k++) {
-                        g += eigenVectors.get(k, j) * realEigenValues[k];
-                        imagEigenValues[k] += eigenVectors.get(k, j) * f;
+                        g += eigenVectors.get(k, j) * eigenValues1[k];
+                        eigenValues2[k] += eigenVectors.get(k, j) * f;
                     }
-                    imagEigenValues[j] = g;
+                    eigenValues2[j] = g;
                 }
                 f = 0.0;
                 for (int j = 0; j < i; j++) {
-                    imagEigenValues[j] /= h;
-                    f += imagEigenValues[j] * realEigenValues[j];
+                    eigenValues2[j] /= h;
+                    f += eigenValues2[j] * eigenValues1[j];
                 }
                 double hh = f / (h + h);
                 for (int j = 0; j < i; j++) {
-                    imagEigenValues[j] -= hh * realEigenValues[j];
+                    eigenValues2[j] -= hh * eigenValues1[j];
                 }
                 for (int j = 0; j < i; j++) {
-                    f = realEigenValues[j];
-                    g = imagEigenValues[j];
+                    f = eigenValues1[j];
+                    g = eigenValues2[j];
                     for (int k = j; k <= i - 1; k++) {
-                        eigenVectors.increment(k, j, -(f * imagEigenValues[k] + g * realEigenValues[k]));
+                        eigenVectors.increment(k, j, -(f * eigenValues2[k] + g * eigenValues1[k]));
                     }
-                    realEigenValues[j] = eigenVectors.get(i - 1, j);
+                    eigenValues1[j] = eigenVectors.get(i - 1, j);
                     eigenVectors.set(i, j, 0.0);
                 }
             }
-            realEigenValues[i] = h;
+            eigenValues1[i] = h;
         }
 
         // Accumulate transformations.
@@ -230,10 +203,10 @@ public class EigenvalueDecomposition implements Serializable {
         for (int i = 0; i < dimension - 1; i++) {
             eigenVectors.set(dimension - 1, i, eigenVectors.get(i, i));
             eigenVectors.set(i, i, 1.0);
-            double h = realEigenValues[i + 1];
+            double h = eigenValues1[i + 1];
             if (h != 0.0) {
                 for (int k = 0; k <= i; k++) {
-                    realEigenValues[k] = eigenVectors.get(k, i + 1) / h;
+                    eigenValues1[k] = eigenVectors.get(k, i + 1) / h;
                 }
                 for (int j = 0; j <= i; j++) {
                     double g = 0.0;
@@ -241,7 +214,7 @@ public class EigenvalueDecomposition implements Serializable {
                         g += eigenVectors.get(k, i + 1) * eigenVectors.get(k, j);
                     }
                     for (int k = 0; k <= i; k++) {
-                        eigenVectors.increment(k, j, -g * realEigenValues[k]);
+                        eigenVectors.increment(k, j, -g * eigenValues1[k]);
                     }
                 }
             }
@@ -250,11 +223,11 @@ public class EigenvalueDecomposition implements Serializable {
             }
         }
         for (int j = 0; j < dimension; j++) {
-            realEigenValues[j] = eigenVectors.get(dimension - 1, j);
+            eigenValues1[j] = eigenVectors.get(dimension - 1, j);
             eigenVectors.set(dimension - 1, j, 0.0);
         }
         eigenVectors.set(dimension - 1, dimension - 1, 1.0);
-        imagEigenValues[0] = 0.0;
+        eigenValues2[0] = 0.0;
     }
 
     // Symmetric tridiagonal QL algorithm.
@@ -267,9 +240,9 @@ public class EigenvalueDecomposition implements Serializable {
         //  Fortran subroutine in EISPACK.
 
         for (int i = 1; i < dimension; i++) {
-            imagEigenValues[i - 1] = imagEigenValues[i];
+            eigenValues2[i - 1] = eigenValues2[i];
         }
-        imagEigenValues[dimension - 1] = 0.0;
+        eigenValues2[dimension - 1] = 0.0;
 
         double f = 0.0;
         double tst1 = 0.0;
@@ -278,10 +251,10 @@ public class EigenvalueDecomposition implements Serializable {
 
             // Find small subdiagonal element
 
-            tst1 = Math.max(tst1, Math.abs(realEigenValues[l]) + Math.abs(imagEigenValues[l]));
+            tst1 = Math.max(tst1, Math.abs(eigenValues1[l]) + Math.abs(eigenValues2[l]));
             int m = l;
             while (m < dimension) {
-                if (Math.abs(imagEigenValues[m]) <= eps * tst1) {
+                if (Math.abs(eigenValues2[m]) <= eps * tst1) {
                     break;
                 }
                 m++;
@@ -297,42 +270,42 @@ public class EigenvalueDecomposition implements Serializable {
 
                     // Compute implicit shift
 
-                    double g = realEigenValues[l];
-                    double p = (realEigenValues[l + 1] - g) / (2.0 * imagEigenValues[l]);
+                    double g = eigenValues1[l];
+                    double p = (eigenValues1[l + 1] - g) / (2.0 * eigenValues2[l]);
                     double r = Math.hypot(p, 1.0);
                     if (p < 0) {
                         r = -r;
                     }
-                    realEigenValues[l] = imagEigenValues[l] / (p + r);
-                    realEigenValues[l + 1] = imagEigenValues[l] * (p + r);
-                    double dl1 = realEigenValues[l + 1];
-                    double h = g - realEigenValues[l];
+                    eigenValues1[l] = eigenValues2[l] / (p + r);
+                    eigenValues1[l + 1] = eigenValues2[l] * (p + r);
+                    double dl1 = eigenValues1[l + 1];
+                    double h = g - eigenValues1[l];
                     for (int i = l + 2; i < dimension; i++) {
-                        realEigenValues[i] -= h;
+                        eigenValues1[i] -= h;
                     }
                     f = f + h;
 
                     // Implicit QL transformation.
 
-                    p = realEigenValues[m];
+                    p = eigenValues1[m];
                     double c = 1.0;
                     double c2 = c;
                     double c3 = c;
-                    double el1 = imagEigenValues[l + 1];
+                    double el1 = eigenValues2[l + 1];
                     double s = 0.0;
                     double s2 = 0.0;
                     for (int i = m - 1; i >= l; i--) {
                         c3 = c2;
                         c2 = c;
                         s2 = s;
-                        g = c * imagEigenValues[i];
+                        g = c * eigenValues2[i];
                         h = c * p;
-                        r = Math.hypot(p, imagEigenValues[i]);
-                        imagEigenValues[i + 1] = s * r;
-                        s = imagEigenValues[i] / r;
+                        r = Math.hypot(p, eigenValues2[i]);
+                        eigenValues2[i + 1] = s * r;
+                        s = eigenValues2[i] / r;
                         c = p / r;
-                        p = c * realEigenValues[i] - s * g;
-                        realEigenValues[i + 1] = h + s * (c * g + s * realEigenValues[i]);
+                        p = c * eigenValues1[i] - s * g;
+                        eigenValues1[i + 1] = h + s * (c * g + s * eigenValues1[i]);
 
                         // Accumulate transformation.
 
@@ -342,32 +315,32 @@ public class EigenvalueDecomposition implements Serializable {
                             eigenVectors.set(k, i, c * eigenVectors.get(k, i) - s * h);
                         }
                     }
-                    p = -s * s2 * c3 * el1 * imagEigenValues[l] / dl1;
-                    imagEigenValues[l] = s * p;
-                    realEigenValues[l] = c * p;
+                    p = -s * s2 * c3 * el1 * eigenValues2[l] / dl1;
+                    eigenValues2[l] = s * p;
+                    eigenValues1[l] = c * p;
 
                     // Check for convergence.
 
-                } while (Math.abs(imagEigenValues[l]) > eps * tst1);
+                } while (Math.abs(eigenValues2[l]) > eps * tst1);
             }
-            realEigenValues[l] = realEigenValues[l] + f;
-            imagEigenValues[l] = 0.0;
+            eigenValues1[l] = eigenValues1[l] + f;
+            eigenValues2[l] = 0.0;
         }
 
         // Sort eigenvalues and corresponding vectors.
 
         for (int i = 0; i < dimension - 1; i++) {
             int k = i;
-            double p = realEigenValues[i];
+            double p = eigenValues1[i];
             for (int j = i + 1; j < dimension; j++) {
-                if (realEigenValues[j] < p) {
+                if (eigenValues1[j] < p) {
                     k = j;
-                    p = realEigenValues[j];
+                    p = eigenValues1[j];
                 }
             }
             if (k != i) {
-                realEigenValues[k] = realEigenValues[i];
-                realEigenValues[i] = p;
+                eigenValues1[k] = eigenValues1[i];
+                eigenValues1[i] = p;
                 for (int j = 0; j < dimension; j++) {
                     p = eigenVectors.get(j, i);
                     eigenVectors.set(j, i, eigenVectors.get(j, k));
@@ -502,16 +475,26 @@ public class EigenvalueDecomposition implements Serializable {
 
         // Initialize
 
-        int n = dimension - 1;
+        int nn = this.dimension;
+        int n = nn - 1;
         int low = 0;
-        int high = dimension - 1;
+        int high = nn - 1;
         double eps = Math.pow(2.0, -52.0);
         double exshift = 0.0;
         double p = 0, q = 0, r = 0, s = 0, z = 0, t, w, x, y;
 
         // Store roots isolated by balanc and compute matrix norm
 
-        double norm = storeRoot(low, high);
+        double norm = 0.0;
+        for (int i = 0; i < nn; i++) {
+            if (i < low | i > high) {
+                eigenValues1[i] = nonSymHessenbergForm[i][i];
+                eigenValues2[i] = 0.0;
+            }
+            for (int j = Math.max(i - 1, 0); j < nn; j++) {
+                norm = norm + Math.abs(nonSymHessenbergForm[i][j]);
+            }
+        }
 
         // Outer loop over eigenvalue index
 
@@ -537,8 +520,8 @@ public class EigenvalueDecomposition implements Serializable {
 
             if (l == n) {
                 nonSymHessenbergForm[n][n] = nonSymHessenbergForm[n][n] + exshift;
-                realEigenValues[n] = nonSymHessenbergForm[n][n];
-                imagEigenValues[n] = 0.0;
+                eigenValues1[n] = nonSymHessenbergForm[n][n];
+                eigenValues2[n] = 0.0;
                 n--;
                 iter = 0;
 
@@ -561,13 +544,13 @@ public class EigenvalueDecomposition implements Serializable {
                     } else {
                         z = p - z;
                     }
-                    realEigenValues[n - 1] = x + z;
-                    realEigenValues[n] = realEigenValues[n - 1];
+                    eigenValues1[n - 1] = x + z;
+                    eigenValues1[n] = eigenValues1[n - 1];
                     if (z != 0.0) {
-                        realEigenValues[n] = x - w / z;
+                        eigenValues1[n] = x - w / z;
                     }
-                    imagEigenValues[n - 1] = 0.0;
-                    imagEigenValues[n] = 0.0;
+                    eigenValues2[n - 1] = 0.0;
+                    eigenValues2[n] = 0.0;
                     x = nonSymHessenbergForm[n][n - 1];
                     s = Math.abs(x) + Math.abs(z);
                     p = x / s;
@@ -578,7 +561,7 @@ public class EigenvalueDecomposition implements Serializable {
 
                     // Row modification
 
-                    for (int j = n - 1; j < dimension; j++) {
+                    for (int j = n - 1; j < nn; j++) {
                         z = nonSymHessenbergForm[n - 1][j];
                         nonSymHessenbergForm[n - 1][j] = q * z + p * nonSymHessenbergForm[n][j];
                         nonSymHessenbergForm[n][j] = q * nonSymHessenbergForm[n][j] - p * z;
@@ -603,10 +586,10 @@ public class EigenvalueDecomposition implements Serializable {
                     // Complex pair
 
                 } else {
-                    realEigenValues[n - 1] = x + p;
-                    realEigenValues[n] = x + p;
-                    imagEigenValues[n - 1] = z;
-                    imagEigenValues[n] = -z;
+                    eigenValues1[n - 1] = x + p;
+                    eigenValues1[n] = x + p;
+                    eigenValues2[n - 1] = z;
+                    eigenValues2[n] = -z;
                 }
                 n = n - 2;
                 iter = 0;
@@ -729,7 +712,7 @@ public class EigenvalueDecomposition implements Serializable {
 
                         // Row modification
 
-                        for (int j = k; j < dimension; j++) {
+                        for (int j = k; j < nn; j++) {
                             p = nonSymHessenbergForm[k][j] + q * nonSymHessenbergForm[k + 1][j];
                             if (notlast) {
                                 p = p + r * nonSymHessenbergForm[k + 2][j];
@@ -773,9 +756,9 @@ public class EigenvalueDecomposition implements Serializable {
             return;
         }
 
-        for (n = dimension - 1; n >= 0; n--) {
-            p = realEigenValues[n];
-            q = imagEigenValues[n];
+        for (n = nn - 1; n >= 0; n--) {
+            p = eigenValues1[n];
+            q = eigenValues2[n];
 
             // Real vector
 
@@ -788,12 +771,12 @@ public class EigenvalueDecomposition implements Serializable {
                     for (int j = l; j <= n; j++) {
                         r = r + nonSymHessenbergForm[i][j] * nonSymHessenbergForm[j][n];
                     }
-                    if (imagEigenValues[i] < 0.0) {
+                    if (eigenValues2[i] < 0.0) {
                         z = w;
                         s = r;
                     } else {
                         l = i;
-                        if (imagEigenValues[i] == 0.0) {
+                        if (eigenValues2[i] == 0.0) {
                             if (w != 0.0) {
                                 nonSymHessenbergForm[i][n] = -r / w;
                             } else {
@@ -805,7 +788,7 @@ public class EigenvalueDecomposition implements Serializable {
                         } else {
                             x = nonSymHessenbergForm[i][i + 1];
                             y = nonSymHessenbergForm[i + 1][i];
-                            q = (realEigenValues[i] - p) * (realEigenValues[i] - p) + imagEigenValues[i] * imagEigenValues[i];
+                            q = (eigenValues1[i] - p) * (eigenValues1[i] - p) + eigenValues2[i] * eigenValues2[i];
                             t = (x * s - z * r) / q;
                             nonSymHessenbergForm[i][n] = t;
                             if (Math.abs(x) > Math.abs(z)) {
@@ -853,13 +836,13 @@ public class EigenvalueDecomposition implements Serializable {
                     }
                     w = nonSymHessenbergForm[i][i] - p;
 
-                    if (imagEigenValues[i] < 0.0) {
+                    if (eigenValues2[i] < 0.0) {
                         z = w;
                         r = ra;
                         s = sa;
                     } else {
                         l = i;
-                        if (imagEigenValues[i] == 0) {
+                        if (eigenValues2[i] == 0) {
                             cdiv(-ra, -sa, w, q);
                             nonSymHessenbergForm[i][n - 1] = cdivr;
                             nonSymHessenbergForm[i][n] = cdivi;
@@ -869,8 +852,8 @@ public class EigenvalueDecomposition implements Serializable {
 
                             x = nonSymHessenbergForm[i][i + 1];
                             y = nonSymHessenbergForm[i + 1][i];
-                            vr = (realEigenValues[i] - p) * (realEigenValues[i] - p) + imagEigenValues[i] * imagEigenValues[i] - q * q;
-                            vi = (realEigenValues[i] - p) * 2.0 * q;
+                            vr = (eigenValues1[i] - p) * (eigenValues1[i] - p) + eigenValues2[i] * eigenValues2[i] - q * q;
+                            vi = (eigenValues1[i] - p) * 2.0 * q;
                             if (vr == 0.0 & vi == 0.0) {
                                 vr = eps * norm * (Math.abs(w) + Math.abs(q) +
                                         Math.abs(x) + Math.abs(y) + Math.abs(z));
@@ -904,9 +887,9 @@ public class EigenvalueDecomposition implements Serializable {
 
         // Vectors of isolated roots
 
-        for (int i = 0; i < dimension; i++) {
+        for (int i = 0; i < nn; i++) {
             if (i < low | i > high) {
-                for (int j = i; j < dimension; j++) {
+                for (int j = i; j < nn; j++) {
                     eigenVectors.set(i, j, nonSymHessenbergForm[i][j]);
                 }
             }
@@ -914,7 +897,7 @@ public class EigenvalueDecomposition implements Serializable {
 
         // Back transformation to get eigenvectors of original matrix
 
-        for (int j = dimension - 1; j >= low; j--) {
+        for (int j = nn - 1; j >= low; j--) {
             for (int i = low; i <= high; i++) {
                 z = 0.0;
                 for (int k = low; k <= Math.min(j, high); k++) {
@@ -925,27 +908,11 @@ public class EigenvalueDecomposition implements Serializable {
         }
     }
 
-	private double storeRoot(int low, int high) {
-		double norm = 0.0;
-        for (int i = 0; i < dimension; i++) {
-            if (i < low | i > high) {
-                realEigenValues[i] = nonSymHessenbergForm[i][i];
-                imagEigenValues[i] = 0.0;
-            }
-            for (int j = Math.max(i - 1, 0); j < dimension; j++) {
-                norm = norm + Math.abs(nonSymHessenbergForm[i][j]);
-            }
-        }
-		return norm;
-	}
-
-
     /**
-     * Return the eigen vector matrix
+     * Return the eigenvector matrix
      *
      * @return V
      */
-
     public RM getV() {
         return eigenVectors;
     }
@@ -955,9 +922,8 @@ public class EigenvalueDecomposition implements Serializable {
      *
      * @return real(diag(D))
      */
-
     public double[] getRealEigenvalues() {
-        return realEigenValues;
+        return eigenValues1;
     }
 
     /**
@@ -965,27 +931,25 @@ public class EigenvalueDecomposition implements Serializable {
      *
      * @return imag(diag(D))
      */
-
     public double[] getImagEigenvalues() {
-        return imagEigenValues;
+        return eigenValues2;
     }
 
     /**
      * Return the block diagonal eigenvalue matrix
      *
-     * @return D
+     * @return D the block diagonal eigenvalue matrix
      */
-
     public RM getD() {
-        RM rMatrix = SolidRM.empty(dimension, dimension);
+        RM d = SolidRM.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
-            rMatrix.set(i, i, realEigenValues[i]);
-            if (imagEigenValues[i] > 0) {
-                rMatrix.set(i, i + 1, imagEigenValues[i]);
-            } else if (imagEigenValues[i] < 0) {
-                rMatrix.set(i, i - 1, imagEigenValues[i]);
+            d.set(i, i, eigenValues1[i]);
+            if (eigenValues2[i] > 0) {
+                d.set(i, i + 1, eigenValues2[i]);
+            } else if (eigenValues2[i] < 0) {
+                d.set(i, i - 1, eigenValues2[i]);
             }
         }
-        return rMatrix;
+        return d;
     }
 }

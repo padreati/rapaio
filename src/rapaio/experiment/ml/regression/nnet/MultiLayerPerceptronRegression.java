@@ -145,8 +145,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
-        for (String varName : df.varNames()) {
-            if (df.var(varName).type().isNominal()) {
+        for (String varName : df.getVarNames()) {
+            if (df.getVar(varName).getType().isNominal()) {
                 throw new IllegalArgumentException("perceptrons can't train nominal features");
             }
         }
@@ -164,14 +164,14 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
         int pos;
         for (int kk = 0; kk < runs; kk++) {
-            pos = RandomSource.nextInt(df.rowCount());
+            pos = RandomSource.nextInt(df.getRowCount());
 
             // set inputs
             for (int i = 0; i < inputNames().length; i++) {
-                if (df.missing(pos, inputName(i))) {
+                if (df.isMissing(pos, inputName(i))) {
                     throw new RuntimeException("detected NaN in input values");
                 }
-                net[0][i + 1].value = df.value(pos, inputName(i));
+                net[0][i + 1].value = df.getValue(pos, inputName(i));
             }
 
             // feed forward
@@ -197,7 +197,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, targetName(i));
+                double expected = df.getValue(pos, targetName(i));
                 double actual = net[last][i].value;
                 net[last][i].gamma = function.differential(actual) * (expected - actual);
             }
@@ -228,11 +228,11 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     @Override
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.build(this, df, withResiduals);
-        for (int pos = 0; pos < df.rowCount(); pos++) {
+        for (int pos = 0; pos < df.getRowCount(); pos++) {
 
             // set inputs
             for (int i = 0; i < inputNames().length; i++) {
-                net[0][i + 1].value = df.value(pos, inputName(i));
+                net[0][i + 1].value = df.getValue(pos, inputName(i));
             }
 
             // feed forward
@@ -256,7 +256,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

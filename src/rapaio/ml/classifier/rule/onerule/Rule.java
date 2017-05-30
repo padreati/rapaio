@@ -52,7 +52,7 @@ public abstract class Rule implements Serializable {
     }
 
     public String getTargetClass() {
-        return dv.label(targetIndex);
+        return dv.getLabel(targetIndex);
     }
 
     public double getErrorCount() {

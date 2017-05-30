@@ -102,7 +102,7 @@ public class ConstantRegression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return fullName();
     }
 }

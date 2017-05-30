@@ -24,7 +24,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -44,7 +44,7 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOpt... opts) {
-        this(Numeric.seq(0, y.rowCount() - 1), y, opts);
+        this(NumericVar.seq(0, y.getRowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOpt... opts) {
@@ -55,15 +55,15 @@ public class Lines extends PlotComponent {
 
     @Override
     public Range buildRange() {
-        if (x.rowCount() == 0) {
+        if (x.getRowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < x.rowCount(); i++) {
-            if (x.missing(i) || y.missing(i)) {
+        for (int i = 0; i < x.getRowCount(); i++) {
+            if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.value(i), y.value(i));
+            range.union(x.getValue(i), y.getValue(i));
         }
         return range;
     }
@@ -74,12 +74,12 @@ public class Lines extends PlotComponent {
         g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < x.rowCount(); i++) {
+        for (int i = 1; i < x.getRowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = x.value(i - 1);
-            double y1 = y.value(i - 1);
-            double x2 = x.value(i);
-            double y2 = y.value(i);
+            double x1 = x.getValue(i - 1);
+            double y1 = y.getValue(i - 1);
+            double x2 = x.getValue(i);
+            double y2 = y.getValue(i);
 
             Range r = new Clip(parent.getRange()).lineClip(x1, y1, x2, y2);
             if (r != null) {

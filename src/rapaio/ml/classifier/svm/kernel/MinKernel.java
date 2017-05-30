@@ -42,7 +42,7 @@ public class MinKernel extends AbstractKernel {
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double sum = 0;
         for (String varName : varNames) {
-            sum += Math.min(df1.value(row1, varName), df2.value(row2, varName));
+            sum += Math.min(df1.getValue(row1, varName), df2.getValue(row2, varName));
         }
         return sum;
     }

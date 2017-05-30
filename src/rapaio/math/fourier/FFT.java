@@ -26,7 +26,7 @@
 package rapaio.math.fourier;
 
 import rapaio.data.Mapping;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.util.Pair;
 
@@ -40,7 +40,7 @@ public class FFT {
     // compute the FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> fft(Pair<Var, Var> x) {
 
-        int N = x._1.rowCount();
+        int N = x._1.getRowCount();
 
         // base case
         if (N == 1) return x;
@@ -66,18 +66,18 @@ public class FFT {
         Pair<Var, Var> r = fft(Pair.from(x._1.mapRows(oddMap), x._2.mapRows(oddMap)));
 
         // combine
-        Var rey = Numeric.fill(N, 0.0);
-        Var imy = Numeric.fill(N, 0.0);
+        Var rey = NumericVar.fill(N, 0.0);
+        Var imy = NumericVar.fill(N, 0.0);
         for (int k = 0; k < N / 2; k++) {
             double kth = -2 * k * Math.PI / N;
             double coskth = Math.cos(kth);
             double sinkth = Math.sin(kth);
 
-            rey.setValue(k, q._1.value(k) + coskth * r._1.value(k) - sinkth * r._2.value(k));
-            imy.setValue(k, q._2.value(k) + coskth * r._2.value(k) + sinkth * r._1.value(k));
+            rey.setValue(k, q._1.getValue(k) + coskth * r._1.getValue(k) - sinkth * r._2.getValue(k));
+            imy.setValue(k, q._2.getValue(k) + coskth * r._2.getValue(k) + sinkth * r._1.getValue(k));
 
-            rey.setValue(k + N / 2, q._1.value(k) - coskth * r._1.value(k) + sinkth * r._2.value(k));
-            imy.setValue(k + N / 2, q._2.value(k) - coskth * r._2.value(k) - sinkth * r._1.value(k));
+            rey.setValue(k + N / 2, q._1.getValue(k) - coskth * r._1.getValue(k) + sinkth * r._2.getValue(k));
+            imy.setValue(k + N / 2, q._2.getValue(k) - coskth * r._2.getValue(k) - sinkth * r._1.getValue(k));
         }
         return Pair.from(rey, imy);
     }
@@ -85,41 +85,41 @@ public class FFT {
 
     // compute the inverse FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
-        int N = x._1.rowCount();
+        int N = x._1.getRowCount();
 
-        Var im2 = Numeric.from(N, row -> -x._2.value(row));
+        Var im2 = NumericVar.from(N, row -> -x._2.getValue(row));
 
         // compute forward FFT
         Pair<Var, Var> y = fft(Pair.from(x._1, im2));
 
         // take conjugate again and divide by N
-        Var re3 = Numeric.from(N, row -> y._1.value(row) / N);
-        Var im3 = Numeric.from(N, row -> -y._2.value(row) / N);
+        Var re3 = NumericVar.from(N, row -> y._1.getValue(row) / N);
+        Var im3 = NumericVar.from(N, row -> -y._2.getValue(row) / N);
         return Pair.from(re3, im3);
     }
 
     // compute the circular convolution of x and y
     public static Pair<Var, Var> cconvolve(Pair<Var, Var> x, Pair<Var, Var> y) {
 
-        int len = x._1.rowCount();
+        int len = x._1.getRowCount();
 
         // should probably pad x and y with 0s so that they have same length
         // and are powers of 2
-        if ((x._2.rowCount() != len)) {
+        if ((x._2.getRowCount() != len)) {
             throw new RuntimeException("Dimensions don't agree");
         }
 
-        int N = x._1.rowCount();
+        int N = x._1.getRowCount();
 
         // compute FFT of each sequence
         Pair<Var, Var> a = fft(x);
         Pair<Var, Var> b = fft(y);
 
         // point-wise multiply
-        Pair<Var, Var> c = Pair.from(Numeric.fill(len, 0.0), Numeric.fill(len, 0.0));
+        Pair<Var, Var> c = Pair.from(NumericVar.fill(len, 0.0), NumericVar.fill(len, 0.0));
         for (int i = 0; i < N; i++) {
-            c._1.setValue(i, a._1.value(i) * b._1.value(i) - a._2.value(i) * b._2.value(i));
-            c._2.setValue(i, a._1.value(i) * b._2.value(i) + a._1.value(i) * b._2.value(i));
+            c._1.setValue(i, a._1.getValue(i) * b._1.getValue(i) - a._2.getValue(i) * b._2.getValue(i));
+            c._2.setValue(i, a._1.getValue(i) * b._2.getValue(i) + a._1.getValue(i) * b._2.getValue(i));
         }
 
         // compute inverse FFT
@@ -132,7 +132,7 @@ public class FFT {
         Pair<Var, Var> a = Pair.from(x._1.solidCopy(), x._2.solidCopy());
         Pair<Var, Var> b = Pair.from(y._1.solidCopy(), y._2.solidCopy());
 
-        for (int i = 0; i < x._1.rowCount(); i++) {
+        for (int i = 0; i < x._1.getRowCount(); i++) {
             a._1.addValue(0.0);
             a._2.addValue(0.0);
             b._1.addValue(0.0);

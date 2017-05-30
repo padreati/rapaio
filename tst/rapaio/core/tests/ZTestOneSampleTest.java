@@ -26,7 +26,7 @@ package rapaio.core.tests;
 
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -43,12 +43,12 @@ public class ZTestOneSampleTest {
         RandomSource.setSeed(1234);
         double mu = 75;
         double sd = 18;
-        Var x = Numeric.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
+        Var x = NumericVar.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
 
         ZTestOneSample z1 = ZTestOneSample.test(x, mu, sd);
         z1.printSummary();
 
-        assertEquals(x.rowCount(), z1.sampleSize());
+        assertEquals(x.getRowCount(), z1.sampleSize());
         assertEquals(HTest.Alternative.TWO_TAILS, z1.alt());
         assertEquals(mu, z1.mu(), TOL);
         assertEquals(sd, z1.sd(), TOL);
@@ -60,7 +60,7 @@ public class ZTestOneSampleTest {
         assertEquals(82.3563105814821, z1.ciHigh(), TOL);
         assertEquals(0.05, z1.sl(), TOL);
 
-        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd);
+        z1 = ZTestOneSample.test(71.2, x.getRowCount(), mu, sd);
         z1.printSummary();
         assertEquals(71.2, z1.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.zScore(), TOL);
@@ -70,7 +70,7 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z1.sl(), TOL);
 
 
-        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
+        z1 = ZTestOneSample.test(71.2, x.getRowCount(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(71.2, z1.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.zScore(), TOL);
@@ -99,7 +99,7 @@ public class ZTestOneSampleTest {
         assertEquals(85.86187743343541, z3.ciHigh(), TOL);
         assertEquals(0.01, z3.sl(), TOL);
 
-        ZTestOneSample z4 = ZTestOneSample.test(Numeric.copy(Double.NaN, Double.NaN), 0, 1);
+        ZTestOneSample z4 = ZTestOneSample.test(NumericVar.copy(Double.NaN, Double.NaN), 0, 1);
         z4.printSummary();
 
         assertEquals(Double.NaN, z4.sampleMean(), TOL);

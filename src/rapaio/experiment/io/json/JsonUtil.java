@@ -87,7 +87,7 @@ public class JsonUtil {
         Pin<Integer> fileCounter = new Pin<>(0);
         Stream<JsonValue> stream = Json.stream(root, ff).parallel();
         StreamUtil.partition(stream, sliceCount).forEach(list -> {
-                    Pin<Integer> counter = new Pin<>();
+                    Pin<Integer> counter = new Pin<>(0);
                     synchronized (fileCounter) {
                         counter.set(fileCounter.get());
                     }

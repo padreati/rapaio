@@ -51,7 +51,7 @@ public class NominalRule extends Rule {
     public String toString() {
         return "NominalRule {"
                 + "value=" + testLabel
-                + ", class=" + dv.label(targetIndex)
+                + ", class=" + dv.getLabel(targetIndex)
                 + ", errors=" + WS.formatFlex(getErrorCount())
                 + ", total=" + WS.formatFlex(getTotalCount())
                 + ", acc=" + WS.formatFlex(getAcc())

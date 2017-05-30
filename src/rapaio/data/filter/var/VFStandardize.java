@@ -56,7 +56,7 @@ public class VFStandardize extends AbstractVF {
         checkSingleVar(vars);
 
         if (Double.isNaN(mean)) {
-            mean = Mean.from(vars[0]).value();
+            mean = Mean.from(vars[0]).getValue();
         }
         if (Double.isNaN(sd)) {
             sd = Variance.from(vars[0]).sdValue();
@@ -66,7 +66,7 @@ public class VFStandardize extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        if (!vars[0].type().isNumeric()) {
+        if (!vars[0].getType().isNumeric()) {
             return vars[0];
         }
         if(Math.abs(sd)<1e-20)

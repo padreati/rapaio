@@ -61,11 +61,11 @@ public class FFAddIntercept extends AbstractFF {
     }
 
     public Frame apply(Frame df) {
-        List<String> names = df.varStream().map(Var::name).collect(Collectors.toList());
+        List<String> names = df.varStream().map(Var::getName).collect(Collectors.toList());
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        Numeric intercept = Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        NumericVar intercept = NumericVar.fill(df.getRowCount(), 1.0).withName(INTERCEPT);
         return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

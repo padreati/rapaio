@@ -65,20 +65,20 @@ public class ROCCurve extends PlotComponent {
         g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < roc.data().rowCount(); i++) {
+        for (int i = 1; i < roc.data().getRowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = parent.xScale(roc.data().value(i - 1, "fpr"));
-            double y1 = parent.yScale(roc.data().value(i - 1, "tpr"));
-            double x2 = parent.xScale(roc.data().value(i, "fpr"));
-            double y2 = parent.yScale(roc.data().value(i, "tpr"));
+            double x1 = parent.xScale(roc.data().getValue(i - 1, "fpr"));
+            double y1 = parent.yScale(roc.data().getValue(i - 1, "tpr"));
+            double x2 = parent.xScale(roc.data().getValue(i, "fpr"));
+            double y2 = parent.yScale(roc.data().getValue(i, "tpr"));
 
             if (parent.getRange().contains(
-                    roc.data().value(i - 1, "fpr"),
-                    roc.data().value(i - 1, "tpr")
+                    roc.data().getValue(i - 1, "fpr"),
+                    roc.data().getValue(i - 1, "tpr")
             )
                     && parent.getRange().contains(
-                    roc.data().value(i, "fpr"),
-                    roc.data().value(i, "tpr"))) {
+                    roc.data().getValue(i, "fpr"),
+                    roc.data().getValue(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

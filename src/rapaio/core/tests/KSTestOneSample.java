@@ -66,12 +66,12 @@ public class KSTestOneSample implements HTest {
         this.cdf = cdf;
 
         D = 0;
-        double n = v.rowCount();
+        double n = v.getRowCount();
         double fo = 0.0;
 
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.getRowCount(); i++) {
             //ECDF(x) - F(x)
-            double ff = cdf.cdf(v.value(i));
+            double ff = cdf.cdf(v.getValue(i));
             double fn = (i + 1) / n;
             D = Math.max(D, Math.abs(fo - ff));
             D = Math.max(D, Math.abs(fn - ff));
@@ -132,12 +132,12 @@ public class KSTestOneSample implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
 
-        int ties = (int) (v.rowCount() - v.stream().mapToDouble().distinct().count());
-        sb.append(String.format("sample size: %d, ties: %d\n", v.rowCount(), ties));
+        int ties = (int) (v.getRowCount() - v.stream().mapToDouble().distinct().count());
+        sb.append(String.format("sample size: %d, ties: %d\n", v.getRowCount(), ties));
         if (ties > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 

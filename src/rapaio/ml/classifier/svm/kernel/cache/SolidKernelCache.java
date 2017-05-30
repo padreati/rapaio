@@ -39,7 +39,7 @@ public class SolidKernelCache implements KernelCache {
 
     public SolidKernelCache(Frame df) {
         this.df = df;
-        cache = new Double[df.rowCount()][df.rowCount()];
+        cache = new Double[df.getRowCount()][df.getRowCount()];
     }
 
     @Override

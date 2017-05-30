@@ -25,9 +25,8 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
-import rapaio.printer.Printable;
 
 import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
@@ -100,7 +99,7 @@ public class ZTestTwoPaired implements HTest {
         xComplete = x.stream().complete().toMappedVar();
         yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
 
@@ -112,14 +111,14 @@ public class ZTestTwoPaired implements HTest {
             return;
         }
 
-        Var complete = Numeric.empty();
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (!(x.missing(i) || y.missing(i)))
-                complete.addValue(x.value(i) - y.value(i));
+        Var complete = NumericVar.empty();
+        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+            if (!(x.isMissing(i) || y.isMissing(i)))
+                complete.addValue(x.getValue(i) - y.getValue(i));
         }
-        sampleMean = mean(complete).value();
+        sampleMean = mean(complete).getValue();
 
-        double sv = sd / Math.sqrt(complete.rowCount());
+        double sv = sd / Math.sqrt(complete.getRowCount());
 
         zScore = (sampleMean - mu) / sv;
 
@@ -176,15 +175,15 @@ public class ZTestTwoPaired implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> ZTestTwoPaired\n");
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
+        sb.append("x complete rows: ").append(xComplete.getRowCount()).append("/").append(x.getRowCount()).append("\n");
+        sb.append("y complete rows: ").append(yComplete.getRowCount()).append("/").append(y.getRowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("x sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");

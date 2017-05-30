@@ -25,7 +25,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
-import rapaio.data.Nominal;
+import rapaio.data.NominalVar;
 import rapaio.data.SolidFrame;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
@@ -44,33 +44,13 @@ public class CFit implements Printable {
     private final Classifier model;
     private final Frame df;
     private final List<String> targetNames = new ArrayList<>();
-    private final boolean withClasses;
-    private final boolean withDensities;
+    private final boolean hasClasses;
+    private final boolean hasDensities;
     private final Map<String, String[]> dictionaries = new HashMap<>();
-    private final Map<String, Nominal> classes = new HashMap<>();
+    private final Map<String, NominalVar> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
     // builder
-
-    private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
-        this.model = model;
-        this.df = df;
-        this.withClasses = withClasses;
-        this.withDensities = withDensities;
-
-        for (String target : model.targetNames()) {
-            targetNames.add(target);
-            dictionaries.put(target, model.targetLevels(target));
-            if (withClasses) {
-                classes.put(target, Nominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
-            }
-            if (withDensities) {
-                densities.put(target, SolidFrame.matrix(df.rowCount(), model.targetLevels(target)));
-            }
-        }
-    }
-
-    // private constructor
 
     public static CFit build(
             final Classifier model,
@@ -80,12 +60,32 @@ public class CFit implements Printable {
         return new CFit(model, df, withClasses, withDensities);
     }
 
-    public boolean isWithClasses() {
-        return withClasses;
+    // private constructor
+
+    private CFit(final Classifier model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
+        this.model = model;
+        this.df = df;
+        this.hasClasses = hasClasses;
+        this.hasDensities = hasDensities;
+
+        for (String target : model.targetNames()) {
+            targetNames.add(target);
+            dictionaries.put(target, model.targetLevels(target));
+            if (hasClasses) {
+                classes.put(target, NominalVar.empty(df.getRowCount(), model.targetLevels(target)).withName(target));
+            }
+            if (hasDensities) {
+                densities.put(target, SolidFrame.matrix(df.getRowCount(), model.targetLevels(target)));
+            }
+        }
     }
 
-    public boolean isWithDensities() {
-        return withDensities;
+    public boolean hasClasses() {
+        return hasClasses;
+    }
+
+    public boolean hasDensities() {
+        return hasDensities;
     }
 
     /**
@@ -136,7 +136,7 @@ public class CFit implements Printable {
      *
      * @return map with nominal variables as predicted classes
      */
-    public Map<String, Nominal> classes() {
+    public Map<String, NominalVar> classes() {
         return classes;
     }
 
@@ -145,7 +145,7 @@ public class CFit implements Printable {
      *
      * @return nominal variable with predicted classes
      */
-    public Nominal firstClasses() {
+    public NominalVar firstClasses() {
         return classes.get(firstTargetName());
     }
 
@@ -155,7 +155,7 @@ public class CFit implements Printable {
      * @param targetVar given target variable name
      * @return nominal variable with predicted classes
      */
-    public Nominal classes(String targetVar) {
+    public NominalVar classes(String targetVar) {
         return classes.get(targetVar);
     }
 
@@ -194,7 +194,7 @@ public class CFit implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");
@@ -206,15 +206,15 @@ public class CFit implements Printable {
         sb.append("\n");
 
         sb.append("Predicted frame summary:\n");
-        sb.append("> rows: ").append(df.rowCount()).append("\n");
-        sb.append("> vars: ").append(df.varCount()).append("\n");
+        sb.append("> rows: ").append(df.getRowCount()).append("\n");
+        sb.append("> vars: ").append(df.getVarCount()).append("\n");
         sb.append("> targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
         sb.append("> inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
         sb.append("\n");
 
         sb.append("Classification results:").append("\n");
-        if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
-            sb.append(new Confusion(df.var(model.firstTargetName()), firstClasses()).summary());
+        if (Arrays.asList(df.getVarNames()).contains(firstTargetName())) {
+            sb.append(new Confusion(df.getVar(model.firstTargetName()), firstClasses()).getSummary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

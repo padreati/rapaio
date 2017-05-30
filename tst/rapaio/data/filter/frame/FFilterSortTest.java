@@ -25,8 +25,8 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
+import rapaio.data.NominalVar;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 
@@ -41,65 +41,65 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVector() {
-        Var unsorted = Numeric.copy(0., 1., 2., 3., 4., 5., 6.);
+        Var unsorted = NumericVar.copy(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = new VFSort().fitApply(unsorted);
-        for (int i = 1; i < sorted.rowCount(); i++) {
-            assertTrue(sorted.value(i - 1) <= sorted.value(i));
+        for (int i = 1; i < sorted.getRowCount(); i++) {
+            assertTrue(sorted.getValue(i - 1) <= sorted.getValue(i));
         }
     }
 
     @Test
     public void testValueVectorWithNA() {
-        Var unsorted = Numeric.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
+        Var unsorted = NumericVar.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 0; i < 3; i++) {
-            assert (sorted.missing(i));
+            assert (sorted.isMissing(i));
         }
     }
 
     @Test
     public void testNominalVector() {
-        Var unsorted = Nominal.empty(3, "ana", "vasile", "ion");
+        Var unsorted = NominalVar.empty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
 
         Var sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
+        assertEquals("ana", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
+        assertEquals("ana", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
-        assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("ana", sorted.label(2));
+        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
+        assertEquals("vasile", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("ana", sorted.getLabel(2));
     }
 
     @Test
     public void testNominalVectorWithNA() {
-        Var unsorted = Nominal.empty(3, "ana", "vasile", "ion");
+        Var unsorted = NominalVar.empty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
 
         Var sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("?", sorted.label(0));
-        assertEquals("ana", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
+        assertEquals("?", sorted.getLabel(0));
+        assertEquals("ana", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
-        assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.label(0));
-        assertEquals("ana", sorted.label(1));
-        assertEquals("?", sorted.label(2));
+        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
+        assertEquals("vasile", sorted.getLabel(0));
+        assertEquals("ana", sorted.getLabel(1));
+        assertEquals("?", sorted.getLabel(2));
     }
 }

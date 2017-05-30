@@ -60,17 +60,17 @@ public class FFToNumeric extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.varCount(), df);
+        checkRangeVars(1, df.getVarCount(), df);
 
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
-        Var[] vars = new Var[df.varCount()];
+        Var[] vars = new Var[df.getVarCount()];
         for (int i = 0; i < vars.length; i++) {
-            if (!nameSet.contains(df.var(i).name())) {
-                vars[i] = df.var(i);
+            if (!nameSet.contains(df.getVar(i).getName())) {
+                vars[i] = df.getVar(i);
             } else {
-                vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
+                vars[i] = VFToNumeric.byDefault().fitApply(df.getVar(i));
             }
         }
-        return SolidFrame.byVars(df.rowCount(), vars);
+        return SolidFrame.byVars(df.getRowCount(), vars);
     }
 }

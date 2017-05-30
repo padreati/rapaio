@@ -26,9 +26,9 @@ package rapaio.experiment.sandbox;
 
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
-import rapaio.data.Index;
+import rapaio.data.IndexVar;
 import rapaio.data.Mapping;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/16.
@@ -39,8 +39,8 @@ public class ParallelTesting {
 
         RandomSource.setSeed(1);
 
-        Numeric x = Numeric.from(10_000, row -> row * 1.0);
-        Index index = Index.from(10_000, row -> row);
+        NumericVar x = NumericVar.from(10_000, row -> row * 1.0);
+        IndexVar index = IndexVar.from(10_000, row -> row);
 
         index.stream()
                 .parallel()
@@ -50,9 +50,9 @@ public class ParallelTesting {
                             } catch (InterruptedException ex) {
 
                             }
-                            return (s.index() >= 5_000)
-                                    ? CoreTools.mean(x.mapRows(Mapping.range(5_000, s.index() + 1))).value()
-                                    : CoreTools.mean(x.mapRows(Mapping.range(0, s.index() + 1))).value();
+                            return (s.getIndex() >= 5_000)
+                                    ? CoreTools.mean(x.mapRows(Mapping.range(5_000, s.getIndex() + 1))).getValue()
+                                    : CoreTools.mean(x.mapRows(Mapping.range(0, s.getIndex() + 1))).getValue();
                         }
                 )
                 .limit(20)

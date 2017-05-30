@@ -60,7 +60,7 @@ public class KDE implements Serializable {
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = new VFSort().fitApply(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
+        this.values = new VFSort().fitApply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }
@@ -100,12 +100,12 @@ public class KDE implements Serializable {
      */
     public static double getSilvermanBandwidth(Var vector) {
         Variance var = Variance.from(vector);
-        double sd = Math.sqrt(var.value());
+        double sd = Math.sqrt(var.getValue());
         if (sd == 0) {
             sd = 1;
         }
         double count = 0;
-        for (int i = 0; i < vector.rowCount(); i++) if (!vector.missing(i)) count++;
+        for (int i = 0; i < vector.getRowCount(); i++) if (!vector.isMissing(i)) count++;
         return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }

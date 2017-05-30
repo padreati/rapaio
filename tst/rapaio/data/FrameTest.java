@@ -36,65 +36,65 @@ public class FrameTest {
     @Test
     public void testRemove() {
         SolidFrame df = SolidFrame.byVars(
-                Nominal.copy("a", "b").withName("x"),
-                Nominal.copy("x", "y").withName("y"),
-                Numeric.wrap(1, 2).withName("z")
+                NominalVar.copy("a", "b").withName("x"),
+                NominalVar.copy("x", "y").withName("y"),
+                NumericVar.wrap(1, 2).withName("z")
         );
         Frame df1 = df.removeVars("x,z");
 
-        assertEquals(1, df1.varCount());
-        assertEquals("y", df1.varNames()[0]);
+        assertEquals(1, df1.getVarCount());
+        assertEquals("y", df1.getVarNames()[0]);
 
         df1 = df.removeVars(VRange.of("y"));
-        assertEquals(2, df1.varCount());
-        assertEquals("x", df1.varNames()[0]);
-        assertEquals("z", df1.varNames()[1]);
+        assertEquals(2, df1.getVarCount());
+        assertEquals("x", df1.getVarNames()[0]);
+        assertEquals("z", df1.getVarNames()[1]);
 
         df1 = df.removeRows(0);
-        assertEquals(1, df1.rowCount());
-        assertEquals(3, df1.varCount());
-        assertEquals("b", df1.label(0, "x"));
+        assertEquals(1, df1.getRowCount());
+        assertEquals(3, df1.getVarCount());
+        assertEquals("b", df1.getLabel(0, "x"));
     }
 
     @Test
     public void testSetters() {
         SolidFrame df = SolidFrame.byVars(
-                Nominal.copy("a", "b").withName("x"),
-                Nominal.copy("x", "y").withName("y"),
-                Numeric.wrap(1, 2).withName("z")
+                NominalVar.copy("a", "b").withName("x"),
+                NominalVar.copy("x", "y").withName("y"),
+                NumericVar.wrap(1, 2).withName("z")
         );
 
         df.setValue(1, "z", 100);
-        assertEquals(100, df.value(1, "z"), 1e-12);
+        assertEquals(100, df.getValue(1, "z"), 1e-12);
 
         df.setIndex(1, "z", 10);
-        assertEquals(10, df.index(1, "z"));
+        assertEquals(10, df.getIndex(1, "z"));
 
         df.setLabel(1, "x", "xxx");
-        assertEquals("xxx", df.label(1, "x"));
+        assertEquals("xxx", df.getLabel(1, "x"));
     }
 
     @Test
     public void testMissing() {
         SolidFrame df = SolidFrame.byVars(
-                Nominal.copy("a", "b").withName("x"),
-                Nominal.copy("x", "y").withName("y"),
-                Numeric.wrap(1, 2).withName("z")
+                NominalVar.copy("a", "b").withName("x"),
+                NominalVar.copy("x", "y").withName("y"),
+                NumericVar.wrap(1, 2).withName("z")
         );
 
-        assertEquals(false, df.missing(0));
-        assertEquals(false, df.missing(1));
+        assertEquals(false, df.isMissing(0));
+        assertEquals(false, df.isMissing(1));
 
         df.setMissing(0, "x");
-        assertEquals(true, df.missing(0, "x"));
-        assertEquals(true, df.missing(0, 0));
-        assertEquals(true, df.missing(0));
-        assertEquals(false, df.missing(1));
+        assertEquals(true, df.isMissing(0, "x"));
+        assertEquals(true, df.isMissing(0, 0));
+        assertEquals(true, df.isMissing(0));
+        assertEquals(false, df.isMissing(1));
 
         df.setMissing(0, 1);
-        assertEquals(true, df.missing(0, "y"));
-        assertEquals(true, df.missing(0, 0));
-        assertEquals(true, df.missing(0));
-        assertEquals(false, df.missing(1));
+        assertEquals(true, df.isMissing(0, "y"));
+        assertEquals(true, df.isMissing(0, 0));
+        assertEquals(true, df.isMissing(0));
+        assertEquals(false, df.isMissing(1));
     }
 }

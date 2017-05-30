@@ -53,10 +53,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.var(0).name());
-        Assert.assertEquals("RP_2", df.var(1).name());
-        Assert.assertEquals("RP_3", df.var(2).name());
+        Assert.assertEquals(3, df.getVarCount());
+        Assert.assertEquals("RP_1", df.getVar(0).getName());
+        Assert.assertEquals("RP_2", df.getVar(1).getName());
+        Assert.assertEquals("RP_3", df.getVar(2).getName());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
@@ -71,10 +71,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.var(0).name());
-        Assert.assertEquals("RP_2", df.var(1).name());
-        Assert.assertEquals("RP_3", df.var(2).name());
+        Assert.assertEquals(3, df.getVarCount());
+        Assert.assertEquals("RP_1", df.getVar(0).getName());
+        Assert.assertEquals("RP_2", df.getVar(1).getName());
+        Assert.assertEquals("RP_3", df.getVar(2).getName());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
@@ -89,10 +89,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.var(0).name());
-        Assert.assertEquals("RP_2", df.var(1).name());
-        Assert.assertEquals("RP_3", df.var(2).name());
+        Assert.assertEquals(3, df.getVarCount());
+        Assert.assertEquals("RP_1", df.getVar(0).getName());
+        Assert.assertEquals("RP_2", df.getVar(1).getName());
+        Assert.assertEquals("RP_3", df.getVar(2).getName());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();

@@ -66,12 +66,12 @@ public class KMeans implements Printable {
     private String[] inputs;
     private Frame centroids;
     private int[] arrows;
-    private Numeric errors;
-    private Map<Integer, Numeric> clusterErrors;
+    private NumericVar errors;
+    private Map<Integer, NumericVar> clusterErrors;
 
     // summary artifacts
 
-    private Numeric summaryAllDist;
+    private NumericVar summaryAllDist;
 
 
     public KMeans withK(int k) {
@@ -104,10 +104,10 @@ public class KMeans implements Printable {
 
         inputs = VRange.of(varNames).parseVarNames(df).stream().toArray(String[]::new);
         centroids = init.get().init(df, inputs, k);
-        arrows = new int[df.rowCount()];
-        errors = Numeric.empty().withName("errors");
+        arrows = new int[df.getRowCount()];
+        errors = NumericVar.empty().withName("errors");
         clusterErrors = new HashMap<>();
-        Index.seq(k).stream().forEach(c -> clusterErrors.put(c.index(), Numeric.empty().withName("c" + (c.index() + 1) + "_errors")));
+        IndexVar.seq(k).stream().forEach(c -> clusterErrors.put(c.getIndex(), NumericVar.empty().withName("c" + (c.getIndex() + 1) + "_errors")));
 
         assignToCentroids(df);
 
@@ -118,8 +118,8 @@ public class KMeans implements Printable {
             if (runningHook != null) {
                 runningHook.accept(this);
             }
-            int erc = errors.rowCount();
-            if (erc > 1 && Math.abs(errors.value(erc - 1) - errors.value(erc - 2)) < eps) {
+            int erc = errors.getRowCount();
+            if (erc > 1 && Math.abs(errors.getValue(erc - 1) - errors.getValue(erc - 2)) < eps) {
                 break;
             }
         }
@@ -130,9 +130,9 @@ public class KMeans implements Printable {
     private void validate(Frame df, String... varNames) {
         List<String> nameList = VRange.of(varNames).parseVarNames(df);
         for (String varName : nameList) {
-            if (!df.var(varName).type().isNumeric())
+            if (!df.getVar(varName).getType().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.var(varName).stream().complete().count() != df.rowCount()) {
+            if (df.getVar(varName).stream().complete().count() != df.getRowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }
@@ -142,11 +142,11 @@ public class KMeans implements Printable {
     private void assignToCentroids(Frame df) {
         if (debug) WS.println("assignToCentroids called ..");
         double totalError = 0.0;
-        double[] err = new double[centroids.rowCount()];
-        List<Pair<Integer, Double>> pairs = IntStream.range(0, df.rowCount()).parallel().boxed().map(i -> {
+        double[] err = new double[centroids.getRowCount()];
+        List<Pair<Integer, Double>> pairs = IntStream.range(0, df.getRowCount()).parallel().boxed().map(i -> {
             double d = Double.NaN;
             int cluster = -1;
-            for (int j = 0; j < centroids.rowCount(); j++) {
+            for (int j = 0; j < centroids.getRowCount(); j++) {
                 double dd = distance.get().distance(df, i, centroids, j, inputs);
                 if (!Double.isFinite(dd)) continue;
                 if (Double.isNaN(dd)) continue;
@@ -179,40 +179,40 @@ public class KMeans implements Printable {
 
     private void recomputeCentroids(Frame df) {
         if (debug) WS.println("recomputeCentroids called ..");
-        Var[] means = IntStream.range(0, k).boxed().map(i -> Numeric.fill(df.rowCount(), 0)).toArray(Numeric[]::new);
+        Var[] means = IntStream.range(0, k).boxed().map(i -> NumericVar.fill(df.getRowCount(), 0)).toArray(NumericVar[]::new);
         for (String input : inputs) {
             for (int j = 0; j < k; j++) {
                 means[j].clear();
             }
-            for (int j = 0; j < df.rowCount(); j++) {
-                means[arrows[j]].addValue(df.value(j, input));
+            for (int j = 0; j < df.getRowCount(); j++) {
+                means[arrows[j]].addValue(df.getValue(j, input));
             }
             for (int j = 0; j < k; j++) {
-                if (means[j].rowCount() == 0)
+                if (means[j].getRowCount() == 0)
                     continue;
-                double mean = Mean.from(means[j]).value();
+                double mean = Mean.from(means[j]).getValue();
                 centroids.setValue(j, input, mean);
             }
         }
     }
 
     public Var getClusterAssignment() {
-        Var var = Index.empty(arrows.length);
+        Var var = IndexVar.empty(arrows.length);
         for (int i = 0; i < arrows.length; i++) {
             var.setIndex(i, arrows[i] + 1);
         }
         return var;
     }
 
-    public Numeric getRunningErrors() {
+    public NumericVar getRunningErrors() {
         return errors.solidCopy();
     }
 
     public double getError() {
-        return errors.rowCount() == 0 ? Double.NaN : errors.value(errors.rowCount() - 1);
+        return errors.getRowCount() == 0 ? Double.NaN : errors.getValue(errors.getRowCount() - 1);
     }
 
-    public Numeric getRunningClusterError(int c) {
+    public NumericVar getRunningClusterError(int c) {
         if (c >= k)
             throw new IllegalArgumentException("cluster " + c + " does not exists");
         return clusterErrors.get(c);
@@ -221,33 +221,33 @@ public class KMeans implements Printable {
     public double getClusterError(int c) {
         if (c >= k)
             throw new IllegalArgumentException("cluster " + c + " does not exists");
-        return clusterErrors.get(c).value(clusterErrors.get(c).rowCount() - 1);
+        return clusterErrors.get(c).getValue(clusterErrors.get(c).getRowCount() - 1);
     }
 
     private void buildSummary(Frame df) {
-        Index summaryId = Index.seq(1, centroids.rowCount() + 1).withName("ID");
-        Index summaryCount = Index.fill(centroids.rowCount(), 0).withName("count");
-        Numeric summaryMean = Numeric.fill(centroids.rowCount(), 0).withName("mean");
-        Numeric summaryVar = Numeric.fill(centroids.rowCount(), 0).withName("var");
-        Numeric summaryVarP = Numeric.fill(centroids.rowCount(), 0).withName("var/total");
-        Numeric summarySd = Numeric.fill(centroids.rowCount(), 0).withName("sd");
+        IndexVar summaryId = IndexVar.seq(1, centroids.getRowCount() + 1).withName("ID");
+        IndexVar summaryCount = IndexVar.fill(centroids.getRowCount(), 0).withName("count");
+        NumericVar summaryMean = NumericVar.fill(centroids.getRowCount(), 0).withName("mean");
+        NumericVar summaryVar = NumericVar.fill(centroids.getRowCount(), 0).withName("var");
+        NumericVar summaryVarP = NumericVar.fill(centroids.getRowCount(), 0).withName("var/total");
+        NumericVar summarySd = NumericVar.fill(centroids.getRowCount(), 0).withName("sd");
 
-        summaryAllDist = Numeric.empty().withName("all dist");
+        summaryAllDist = NumericVar.empty().withName("all dist");
 
-        Map<Integer, Numeric> distances = new HashMap<>();
+        Map<Integer, NumericVar> distances = new HashMap<>();
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double d = distance.get().distance(centroids, arrows[i], df, i, inputs);
             if (!distances.containsKey(arrows[i]))
-                distances.put(arrows[i], Numeric.empty());
+                distances.put(arrows[i], NumericVar.empty());
             distances.get(arrows[i]).addValue(d);
             summaryAllDist.addValue(d);
         }
-        double tvar = var(summaryAllDist).value();
-        for (Map.Entry<Integer, Numeric> e : distances.entrySet()) {
-            summaryCount.setIndex(e.getKey(), e.getValue().rowCount());
-            summaryMean.setValue(e.getKey(), mean(e.getValue()).value());
-            double v = var(e.getValue()).value();
+        double tvar = variance(summaryAllDist).getValue();
+        for (Map.Entry<Integer, NumericVar> e : distances.entrySet()) {
+            summaryCount.setIndex(e.getKey(), e.getValue().getRowCount());
+            summaryMean.setValue(e.getKey(), mean(e.getValue()).getValue());
+            double v = variance(e.getValue()).getValue();
             summaryVar.setValue(e.getKey(), v);
             summaryVarP.setValue(e.getKey(), v / tvar);
             summarySd.setValue(e.getKey(), Math.sqrt(v));
@@ -257,7 +257,7 @@ public class KMeans implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("KMeans clustering model\n");
         sb.append("=======================\n");
@@ -277,14 +277,14 @@ public class KMeans implements Printable {
             sb.append("KMeans did not clustered anything yet!\n");
         } else {
             sb.append("Overall: \n");
-            sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");
-            sb.append("> mean: ").append(WS.formatFlex(mean(summaryAllDist).value())).append("\n");
-            sb.append("> var: ").append(WS.formatFlex(var(summaryAllDist).value())).append("\n");
-            sb.append("> sd: ").append(WS.formatFlex(var(summaryAllDist).sdValue())).append("\n");
+            sb.append("> count: ").append(summaryAllDist.getRowCount()).append("\n");
+            sb.append("> mean: ").append(WS.formatFlex(mean(summaryAllDist).getValue())).append("\n");
+            sb.append("> var: ").append(WS.formatFlex(variance(summaryAllDist).getValue())).append("\n");
+            sb.append("> sd: ").append(WS.formatFlex(variance(summaryAllDist).sdValue())).append("\n");
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(Summary.headString(Filters.refSort(summary, summary.var("count").refComparator(false))));
+            sb.append(Summary.headString(Filters.refSort(summary, summary.getVar("count").refComparator(false))));
         }
 
         return sb.toString();

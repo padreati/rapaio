@@ -25,7 +25,7 @@
 package rapaio.ml.eval;
 
 import org.junit.Test;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.experiment.ml.eval.NormalizedGini;
 
 /**
@@ -36,13 +36,13 @@ public class NormalizedGiniTest {
     @Test
     public void testSmoke() {
 
-        Numeric x = Numeric.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        Numeric y = Numeric.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
+        NumericVar x = NumericVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        NumericVar y = NumericVar.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
 
-        double eval = new NormalizedGini(x, y).value();
+        double eval = new NormalizedGini(x, y).getValue();
         System.out.println(eval);
 
-        System.out.println(new NormalizedGini(x, x).value());
-        System.out.println(new NormalizedGini(y, x).value());
+        System.out.println(new NormalizedGini(x, x).getValue());
+        System.out.println(new NormalizedGini(y, x).getValue());
     }
 }

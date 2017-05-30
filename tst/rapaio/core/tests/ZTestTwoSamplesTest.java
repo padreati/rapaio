@@ -25,7 +25,7 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -40,8 +40,8 @@ public class ZTestTwoSamplesTest {
 
     @Test
     public void zTestTwoSamples() {
-        Var x = Numeric.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
-        Var y = Numeric.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
+        Var x = NumericVar.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
+        Var y = NumericVar.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 
         ZTestTwoSamples z1 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
@@ -55,7 +55,7 @@ public class ZTestTwoSamplesTest {
         assertEquals(2.211040435576059, z1.ciHigh(), TOL);
 
 
-        z1 = ZTestTwoSamples.test(mean(x).value(), x.rowCount(), mean(y).value(), y.rowCount(), 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
+        z1 = ZTestTwoSamples.test(mean(x).getValue(), x.getRowCount(), mean(y).getValue(), y.getRowCount(), 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(1.7556818181818183, z1.sampleMean(), TOL);
         assertEquals(7.0181818181818185, z1.xSampleMean(), TOL);
@@ -74,7 +74,7 @@ public class ZTestTwoSamplesTest {
         assertEquals(1.3276174779349252, z2.ciLow(), TOL);
         assertEquals(2.1837461584287112, z2.ciHigh(), TOL);
 
-        ZTestTwoSamples z3 = ZTestTwoSamples.test(x, Numeric.empty(), 0, 0.5, 0.5);
+        ZTestTwoSamples z3 = ZTestTwoSamples.test(x, NumericVar.empty(), 0, 0.5, 0.5);
         z3.printSummary();
 
         assertEquals(Double.NaN, z3.zScore(), TOL);

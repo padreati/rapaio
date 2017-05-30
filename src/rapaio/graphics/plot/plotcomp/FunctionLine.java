@@ -24,7 +24,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
@@ -33,7 +33,6 @@ import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.util.function.Function;
 
 import static rapaio.graphics.Plotter.points;
 
@@ -60,23 +59,23 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        Var x = Numeric.fill(options.getPoints() + 1, 0);
-        Var y = Numeric.fill(options.getPoints() + 1, 0);
+        Var x = NumericVar.fill(options.getPoints() + 1, 0);
+        Var y = NumericVar.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.getRowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, f.apply(x.value(i)));
+            y.setValue(i, f.apply(x.getValue(i)));
         }
 
-        for (int i = 1; i < x.rowCount(); i++) {
-            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
+        for (int i = 1; i < x.getRowCount(); i++) {
+            if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        parent.xScale(x.value(i - 1)),
-                        parent.yScale(y.value(i - 1)),
-                        parent.xScale(x.value(i)),
-                        parent.yScale(y.value(i))));
+                        parent.xScale(x.getValue(i - 1)),
+                        parent.yScale(y.getValue(i - 1)),
+                        parent.xScale(x.getValue(i)),
+                        parent.yScale(y.getValue(i))));
 
             }
         }

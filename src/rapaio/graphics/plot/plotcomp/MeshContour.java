@@ -57,10 +57,10 @@ public class MeshContour extends PlotComponent {
     @Override
     protected Range buildRange() {
         return new Range(
-                mg.x().value(0),
-                mg.y().value(0),
-                mg.x().value(mg.x().rowCount() - 1),
-                mg.y().value(mg.y().rowCount() - 1)
+                mg.x().getValue(0),
+                mg.y().getValue(0),
+                mg.x().getValue(mg.x().getRowCount() - 1),
+                mg.y().getValue(mg.y().getRowCount() - 1)
         );
     }
 
@@ -74,12 +74,12 @@ public class MeshContour extends PlotComponent {
 
         LinkedList<Point2D.Double> lines = new LinkedList<>();
 
-        for (int i = 0; i < mg.x().rowCount() - 1; i++) {
-            for (int j = 0; j < mg.y().rowCount() - 1; j++) {
+        for (int i = 0; i < mg.x().getRowCount() - 1; i++) {
+            for (int j = 0; j < mg.y().getRowCount() - 1; j++) {
 
-                if (!parent.getRange().contains(x.value(i), y.value(j)))
+                if (!parent.getRange().contains(x.getValue(i), y.getValue(j)))
                     continue;
-                if (!parent.getRange().contains(x.value(i + 1), y.value(j + 1)))
+                if (!parent.getRange().contains(x.getValue(i + 1), y.getValue(j + 1)))
                     continue;
 
                 int k = mg.side(i, j);
@@ -100,11 +100,11 @@ public class MeshContour extends PlotComponent {
                         // full fill
                         if (fill) {
                             Path2D.Double path = new Path2D.Double();
-                            path.moveTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
-                            path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
-                            path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
-                            path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
-                            path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
+                            path.moveTo(parent.xScale(x.getValue(i)), parent.yScale(y.getValue(j)));
+                            path.lineTo(parent.xScale(x.getValue(i + 1)), parent.yScale(y.getValue(j)));
+                            path.lineTo(parent.xScale(x.getValue(i + 1)), parent.yScale(y.getValue(j + 1)));
+                            path.lineTo(parent.xScale(x.getValue(i)), parent.yScale(y.getValue(j + 1)));
+                            path.lineTo(parent.xScale(x.getValue(i)), parent.yScale(y.getValue(j)));
 
                             g2d.setColor(options.getColor(0));
                             g2d.setStroke(new BasicStroke());
@@ -122,16 +122,16 @@ public class MeshContour extends PlotComponent {
 
                         // first fill corners
 
-                        points[0] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
+                        points[0] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(y.getValue(j)));
                         sides[0] = mg.side(i, j);
 
-                        points[3] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
+                        points[3] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(y.getValue(j)));
                         sides[3] = mg.side(i + 1, j);
 
-                        points[6] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
+                        points[6] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(y.getValue(j + 1)));
                         sides[6] = mg.side(i + 1, j + 1);
 
-                        points[9] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
+                        points[9] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(y.getValue(j + 1)));
                         sides[9] = mg.side(i, j + 1);
 
 
@@ -140,20 +140,20 @@ public class MeshContour extends PlotComponent {
                         // (i,j) -> (i+1,j)
 
                         if (sides[0] == 0 && sides[3] >= 1) {
-                            points[1] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.value(j)));
+                            points[1] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.getValue(j)));
                             sides[1] = 1;
                         }
                         if (sides[0] >= 1 && sides[3] == 0) {
-                            points[2] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.value(j)));
+                            points[2] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.getValue(j)));
                             sides[2] = 1;
                         }
 
                         if (sides[0] <= 1 && sides[3] == 2) {
-                            points[2] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.value(j)));
+                            points[2] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.getValue(j)));
                             sides[2] = 2;
                         }
                         if (sides[0] == 2 && sides[3] <= 1) {
-                            points[1] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.value(j)));
+                            points[1] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.getValue(j)));
                             sides[1] = 2;
                         }
 
@@ -161,60 +161,60 @@ public class MeshContour extends PlotComponent {
 
 
                         if (sides[3] == 0 && sides[6] >= 1) {
-                            points[4] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
+                            points[4] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
                             sides[4] = 1;
                         }
                         if (sides[3] >= 1 && sides[6] == 0) {
-                            points[5] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
+                            points[5] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
                             sides[5] = 1;
                         }
 
                         if (sides[3] <= 1 && sides[6] == 2) {
-                            points[5] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
+                            points[5] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
                             sides[5] = 2;
                         }
                         if (sides[3] == 2 && sides[6] <= 1) {
-                            points[4] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
+                            points[4] = new Point2D.Double(parent.xScale(x.getValue(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
                             sides[4] = 2;
                         }
 
                         // (i+1,j+1) -> (i,j+1)
 
                         if (sides[6] == 0 && sides[9] >= 1) {
-                            points[7] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            points[7] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.getValue(j + 1)));
                             sides[7] = 1;
                         }
                         if (sides[6] >= 1 && sides[9] == 0) {
-                            points[8] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            points[8] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.getValue(j + 1)));
                             sides[8] = 1;
                         }
 
                         if (sides[6] <= 1 && sides[9] == 2) {
-                            points[8] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            points[8] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.getValue(j + 1)));
                             sides[8] = 2;
                         }
                         if (sides[6] == 2 && sides[9] <= 1) {
-                            points[7] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            points[7] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.getValue(j + 1)));
                             sides[7] = 2;
                         }
 
                         // (i,j+1) -> (i,j)
 
                         if (sides[9] == 0 && sides[0] >= 1) {
-                            points[10] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yLow(i, j)));
+                            points[10] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(mg.yLow(i, j)));
                             sides[10] = 1;
                         }
                         if (sides[9] >= 1 && sides[0] == 0) {
-                            points[11] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yLow(i, j)));
+                            points[11] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(mg.yLow(i, j)));
                             sides[11] = 1;
                         }
 
                         if (sides[9] <= 1 && sides[0] == 2) {
-                            points[11] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yHigh(i, j)));
+                            points[11] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(mg.yHigh(i, j)));
                             sides[11] = 2;
                         }
                         if (sides[9] == 2 && sides[0] <= 1) {
-                            points[10] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yHigh(i, j)));
+                            points[10] = new Point2D.Double(parent.xScale(x.getValue(i)), parent.yScale(mg.yHigh(i, j)));
                             sides[11] = 2;
                         }
 

@@ -70,9 +70,9 @@ public class VFJitter extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        for (int i = 0; i < vars[0].rowCount(); i++) {
+        for (int i = 0; i < vars[0].getRowCount(); i++) {
             double err = d.sampleNext();
-            vars[0].setValue(i, vars[0].value(i) + err);
+            vars[0].setValue(i, vars[0].getValue(i) + err);
         }
         return vars[0];
     }

@@ -26,11 +26,11 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import static rapaio.core.CoreTools.mean;
-import static rapaio.core.CoreTools.var;
+import static rapaio.core.CoreTools.variance;
 
 public class TTestTwoSamplesTest {
 
@@ -39,19 +39,19 @@ public class TTestTwoSamplesTest {
     @Test
     public void testTTest() {
 
-        Var x = Numeric.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = Numeric.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = NumericVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = NumericVar.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.rowCount(), t1.xSampleSize(), TOL);
-        Assert.assertEquals(mean(x).value(), t1.xSampleMean(), TOL);
-        Assert.assertEquals(var(x).sdValue(), t1.xSampleSd(), TOL);
+        Assert.assertEquals(x.getRowCount(), t1.xSampleSize(), TOL);
+        Assert.assertEquals(mean(x).getValue(), t1.xSampleMean(), TOL);
+        Assert.assertEquals(variance(x).sdValue(), t1.xSampleSd(), TOL);
 
-        Assert.assertEquals(y.rowCount(), t1.ySampleSize(), TOL);
-        Assert.assertEquals(mean(y).value(), t1.ySampleMean(), TOL);
-        Assert.assertEquals(var(y).sdValue(), t1.ySampleSd(), TOL);
+        Assert.assertEquals(y.getRowCount(), t1.ySampleSize(), TOL);
+        Assert.assertEquals(mean(y).getValue(), t1.ySampleMean(), TOL);
+        Assert.assertEquals(variance(y).sdValue(), t1.ySampleSd(), TOL);
 
         Assert.assertEquals(true, t1.equalVars());
         Assert.assertEquals(-1.166666666666667, t1.sampleMean(), TOL);
@@ -76,26 +76,26 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t3 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.GREATER_THAN);
         Assert.assertEquals(HTest.Alternative.GREATER_THAN, t3.alt());
 
-        HTest t4 = TTestTwoSamples.test(Numeric.empty(), x, 0);
+        HTest t4 = TTestTwoSamples.test(NumericVar.empty(), x, 0);
         Assert.assertEquals(Double.NaN, t4.pValue(), TOL);
     }
 
     @Test
     public void testWelchTTest() {
 
-        Var x = Numeric.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = Numeric.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = NumericVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = NumericVar.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.rowCount(), t1.xSampleSize(), TOL);
-        Assert.assertEquals(mean(x).value(), t1.xSampleMean(), TOL);
-        Assert.assertEquals(var(x).sdValue(), t1.xSampleSd(), TOL);
+        Assert.assertEquals(x.getRowCount(), t1.xSampleSize(), TOL);
+        Assert.assertEquals(mean(x).getValue(), t1.xSampleMean(), TOL);
+        Assert.assertEquals(variance(x).sdValue(), t1.xSampleSd(), TOL);
 
-        Assert.assertEquals(y.rowCount(), t1.ySampleSize(), TOL);
-        Assert.assertEquals(mean(y).value(), t1.ySampleMean(), TOL);
-        Assert.assertEquals(var(y).sdValue(), t1.ySampleSd(), TOL);
+        Assert.assertEquals(y.getRowCount(), t1.ySampleSize(), TOL);
+        Assert.assertEquals(mean(y).getValue(), t1.ySampleMean(), TOL);
+        Assert.assertEquals(variance(y).sdValue(), t1.ySampleSd(), TOL);
 
         Assert.assertEquals(false, t1.equalVars());
         Assert.assertEquals(-1.166666666666667, t1.sampleMean(), TOL);
@@ -113,7 +113,7 @@ public class TTestTwoSamplesTest {
 
         TTestTwoSamples t2 = TTestTwoSamples.welchTest(x, y, 0, 0.05, HTest.Alternative.TWO_TAILS);
 
-        Assert.assertEquals(t1.summary(), t2.summary());
+        Assert.assertEquals(t1.getSummary(), t2.getSummary());
     }
 
 }

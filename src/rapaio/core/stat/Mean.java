@@ -49,14 +49,14 @@ public final class Mean implements Printable {
     private double completeCount = 0;
 
     private Mean(Var var) {
-        this.varName = var.name();
+        this.varName = var.getName();
         double sum = 0.0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += var.value(i);
+                sum += var.getValue(i);
             }
         }
         if (completeCount == 0) {
@@ -64,7 +64,7 @@ public final class Mean implements Printable {
             return;
         }
         final double mean = sum / completeCount;
-        final double mean2 = var.stream().complete().mapToDouble(s -> s.value() - mean).sum();
+        final double mean2 = var.stream().complete().mapToDouble(s -> s.getValue() - mean).sum();
         this.value = mean + mean2 / completeCount;
     }
 
@@ -73,12 +73,12 @@ public final class Mean implements Printable {
      *
      * @return computed mean
      */
-    public double value() {
+    public double getValue() {
         return value;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "\n" +
                 "> mean[" + varName + "]\n" +
                 "total rows: " + formatFlex(completeCount + missingCount) +

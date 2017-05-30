@@ -29,7 +29,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.*;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class KSTestTest {
     public void testPearson() throws IOException, URISyntaxException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
-        KSTestTwoSamples test = KSTestTwoSamples.from(df.var("Son"), df.var("Father"));
+        KSTestTwoSamples test = KSTestTwoSamples.from(df.getVar("Son"), df.getVar("Father"));
         test.printSummary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);
@@ -58,7 +58,7 @@ public class KSTestTest {
     public void testNormal() {
         RandomSource.setSeed(1);
         Normal d = distNormal();
-        Numeric sample = d.sample(1000);
+        NumericVar sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
         Assert.assertTrue(test.d() < 0.4);
@@ -68,7 +68,7 @@ public class KSTestTest {
     @Test
     public void testUniform() {
         RandomSource.setSeed(1);
-        Numeric sample = new Uniform(0, 1).sample(1_000);
+        NumericVar sample = new Uniform(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
@@ -79,7 +79,7 @@ public class KSTestTest {
     public void testStudentT() {
         RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
-        Numeric sample = d.sample(1000);
+        NumericVar sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);

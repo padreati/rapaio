@@ -151,7 +151,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.var(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.getVar(firstTargetName()), cNext.fit(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
                     if (acc > bestAcc) {
@@ -181,7 +181,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.var(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.getVar(firstTargetName()), cNext.fit(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
 
@@ -226,7 +226,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
             WS.println("last test: " + testNext);
 
-            new Confusion(testFrame.var(firstTargetName()), best.fit(testFrame).firstClasses()).printSummary();
+            new Confusion(testFrame.getVar(firstTargetName()), best.fit(testFrame).firstClasses()).printSummary();
         }
 
 

@@ -24,16 +24,16 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 import rapaio.printer.Summary;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
-@SuppressWarnings("deprecation")
 public class SolidRV implements RV {
 
     private static final long serialVersionUID = 5763094452899116225L;
@@ -57,9 +57,9 @@ public class SolidRV implements RV {
      * @return new real dense vector
      */
     public static SolidRV from(Var v) {
-        SolidRV rdv = new SolidRV(v.rowCount());
+        SolidRV rdv = new SolidRV(v.getRowCount());
         for (int i = 0; i < rdv.count(); i++) {
-            rdv.values[i] = v.value(i);
+            rdv.values[i] = v.getValue(i);
         }
         return rdv;
     }
@@ -197,8 +197,8 @@ public class SolidRV implements RV {
         return Arrays.stream(values);
     }
 
-    public String summary() {
-        return Summary.headString(true, values.length, new Var[]{Numeric.wrap(values)}, new String[]{""});
+    public String getSummary() {
+        return Summary.headString(true, values.length, new Var[]{NumericVar.wrap(values)}, new String[]{""});
     }
 
 }

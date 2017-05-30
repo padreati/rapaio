@@ -60,8 +60,8 @@ public class CsvTest {
         try {
             Frame f = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(f);
-            assertEquals(5, f.varCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.varNames());
+            assertEquals(5, f.getVarCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getVarNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
@@ -104,8 +104,8 @@ public class CsvTest {
             persistence.withQuotes(true);
             Frame df = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(df);
-            assertEquals(5, df.varCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.varNames());
+            assertEquals(5, df.getVarCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getVarNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
@@ -132,51 +132,51 @@ public class CsvTest {
                 .withDefaultTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
 
-        assertEquals(7, df.rowCount());
+        assertEquals(7, df.getRowCount());
 
         // x1 is binary
 
-        assertEquals(VarType.BINARY, df.var("x1").type());
-        assertEquals(false, df.binary(0, "x1"));
-        assertEquals(true, df.binary(1, "x1"));
-        assertEquals(false, df.binary(2, "x1"));
-        assertEquals(true, df.binary(3, "x1"));
-        assertEquals(true, df.missing(4, "x1"));
-        assertEquals(false, df.binary(5, "x1"));
-        assertEquals(true, df.binary(6, "x1"));
+        assertEquals(VarType.BINARY, df.getVar("x1").getType());
+        assertEquals(false, df.getBinary(0, "x1"));
+        assertEquals(true, df.getBinary(1, "x1"));
+        assertEquals(false, df.getBinary(2, "x1"));
+        assertEquals(true, df.getBinary(3, "x1"));
+        assertEquals(true, df.isMissing(4, "x1"));
+        assertEquals(false, df.getBinary(5, "x1"));
+        assertEquals(true, df.getBinary(6, "x1"));
 
         // x2 is index
 
-        assertEquals(VarType.INDEX, df.var("x2").type());
-        assertEquals(0, df.index(0, "x2"));
-        assertEquals(1, df.index(1, "x2"));
-        assertEquals(0, df.index(2, "x2"));
-        assertEquals(1, df.index(3, "x2"));
-        assertEquals(true, df.missing(4, "x2"));
-        assertEquals(2, df.index(5, "x2"));
-        assertEquals(3, df.index(6, "x2"));
+        assertEquals(VarType.INDEX, df.getVar("x2").getType());
+        assertEquals(0, df.getIndex(0, "x2"));
+        assertEquals(1, df.getIndex(1, "x2"));
+        assertEquals(0, df.getIndex(2, "x2"));
+        assertEquals(1, df.getIndex(3, "x2"));
+        assertEquals(true, df.isMissing(4, "x2"));
+        assertEquals(2, df.getIndex(5, "x2"));
+        assertEquals(3, df.getIndex(6, "x2"));
 
         // x3 is numeric
 
-        assertEquals(VarType.NUMERIC, df.var("x3").type());
-        assertEquals(0.0, df.value(0, "x3"), 10e-12);
-        assertEquals(1.0, df.value(1, "x3"), 10e-12);
-        assertEquals(0.0, df.value(2, "x3"), 10e-12);
-        assertEquals(1.0, df.value(3, "x3"), 10e-12);
-        assertEquals(Double.NaN, df.value(4, "x3"), 10e-12);
-        assertEquals(2.0, df.value(5, "x3"), 10e-12);
-        assertEquals(3.0, df.value(6, "x3"), 10e-12);
+        assertEquals(VarType.NUMERIC, df.getVar("x3").getType());
+        assertEquals(0.0, df.getValue(0, "x3"), 10e-12);
+        assertEquals(1.0, df.getValue(1, "x3"), 10e-12);
+        assertEquals(0.0, df.getValue(2, "x3"), 10e-12);
+        assertEquals(1.0, df.getValue(3, "x3"), 10e-12);
+        assertEquals(Double.NaN, df.getValue(4, "x3"), 10e-12);
+        assertEquals(2.0, df.getValue(5, "x3"), 10e-12);
+        assertEquals(3.0, df.getValue(6, "x3"), 10e-12);
 
         // x4 nominal
 
-        assertEquals(VarType.NOMINAL, df.var("x4").type());
-        assertEquals("0", df.label(0, "x4"));
-        assertEquals("1", df.label(1, "x4"));
-        assertEquals("false", df.label(2, "x4"));
-        assertEquals("other", df.label(3, "x4"));
-        assertEquals("?", df.label(4, "x4"));
-        assertEquals("2", df.label(5, "x4"));
-        assertEquals("3", df.label(6, "x4"));
+        assertEquals(VarType.NOMINAL, df.getVar("x4").getType());
+        assertEquals("0", df.getLabel(0, "x4"));
+        assertEquals("1", df.getLabel(1, "x4"));
+        assertEquals("false", df.getLabel(2, "x4"));
+        assertEquals("other", df.getLabel(3, "x4"));
+        assertEquals("?", df.getLabel(4, "x4"));
+        assertEquals("2", df.getLabel(5, "x4"));
+        assertEquals("3", df.getLabel(6, "x4"));
     }
 
     @Test
@@ -191,8 +191,8 @@ public class CsvTest {
 
         // test no skip
         Frame full = new Csv().read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(5, full.varCount());
-        Assert.assertArrayEquals(allVarNames.toArray(), full.varNames());
+        Assert.assertEquals(5, full.getVarCount());
+        Assert.assertArrayEquals(allVarNames.toArray(), full.getVarNames());
 
         // test skip first 10 rows
 
@@ -208,8 +208,8 @@ public class CsvTest {
         // test skip row % 2 == 0 and between 50 and 100
 
         Frame r5 = new Csv().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(25, r5.rowCount());
-        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.var("class").levels());
+        Assert.assertEquals(25, r5.getRowCount());
+        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.getVar("class").getLevels());
 
         // test skip vars 0 and 2
 
@@ -218,7 +218,7 @@ public class CsvTest {
         Frame v3 = new Csv().withCols(1, 3, 4).read(Datasets.class, "iris-r.csv");
         Frame v4 = new Csv().withCols(row -> (row != 0) && (row != 2)).read(Datasets.class, "iris-r.csv");
 
-        Assert.assertEquals(3, v1.varCount());
+        Assert.assertEquals(3, v1.getVarCount());
         Assert.assertTrue(v1.deepEquals(v2));
         Assert.assertTrue(v1.deepEquals(v3));
         Assert.assertTrue(v1.deepEquals(v4));
@@ -226,8 +226,8 @@ public class CsvTest {
         // test mixed
 
         Frame m1 = new Csv().withRows(row -> row >= 20 && row < 30).withCols(col -> col >= 2).read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(10, m1.rowCount());
-        Assert.assertEquals(3, m1.varCount());
+        Assert.assertEquals(10, m1.getRowCount());
+        Assert.assertEquals(3, m1.getVarCount());
     }
 
     @Test
@@ -239,7 +239,7 @@ public class CsvTest {
         t1.printSummary();
 
         VarType[] types = new VarType[]{VarType.NOMINAL, VarType.NUMERIC, VarType.NUMERIC, VarType.NOMINAL, VarType.NOMINAL};
-        Assert.assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
+        Assert.assertArrayEquals(types, t1.varStream().map(Var::getType).toArray());
 
         Frame t2 = new Csv().withTemplate(t1).read(Datasets.class, "iris-r.csv");
         Assert.assertTrue(t1.deepEquals(t2));

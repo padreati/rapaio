@@ -63,9 +63,9 @@ public class FFRetainTypes extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
         List<String> names = new ArrayList<>();
-        for (String name : df.varNames()) {
+        for (String name : df.getVarNames()) {
             for (VarType type : types) {
-                if (df.var(name).type().equals(type)) {
+                if (df.getVar(name).getType().equals(type)) {
                     names.add(name);
                     break;
                 }

@@ -54,7 +54,7 @@ public class KFuncTricube implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncTricube";
     }
 }

@@ -113,7 +113,7 @@ public class MarkovChain implements Printable {
 
         // normalization
         p.normalize(1);
-        for (int i = 0; i < m.rowCount(); i++) {
+        for (int i = 0; i < m.getRowCount(); i++) {
             m.mapRow(i).normalize(1);
         }
     }
@@ -177,7 +177,7 @@ public class MarkovChain implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
 
         RandomSource.setSeed(1);
 
@@ -199,10 +199,10 @@ public class MarkovChain implements Printable {
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");
-        sb.append(p.summary());
+        sb.append(p.getSummary());
 
         sb.append("Matrix: \n");
-        sb.append(m.summary());
+        sb.append(m.getSummary());
 
         return sb.toString();
     }

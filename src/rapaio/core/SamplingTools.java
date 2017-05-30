@@ -320,24 +320,24 @@ public final class SamplingTools {
     public static List<Frame> randomSampleSlices(Frame frame, double... freq) {
         int total = 0;
         for (double f : freq) {
-            total += (int) (f * frame.rowCount());
+            total += (int) (f * frame.getRowCount());
         }
-        if (total > frame.rowCount()) {
+        if (total > frame.getRowCount()) {
             throw new IllegalArgumentException("total counts greater than available number of rows");
         }
         List<Frame> result = new ArrayList<>();
 
-        List<Integer> rows = IntStream.range(0, frame.rowCount()).mapToObj(i -> i).collect(Collectors.toList());
+        List<Integer> rows = IntStream.range(0, frame.getRowCount()).mapToObj(i -> i).collect(Collectors.toList());
         Collections.shuffle(rows, RandomSource.getRandom());
 
         int start = 0;
         for (double f : freq) {
-            int len = (int) (f * frame.rowCount());
+            int len = (int) (f * frame.getRowCount());
             result.add(frame.mapRows(Mapping.copy(rows.subList(start, start + len))));
             start += len;
         }
-        if (start < frame.rowCount()) {
-            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.rowCount()))));
+        if (start < frame.getRowCount()) {
+            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.getRowCount()))));
         }
         return result;
     }
@@ -347,10 +347,10 @@ public final class SamplingTools {
             throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
         }
         List<List<Integer>> maps = new ArrayList<>();
-        for (int i = 0; i < df.var(strataName).levels().length; i++) {
+        for (int i = 0; i < df.getVar(strataName).getLevels().length; i++) {
             maps.add(new ArrayList<>());
         }
-        df.var(strataName).stream().forEach(s -> maps.get(s.index()).add(s.row()));
+        df.getVar(strataName).stream().forEach(s -> maps.get(s.getIndex()).add(s.getRow()));
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {
@@ -372,6 +372,6 @@ public final class SamplingTools {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
+        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.getRowCount(), (int) (percent * frame.getRowCount()))));
     }
 }

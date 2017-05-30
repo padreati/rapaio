@@ -72,18 +72,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "bin";
         }
 
         @Override
         public Var newInstance() {
-            return Binary.empty();
+            return BinaryVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Binary.empty(rows);
+            return BinaryVar.empty(rows);
         }
     },
     /**
@@ -101,18 +101,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "idx";
         }
 
         @Override
         public Var newInstance() {
-            return Index.empty();
+            return IndexVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Index.empty(rows);
+            return IndexVar.empty(rows);
         }
     },
     /**
@@ -131,18 +131,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "nom";
         }
 
         @Override
         public Var newInstance() {
-            return Nominal.empty();
+            return NominalVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Nominal.empty(rows);
+            return NominalVar.empty(rows);
         }
     },
     /**
@@ -160,18 +160,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "num";
         }
 
         @Override
         public Var newInstance() {
-            return Numeric.empty();
+            return NumericVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Numeric.empty(rows);
+            return NumericVar.empty(rows);
         }
     },
     /**
@@ -191,18 +191,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "ord";
         }
 
         @Override
         public Var newInstance() {
-            return Ordinal.empty();
+            return OrdinalVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Ordinal.empty(rows);
+            return OrdinalVar.empty(rows);
         }
     },
     /**
@@ -220,18 +220,18 @@ public enum VarType {
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "dat";
         }
 
         @Override
         public Var newInstance() {
-            return Stamp.empty();
+            return StampVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Stamp.empty(rows);
+            return StampVar.empty(rows);
         }
     },
     /**
@@ -245,17 +245,17 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Text.empty();
+            return TextVar.empty();
         }
 
         @Override
-        public String code() {
+        public String getCode() {
             return "txt";
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Text.empty(rows);
+            return TextVar.empty(rows);
         }
 
         @Override
@@ -278,7 +278,7 @@ public enum VarType {
         return false;
     }
 
-    public abstract String code();
+    public abstract String getCode();
 
     /**
      * Builds a new empty instance of the given type

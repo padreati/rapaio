@@ -85,7 +85,7 @@ public interface VFilter extends Serializable, Printable {
     }
 
     @Override
-    default String summary() {
+    default String getSummary() {
         return "filter summary not implemented";
     }
 }

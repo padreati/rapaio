@@ -104,10 +104,10 @@ public interface RTreeNominalMethod extends Serializable {
         public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
             List<RTree.Candidate> result = new ArrayList<>();
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testVarName)).collectMapping();
+            Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testVarName);
-            Var targetVar = df.var(targetVarName);
+            Var testVar = df.getVar(testVarName);
+            Var targetVar = df.getVar(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
@@ -118,19 +118,19 @@ public interface RTreeNominalMethod extends Serializable {
                 return Optional.empty();
 
             // make the payload
-            RTreeTestPayload p = new RTreeTestPayload(testVar.levels().length - 1);
-            p.totalVar = CoreTools.var(targetVar).value();
+            RTreeTestPayload p = new RTreeTestPayload(testVar.getLevels().length - 1);
+            p.totalVar = CoreTools.variance(targetVar).getValue();
 
-            for (int i = 1; i < testVar.levels().length; i++) {
+            for (int i = 1; i < testVar.getLevels().length; i++) {
                 p.splitWeight[i - 1] = dvWeights.get(i - 1);
-                String label = testVar.levels()[i];
-                p.splitVar[i - 1] = CoreTools.var(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
+                String label = testVar.getLevels()[i];
+                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.getLabel(testVarName).equals(label)).toMappedFrame().getVar(targetVarName)).getValue();
             }
             double value = tree.function.computeTestValue(p);
             RTree.Candidate candidate = new RTree.Candidate(value, testVarName);
-            for (int i = 1; i < testVar.levels().length; i++) {
-                String label = testVar.levels()[i];
-                candidate.addGroup(testVarName + " == " + label, spot -> spot.label(testVarName).equals(label));
+            for (int i = 1; i < testVar.getLevels().length; i++) {
+                String label = testVar.getLevels()[i];
+                candidate.addGroup(testVarName + " == " + label, spot -> spot.getLabel(testVarName).equals(label));
             }
             return Optional.of(candidate);
         }
@@ -153,44 +153,44 @@ public interface RTreeNominalMethod extends Serializable {
         @Override
         public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testVarName)).collectMapping();
+            Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testVarName);
-            Var targetVar = df.var(targetVarName);
+            Var testVar = df.getVar(testVarName);
+            Var targetVar = df.getVar(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
             DVector dvCount = DVector.fromCount(false, testVar);
 
             // compute online statistics for all level slices
-            OnlineStat[] os = new OnlineStat[testVar.levels().length - 1];
-            for (int i = 0; i < testVar.levels().length - 1; i++) {
+            OnlineStat[] os = new OnlineStat[testVar.getLevels().length - 1];
+            for (int i = 0; i < testVar.getLevels().length - 1; i++) {
                 os[i] = OnlineStat.empty();
             }
-            for (int i = 0; i < testVar.rowCount(); i++) {
-                int index = testVar.index(i);
+            for (int i = 0; i < testVar.getRowCount(); i++) {
+                int index = testVar.getIndex(i);
                 if (index == 0)
                     continue;
-                os[index - 1].update(targetVar.value(i));
+                os[index - 1].update(targetVar.getValue(i));
             }
 
-            double totalVar = CoreTools.var(targetVar).value();
+            double totalVar = CoreTools.variance(targetVar).getValue();
 
             RTree.Candidate best = null;
             double bestScore = Double.NaN;
 
-            for (int i = 1; i < testVar.levels().length; i++) {
-                String testLabel = testVar.levels()[i];
+            for (int i = 1; i < testVar.getLevels().length; i++) {
+                String testLabel = testVar.getLevels()[i];
 
                 // check to see if we have enough values
 
-                if (dvCount.get(i) < tree.minCount || df.rowCount() - dvCount.get(i) < tree.minCount)
+                if (dvCount.get(i) < tree.minCount || df.getRowCount() - dvCount.get(i) < tree.minCount)
                     continue;
 
                 OnlineStat osSelect = os[i - 1];
                 OnlineStat osOther = OnlineStat.empty();
 
-                for (int j = 1; j < testVar.levels().length; j++) {
+                for (int j = 1; j < testVar.getLevels().length; j++) {
                     if (i == j)
                         continue;
                     osOther.update(os[j - 1]);
@@ -214,9 +214,9 @@ public interface RTreeNominalMethod extends Serializable {
                     bestScore = value;
                     best = new RTree.Candidate(value, testVarName);
                     best.addGroup(testVarName + " == " + testLabel,
-                            spot -> !spot.missing(testVarName) && spot.label(testVarName).equals(testLabel));
+                            spot -> !spot.isMissing(testVarName) && spot.getLabel(testVarName).equals(testLabel));
                     best.addGroup(testVarName + " != " + testLabel,
-                            spot -> !spot.missing(testVarName) && !spot.label(testVarName).equals(testLabel));
+                            spot -> !spot.isMissing(testVarName) && !spot.getLabel(testVarName).equals(testLabel));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

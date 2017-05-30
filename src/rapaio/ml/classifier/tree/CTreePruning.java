@@ -80,7 +80,7 @@ class ReducedErrorPruning {
         List<Integer> ids = new ArrayList<>(nodes.keySet());
         Set<Integer> pruned = new HashSet<>();
         boolean found = true;
-        double rowCount = df.rowCount();
+        double rowCount = df.getRowCount();
         while (found) {
             found = false;
             double maxAcc = -1;
@@ -155,7 +155,7 @@ class ReducedErrorPruning {
     private static ValuePair bottomUpCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
 
         if (node.isLeaf()) {
-            ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+            ValuePair err = spot.getIndex(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
             bottomUp.get(node.getId()).increment(err);
             return err;
         }
@@ -172,7 +172,7 @@ class ReducedErrorPruning {
 
     private static void topDownCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
 
-        ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+        ValuePair err = spot.getIndex(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
         topDown.get(node.getId()).increment(err);
 
         for (CTreeNode child : node.getChildren()) {

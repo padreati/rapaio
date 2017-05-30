@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -38,8 +38,8 @@ public class FFTTest {
     // display an array of Complex numbers to standard output
     public static void show(Pair<Var, Var> x) {
         System.out.println("-------------------");
-        for (int i = 0; i < x._1.rowCount(); i++) {
-            System.out.println(x._1.value(i) + " , " + x._2.value(i));
+        for (int i = 0; i < x._1.getRowCount(); i++) {
+            System.out.println(x._1.getValue(i) + " , " + x._2.getValue(i));
         }
         System.out.println();
     }
@@ -91,8 +91,8 @@ public class FFTTest {
          * 4.01805098805014E-17i
          ***************************************************************************/
 
-        Numeric xre = Numeric.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
-        Numeric xim = Numeric.copy(0, 0, 0, 0);
+        NumericVar xre = NumericVar.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
+        NumericVar xim = NumericVar.copy(0, 0, 0, 0);
 
         int len = 10;
 
@@ -123,8 +123,8 @@ public class FFTTest {
 
         for (int i = 0; i < 10; i++) {
 
-            Numeric x1 = Numeric.from(N, normal::sampleNext);
-            Numeric x2 = Numeric.from(N, normal::sampleNext);
+            NumericVar x1 = NumericVar.from(N, normal::sampleNext);
+            NumericVar x2 = NumericVar.from(N, normal::sampleNext);
 
             Pair<Var, Var> y = FFT.ifft(FFT.fft(Pair.from(x1, x2)));
 
@@ -132,7 +132,7 @@ public class FFTTest {
             Var y2 = y._2;
 
             for (int j = 0; j < N; j++) {
-                Assert.assertEquals(x1.value(i), y1.value(i), 1e-12);
+                Assert.assertEquals(x1.getValue(i), y1.getValue(i), 1e-12);
             }
         }
     }

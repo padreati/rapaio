@@ -335,8 +335,7 @@ public class MTools {
             r = 0;
         } /*
          * for x < 2.0
-         */ 
-        else if (ix < 0x40000000) {
+         */ else if (ix < 0x40000000) {
             if (ix <= 0x3feccccc) { 	/*
                  * lgamma(x) = lgamma(x+1)-log(x)
                  */
@@ -405,14 +404,6 @@ public class MTools {
             q = 1 + y * (r1 + y * (r2 + y * (r3 + y * (r4 + y * (r5 + y * r6)))));
             r = 0.5 * y + p / q;
             z = 1;
-          
-          
-            for(int counter = i; counter > 2; counter--) {
-            	z *= (y + counter - 1.0);
-            }
-            r += Math.log(z);
-            
-            /*
             switch (i) {
                 case 7:
                     z *= (y + 6.0);
@@ -426,7 +417,7 @@ public class MTools {
                     z *= (y + 2.0);
                     r += Math.log(z);
                     break;
-            }*/
+            }
             /*
              * 8.0 <= x < 2**58
              */
@@ -636,8 +627,7 @@ public class MTools {
      * } will return p.
      */
     public static double invBetaIncReg(double p, double a, double b) {
-    	boolean pIsOutOfBoundary = (p < 0 || p > 1);
-        if (pIsOutOfBoundary) {
+        if (p < 0 || p > 1) {
             throw new ArithmeticException("The value p must be in the range [0,1], not" + p);
         }
 

@@ -88,7 +88,7 @@ public class L1Regression extends AbstractRegression {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            medians[i] = Quantiles.from(df.var(target), 0.5).values()[0];
+            medians[i] = Quantiles.from(df.getVar(target), 0.5).getValues()[0];
         }
         return true;
     }
@@ -106,7 +106,7 @@ public class L1Regression extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" Summary\n");
         sb.append("=========================\n");

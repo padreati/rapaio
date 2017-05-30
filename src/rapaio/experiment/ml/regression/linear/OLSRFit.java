@@ -60,8 +60,8 @@ public class OLSRFit extends RFit {
         sb.append("\n");
 
         sb.append("Predicted frame printSummary:\n");
-        sb.append(" - rows: ").append(getFrame().rowCount()).append("\n");
-        sb.append(" - cols: ").append(getFrame().varCount()).append("\n");
+        sb.append(" - rows: ").append(getFrame().getRowCount()).append("\n");
+        sb.append(" - cols: ").append(getFrame().getVarCount()).append("\n");
         sb.append(" - inputs: ").append(Arrays.toString(regressor.inputNames())).append("\n");
         sb.append(" - targets: ").append(Arrays.toString(regressor.targetNames())).append("\n");
         sb.append("\n");
