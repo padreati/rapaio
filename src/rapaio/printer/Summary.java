@@ -92,120 +92,21 @@ public class Summary {
             int i = df.getVarIndex(names[k]);
 
             Var v = df.getVar(i);
+            TypeStrategy typeStrategy;
+            
             if (v.getType() == VarType.BINARY) {
-                first[k][0] = "0";
-                first[k][1] = "1";
-                first[k][2] = "NA's";
-
-                int ones = 0;
-                int zeros = 0;
-                int missing = 0;
-                for (int j = 0; j < v.getRowCount(); j++) {
-                    if (v.isMissing(j)) {
-                        missing++;
-                    } else {
-                        if (v.getBinary(j))
-                            ones++;
-                        else
-                            zeros++;
-                    }
-                }
-                second[k][0] = String.valueOf(zeros);
-                second[k][1] = String.valueOf(ones);
-                second[k][2] = String.valueOf(missing);
-                continue;
+                typeStrategy = new BinaryTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
 
             if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
-                double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-                double[] perc = Quantiles.from(v, p).getValues();
-                double mean = Mean.from(v).getValue();
-
-                int nas = 0;
-                for (int j = 0; j < df.getRowCount(); j++) {
-                    if (v.isMissing(j)) {
-                        nas++;
-                    }
-                }
-
-                first[k][0] = "Min.";
-                first[k][1] = "1st Qu.";
-                first[k][2] = "Median";
-                first[k][3] = "Mean";
-                first[k][4] = "2nd Qu.";
-                first[k][5] = "Max.";
-
-                second[k][0] = String.format("%.3f", perc[0]);
-                second[k][1] = String.format("%.3f", perc[1]);
-                second[k][2] = String.format("%.3f", perc[2]);
-                second[k][3] = String.format("%.3f", mean);
-                second[k][4] = String.format("%.3f", perc[3]);
-                second[k][5] = String.format("%.3f", perc[4]);
-
-                if (nas != 0) {
-                    first[k][6] = "NA's";
-                    second[k][6] = String.format("%d", nas);
-                }
+                typeStrategy = new NumbericTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
 
             if (v.getType().isNominal()) {
-                int[] hits = new int[v.getLevels().length];
-                int[] indexes = new int[v.getLevels().length];
-                for (int j = 0; j < df.getRowCount(); j++) {
-                    hits[v.getIndex(j)]++;
-                    indexes[v.getIndex(j)] = j;
-                }
-                int[] tophit = new int[6];
-                int[] topindex = new int[6];
-                for (int j = 1; j < hits.length; j++) {
-                    if (hits[j] != 0) {
-                        for (int l = 0; l < tophit.length; l++) {
-                            if (tophit[l] < hits[j]) {
-                                for (int m = tophit.length - 1; m > l; m--) {
-                                    tophit[m] = tophit[m - 1];
-                                    topindex[m] = topindex[m - 1];
-                                }
-                                tophit[l] = hits[j];
-                                topindex[l] = j;
-                                break;
-                            }
-                        }
-                    }
-                }
-                int nas = 0;
-                for (int j = 0; j < df.getRowCount(); j++) {
-                    if (v.isMissing(j)) {
-                        nas++;
-                    }
-                }
-
-                int other = df.getRowCount();
-                int pos = 0;
-                for (int j = 0; j < 6; j++) {
-                    if (tophit[j] != 0) {
-                        other -= tophit[j];
-                        first[k][j] = v.getLabel(indexes[topindex[j]]);
-                        second[k][j] = String.valueOf(tophit[j]);
-                        pos++;
-                    }
-                }
-                if (nas != 0) {
-                    if (other - nas != 0) {
-                        if (pos == 6) {
-                            pos--;
-                        }
-                        first[k][pos] = "(Other)";
-                        second[k][pos] = String.valueOf(other - nas);
-                        pos++;
-                    }
-                    first[k][pos] = "NA's";
-                    second[k][pos] = String.valueOf(nas);
-                } else {
-                    if (other != 0) {
-                        first[k][pos] = "(Other)";
-                        second[k][pos] = String.valueOf(other);
-                    }
-                }
+                typeStrategy = new NominalTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
         }
 
