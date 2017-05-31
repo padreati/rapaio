@@ -46,11 +46,11 @@ import static rapaio.sys.WS.getPrinter;
 @Deprecated
 public class Summary {
 
-    public static String summary(Frame df) {
-        return summary(df, df.varNames());
+    public static String getSummary(Frame df) {
+        return getSummary(df, df.getVarNames());
     }
 
-    public static String summary(Frame df, String... names) {
+    public static String getSummary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
 
@@ -62,21 +62,21 @@ public class Summary {
             return buffer.toString();
         }
 
-        buffer.append("* rowCount: ").append(df.rowCount()).append("\n");
-        buffer.append("* complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
-        buffer.append("* varCount: ").append(df.varCount()).append("\n");
+        buffer.append("* rowCount: ").append(df.getRowCount()).append("\n");
+        buffer.append("* complete: ").append(df.stream().complete().count()).append("/").append(df.getRowCount()).append("\n");
+        buffer.append("* varCount: ").append(df.getVarCount()).append("\n");
         buffer.append("* varNames: \n");
 
-        TextTable tt = TextTable.newEmpty(df.varCount(), 5);
-        for (int i = 0; i < df.varCount(); i++) {
+        TextTable tt = TextTable.newEmpty(df.getVarCount(), 5);
+        for (int i = 0; i < df.getVarCount(); i++) {
             tt.set(i, 0, i + ".", 1);
-            tt.set(i, 1, df.var(i).name(), 1);
+            tt.set(i, 1, df.getVar(i).getName(), 1);
             tt.set(i, 2, ":", -1);
-            tt.set(i, 3, df.var(i).type().code(), -1);
+            tt.set(i, 3, df.getVar(i).getType().getCode(), -1);
             tt.set(i, 4, "|", 1);
         }
         tt.withMerge();
-        buffer.append("\n").append(tt.summary()).append("\n");
+        buffer.append("\n").append(tt.getSummary()).append("\n");
 
 
         String[][] first = new String[names.length][7];
@@ -89,123 +89,24 @@ public class Summary {
         }
 
         for (int k = 0; k < names.length; k++) {
-            int i = df.varIndex(names[k]);
+            int i = df.getVarIndex(names[k]);
 
-            Var v = df.var(i);
-            if (v.type() == VarType.BINARY) {
-                first[k][0] = "0";
-                first[k][1] = "1";
-                first[k][2] = "NA's";
-
-                int ones = 0;
-                int zeros = 0;
-                int missing = 0;
-                for (int j = 0; j < v.rowCount(); j++) {
-                    if (v.missing(j)) {
-                        missing++;
-                    } else {
-                        if (v.binary(j))
-                            ones++;
-                        else
-                            zeros++;
-                    }
-                }
-                second[k][0] = String.valueOf(zeros);
-                second[k][1] = String.valueOf(ones);
-                second[k][2] = String.valueOf(missing);
-                continue;
+            Var v = df.getVar(i);
+            TypeStrategy typeStrategy;
+            
+            if (v.getType() == VarType.BINARY) {
+                typeStrategy = new BinaryTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
 
-            if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
-                double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-                double[] perc = Quantiles.from(v, p).values();
-                double mean = Mean.from(v).value();
-
-                int nas = 0;
-                for (int j = 0; j < df.rowCount(); j++) {
-                    if (v.missing(j)) {
-                        nas++;
-                    }
-                }
-
-                first[k][0] = "Min.";
-                first[k][1] = "1st Qu.";
-                first[k][2] = "Median";
-                first[k][3] = "Mean";
-                first[k][4] = "2nd Qu.";
-                first[k][5] = "Max.";
-
-                second[k][0] = String.format("%.3f", perc[0]);
-                second[k][1] = String.format("%.3f", perc[1]);
-                second[k][2] = String.format("%.3f", perc[2]);
-                second[k][3] = String.format("%.3f", mean);
-                second[k][4] = String.format("%.3f", perc[3]);
-                second[k][5] = String.format("%.3f", perc[4]);
-
-                if (nas != 0) {
-                    first[k][6] = "NA's";
-                    second[k][6] = String.format("%d", nas);
-                }
+            if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
+                typeStrategy = new NumbericTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
 
-            if (v.type().isNominal()) {
-                int[] hits = new int[v.levels().length];
-                int[] indexes = new int[v.levels().length];
-                for (int j = 0; j < df.rowCount(); j++) {
-                    hits[v.index(j)]++;
-                    indexes[v.index(j)] = j;
-                }
-                int[] tophit = new int[6];
-                int[] topindex = new int[6];
-                for (int j = 1; j < hits.length; j++) {
-                    if (hits[j] != 0) {
-                        for (int l = 0; l < tophit.length; l++) {
-                            if (tophit[l] < hits[j]) {
-                                for (int m = tophit.length - 1; m > l; m--) {
-                                    tophit[m] = tophit[m - 1];
-                                    topindex[m] = topindex[m - 1];
-                                }
-                                tophit[l] = hits[j];
-                                topindex[l] = j;
-                                break;
-                            }
-                        }
-                    }
-                }
-                int nas = 0;
-                for (int j = 0; j < df.rowCount(); j++) {
-                    if (v.missing(j)) {
-                        nas++;
-                    }
-                }
-
-                int other = df.rowCount();
-                int pos = 0;
-                for (int j = 0; j < 6; j++) {
-                    if (tophit[j] != 0) {
-                        other -= tophit[j];
-                        first[k][j] = v.label(indexes[topindex[j]]);
-                        second[k][j] = String.valueOf(tophit[j]);
-                        pos++;
-                    }
-                }
-                if (nas != 0) {
-                    if (other - nas != 0) {
-                        if (pos == 6) {
-                            pos--;
-                        }
-                        first[k][pos] = "(Other)";
-                        second[k][pos] = String.valueOf(other - nas);
-                        pos++;
-                    }
-                    first[k][pos] = "NA's";
-                    second[k][pos] = String.valueOf(nas);
-                } else {
-                    if (other != 0) {
-                        first[k][pos] = "(Other)";
-                        second[k][pos] = String.valueOf(other);
-                    }
-                }
+            if (v.getType().isNominal()) {
+                typeStrategy = new NominalTypeStrategy();
+                typeStrategy.getString(df, v, first, second, k);
             }
         }
 
@@ -284,14 +185,14 @@ public class Summary {
         return buffer.toString();
     }
 
-    public static String summary(Var v) {
+    public static String getSummary(Var v) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("> printSummary(var: ").append(v.name()).append(")\n");
-        sb.append("name: ").append(v.name()).append("\n");
-        sb.append("type: ").append(v.type().name()).append("\n");
+        sb.append("> printSummary(var: ").append(v.getName()).append(")\n");
+        sb.append("name: ").append(v.getName()).append("\n");
+        sb.append("type: ").append(v.getType().name()).append("\n");
         int complete = (int) v.stream().complete().count();
-        sb.append("rows: ").append(v.rowCount()).append(", complete: ").append(complete).append(", missing: ").append(v.rowCount() - complete).append("\n");
+        sb.append("rows: ").append(v.getRowCount()).append(", complete: ").append(complete).append(", missing: ").append(v.getRowCount() - complete).append("\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -300,7 +201,7 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.type() == VarType.BINARY) {
+        if (v.getType() == VarType.BINARY) {
             first[0] = "0";
             first[1] = "1";
             first[2] = "NA's";
@@ -308,11 +209,11 @@ public class Summary {
             int ones = 0;
             int zeros = 0;
             int missing = 0;
-            for (int i = 0; i < v.rowCount(); i++) {
-                if (v.missing(i)) {
+            for (int i = 0; i < v.getRowCount(); i++) {
+                if (v.isMissing(i)) {
                     missing++;
                 } else {
-                    if (v.binary(i))
+                    if (v.getBinary(i))
                         ones++;
                     else
                         zeros++;
@@ -323,14 +224,14 @@ public class Summary {
             second[2] = String.valueOf(missing);
         }
 
-        if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
+        if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-            double[] perc = Quantiles.from(v, p).values();
-            double mean = Mean.from(v).value();
+            double[] perc = Quantiles.from(v, p).getValues();
+            double mean = Mean.from(v).getValue();
 
             int nas = 0;
-            for (int j = 0; j < v.rowCount(); j++) {
-                if (v.missing(j)) {
+            for (int j = 0; j < v.getRowCount(); j++) {
+                if (v.isMissing(j)) {
                     nas++;
                 }
             }
@@ -355,12 +256,12 @@ public class Summary {
             }
         }
 
-        if (v.type().isNominal()) {
-            int[] hits = new int[v.rowCount() + 1];
-            int[] indexes = new int[v.rowCount() + 1];
-            for (int j = 0; j < v.rowCount(); j++) {
-                hits[v.index(j)]++;
-                indexes[v.index(j)] = j;
+        if (v.getType().isNominal()) {
+            int[] hits = new int[v.getRowCount() + 1];
+            int[] indexes = new int[v.getRowCount() + 1];
+            for (int j = 0; j < v.getRowCount(); j++) {
+                hits[v.getIndex(j)]++;
+                indexes[v.getIndex(j)] = j;
             }
             int[] tophit = new int[6];
             int[] topindex = new int[6];
@@ -380,18 +281,18 @@ public class Summary {
                 }
             }
             int nas = 0;
-            for (int j = 0; j < v.rowCount(); j++) {
-                if (v.missing(j)) {
+            for (int j = 0; j < v.getRowCount(); j++) {
+                if (v.isMissing(j)) {
                     nas++;
                 }
             }
 
-            int other = v.rowCount();
+            int other = v.getRowCount();
             int pos = 0;
             for (int j = 0; j < 6; j++) {
                 if (tophit[j] != 0) {
                     other -= tophit[j];
-                    first[j] = v.label(indexes[topindex[j]]);
+                    first[j] = v.getLabel(indexes[topindex[j]]);
                     second[j] = String.valueOf(tophit[j]);
                     pos++;
                 }
@@ -446,8 +347,8 @@ public class Summary {
     public static void printNames(Frame df) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("\n > names(frame)\n");
-        for (int i = 0; i < df.varCount(); i++) {
-            buffer.append(df.varNames()[i]).append("\n");
+        for (int i = 0; i < df.getVarCount(); i++) {
+            buffer.append(df.getVarNames()[i]).append("\n");
         }
         code(buffer.toString());
     }
@@ -457,7 +358,7 @@ public class Summary {
     }
 
     public static void lines(boolean merge, Var v) {
-        head(merge, v.rowCount(), new Var[]{v}, new String[]{""});
+        head(merge, v.getRowCount(), new Var[]{v}, new String[]{""});
     }
 
     public static void head(boolean merge, int lines, Var v) {
@@ -469,21 +370,21 @@ public class Summary {
     }
 
     public static void lines(boolean merge, Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        String[] names = df.varNames();
+        Var[] vars = new Var[df.getVarCount()];
+        String[] names = df.getVarNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.getVar(i);
         }
-        head(merge, df.rowCount(), vars, names);
+        head(merge, df.getRowCount(), vars, names);
     }
 
     public static void head(boolean merge, int lines, Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        String[] names = df.varNames();
+        Var[] vars = new Var[df.getVarCount()];
+        String[] names = df.getVarNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.getVar(i);
         }
-        head(merge, Math.min(lines, df.rowCount()), vars, names);
+        head(merge, Math.min(lines, df.getRowCount()), vars, names);
     }
 
     public static void head(boolean merge, int lines, Var[] vars, String[] names) {
@@ -491,11 +392,11 @@ public class Summary {
     }
 
     public static String headString(Frame df) {
-        return headString(true, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
+        return headString(true, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
     }
 
     public static String headString(boolean merge, Frame df) {
-        return headString(merge, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
+        return headString(merge, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
     }
 
     public static String headString(int lines, Var[] vars, String[] names) {
@@ -504,65 +405,8 @@ public class Summary {
 
     public static String headString(boolean merge, int lines, Var[] vars, String[] names) {
         if (lines == -1) {
-            lines = vars[0].rowCount();
+            lines = vars[0].getRowCount();
         }
-
-        int[] max = new int[vars.length];
-        for (int i = 0; i < vars.length; i++) {
-            max[i] = names[i].length() + 1;
-            for (int j = 0; j < vars[i].rowCount(); j++) {
-                if (vars[i].type().isNominal() && max[i] < vars[i].label(j).length()) {
-                    max[i] = vars[i].label(j).length();
-                }
-                if (vars[i].type().isNumeric()) {
-                    String value = vars[i].type() == VarType.NUMERIC ?
-                            String.format("%.10f", vars[i].value(j)) :
-                            String.format("%d", vars[i].index(j));
-                    if (max[i] < value.length()) {
-                        max[i] = value.length();
-                    }
-                }
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        int pos = 0;
-        while (pos < vars.length) {
-            int maxWidth = getPrinter().textWidth();
-            int width = 0;
-            int start = pos;
-            while ((pos < vars.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {
-                width += max[pos + 1] + 1;
-                pos++;
-            }
-
-            for (int j = start; j <= pos; j++) {
-                String value = String.format("%" + max[j] + "s", names[j]);
-                sb.append(value).append(" ");
-            }
-            sb.append("\n");
-
-            for (int i = 0; i < lines; i++) {
-                for (int j = start; j <= pos; j++) {
-                    String value;
-                    if (vars[j].type().isNominal()) {
-                        value = String.format("%" + max[j] + "s", vars[j].label(i));
-                    } else {
-                        value = String.format("%" + max[j] + "s",
-                                vars[j].type() == VarType.NUMERIC ?
-                                        String.format("%.6f", vars[j].value(i)) :
-                                        String.format("%d", vars[j].index(i))
-                        );
-                    }
-                    sb.append(value).append(" ");
-                }
-                sb.append("\n");
-            }
-            pos++;
-            sb.append("\n");
-        }
-//        return sb.toString();
 
         TextTable tt = TextTable.newEmpty(lines + 1, vars.length + 1);
         if (merge)
@@ -578,10 +422,9 @@ public class Summary {
         }
         for (int i = 0; i < lines; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.set(i + 1, j + 1, vars[j].label(i), 1);
+                tt.set(i + 1, j + 1, vars[j].getLabel(i), 1);
             }
         }
-        return tt.summary();
-
+        return tt.getSummary();
     }
 }
