@@ -71,51 +71,11 @@ public final class Linear {
         return X;
     }
 
-    /*
-    public static EigenPair pdEigenDecomp(RM s, int maxRuns, double tol) {
-
-        // runs QR decomposition algorithm for maximum of iterations
-        // to provide a solution which has other than diagonals under
-        // tolerance
-
-        // this works only for positive definite
-        // here we check only symmetry
-
-        if (s.getRowCount() != s.getColCount())
-            throw new IllegalArgumentException("This eigen pair method works only for positive definite matrices");
-        QR qr = s.qr();
-        s = qr.getR().dot(qr.getQ());
-        RM ev = qr.getQ();
-        for (int i = 0; i < maxRuns - 1; i++) {
-            qr = s.qr();
-            s = qr.getR().dot(qr.getQ());
-            ev = ev.dot(qr.getQ());
-            if (inTolerance(s, tol))
-                break;
-        }
-        return EigenPair.from(s.diag(), ev.solidCopy());
-    }*/
 
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
 
-        int n = s.getColCount();
-        EigenDecomposition evd = EigenDecomposition.from(s);
-
-        double[] _values = evd.getRealEigenvalues();
-        RM _vectors = evd.getV();
-
-        RV values = SolidRV.empty(n);
-        RM vectors = SolidRM.empty(n, n);
-
-        for (int i = 0; i < values.count(); i++) {
-            values.set(values.count() - i - 1, _values[i]);
-        }
-        for (int i = 0; i < vectors.getRowCount(); i++) {
-            for (int j = 0; j < vectors.getColCount(); j++) {
-                vectors.set(i, vectors.getColCount() - j - 1, _vectors.get(i, j));
-            }
-        }
-        return EigenPair.from(values, vectors);
+    	DecompStrategy decompStrategy = new EigenDecomp();
+    	return decompStrategy.eigenDecomp(s, maxRuns, tol);
     }
 
     public static RM pdPower(RM s, double power, int maxRuns, double tol) {
