@@ -6,7 +6,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 
 public class NumbericTypeStrategy implements TypeStrategy {
-	public void getString(Frame df, Var v,String[][] first, String[][] second, int th ){
+	public void getVarSummary(Frame df, Var v,String[][] first, String[][] second, int th ){
 		double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
         double[] perc = Quantiles.from(v, p).getValues();
         double mean = Mean.from(v).getValue();
@@ -35,6 +35,39 @@ public class NumbericTypeStrategy implements TypeStrategy {
         if (nas != 0) {
             first[th][6] = "NA's";
             second[th][6] = String.format("%d", nas);
+        }
+	}
+
+	@Override
+	public void getPrintSummary(Var v, String[] first, String[] second) {
+		double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
+        double[] perc = Quantiles.from(v, p).getValues();
+        double mean = Mean.from(v).getValue();
+
+        int nas = 0;
+        for (int j = 0; j < v.getRowCount(); j++) {
+            if (v.isMissing(j)) {
+                nas++;
+            }
+        }
+
+        first[0] = "Min.";
+        first[1] = "1st Qu.";
+        first[2] = "Median";
+        first[3] = "Mean";
+        first[4] = "2nd Qu.";
+        first[5] = "Max.";
+
+        second[0] = String.format("%.3f", perc[0]);
+        second[1] = String.format("%.3f", perc[1]);
+        second[2] = String.format("%.3f", perc[2]);
+        second[3] = String.format("%.3f", mean);
+        second[4] = String.format("%.3f", perc[3]);
+        second[5] = String.format("%.3f", perc[4]);
+
+        if (nas != 0) {
+            first[6] = "NA's";
+            second[6] = String.format("%d", nas);
         }
 	}
 }

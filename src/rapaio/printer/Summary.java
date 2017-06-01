@@ -96,17 +96,17 @@ public class Summary {
             
             if (v.getType() == VarType.BINARY) {
                 typeStrategy = new BinaryTypeStrategy();
-                typeStrategy.getString(df, v, first, second, k);
+                typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
             if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
                 typeStrategy = new NumbericTypeStrategy();
-                typeStrategy.getString(df, v, first, second, k);
+                typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
             if (v.getType().isNominal()) {
                 typeStrategy = new NominalTypeStrategy();
-                typeStrategy.getString(df, v, first, second, k);
+                typeStrategy.getVarSummary(df, v, first, second, k);
             }
         }
 
@@ -201,119 +201,20 @@ public class Summary {
             second[i] = " ";
         }
 
+        TypeStrategy typeStrategy;
         if (v.getType() == VarType.BINARY) {
-            first[0] = "0";
-            first[1] = "1";
-            first[2] = "NA's";
-
-            int ones = 0;
-            int zeros = 0;
-            int missing = 0;
-            for (int i = 0; i < v.getRowCount(); i++) {
-                if (v.isMissing(i)) {
-                    missing++;
-                } else {
-                    if (v.getBinary(i))
-                        ones++;
-                    else
-                        zeros++;
-                }
-            }
-            second[0] = String.valueOf(zeros);
-            second[1] = String.valueOf(ones);
-            second[2] = String.valueOf(missing);
+             typeStrategy = new BinaryTypeStrategy();
+             typeStrategy.getPrintSummary(v, first, second);;
         }
 
         if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
-            double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-            double[] perc = Quantiles.from(v, p).getValues();
-            double mean = Mean.from(v).getValue();
-
-            int nas = 0;
-            for (int j = 0; j < v.getRowCount(); j++) {
-                if (v.isMissing(j)) {
-                    nas++;
-                }
-            }
-
-            first[0] = "Min.";
-            first[1] = "1st Qu.";
-            first[2] = "Median";
-            first[3] = "Mean";
-            first[4] = "2nd Qu.";
-            first[5] = "Max.";
-
-            second[0] = String.format("%.3f", perc[0]);
-            second[1] = String.format("%.3f", perc[1]);
-            second[2] = String.format("%.3f", perc[2]);
-            second[3] = String.format("%.3f", mean);
-            second[4] = String.format("%.3f", perc[3]);
-            second[5] = String.format("%.3f", perc[4]);
-
-            if (nas != 0) {
-                first[6] = "NA's";
-                second[6] = String.format("%d", nas);
-            }
+            typeStrategy = new NumbericTypeStrategy();
+            typeStrategy.getPrintSummary(v, first, second);
         }
 
         if (v.getType().isNominal()) {
-            int[] hits = new int[v.getRowCount() + 1];
-            int[] indexes = new int[v.getRowCount() + 1];
-            for (int j = 0; j < v.getRowCount(); j++) {
-                hits[v.getIndex(j)]++;
-                indexes[v.getIndex(j)] = j;
-            }
-            int[] tophit = new int[6];
-            int[] topindex = new int[6];
-            for (int j = 1; j < hits.length; j++) {
-                if (hits[j] != 0) {
-                    for (int l = 0; l < tophit.length; l++) {
-                        if (tophit[l] < hits[j]) {
-                            for (int m = tophit.length - 1; m > l; m--) {
-                                tophit[m] = tophit[m - 1];
-                                topindex[m] = topindex[m - 1];
-                            }
-                            tophit[l] = hits[j];
-                            topindex[l] = j;
-                            break;
-                        }
-                    }
-                }
-            }
-            int nas = 0;
-            for (int j = 0; j < v.getRowCount(); j++) {
-                if (v.isMissing(j)) {
-                    nas++;
-                }
-            }
-
-            int other = v.getRowCount();
-            int pos = 0;
-            for (int j = 0; j < 6; j++) {
-                if (tophit[j] != 0) {
-                    other -= tophit[j];
-                    first[j] = v.getLabel(indexes[topindex[j]]);
-                    second[j] = String.valueOf(tophit[j]);
-                    pos++;
-                }
-            }
-            if (nas != 0) {
-                if (other - nas != 0) {
-                    if (pos == 6) {
-                        pos--;
-                    }
-                    first[pos] = "(Other)";
-                    second[pos] = String.valueOf(other - nas);
-                    pos++;
-                }
-                first[pos] = "NA's";
-                second[pos] = String.valueOf(nas);
-            } else {
-                if (other != 0) {
-                    first[pos] = "(Other)";
-                    second[pos] = String.valueOf(other);
-                }
-            }
+            typeStrategy = new NominalTypeStrategy();
+            typeStrategy.getPrintSummary(v, first, second);
         }
 
         // learn layout
