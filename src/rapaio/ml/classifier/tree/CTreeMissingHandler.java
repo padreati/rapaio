@@ -162,6 +162,7 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
     };
     CTreeMissingHandler ToRandom = new CTreeMissingHandler() {
         private static final long serialVersionUID = -4762758695801141929L;
+		RandomSource randomSource = RandomSource.createRandom();
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
@@ -178,7 +179,7 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
                 }
                 missingSpots.add(s.getRow());
             });
-            missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
+            missingSpots.forEach(rowId -> mappings.get(randomSource.nextInt(mappings.size())).add(rowId));
             List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
             List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
             return Pair.from(frameList, weightList);

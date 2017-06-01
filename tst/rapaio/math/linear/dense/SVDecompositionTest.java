@@ -34,18 +34,19 @@ import static org.junit.Assert.*;
 public class SVDecompositionTest {
 
     private static final double TOL = 1e-14;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testBuilder() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         final int ROUNDS = 100;
         for (int round = 0; round < ROUNDS; round++) {
 
 
-            int n = RandomSource.nextInt(20) + 1;
-            int m = RandomSource.nextInt(20) + n;
+            int n = randomSource.nextInt(20) + 1;
+            int m = randomSource.nextInt(20) + n;
 
             RM a = SolidRM.random(m, n);
 
@@ -76,7 +77,7 @@ public class SVDecompositionTest {
     @Test
     public void conditionNumberTest() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         // for random matrices we expect a low condition number
 

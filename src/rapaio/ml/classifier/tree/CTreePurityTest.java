@@ -68,6 +68,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+			 RandomSource randomSource = RandomSource.createRandom();
             Var test = df.getVar(testName);
             Var target = df.getVar(targetName);
 
@@ -100,7 +101,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
                     if (best != null) {
                         int comp = Double.compare(bestScore, currentScore);
                         if (comp > 0) continue;
-                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        if (comp == 0 && randomSource.nextDouble() > 0.5) continue;
                     }
                     best = new CTreeCandidate(bestScore, testName);
                     double testValue = (test.getValue(sort.getIndex(i)) + test.getValue(sort.getIndex(i + 1))) / 2.0;
@@ -185,6 +186,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+            RandomSource randomSource = RandomSource.createRandom();
             Var test = df.getVar(testName);
             Var target = df.getVar(targetName);
             DTable counts = DTable.fromCounts(test, target, false);
@@ -210,7 +212,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
                 if (best != null) {
                     int comp = Double.compare(bestScore, currentScore);
                     if (comp > 0) continue;
-                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    if (comp == 0 && randomSource.nextDouble() > 0.5) continue;
                 }
                 best = new CTreeCandidate(currentScore, testName);
                 best.addGroup(testName + " == " + testLabel, spot -> spot.getLabel(testName).equals(testLabel));

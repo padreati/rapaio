@@ -80,6 +80,7 @@ import static rapaio.sys.WS.formatFlex;
 public class Gamma extends AbstractDistribution {
 
     private static final long serialVersionUID = -7748384822665249829L;
+    RandomSource randomSource = RandomSource.createRandom();
     private final double alpha;
     private final double beta;
 
@@ -201,14 +202,14 @@ public class Gamma extends AbstractDistribution {
         if (a < 1.0) { // CASE A: Acceptance rejection algorithm gs
             b = 1.0 + 0.36788794412 * a; // Step 1
             for (; ; ) {
-                p = b * RandomSource.nextDouble();
+                p = b * randomSource.nextDouble();
                 if (p <= 1.0) { // Step 2. Case gds <= 1
                     gds = Math.exp(Math.log(p) / a);
-                    if (Math.log(RandomSource.nextDouble()) <= -gds)
+                    if (Math.log(randomSource.nextDouble()) <= -gds)
                         return (gds / beta1);
                 } else { // Step 3. Case gds > 1
                     gds = -Math.log((b - p) / a);
-                    if (Math.log(RandomSource.nextDouble()) <= ((a - 1.0) * Math.log(gds)))
+                    if (Math.log(randomSource.nextDouble()) <= ((a - 1.0) * Math.log(gds)))
                         return (gds / beta1);
                 }
             }
@@ -222,8 +223,8 @@ public class Gamma extends AbstractDistribution {
             }
             // Step 2. Normal deviate
             do {
-                v1 = 2.0 * RandomSource.nextDouble() - 1.0;
-                v2 = 2.0 * RandomSource.nextDouble() - 1.0;
+                v1 = 2.0 * randomSource.nextDouble() - 1.0;
+                v2 = 2.0 * randomSource.nextDouble() - 1.0;
                 v12 = v1 * v1 + v2 * v2;
             } while (v12 > 1.0);
             t = v1 * Math.sqrt(-2.0 * Math.log(v12) / v12);
@@ -232,7 +233,7 @@ public class Gamma extends AbstractDistribution {
             if (t >= 0.0)
                 return (gds / beta1); // Immediate acceptance
 
-            u = RandomSource.nextDouble(); // Step 3. Uniform random number
+            u = randomSource.nextDouble(); // Step 3. Uniform random number
             if (d * u <= t * t * t)
                 return (gds / beta1); // Squeeze acceptance
 
@@ -274,8 +275,8 @@ public class Gamma extends AbstractDistribution {
 
             for (; ; ) { // Step 8. Double exponential deviate t
                 do {
-                    e = -Math.log(RandomSource.nextDouble());
-                    u = RandomSource.nextDouble();
+                    e = -Math.log(randomSource.nextDouble());
+                    u = randomSource.nextDouble();
                     u = u + u - 1.0;
                     sign_u = (u > 0) ? 1.0 : -1.0;
                     t = b + (e * si) * sign_u;

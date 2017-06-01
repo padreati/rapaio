@@ -38,7 +38,8 @@ public enum TFunction {
         }
 
         public double differential(double value) {
-            if (value == 0) return RandomSource.nextDouble() / 100;
+			RandomSource randomSource = RandomSource.createRandom();
+            if (value == 0) return randomSource.nextDouble() / 100;
             return value * (1. - value);
         }
     },

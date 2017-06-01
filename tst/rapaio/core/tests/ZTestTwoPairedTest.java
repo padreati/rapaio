@@ -38,10 +38,11 @@ public class ZTestTwoPairedTest {
 
     private static final double TOL = 1e-12;
 
+    RandomSource randomSource = RandomSource.createRandom();
     @Test
     public void zTestTwoPairedTest() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         Var x = NumericVar.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
         Var y = NumericVar.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 

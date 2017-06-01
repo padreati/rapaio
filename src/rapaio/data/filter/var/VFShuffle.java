@@ -37,6 +37,7 @@ import java.util.List;
 public class VFShuffle extends AbstractVF {
 
     private static final long serialVersionUID = -5571537968976749556L;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Override
     public void fit(Var... vars) {
@@ -50,7 +51,7 @@ public class VFShuffle extends AbstractVF {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
+            mapping.set(i - 1, mapping.set(randomSource.nextInt(i), mapping.get(i - 1)));
         }
         return vars[0].mapRows(Mapping.wrap(mapping));
     }

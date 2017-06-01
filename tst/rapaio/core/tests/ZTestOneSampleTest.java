@@ -36,11 +36,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class ZTestOneSampleTest {
     private static double TOL = 1e-20;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void zTestOneSampleTest() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         double mu = 75;
         double sd = 18;
         Var x = NumericVar.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);

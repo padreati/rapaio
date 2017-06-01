@@ -33,6 +33,7 @@ import rapaio.data.Var;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/1/16.
  */
 public class RandomSourceTest {
+    private RandomSource randomSource = RandomSource.createRandom();
 
 
     @Test
@@ -40,16 +41,16 @@ public class RandomSourceTest {
 
         Var seeds = IndexVar.from(100, i -> i*i);
 
-        RandomSource.withUtilRandom(0);
+        randomSource.withUtilRandom(0);
         checkRandom(seeds);
     }
 
     private void checkRandom(Var seeds) {
         for (int i = 0; i < seeds.getRowCount(); i++) {
-            RandomSource.setSeed(seeds.getIndex(i));
-            int n1 = RandomSource.nextInt(1000);
-            RandomSource.setSeed(seeds.getIndex(i));
-            int n2 = RandomSource.nextInt(1000);
+            randomSource.setSeed(seeds.getIndex(i));
+            int n1 = randomSource.nextInt(1000);
+            randomSource.setSeed(seeds.getIndex(i));
+            int n2 = randomSource.nextInt(1000);
             Assert.assertEquals(n1, n2);
         }
     }

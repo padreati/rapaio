@@ -52,6 +52,7 @@ import static rapaio.sys.WS.print;
  */
 @Deprecated
 public class CEvaluation {
+    private static RandomSource randomSource = RandomSource.createRandom();
 
     public static double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
@@ -103,7 +104,7 @@ public class CEvaluation {
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
-            Collections.shuffle(rows.get(i), RandomSource.getRandom());
+            Collections.shuffle(rows.get(i), randomSource.getRandom());
             shuffle.addAll(rows.get(i));
         }
         List<List<Integer>> strata = new ArrayList<>();

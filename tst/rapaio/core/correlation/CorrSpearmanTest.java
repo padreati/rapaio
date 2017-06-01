@@ -45,6 +45,7 @@ public class CorrSpearmanTest {
     private final Var iq = NumericVar.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = NumericVar.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
+    private RandomSource randomSource = RandomSource.createRandom();
     @Test
     public void testFromWikipedia() {
         CorrSpearman sc = CorrSpearman.from(iq, tvHours);
@@ -80,7 +81,7 @@ public class CorrSpearmanTest {
 
     @Test
     public void randomTest() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> norm.sampleNext()).withName("y");
@@ -92,7 +93,7 @@ public class CorrSpearmanTest {
 
     @Test
     public void testNonLinearCorr() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -105,7 +106,7 @@ public class CorrSpearmanTest {
     @Test
     public void testMultipleVarsNonLinear() {
 
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");

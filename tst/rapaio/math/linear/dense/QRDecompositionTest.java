@@ -35,18 +35,19 @@ import static org.junit.Assert.*;
 public class QRDecompositionTest {
 
     private static final double TOL = 1e-14;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testBasic() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         final int n = 10;
 
         for (int round = 0; round < 100; round++) {
 
             // generate a random matrix
 
-            int off = RandomSource.nextInt(n);
+            int off = randomSource.nextInt(n);
 
             RM a = SolidRM.random(n + off, n);
             QRDecomposition qr = QRDecomposition.from(a);
@@ -82,7 +83,7 @@ public class QRDecompositionTest {
     @Test
     public void testHouseholderProperties() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         final int n = 10;
 
         for (int round = 0; round < 100; round++) {
@@ -106,7 +107,7 @@ public class QRDecompositionTest {
     @Test
     public void testLMS() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         Normal normal = new Normal();
         Uniform unif = new Uniform(0, 100);
 

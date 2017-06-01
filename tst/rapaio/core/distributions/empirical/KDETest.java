@@ -42,10 +42,11 @@ public class KDETest {
 
     private Var x = NumericVar.seq(-20, 20, 0.01);
     private Var y;
+    private RandomSource randomSource = RandomSource.createRandom();
 
     @Before
     public void setUp() throws Exception {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         sample = normal.sample(1_000);
         y = NumericVar.from(x, normal::pdf);
     }

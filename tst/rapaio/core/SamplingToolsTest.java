@@ -37,11 +37,12 @@ import static rapaio.core.CoreTools.distDUnif;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class SamplingToolsTest {
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void worTest() {
 
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
 
         double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
         DVector freq = DVector.empty(true, w.length);
@@ -71,7 +72,7 @@ public class SamplingToolsTest {
     @Test
     public void wrTest() {
 
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
 
         double[] w = new double[]{0.001, 0.009, 0.09, 0.9};
         DVector freq = DVector.empty(true, w.length);

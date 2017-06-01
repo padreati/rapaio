@@ -37,11 +37,12 @@ import static org.junit.Assert.assertEquals;
 public class BernoulliTest {
 
     private static final double TOL = 1e-12;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testBase() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         Bernoulli b90 = new Bernoulli(0.9);
         Bernoulli b80 = new Bernoulli(0.8);

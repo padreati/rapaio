@@ -44,11 +44,12 @@ import static rapaio.graphics.Plotter.*;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
  */
 public class FFRandomProjectionTest {
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void gausianSDTest() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
@@ -66,7 +67,7 @@ public class FFRandomProjectionTest {
     @Test
     public void achioptasTest() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
@@ -84,7 +85,7 @@ public class FFRandomProjectionTest {
     @Test
     public void achioptas5Test() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();

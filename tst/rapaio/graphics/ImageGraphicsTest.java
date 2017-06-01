@@ -70,12 +70,13 @@ public class ImageGraphicsTest {
     private static final boolean regenerate = false;
     private static final boolean show = false;
     private static String root = "/home/ati/work/rapaio/src/test/resources";
+    private RandomSource randomSource = RandomSource.createRandom();
 
     private Frame df;
 
     @Before
     public void setUp() throws Exception {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         WS.setPrinter(new IdeaPrinter());
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
     }

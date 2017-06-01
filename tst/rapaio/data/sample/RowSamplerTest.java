@@ -46,6 +46,7 @@ public class RowSamplerTest {
 
     private Frame df;
     private NumericVar w;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Before
     public void setUp() throws Exception {
@@ -63,7 +64,7 @@ public class RowSamplerTest {
 
     @Test
     public void bootstrapTest() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
 
         int N = 1_000;
         NumericVar count = NumericVar.empty().withName("bcount");
@@ -78,7 +79,7 @@ public class RowSamplerTest {
 
     @Test
     public void subsampleTest() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
 
         int N = 1_000;
         NumericVar count = NumericVar.fill(df.getRowCount(), 0.0).withName("sscount");

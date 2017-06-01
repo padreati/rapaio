@@ -42,6 +42,7 @@ public class GammaTest {
 
     private static final double TOL = 1e-13;
 
+    RandomSource randomSource = RandomSource.createRandom();
     private Frame df;
     private Gamma g_low_low;
     private Gamma g_one_low;
@@ -131,7 +132,7 @@ public class GammaTest {
 
     @Test
     public void testSampling() {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         Gamma g = new Gamma(10, 10);
         Var sample = g.sample(100);
 

@@ -34,10 +34,11 @@ import rapaio.data.NumericVar;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/4/16.
  */
 public class ParallelTesting {
+    private static RandomSource randomSource = RandomSource.createRandom();
 
     public static void main(String[] args) {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
 
         NumericVar x = NumericVar.from(10_000, row -> row * 1.0);
         IndexVar index = IndexVar.from(10_000, row -> row);
@@ -46,7 +47,7 @@ public class ParallelTesting {
                 .parallel()
                 .map(s -> {
                             try {
-                                Thread.sleep(RandomSource.nextInt(500));
+                                Thread.sleep(randomSource.nextInt(500));
                             } catch (InterruptedException ex) {
 
                             }

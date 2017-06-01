@@ -171,6 +171,7 @@ public interface RTreeSplitter extends Serializable {
      */
     RTreeSplitter REMAINS_TO_RANDOM = new RTreeSplitter() {
         private static final long serialVersionUID = -592529235216896819L;
+    RandomSource randomSource = RandomSource.createRandom();
 
         @Override
         public String name() {
@@ -181,7 +182,7 @@ public interface RTreeSplitter extends Serializable {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
             RegularSplitting s = new RegularSplitting(df, weights, candidate);
             for (FSpot spot : s.missingSpots) {
-                int next = RandomSource.nextInt(s.mappings.size());
+                int next = randomSource.nextInt(s.mappings.size());
                 s.mappings.get(next).add(spot.getRow());
                 s.weightsList.get(next).addValue(weights.getValue(spot.getRow()));
             }

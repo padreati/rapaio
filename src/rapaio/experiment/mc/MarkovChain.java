@@ -49,6 +49,7 @@ public class MarkovChain implements Printable {
     private ChainAdapter adapter = new NGram(2);
     //
     private double smoothEps = 1e-30;
+    RandomSource randomSource = RandomSource.createRandom();
 
     public MarkovChain() {
     }
@@ -121,7 +122,7 @@ public class MarkovChain implements Printable {
     public List<String> generateChain(Predicate<List<String>> tokenCondition) {
         List<String> result = new ArrayList<>();
 
-        double c = RandomSource.nextDouble();
+        double c = randomSource.nextDouble();
 
         int last = -1;
         for (int i = 0; i < p.count(); i++) {
@@ -154,7 +155,7 @@ public class MarkovChain implements Printable {
             }
 
             double[] row = cache.get(last);
-            c = RandomSource.nextDouble();
+            c = randomSource.nextDouble();
 
             int i = Arrays.binarySearch(row, c);
             if (i < 0) {
@@ -179,7 +180,7 @@ public class MarkovChain implements Printable {
     @Override
     public String getSummary() {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
 
         StringBuilder sb = new StringBuilder();
         sb.append("MarkovChain model\n");

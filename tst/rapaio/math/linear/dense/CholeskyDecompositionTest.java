@@ -33,10 +33,11 @@ import static org.junit.Assert.*;
 public class CholeskyDecompositionTest {
 
     private static final double TOL = 1e-14;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testBasic() {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         for (int i = 0; i < 100; i++) {
             RM a = SolidRM.random(30, 30);
             RM b = a.t().dot(a);
@@ -51,7 +52,7 @@ public class CholeskyDecompositionTest {
 
     @Test
     public void testNonSPD() {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         for (int i = 0; i < 100; i++) {
             RM a = SolidRM.random(30, 30);
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(a);
@@ -100,13 +101,13 @@ public class CholeskyDecompositionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSystemNonSymmetric() {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         CholeskyDecomposition.from(SolidRM.random(2, 2)).solve(SolidRM.random(2, 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testSystemNonCompatible() {
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         CholeskyDecomposition.from(SolidRM.random(2, 2)).solve(SolidRM.random(3, 1));
     }
 }

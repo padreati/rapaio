@@ -40,6 +40,7 @@ import rapaio.math.linear.dense.SolidRM;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/29/16.
  */
 public class CorrPearsonTest {
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void maxCorrTest() {
@@ -65,7 +66,7 @@ public class CorrPearsonTest {
 
     @Test
     public void randomTest() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> norm.sampleNext()).withName("y");
@@ -77,7 +78,7 @@ public class CorrPearsonTest {
 
     @Test
     public void testNonLinearCorr() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -90,7 +91,7 @@ public class CorrPearsonTest {
     @Test
     public void testMultipleVarsNonLinear() {
 
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
         NumericVar x = NumericVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         NumericVar y = NumericVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
