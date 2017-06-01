@@ -49,24 +49,16 @@ import java.util.logging.Logger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA implements Printable {
+public class LDA extends DimensionReduction implements Printable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
     private double tol = 1e-24;
     private int maxRuns = 10_000;
 
-    private boolean scaling = true;
-
     private String targetName;
     private String[] targetLevels;
-    private String[] inputNames;
-    private RV mean;
-    private RV sd;
 
     private RV[] classMean;
-
-    private RV eigenValues;
-    private RM eigenVectors;
 
     public LDA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -77,17 +69,9 @@ public class LDA implements Printable {
         this.tol = tol;
         return this;
     }
-
-    public RV getEigenValues() {
-        return eigenValues;
-    }
-
-    public RM getEigenVectors() {
-        return eigenVectors;
-    }
-
-    public void learn(Frame df, String... targetVars) {
-        validate(df, targetVars);
+    
+    public void train(Frame df, String... targetVars) {
+    	validate(df, targetVars);
 
         logger.fine("start lda train");
         RM xx = SolidRM.copy(df.removeVars(targetName));
@@ -176,7 +160,6 @@ public class LDA implements Printable {
         eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
         eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
-
 
     public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
         RM x = SolidRM.copy(df.mapVars(inputNames));

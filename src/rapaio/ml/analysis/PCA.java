@@ -39,26 +39,18 @@ import rapaio.printer.Printable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-public class PCA implements Printable {
+public class PCA extends DimensionReduction implements Printable {
 
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
     private double tol = 1e-10;
     private int maxRuns = 2_000;
-
-    private boolean scaling = true;
-    private String[] inputNames;
-
-    private RV mean;
-    private RV sd;
-
-    private RV eigenValues;
-    private RM eigenVectors;
 
     public PCA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -73,14 +65,6 @@ public class PCA implements Printable {
     public PCA withScaling(boolean scaling) {
         this.scaling = scaling;
         return this;
-    }
-
-    public RV getEigenValues() {
-        return eigenValues;
-    }
-
-    public RM getEigenVectors() {
-        return eigenVectors;
     }
 
     public void train(Frame df) {
