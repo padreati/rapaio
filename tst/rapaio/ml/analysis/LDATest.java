@@ -54,7 +54,7 @@ public class LDATest {
         final String targetName = "class";
 
         LDA lda = new LDA().withMaxRuns(1_000).withTol(1e-20);
-        lda.learn(df, "class");
+        lda.train(df, "class");
         lda.printSummary();
 
         Frame fit = lda.fit(df, (rv, rm) -> 4);
