@@ -45,7 +45,7 @@ import static rapaio.sys.WS.getPrinter;
  */
 @Deprecated
 public class Summary {
-    static TypeStrategy typeStrategy;
+    private static TypeStrategy typeStrategy;
 
     public static String getSummary(Frame df) {
         return getSummary(df, df.getVarNames());
