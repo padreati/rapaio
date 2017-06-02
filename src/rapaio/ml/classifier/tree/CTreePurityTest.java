@@ -27,7 +27,7 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
-import rapaio.data.Index;
+import rapaio.data.IndexVar;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
@@ -68,33 +68,33 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            Var test = df.var(testName);
-            Var target = df.var(targetName);
+            Var test = df.getVar(testName);
+            Var target = df.getVar(targetName);
 
-            DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
+            DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, target.getLevels(), false);
             int misCount = 0;
-            for (int i = 0; i < df.rowCount(); i++) {
-                int row = (test.missing(i)) ? 0 : 2;
-                if (test.missing(i)) misCount++;
-                dt.update(row, target.index(i), weights.value(i));
+            for (int i = 0; i < df.getRowCount(); i++) {
+                int row = (test.isMissing(i)) ? 0 : 2;
+                if (test.isMissing(i)) misCount++;
+                dt.update(row, target.getIndex(i), weights.getValue(i));
             }
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(IndexVar.seq(df.getRowCount()));
 
             CTreeCandidate best = null;
             double bestScore = 0.0;
 
-            for (int i = 0; i < df.rowCount(); i++) {
-                int row = sort.index(i);
+            for (int i = 0; i < df.getRowCount(); i++) {
+                int row = sort.getIndex(i);
 
-                if (test.missing(row)) continue;
+                if (test.isMissing(row)) continue;
 
-                dt.update(2, target.index(row), -weights.value(row));
-                dt.update(1, target.index(row), +weights.value(row));
+                dt.update(2, target.getIndex(row), -weights.getValue(row));
+                dt.update(1, target.getIndex(row), +weights.getValue(row));
 
                 if (i >= misCount + c.minCount() - 1 &&
-                        i < df.rowCount() - c.minCount() &&
-                        test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
+                        i < df.getRowCount() - c.minCount() &&
+                        test.getValue(sort.getIndex(i)) < test.getValue(sort.getIndex(i + 1))) {
 
                     double currentScore = function.compute(dt);
                     if (best != null) {
@@ -103,13 +103,13 @@ public interface CTreePurityTest extends Tagged, Serializable {
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                     }
                     best = new CTreeCandidate(bestScore, testName);
-                    double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
+                    double testValue = (test.getValue(sort.getIndex(i)) + test.getValue(sort.getIndex(i + 1))) / 2.0;
                     best.addGroup(
                             String.format("%s <= %s", testName, WS.formatFlex(testValue)),
-                            spot -> !spot.missing(testName) && spot.value(testName) <= testValue);
+                            spot -> !spot.isMissing(testName) && spot.getValue(testName) <= testValue);
                     best.addGroup(
                             String.format("%s > %s", testName, WS.formatFlex(testValue)),
-                            spot -> !spot.missing(testName) && spot.value(testName) > testValue);
+                            spot -> !spot.isMissing(testName) && spot.getValue(testName) > testValue);
 
                     bestScore = currentScore;
                 }
@@ -129,16 +129,16 @@ public interface CTreePurityTest extends Tagged, Serializable {
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function) {
 
-            Var test = df.var(testName);
-            Var target = df.var(targetName);
+            Var test = df.getVar(testName);
+            Var target = df.getVar(targetName);
             DTable dt = DTable.fromCounts(test, target, false);
             if (!(dt.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
             }
 
             CTreeCandidate best = new CTreeCandidate(function.compute(dt), testName);
-            best.addGroup(testName + " == 1", spot -> spot.binary(testName));
-            best.addGroup(testName + " != 1", spot -> !spot.binary(testName));
+            best.addGroup(testName + " == 1", spot -> spot.getBinary(testName));
+            best.addGroup(testName + " != 1", spot -> !spot.getBinary(testName));
             return best;
 
         }
@@ -153,8 +153,8 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            Var test = df.var(testName);
-            Var target = df.var(targetName);
+            Var test = df.getVar(testName);
+            Var target = df.getVar(targetName);
 
             if (!DTable.fromCounts(test, target, false).hasColsWithMinimumCount(c.minCount(), 2)) {
                 return null;
@@ -164,11 +164,11 @@ public interface CTreePurityTest extends Tagged, Serializable {
             double value = function.compute(dt);
 
             CTreeCandidate candidate = new CTreeCandidate(value, testName);
-            for (int i = 1; i < test.levels().length; i++) {
-                final String label = test.levels()[i];
+            for (int i = 1; i < test.getLevels().length; i++) {
+                final String label = test.getLevels()[i];
                 candidate.addGroup(
                         String.format("%s == %s", testName, label),
-                        spot -> !spot.missing(testName) && spot.label(testName).equals(label));
+                        spot -> !spot.isMissing(testName) && spot.getLabel(testName).equals(label));
             }
             return candidate;
         }
@@ -185,8 +185,8 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            Var test = df.var(testName);
-            Var target = df.var(targetName);
+            Var test = df.getVar(testName);
+            Var target = df.getVar(targetName);
             DTable counts = DTable.fromCounts(test, target, false);
             if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
@@ -195,15 +195,15 @@ public interface CTreePurityTest extends Tagged, Serializable {
             CTreeCandidate best = null;
             double bestScore = 0.0;
 
-            int[] termCount = new int[test.levels().length];
-            test.stream().forEach(s -> termCount[s.index()]++);
+            int[] termCount = new int[test.getLevels().length];
+            test.stream().forEach(s -> termCount[s.getIndex()]++);
 
             double[] rowCounts = counts.rowTotals();
-            for (int i = 1; i < test.levels().length; i++) {
+            for (int i = 1; i < test.getLevels().length; i++) {
                 if (rowCounts[i] < c.minCount())
                     continue;
 
-                String testLabel = df.var(testName).levels()[i];
+                String testLabel = df.getVar(testName).getLevels()[i];
 
                 DTable dt = DTable.binaryFromWeights(test, target, weights, testLabel, false);
                 double currentScore = function.compute(dt);
@@ -213,8 +213,8 @@ public interface CTreePurityTest extends Tagged, Serializable {
                     if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                 }
                 best = new CTreeCandidate(currentScore, testName);
-                best.addGroup(testName + " == " + testLabel, spot -> spot.label(testName).equals(testLabel));
-                best.addGroup(testName + " != " + testLabel, spot -> !spot.label(testName).equals(testLabel));
+                best.addGroup(testName + " == " + testLabel, spot -> spot.getLabel(testName).equals(testLabel));
+                best.addGroup(testName + " != " + testLabel, spot -> !spot.getLabel(testName).equals(testLabel));
             }
             return best;
         }

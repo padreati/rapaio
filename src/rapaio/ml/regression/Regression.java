@@ -110,12 +110,24 @@ public interface Regression extends Printable, Serializable {
 
     /**
      * Specifies which filters will be used to transform data
-     * before learning and fitting.
+     * before learning and fitting. All previously configured
+     * input filters will be deleted and the used input
+     * filters will be only those specified here.
      *
      * @param filters list of filters applied in chain
      * @return self instance
      */
     Regression withInputFilters(FFilter... filters);
+
+    /**
+     * Specifies input filters which will be used to transform data
+     * before learning and fitting, additionally of the previously
+     * specified input filters.
+     *
+     * @param filters list of filters applied in chain
+     * @return self instance
+     */
+    Regression addInputFilters(FFilter... filters);
 
     /**
      * Returns input variable names built at learning time

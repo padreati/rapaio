@@ -27,8 +27,8 @@ package rapaio.graphics;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
-import rapaio.data.Index;
-import rapaio.data.Numeric;
+import rapaio.data.IndexVar;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
@@ -115,7 +115,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var y, GOpt... opts) {
-        return plot().add(new Points(Index.seq(y.rowCount()).withName("pos"), y, opts));
+        return plot().add(new Points(IndexVar.seq(y.getRowCount()).withName("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOpt... opts) {
@@ -154,9 +154,9 @@ public final class Plotter {
 
     public static GOpt color(Var color) {
         return opt -> opt.setColor(gOpts -> {
-            Color[] colors = new Color[color.rowCount()];
+            Color[] colors = new Color[color.getRowCount()];
             for (int i = 0; i < colors.length; i++) {
-                colors[i] = opt.getPalette().getColor(color.index(i));
+                colors[i] = opt.getPalette().getColor(color.getIndex(i));
             }
             return colors;
         });
@@ -175,22 +175,22 @@ public final class Plotter {
     }
 
     public static GOpt sz(Var sizeIndex, double factor, double offset) {
-        Numeric size = sizeIndex
+        NumericVar size = sizeIndex
                 .stream()
                 .mapToDouble()
                 .map(x -> x * factor + offset)
                 .boxed()
-                .collect(Numeric.collector());
+                .collect(NumericVar.collector());
         return opt -> opt.setSz(gOpts -> size);
     }
 
     public static GOpt sz(double size) {
-        return opt -> opt.setSz(gOpts -> Numeric.scalar(size));
+        return opt -> opt.setSz(gOpts -> NumericVar.scalar(size));
     }
 
     public static GOpt pch(Var pchIndex, int... mapping) {
-        Index pch = Index.from(pchIndex.rowCount(), row -> {
-            int i = pchIndex.index(row);
+        IndexVar pch = IndexVar.from(pchIndex.getRowCount(), row -> {
+            int i = pchIndex.getIndex(row);
             if (i >= 0 || i < mapping.length) {
                 return mapping[i];
             }
@@ -200,7 +200,7 @@ public final class Plotter {
     }
 
     public static GOpt pch(int pch) {
-        return opt -> opt.setPch(gOpts -> Index.scalar(pch));
+        return opt -> opt.setPch(gOpts -> IndexVar.scalar(pch));
     }
 
     public static GOpt alpha(float alpha) {

@@ -83,8 +83,8 @@ public class ImageGraphicsTest {
     @Test
     public void testBoxPlot() throws IOException, URISyntaxException {
 
-        Var x = df.var(1);
-        Var factor = df.var("class");
+        Var x = df.getVar(1);
+        Var factor = df.getVar("class");
 
         BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
 
@@ -133,8 +133,8 @@ public class ImageGraphicsTest {
     public void testQQPlot() throws IOException {
 
         final int N = 100;
-        Var x = df.var(2);
-        Distribution normal = CoreTools.distNormal(CoreTools.mean(x).value(), CoreTools.var(x).sdValue());
+        Var x = df.getVar(2);
+        Distribution normal = CoreTools.distNormal(CoreTools.mean(x).getValue(), CoreTools.variance(x).sdValue());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));
@@ -153,8 +153,8 @@ public class ImageGraphicsTest {
     @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
 
-        Var x = df.var(0).solidCopy().withName("x");
-        Var y = df.var(1).solidCopy().withName("y");
+        Var x = df.getVar(0).solidCopy().withName("x");
+        Var y = df.getVar(1).solidCopy().withName("y");
 
         Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
         if (show)
@@ -169,7 +169,7 @@ public class ImageGraphicsTest {
     @Test
     public void testHistogram() throws IOException, URISyntaxException {
 
-        Var x = df.var(0).withName("x");
+        Var x = df.getVar(0).withName("x");
         Plot plot = hist(x, bins(30));
         if (show)
             WS.draw(plot);
@@ -183,8 +183,8 @@ public class ImageGraphicsTest {
     @Test
     public void testGridLayer() throws IOException, URISyntaxException {
 
-        Var x = df.var(0).withName("x");
-        Var y = df.var(1).withName("y");
+        Var x = df.getVar(0).withName("x");
+        Var y = df.getVar(1).withName("y");
 
         Figure fig = gridLayer(3, 3)
                 .add(1, 1, 2, 2, points(x, y, sz(2)))
@@ -205,10 +205,10 @@ public class ImageGraphicsTest {
     @Test
     public void testLines() throws IOException, URISyntaxException {
 
-        Var x = updateValue(Math::log1p, df.var(0)).withName("x").stream().complete().toMappedVar();
+        Var x = updateValue(Math::log1p, df.getVar(0)).withName("x").stream().complete().toMappedVar();
 
-        double min = CoreTools.min(x).value();
-        double max = CoreTools.max(x).value();
+        double min = CoreTools.min(x).getValue();
+        double max = CoreTools.max(x).getValue();
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
                 .add(lines(x).yLim(-2, -1));
@@ -225,8 +225,8 @@ public class ImageGraphicsTest {
     @Test
     public void testPoints() throws IOException, URISyntaxException {
 
-        Var x = updateValue(Math::log1p, df.var(0)).withName("x");
-        Var y = updateValue(Math::log1p, df.var(1)).withName("y");
+        Var x = updateValue(Math::log1p, df.getVar(0)).withName("x");
+        Var y = updateValue(Math::log1p, df.getVar(1)).withName("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))
@@ -244,7 +244,7 @@ public class ImageGraphicsTest {
     @Test
     public void testDensity() throws IOException, URISyntaxException {
 
-        Var x = df.var(0).mapRows(Mapping.range(200));
+        Var x = df.getVar(0).mapRows(Mapping.range(200));
         x.printSummary();
 
         Plot fig = plot();
@@ -265,7 +265,7 @@ public class ImageGraphicsTest {
     @Test
     public void testRocCurve() throws IOException, URISyntaxException {
 
-        ROC roc = ROC.from(df.var(0), df.var("class"), 2);
+        ROC roc = ROC.from(df.getVar(0), df.getVar("class"), 2);
         roc.printSummary();
 
         Figure fig = rocCurve(roc);

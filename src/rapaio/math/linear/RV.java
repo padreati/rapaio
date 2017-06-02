@@ -26,7 +26,7 @@ package rapaio.math.linear;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
 
@@ -201,7 +201,7 @@ public interface RV extends Serializable, Printable {
      * @return sample mean object
      */
     default Mean mean() {
-        Numeric values = Numeric.empty();
+        NumericVar values = NumericVar.empty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }
@@ -214,8 +214,8 @@ public interface RV extends Serializable, Printable {
      *
      * @return the sample variance object
      */
-    default Variance var() {
-        Numeric values = Numeric.empty();
+    default Variance variance() {
+        NumericVar values = NumericVar.empty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }

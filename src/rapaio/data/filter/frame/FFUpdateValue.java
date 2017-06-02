@@ -52,14 +52,14 @@ public class FFUpdateValue extends AbstractFF {
     @Override
     public void train(Frame df) {
         parse(df);
-        checkRangeVars(1, df.varCount(), df);
+        checkRangeVars(1, df.getVarCount(), df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             for (String name : varNames) {
-                df.setValue(i, name, f.apply(df.value(i, name)));
+                df.setValue(i, name, f.apply(df.getValue(i, name)));
             }
         }
         return df;

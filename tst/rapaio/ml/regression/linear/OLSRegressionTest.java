@@ -34,7 +34,7 @@ import rapaio.experiment.ml.regression.linear.OLSRegression;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 import rapaio.printer.Summary;
@@ -74,23 +74,23 @@ public class OLSRegressionTest {
         RM X = SolidRM.copy(df.mapVars(inputNames));
         RM Y = SolidRM.copy(df.mapVars(targetNames));
 
-        QR qr1 = new QR(X);
+        QRDecomposition qr1 = QRDecomposition.from(X);
         RM beta = qr1.solve(Y);
 
-        Var betaTerm = Nominal.empty().withName("Term");
-        Var betaEstimate = Numeric.empty().withName("Estimate");
-        Var betaStdError = Numeric.empty().withName("Std. Error");
-        Var betaTValue = Numeric.empty().withName("t value");
-        Var betaPValue = Nominal.empty().withName("Pr(>|t|)");
-        Var betaSignificance = Nominal.empty().withName("");
+        Var betaTerm = NominalVar.empty().withName("Term");
+        Var betaEstimate = NumericVar.empty().withName("Estimate");
+        Var betaStdError = NumericVar.empty().withName("Std. Error");
+        Var betaTValue = NumericVar.empty().withName("t value");
+        Var betaPValue = NominalVar.empty().withName("Pr(>|t|)");
+        Var betaSignificance = NominalVar.empty().withName("");
 
         RM c = Linear.chol2inv(qr1.getR());
 
         double sigma2 = 0;
-        for (int i = 0; i < X.rowCount(); i++) {
+        for (int i = 0; i < X.getRowCount(); i++) {
             sigma2 += Math.pow(Y.get(i, 0) - X.mapRow(i).dotProd(beta.mapCol(0)), 2);
         }
-        sigma2 /= (X.rowCount() - X.colCount());
+        sigma2 /= (X.getRowCount() - X.getColCount());
 
         WS.println("sigma: " + Math.sqrt(sigma2));
 
@@ -100,10 +100,10 @@ public class OLSRegressionTest {
             betaTerm.addLabel(inputNames[i]);
             betaEstimate.addValue(beta.get(i, 0));
             betaStdError.addValue(Math.sqrt(var.get(i)));
-            betaTValue.addValue(betaEstimate.value(i) / betaStdError.value(i));
+            betaTValue.addValue(betaEstimate.getValue(i) / betaStdError.getValue(i));
 
-            StudentT t = new StudentT(X.rowCount() - X.colCount(), 0, betaStdError.value(i));
-            double pValue = 1 - Math.abs(t.cdf(betaEstimate.value(i)) - t.cdf(-betaEstimate.value(i)));
+            StudentT t = new StudentT(X.getRowCount() - X.getColCount(), 0, betaStdError.getValue(i));
+            double pValue = 1 - Math.abs(t.cdf(betaEstimate.getValue(i)) - t.cdf(-betaEstimate.getValue(i)));
             betaPValue.addLabel(pValue < 2e-16 ? "<2e-16" : new DecimalFormat("0.00").format(pValue));
             String signif = " ";
             if (pValue <= 0.1)

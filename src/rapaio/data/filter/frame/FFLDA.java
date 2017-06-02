@@ -53,7 +53,7 @@ public class FFLDA extends AbstractFF {
     public void train(Frame df) {
         parse(df);
         lda = new LDA();
-        lda.learn(df, varNames);
+        lda.train(df, varNames);
     }
 
     @Override

@@ -31,9 +31,8 @@ import rapaio.core.distributions.DUniform;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
-import rapaio.core.stat.QuantilesEstimator.Type;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 /**
@@ -59,7 +58,7 @@ public final class CoreTools {
         return GeometricMean.from(var);
     }
 
-    public static Variance var(Var var) {
+    public static Variance variance(Var var) {
         return Variance.from(var);
     }
 
@@ -79,11 +78,11 @@ public final class CoreTools {
         return Quantiles.from(var, p);
     }
 
-    public static Quantiles quantiles(Var var, Numeric p) {
+    public static Quantiles quantiles(Var var, NumericVar p) {
         return Quantiles.from(var, p.stream().mapToDouble().toArray());
     }
 
-    public static Quantiles quantiles(Var var, QuantilesEstimator.Type type, Numeric p) {
+    public static Quantiles quantiles(Var var, Quantiles.Type type, NumericVar p) {
         return Quantiles.from(var, type, p.stream().mapToDouble().toArray());
     }
 

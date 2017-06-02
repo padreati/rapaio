@@ -29,7 +29,7 @@ import org.junit.Test;
 import rapaio.core.tests.ChiSquareTest;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 
 import static rapaio.core.CoreTools.distDUnif;
 
@@ -93,7 +93,7 @@ public class SamplingToolsTest {
         double[] freq = new double[10];
         final int TRIALS = 100_000;
         final int SAMPLES = 3;
-        Numeric v = Numeric.empty();
+        NumericVar v = NumericVar.empty();
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
                 freq[next]++;

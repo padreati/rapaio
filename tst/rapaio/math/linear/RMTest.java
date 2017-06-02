@@ -26,7 +26,6 @@ package rapaio.math.linear;
 
 import org.junit.Test;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.util.Util;
 
 import static org.junit.Assert.*;
 
@@ -81,7 +80,7 @@ public class RMTest {
         RM a1 = SolidRM.random(5, 5);
 
         RM a2 = a1.mapRows(1, 3);
-        for (int i = 0; i < a1.colCount(); i++) {
+        for (int i = 0; i < a1.getColCount(); i++) {
             assertEquals(a1.get(1, i), a2.get(0, i), TOL);
             assertEquals(a1.get(3, i), a2.get(1, i), TOL);
         }
@@ -98,7 +97,7 @@ public class RMTest {
         RM a1 = SolidRM.random(5, 5);
 
         RM a2 = a1.mapCols(1, 3);
-        for (int i = 0; i < a1.rowCount(); i++) {
+        for (int i = 0; i < a1.getRowCount(); i++) {
             assertEquals(a1.get(i, 1), a2.get(i, 0), TOL);
             assertEquals(a1.get(i, 3), a2.get(i, 1), TOL);
         }
@@ -131,8 +130,8 @@ public class RMTest {
                 {7, 8, 9}
         });
 
-        assertEquals(5, a1.mean().value(), TOL);
-        assertEquals(7.5, a1.var().value(), TOL);
+        assertEquals(5, a1.mean().getValue(), TOL);
+        assertEquals(7.5, a1.var().getValue(), TOL);
     }
 
     @Test
@@ -182,6 +181,6 @@ public class RMTest {
                 {360.0, 360.0, 0.0},
                 {180.0, 0.0, 720.0}
         });
-        assertTrue(s3.isEqual(a3.scatter().dot(1.0 / a3.rowCount())));
+        assertTrue(s3.isEqual(a3.scatter().dot(1.0 / a3.getRowCount())));
     }
 }

@@ -46,9 +46,9 @@ public class VFTransformPower extends AbstractVF {
         checkSingleVar(vars);
         GeometricMean mygm = GeometricMean.from(vars[0]);
         if (mygm.isDefined()) {
-            gm = mygm.value();
+            gm = mygm.getValue();
         } else {
-            throw new IllegalArgumentException("The transformed variable " + vars[0].name() + "contains negative values, geometric mean cannot be computed");
+            throw new IllegalArgumentException("The transformed variable " + vars[0].getName() + "contains negative values, geometric mean cannot be computed");
         }
     }
 

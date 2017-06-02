@@ -60,11 +60,11 @@ public class KSTestTwoSamples implements HTest {
         double fn2 = 0.0;
         int i1 = 0;
         int i2 = 0;
-        double n1 = v1.rowCount();
-        double n2 = v2.rowCount();
+        double n1 = v1.getRowCount();
+        double n2 = v2.getRowCount();
         while (i1 < n1 && i2 < n2) {
-            double d1 = v1.value(i1);
-            double d2 = v2.value(i2);
+            double d1 = v1.getValue(i1);
+            double d2 = v2.getValue(i2);
             if (d1 <= d2) fn1 = i1++ / n1;
             if (d2 <= d1) fn2 = i2++ / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));
@@ -125,16 +125,16 @@ public class KSTestTwoSamples implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
-        int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
-        int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());
+        int ties1 = (int) (v1.getRowCount() - v1.stream().mapToDouble().distinct().count());
+        int ties2 = (int) (v2.getRowCount() - v2.stream().mapToDouble().distinct().count());
         sb.append(String.format("first sample size: %d, ties: %d\n",
-                v1.rowCount(), ties1));
+                v1.getRowCount(), ties1));
         sb.append(String.format("second sample size: %d, ties: %d\n",
-                v2.rowCount(), ties2));
+                v2.getRowCount(), ties2));
         if (ties1 + ties2 > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 

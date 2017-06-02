@@ -25,7 +25,7 @@
 package rapaio.core.tools;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
@@ -86,8 +86,8 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector filled with counts
      */
     public static DVector fromCount(boolean useFirst, Var var) {
-        Var weights = Numeric.fill(var.rowCount(), 1);
-        return new DVector(useFirst, var.levels(), var, weights);
+        Var weights = NumericVar.fill(var.getRowCount(), 1);
+        return new DVector(useFirst, var.getLevels(), var, weights);
     }
 
     /**
@@ -100,7 +100,7 @@ public class DVector implements Printable, Serializable {
      * @return new distribution variable
      */
     public static DVector fromWeights(boolean useFirst, Var var, Var weights) {
-        return new DVector(useFirst, var.levels(), var, weights);
+        return new DVector(useFirst, var.getLevels(), var, weights);
     }
 
     /**
@@ -137,8 +137,8 @@ public class DVector implements Printable, Serializable {
 
     private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
         this(useFirst, labels);
-        int off = var.type().equals(VarType.BINARY) ? 1 : 0;
-        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
+        int off = var.getType().equals(VarType.BINARY) ? 1 : 0;
+        var.stream().forEach(s -> values[s.getIndex() + off] += weights.getValue(s.getRow()));
         total = Arrays.stream(values).sum();
     }
 
@@ -152,7 +152,7 @@ public class DVector implements Printable, Serializable {
         return this;
     }
 
-    public String[] levels() {
+    public String[] getLevels() {
         return levels;
     }
 
@@ -170,7 +170,7 @@ public class DVector implements Printable, Serializable {
         return get(reverse.get(name));
     }
 
-    public String label(int pos) {
+    public String getLabel(int pos) {
         return levels[pos];
     }
 
@@ -307,7 +307,7 @@ public class DVector implements Printable, Serializable {
         return count;
     }
 
-    public int rowCount() {
+    public int getRowCount() {
         return levels.length;
     }
 
@@ -363,14 +363,14 @@ public class DVector implements Printable, Serializable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         TextTable tt = TextTable.newEmpty(3, levels.length);
         for (int i = start; i < levels.length; i++) {
             tt.set(0, i, levels[i], 1);
             tt.set(1, i, repeat(levels[i].length(), '-'), 1);
             tt.set(2, i, WS.formatShort(values[i]), 1);
         }
-        return tt.summary();
+        return tt.getSummary();
     }
 
     private String repeat(int len, char ch) {

@@ -39,26 +39,18 @@ import rapaio.printer.Printable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-public class PCA implements Printable {
+public class PCA extends DimensionReduction implements Printable {
 
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
     private double tol = 1e-10;
     private int maxRuns = 2_000;
-
-    private boolean scaling = true;
-    private String[] inputNames;
-
-    private RV mean;
-    private RV sd;
-
-    private RV eigenValues;
-    private RM eigenVectors;
 
     public PCA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -75,14 +67,6 @@ public class PCA implements Printable {
         return this;
     }
 
-    public RV getEigenValues() {
-        return eigenValues;
-    }
-
-    public RM getEigenVectors() {
-        return eigenVectors;
-    }
-
     public void train(Frame df) {
         validate(df);
 
@@ -90,14 +74,14 @@ public class PCA implements Printable {
         RM x = SolidRM.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = SolidRV.empty(x.colCount());
-            sd = SolidRV.empty(x.colCount());
-            for (int i = 0; i < x.colCount(); i++) {
-                mean.set(i, x.mapCol(i).mean().value());
-                sd.set(i, x.mapCol(i).var().sdValue());
+            mean = SolidRV.empty(x.getColCount());
+            sd = SolidRV.empty(x.getColCount());
+            for (int i = 0; i < x.getColCount(); i++) {
+                mean.set(i, x.mapCol(i).mean().getValue());
+                sd.set(i, x.mapCol(i).variance().sdValue());
             }
-            for (int i = 0; i < x.rowCount(); i++) {
-                for (int j = 0; j < x.colCount(); j++) {
+            for (int i = 0; i < x.getRowCount(); i++) {
+                for (int j = 0; j < x.getColCount(); j++) {
                     if (sd.get(j) == 0)
                         continue;
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
@@ -132,8 +116,8 @@ public class PCA implements Printable {
         RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
-            for (int i = 0; i < x.rowCount(); i++) {
-                for (int j = 0; j < x.colCount(); j++) {
+            for (int i = 0; i < x.getRowCount(); i++) {
+                for (int j = 0; j < x.getColCount(); j++) {
                     if (sd.get(j) != 0)
                         x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
@@ -148,7 +132,7 @@ public class PCA implements Printable {
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
-        return rest.varCount() == 0 ?
+        return rest.getVarCount() == 0 ?
                 SolidFrame.matrix(result, names) :
                 SolidFrame.matrix(result, names).bindVars(rest);
     }
@@ -156,23 +140,23 @@ public class PCA implements Printable {
     private void validate(Frame df) {
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
         df.varStream().forEach(var -> {
-            if (!allowedTypes.contains(var.type())) {
-                throw new IllegalArgumentException("Var type not allowed. Var name: " + var.name() + ", type: " + var.type().name());
+            if (!allowedTypes.contains(var.getType())) {
+                throw new IllegalArgumentException("Var type not allowed. Var name: " + var.getName() + ", type: " + var.getType().name());
             }
         });
 
-        inputNames = df.varStream().map(Var::name).toArray(String[]::new);
+        inputNames = df.varStream().map(Var::getName).toArray(String[]::new);
     }
 
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(eigenValues.summary()).append("\n");
+        sb.append(eigenValues.getSummary()).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.summary()).append("\n");
+        sb.append(eigenVectors.getSummary()).append("\n");
 
         return sb.toString();
     }

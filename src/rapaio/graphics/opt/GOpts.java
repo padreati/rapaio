@@ -24,8 +24,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Index;
-import rapaio.data.Numeric;
+import rapaio.data.IndexVar;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.util.func.SFunction;
 
@@ -48,8 +48,8 @@ public class GOpts implements Serializable {
         DEFAULTS.palette = gOpts -> ColorPalette.STANDARD;
         DEFAULTS.color = gOpts -> new Color[]{Color.black};
         DEFAULTS.lwd = gOpts -> 1.0f;
-        DEFAULTS.sz = gOpts -> Numeric.scalar(3);
-        DEFAULTS.pch = gOpts -> Index.scalar(0);
+        DEFAULTS.sz = gOpts -> NumericVar.scalar(3);
+        DEFAULTS.pch = gOpts -> IndexVar.scalar(0);
         DEFAULTS.alpha = gOpts -> 1.0f;
         DEFAULTS.bins = gOpts -> -1;
         DEFAULTS.prob = gOpts -> false;
@@ -182,7 +182,7 @@ public class GOpts implements Serializable {
             c = getUpSzDefault();
         if (c == null)
             c = DEFAULTS.sz;
-        return c.apply(this).value(row % c.apply(this).rowCount());
+        return c.apply(this).getValue(row % c.apply(this).getRowCount());
     }
 
     private SFunction<GOpts, Var> getUpSz() {
@@ -207,7 +207,7 @@ public class GOpts implements Serializable {
             c = getUpPchDefault();
         if (c == null)
             c = DEFAULTS.pch;
-        return c.apply(this).index(row % c.apply(this).rowCount());
+        return c.apply(this).getIndex(row % c.apply(this).getRowCount());
     }
 
     private SFunction<GOpts, Var> getUpPch() {

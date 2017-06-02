@@ -74,13 +74,13 @@ public class FFImputeWithRegression extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        Var[] vars = new Var[df.varCount()];
+        Var[] vars = new Var[df.getVarCount()];
         int pos = 0;
-        for (String varName : df.varNames()) {
+        for (String varName : df.getVarNames()) {
             if (filters.containsKey(varName)) {
                 vars[pos++] = filters.get(varName).apply(df.varStream().toArray(Var[]::new));
             } else {
-                vars[pos++] = df.var(varName);
+                vars[pos++] = df.getVar(varName);
             }
         }
         return BoundFrame.byVars(vars);

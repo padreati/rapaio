@@ -26,7 +26,7 @@ package rapaio.data.stream;
 
 import org.junit.Test;
 import rapaio.core.stat.Sum;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -39,13 +39,13 @@ public class RVSpotTest {
 
     @Test
     public void testNumericStream() {
-        Var x = Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Var x = NumericVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         Var y = x.solidCopy().stream().transValue(Math::sqrt).toMappedVar();
 
         double v = 0;
         for (int i = 0; i < 10; i++) {
-            v += Math.sqrt(x.value(i));
+            v += Math.sqrt(x.getValue(i));
         }
-        assertEquals(v, Sum.from(y).value(), 1e-12);
+        assertEquals(v, Sum.from(y).getValue(), 1e-12);
     }
 }

@@ -113,8 +113,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().length - 1;
-        f = new double[df.rowCount()][K];
-        p = new double[df.rowCount()][K];
+        f = new double[df.getRowCount()][K];
+        p = new double[df.getRowCount()][K];
         trees = new ArrayList<>();
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
@@ -132,7 +132,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         // a) Set p_k(x)
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
                 sum += Math.pow(Math.E, f[i][k]);
@@ -149,9 +149,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            Numeric r = Numeric.empty().withName("##tt##");
-            for (int i = 0; i < df.rowCount(); i++) {
-                double y_i = (df.var(firstTargetName()).index(i) == k + 1) ? 1 : 0;
+            NumericVar r = NumericVar.empty().withName("##tt##");
+            for (int i = 0; i < df.getRowCount(); i++) {
+                double y_i = (df.getVar(firstTargetName()).getIndex(i) == k + 1) ? 1 : 0;
                 r.addValue(y_i - p[i][k]);
             }
 
@@ -167,8 +167,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
             RFit rr = tree.fit(train, true);
 
-            for (int i = 0; i < df.rowCount(); i++) {
-                f[i][k] += shrinkage * rr.firstFit().value(i);
+            for (int i = 0; i < df.getRowCount(); i++) {
+                f[i][k] += shrinkage * rr.firstFit().getValue(i);
             }
             trees.get(k).add(tree);
         }
@@ -180,9 +180,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         for (int k = 0; k < K; k++) {
             for (BTRegression tree : trees.get(k)) {
                 RFit rr = tree.fit(df, false);
-                for (int i = 0; i < df.rowCount(); i++) {
-                    double p = cr.firstDensity().value(i, k + 1);
-                    p += shrinkage * rr.firstFit().value(i);
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    double p = cr.firstDensity().getValue(i, k + 1);
+                    p += shrinkage * rr.firstFit().getValue(i);
                     cr.firstDensity().setValue(i, k + 1, p);
                 }
             }
@@ -190,34 +190,34 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         // make probabilities
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double t = 0.0;
             for (int k = 0; k < K; k++) {
-                t += Math.exp(cr.firstDensity().value(i, k + 1));
+                t += Math.exp(cr.firstDensity().getValue(i, k + 1));
             }
             if (t != 0) {
                 for (int k = 0; k < K; k++) {
-                    cr.firstDensity().setValue(i, k + 1, Math.exp(cr.firstDensity().value(i, k + 1)) / t);
+                    cr.firstDensity().setValue(i, k + 1, Math.exp(cr.firstDensity().getValue(i, k + 1)) / t);
                 }
             }
         }
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             int maxIndex = 0;
             double maxValue = Double.NEGATIVE_INFINITY;
             double total = 0;
             for (int k = 0; k < K; k++) {
-                if (cr.firstDensity().value(i, k + 1) > maxValue) {
-                    maxValue = cr.firstDensity().value(i, k + 1);
+                if (cr.firstDensity().getValue(i, k + 1) > maxValue) {
+                    maxValue = cr.firstDensity().getValue(i, k + 1);
                     maxIndex = k + 1;
                 }
-                total += cr.firstDensity().value(i, k + 1);
+                total += cr.firstDensity().getValue(i, k + 1);
             }
             // this does not work directly since we have also negative scores
             // why is that happening?
 
 //            for (int k = 0; k < K; k++) {
-//                double p = cr.firstDensity().value(i, k + 1);
+//                double p = cr.firstDensity().getValue(i, k + 1);
 //                p /= total;
 //                cr.firstDensity().setValue(i, k + 1, p);
 //            }
@@ -248,9 +248,9 @@ class ClassifierLossFunction implements GBTLossFunction {
         double up = 0.0;
         double down = 0.0;
 
-        for (int i = 0; i < y.rowCount(); i++) {
-            up += y.value(i);
-            down += Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
+        for (int i = 0; i < y.getRowCount(); i++) {
+            up += y.getValue(i);
+            down += Math.abs(y.getValue(i)) * (1.0 - Math.abs(y.getValue(i)));
         }
 
         if (down == 0) {
@@ -265,7 +265,7 @@ class ClassifierLossFunction implements GBTLossFunction {
     }
 
     @Override
-    public Numeric gradient(Var y, Var fx) {
+    public NumericVar gradient(Var y, Var fx) {
         return null;
     }
 }

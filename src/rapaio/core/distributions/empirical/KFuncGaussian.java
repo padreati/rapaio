@@ -53,7 +53,7 @@ public class KFuncGaussian implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncGaussian(" + normal.name() + ")";
     }
 }

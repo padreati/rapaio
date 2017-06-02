@@ -48,21 +48,28 @@ public class LUDecomposition implements Serializable, Printable {
 
     private static final long serialVersionUID = -4226024886673558685L;
 
-    private LUDecompositionData data = new LUDecompositionData();
+    // internal storage of decomposition
+    private RM LU;
+    private int rowCount;
+    private int colCount;
+    // pivot sign
+    private int pivSign;
+    // internal storage for row pivot indexes
+    private int[] piv;
 
-	/**
+    /**
      * LU Decomposition Structure to access L, U and piv.
      *
      * @param A input matrix
      */
     public static LUDecomposition from(RM A) {
-        if(A.rowCount()<A.colCount())
+        if(A.getRowCount()<A.getColCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
     public static LUDecomposition from(RM A, Method method) {
-        if(A.rowCount()<A.colCount())
+        if(A.getRowCount()<A.getColCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, method);
     }
@@ -77,8 +84,8 @@ public class LUDecomposition implements Serializable, Printable {
      * @return true if U, and hence A, is nonsingular.
      */
     public boolean isNonSingular() {
-        for (int j = 0; j < data.getColCount(); j++) {
-            if (data.getLU().get(j, j) == 0) return false;
+        for (int j = 0; j < colCount; j++) {
+            if (LU.get(j, j) == 0) return false;
         }
         return true;
     }
@@ -89,11 +96,11 @@ public class LUDecomposition implements Serializable, Printable {
      * @return L lower triangular factor
      */
     public RM getL() {
-        RM X = SolidRM.empty(data.getRowCount(), data.getColCount());
-        for (int i = 0; i < data.getRowCount(); i++) {
+        RM X = SolidRM.empty(rowCount, colCount);
+        for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j <= i; j++) {
                 if (i > j) {
-                    X.set(i, j, data.getLU().get(i, j));
+                    X.set(i, j, LU.get(i, j));
                 } else if (i == j) {
                     X.set(i, j, 1.0);
                 }
@@ -108,10 +115,10 @@ public class LUDecomposition implements Serializable, Printable {
      * @return U upper triangular factor
      */
     public RM getU() {
-        RM U = SolidRM.empty(data.getColCount(), data.getColCount());
-        for (int i = 0; i < data.getColCount(); i++) {
-            for (int j = i; j < data.getColCount(); j++) {
-                U.set(i, j, data.getLU().get(i, j));
+        RM U = SolidRM.empty(colCount, colCount);
+        for (int i = 0; i < colCount; i++) {
+            for (int j = i; j < colCount; j++) {
+                U.set(i, j, LU.get(i, j));
             }
         }
         return U;
@@ -123,7 +130,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @return piv
      */
     public int[] getPivot() {
-        return Arrays.copyOf(data.getPiv(), data.getRowCount());
+        return Arrays.copyOf(piv, rowCount);
     }
 
     /**
@@ -133,12 +140,12 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws IllegalArgumentException Matrix must be square
      */
     public double det() {
-        if (data.getRowCount() != data.getColCount()) {
+        if (rowCount != colCount) {
             throw new IllegalArgumentException("Matrix must be square.");
         }
-        double d = (double) data.getPivSign();
-        for (int j = 0; j < data.getColCount(); j++) {
-            d *= data.getLU().get(j, j);
+        double d = (double) pivSign;
+        for (int j = 0; j < colCount; j++) {
+            d *= LU.get(j, j);
         }
         return d;
     }
@@ -152,7 +159,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws RuntimeException         Matrix is singular.
      */
     public RM solve(RM B) {
-        if (B.rowCount() != data.getRowCount()) {
+        if (B.getRowCount() != rowCount) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!this.isNonSingular()) {
@@ -160,28 +167,28 @@ public class LUDecomposition implements Serializable, Printable {
         }
 
         // Copy right hand side with pivoting
-        int nx = B.colCount();
-        RM X = B.mapRows(data.getPiv()).solidCopy();
+        int nx = B.getColCount();
+        RM X = B.mapRows(piv).solidCopy();
 
         // Solve L*Y = B(piv,:)
 
-        for (int k = 0; k < data.getColCount(); k++) {
-            for (int i = k + 1; i < data.getColCount(); i++) {
+        for (int k = 0; k < colCount; k++) {
+            for (int i = k + 1; i < colCount; i++) {
                 for (int j = 0; j < nx; j++) {
-                    X.set(i, j, X.get(i, j) - X.get(k, j) * data.getLU().get(i, k));
+                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
                 }
             }
         }
 
         // Solve U*X = Y;
 
-        for (int k = data.getColCount() - 1; k >= 0; k--) {
+        for (int k = colCount - 1; k >= 0; k--) {
             for (int j = 0; j < nx; j++) {
-                X.set(k, j, X.get(k, j) / data.getLU().get(k, k));
+                X.set(k, j, X.get(k, j) / LU.get(k, k));
             }
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < nx; j++) {
-                    X.set(i, j, X.get(i, j) - X.get(k, j) * data.getLU().get(i, k));
+                    X.set(i, j, X.get(i, j) - X.get(k, j) * LU.get(i, k));
                 }
             }
         }
@@ -189,14 +196,14 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition summary\n");
         sb.append("========================\n");
 
-        sb.append("\nL matrix\n").append(getL().summary());
-        sb.append("\nU matrix:\n").append(getU().summary());
+        sb.append("\nL matrix\n").append(getL().getSummary());
+        sb.append("\nU matrix:\n").append(getU().getSummary());
         return sb.toString();
     }
 
@@ -210,26 +217,26 @@ public class LUDecomposition implements Serializable, Printable {
             @Override
             BiConsumer<LUDecomposition, RM> method() {
                 return (lu, A) -> {
-                    lu.data.setLU(A.solidCopy());
-                    lu.data.setRowCount(A.rowCount());
-                    lu.data.setColCount(A.colCount());
-                    lu.data.setPiv(new int[lu.data.getRowCount()]);
-                    for (int i = 0; i < lu.data.getRowCount(); i++) {
-                        lu.data.getPiv()[i] = i;
+                    lu.LU = A.solidCopy();
+                    lu.rowCount = A.getRowCount();
+                    lu.colCount = A.getColCount();
+                    lu.piv = new int[lu.rowCount];
+                    for (int i = 0; i < lu.rowCount; i++) {
+                        lu.piv[i] = i;
                     }
-                    lu.data.setPivSign(1);
-                    double[] LUcolj = new double[lu.data.getRowCount()];
+                    lu.pivSign = 1;
+                    double[] LUcolj = new double[lu.rowCount];
 
                     // Outer loop.
-                    for (int j = 0; j < lu.data.getColCount(); j++) {
+                    for (int j = 0; j < lu.colCount; j++) {
 
                         // Make a copy of the j-th column to localize references.
-                        for (int i = 0; i < lu.data.getRowCount(); i++) {
-                            LUcolj[i] = lu.data.getLU().get(i, j);
+                        for (int i = 0; i < lu.rowCount; i++) {
+                            LUcolj[i] = lu.LU.get(i, j);
                         }
 
                         // Apply previous transformations.
-                        for (int i = 0; i < lu.data.getRowCount(); i++) {
+                        for (int i = 0; i < lu.rowCount; i++) {
 
 
                             // Most of the time is spent in the following dot product.
@@ -237,36 +244,36 @@ public class LUDecomposition implements Serializable, Printable {
                             int kmax = Math.min(i, j);
                             double s = 0.0;
                             for (int k = 0; k < kmax; k++) {
-                                s += lu.data.getLU().get(i, k) * LUcolj[k];
+                                s += lu.LU.get(i, k) * LUcolj[k];
                             }
                             LUcolj[i] -= s;
-                            lu.data.getLU().set(i, j, LUcolj[i]);
+                            lu.LU.set(i, j, LUcolj[i]);
                         }
 
                         // Find pivot and exchange if necessary.
 
                         int p = j;
-                        for (int i = j + 1; i < lu.data.getLU().rowCount(); i++) {
+                        for (int i = j + 1; i < lu.LU.getRowCount(); i++) {
                             if (Math.abs(LUcolj[i]) > Math.abs(LUcolj[p])) {
                                 p = i;
                             }
                         }
                         if (p != j) {
-                            for (int k = 0; k < lu.data.getLU().colCount(); k++) {
-                                double t = lu.data.getLU().get(p, k);
-                                lu.data.getLU().set(p, k, lu.data.getLU().get(j, k));
-                                lu.data.getLU().set(j, k, t);
+                            for (int k = 0; k < lu.LU.getColCount(); k++) {
+                                double t = lu.LU.get(p, k);
+                                lu.LU.set(p, k, lu.LU.get(j, k));
+                                lu.LU.set(j, k, t);
                             }
-                            int k = lu.data.getPiv()[p];
-                            lu.data.getPiv()[p] = lu.data.getPiv()[j];
-                            lu.data.getPiv()[j] = k;
-                            lu.data.setPivSign(-lu.data.getPivSign());
+                            int k = lu.piv[p];
+                            lu.piv[p] = lu.piv[j];
+                            lu.piv[j] = k;
+                            lu.pivSign = -lu.pivSign;
                         }
 
                         // Compute multipliers.
-                        if (j < lu.data.getLU().rowCount() & lu.data.getLU().get(j, j) != 0.0) {
-                            for (int i = j + 1; i < lu.data.getLU().rowCount(); i++) {
-                                lu.data.getLU().set(i, j, lu.data.getLU().get(i, j) / lu.data.getLU().get(j, j));
+                        if (j < lu.LU.getRowCount() & lu.LU.get(j, j) != 0.0) {
+                            for (int i = j + 1; i < lu.LU.getRowCount(); i++) {
+                                lu.LU.set(i, j, lu.LU.get(i, j) / lu.LU.get(j, j));
                             }
                         }
                     }
@@ -284,41 +291,41 @@ public class LUDecomposition implements Serializable, Printable {
                 return (lu, A) -> {
 
                     // Initialize.
-                    lu.data.setLU(A.solidCopy());
-                    lu.data.setRowCount(A.rowCount());
-                    lu.data.setColCount(A.colCount());
-                    lu.data.setPiv(new int[lu.data.getRowCount()]);
-                    for (int i = 0; i < lu.data.getRowCount(); i++) {
-                        lu.data.getPiv()[i] = i;
+                    lu.LU = A.solidCopy();
+                    lu.rowCount = A.getRowCount();
+                    lu.colCount = A.getColCount();
+                    lu.piv = new int[lu.rowCount];
+                    for (int i = 0; i < lu.rowCount; i++) {
+                        lu.piv[i] = i;
                     }
-                    lu.data.setPivSign(1);
+                    lu.pivSign = 1;
                     // Main loop.
-                    for (int k = 0; k < lu.data.getColCount(); k++) {
+                    for (int k = 0; k < lu.colCount; k++) {
                         // Find pivot.
                         int p = k;
-                        for (int i = k + 1; i < lu.data.getRowCount(); i++) {
-                            if (Math.abs(lu.data.getLU().get(i, k)) > Math.abs(lu.data.getLU().get(p, k))) {
+                        for (int i = k + 1; i < lu.rowCount; i++) {
+                            if (Math.abs(lu.LU.get(i, k)) > Math.abs(lu.LU.get(p, k))) {
                                 p = i;
                             }
                         }
                         // Exchange if necessary.
                         if (p != k) {
-                            for (int j = 0; j < lu.data.getColCount(); j++) {
-                                double t = lu.data.getLU().get(p, j);
-                                lu.data.getLU().set(p, j, lu.data.getLU().get(k, j));
-                                lu.data.getLU().set(k, j, t);
+                            for (int j = 0; j < lu.colCount; j++) {
+                                double t = lu.LU.get(p, j);
+                                lu.LU.set(p, j, lu.LU.get(k, j));
+                                lu.LU.set(k, j, t);
                             }
-                            int t = lu.data.getPiv()[p];
-                            lu.data.getPiv()[p] = lu.data.getPiv()[k];
-                            lu.data.getPiv()[k] = t;
-                            lu.data.setPivSign(-lu.data.getPivSign());
+                            int t = lu.piv[p];
+                            lu.piv[p] = lu.piv[k];
+                            lu.piv[k] = t;
+                            lu.pivSign = -lu.pivSign;
                         }
                         // Compute multipliers and eliminate k-th column.
-                        if (lu.data.getLU().get(k, k) != 0.0) {
-                            for (int i = k + 1; i < lu.data.getRowCount(); i++) {
-                                lu.data.getLU().set(i, k, lu.data.getLU().get(i, k) / lu.data.getLU().get(k, k));
-                                for (int j = k + 1; j < lu.data.getColCount(); j++) {
-                                    lu.data.getLU().set(i, j, lu.data.getLU().get(i, j) - lu.data.getLU().get(i, k) * lu.data.getLU().get(k, j));
+                        if (lu.LU.get(k, k) != 0.0) {
+                            for (int i = k + 1; i < lu.rowCount; i++) {
+                                lu.LU.set(i, k, lu.LU.get(i, k) / lu.LU.get(k, k));
+                                for (int j = k + 1; j < lu.colCount; j++) {
+                                    lu.LU.set(i, j, lu.LU.get(i, j) - lu.LU.get(i, k) * lu.LU.get(k, j));
                                 }
                             }
                         }

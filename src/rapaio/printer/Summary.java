@@ -45,6 +45,7 @@ import static rapaio.sys.WS.getPrinter;
  */
 @Deprecated
 public class Summary {
+    TypeStrategy typeStrategy;
 
     public static String getSummary(Frame df) {
         return getSummary(df, df.getVarNames());
@@ -92,7 +93,6 @@ public class Summary {
             int i = df.getVarIndex(names[k]);
 
             Var v = df.getVar(i);
-            TypeStrategy typeStrategy;
             
             if (v.getType() == VarType.BINARY) {
                 typeStrategy = new BinaryTypeStrategy();
@@ -201,7 +201,6 @@ public class Summary {
             second[i] = " ";
         }
 
-        TypeStrategy typeStrategy;
         if (v.getType() == VarType.BINARY) {
              typeStrategy = new BinaryTypeStrategy();
              typeStrategy.getPrintSummary(v, first, second);;

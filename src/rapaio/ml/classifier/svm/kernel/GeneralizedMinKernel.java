@@ -54,8 +54,8 @@ public class GeneralizedMinKernel extends AbstractKernel {
         double sum = 0;
         for (String varName : varNames) {
             sum += Math.min(
-                    Math.pow(Math.abs(df1.value(row1, varName)), alpha),
-                    Math.pow(Math.abs(df2.value(row2, varName)), beta)
+                    Math.pow(Math.abs(df1.getValue(row1, varName)), alpha),
+                    Math.pow(Math.abs(df2.getValue(row2, varName)), beta)
             );
         }
         return sum;

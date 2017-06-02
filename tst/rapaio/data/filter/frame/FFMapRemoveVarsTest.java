@@ -40,10 +40,10 @@ public class FFMapRemoveVarsTest {
     @Before
     public void setUp() throws Exception {
         df = SolidFrame.byVars(
-                Numeric.fill(10, 1).withName("a"),
-                Numeric.fill(10, 2).withName("b"),
-                Numeric.fill(10, 3).withName("c"),
-                Nominal.from(10, r -> String.valueOf(r%3)).withName("d")
+                NumericVar.fill(10, 1).withName("a"),
+                NumericVar.fill(10, 2).withName("b"),
+                NumericVar.fill(10, 3).withName("c"),
+                NominalVar.from(10, r -> String.valueOf(r%3)).withName("d")
         );
     }
 
@@ -83,11 +83,11 @@ public class FFMapRemoveVarsTest {
         FFilter map = new FFMapVars(VRange.onlyTypes(VarType.NUMERIC)).newInstance();
         map.train(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, map.apply(df).varCount());
+        Assert.assertEquals(2, map.apply(df).getVarCount());
 
         FFilter remove = new FFRemoveVars(VRange.onlyTypes(VarType.NUMERIC)).newInstance();
         remove.train(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, remove.apply(df).varCount());
+        Assert.assertEquals(2, remove.apply(df).getVarCount());
     }
 }

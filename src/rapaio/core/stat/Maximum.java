@@ -48,9 +48,9 @@ public class Maximum implements Printable {
     private int missingCount;
 
     private Maximum(Var var) {
-        this.varName = var.name();
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
+        this.varName = var.getName();
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
@@ -63,12 +63,12 @@ public class Maximum implements Printable {
         }
     }
 
-    public double value() {
+    public double getValue() {
         return value;
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "\n" +
                 "> maximum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + " missing: " + missingCount + ")\n" +

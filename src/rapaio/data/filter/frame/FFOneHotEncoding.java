@@ -68,16 +68,16 @@ public class FFOneHotEncoding extends AbstractFF {
         levels = new HashMap<>();
         for (String varName : varNames) {
             // for each nominal variable
-            if (df.var(varName).type().isNominal()) {
+            if (df.getVar(varName).getType().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.var(varName).levels();
+                String[] dict = df.getVar(varName).getLevels();
                 levels.put(varName, dict);
             }
         }
     }
 
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.varCount(), df);
+        checkRangeVars(1, df.getVarCount(), df);
 
         // build a set for fast search
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
@@ -85,7 +85,7 @@ public class FFOneHotEncoding extends AbstractFF {
         // list of variables with encoding
         List<Var> vars = new ArrayList<>();
 
-        for (String varName : df.varNames()) {
+        for (String varName : df.getVarNames()) {
 
             // if the variable has been learned
             if (levels.keySet().contains(varName)) {
@@ -96,20 +96,20 @@ public class FFOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.length; i++) {
-                    Var v = Numeric.fill(df.rowCount()).withName(varName + "." + dict[i]);
+                    Var v = NumericVar.fill(df.getRowCount()).withName(varName + "." + dict[i]);
                     oneHotVars.add(v);
                     index.put(dict[i], v);
                 }
                 // populate encoding variables
-                for (int i = 0; i < df.rowCount(); i++) {
-                    String level = df.label(i, varName);
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    String level = df.getLabel(i, varName);
                     if (index.containsKey(level)) {
                         index.get(level).setValue(i, 1.0);
                     }
                 }
                 vars.addAll(oneHotVars);
             } else {
-                vars.add(df.var(varName));
+                vars.add(df.getVar(varName));
             }
         }
         return BoundFrame.byVars(vars);

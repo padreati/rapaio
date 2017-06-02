@@ -45,14 +45,14 @@ public class MappedRM implements RM {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;
-            this.colIndexes = new int[ref.colCount()];
-            for (int i = 0; i < ref.colCount(); i++) {
+            this.colIndexes = new int[ref.getColCount()];
+            for (int i = 0; i < ref.getColCount(); i++) {
                 this.colIndexes[i] = i;
             }
         } else {
             this.ref = ref;
-            this.rowIndexes = new int[ref.rowCount()];
-            for (int i = 0; i < ref.rowCount(); i++) {
+            this.rowIndexes = new int[ref.getRowCount()];
+            for (int i = 0; i < ref.getRowCount(); i++) {
                 this.rowIndexes[i] = i;
             }
             this.colIndexes = indexes;
@@ -60,12 +60,12 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rowIndexes.length;
     }
 
     @Override
-    public int colCount() {
+    public int getColCount() {
         return colIndexes.length;
     }
 

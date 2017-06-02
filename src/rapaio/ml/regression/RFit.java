@@ -26,7 +26,7 @@ package rapaio.ml.regression;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -45,8 +45,8 @@ public class RFit implements Printable {
     private final Regression model;
     private final Frame df;
     private final boolean withResiduals;
-    private final Map<String, Numeric> fit;
-    private final Map<String, Numeric> residuals;
+    private final Map<String, NumericVar> fit;
+    private final Map<String, NumericVar> residuals;
     private final Map<String, Double> tss;
     private final Map<String, Double> ess;
     private final Map<String, Double> rss;
@@ -66,8 +66,8 @@ public class RFit implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, Numeric.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, Numeric.empty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, NumericVar.empty(df.getRowCount()).withName(targetName));
+            residuals.put(targetName, NumericVar.empty(df.getRowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -112,7 +112,7 @@ public class RFit implements Printable {
      *
      * @return map with numeric variables as predicted values
      */
-    public Map<String, Numeric> fitMap() {
+    public Map<String, NumericVar> fitMap() {
         return fit;
     }
 
@@ -130,7 +130,7 @@ public class RFit implements Printable {
      *
      * @return numeric variable with predicted values
      */
-    public Numeric firstFit() {
+    public NumericVar firstFit() {
         return fit.get(firstTargetName());
     }
 
@@ -140,11 +140,11 @@ public class RFit implements Printable {
      * @param targetVar given target variable name
      * @return numeric variable with predicted values
      */
-    public Numeric fit(String targetVar) {
+    public NumericVar fit(String targetVar) {
         return fit.get(targetVar);
     }
 
-    public Map<String, Numeric> residualsMap() {
+    public Map<String, NumericVar> residualsMap() {
         return residuals;
     }
 
@@ -152,30 +152,30 @@ public class RFit implements Printable {
         return SolidFrame.byVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
-    public Numeric firstResidual() {
+    public NumericVar firstResidual() {
         return residuals.get(firstTargetName());
     }
 
-    public Numeric residual(String targetVar) {
+    public NumericVar residual(String targetVar) {
         return residuals.get(targetVar);
     }
 
     public void buildComplete() {
         if (withResiduals) {
             for (String target : targetNames()) {
-                for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(target).setValue(i, df.var(target).value(i) - fit(target).value(i));
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    residuals.get(target).setValue(i, df.getVar(target).getValue(i) - fit(target).getValue(i));
                 }
 
-                double mu = CoreTools.mean(df.var(target)).value();
+                double mu = CoreTools.mean(df.getVar(target)).getValue();
                 double tssValue = 0;
                 double essValue = 0;
                 double rssValue = 0;
 
-                for (int i = 0; i < df.rowCount(); i++) {
-                    tssValue += Math.pow(df.var(target).value(i) - mu, 2);
-                    essValue += Math.pow(fit(target).value(i) - mu, 2);
-                    rssValue += Math.pow(df.var(target).value(i) - fit(target).value(i), 2);
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    tssValue += Math.pow(df.getVar(target).getValue(i) - mu, 2);
+                    essValue += Math.pow(fit(target).getValue(i) - mu, 2);
+                    rssValue += Math.pow(df.getVar(target).getValue(i) - fit(target).getValue(i), 2);
                 }
 
                 tss.put(target, tssValue);
@@ -187,7 +187,7 @@ public class RFit implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Regression Fit Summary").append("\n");
@@ -198,55 +198,41 @@ public class RFit implements Printable {
         sb.append("Model instance: ").append(model.fullName()).append("\n");
 
         sb.append("Predicted frame summary:\n");
-        sb.append("> rows: ").append(df.rowCount()).append("\n");
-        sb.append("> vars: ").append(df.varCount()).append("\n");
+        sb.append("> rows: ").append(df.getRowCount()).append("\n");
+        sb.append("> vars: ").append(df.getVarCount()).append("\n");
         sb.append("\n");
 
         // inputs
 
         sb.append("> input variables: \n");
 
-        TextTable tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
-        tt.set(0, 0, "no", 1);
-        tt.set(1, 0, "--", 1);
-        tt.set(0, 1, "name", -1);
-        tt.set(1, 1, "----", -1);
-        tt.set(0, 2, "type", 1);
-        tt.set(1, 2, "----", 1);
-
+        TextTable tt = TextTable.newEmpty(model.inputNames().length, 3);
         for (int i = 0; i < model.inputNames().length; i++) {
-            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
-            tt.set(i + 2, 1, model.inputName(i), -1);
-            tt.set(i + 2, 2, model.inputType(i).code(), -1);
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, model.inputName(i), -1);
+            tt.set(i, 2, model.inputType(i).getCode(), -1);
         }
 
-        tt.withHeaderRows(2);
+        tt.withHeaderRows(0);
         tt.withMerge();
 
-        sb.append(tt.summary()).append("\n");
+        sb.append(tt.getSummary());
 
         // targets
 
         sb.append("> target variables: \n");
 
-        tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
-        tt.set(0, 0, "no", 1);
-        tt.set(1, 0, "--", 1);
-        tt.set(0, 1, "name", -1);
-        tt.set(1, 1, "----", -1);
-        tt.set(0, 2, "type", 1);
-        tt.set(1, 2, "----", 1);
-
+        tt = TextTable.newEmpty(model.targetNames().length, 3);
         for (int i = 0; i < model.targetNames().length; i++) {
-            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
-            tt.set(i + 2, 1, model.targetName(i), -1);
-            tt.set(i + 2, 2, model.targetType(i).code(), -1);
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, model.targetName(i), -1);
+            tt.set(i, 2, model.targetType(i).getCode(), -1);
         }
 
-        tt.withHeaderRows(2);
+        tt.withHeaderRows(0);
         tt.withMerge();
 
-        sb.append(tt.summary()).append("\n");
+        sb.append(tt.getSummary());
 
         sb.append("\n");
 
@@ -254,9 +240,9 @@ public class RFit implements Printable {
         for (String target : model.targetNames()) {
             sb.append("Fit and residuals for ").append(target).append("\n");
             sb.append("======================")
-                    .append(String.join("", nCopies(target.length(), "="))).append("\n");
+                    .append(String.join("", nCopies(target.length(), "=")));
 
-            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).summary();
+            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).getSummary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {

@@ -26,8 +26,8 @@ package rapaio.data.filter.var;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
+import rapaio.data.NominalVar;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
@@ -37,32 +37,32 @@ public class VFUpdateTest {
     public void testUpdate() {
 
         VFilter vf = VFUpdate.with(spot -> {
-            if (spot.missing())
+            if (spot.isMissing())
                 spot.setValue(0);
-            if (spot.value() > 0)
-                spot.setValue(spot.value() * spot.value());
+            if (spot.getValue() > 0)
+                spot.setValue(spot.getValue() * spot.getValue());
             else
-                spot.setValue(-spot.value() * spot.value());
+                spot.setValue(-spot.getValue() * spot.getValue());
         });
 
-        Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
-        Assert.assertEquals(0, y.value(0), 1e-20);
-        Assert.assertEquals(0, y.value(1), 1e-20);
-        Assert.assertEquals(1, y.value(2), 1e-20);
-        Assert.assertEquals(0, y.value(3), 1e-20);
-        Assert.assertEquals(-144, y.value(4), 1e-20);
-        Assert.assertEquals(3.1 * 3.1, y.value(5), 1e-20);
+        Assert.assertEquals(0, y.getValue(0), 1e-20);
+        Assert.assertEquals(0, y.getValue(1), 1e-20);
+        Assert.assertEquals(1, y.getValue(2), 1e-20);
+        Assert.assertEquals(0, y.getValue(3), 1e-20);
+        Assert.assertEquals(-144, y.getValue(4), 1e-20);
+        Assert.assertEquals(3.1 * 3.1, y.getValue(5), 1e-20);
 
-        Var l1 = Nominal.copy("ana", "?", "are", "?", "mere");
+        Var l1 = NominalVar.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fitApply(VFUpdate.with(s -> {
-            if (s.missing()) {
+            if (s.isMissing()) {
                 s.setLabel("missing");
                 return;
             }
 
-            char[] msg = s.label().toCharArray();
+            char[] msg = s.getLabel().toCharArray();
             for (int i = 0; i < msg.length / 2; i++) {
                 char tmp = msg[i];
                 msg[i] = msg[msg.length - i - 1];
@@ -71,11 +71,11 @@ public class VFUpdateTest {
             s.setLabel(String.copyValueOf(msg));
         }));
 
-        Assert.assertEquals("ana", l2.label(0));
-        Assert.assertEquals("missing", l2.label(1));
-        Assert.assertEquals("era", l2.label(2));
-        Assert.assertEquals("missing", l2.label(3));
-        Assert.assertEquals("erem", l2.label(4));
+        Assert.assertEquals("ana", l2.getLabel(0));
+        Assert.assertEquals("missing", l2.getLabel(1));
+        Assert.assertEquals("era", l2.getLabel(2));
+        Assert.assertEquals("missing", l2.getLabel(3));
+        Assert.assertEquals("erem", l2.getLabel(4));
     }
 
     @Test
@@ -87,15 +87,15 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
-        Assert.assertEquals(0, y.value(0), 1e-20);
-        Assert.assertEquals(0, y.value(1), 1e-20);
-        Assert.assertEquals(1, y.value(2), 1e-20);
-        Assert.assertEquals(0, y.value(3), 1e-20);
-        Assert.assertEquals(-144, y.value(4), 1e-20);
-        Assert.assertEquals(3.1 * 3.1, y.value(5), 1e-20);
+        Assert.assertEquals(0, y.getValue(0), 1e-20);
+        Assert.assertEquals(0, y.getValue(1), 1e-20);
+        Assert.assertEquals(1, y.getValue(2), 1e-20);
+        Assert.assertEquals(0, y.getValue(3), 1e-20);
+        Assert.assertEquals(-144, y.getValue(4), 1e-20);
+        Assert.assertEquals(3.1 * 3.1, y.getValue(5), 1e-20);
     }
 
     @Test
@@ -107,21 +107,21 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
+        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
         Var y = x.solidCopy().fitApply(vf);
-        Assert.assertEquals(0, y.value(0), 1e-20);
-        Assert.assertEquals(0, y.value(1), 1e-20);
-        Assert.assertEquals(1, y.value(2), 1e-20);
-        Assert.assertEquals(0, y.value(3), 1e-20);
-        Assert.assertEquals(-144, y.value(4), 1e-20);
-        Assert.assertEquals(9, y.value(5), 1e-20);
+        Assert.assertEquals(0, y.getValue(0), 1e-20);
+        Assert.assertEquals(0, y.getValue(1), 1e-20);
+        Assert.assertEquals(1, y.getValue(2), 1e-20);
+        Assert.assertEquals(0, y.getValue(3), 1e-20);
+        Assert.assertEquals(-144, y.getValue(4), 1e-20);
+        Assert.assertEquals(9, y.getValue(5), 1e-20);
     }
 
     @Test
     public void testUpdateLabel() {
 
-        Var l1 = Nominal.copy("ana", "?", "are", "?", "mere");
+        Var l1 = NominalVar.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fitApply(VFUpdateLabel.with(l -> {
             if (l.equals("?")) {
                 return "missing";
@@ -136,10 +136,10 @@ public class VFUpdateTest {
             return String.copyValueOf(msg);
         }));
 
-        Assert.assertEquals("ana", l2.label(0));
-        Assert.assertEquals("missing", l2.label(1));
-        Assert.assertEquals("era", l2.label(2));
-        Assert.assertEquals("missing", l2.label(3));
-        Assert.assertEquals("erem", l2.label(4));
+        Assert.assertEquals("ana", l2.getLabel(0));
+        Assert.assertEquals("missing", l2.getLabel(1));
+        Assert.assertEquals("era", l2.getLabel(2));
+        Assert.assertEquals("missing", l2.getLabel(3));
+        Assert.assertEquals("erem", l2.getLabel(4));
     }
 }

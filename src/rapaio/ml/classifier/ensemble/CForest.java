@@ -201,47 +201,47 @@ public class CForest extends AbstractClassifier {
     }
 
     public Frame getFreqVIInfo() {
-        Var name = Nominal.empty().withName("name");
-        Var score = Numeric.empty().withName("score mean");
-        Var sd = Numeric.empty().withName("score sd");
+        Var name = NominalVar.empty().withName("name");
+        Var score = NumericVar.empty().withName("score mean");
+        Var sd = NumericVar.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.copy(e.getValue());
-            sd.addValue(CoreTools.var(scores).sdValue());
-            score.addValue(CoreTools.mean(scores).value());
+            NumericVar scores = NumericVar.copy(e.getValue());
+            sd.addValue(CoreTools.variance(scores).sdValue());
+            score.addValue(CoreTools.mean(scores).getValue());
         }
-        double maxScore = CoreTools.max(score).value();
-        Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        double maxScore = CoreTools.max(score).getValue();
+        Var scaled = NumericVar.from(score.getRowCount(), row -> 100.0 * score.getValue(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getGainVIInfo() {
-        Var name = Nominal.empty().withName("name");
-        Var score = Numeric.empty().withName("score mean");
-        Var sd = Numeric.empty().withName("score sd");
+        Var name = NominalVar.empty().withName("name");
+        Var score = NumericVar.empty().withName("score mean");
+        Var sd = NumericVar.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.copy(e.getValue());
-            sd.addValue(CoreTools.var(scores).sdValue());
-            score.addValue(CoreTools.mean(scores).value());
+            NumericVar scores = NumericVar.copy(e.getValue());
+            sd.addValue(CoreTools.variance(scores).sdValue());
+            score.addValue(CoreTools.mean(scores).getValue());
         }
-        double maxScore = CoreTools.max(score).value();
-        Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        double maxScore = CoreTools.max(score).getValue();
+        Var scaled = NumericVar.from(score.getRowCount(), row -> 100.0 * score.getValue(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getPermVIInfo() {
-        Var name = Nominal.empty().withName("name");
-        Var score = Numeric.empty().withName("score mean");
-        Var sds = Numeric.empty().withName("score sd");
-        Var zscores = Numeric.empty().withName("z-score");
-        Var pvalues = Numeric.empty().withName("p-value");
+        Var name = NominalVar.empty().withName("name");
+        Var score = NumericVar.empty().withName("score mean");
+        Var sds = NumericVar.empty().withName("score sd");
+        Var zscores = NumericVar.empty().withName("z-score");
+        Var pvalues = NumericVar.empty().withName("p-value");
         Distribution normal = CoreTools.distNormal();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.copy(e.getValue());
-            double mean = CoreTools.mean(scores).value();
-            double sd = CoreTools.var(scores).sdValue();
+            NumericVar scores = NumericVar.copy(e.getValue());
+            double mean = CoreTools.mean(scores).getValue();
+            double sd = CoreTools.variance(scores).sdValue();
             double zscore = mean / (sd);
             double pvalue = normal.cdf(2 * normal.cdf(-Math.abs(zscore)));
             score.addValue(Math.abs(mean));
@@ -259,9 +259,9 @@ public class CForest extends AbstractClassifier {
         double totalOobError = 0;
         if (oobComp) {
             oobDensities = new HashMap<>();
-            oobTrueClass = df.var(firstTargetName()).solidCopy();
-            oobFit = Nominal.empty(df.rowCount(), firstTargetLevels());
-            for (int i = 0; i < df.rowCount(); i++) {
+            oobTrueClass = df.getVar(firstTargetName()).solidCopy();
+            oobFit = NominalVar.empty(df.getRowCount(), firstTargetLevels());
+            for (int i = 0; i < df.getRowCount(); i++) {
                 oobDensities.put(i, DVector.empty(false, firstTargetLevels()));
             }
         }
@@ -337,7 +337,7 @@ public class CForest extends AbstractClassifier {
         // build accuracy on oob data frame
         CFit fit = c.fit(oobFrame);
         double refScore = new Confusion(
-                oobFrame.var(firstTargetName()),
+                oobFrame.getVar(firstTargetName()),
                 fit.firstClasses())
                 .acceptedCases();
 
@@ -345,7 +345,7 @@ public class CForest extends AbstractClassifier {
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = Filters.shuffle(oobFrame.var(varName));
+            Var shuffled = Filters.shuffle(oobFrame.getVar(varName));
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(varName).bindVars(shuffled);
@@ -354,7 +354,7 @@ public class CForest extends AbstractClassifier {
 
             CFit pfit = c.fit(oobReduced);
             double acc = new Confusion(
-                    oobReduced.var(firstTargetName()),
+                    oobReduced.getVar(firstTargetName()),
                     pfit.firstClasses()
             ).acceptedCases();
 
@@ -417,8 +417,8 @@ public class CForest extends AbstractClassifier {
         List<Integer> oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
         CFit fit = weak._1.fit(oobTest);
-        for (int j = 0; j < oobTest.rowCount(); j++) {
-            int fitIndex = fit.firstClasses().index(j);
+        for (int j = 0; j < oobTest.getRowCount(); j++) {
+            int fitIndex = fit.firstClasses().getIndex(j);
             oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
         }
         oobFit.clear();
@@ -429,7 +429,7 @@ public class CForest extends AbstractClassifier {
                 int bestIndex = e.getValue().findBestIndex();
                 String bestLevel = firstTargetLevels()[bestIndex];
                 oobFit.setLabel(e.getKey(), bestLevel);
-                if (!bestLevel.equals(oobTrueClass.label(e.getKey()))) {
+                if (!bestLevel.equals(oobTrueClass.getLabel(e.getKey()))) {
                     totalOobError++;
                 }
                 totalOobInstances++;
@@ -450,7 +450,7 @@ public class CForest extends AbstractClassifier {
         List<Integer> oobIndexes = new ArrayList<>();
         if (oobComp) {
             Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
-            oobIndexes = IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
+            oobIndexes = IntStream.range(0, df.getRowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
         }
         return Pair.from(weak, oobIndexes);
     }
@@ -486,7 +486,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest model\n");
         sb.append("================\n\n");
@@ -495,7 +495,7 @@ public class CForest extends AbstractClassifier {
         sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().summary()).append("\n");
+        sb.append(capabilities().getSummary()).append("\n");
 
         sb.append("Learned model:\n");
 

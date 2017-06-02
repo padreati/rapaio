@@ -105,7 +105,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vars.add(Numeric.empty());
+                            vars.add(NumericVar.empty());
                         } else//Not correct, but we aren't supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -118,7 +118,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vars.add(Nominal.empty(0, tempMap));
+                            vars.add(NominalVar.empty(0, tempMap));
                         }
                         continue;
                     }
@@ -128,11 +128,11 @@ public class ArffPersistence {
 
             List<Var> newvectors = new ArrayList<>();
             for (int i = 0; i < vars.size(); i++) {
-                if (vars.get(i) instanceof Numeric) {
-                    newvectors.add(Numeric.empty(data.size()));
+                if (vars.get(i) instanceof NumericVar) {
+                    newvectors.add(NumericVar.empty(data.size()));
                 }
-                if (vars.get(i) instanceof Nominal) {
-                    newvectors.add(Nominal.empty(data.size(), nomValueMap.get(names.get(i))));
+                if (vars.get(i) instanceof NominalVar) {
+                    newvectors.add(NominalVar.empty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             for (int i = 0; i < newvectors.size(); i++) {
@@ -147,11 +147,11 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (df.var(j).type().isNumeric()) {
-                        df.var(j).setValue(i, Double.parseDouble(tmp[j]));
+                    if (df.getVar(j).getType().isNumeric()) {
+                        df.getVar(j).setValue(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.var(j).type().isNominal()) {
-                        df.var(j).setLabel(i, fullTrim(tmp[j]));
+                    if (df.getVar(j).getType().isNominal()) {
+                        df.getVar(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }
             }

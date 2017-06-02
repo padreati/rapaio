@@ -55,21 +55,21 @@ public class Points extends PlotComponent {
     @Override
     public void initialize(Plot parent) {
         super.initialize(parent);
-        parent.xLab(x.name());
-        parent.yLab(y.name());
+        parent.xLab(x.getName());
+        parent.yLab(y.getName());
     }
 
     @Override
     public Range buildRange() {
-        if (x.rowCount() == 0) {
+        if (x.getRowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (x.missing(i) || y.missing(i)) {
+        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+            if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.value(i), y.value(i));
+            range.union(x.getValue(i), y.getValue(i));
         }
         return range;
     }
@@ -77,14 +77,14 @@ public class Points extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
 
-        int len = Math.min(x.rowCount(), y.rowCount());
+        int len = Math.min(x.getRowCount(), y.getRowCount());
         for (int i = 0; i < len; i++) {
-            if (x.missing(i) || y.missing(i)) {
+            if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
 
-            double xx = x.value(i);
-            double yy = y.value(i);
+            double xx = x.getValue(i);
+            double yy = y.getValue(i);
 
             if (!parent.getRange().contains(xx, yy)) continue;
 

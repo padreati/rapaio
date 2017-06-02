@@ -141,8 +141,8 @@ public class AdaBoostSAMME extends AbstractClassifier {
         w = weights.solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i) / total);
+        for (int i = 0; i < w.getRowCount(); i++) {
+            w.setValue(i, w.getValue(i) / total);
         }
 
         for (int i = 0; i < runs(); i++) {
@@ -167,9 +167,9 @@ public class AdaBoostSAMME extends AbstractClassifier {
         CFit fit = hh.fit(df, true, false);
 
         double err = 0;
-        for (int j = 0; j < df.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
-                err += w.value(j);
+        for (int j = 0; j < df.getRowCount(); j++) {
+            if (fit.firstClasses().getIndex(j) != df.getVar(firstTargetName()).getIndex(j)) {
+                err += w.getValue(j);
             }
         }
         err /= w.stream().mapToDouble().sum();
@@ -187,14 +187,14 @@ public class AdaBoostSAMME extends AbstractClassifier {
         h.add(hh);
         a.add(alpha);
 
-        for (int j = 0; j < w.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
-                w.setValue(j, w.value(j) * Math.exp(alpha * shrinkage));
+        for (int j = 0; j < w.getRowCount(); j++) {
+            if (fit.firstClasses().getIndex(j) != df.getVar(firstTargetName()).getIndex(j)) {
+                w.setValue(j, w.getValue(j) * Math.exp(alpha * shrinkage));
             }
         }
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i) / total);
+        for (int i = 0; i < w.getRowCount(); i++) {
+            w.setValue(i, w.getValue(i) / total);
         }
 
         return true;
@@ -205,27 +205,27 @@ public class AdaBoostSAMME extends AbstractClassifier {
         CFit fit = CFit.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
             CFit hp = h.get(i).fit(df, true, false);
-            for (int j = 0; j < df.rowCount(); j++) {
-                int index = hp.firstClasses().index(j);
-                fit.firstDensity().setValue(j, index, fit.firstDensity().value(j, index) + a.get(i));
+            for (int j = 0; j < df.getRowCount(); j++) {
+                int index = hp.firstClasses().getIndex(j);
+                fit.firstDensity().setValue(j, index, fit.firstDensity().getValue(j, index) + a.get(i));
             }
         }
 
         // simply fit
-        for (int i = 0; i < fit.firstDensity().rowCount(); i++) {
+        for (int i = 0; i < fit.firstDensity().getRowCount(); i++) {
 
             double max = 0;
             int best = 0;
             double total = 0;
-            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
-                total += fit.firstDensity().value(i, j);
-                if (fit.firstDensity().value(i, j) > max) {
+            for (int j = 1; j < fit.firstDensity().getVarCount(); j++) {
+                total += fit.firstDensity().getValue(i, j);
+                if (fit.firstDensity().getValue(i, j) > max) {
                     best = j;
-                    max = fit.firstDensity().value(i, j);
+                    max = fit.firstDensity().getValue(i, j);
                 }
             }
-            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
-                fit.firstDensity().setValue(i, j, fit.firstDensity().value(i, j) / total);
+            for (int j = 1; j < fit.firstDensity().getVarCount(); j++) {
+                fit.firstDensity().setValue(i, j, fit.firstDensity().getValue(i, j) / total);
             }
             fit.firstClasses().setIndex(i, best);
         }
@@ -253,7 +253,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 

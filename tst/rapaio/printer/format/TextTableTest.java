@@ -43,16 +43,16 @@ public class TextTableTest {
     @Test
     public void testSimple() throws IOException, URISyntaxException {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 50, 51, 52, 100, 101, 102);
-        TextTable tt = TextTable.newEmpty(iris.rowCount() + 1, iris.varCount() + 1);
-        for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 1);
+        TextTable tt = TextTable.newEmpty(iris.getRowCount() + 1, iris.getVarCount() + 1);
+        for (int i = 0; i < iris.getVarCount(); i++) {
+            tt.set(0, i + 1, iris.getVar(i).getName(), 1);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
+        for (int i = 0; i < iris.getRowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
-            for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 1);
+        for (int i = 0; i < iris.getRowCount(); i++) {
+            for (int j = 0; j < iris.getVarCount(); j++) {
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.getVar(j).getType().isNumeric() ? 1 : 1);
             }
         }
         tt.printSummary();
@@ -65,30 +65,31 @@ public class TextTableTest {
                 " 5.          6.9         3.1          4.9         1.5 versicolor\n" +
                 " 6.          6.3         3.3          6.0         2.5  virginica\n" +
                 " 7.          5.8         2.7          5.1         1.9  virginica\n" +
-                " 8.          7.1         3.0          5.9         2.1  virginica\n", tt.summary());
+                " 8.          7.1         3.0          5.9         2.1  virginica\n" +
+                "\n", tt.getSummary());
     }
 
     @Test
     public void testSimpleWithMerge() throws IOException, URISyntaxException {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 50, 51, 52, 100, 101, 102);
-        TextTable tt = TextTable.newEmpty(iris.rowCount() + 3, iris.varCount() + 1);
-        for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+        TextTable tt = TextTable.newEmpty(iris.getRowCount() + 3, iris.getVarCount() + 1);
+        for (int i = 0; i < iris.getVarCount(); i++) {
+            tt.set(0, i + 1, iris.getVar(i).getName(), 0);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
+        for (int i = 0; i < iris.getRowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
-            for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+        for (int i = 0; i < iris.getRowCount(); i++) {
+            for (int j = 0; j < iris.getVarCount(); j++) {
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.getVar(j).getType().isNumeric() ? 1 : 0);
             }
         }
 
-        tt.mergeCols(iris.rowCount() + 1, 0, iris.varCount() + 1);
-        tt.set(iris.rowCount() + 1, 0, "centered footer text", 0);
+        tt.mergeCols(iris.getRowCount() + 1, 0, iris.getVarCount() + 1);
+        tt.set(iris.getRowCount() + 1, 0, "centered footer text", 0);
 
-        tt.mergeCols(iris.rowCount() + 2, 1, iris.varCount());
-        tt.set(iris.rowCount() + 2, 1, "centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd", 0);
+        tt.mergeCols(iris.getRowCount() + 2, 1, iris.getVarCount());
+        tt.set(iris.getRowCount() + 2, 1, "centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd", 0);
 
         tt.printSummary();
         Assert.assertEquals("      sepal-length   sepal-width petal-length petal-width    class  \n" +
@@ -102,33 +103,34 @@ public class TextTableTest {
                 " 7.              5.8         2.7          5.1         1.9  virginica\n" +
                 " 8.              7.1         3.0          5.9         2.1  virginica\n" +
                 "                        centered footer text                        \n" +
-                "   centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd\n", tt.summary());
+                "   centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd\n" +
+                "\n", tt.getSummary());
     }
 
     @Test
     public void testWithHorizontalMerge() throws IOException, URISyntaxException {
         Frame iris = Datasets.loadIrisDataset().mapRows(Mapping.range(0, 23));
-        TextTable tt = TextTable.newEmpty(iris.rowCount() + 3, iris.varCount() + 2);
-        for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+        TextTable tt = TextTable.newEmpty(iris.getRowCount() + 3, iris.getVarCount() + 2);
+        for (int i = 0; i < iris.getVarCount(); i++) {
+            tt.set(0, i + 1, iris.getVar(i).getName(), 0);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
+        for (int i = 0; i < iris.getRowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
-            for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+        for (int i = 0; i < iris.getRowCount(); i++) {
+            for (int j = 0; j < iris.getVarCount(); j++) {
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.getVar(j).getType().isNumeric() ? 1 : 0);
             }
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
-            tt.set(i + 1, iris.varCount() + 1, " || ", 1);
+        for (int i = 0; i < iris.getRowCount(); i++) {
+            tt.set(i + 1, iris.getVarCount() + 1, " || ", 1);
         }
 
-        tt.mergeCols(iris.rowCount() + 1, 0, iris.varCount() + 1);
-        tt.set(iris.rowCount() + 1, 0, "centered footer text", 0);
+        tt.mergeCols(iris.getRowCount() + 1, 0, iris.getVarCount() + 1);
+        tt.set(iris.getRowCount() + 1, 0, "centered footer text", 0);
 
-        tt.mergeCols(iris.rowCount() + 2, 1, iris.varCount());
-        tt.set(iris.rowCount() + 2, 1, "centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd", 0);
+        tt.mergeCols(iris.getRowCount() + 2, 1, iris.getVarCount());
+        tt.set(iris.getRowCount() + 2, 1, "centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd", 0);
 
         tt.withHeaderRows(1);
         tt.withMerge(150);
@@ -139,16 +141,16 @@ public class TextTableTest {
     @Test
     public void testWithSplit() throws IOException, URISyntaxException {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 3, 50, 51, 52, 53, 100, 101, 102, 103);
-        TextTable tt = TextTable.newEmpty(iris.rowCount() + 1, iris.varCount() + 1);
-        for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+        TextTable tt = TextTable.newEmpty(iris.getRowCount() + 1, iris.getVarCount() + 1);
+        for (int i = 0; i < iris.getVarCount(); i++) {
+            tt.set(0, i + 1, iris.getVar(i).getName(), 0);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
+        for (int i = 0; i < iris.getRowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + ")"), 1);
         }
-        for (int i = 0; i < iris.rowCount(); i++) {
-            for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+        for (int i = 0; i < iris.getRowCount(); i++) {
+            for (int j = 0; j < iris.getVarCount(); j++) {
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.getVar(j).getType().isNumeric() ? 1 : 0);
             }
         }
 
@@ -184,6 +186,6 @@ public class TextTableTest {
                 "  9)         1.9  virginica\n" +
                 " 10)         2.1  virginica\n" +
                 " 11)         1.8  virginica\n" +
-                "\n", tt.summary());
+                "\n", tt.getSummary());
     }
 }

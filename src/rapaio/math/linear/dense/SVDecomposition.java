@@ -31,23 +31,25 @@ import static java.lang.StrictMath.hypot;
 /**
  * Singular Value Decomposition.
  * <p>
- * For an m-by-n rapaio.data.matrix A with m >= n, the singular value decomposition is an
- * m-by-n orthogonal rapaio.data.matrix U, an n-by-n diagonal rapaio.data.matrix S, and an n-by-n
- * orthogonal rapaio.data.matrix RV so that A = U*S*RV'.
+ * For an m-by-n matrix A with m >= n, the singular value decomposition is an
+ * m-by-n orthogonal matrix U, an n-by-n diagonal matrix S, and an n-by-n
+ * orthogonal matrix V so that A = U*S*V'.
  * <p>
  * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
  * sigma[1] >= ... >= sigma[n-1].
  * <p>
- * The singular value decompostion always exists, so the constructor will never
+ * The singular value decomposition always exists, so the constructor will never
  * fail. The matrix condition number and the effective numerical rank can be
  * computed from this decomposition.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class SVDecomposition implements java.io.Serializable {
 
     private static final long serialVersionUID = -502574786523851631L;
+
+    public static SVDecomposition from(RM A) {
+        return new SVDecomposition(A);
+    }
+
     private double[][] U, V;
     private double[] s;
     private final int rowCount, colCount;
@@ -57,19 +59,18 @@ public class SVDecomposition implements java.io.Serializable {
     private final boolean wantv = true;
     private final int minCount;
 
-    public SVDecomposition(RM Arg) {
+    private SVDecomposition(RM Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
         RM A = Arg.solidCopy();
-        rowCount = Arg.rowCount();
-        colCount = Arg.colCount();
+        rowCount = Arg.getRowCount();
+        colCount = Arg.getColCount();
 
-        /*
-         * Apparently the failing cases are only a proper subset of (m<n), so
-         * let's not throw error. Correct fix to come later? if (m<n) { throw
-         * new IllegalArgumentException("Jama SVD only works for m >= n"); }
-         */
+        if (rowCount < colCount) {
+            throw new IllegalArgumentException("SVD only works for rowCount >= colCount");
+        }
+
         minCount = Math.min(rowCount, colCount);
         s = new double[Math.min(rowCount + 1, colCount)];
         U = new double[rowCount][minCount];
@@ -81,20 +82,23 @@ public class SVDecomposition implements java.io.Serializable {
 
         nct = Math.min(rowCount - 1, colCount);
         nrt = Math.max(0, Math.min(colCount - 2, rowCount));
+
         // Reduce A to bidiagonal form, storing the diagonal elements
         reduceBidigonalForm(A, e, work);
-
         setupFinalBidiagonal(e, A);
 
+        if (wantu)
+            generateU(e);
 
-        generateU(e);
-        generateRV(e);
+        if (wantv)
+            generateV(e);
+
         computeSingularValues(e);
 
     }
 
     private void setupFinalBidiagonal(double[] e, RM A) {
-        // Set up the final bidiagonal rapaio.data.matrix or order p.
+        // Set up the final bidiagonal matrix or order p.
         p = Math.min(colCount, rowCount + 1);
         pp = p - 1;
         if (nct < colCount) {
@@ -111,63 +115,59 @@ public class SVDecomposition implements java.io.Serializable {
 
     private void generateU(double[] e) {
         // If required, generate U.
-        if (wantu) {
-            for (int j = nct; j < minCount; j++) {
-                for (int i = 0; i < rowCount; i++) {
-                    U[i][j] = 0.0;
-                }
-                U[j][j] = 1.0;
+        for (int j = nct; j < minCount; j++) {
+            for (int i = 0; i < rowCount; i++) {
+                U[i][j] = 0.0;
             }
-            for (int k = nct - 1; k >= 0; k--) {
-                if (s[k] != 0.0) {
-                    for (int j = k + 1; j < minCount; j++) {
-                        double t = 0;
-                        for (int i = k; i < rowCount; i++) {
-                            t += U[i][k] * U[i][j];
-                        }
-                        t = -t / U[k][k];
-                        for (int i = k; i < rowCount; i++) {
-                            U[i][j] += t * U[i][k];
-                        }
-                    }
+            U[j][j] = 1.0;
+        }
+        for (int k = nct - 1; k >= 0; k--) {
+            if (s[k] != 0.0) {
+                for (int j = k + 1; j < minCount; j++) {
+                    double t = 0;
                     for (int i = k; i < rowCount; i++) {
-                        U[i][k] = -U[i][k];
+                        t += U[i][k] * U[i][j];
                     }
-                    U[k][k] = 1.0 + U[k][k];
-                    for (int i = 0; i < k - 1; i++) {
-                        U[i][k] = 0.0;
+                    t = -t / U[k][k];
+                    for (int i = k; i < rowCount; i++) {
+                        U[i][j] += t * U[i][k];
                     }
-                } else {
-                    for (int i = 0; i < rowCount; i++) {
-                        U[i][k] = 0.0;
-                    }
-                    U[k][k] = 1.0;
                 }
+                for (int i = k; i < rowCount; i++) {
+                    U[i][k] = -U[i][k];
+                }
+                U[k][k] = 1.0 + U[k][k];
+                for (int i = 0; i < k - 1; i++) {
+                    U[i][k] = 0.0;
+                }
+            } else {
+                for (int i = 0; i < rowCount; i++) {
+                    U[i][k] = 0.0;
+                }
+                U[k][k] = 1.0;
             }
         }
     }
 
-    private void generateRV(double[] e) {
-        // If required, generate RV.
-        if (wantv) {
-            for (int k = colCount - 1; k >= 0; k--) {
-                if ((k < nrt) & (e[k] != 0.0)) {
-                    for (int j = k + 1; j < minCount; j++) {
-                        double t = 0;
-                        for (int i = k + 1; i < colCount; i++) {
-                            t += V[i][k] * V[i][j];
-                        }
-                        t = -t / V[k + 1][k];
-                        for (int i = k + 1; i < colCount; i++) {
-                            V[i][j] += t * V[i][k];
-                        }
+    private void generateV(double[] e) {
+        // If required, generate V.
+        for (int k = colCount - 1; k >= 0; k--) {
+            if ((k < nrt) & (e[k] != 0.0)) {
+                for (int j = k + 1; j < minCount; j++) {
+                    double t = 0;
+                    for (int i = k + 1; i < colCount; i++) {
+                        t += V[i][k] * V[i][j];
+                    }
+                    t = -t / V[k + 1][k];
+                    for (int i = k + 1; i < colCount; i++) {
+                        V[i][j] += t * V[i][k];
                     }
                 }
-                for (int i = 0; i < colCount; i++) {
-                    V[i][k] = 0.0;
-                }
-                V[k][k] = 1.0;
             }
+            for (int i = 0; i < colCount; i++) {
+                V[i][k] = 0.0;
+            }
+            V[k][k] = 1.0;
         }
     }
 
@@ -292,11 +292,10 @@ public class SVDecomposition implements java.io.Serializable {
                 if (k == -1) {
                     break;
                 }
-                if (Math.abs(e[k])
-                        <= tiny + eps * (Math.abs(s[k]) + Math.abs(s[k + 1]))) {
+                if (Math.abs(e[k]) <= tiny + eps * (Math.abs(s[k]) + Math.abs(s[k + 1]))) {
                     e[k] = 0.0;
                     break;
-                        }
+                }
             }
             if (k == p - 2) {
                 kase = 4;
@@ -307,7 +306,7 @@ public class SVDecomposition implements java.io.Serializable {
                         break;
                     }
                     double t = (ks != p ? Math.abs(e[ks]) : 0.)
-                        + (ks != k + 1 ? Math.abs(e[ks - 1]) : 0.);
+                            + (ks != k + 1 ? Math.abs(e[ks - 1]) : 0.);
                     if (Math.abs(s[ks]) <= tiny + eps * t) {
                         s[ks] = 0.0;
                         break;
@@ -328,31 +327,26 @@ public class SVDecomposition implements java.io.Serializable {
             switch (kase) {
 
                 // Deflate negligible s(p).
-                case 1: {
-                            deflate(e, k);
-                }
-                break;
+                case 1:
+                    deflate(e, k);
+                    break;
 
                 // Split at negligible s(k).
-                case 2: {
-                            split(e, k);
-                }
-                break;
+                case 2:
+                    split(e, k);
+                    break;
 
                 // Perform one qr step.
-                case 3: {
-                            oneQrStep(e, k);
-                            iter = iter + 1;
-                }
-                break;
+                case 3:
+                    oneQrStep(e, k);
+                    iter = iter + 1;
+                    break;
 
                 // Convergence.
-                case 4: {
-                            k = convergence(k);
-                            iter = 0;
-
-                }
-                break;
+                case 4:
+                    k = convergence(k);
+                    iter = 0;
+                    break;
             }
         }
     }
@@ -378,6 +372,7 @@ public class SVDecomposition implements java.io.Serializable {
             }
         }
     }
+
     private void split(double[] e, final int k) {
         double f = e[k - 1];
         e[k - 1] = 0.0;
@@ -397,12 +392,13 @@ public class SVDecomposition implements java.io.Serializable {
             }
         }
     }
-    private void oneQrStep(double[] e, final int k) { 
+
+    private void oneQrStep(double[] e, final int k) {
         // Calculate the shift.
         double scale = Math.max(Math.max(Math.max(Math.max(
-                            Math.abs(s[p - 1]), Math.abs(s[p - 2])), Math.abs(e[p - 2])),
-                    Math.abs(s[k])
-                    ), Math.abs(e[k]));
+                Math.abs(s[p - 1]), Math.abs(s[p - 2])), Math.abs(e[p - 2])),
+                Math.abs(s[k])
+        ), Math.abs(e[k]));
         double sp = s[p - 1] / scale;
         double spm1 = s[p - 2] / scale;
         double epm1 = e[p - 2] / scale;
@@ -458,6 +454,7 @@ public class SVDecomposition implements java.io.Serializable {
         }
         e[p - 2] = f;
     }
+
     private int convergence(int k) {
         // Make the singular values positive.
         if (s[k] <= 0.0) {
@@ -496,6 +493,7 @@ public class SVDecomposition implements java.io.Serializable {
         p--;
         return k;
     }
+
     public RM getU() {
         return SolidRM.copy(U, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
     }
@@ -532,16 +530,24 @@ public class SVDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Two norm
+     * Returns operator norm of a matrix, which is defined
+     * as argmax ||Ax||/||x||.
+     * <p>
+     * See more details here: https://en.wikipedia.org/wiki/Operator_norm
      *
-     * @return max(S)
+     * The value of the operator norm is equal with the first and biggest singular value.
+     * For details, see: https://en.wikipedia.org/wiki/Min-max_theorem#Min-max_principle_for_singular_values
+     *
+     * @return The value of the operator norm
      */
     public double norm2() {
         return s[0];
     }
 
     /**
-     * Two norm condition number
+     * Two norm condition number.
+     *
+     * See: https://en.wikipedia.org/wiki/Condition_number
      *
      * @return max(S)/min(S)
      */

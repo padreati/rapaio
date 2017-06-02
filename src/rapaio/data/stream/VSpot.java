@@ -52,22 +52,22 @@ public class VSpot implements Serializable {
     /**
      * @return row of the spotted variable
      */
-    public int row() {
+    public int getRow() {
         return row;
     }
 
     /**
      * @return underlying support variable
      */
-    public Var var() {
+    public Var getVar() {
         return var;
     }
 
     /**
      * @return true if the observation is missing, false otherwise
      */
-    public boolean missing() {
-        return var.missing(row);
+    public boolean isMissing() {
+        return var.isMissing(row);
     }
 
     /**
@@ -80,8 +80,8 @@ public class VSpot implements Serializable {
     /**
      * @return numeric double value of the observation
      */
-    public double value() {
-        return var.value(row);
+    public double getValue() {
+        return var.getValue(row);
     }
 
     /**
@@ -95,8 +95,8 @@ public class VSpot implements Serializable {
     /**
      * @return index value of the observation
      */
-    public int index() {
-        return var.index(row);
+    public int getIndex() {
+        return var.getIndex(row);
     }
 
     /**
@@ -110,8 +110,8 @@ public class VSpot implements Serializable {
     /**
      * @return label value of the observation
      */
-    public String label() {
-        return var.label(row);
+    public String getLabel() {
+        return var.getLabel(row);
     }
 
     /**
@@ -125,8 +125,8 @@ public class VSpot implements Serializable {
     /**
      * @return binary value of the observation
      */
-    public boolean binary() {
-        return var.binary(row);
+    public boolean getBinary() {
+        return var.getBinary(row);
     }
 
     /**
@@ -140,8 +140,8 @@ public class VSpot implements Serializable {
     /**
      * @return stamp value of the observation
      */
-    public long stamp() {
-        return var.stamp(row);
+    public long getStamp() {
+        return var.getStamp(row);
     }
 
     /**

@@ -48,7 +48,7 @@ public interface Var extends Serializable, Printable {
     /**
      * @return name of the variable
      */
-    String name();
+    String getName();
 
     /**
      * Sets the variable name
@@ -60,14 +60,14 @@ public interface Var extends Serializable, Printable {
     /**
      * @return variable type
      */
-    VarType type();
+    VarType getType();
 
     /**
      * Number of observations contained by the variable.
      *
      * @return size of var
      */
-    int rowCount();
+    int getRowCount();
 
     /**
      * Builds a new variable having rows of the current variable,
@@ -111,7 +111,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return numerical setValue
      */
-    double value(int row);
+    double getValue(int row);
 
     /**
      * Set numeric value for the observation specified by {@param row} to {@param value}.
@@ -137,7 +137,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return index value
      */
-    int index(int row);
+    int getIndex(int row);
 
     /**
      * Set index value for the observation specified by {@param row}.
@@ -160,7 +160,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return label value for the observation
      */
-    String label(int row);
+    String getLabel(int row);
 
     /**
      * Set nominal label for the observation specified by {@param row}.
@@ -192,10 +192,10 @@ public interface Var extends Serializable, Printable {
      *
      * @return term levels defined by the nominal var.
      */
-    String[] levels();
+    String[] getLevels();
 
     default Stream<String> streamLevels() {
-        return Arrays.stream(levels());
+        return Arrays.stream(getLevels());
     }
 
     /**
@@ -229,14 +229,14 @@ public interface Var extends Serializable, Printable {
      * @param dict list of levels which comprises the new levels
      */
     default void setLevels(List<String> dict) {
-        setLevels(dict.stream().toArray(String[]::new));
+        setLevels(dict.toArray(new String[0]));
     }
 
     /**
      * @param row position of the observation
      * @return boolean binary value
      */
-    boolean binary(int row);
+    boolean getBinary(int row);
 
     /**
      * Set a binary/boolean value
@@ -259,7 +259,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return long integer value
      */
-    long stamp(int row);
+    long getStamp(int row);
 
     /**
      * Set long integer (stamp) value
@@ -286,7 +286,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return true if the observation measurement is not specified or not assigned
      */
-    boolean missing(int row);
+    boolean isMissing(int row);
 
     /**
      * Set the value of the observation specified by {@param row} as missing, not available for analysis.
@@ -342,14 +342,14 @@ public interface Var extends Serializable, Printable {
      * @return a stream of variables spots
      */
     default VSpots stream() {
-        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
+        return new VSpots(IntStream.range(0, getRowCount()).mapToObj(row -> new VSpot(row, this)), this);
     }
 
     /**
      * @return a stream of variables spots
      */
     default List<VSpot> spotList() {
-        return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
+        return IntStream.range(0, getRowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
     }
 
     default Var fitApply(VFilter... inputFilters) {
@@ -366,7 +366,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default Comparator<Integer> refComparator(boolean asc) {
-        switch (this.type()) {
+        switch (this.getType()) {
             case TEXT:
             case NOMINAL:
                 return RowComparators.nominal(this, asc);
@@ -388,18 +388,18 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
-        if (!name().equals(var.name()))
+        if (!getName().equals(var.getName()))
             return false;
-        if (rowCount() != var.rowCount())
+        if (getRowCount() != var.getRowCount())
             return false;
-        if (type() != var.type())
+        if (getType() != var.getType())
             return false;
-        for (int i = 0; i < rowCount(); i++) {
-            if (var.type().isNumeric()) {
-                if (Math.abs(value(i) - var.value(i)) > 1e-12)
+        for (int i = 0; i < getRowCount(); i++) {
+            if (var.getType().isNumeric()) {
+                if (Math.abs(getValue(i) - var.getValue(i)) > 1e-12)
                     return false;
             } else {
-                if (!label(i).equals(var.label(i)))
+                if (!getLabel(i).equals(var.getLabel(i)))
                     return false;
             }
         }
@@ -407,8 +407,8 @@ public interface Var extends Serializable, Printable {
     }
 
     @Override
-    default String summary() {
-        return Summary.summary(this);
+    default String getSummary() {
+        return Summary.getSummary(this);
     }
 
     default void printLines() {

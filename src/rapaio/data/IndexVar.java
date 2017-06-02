@@ -47,15 +47,15 @@ import java.util.stream.Collector;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class Index extends AbstractVar {
+public final class IndexVar extends AbstractVar {
 
     /**
      * Builds an empty index var of size 0
      *
      * @return new instance of index var
      */
-    public static Index empty() {
-        return new Index(0, 0, 0);
+    public static IndexVar empty() {
+        return new IndexVar(0, 0, 0);
     }
 
     /**
@@ -64,8 +64,8 @@ public final class Index extends AbstractVar {
      * @param rows index size
      * @return new instance of index var
      */
-    public static Index empty(int rows) {
-        return new Index(rows, rows, 0);
+    public static IndexVar empty(int rows) {
+        return new IndexVar(rows, rows, 0);
     }
 
     /**
@@ -74,8 +74,8 @@ public final class Index extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static Index scalar(int value) {
-        return new Index(1, 1, value);
+    public static IndexVar scalar(int value) {
+        return new IndexVar(1, 1, value);
     }
 
     /**
@@ -85,8 +85,8 @@ public final class Index extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static Index fill(int rows, int value) {
-        return new Index(rows, rows, value);
+    public static IndexVar fill(int rows, int value) {
+        return new IndexVar(rows, rows, value);
     }
 
     /**
@@ -95,8 +95,8 @@ public final class Index extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static Index copy(int... values) {
-        Index index = new Index(0, 0, 0);
+    public static IndexVar copy(int... values) {
+        IndexVar index = new IndexVar(0, 0, 0);
         index.data = Arrays.copyOf(values, values.length);
         index.rows = values.length;
         return index;
@@ -108,8 +108,8 @@ public final class Index extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static Index wrap(int... values) {
-        Index index = new Index(0, 0, 0);
+    public static IndexVar wrap(int... values) {
+        IndexVar index = new IndexVar(0, 0, 0);
         index.data = values;
         index.rows = values.length;
         return index;
@@ -121,7 +121,7 @@ public final class Index extends AbstractVar {
      * @param len size of the index
      * @return new instance of index var
      */
-    public static Index seq(int len) {
+    public static IndexVar seq(int len) {
         return seq(0, len, 1);
     }
 
@@ -132,7 +132,7 @@ public final class Index extends AbstractVar {
      * @param len   size of the index
      * @return new instance of index var
      */
-    public static Index seq(int start, int len) {
+    public static IndexVar seq(int start, int len) {
         return seq(start, len, 1);
     }
 
@@ -144,8 +144,8 @@ public final class Index extends AbstractVar {
      * @param step  increment value
      * @return new instance of index var
      */
-    public static Index seq(final int start, final int len, final int step) {
-        Index index = new Index(len, len, 0);
+    public static IndexVar seq(final int start, final int len, final int step) {
+        IndexVar index = new IndexVar(len, len, 0);
         int s = start;
         for (int i = 0; i < len; i++) {
             index.data[i] = s;
@@ -156,8 +156,8 @@ public final class Index extends AbstractVar {
 
     // private constructor, only public static builders available
 
-    public static Index from(int len, Function<Integer, Integer> supplier) {
-        Index index = new Index(len, len, 0);
+    public static IndexVar from(int len, Function<Integer, Integer> supplier) {
+        IndexVar index = new IndexVar(len, len, 0);
         for (int i = 0; i < index.data.length; i++) {
             index.data[i] = supplier.apply(i);
         }
@@ -172,7 +172,7 @@ public final class Index extends AbstractVar {
 
     // static builders
 
-    private Index(int rows, int capacity, int fill) {
+    private IndexVar(int rows, int capacity, int fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
@@ -182,29 +182,29 @@ public final class Index extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public static Collector<? super Integer, Index, Index> collector() {
-        return new Collector<Integer, Index, Index>() {
+    public static Collector<? super Integer, IndexVar, IndexVar> collector() {
+        return new Collector<Integer, IndexVar, IndexVar>() {
             @Override
-            public Supplier<Index> supplier() {
-                return Index::empty;
+            public Supplier<IndexVar> supplier() {
+                return IndexVar::empty;
             }
 
             @Override
-            public BiConsumer<Index, Integer> accumulator() {
-                return Index::addIndex;
+            public BiConsumer<IndexVar, Integer> accumulator() {
+                return IndexVar::addIndex;
             }
 
             @Override
-            public BinaryOperator<Index> combiner() {
+            public BinaryOperator<IndexVar> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
+                    y.stream().forEach(s -> x.addValue(s.getValue()));
                     return x;
                 };
             }
 
             @Override
-            public Function<Index, Index> finisher() {
-                return Index::solidCopy;
+            public Function<IndexVar, IndexVar> finisher() {
+                return IndexVar::solidCopy;
             }
 
             @Override
@@ -215,8 +215,8 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public Index withName(String name) {
-        return (Index) super.withName(name);
+    public IndexVar withName(String name) {
+        return (IndexVar) super.withName(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {
@@ -232,12 +232,12 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
+    public VarType getType() {
         return VarType.INDEX;
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return rows;
     }
 
@@ -245,13 +245,13 @@ public final class Index extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = Index.MISSING_VALUE;
+            data[rows + i] = IndexVar.MISSING_VALUE;
         }
         rows += rowCount;
     }
 
     @Override
-    public int index(int row) {
+    public int getIndex(int row) {
         return data[row];
     }
 
@@ -268,10 +268,10 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
-        if(missing(row))
+    public double getValue(int row) {
+        if(isMissing(row))
             return Double.NaN;
-        return index(row);
+        return getIndex(row);
     }
 
     @Override
@@ -285,10 +285,10 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public String label(int row) {
-        if (missing(row))
+    public String getLabel(int row) {
+        if (isMissing(row))
             return "?";
-        return String.valueOf(index(row));
+        return String.valueOf(getIndex(row));
     }
 
     @Override
@@ -310,7 +310,7 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public String[] getLevels() {
         throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
@@ -320,8 +320,8 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        return index(row) == 1;
+    public boolean getBinary(int row) {
+        return getIndex(row) == 1;
     }
 
     @Override
@@ -335,8 +335,8 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public long stamp(int row) {
-        return index(row);
+    public long getStamp(int row) {
+        return getIndex(row);
     }
 
     @Override
@@ -350,8 +350,8 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public boolean missing(int row) {
-        return index(row) == MISSING_VALUE;
+    public boolean isMissing(int row) {
+        return getIndex(row) == MISSING_VALUE;
     }
 
     @Override
@@ -382,22 +382,22 @@ public final class Index extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return Index.empty(rows);
+        return IndexVar.empty(rows);
     }
 
     @Override
     public String toString() {
-        return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
+        return "Index[name:" + getName() + ", rowCount:" + getRowCount() + "]";
     }
 
     @Override
-    public Index solidCopy() {
-        return (Index) super.solidCopy();
+    public IndexVar solidCopy() {
+        return (IndexVar) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
+        out.writeInt(getRowCount());
+        for (int i = 0; i < getRowCount(); i++) {
             out.writeInt(data[i]);
         }
     }

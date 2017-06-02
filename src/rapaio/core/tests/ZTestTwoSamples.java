@@ -135,7 +135,7 @@ public class ZTestTwoSamples implements HTest {
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
@@ -151,10 +151,10 @@ public class ZTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).value();
-        xSampleSize = xComplete.rowCount();
-        ySampleMean = mean(yComplete).value();
-        ySampleSize = yComplete.rowCount();
+        xSampleMean = mean(xComplete).getValue();
+        xSampleSize = xComplete.getRowCount();
+        ySampleMean = mean(yComplete).getValue();
+        ySampleSize = yComplete.getRowCount();
         sampleMean = xSampleMean - ySampleMean;
 
         compute();
@@ -266,7 +266,7 @@ public class ZTestTwoSamples implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.zTestTwoSamples\n");

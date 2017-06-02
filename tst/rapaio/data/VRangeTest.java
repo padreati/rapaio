@@ -39,10 +39,10 @@ public class VRangeTest {
     @Test
     public void testSmoke() {
         Frame df = SolidFrame.byVars(
-                Numeric.empty().withName("a"),
-                Numeric.empty().withName("b"),
-                Numeric.empty().withName("c"),
-                Numeric.empty().withName("d")
+                NumericVar.empty().withName("a"),
+                NumericVar.empty().withName("b"),
+                NumericVar.empty().withName("c"),
+                NumericVar.empty().withName("d")
         );
 
         List<Integer> indexes = VRange.of(0, 2).parseVarIndexes(df);

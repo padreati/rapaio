@@ -116,7 +116,7 @@ public class ZTestOneSample implements HTest {
         this.alt = alt;
 
         Var clean = sample.stream().complete().toMappedVar();
-        sampleSize = clean.rowCount();
+        sampleSize = clean.getRowCount();
         if (sampleSize < 1) {
             sampleMean = Double.NaN;
             zScore = Double.NaN;
@@ -125,7 +125,7 @@ public class ZTestOneSample implements HTest {
             ciHigh = Double.NaN;
             return;
         }
-        sampleMean = CoreTools.mean(clean).value();
+        sampleMean = CoreTools.mean(clean).getValue();
         compute();
     }
 
@@ -200,7 +200,7 @@ public class ZTestOneSample implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.zTestOneSample\n");

@@ -44,14 +44,14 @@ public class JavaDBUtil {
     }
 
     public void putFrame(Frame df, String tableName) throws SQLException {
-        String[] columns = df.varNames();
+        String[] columns = df.getVarNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.var(i).type().isNumeric()) {
+            if (df.getVar(i).getType().isNumeric()) {
                 types[i] = "DOUBLE";
                 continue;
             }
-            if (df.var(i).type().isNominal()) {
+            if (df.getVar(i).getType().isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }
@@ -85,14 +85,14 @@ public class JavaDBUtil {
         }
         sb.append(")");
         try (PreparedStatement ps = conn.prepareStatement(sb.toString())) {
-            for (int i = 0; i < df.rowCount(); i++) {
+            for (int i = 0; i < df.getRowCount(); i++) {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
                         case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.label(i, j));
+                            ps.setString(j + 1, df.getLabel(i, j));
                             break;
                         case "DOUBLE":
-                            ps.setDouble(j + 1, df.value(i, j));
+                            ps.setDouble(j + 1, df.getValue(i, j));
                             break;
                     }
                 }
@@ -131,7 +131,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    Numeric v1 = Numeric.empty(lists.get(i).size());
+                    NumericVar v1 = NumericVar.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
@@ -142,7 +142,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    Nominal v2 = Nominal.empty(lists.get(i).size(), dict);
+                    NominalVar v2 = NominalVar.empty(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

@@ -40,8 +40,8 @@ public class SplineKernel extends AbstractKernel {
 
         double value = 1;
         for (String varName : varNames) {
-            double x_i = df1.value(row1, varName);
-            double y_i = df2.value(row2, varName);
+            double x_i = df1.getValue(row1, varName);
+            double y_i = df2.getValue(row2, varName);
             double min = Math.min(x_i, y_i);
             value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
         }

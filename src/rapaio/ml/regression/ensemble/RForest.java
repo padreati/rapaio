@@ -22,10 +22,10 @@
  *
  */
 
-package rapaio.experiment.ml.regression.ensemble;
+package rapaio.ml.regression.ensemble;
 
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.Sample;
@@ -38,25 +38,23 @@ import rapaio.ml.regression.tree.RTree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-@Deprecated
 public class RForest extends AbstractRegression {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
-    int runs = 0;
-    Regression r = RTree.buildC45();
-    //
-    List<Regression> regressors = new ArrayList<>();
-
-    private RForest() {
-    }
+    private Regression r = RTree.buildC45();
+    private List<Regression> regressors = new ArrayList<>();
 
     public static RForest newRF() {
         return new RForest();
+    }
+
+    private RForest() {
     }
 
     @Override
@@ -75,7 +73,7 @@ public class RForest extends AbstractRegression {
         sb.append(name()).append("\n");
         sb.append("{\n");
         sb.append("r=").append(r.fullName()).append(",\n");
-        sb.append("runs=").append(runs).append(",\n");
+        sb.append("runs=").append(runs()).append(",\n");
         sb.append("}\n");
         return sb.toString();
     }
@@ -99,29 +97,33 @@ public class RForest extends AbstractRegression {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
         regressors.clear();
-        for (int i = 0; i < runs(); i++) {
-            Regression rnew = r.newInstance();
-            Sample sample = sampler().nextSample(df, weights);
-            rnew.train(sample.df, sample.weights, firstTargetName());
-            regressors.add(rnew);
-            if (runningHook() != null) {
-                runningHook().accept(this, i + 1);
-            }
-        }
+        IntStream.range(0, runs()).forEach(i -> {
+                Regression rnew = r.newInstance();
+                Sample sample = sampler().nextSample(df, weights);
+                rnew.train(sample.df, sample.weights, firstTargetName());
+                regressors.add(rnew);
+                if (runningHook() != null) {
+                    runningHook().accept(this, i + 1);
+                }
+        });
         return true;
+    }
+
+    public List<Regression> getRegressors() {
+        return regressors;
     }
 
     @Override
     protected RFit coreFit(Frame df, boolean withResiduals) {
         RFit fit = RFit.build(this, df, withResiduals);
-        List<Numeric> results = regressors
+        List<NumericVar> results = regressors
                 .parallelStream()
                 .map(r -> r.fit(df, false).firstFit())
                 .collect(Collectors.toList());
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             double sum = 0;
-            for (Numeric result : results) {
-                sum += result.value(i);
+            for (NumericVar result : results) {
+                sum += result.getValue(i);
             }
             fit.firstFit().setValue(i, sum / regressors.size());
         }
@@ -131,7 +133,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

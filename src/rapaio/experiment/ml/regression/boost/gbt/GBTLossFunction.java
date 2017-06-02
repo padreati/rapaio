@@ -26,7 +26,7 @@ package rapaio.experiment.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.sys.WS;
 
@@ -45,7 +45,7 @@ public interface GBTLossFunction extends Serializable {
 
     double findMinimum(Var y, Var fx);
 
-    Numeric gradient(Var y, Var fx);
+    NumericVar gradient(Var y, Var fx);
 
     // standard implementations
 
@@ -58,11 +58,11 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            Numeric values = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                values.addValue(y.value(i) - fx.value(i));
+            NumericVar values = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                values.addValue(y.getValue(i) - fx.getValue(i));
             }
-            double result = Quantiles.from(values, new double[]{0.5}).values()[0];
+            double result = Quantiles.from(values, new double[]{0.5}).getValues()[0];
             if (Double.isNaN(result)) {
                 WS.println();
             }
@@ -70,10 +70,10 @@ public interface GBTLossFunction extends Serializable {
         }
 
         @Override
-        public Numeric gradient(Var y, Var fx) {
-            Numeric gradient = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
+        public NumericVar gradient(Var y, Var fx) {
+            NumericVar gradient = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                gradient.addValue(y.getValue(i) - fx.getValue(i) < 0 ? -1. : 1.);
             }
             return gradient;
         }
@@ -88,14 +88,14 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            return Mean.from(gradient(y, fx)).value();
+            return Mean.from(gradient(y, fx)).getValue();
         }
 
         @Override
-        public Numeric gradient(Var y, Var fx) {
-            Numeric delta = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                delta.addValue(y.value(i) - fx.value(i));
+        public NumericVar gradient(Var y, Var fx) {
+            NumericVar delta = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                delta.addValue(y.getValue(i) - fx.getValue(i));
             }
             return delta;
         }
@@ -127,60 +127,60 @@ public interface GBTLossFunction extends Serializable {
 
             // compute residuals
 
-            Numeric residual = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                residual.addValue(y.value(i) - fx.value(i));
+            NumericVar residual = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                residual.addValue(y.getValue(i) - fx.getValue(i));
             }
 
             // compute median of residuals
 
-            double r_bar = Quantiles.from(residual, new double[]{0.5}).values()[0];
+            double r_bar = Quantiles.from(residual, new double[]{0.5}).getValues()[0];
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
+            NumericVar absResidual = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).getValues()[0];
 
             // compute one-iteration approximation
 
             double gamma = r_bar;
-            double count = y.rowCount();
-            for (int i = 0; i < y.rowCount(); i++) {
-                gamma += (residual.value(i) - r_bar <= 0 ? -1 : 1)
-                        * Math.min(rho, Math.abs(residual.value(i) - r_bar))
+            double count = y.getRowCount();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
+                        * Math.min(rho, Math.abs(residual.getValue(i) - r_bar))
                         / count;
             }
             return gamma;
         }
 
         @Override
-        public Numeric gradient(Var y, Var fx) {
+        public NumericVar gradient(Var y, Var fx) {
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
+            NumericVar absResidual = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).getValues()[0];
 
             // now compute gradient
 
-            Numeric gradient = Numeric.empty();
-            for (int i = 0; i < y.rowCount(); i++) {
-                if (absResidual.value(i) <= rho) {
-                    gradient.addValue(y.value(i) - fx.value(i));
+            NumericVar gradient = NumericVar.empty();
+            for (int i = 0; i < y.getRowCount(); i++) {
+                if (absResidual.getValue(i) <= rho) {
+                    gradient.addValue(y.getValue(i) - fx.getValue(i));
                 } else {
-                    gradient.addValue(rho * ((y.value(i) - fx.value(i) <= 0) ? -1 : 1));
+                    gradient.addValue(rho * ((y.getValue(i) - fx.getValue(i) <= 0) ? -1 : 1));
                 }
             }
 

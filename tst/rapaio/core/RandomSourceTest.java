@@ -26,7 +26,7 @@ package rapaio.core;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Index;
+import rapaio.data.IndexVar;
 import rapaio.data.Var;
 
 /**
@@ -38,17 +38,17 @@ public class RandomSourceTest {
     @Test
     public void reproducibleTest() {
 
-        Var seeds = Index.from(100, i -> i*i);
+        Var seeds = IndexVar.from(100, i -> i*i);
 
         RandomSource.withUtilRandom(0);
         checkRandom(seeds);
     }
 
     private void checkRandom(Var seeds) {
-        for (int i = 0; i < seeds.rowCount(); i++) {
-            RandomSource.setSeed(seeds.index(i));
+        for (int i = 0; i < seeds.getRowCount(); i++) {
+            RandomSource.setSeed(seeds.getIndex(i));
             int n1 = RandomSource.nextInt(1000);
-            RandomSource.setSeed(seeds.index(i));
+            RandomSource.setSeed(seeds.getIndex(i));
             int n2 = RandomSource.nextInt(1000);
             Assert.assertEquals(n1, n2);
         }

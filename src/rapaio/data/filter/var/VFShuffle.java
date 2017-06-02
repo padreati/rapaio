@@ -46,7 +46,7 @@ public class VFShuffle extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < vars[0].rowCount(); i++) {
+        for (int i = 0; i < vars[0].getRowCount(); i++) {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {

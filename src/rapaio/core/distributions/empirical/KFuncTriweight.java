@@ -54,7 +54,7 @@ public class KFuncTriweight implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncTriweight";
     }
 }

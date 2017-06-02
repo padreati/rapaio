@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
@@ -38,7 +38,6 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.ml.eval.Confusion;
 import rapaio.sys.WS;
 
@@ -81,7 +80,7 @@ public class PCATest {
 
         pca.printSummary();
 
-        Frame fit = pca.fit(x, 4).bindVars(iris.var("class"));
+        Frame fit = pca.fit(x, 4).bindVars(iris.getVar("class"));
 
         CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
         CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
@@ -92,8 +91,8 @@ public class PCATest {
         rf2.train(fit.mapVars("0,1,class"), "class");
         CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
 
-        double acc1 = new Confusion(iris.var("class"), fit1.firstClasses()).accuracy();
-        double acc2 = new Confusion(iris.var("class"), fit2.firstClasses()).accuracy();
+        double acc1 = new Confusion(iris.getVar("class"), fit1.firstClasses()).accuracy();
+        double acc2 = new Confusion(iris.getVar("class"), fit2.firstClasses()).accuracy();
 
         WS.println(acc1);
         WS.println(acc2);
@@ -103,9 +102,9 @@ public class PCATest {
 
     @Test
     public void testColinear() {
-        Var x = Numeric.copy(1, 2, 3, 4).withName("x");
-        Var y = Numeric.copy(2, 3, 4, 5).withName("y");
-        Var z = Numeric.copy(4, 2, 6, 9).withName("z");
+        Var x = NumericVar.copy(1, 2, 3, 4).withName("x");
+        Var y = NumericVar.copy(2, 3, 4, 5).withName("y");
+        Var z = NumericVar.copy(4, 2, 6, 9).withName("z");
 
         PCA pca = new PCA();
         pca.train(SolidFrame.byVars(x, y, z));

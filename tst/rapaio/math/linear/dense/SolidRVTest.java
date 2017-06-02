@@ -30,10 +30,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
 
 import java.util.Arrays;
 
@@ -51,7 +50,7 @@ public class SolidRVTest {
     @Before
     public void setUp() throws Exception {
         normal = new Normal(0, 10);
-        varx = Numeric.from(N, normal::sampleNext);
+        varx = NumericVar.from(N, normal::sampleNext);
         x = SolidRV.from(varx);
     }
 
@@ -72,20 +71,20 @@ public class SolidRVTest {
             assertTrue(Double.isNaN(x.get(i)));
         }
 
-        x = SolidRV.from(Numeric.seq(N - 1));
+        x = SolidRV.from(NumericVar.seq(N - 1));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        RV y = SolidRV.from(Numeric.seq(N - 1));
+        RV y = SolidRV.from(NumericVar.seq(N - 1));
         x = SolidRV.copy(y);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidRV.from(Numeric.fill(N, 1).bindRows(Numeric.seq(N - 1)));
+        x = SolidRV.from(NumericVar.fill(N, 1).bindRows(NumericVar.seq(N - 1)));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
@@ -107,7 +106,7 @@ public class SolidRVTest {
 
     @Test
     public void incrementTest() {
-        RV x = SolidRV.from(Numeric.seq(0, 1, 0.01));
+        RV x = SolidRV.from(NumericVar.seq(0, 1, 0.01));
         RV y = x.solidCopy();
         for (int i = 0; i < y.count(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
@@ -143,7 +142,7 @@ public class SolidRVTest {
 
     @Test
     public void vectorPlusTest() {
-        RV z = SolidRV.from(Numeric.fill(N, 10));
+        RV z = SolidRV.from(NumericVar.fill(N, 10));
         RV y = x.solidCopy().plus(z);
 
         for (int i = 0; i < y.count(); i++) {
@@ -175,7 +174,7 @@ public class SolidRVTest {
 
     @Test
     public void vectorMinusTest() {
-        RV z = SolidRV.from(Numeric.fill(N, 10));
+        RV z = SolidRV.from(NumericVar.fill(N, 10));
         RV y = x.solidCopy().minus(z);
 
         for (int i = 0; i < y.count(); i++) {
@@ -194,12 +193,12 @@ public class SolidRVTest {
         double[] pvalues = new double[]{Double.POSITIVE_INFINITY, 0, 0.5, 1, 1.5, 2, 100};
         for (double p : pvalues) {
             double pnorm = 0.0;
-            for (int i = 0; i < varx.rowCount(); i++) {
-                pnorm += Math.pow(Math.abs(varx.value(i)), p);
+            for (int i = 0; i < varx.getRowCount(); i++) {
+                pnorm += Math.pow(Math.abs(varx.getValue(i)), p);
             }
             pnorm = Math.pow(pnorm, p > 0 ? 1.0 / p : 1.0);
             if (Double.POSITIVE_INFINITY == p) {
-                pnorm = Maximum.from(varx).value();
+                pnorm = Maximum.from(varx).getValue();
             }
             assertEquals("pnorm failed for p=" + p, pnorm, x.norm(p), TOL);
         }
@@ -207,8 +206,8 @@ public class SolidRVTest {
 
     @Test
     public void meanVarTest() {
-        assertEquals(Mean.from(varx).value(), x.mean().value(), TOL);
-        assertEquals(Variance.from(varx).value(), x.var().value(), TOL);
+        assertEquals(Mean.from(varx).getValue(), x.mean().getValue(), TOL);
+        assertEquals(Variance.from(varx).getValue(), x.variance().getValue(), TOL);
     }
 
     @Test

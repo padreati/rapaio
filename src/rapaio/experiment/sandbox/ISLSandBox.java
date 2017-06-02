@@ -48,9 +48,9 @@ public class ISLSandBox {
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
         df.printSummary();
         GridLayer gl = new GridLayer(1, 3);
-        gl.add(1, 1, points(df.var("TV"), df.var("Sales"), color(Color.RED), pch(2)));
-        gl.add(1, 2, points(df.var("Radio"), df.var("Sales"), color(Color.RED), pch(2)));
-        gl.add(1, 3, points(df.var("Newspaper"), df.var("Sales"), color(Color.cyan), pch(2)));
+        gl.add(1, 1, points(df.getVar("TV"), df.getVar("Sales"), color(Color.RED), pch(2)));
+        gl.add(1, 2, points(df.getVar("Radio"), df.getVar("Sales"), color(Color.RED), pch(2)));
+        gl.add(1, 3, points(df.getVar("Newspaper"), df.getVar("Sales"), color(Color.cyan), pch(2)));
         draw(gl);
 
     }

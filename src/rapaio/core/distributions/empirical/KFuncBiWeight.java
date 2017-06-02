@@ -49,7 +49,7 @@ public class KFuncBiWeight implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncBiWeight";
     }
 }

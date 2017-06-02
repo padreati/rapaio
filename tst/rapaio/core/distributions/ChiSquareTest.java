@@ -53,34 +53,34 @@ public class ChiSquareTest {
         ChiSquare c10 = new ChiSquare(10);
         ChiSquare c100 = new ChiSquare(100);
 
-        for (int i = 1; i < df.rowCount(); i++) {
+        for (int i = 1; i < df.getRowCount(); i++) {
 
-            double x = df.value(i, "x");
+            double x = df.getValue(i, "x");
 
-            assertEquals(df.value(i, "pdf_1"), c1.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_1"), c1.cdf(x), ERROR);
+            assertEquals(df.getValue(i, "pdf_1"), c1.pdf(x), ERROR);
+            assertEquals(df.getValue(i, "cdf_1"), c1.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_1"), c1.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getValue(i, "quantile_1"), c1.quantile(df.getValue(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_2"), c2.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_2"), c2.cdf(x), ERROR);
+            assertEquals(df.getValue(i, "pdf_2"), c2.pdf(x), ERROR);
+            assertEquals(df.getValue(i, "cdf_2"), c2.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_2"), c2.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getValue(i, "quantile_2"), c2.quantile(df.getValue(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_5"), c5.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_5"), c5.cdf(x), ERROR);
+            assertEquals(df.getValue(i, "pdf_5"), c5.pdf(x), ERROR);
+            assertEquals(df.getValue(i, "cdf_5"), c5.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_5"), c5.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getValue(i, "quantile_5"), c5.quantile(df.getValue(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_10"), c10.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_10"), c10.cdf(x), ERROR);
+            assertEquals(df.getValue(i, "pdf_10"), c10.pdf(x), ERROR);
+            assertEquals(df.getValue(i, "cdf_10"), c10.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_10"), c10.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getValue(i, "quantile_10"), c10.quantile(df.getValue(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_100"), c100.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_100"), c100.cdf(x), ERROR);
+            assertEquals(df.getValue(i, "pdf_100"), c100.pdf(x), ERROR);
+            assertEquals(df.getValue(i, "cdf_100"), c100.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_100"), c100.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getValue(i, "quantile_100"), c100.quantile(df.getValue(i, "x")), ERROR);
             }
         }
     }
@@ -102,10 +102,10 @@ public class ChiSquareTest {
         ChiSquare c2 = new ChiSquare(2);
         Var sample = c2.sample(100);
         long count = sample.stream().mapToDouble().filter(x -> x > 0).count();
-        assertEquals(sample.rowCount(), count);
+        assertEquals(sample.getRowCount(), count);
 
         sample = c.sample(100);
         count = sample.stream().mapToDouble().filter(x -> x > 0).count();
-        assertEquals(sample.rowCount(), count);
+        assertEquals(sample.getRowCount(), count);
     }
 }

@@ -49,7 +49,7 @@ public class KFuncEpanechnikov implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         return "KFuncEpanechnikov";
     }
 }

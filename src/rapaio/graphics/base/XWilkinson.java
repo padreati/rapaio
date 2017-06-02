@@ -253,7 +253,17 @@ public class XWilkinson {
      * @return XWilkinson.Label
      */
     public Label search(double dmin, double dmax, int m) {
+
         Label best = new Label();
+
+        if (dmin == dmax) {
+            best.min = dmin;
+            best.max = dmax;
+            best.step = 0;
+            best.score = 0.0;
+            return best;
+        }
+
         double bestScore = -2;
         double sm, dm, cm, delta;
         int j = 1;
@@ -320,13 +330,13 @@ public class XWilkinson {
             Label bounded = new Label();
             bounded.score = current.score;
             bounded.step = current.step;
-            bounded.min = (current.min<min)
-                    ?current.min+current.step
+            bounded.min = (current.min < min)
+                    ? current.min + current.step
                     : current.min;
-            bounded.max = (current.max>max)
-                    ? current.max-current.step
+            bounded.max = (current.max > max)
+                    ? current.max - current.step
                     : current.max;
-            if(best == null || best.getList().size() < bounded.getList().size()) {
+            if (best == null || best.getList().size() < bounded.getList().size()) {
                 best = bounded;
             }
         }

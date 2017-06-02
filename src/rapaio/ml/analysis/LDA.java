@@ -30,7 +30,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
@@ -49,24 +49,16 @@ import java.util.logging.Logger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA implements Printable {
+public class LDA extends DimensionReduction implements Printable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
     private double tol = 1e-24;
     private int maxRuns = 10_000;
 
-    private boolean scaling = true;
-
     private String targetName;
     private String[] targetLevels;
-    private String[] inputNames;
-    private RV mean;
-    private RV sd;
 
     private RV[] classMean;
-
-    private RV eigenValues;
-    private RM eigenVectors;
 
     public LDA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -77,35 +69,27 @@ public class LDA implements Printable {
         this.tol = tol;
         return this;
     }
-
-    public RV getEigenValues() {
-        return eigenValues;
-    }
-
-    public RM getEigenVectors() {
-        return eigenVectors;
-    }
-
-    public void learn(Frame df, String... targetVars) {
-        validate(df, targetVars);
+    
+    public void train(Frame df, String... targetVars) {
+    	validate(df, targetVars);
 
         logger.fine("start lda train");
         RM xx = SolidRM.copy(df.removeVars(targetName));
 
         // compute mean and sd
 
-        mean = SolidRV.empty(xx.colCount());
-        sd = SolidRV.empty(xx.colCount());
-        for (int i = 0; i < xx.colCount(); i++) {
-            mean.set(i, xx.mapCol(i).mean().value());
-            sd.set(i, xx.mapCol(i).var().sdValue());
+        mean = SolidRV.empty(xx.getColCount());
+        sd = SolidRV.empty(xx.getColCount());
+        for (int i = 0; i < xx.getColCount(); i++) {
+            mean.set(i, xx.mapCol(i).mean().getValue());
+            sd.set(i, xx.mapCol(i).variance().sdValue());
         }
 
         // scale the whole data if it is the case
 
         if (scaling) {
-            for (int i = 0; i < xx.rowCount(); i++) {
-                for (int j = 0; j < xx.colCount(); j++) {
+            for (int i = 0; i < xx.getRowCount(); i++) {
+                for (int j = 0; j < xx.getColCount(); j++) {
                     if (sd.get(j) != 0)
                         xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
                 }
@@ -118,8 +102,8 @@ public class LDA implements Printable {
         for (int i = 0; i < targetLevels.length; i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
-                    .filter(s -> s.label(targetName).equals(targetLevels[index]))
-                    .mapToInt(FSpot::row)
+                    .filter(s -> s.getLabel(targetName).equals(targetLevels[index]))
+                    .mapToInt(FSpot::getRow)
                     .toArray());
         }
 
@@ -127,9 +111,9 @@ public class LDA implements Printable {
 
         classMean = new RV[targetLevels.length];
         for (int i = 0; i < targetLevels.length; i++) {
-            classMean[i] = SolidRV.empty(x[i].colCount());
-            for (int j = 0; j < x[i].colCount(); j++) {
-                classMean[i].set(j, x[i].mapCol(j).mean().value());
+            classMean[i] = SolidRV.empty(x[i].getColCount());
+            for (int j = 0; j < x[i].getColCount(); j++) {
+                classMean[i].set(j, x[i].mapCol(j).mean().getValue());
             }
         }
 
@@ -145,12 +129,11 @@ public class LDA implements Printable {
         RM sb = SolidRM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
             RM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
-            sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
+            sb.plus(cm.dot(cm.t()).dot(x[i].getRowCount()));
         }
 
         // inverse sw
-        @SuppressWarnings("deprecation")
-		RM swi = new QR(sw).solve(SolidRM.identity(inputNames.length));
+		RM swi = QRDecomposition.from(sw).solve(SolidRM.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
@@ -178,13 +161,12 @@ public class LDA implements Printable {
         eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
-
     public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
         RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
-            for (int i = 0; i < x.rowCount(); i++) {
-                for (int j = 0; j < x.colCount(); j++) {
+            for (int i = 0; i < x.getRowCount(); i++) {
+                for (int j = 0; j < x.getColCount(); j++) {
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }
@@ -200,7 +182,7 @@ public class LDA implements Printable {
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
-        return rest.varCount() == 0 ?
+        return rest.getVarCount() == 0 ?
                 SolidFrame.matrix(result, names) :
                 SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
     }
@@ -214,28 +196,28 @@ public class LDA implements Printable {
 
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
         df.varStream().forEach(var -> {
-            if (targetName.equals(var.name())) {
-                if (!var.type().equals(VarType.NOMINAL)) {
+            if (targetName.equals(var.getName())) {
+                if (!var.getType().equals(VarType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
-                targetLevels = new String[var.levels().length - 1];
-                System.arraycopy(var.levels(), 1, targetLevels, 0, var.levels().length - 1);
+                targetLevels = new String[var.getLevels().length - 1];
+                System.arraycopy(var.getLevels(), 1, targetLevels, 0, var.getLevels().length - 1);
                 return;
             }
-            if (!allowedTypes.contains(var.type())) {
+            if (!allowedTypes.contains(var.getType())) {
                 throw new IllegalArgumentException("column type not allowed");
             }
         });
-        inputNames = df.varStream().filter(v -> !v.name().equals(targetName)).map(Var::name).toArray(String[]::new);
+        inputNames = df.varStream().filter(v -> !v.getName().equals(targetName)).map(Var::getName).toArray(String[]::new);
     }
 
-    @SuppressWarnings("deprecation")
-	public String summary() {
+    @Override
+	public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                Numeric.empty(eigenValues.count()).withName("values"),
-                Numeric.empty(eigenValues.count()).withName("percent")
+                NumericVar.empty(eigenValues.count()).withName("values"),
+                NumericVar.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {
@@ -251,7 +233,7 @@ public class LDA implements Printable {
         sb.append(Summary.headString(true, eval)).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.summary()).append("\n");
+        sb.append(eigenVectors.getSummary()).append("\n");
 
         return sb.toString();
     }

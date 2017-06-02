@@ -144,8 +144,8 @@ public class Capabilities implements Printable {
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
-            if (!targetTypes.contains(df.var(varName).type())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.var(varName).type().name() + " as target type vor var: " + varName);
+            if (!targetTypes.contains(df.getVar(varName).getType())) {
+                throw new IllegalArgumentException("Algorithm does not allow " + df.getVar(varName).getType().name() + " as target type vor var: " + varName);
             }
         }
     }
@@ -156,7 +156,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
+            if (df.getVar(targetName).stream().complete().count() != df.getVar(targetName).getRowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -182,12 +182,12 @@ public class Capabilities implements Printable {
         List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
-            Var inputVar = df.var(inputName);
-            if (!inputTypes.contains(inputVar.type())) {
+            Var inputVar = df.getVar(inputName);
+            if (!inputTypes.contains(inputVar.getType())) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
-                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
+                sb.append(inputName).append("[").append(inputVar.getType().name()).append("]");
             }
         }
         if (sb.length() > 0) {
@@ -201,7 +201,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
-            if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {
+            if (df.getVar(inputName).stream().complete().count() != df.getVar(inputName).getRowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -245,7 +245,7 @@ public class Capabilities implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
         sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")

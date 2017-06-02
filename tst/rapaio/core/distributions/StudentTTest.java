@@ -50,18 +50,18 @@ public class StudentTTest {
                 .read(StudentTTest.class, "student-density.csv");
         df.printSummary();
 
-        for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(df.value(i, "y1"), new StudentT(1).pdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y2"), new StudentT(2).pdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y3"), new StudentT(3).pdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y5"), new StudentT(5).pdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y10"), new StudentT(10).pdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y15"), new StudentT(15).pdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y20"), new StudentT(20).pdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y50"), new StudentT(50).pdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y100"), new StudentT(100).pdf(df.value(i, "x")), 1e-13);
-            assertEquals(df.value(i, "y1000"), new StudentT(1_000).pdf(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y10000"), new StudentT(10_000).pdf(df.value(i, "x")), 1e-11);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            assertEquals(df.getValue(i, "y1"), new StudentT(1).pdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y2"), new StudentT(2).pdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y3"), new StudentT(3).pdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y5"), new StudentT(5).pdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y10"), new StudentT(10).pdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y15"), new StudentT(15).pdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y20"), new StudentT(20).pdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y50"), new StudentT(50).pdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y100"), new StudentT(100).pdf(df.getValue(i, "x")), 1e-13);
+            assertEquals(df.getValue(i, "y1000"), new StudentT(1_000).pdf(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y10000"), new StudentT(10_000).pdf(df.getValue(i, "x")), 1e-11);
         }
     }
 
@@ -73,18 +73,18 @@ public class StudentTTest {
                 .read(StudentTTest.class, "student-distribution.csv");
         df.printSummary();
 
-        for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(df.value(i, "y1"), new StudentT(1).cdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y2"), new StudentT(2).cdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y3"), new StudentT(3).cdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y5"), new StudentT(5).cdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y10"), new StudentT(10).cdf(df.value(i, "x")), 1e-15);
-            assertEquals(df.value(i, "y15"), new StudentT(15).cdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y20"), new StudentT(20).cdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y50"), new StudentT(50).cdf(df.value(i, "x")), 1e-14);
-            assertEquals(df.value(i, "y100"), new StudentT(100).cdf(df.value(i, "x")), 1e-13);
-            assertEquals(df.value(i, "y1000"), new StudentT(1_000).cdf(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y10000"), new StudentT(10_000).cdf(df.value(i, "x")), 1e-12);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            assertEquals(df.getValue(i, "y1"), new StudentT(1).cdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y2"), new StudentT(2).cdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y3"), new StudentT(3).cdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y5"), new StudentT(5).cdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y10"), new StudentT(10).cdf(df.getValue(i, "x")), 1e-15);
+            assertEquals(df.getValue(i, "y15"), new StudentT(15).cdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y20"), new StudentT(20).cdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y50"), new StudentT(50).cdf(df.getValue(i, "x")), 1e-14);
+            assertEquals(df.getValue(i, "y100"), new StudentT(100).cdf(df.getValue(i, "x")), 1e-13);
+            assertEquals(df.getValue(i, "y1000"), new StudentT(1_000).cdf(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y10000"), new StudentT(10_000).cdf(df.getValue(i, "x")), 1e-12);
         }
     }
 
@@ -96,18 +96,18 @@ public class StudentTTest {
                 .read(StudentTTest.class, "student-quantile.csv");
         df.printSummary();
 
-        for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(df.value(i, "y1"), new StudentT(1).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y2"), new StudentT(2).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y3"), new StudentT(3).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y5"), new StudentT(5).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y10"), new StudentT(10).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y15"), new StudentT(15).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y20"), new StudentT(20).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y50"), new StudentT(50).quantile(df.value(i, "x")), 1e-12);
-            assertEquals(df.value(i, "y100"), new StudentT(100).quantile(df.value(i, "x")), 1e-11);
-            assertEquals(df.value(i, "y1000"), new StudentT(1_000).quantile(df.value(i, "x")), 1e-10);
-            assertEquals(df.value(i, "y10000"), new StudentT(10_000).quantile(df.value(i, "x")), 1e-9);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            assertEquals(df.getValue(i, "y1"), new StudentT(1).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y2"), new StudentT(2).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y3"), new StudentT(3).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y5"), new StudentT(5).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y10"), new StudentT(10).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y15"), new StudentT(15).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y20"), new StudentT(20).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y50"), new StudentT(50).quantile(df.getValue(i, "x")), 1e-12);
+            assertEquals(df.getValue(i, "y100"), new StudentT(100).quantile(df.getValue(i, "x")), 1e-11);
+            assertEquals(df.getValue(i, "y1000"), new StudentT(1_000).quantile(df.getValue(i, "x")), 1e-10);
+            assertEquals(df.getValue(i, "y10000"), new StudentT(10_000).quantile(df.getValue(i, "x")), 1e-9);
         }
     }
 
@@ -128,39 +128,39 @@ public class StudentTTest {
         Assert.assertEquals("StudentT(df=1, mu=0, sigma=1)", t1.name());
         Assert.assertEquals(false, t1.discrete());
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
 
-            double x = df.value(i, "x");
+            double x = df.getValue(i, "x");
 
-            Assert.assertEquals(df.value(i, "pdf_1"), t1.pdf(x), ERROR);
-            Assert.assertEquals(df.value(i, "cdf_1"), t1.cdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "pdf_1"), t1.pdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "cdf_1"), t1.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                if (!Double.isNaN(df.value(i, "quantile_1")))
-                    Assert.assertEquals(df.value(i, "quantile_1"), t1.quantile(df.value(i, "x")), ERROR);
+                if (!Double.isNaN(df.getValue(i, "quantile_1")))
+                    Assert.assertEquals(df.getValue(i, "quantile_1"), t1.quantile(df.getValue(i, "x")), ERROR);
             }
-            Assert.assertEquals(df.value(i, "pdf_2"), t2.pdf(x), ERROR);
-            Assert.assertEquals(df.value(i, "cdf_2"), t2.cdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "pdf_2"), t2.pdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "cdf_2"), t2.cdf(x), ERROR);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
-                if (!Double.isNaN(df.value(i, "quantile_2")))
-                    Assert.assertEquals(df.value(i, "quantile_2"), t2.quantile(df.value(i, "x")), ERROR);
+                if (!Double.isNaN(df.getValue(i, "quantile_2")))
+                    Assert.assertEquals(df.getValue(i, "quantile_2"), t2.quantile(df.getValue(i, "x")), ERROR);
             }
-            Assert.assertEquals(df.value(i, "pdf_5"), t5.pdf(x), ERROR);
-            Assert.assertEquals(df.value(i, "cdf_5"), t5.cdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "pdf_5"), t5.pdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "cdf_5"), t5.cdf(x), ERROR);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
-                if (!Double.isNaN(df.value(i, "quantile_5")))
-                    Assert.assertEquals(df.value(i, "quantile_5"), t5.quantile(df.value(i, "x")), ERROR);
+                if (!Double.isNaN(df.getValue(i, "quantile_5")))
+                    Assert.assertEquals(df.getValue(i, "quantile_5"), t5.quantile(df.getValue(i, "x")), ERROR);
             }
-            Assert.assertEquals(df.value(i, "pdf_10"), t10.pdf(x), ERROR);
-            Assert.assertEquals(df.value(i, "cdf_10"), t10.cdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "pdf_10"), t10.pdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "cdf_10"), t10.cdf(x), ERROR);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
-                if (!Double.isNaN(df.value(i, "quantile_10")))
-                    Assert.assertEquals(df.value(i, "quantile_10"), t10.quantile(df.value(i, "x")), ERROR);
+                if (!Double.isNaN(df.getValue(i, "quantile_10")))
+                    Assert.assertEquals(df.getValue(i, "quantile_10"), t10.quantile(df.getValue(i, "x")), ERROR);
             }
-            Assert.assertEquals(df.value(i, "pdf_100"), t100.pdf(x), ERROR);
-            Assert.assertEquals(df.value(i, "cdf_100"), t100.cdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "pdf_100"), t100.pdf(x), ERROR);
+            Assert.assertEquals(df.getValue(i, "cdf_100"), t100.cdf(x), ERROR);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
-                if (!Double.isNaN(df.value(i, "quantile_100")))
-                    Assert.assertEquals(df.value(i, "quantile_100"), t100.quantile(df.value(i, "x")), ERROR);
+                if (!Double.isNaN(df.getValue(i, "quantile_100")))
+                    Assert.assertEquals(df.getValue(i, "quantile_100"), t100.quantile(df.getValue(i, "x")), ERROR);
             }
         }
     }

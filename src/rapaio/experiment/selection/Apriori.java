@@ -48,17 +48,17 @@ public class Apriori implements Printable {
     private double coverage;
 
     public String[] inputVarNames() {
-        return inputDf.varNames();
+        return inputDf.getVarNames();
     }
 
     public void train(Frame df, String target, BiPredicate<Integer, DVector> filter) {
 
         List<Var> inputVars = df.varStream()
-                .filter(var -> var.type().equals(VarType.NOMINAL))
-                .filter(var -> !var.name().equals(target))
+                .filter(var -> var.getType().equals(VarType.NOMINAL))
+                .filter(var -> !var.getName().equals(target))
                 .collect(Collectors.toList());
         this.inputDf = SolidFrame.byVars(inputVars);
-        this.targetVar = df.var(target);
+        this.targetVar = df.getVar(target);
         this.filter = filter;
 
         List<AprioriRule> C = new ArrayList<>();
@@ -66,10 +66,10 @@ public class Apriori implements Printable {
 
         // build dictionary of rules $C0$
 
-        for (int i = 0; i < inputDf.varCount(); i++) {
-            Var input = inputDf.var(i);
-            for (String level : input.levels()) {
-                AprioriRuleClause clause = new AprioriRuleClause(input.name(), level);
+        for (int i = 0; i < inputDf.getVarCount(); i++) {
+            Var input = inputDf.getVar(i);
+            for (String level : input.getLevels()) {
+                AprioriRuleClause clause = new AprioriRuleClause(input.getName(), level);
                 AprioriRule rule = new AprioriRule();
                 rule.addClause(clause);
                 C.add(rule);
@@ -77,19 +77,19 @@ public class Apriori implements Printable {
         }
 
         List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.from(rule,
-                DVector.empty(false, targetVar.levels())))
+                DVector.empty(false, targetVar.getLevels())))
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             for (Pair<AprioriRule, DVector> cnt : counts) {
                 if (cnt._1.matchRow(df, i)) {
-                    cnt._2.increment(targetVar.index(i), 1);
+                    cnt._2.increment(targetVar.getIndex(i), 1);
                 }
             }
         }
 
         List<Pair<AprioriRule, DVector>> list = counts.stream()
-                .filter(pair -> filter.test(df.rowCount(), pair._2))
+                .filter(pair -> filter.test(df.getRowCount(), pair._2))
                 .collect(Collectors.toList());
         list.sort((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()));
         P.add(list);
@@ -104,7 +104,7 @@ public class Apriori implements Printable {
             Map<String, Pair<AprioriRule, DVector>> cnts = new HashMap<>();
 
             // loop for all possibilities
-            for (int i = 0; i < df.rowCount(); i++) {
+            for (int i = 0; i < df.getRowCount(); i++) {
                 for (AprioriRule b : base) {
                     if (!b.matchRow(df, i))
                         continue;
@@ -115,16 +115,16 @@ public class Apriori implements Printable {
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, targetVar.levels())));
+                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, targetVar.getLevels())));
                         }
-                        cnts.get(next.toString())._2.increment(targetVar.index(i), 1);
+                        cnts.get(next.toString())._2.increment(targetVar.getIndex(i), 1);
                     }
                 }
             }
 
             // keep only survivors
             List<Pair<AprioriRule, DVector>> top = cnts.values().stream()
-                    .filter(pair -> filter.test(df.rowCount(), pair._2))
+                    .filter(pair -> filter.test(df.getRowCount(), pair._2))
                     .collect(Collectors.toList());
 
             if (top.isEmpty()) {
@@ -164,7 +164,7 @@ public class Apriori implements Printable {
 
         // create coverage
         double count = 0;
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             for (int j = 0; j < rules.size(); j++) {
                 if (rules.get(j).matchRow(df, i)) {
                     count++;
@@ -172,11 +172,11 @@ public class Apriori implements Printable {
                 }
             }
         }
-        coverage = count / df.rowCount();
+        coverage = count / df.getRowCount();
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
 
         StringBuilder sb = new StringBuilder();
         // print a list of rules
@@ -189,7 +189,7 @@ public class Apriori implements Printable {
                 sb.append(j + 1).append(". ").append(P.get(i).get(j)._1.toString())
                         .append(" ")
                         .append(WS.formatFlex(P.get(i).get(j)._2.sum())).append(" [");
-                for (int k = 1; k < targetVar.levels().length; k++) {
+                for (int k = 1; k < targetVar.getLevels().length; k++) {
                     sb.append(WS.formatShort(P.get(i).get(j)._2.get(k))).append(",");
                 }
                 sb.append("]\n");
@@ -203,11 +203,11 @@ public class Apriori implements Printable {
     }
 
     public Frame buildFeatures(Frame df) {
-        List<Var> vars = rules.stream().map(r -> Nominal.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
+        List<Var> vars = rules.stream().map(r -> NominalVar.empty(df.getRowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName("Apriori_" + (i + 1));
         }
-        for (int i = 0; i < df.rowCount(); i++) {
+        for (int i = 0; i < df.getRowCount(); i++) {
             for (int j = 0; j < rules.size(); j++) {
                 vars.get(j).setIndex(i, rules.get(j).matchRow(df, i) ? 1 : 2);
             }
@@ -225,7 +225,7 @@ class AprioriRule {
 
     public boolean matchRow(Frame df, int row) {
         for (AprioriRuleClause clause : clauses) {
-            if (!df.label(row, clause.varName).equals(clause.level))
+            if (!df.getLabel(row, clause.varName).equals(clause.level))
                 return false;
         }
         return true;

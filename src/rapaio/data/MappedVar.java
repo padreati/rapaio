@@ -67,9 +67,10 @@ public class MappedVar extends AbstractVar {
     private final Mapping mapping;
 
     private MappedVar(Var var, Mapping mapping) {
-        withName(var.name());
+        withName(var.getName());
         if (var instanceof MappedVar) {
-            this.mapping = Mapping.wrap(mapping.rowStream().map(row -> ((MappedVar) var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+
+            this.mapping = Mapping.wrap(mapping.rowStream().map(row -> ((MappedVar) var).getMapping().get(row)).boxed().collect(Collectors.toList()));
             this.source = ((MappedVar) var).source();
         } else {
             this.mapping = mapping;
@@ -78,12 +79,12 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return source.type();
+    public VarType getType() {
+        return source.getType();
     }
 
     @Override
-    public int rowCount() {
+    public int getRowCount() {
         return mapping.size();
     }
 
@@ -96,13 +97,13 @@ public class MappedVar extends AbstractVar {
         return source;
     }
 
-    public Mapping mapping() {
+    public Mapping getMapping() {
         return mapping;
     }
 
     @Override
-    public double value(int row) {
-        return source.value(mapping.get(row));
+    public double getValue(int row) {
+        return source.getValue(mapping.get(row));
     }
 
     @Override
@@ -116,8 +117,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public int index(int row) {
-        return source.index(mapping.get(row));
+    public int getIndex(int row) {
+        return source.getIndex(mapping.get(row));
     }
 
     @Override
@@ -131,8 +132,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String label(int row) {
-        return source.label(mapping.get(row));
+    public String getLabel(int row) {
+        return source.getLabel(mapping.get(row));
     }
 
     @Override
@@ -146,8 +147,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
-        return source.levels();
+    public String[] getLevels() {
+        return source.getLevels();
     }
 
     @Override
@@ -156,8 +157,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        return source.binary(mapping.get(row));
+    public boolean getBinary(int row) {
+        return source.getBinary(mapping.get(row));
     }
 
     @Override
@@ -171,8 +172,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public long stamp(int row) {
-        return source.stamp(mapping.get(row));
+    public long getStamp(int row) {
+        return source.getStamp(mapping.get(row));
     }
 
     @Override
@@ -186,8 +187,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean missing(int row) {
-        return source.missing(mapping.get(row));
+    public boolean isMissing(int row) {
+        return source.isMissing(mapping.get(row));
     }
 
     @Override
@@ -217,8 +218,6 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public String toString() {
-        return "MappedVar:" + source.type() +
-                "[name:" + name() + ", rowCount:" + mapping.size() +
-                ']';
+        return "MappedVar:" + source.getType() + "[name:" + getName() + ", rowCount:" + mapping.size() + ']';
     }
 }

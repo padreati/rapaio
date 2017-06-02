@@ -24,24 +24,17 @@
 
 package rapaio.math.linear.dense;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Mean;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
-import rapaio.data.Var;
 import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.MatrixMultiplication;
-import rapaio.math.linear.dense.SolidRM;
 import rapaio.util.Util;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
@@ -99,7 +92,7 @@ public class MatrixMultiplicationTest {
 
         System.out.println("...");
 
-        Map<String, Numeric> times = new LinkedHashMap<>();
+        Map<String, NumericVar> times = new LinkedHashMap<>();
         for (int i = 0; i < 10; i++) {
 
             System.out.println("=========================");
@@ -125,9 +118,9 @@ public class MatrixMultiplicationTest {
         SolidFrame.byVars(new ArrayList<>(times.values())).printSummary();
     }
 
-    private void put(Map<String, Numeric> map, String key, Long value) {
+    private void put(Map<String, NumericVar> map, String key, Long value) {
         if (!map.containsKey(key)) {
-            map.put(key, Numeric.empty().withName(key));
+            map.put(key, NumericVar.empty().withName(key));
         }
         map.get(key).addValue(value);
     }

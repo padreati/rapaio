@@ -27,7 +27,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DTable;
 import rapaio.core.tools.DVector;
-import rapaio.data.Numeric;
+import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -43,12 +43,12 @@ public abstract class ChiSquareTest implements Printable {
 
     public static ChiSquareTest goodnessOfFitTest(Var x, double... p) {
         DVector dv = buildDv(x);
-        Numeric expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(Numeric.collector());
+        NumericVar expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(NumericVar.collector());
         return new GoodnessOfFit(dv, expected);
     }
 
     public static ChiSquareTest goodnessOfFitTest(DVector dv, double... p) {
-        Numeric expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(Numeric.collector());
+        NumericVar expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(NumericVar.collector());
         return new GoodnessOfFit(dv, expected);
     }
 
@@ -74,16 +74,16 @@ public abstract class ChiSquareTest implements Printable {
     public abstract double chiValue();
 
     private static DVector buildDv(Var x) {
-        switch (x.type()) {
+        switch (x.getType()) {
             case BINARY:
             case NOMINAL:
             case ORDINAL:
                 return DVector.fromCount(false, x);
             case NUMERIC:
             case INDEX:
-                DVector dv = DVector.empty(true, x.rowCount());
-                for (int i = 0; i < x.rowCount(); i++) {
-                    dv.set(i, x.value(i));
+                DVector dv = DVector.empty(true, x.getRowCount());
+                for (int i = 0; i < x.getRowCount(); i++) {
+                    dv.set(i, x.getValue(i));
                 }
                 return dv;
             default:
@@ -96,11 +96,11 @@ public abstract class ChiSquareTest implements Printable {
 
 class GoodnessOfFit extends ChiSquareTest {
 
-    public static GoodnessOfFit fromCountAndExpected(Var o, Numeric e) {
+    public static GoodnessOfFit fromCountAndExpected(Var o, NumericVar e) {
 
         // degrees of freedom
         DVector dv = DVector.fromCount(false, o);
-        if (e.rowCount() != dv.rowCount()) {
+        if (e.getRowCount() != dv.getRowCount()) {
             throw new IllegalArgumentException("number of expected value elements is not the same as number of levels");
         }
         return new GoodnessOfFit(dv, e);
@@ -111,21 +111,21 @@ class GoodnessOfFit extends ChiSquareTest {
     private final double chiValue; // chi-square statistic's value
     private final double pValue;
 
-    public GoodnessOfFit(DVector dv, Numeric expected) {
-        if (dv.rowCount() - dv.start() != expected.rowCount()) {
+    public GoodnessOfFit(DVector dv, NumericVar expected) {
+        if (dv.getRowCount() - dv.start() != expected.getRowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
         }
 
         this.dv = dv;
-        this.df = expected.rowCount() - 1;
+        this.df = expected.getRowCount() - 1;
         if (df <= 0) {
             throw new IllegalArgumentException("should be over 0");
         }
 
         double sum = 0;
-        for (int i = dv.start(); i < dv.rowCount(); i++) {
+        for (int i = dv.start(); i < dv.getRowCount(); i++) {
             double o = dv.get(i);
-            double e = expected.value(i - dv.start());
+            double e = expected.getValue(i - dv.start());
 
             if (Math.abs(e) < 1e-50) {
                 sum += Double.POSITIVE_INFINITY;
@@ -134,7 +134,7 @@ class GoodnessOfFit extends ChiSquareTest {
             if (Math.abs(e) < 1e-50 && Math.abs(o - e) < 1e50) {
                 continue;
             }
-            sum += Math.pow(o - e, 2) / expected.value(i - dv.start());
+            sum += Math.pow(o - e, 2) / expected.getValue(i - dv.start());
         }
         chiValue = sum;
         pValue = 1.0 - new ChiSquare(df).cdf(chiValue);
@@ -153,16 +153,16 @@ class GoodnessOfFit extends ChiSquareTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n> ChiSquareTest.goodness\n");
         sb.append("\n");
         sb.append("Chi-squared test for given probabilities (goodness of fit)\n");
         sb.append("\n");
         sb.append("data:  \n");
-        sb.append(dv.summary());
+        sb.append(dv.getSummary());
         sb.append("TODO\n\n");
-//        sb.append(dv.summary()).append("\n");
+//        sb.append(dv.getSummary()).append("\n");
         sb.append("X-squared = ").append(WS.formatFlex(chiValue))
                 .append(", df = ").append(df)
                 .append(", p-value = ").append(pValue)
@@ -185,15 +185,15 @@ class Independence extends ChiSquareTest {
 
     public Independence(DTable dt) {
         this.dt = dt;
-        df = (dt.rowCount() - 1 - dt.start()) * (dt.colCount() - 1 - dt.start());
+        df = (dt.getRowCount() - 1 - dt.start()) * (dt.getgetColCount() - 1 - dt.start());
 
         double[] rowTotals = dt.rowTotals();
         double[] colTotals = dt.colTotals();
         double total = Arrays.stream(rowTotals).sum();
 
         double sum = 0.0;
-        for (int i = dt.start(); i < dt.rowCount(); i++) {
-            for (int j = dt.start(); j < dt.colCount(); j++) {
+        for (int i = dt.start(); i < dt.getRowCount(); i++) {
+            for (int j = dt.start(); j < dt.getgetColCount(); j++) {
                 double expected = rowTotals[i] * colTotals[j] / total;
                 sum += Math.pow(dt.get(i, j) - expected, 2) / expected;
             }
@@ -215,14 +215,14 @@ class Independence extends ChiSquareTest {
     }
 
     @Override
-    public String summary() {
+    public String getSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n> ChiSquareTest.independence \n");
         sb.append("\n");
         sb.append("        Pearson’s Chi-squared test \n");
         sb.append("\n");
         sb.append("data:  \n");
-        sb.append(dt.summary()).append("\n");
+        sb.append(dt.getSummary()).append("\n");
         sb.append("X-squared = ").append(WS.formatFlex(chiValue))
                 .append(", df = ").append(df)
                 .append(", p-value = ").append(pValue)
