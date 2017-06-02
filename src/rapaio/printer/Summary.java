@@ -50,7 +50,7 @@ public class Summary {
     public static String getSummary(Frame df) {
         return getSummary(df, df.getVarNames());
     }
-
+  
     public static String getSummary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
