@@ -24,10 +24,10 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.BackwordMultiply;
+import rapaio.math.linear.dense.BackwardSubstitution;
 import rapaio.math.linear.dense.EigenDecomposition;
-import rapaio.math.linear.dense.ForwardMultiply;
-import rapaio.math.linear.dense.RMMultiplyStrategy;
+import rapaio.math.linear.dense.ForwardSubstitution;
+import rapaio.math.linear.dense.RMSubstitutionStrategy;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 
@@ -62,14 +62,14 @@ public final class Linear {
         }
         
         // Solve L*Y = B;
-        RMMultiplyStrategy multiply = new ForwardMultiply();
+        RMSubstitutionStrategy multiply = new ForwardSubstitution();
         
-        multiply.getMultiply(X, L, n, nx);
+        multiply.getSubstitution(X, L, n, nx);
 
         // Solve L'*X = Y;
-        multiply = new BackwordMultiply();
+        multiply = new BackwardSubstitution();
         
-        multiply.getMultiply(X, L, n, nx);
+        multiply.getSubstitution(X, L, n, nx);
         
         return X;
     }

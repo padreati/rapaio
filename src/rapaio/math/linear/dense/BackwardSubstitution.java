@@ -2,10 +2,10 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.RM;
 
-public class BackwordMultiply extends RMMultiplyStrategy{
+public class BackwardSubstitution extends RMSubstitutionStrategy{
 
 	@Override
-	public RM getMultiply(RM X, double[][] L, int n, int nx) {
+	public RM getSubstitution(RM X, double[][] L, int n, int nx) {
 		for (int k = n - 1; k >= 0; k--) {
             for (int j = 0; j < nx; j++) {
                 for (int i = k + 1; i < n; i++) {
