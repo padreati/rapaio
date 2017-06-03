@@ -203,84 +203,26 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double totalColEntropy() {
-        double[] totals = new double[colLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[j] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double entropy = 0;
-        for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                entropy += -log2(totals[i] / total) * totals[i] / total;
-            }
-        }
+    	AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
+        double entropy = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return entropy;
     }
 
     public double totalRowEntropy() {
-        double[] totals = new double[rowLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[i] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double entropy = 0;
-        for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                entropy += -log2(totals[i] / total) * totals[i] / total;
-            }
-        }
+    	AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
+        double entropy = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return entropy;
     }
 
     public double splitByRowAverageEntropy() {
-        double[] totals = new double[rowLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[i] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double gain = 0;
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                if (values[i][j] > 0)
-                    gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
-            }
-        }
+    	AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
+        double gain = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return gain;
     }
 
     public double splitByColAverageEntropy() {
-        double[] totals = new double[colLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[j] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double gain = 0;
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                if (values[i][j] > 0)
-                    gain += -log2(values[i][j] / totals[j]) * values[i][j] / total;
-            }
-        }
+    	AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
+        double gain = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return gain;
     }
 
@@ -293,42 +235,14 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double splitByRowIntrinsicInfo() {
-        double[] totals = new double[rowLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[i] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double splitInfo = 0;
-        for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                splitInfo += -log2(totals[i] / total) * totals[i] / total;
-            }
-        }
+        AbstractSplit abstractSplit = new ConcreteRowIntrinsicInfo();
+        double splitInfo = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return splitInfo;
     }
 
     public double splitByColIntrinsicInfo() {
-        double[] totals = new double[colLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[j] += values[i][j];
-            }
-        }
-        double total = 0;
-        for (int i = start; i < totals.length; i++) {
-            total += totals[i];
-        }
-        double splitInfo = 0;
-        for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                splitInfo += -log2(totals[i] / total) * totals[i] / total;
-            }
-        }
+    	AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
+        double splitInfo = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
         return splitInfo;
     }
 

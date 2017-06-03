@@ -56,7 +56,7 @@ public class MatrixMultiplication {
     }
 
     public static RM ijkAlgorithm(RM A, RM B) {
-        // initialise C
+        // Initialize C
         RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
         for (int i = 0; i < A.getRowCount(); i++) {
             for (int j = 0; j < B.getColCount(); j++) {
@@ -69,7 +69,7 @@ public class MatrixMultiplication {
     }
 
     public static RM ijkParallel(RM A, RM B) {
-        // initialise C
+        // initialize C
         RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
         IntStream.range(0, A.getRowCount()).parallel().forEach(i -> {
             for (int j = 0; j < B.getColCount(); j++) {
@@ -82,7 +82,7 @@ public class MatrixMultiplication {
     }
 
     public static RM ikjAlgorithm(RM A, RM B) {
-        // initialise C
+        // initialize C
         RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
         for (int i = 0; i < A.getRowCount(); i++) {
             for (int k = 0; k < A.getColCount(); k++) {
