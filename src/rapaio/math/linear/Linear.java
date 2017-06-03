@@ -24,7 +24,10 @@
 
 package rapaio.math.linear;
 
+import rapaio.math.linear.dense.BackwardSubstitution;
 import rapaio.math.linear.dense.EigenDecomposition;
+import rapaio.math.linear.dense.ForwardSubstitution;
+import rapaio.math.linear.dense.RMSubstitutionStrategy;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 
@@ -49,73 +52,33 @@ public final class Linear {
         // Copy right hand side.
         RM X = B.solidCopy();
 
-        // Solve L*Y = B;
-        for (int k = 0; k < ref.getRowCount(); k++) {
-            for (int j = 0; j < X.getColCount(); j++) {
-                for (int i = 0; i < k; i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(k, i));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
+        int n = ref.getRowCount();
+        int nx = ref.getColCount();
+        double[][] L = new double[n][nx];
+        for (int i = 0; i < n; i++) {
+        	for (int j = 0; j < nx; j++) {
+        		L[i][j] = ref.get(i, j);
+        	}
         }
+        
+        // Solve L*Y = B;
+        RMSubstitutionStrategy multiply = new ForwardSubstitution();
+        
+        multiply.getSubstitution(X, L, n, nx);
 
         // Solve L'*X = Y;
-        for (int k = ref.getRowCount() - 1; k >= 0; k--) {
-            for (int j = 0; j < X.getColCount(); j++) {
-                for (int i = k + 1; i < ref.getRowCount(); i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(i, k));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
-        }
+        multiply = new BackwardSubstitution();
+        
+        multiply.getSubstitution(X, L, n, nx);
+        
         return X;
     }
 
-    /*
-    public static EigenPair pdEigenDecomp(RM s, int maxRuns, double tol) {
-
-        // runs QR decomposition algorithm for maximum of iterations
-        // to provide a solution which has other than diagonals under
-        // tolerance
-
-        // this works only for positive definite
-        // here we check only symmetry
-
-        if (s.getRowCount() != s.getColCount())
-            throw new IllegalArgumentException("This eigen pair method works only for positive definite matrices");
-        QR qr = s.qr();
-        s = qr.getR().dot(qr.getQ());
-        RM ev = qr.getQ();
-        for (int i = 0; i < maxRuns - 1; i++) {
-            qr = s.qr();
-            s = qr.getR().dot(qr.getQ());
-            ev = ev.dot(qr.getQ());
-            if (inTolerance(s, tol))
-                break;
-        }
-        return EigenPair.from(s.diag(), ev.solidCopy());
-    }*/
 
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
 
-        int n = s.getColCount();
-        EigenDecomposition evd = EigenDecomposition.from(s);
-
-        double[] _values = evd.getRealEigenvalues();
-        RM _vectors = evd.getV();
-
-        RV values = SolidRV.empty(n);
-        RM vectors = SolidRM.empty(n, n);
-
-        for (int i = 0; i < values.count(); i++) {
-            values.set(values.count() - i - 1, _values[i]);
-        }
-        for (int i = 0; i < vectors.getRowCount(); i++) {
-            for (int j = 0; j < vectors.getColCount(); j++) {
-                vectors.set(i, vectors.getColCount() - j - 1, _vectors.get(i, j));
-            }
-        }
-        return EigenPair.from(values, vectors);
+    	DecompStrategy decompStrategy = new EigenDecomp();
+    	return decompStrategy.eigenDecomp(s, maxRuns, tol);
     }
 
     public static RM pdPower(RM s, double power, int maxRuns, double tol) {

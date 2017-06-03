@@ -188,24 +188,16 @@ public class CholeskyDecomposition implements Serializable {
         int nx = B.getColCount();
 
         // Solve L*Y = B;
-        for (int k = 0; k < n; k++) {
-            for (int j = 0; j < nx; j++) {
-                for (int i = 0; i < k; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[k][i]);
-                }
-                X.set(k, j, X.get(k, j) / L[k][k]);
-            }
-        }
+        
+        RMMultiplyStrategy multiply = new ForwardMultiply();
+        
+        multiply.getMultiply(X, L, n, nx);
 
         // Solve L'*X = Y;
-        for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
-                for (int i = k + 1; i < n; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[i][k]);
-                }
-                X.set(k, j, X.get(k, j) / L[k][k]);
-            }
-        }
+        multiply = new BackwordMultiply();
+        
+        multiply.getMultiply(X, L, n, nx);
+        
 
         return X;
     }
