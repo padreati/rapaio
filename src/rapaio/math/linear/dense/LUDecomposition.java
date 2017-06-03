@@ -179,7 +179,7 @@ public class LUDecomposition implements Serializable, Printable {
                 }
             }
         }
-
+        
         // Solve U*X = Y;
 
         for (int k = colCount - 1; k >= 0; k--) {
