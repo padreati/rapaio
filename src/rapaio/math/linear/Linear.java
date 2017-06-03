@@ -49,25 +49,21 @@ public final class Linear {
         // Copy right hand side.
         RM X = B.solidCopy();
 
-        // Solve L*Y = B;
-        for (int k = 0; k < ref.getRowCount(); k++) {
-            for (int j = 0; j < X.getColCount(); j++) {
-                for (int i = 0; i < k; i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(k, i));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
+        int n = ref.getRowCount();
+        int nx = X.getColCount();
+        double[][] L = new double[n][n];
+        for (int i = 0; i < n; i++) {
+        	for (int j = 0; j < n; j++) {
+        		L[i][j] = ref.get(i, j);
+        	}
         }
-
-        // Solve L'*X = Y;
-        for (int k = ref.getRowCount() - 1; k >= 0; k--) {
-            for (int j = 0; j < X.getColCount(); j++) {
-                for (int i = k + 1; i < ref.getRowCount(); i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(i, k));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
-        }
+        
+        SubstitutionStrategy sStrategy = new ForwardSubstitution();
+        X = sStrategy.getSubstitution(n, nx, X, L);
+        
+        sStrategy = new BackwardSubstitution();
+        X = sStrategy.getSubstitution(n, nx, X, L);
+        
         return X;
     }
 
