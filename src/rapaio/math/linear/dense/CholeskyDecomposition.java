@@ -25,7 +25,10 @@
 package rapaio.math.linear.dense;
 
 
+import rapaio.math.linear.BackwardSubstitution;
+import rapaio.math.linear.ForwardSubstitution;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.SubstitutionStrategy;
 
 import java.io.Serializable;
 
@@ -187,26 +190,14 @@ public class CholeskyDecomposition implements Serializable {
         RM X = B.solidCopy();
         int nx = B.getColCount();
 
-        // Solve L*Y = B;
-        for (int k = 0; k < n; k++) {
-            for (int j = 0; j < nx; j++) {
-                for (int i = 0; i < k; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[k][i]);
-                }
-                X.set(k, j, X.get(k, j) / L[k][k]);
-            }
-        }
+        SubstitutionStrategy sStrategy = new ForwardSubstitution();
+        
+        X = sStrategy.getSubstitution(n, nx, X, L);
 
-        // Solve L'*X = Y;
-        for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
-                for (int i = k + 1; i < n; i++) {
-                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[i][k]);
-                }
-                X.set(k, j, X.get(k, j) / L[k][k]);
-            }
-        }
-
+        sStrategy = new BackwardSubstitution();
+        
+        X = sStrategy.getSubstitution(n, nx, X, L);
+        
         return X;
     }
 }
