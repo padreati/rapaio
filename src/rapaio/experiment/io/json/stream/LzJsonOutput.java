@@ -123,32 +123,36 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         // then write all objects
 
         for (JsonValue js : objectBuffer) {
-            os.writeByte(BLOCK_VALUE);
-            if (js instanceof JsonNull) {
-                writeNull();
-                continue;
-            }
-            if (js instanceof JsonBool) {
-                writeBool((JsonBool) js);
-                continue;
-            }
-            if (js instanceof JsonNumber) {
-                writeNumeric((JsonNumber) js);
-                continue;
-            }
-            if (js instanceof JsonString) {
-                writeString((JsonString) js);
-                continue;
-            }
-            if (js instanceof JsonArray) {
-                writeArray((JsonArray) js);
-                continue;
-            }
-            writeObject((JsonObject) js, true);
+            writeAllObject(js, true);
         }
 
         objectBuffer.clear();
     }
+
+	private void writeAllObject(JsonValue js, boolean write) throws IOException {
+		os.writeByte(BLOCK_VALUE);
+		if (js instanceof JsonNull) {
+		    writeNull();
+		    return;
+		}
+		if (js instanceof JsonBool) {
+		    writeBool((JsonBool) js);
+		    return;
+		}
+		if (js instanceof JsonNumber) {
+		    writeNumeric((JsonNumber) js);
+		    return;
+		}
+		if (js instanceof JsonString) {
+		    writeString((JsonString) js);
+		    return;
+		}
+		if (js instanceof JsonArray) {
+		    writeArray((JsonArray) js);
+		    return;
+		}
+		writeObject((JsonObject) js, write);
+	}
 
     private void buildDictionary() {
         Map<String, Integer> strCounter = new HashMap<>();
@@ -267,27 +271,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         os.writeByte(TYPE_ARRAY);
         writeLen(size);
         for (JsonValue js : valueList) {
-            if (js instanceof JsonNull) {
-                writeNull();
-                continue;
-            }
-            if (js instanceof JsonBool) {
-                writeBool((JsonBool) js);
-                continue;
-            }
-            if (js instanceof JsonNumber) {
-                writeNumeric((JsonNumber) js);
-                continue;
-            }
-            if (js instanceof JsonString) {
-                writeString((JsonString) js);
-                continue;
-            }
-            if (js instanceof JsonArray) {
-                writeArray((JsonArray) js);
-                continue;
-            }
-            writeObject((JsonObject) js, false);
+            writeAllObject(js, false);
         }
     }
 
