@@ -611,7 +611,7 @@ class LBFGS {
 
     /**
      * Compute the sum of a vector times a scalara plus another vector.
-     * Adapted from the subroutine <code>daxpy</code> in <code>lbfgs_cimpl.f</code>.
+     * Adapted from the subroutine <code>daxpy</code> in <code>lbfgs_cimpl.f</code>
      * There could well be faster ways to carry out this operation; this
      * code is a straight translation from the Fortran.
      */
