@@ -62,37 +62,6 @@ public class StandardPrinter extends AbstractPrinter {
     }
 
     @Override
-    public int textWidth() {
-        return textWidth;
-    }
-
-    @Override
-    public Printer withTextWidth(int chars) {
-        textWidth = chars;
-        return this;
-    }
-
-    @Override
-    public int graphicWidth() {
-        return graphicWidth;
-    }
-
-    @Override
-    public void withGraphicWidth(int width) {
-        graphicWidth = width;
-    }
-
-    @Override
-    public int graphicHeight() {
-        return graphicHeight;
-    }
-
-    @Override
-    public void withGraphicHeight(int height) {
-        graphicHeight = height;
-    }
-
-    @Override
     public void print(String message) {
         writer.print(message);
         writer.flush();
@@ -117,7 +86,8 @@ public class StandardPrinter extends AbstractPrinter {
 
     @Override
     public void draw(Figure figure, int width, int height) {
-        FigurePanel figurePanel = new FigurePanel(figure);
+        @SuppressWarnings("deprecation")
+		FigurePanel figurePanel = new FigurePanel(figure);
         JFrame frame = new JFrame("rapaio graphic window");
         frame.setContentPane(figurePanel);
         frame.setVisible(true);
