@@ -122,8 +122,9 @@ public class CannyEdgeDetector {
      * @param image a source of luminance data
      */
 
-    public void setSourceImage(BufferedImage image) {
+    public CannyEdgeDetector setSourceImage(BufferedImage image) {
         sourceImage = image;
+        return this;
     }
 
     /**
@@ -148,8 +149,9 @@ public class CannyEdgeDetector {
      * @param edgesImage expected (though not required) to be null
      */
 
-    public void setEdgesImage(BufferedImage edgesImage) {
+    public CannyEdgeDetector setEdgesImage(BufferedImage edgesImage) {
         this.edgesImage = edgesImage;
+        return this;
     }
 
     /**
@@ -170,9 +172,10 @@ public class CannyEdgeDetector {
      * @param threshold a low hysteresis threshold
      */
 
-    public void setLowThreshold(float threshold) {
+    public CannyEdgeDetector setLowThreshold(float threshold) {
         if (threshold < 0) throw new IllegalArgumentException();
         lowThreshold = threshold;
+        return this;
     }
 
     /**
@@ -194,9 +197,10 @@ public class CannyEdgeDetector {
      * @param threshold a high hysteresis threshold
      */
 
-    public void setHighThreshold(float threshold) {
+    public CannyEdgeDetector setHighThreshold(float threshold) {
         if (threshold < 0) throw new IllegalArgumentException();
         highThreshold = threshold;
+        return this;
     }
 
     /**
@@ -219,9 +223,11 @@ public class CannyEdgeDetector {
      *                            pixels, at least 2.
      */
 
-    public void setGaussianKernelWidth(int gaussianKernelWidth) {
+    public CannyEdgeDetector setGaussianKernelWidth(int gaussianKernelWidth) {
         if (gaussianKernelWidth < 2) throw new IllegalArgumentException();
         this.gaussianKernelWidth = gaussianKernelWidth;
+        
+        return this;
     }
 
     /**
@@ -242,9 +248,11 @@ public class CannyEdgeDetector {
      * @return a GaussianPdf kernel radius in pixels, must exceed 0.1f.
      */
 
-    public void setGaussianKernelRadius(float gaussianKernelRadius) {
+    public CannyEdgeDetector setGaussianKernelRadius(float gaussianKernelRadius) {
         if (gaussianKernelRadius < 0.1f) throw new IllegalArgumentException();
         this.gaussianKernelRadius = gaussianKernelRadius;
+        
+        return this;
     }
 
     /**
@@ -266,8 +274,10 @@ public class CannyEdgeDetector {
      *                           false otherwise
      */
 
-    public void setContrastNormalized(boolean contrastNormalized) {
+    public CannyEdgeDetector setContrastNormalized(boolean contrastNormalized) {
         this.contrastNormalized = contrastNormalized;
+        
+        return this;
     }
 
     // methods
