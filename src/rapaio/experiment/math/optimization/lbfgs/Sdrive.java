@@ -70,7 +70,7 @@ public class Sdrive {
             }
 
             try {
-                LBFGS.lbfgs(n, m, x, f, g, diagco, diag, iprint, eps, xtol, iflag);
+                LBFGS.getInstance().lbfgs(n, m, x, f, g, diagco, diag, iprint, eps, xtol, iflag);
             } catch (LBFGS.ExceptionWithIflag e) {
                 System.err.println("Sdrive: lbfgs_cimpl failed.\n" + e);
                 return;
