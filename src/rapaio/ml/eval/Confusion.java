@@ -147,7 +147,6 @@ public class Confusion implements Printable {
         sb.append("> Confusion\n");
 
         sb.append("\n");
-
         TextTable tt = TextTable.newEmpty(factors.length + 3, factors.length + 3);
         tt.withSplit();
 
