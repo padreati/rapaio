@@ -86,7 +86,7 @@ public final class Linear {
         return U.dot(lambda).dot(U.t());
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") 
 	private static boolean inTolerance(RM s, double tol) {
         for (int i = 0; i < s.getRowCount(); i++) {
             for (int j = i + 1; j < s.getColCount(); j++) {
