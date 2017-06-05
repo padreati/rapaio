@@ -464,7 +464,7 @@ class LBFGS {
             	dx[i] = x.get(i);
             }
             
-            Mcsrch.mcsrch(n, dx, f, g, w, ispt + point * n, stp, ftol, xtol, maxfev, info, nfev, diag);
+            Mcsrch.getInstance().mcsrch(n, dx, f, g, w, ispt + point * n, stp, ftol, xtol, maxfev, info, nfev, diag);
 
             if (info[0] == -1) {
                 iflag[0] = 1;
