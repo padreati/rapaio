@@ -31,15 +31,24 @@ package rapaio.experiment.math.optimization.lbfgs;
  * <tt>LBFGS.java</tt> for more information.
  */
 public class Mcsrch {
-    private static int infoc[] = new int[1], j = 0;
-    private static double dg = 0, dgm = 0, dginit = 0, dgtest = 0, dgx[] = new double[1], dgxm[] = new double[1], dgy[] = new double[1], dgym[] = new double[1], finit = 0, ftest1 = 0, fm = 0, fx[] = new double[1], fxm[] = new double[1], fy[] = new double[1], fym[] = new double[1], p5 = 0, p66 = 0, stx[] = new double[1], sty[] = new double[1], stmin = 0, stmax = 0, width = 0, width1 = 0, xtrapf = 0;
-    private static boolean brackt[] = new boolean[1], stage1 = false;
+    private static Mcsrch instance;
+    private Mcsrch () {}
 
-    static double sqr(double x) {
+    public static synchronized Mcsrch getInstance () {
+        if (instance == null)
+            instance = new Mcsrch();
+        return instance;
+    }
+
+    private  int infoc[] = new int[1], j = 0;
+    private  double dg = 0, dgm = 0, dginit = 0, dgtest = 0, dgx[] = new double[1], dgxm[] = new double[1], dgy[] = new double[1], dgym[] = new double[1], finit = 0, ftest1 = 0, fm = 0, fx[] = new double[1], fxm[] = new double[1], fy[] = new double[1], fym[] = new double[1], p5 = 0, p66 = 0, stx[] = new double[1], sty[] = new double[1], stmin = 0, stmax = 0, width = 0, width1 = 0, xtrapf = 0;
+    private  boolean brackt[] = new boolean[1], stage1 = false;
+
+     double sqr(double x) {
         return x * x;
     }
 
-    static double max3(double x, double y, double z) {
+     double max3(double x, double y, double z) {
         return x < y ? (y < z ? z : y) : (x < z ? z : x);
     }
 
@@ -129,14 +138,16 @@ public class Mcsrch {
      * Laboratory. Java translation by Robert Dodier, August 1997.
      */
 
-    public static void mcsrch(int n, double[] x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
+    public  void mcsrch(int n, double[] x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
         p5 = 0.5;
         p66 = 0.66;
         xtrapf = 4;
 
+        LBFGS lbfgs = LBFGS.getInstance();
+
         if (info[0] != -1) {
             infoc[0] = 1;
-            if (n <= 0 || stp[0] <= 0 || ftol < 0 || LBFGS.gtol < 0 || xtol < 0 || LBFGS.stpmin < 0 || LBFGS.stpmax < LBFGS.stpmin || maxfev <= 0)
+            if (n <= 0 || stp[0] <= 0 || ftol < 0 || lbfgs.gtol < 0 || xtol < 0 || lbfgs.stpmin < 0 || lbfgs.stpmax < lbfgs.stpmin || maxfev <= 0)
                 return;
 
             // Compute the initial gradient in the search direction
@@ -159,7 +170,7 @@ public class Mcsrch {
             nfev[0] = 0;
             finit = f;
             dgtest = ftol * dginit;
-            width = LBFGS.stpmax - LBFGS.stpmin;
+            width = lbfgs.stpmax - lbfgs.stpmin;
             width1 = width / p5;
 
             for (j = 1; j <= n; j += 1) {
@@ -197,8 +208,8 @@ public class Mcsrch {
 
                 // Force the step to be within the bounds stpmax and stpmin.
 
-                stp[0] = Math.max(stp[0], LBFGS.stpmin);
-                stp[0] = Math.min(stp[0], LBFGS.stpmax);
+                stp[0] = Math.max(stp[0], lbfgs.stpmin);
+                stp[0] = Math.min(stp[0], lbfgs.stpmax);
 
                 // If an unusual termination is to occur then let
                 // stp be the lowest point obtained so far.
@@ -232,15 +243,15 @@ public class Mcsrch {
 
             if ((brackt[0] && (stp[0] <= stmin || stp[0] >= stmax)) || infoc[0] == 0) info[0] = 6;
 
-            if (stp[0] == LBFGS.stpmax && f <= ftest1 && dg <= dgtest) info[0] = 5;
+            if (stp[0] == lbfgs.stpmax && f <= ftest1 && dg <= dgtest) info[0] = 5;
 
-            if (stp[0] == LBFGS.stpmin && (f > ftest1 || dg >= dgtest)) info[0] = 4;
+            if (stp[0] == lbfgs.stpmin && (f > ftest1 || dg >= dgtest)) info[0] = 4;
 
             if (nfev[0] >= maxfev) info[0] = 3;
 
             if (brackt[0] && stmax - stmin <= xtol * stmax) info[0] = 2;
 
-            if (f <= ftest1 && Math.abs(dg) <= LBFGS.gtol * (-dginit)) info[0] = 1;
+            if (f <= ftest1 && Math.abs(dg) <= lbfgs.gtol * (-dginit)) info[0] = 1;
 
             // Check for termination.
 
@@ -249,7 +260,7 @@ public class Mcsrch {
             // In the first stage we seek a step for which the modified
             // function has a nonpositive value and nonnegative derivative.
 
-            if (stage1 && f <= ftest1 && dg >= Math.min(ftol, LBFGS.gtol) * dginit) stage1 = false;
+            if (stage1 && f <= ftest1 && dg >= Math.min(ftol, lbfgs.gtol) * dginit) stage1 = false;
 
             // A modified function is used to predict the step only if
             // we have not obtained a step for which the modified
@@ -346,7 +357,7 @@ public class Mcsrch {
      * as part of Minpack project. Argonne Nat'l Laboratory, June 1983.
      * Robert Dodier: Java translation, August 1997.
      */
-    public static void mcstep(double[] stx, double[] fx, double[] dx, double[] sty, double[] fy, double[] dy, double[] stp, double fp, double dp, boolean[] brackt, double stpmin, double stpmax, int[] info) {
+    public  void mcstep(double[] stx, double[] fx, double[] dx, double[] sty, double[] fy, double[] dy, double[] stp, double fp, double dp, boolean[] brackt, double stpmin, double stpmax, int[] info) {
         boolean bound;
         double gamma, p, q, r, s, sgnd, stpc, stpf, stpq, theta;
 
