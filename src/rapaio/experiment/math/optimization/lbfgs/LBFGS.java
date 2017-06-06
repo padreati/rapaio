@@ -78,6 +78,17 @@ package rapaio.experiment.math.optimization.lbfgs;
  */
 
 public class LBFGS {
+    private static LBFGS instance;
+    private LBFGS () {}
+
+    public static synchronized LBFGS getInstance () {
+        if (instance == null)
+            instance = new LBFGS();
+        return instance;
+    }
+
+
+
     /**
      * Controls the accuracy of the line search <code>mcsrch</code>. If the
      * function and gradient evaluations are inexpensive with respect
@@ -87,7 +98,7 @@ public class LBFGS {
      * <code>gtol</code> should be greater than 1e-4.
      */
 
-    public static double gtol = 0.9;
+    public double gtol = 0.9;
     /**
      * Specify lower bound for the step in the line search.
      * The default value is 1e-20. This value need not be modified unless
@@ -96,7 +107,7 @@ public class LBFGS {
      * should be increased).
      */
 
-    public static double stpmin = 1e-20;
+    public  double stpmin = 1e-20;
     /**
      * Specify upper bound for the step in the line search.
      * The default value is 1e20. This value need not be modified unless
@@ -105,7 +116,7 @@ public class LBFGS {
      * should be increased).
      */
 
-    public static double stpmax = 1e20;
+    public  double stpmax = 1e20;
     /**
      * The solution vector as it was at the end of the most recently
      * completed line search. This will usually be different from the
@@ -116,11 +127,11 @@ public class LBFGS {
      * of using <tt>x</tt>. When <tt>LBFGS.lbfgs_cimpl</tt> automatically stops,
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
-    public static double[] solution_cache = null;
-    private static double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
-    private static int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
-    private static boolean finish = false;
-    private static double[] w = null;
+    public  double[] solution_cache = null;
+    private  double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
+    private  int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
+    private  boolean finish = false;
+    private  double[] w = null;
 
     /**
      * This method returns the total number of evaluations of the objective
@@ -128,7 +139,7 @@ public class LBFGS {
      * evaluations increases by the number of evaluations required for the
      * line search; the total is only increased after a successful line search.
      */
-    public static int nfevaluations() {
+    public  int nfevaluations() {
         return nfun;
     }
 
@@ -258,7 +269,7 @@ public class LBFGS {
      * @throws ExceptionWithIflag
      */
 
-    public static void lbfgs(int n, int m, double[] x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
+    public  void lbfgs(int n, int m, double[] x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
         boolean execute_entire_while_loop = false;
 
         if (w == null || w.length != n * (2 * m + 1) + 2 * m) {
@@ -396,7 +407,7 @@ public class LBFGS {
                 }
             }
 
-            Mcsrch.mcsrch(n, x, f, g, w, ispt + point * n, stp, ftol, xtol, maxfev, info, nfev, diag);
+            Mcsrch.getInstance().mcsrch(n, x, f, g, w, ispt + point * n, stp, ftol, xtol, maxfev, info, nfev, diag);
 
             if (info[0] == -1) {
                 iflag[0] = 1;
@@ -480,7 +491,7 @@ public class LBFGS {
      * @param stp    Current stepsize.
      * @param finish Whether this method should print the ``we're done'' message.
      */
-    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, double[] x, double f, double[] g, double[] stp, boolean finish) {
+    public  void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, double[] x, double f, double[] g, double[] stp, boolean finish) {
         int i;
 
         if (iter == 0) {
@@ -543,7 +554,7 @@ public class LBFGS {
      * There could well be faster ways to carry out this operation; this
      * code is a straight translation from the Fortran.
      */
-    public static void daxpy(int n, double da, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
+    public  void daxpy(int n, double da, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
         int i, ix, iy, m, mp1;
 
         if (n <= 0) return;
@@ -591,7 +602,7 @@ public class LBFGS {
      * There could well be faster ways to carry out this operation; this
      * code is a straight translation from the Fortran.
      */
-    public static double ddot(int n, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
+    public  double ddot(int n, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
         double dtemp;
         int i, ix, iy, m, mp1;
 
