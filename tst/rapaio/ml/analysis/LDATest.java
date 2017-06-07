@@ -46,10 +46,11 @@ import static rapaio.graphics.Plotter.*;
 public class LDATest {
 
     private static final Logger logger = Logger.getLogger(LDATest.class.getName());
+    private RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void irisDraft() throws IOException, URISyntaxException {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         final Frame df = Datasets.loadIrisDataset();
         final String targetName = "class";
 

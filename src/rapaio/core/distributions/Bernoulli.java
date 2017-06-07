@@ -35,6 +35,7 @@ public class Bernoulli implements Distribution {
 
     private static final long serialVersionUID = -180129876504915848L;
 
+    private RandomSource randomSource = RandomSource.createRandom();
     private final double prob;
 
     public Bernoulli(double p) {
@@ -119,6 +120,6 @@ public class Bernoulli implements Distribution {
 
     @Override
     public double sampleNext() {
-        return RandomSource.nextDouble() <= prob ? 1 : 0;
+        return randomSource.nextDouble() <= prob ? 1 : 0;
     }
 }

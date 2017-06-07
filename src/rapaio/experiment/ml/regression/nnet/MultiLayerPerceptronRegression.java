@@ -48,6 +48,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     int runs = 0;
     private TFunction function = TFunction.SIGMOID;
     private double learningRate = 1.0;
+    private RandomSource randomSource = RandomSource.createRandom();
 
     public MultiLayerPerceptronRegression(int... layerSizes) {
         this.layerSizes = layerSizes;
@@ -164,7 +165,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
         int pos;
         for (int kk = 0; kk < runs; kk++) {
-            pos = RandomSource.nextInt(df.getRowCount());
+            pos = randomSource.nextInt(df.getRowCount());
 
             // set inputs
             for (int i = 0; i < inputNames().length; i++) {
@@ -263,8 +264,9 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
 @Deprecated
 class NetNode {
+    RandomSource randomSource = RandomSource.createRandom();
 
-    double value = RandomSource.nextDouble() / 10.;
+    double value = randomSource.nextDouble() / 10.;
     NetNode[] inputs;
     double[] weights;
     double gamma;
@@ -277,7 +279,7 @@ class NetNode {
         }
         this.weights = new double[inputs.length];
         for (int i = 0; i < weights.length; i++) {
-            weights[i] = RandomSource.nextDouble() / 10.;
+            weights[i] = randomSource.nextDouble() / 10.;
         }
     }
 }

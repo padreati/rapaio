@@ -42,10 +42,11 @@ import static rapaio.core.CoreTools.*;
  */
 @Deprecated
 public class KSTestTest {
+    private RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testPearson() throws IOException, URISyntaxException {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
         KSTestTwoSamples test = KSTestTwoSamples.from(df.getVar("Son"), df.getVar("Father"));
         test.printSummary();
@@ -56,7 +57,7 @@ public class KSTestTest {
 
     @Test
     public void testNormal() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Normal d = distNormal();
         NumericVar sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
@@ -67,7 +68,7 @@ public class KSTestTest {
 
     @Test
     public void testUniform() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         NumericVar sample = new Uniform(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
@@ -77,7 +78,7 @@ public class KSTestTest {
 
     @Test
     public void testStudentT() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
         NumericVar sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());

@@ -57,6 +57,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     private static final long serialVersionUID = 1208515184777030598L;
 
+    RandomSource randomSource = RandomSource.createRandom();
     protected double[] alpha; // Lagrange multipliers from dual
     protected double b, bLow, bUp; // thresholds
     protected int iLow, iUp; // indices for bLow and bUp
@@ -356,7 +357,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             if (examineAll) {
 
                 // add random as an additional step
-                int offset = RandomSource.nextInt(train.getRowCount());
+                int offset = randomSource.nextInt(train.getRowCount());
                 for (int i = offset; i < train.getRowCount() + offset; i++) {
                     int pos = i;
                     if (pos >= train.getRowCount())
@@ -369,7 +370,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             } else {
 
                 // This code implements Modification 1 from Keerthi et al.'s paper
-//                int offset = RandomSource.nextInt(train.getRowCount());
+//                int offset = randomSource.nextInt(train.getRowCount());
 //                for (int i = offset; i < train.getRowCount() + offset; i++) {
 //
 //                    int pos = i;

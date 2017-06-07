@@ -43,19 +43,25 @@ import java.util.Random;
  * @author Aurelian Tutuianu
  */
 public final class RandomSource implements Serializable {
-
     private static final long serialVersionUID = -1201316989986445607L;
-    private static Random rand = new Random();
+    public static RandomSource createRandom(){
+        return new RandomSource();
+    }
 
-    public static void setSeed(long seed) {
+    private Random rand = null;
+
+    private RandomSource() {
+        rand = new Random();
+    }
+    public  void setSeed(long seed) {
         rand.setSeed(seed);
     }
 
-    public static void withUtilRandom(long seed) {
+    public  void withUtilRandom(long seed) {
         rand = new Random(seed);
     }
 
-    public static void withSecureRandom(byte[] seed) {
+    public  void withSecureRandom(byte[] seed) {
         rand = new SecureRandom(seed);
     }
 
@@ -64,23 +70,23 @@ public final class RandomSource implements Serializable {
      * {@code double} value between {@code 0.0} and
      * {@code 1.0} from this random number generator's sequence.
      */
-    public static double nextDouble() {
+    public  double nextDouble() {
         return rand.nextDouble();
     }
 
-    public static int nextInt(int n) {
+    public  int nextInt(int n) {
         return rand.nextInt(n);
     }
 
-    public static long nextLong() {
+    public  long nextLong() {
         return rand.nextLong();
     }
 
-    public static String nextString(int len) {
+    public  String nextString(int len) {
         return new BigInteger(len, rand).toString();
     }
 
-    public static Random getRandom() {
+    public  Random getRandom() {
         return rand;
     }
 }

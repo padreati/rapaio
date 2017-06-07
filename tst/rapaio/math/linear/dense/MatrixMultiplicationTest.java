@@ -41,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 public class MatrixMultiplicationTest {
 
     private static double TOL = 1e-12;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void basicTestMM() {
@@ -59,7 +60,7 @@ public class MatrixMultiplicationTest {
     @Test
     public void testDifferentMethods() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         Normal normal = new Normal();
         RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
@@ -79,7 +80,7 @@ public class MatrixMultiplicationTest {
     @Test
     public void largeMatrices() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         int N = 100;
         Normal norm = new Normal(1, 12);

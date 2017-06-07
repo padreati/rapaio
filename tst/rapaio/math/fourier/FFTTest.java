@@ -35,6 +35,7 @@ import rapaio.util.Pair;
 
 public class FFTTest {
 
+    RandomSource randomSource = RandomSource.createRandom();
     // display an array of Complex numbers to standard output
     public static void show(Pair<Var, Var> x) {
         System.out.println("-------------------");
@@ -117,7 +118,7 @@ public class FFTTest {
     public void randomInverseTest() {
 
         final int N = 1024;
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
 
         Normal normal = new Normal(0, 100);
 

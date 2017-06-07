@@ -52,6 +52,7 @@ import java.net.URISyntaxException;
 public class PCATest {
 
     Frame df;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Before
     public void setUp() throws Exception {
@@ -71,7 +72,7 @@ public class PCATest {
 
     @Test
     public void irisPca() throws IOException, URISyntaxException {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         Frame iris = Datasets.loadIrisDataset();
         Frame x = iris.removeVars("class");
 

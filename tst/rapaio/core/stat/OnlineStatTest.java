@@ -39,11 +39,12 @@ import static org.junit.Assert.assertEquals;
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class OnlineStatTest {
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testVariance() {
 
-        RandomSource.setSeed(1223);
+        randomSource.setSeed(1223);
 
         int LEN = 1_000;
         Var v = new Normal(0, 1).sample(LEN);

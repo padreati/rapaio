@@ -47,6 +47,7 @@ import java.util.stream.DoubleStream;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class DVector implements Printable, Serializable {
+    RandomSource randomSource = RandomSource.createRandom();
 
     /**
      * Builds a distribution vector with given levels
@@ -244,7 +245,7 @@ public class DVector implements Printable, Serializable {
                 continue;
             }
             if (values[i] == best) {
-                if (RandomSource.nextDouble() > n / (n + 1)) {
+                if (randomSource.nextDouble() > n / (n + 1)) {
                     best = values[i];
                     bestIndex = i;
                 }

@@ -39,6 +39,7 @@ import java.util.List;
 public class FFShuffle extends AbstractFF {
 
     private static final long serialVersionUID = 3868876807602578584L;
+    RandomSource randomSource = RandomSource.createRandom();
 
     public FFShuffle() {
         super(VRange.all());
@@ -61,7 +62,7 @@ public class FFShuffle extends AbstractFF {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
+            mapping.set(i - 1, mapping.set(randomSource.nextInt(i), mapping.get(i - 1)));
         }
         return df.mapRows(Mapping.wrap(mapping));
     }

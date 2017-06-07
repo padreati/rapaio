@@ -51,10 +51,11 @@ import static rapaio.sys.WS.draw;
  */
 @Deprecated
 public class IrisContour {
+    private static RandomSource randomSource = RandomSource.createRandom();
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
 
         final String X = "petal-length";
         final String Y = "sepal-width";

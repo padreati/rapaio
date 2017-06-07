@@ -35,6 +35,7 @@ import java.io.Serializable;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
  */
 public interface Distribution extends Serializable {
+    RandomSource randomSource = RandomSource.createRandom();
 
     /**
      * @return canonical name of the densities with parameter values
@@ -109,7 +110,7 @@ public interface Distribution extends Serializable {
      * @return new random value
      */
     default double sampleNext() {
-        return quantile(RandomSource.nextDouble());
+        return quantile(randomSource.nextDouble());
     }
 
     /**

@@ -40,6 +40,7 @@ public class ChiSquare implements Distribution {
     private final double b;
     private final double vm;
     private final double vd;
+    RandomSource randomSource = RandomSource.createRandom();
 
     public ChiSquare(double df) {
         if (df < 1) {
@@ -161,8 +162,8 @@ public class ChiSquare implements Distribution {
 
         if (df == 1.0) {
             for (; ; ) {
-                u = RandomSource.nextDouble();
-                v = RandomSource.nextDouble() * 0.857763884960707;
+                u = randomSource.nextDouble();
+                v = randomSource.nextDouble() * 0.857763884960707;
                 z = v / u;
                 if (z < 0)
                     continue;
@@ -179,8 +180,8 @@ public class ChiSquare implements Distribution {
             }
         } else {
             for (; ; ) {
-                u = RandomSource.nextDouble();
-                v = RandomSource.nextDouble() * vd + vm;
+                u = randomSource.nextDouble();
+                v = randomSource.nextDouble() * vd + vm;
                 z = v / u;
                 if (z < -b)
                     continue;

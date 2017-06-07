@@ -35,21 +35,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static rapaio.core.RandomSource.nextDouble;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public final class SamplingTools {
 
+    private static RandomSource randomSource = RandomSource.createRandom();
+
     /**
      * Discrete sampling with repetition.
      * Nothing special, just using the uniform discrete sampler offered by the system.
      */
     public static int[] sampleWR(final int populationSize, int sampleSize) {
-        int[] sample = new int[sampleSize];
+        int[] sample = new int[sampleSize]; 
         for (int i = 0; i < sampleSize; i++) {
-            sample[i] = RandomSource.nextInt(populationSize);
+            sample[i] = randomSource.nextInt(populationSize);
         }
         return sample;
     }
@@ -94,14 +95,14 @@ public final class SamplingTools {
             sample[i] = i;
         }
         for (int i = sampleSize; i > 1; i--) {
-            int j = RandomSource.nextInt(i);
+            int j = randomSource.nextInt(i);
             int tmp = sample[i - 1];
             sample[i - 1] = sample[j];
             sample[j] = tmp;
         }
 
         for (int i = sampleSize; i < populationSize; i++) {
-            int j = RandomSource.nextInt(i + 1);
+            int j = randomSource.nextInt(i + 1);
             if (j < sampleSize) {
                 sample[j] = i;
             }
@@ -133,8 +134,8 @@ public final class SamplingTools {
 
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
-            int column = RandomSource.nextInt(prob.length);
-            sample[i] = RandomSource.nextDouble() < prob[column] ? column : alias[column];
+            int column = randomSource.nextInt(prob.length);
+            sample[i] = randomSource.nextDouble() < prob[column] ? column : alias[column];
         }
         return sample;
     }
@@ -184,7 +185,7 @@ public final class SamplingTools {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = Math.pow(nextDouble(), 1. / freq[i]);
+            k[i] = Math.pow(randomSource.nextDouble(), 1. / freq[i]);
             result[i] = i;
         }
 
@@ -208,7 +209,7 @@ public final class SamplingTools {
         // exhaust the source
         int pos = sampleSize;
         while (pos < freq.length) {
-            double r = nextDouble();
+            double r = randomSource.nextDouble();
             double xw = Math.log(r) / Math.log(k[heap[1]]);
 
             double acc = 0;
@@ -224,7 +225,7 @@ public final class SamplingTools {
 
             // min replaced with the new selected value
             double tw = Math.pow(k[heap[1]], freq[pos]);
-            double r2 = nextDouble() * (1. - tw) + tw;
+            double r2 = randomSource.nextDouble() * (1. - tw) + tw;
             double ki = Math.pow(r2, 1 / freq[pos]);
 
             k[heap[1]] = ki;
@@ -328,7 +329,7 @@ public final class SamplingTools {
         List<Frame> result = new ArrayList<>();
 
         List<Integer> rows = IntStream.range(0, frame.getRowCount()).mapToObj(i -> i).collect(Collectors.toList());
-        Collections.shuffle(rows, RandomSource.getRandom());
+        Collections.shuffle(rows, randomSource.getRandom());
 
         int start = 0;
         for (double f : freq) {
@@ -354,12 +355,12 @@ public final class SamplingTools {
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {
-            Collections.shuffle(map, RandomSource.getRandom());
+            Collections.shuffle(map, randomSource.getRandom());
             left.addAll(map.subList(0, (int) (p * map.size())));
             right.addAll(map.subList((int) (p * map.size()), map.size()));
         }
-        Collections.shuffle(left, RandomSource.getRandom());
-        Collections.shuffle(right, RandomSource.getRandom());
+        Collections.shuffle(left, randomSource.getRandom());
+        Collections.shuffle(right, randomSource.getRandom());
 
         List<Frame> list = new ArrayList<>();
         list.add(df.mapRows(Mapping.wrap(left)));

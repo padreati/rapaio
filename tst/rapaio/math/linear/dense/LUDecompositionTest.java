@@ -36,11 +36,12 @@ import static org.junit.Assert.*;
 public class LUDecompositionTest {
 
     private static final double TOL = 1e-14;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testBasicGaussian() {
 
-        RandomSource.setSeed(14);
+        randomSource.setSeed(14);
 
         RM a = SolidRM.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
@@ -52,7 +53,7 @@ public class LUDecompositionTest {
     @Test
     public void testBasicCrout() {
 
-        RandomSource.setSeed(14);
+        randomSource.setSeed(14);
 
         RM a = SolidRM.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.CROUT);
@@ -78,7 +79,7 @@ public class LUDecompositionTest {
 
     @Test
     public void testIsSingular() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         assertFalse(LUDecomposition.from(SolidRM.empty(10, 10)).isNonSingular());
         assertTrue(LUDecomposition.from(SolidRM.random(10, 10)).isNonSingular());
     }
@@ -121,7 +122,7 @@ public class LUDecompositionTest {
 
     @Test
     public void determinantTest() {
-        RandomSource.setSeed(123);
+        randomSource.setSeed(123);
         RM a = SolidRM.wrap(new double[][] {
                 {1, 2},
                 {3, 4}

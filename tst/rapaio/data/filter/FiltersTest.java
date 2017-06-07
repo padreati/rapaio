@@ -43,9 +43,10 @@ import static rapaio.data.filter.Filters.*;
  */
 public class FiltersTest {
 
+    RandomSource randomSource = RandomSource.createRandom();
     @Test
     public void testJitterStandard() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var a = jitter(NumericVar.fill(100_000, 1));
         Mean mean = mean(a);
         Variance var = variance(a);
@@ -60,7 +61,7 @@ public class FiltersTest {
 
     @Test
     public void testJitterStandardSd() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var a = jitter(NumericVar.fill(100_000, 1), 2);
         Mean mean = mean(a);
         Variance var = variance(a);
@@ -75,7 +76,7 @@ public class FiltersTest {
 
     @Test
     public void testJitterDistributed() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var a = jitter(NumericVar.fill(100_000, 1), new ChiSquare(5));
         Mean mean = mean(a);
         Variance var = variance(a);
@@ -90,7 +91,7 @@ public class FiltersTest {
 
     @Test
     public void testSortNominal() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var x1 = NominalVar.copy("z", "q", "a", "b", "d", "c");
         Var x2 = sort(x1);
         for (int i = 0; i < x2.getRowCount() - 1; i++) {
@@ -104,7 +105,7 @@ public class FiltersTest {
 
     @Test
     public void testSortNumeric() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var x1 = NumericVar.copy(7, 5, 1, 2, 5, 4);
         Var x2 = sort(x1);
         for (int i = 0; i < x2.getRowCount() - 1; i++) {
@@ -118,7 +119,7 @@ public class FiltersTest {
 
     @Test
     public void testSortRef() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         Var x1 = NominalVar.copy("z", "q", "a", "b", "d", "c");
         Var x2 = NumericVar.copy(7, 6, 1, 2, 5, 4);
         Var x3 = refSort(x2, x1);
@@ -133,7 +134,7 @@ public class FiltersTest {
 
     @Test
     public void testShuffle() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         double N = 1000.0;
         Var x = NumericVar.seq(0, N, 1);
         Var first = NumericVar.empty();
@@ -147,7 +148,7 @@ public class FiltersTest {
 
     @Test
     public void powerTransform() {
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
 
         Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.getValue(), 2)).boxed().collect(NumericVar.collector());
         Var y = transformPower(x.solidCopy(), 0.2);

@@ -44,10 +44,11 @@ import static org.junit.Assert.*;
  */
 public class NaiveBayesTest {
 
+    RandomSource randomSource = RandomSource.createRandom();
     @Test
     public void testBasicCvpGaussian() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1L);
+        randomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes();
         nb.train(df, "class");
@@ -71,7 +72,7 @@ public class NaiveBayesTest {
     @Test
     public void testBasicCvpEmpirical() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1L);
+        randomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
         nb.train(df, "class");
@@ -94,7 +95,7 @@ public class NaiveBayesTest {
     @Test
     public void testBasicDvp() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1L);
+        randomSource.setSeed(1L);
         Frame df = Datasets.loadMushrooms();
 
         NaiveBayes nb = new NaiveBayes();

@@ -33,11 +33,12 @@ import static org.junit.Assert.assertTrue;
 public class EigenDecompositionTest {
 
     private static final double TOL = 1e-12;
+    RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testSymmetric() {
 
-        RandomSource.setSeed(1234);
+        randomSource.setSeed(1234);
         for (int i = 0; i < 100; i++) {
 
             RM a = SolidRM.random(10, 10).scatter();

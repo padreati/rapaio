@@ -42,6 +42,7 @@ public class OneRuleTest {
 
     private static final int SIZE = 6;
 
+    RandomSource randomSource = RandomSource.createRandom();
     private final Var classVar;
     private final Var heightVar;
 
@@ -131,7 +132,7 @@ public class OneRuleTest {
 
         Frame df2 = Datasets.loadMushrooms();
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         OneRule oneRule2 = new OneRule();
         oneRule2.train(df2, "classes");
 

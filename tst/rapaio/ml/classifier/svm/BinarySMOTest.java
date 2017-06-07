@@ -48,6 +48,7 @@ import static org.junit.Assert.assertTrue;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/20/16.
  */
 public class BinarySMOTest {
+    private RandomSource randomSource = RandomSource.createRandom();
 
     @Test
     public void testDescription() {
@@ -122,7 +123,7 @@ public class BinarySMOTest {
                 .withKernel(new PolyKernel(1))
                 .withC(0.1);
 
-        RandomSource.setSeed(1);
+        randomSource.setSeed(1);
         double score = CEvaluation.cv(df, target, smo1, 10);
         assertEquals(0.75, score, 1e-7);
     }
@@ -159,7 +160,7 @@ public class BinarySMOTest {
 
         for (Kernel k : kernels) {
 
-            RandomSource.setSeed(1);
+            randomSource.setSeed(1);
 
             BinarySMO smo = new BinarySMO();
             smo.withInputFilters(new FFStandardize(VRange.all()));
