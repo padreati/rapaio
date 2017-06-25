@@ -119,5 +119,27 @@ public class LinearRegressionTest {
                         "Multiple R-squared:  0.003004, Adjusted R-squared:  -0.0020313\n" +
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
                         "\n", lmfit.getSummary());
+
+        LinearRFit lmfit2 = lm.fit(df, false);
+        assertEquals(
+                "Regression Fit Summary\n" +
+                        "=======================\n" +
+                        "\n" +
+                        "Model type: LinearRegression\n" +
+                        "Model instance: LinearRegression\n" +
+                        "\n" +
+                        "> input variables: \n" +
+                        " 1. (Intercept) num 2. TV num                     \n" +
+                        "> target variables: \n" +
+                        " 1. Radio num                                       \n" +
+                        "\n" +
+                        "Target <<< Radio >>>\n" +
+                        "\n" +
+                        "> Coefficients: \n" +
+                        "     Name     Estimate \n" +
+                        " (Intercept) 21.8703186\n" +
+                        " TV          0.0094781 \n",
+                lmfit2.getSummary());
+
     }
 }

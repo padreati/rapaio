@@ -45,8 +45,8 @@ public class LinearRFit extends RFit {
 
     private LinearRegression lm;
 
-    public LinearRFit(LinearRegression model, Frame df) {
-        super(model, df, true);
+    public LinearRFit(LinearRegression model, Frame df, boolean withResiduals) {
+        super(model, df, withResiduals);
         this.lm = model;
     }
 

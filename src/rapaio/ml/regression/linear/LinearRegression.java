@@ -111,7 +111,7 @@ public class LinearRegression extends AbstractRegression {
 
     @Override
     protected LinearRFit coreFit(Frame df, boolean withResiduals) {
-        LinearRFit rp = new LinearRFit(this, df);
+        LinearRFit rp = new LinearRFit(this, df, withResiduals);
 
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
