@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost;
+package rapaio.ml.regression.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
@@ -30,8 +31,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
-import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
-import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.BTRegression;
+import rapaio.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.ml.regression.simple.L2Regression;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
@@ -52,14 +53,13 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private static final long serialVersionUID = 4559540258922653130L;
 
     // parameters
-    GBTLossFunction lossFunction = new GBTLossFunction.Huber();
+    private GBTLossFunction lossFunction = new GBTLossFunction.Huber();
 
-    Regression initRegression = L2Regression.create();
-    BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
-    double shrinkage = 1.0;
+    private Regression initRegression = L2Regression.create();
+    private BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
+    private double shrinkage = 1.0;
 
     // prediction
-    NumericVar fitLearn;
     NumericVar fitValues;
     List<BTRegression> trees;
 
@@ -135,20 +135,16 @@ public class GBTRegression extends AbstractRegression implements Printable {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
+        trees = new ArrayList<>();
+
         Var y = df.getVar(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
-        initRegression.train(df, firstTargetName());
-        RFit initPred = initRegression.fit(df, false);
-        trees = new ArrayList<>();
-
-        fitLearn = NumericVar.fill(df.getRowCount());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            fitLearn.setValue(i, initPred.firstFit().getValue(i));
-        }
+        initRegression.train(df, weights, firstTargetName());
+        fitValues = initRegression.fit(df, false).firstFit().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
-            NumericVar gradient = lossFunction.gradient(y, fitLearn).withName("target");
+            NumericVar gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
             BTRegression tree = regressor.newInstance();
@@ -157,7 +153,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             Mapping samplerMapping = sampler().nextSample(xm, weights).mapping;
             Frame xmLearn = xm.mapRows(samplerMapping);
-            Frame xLearn = x.mapRows(samplerMapping);
+//            Frame xLearn = x.mapRows(samplerMapping);
 
             // build regions
 
@@ -166,26 +162,26 @@ public class GBTRegression extends AbstractRegression implements Printable {
             // fit residuals
 
             tree.boostFit(
-                    xLearn,
+                    xmLearn,
                     MappedVar.byRows(y, samplerMapping),
-                    MappedVar.byRows(fitLearn, samplerMapping),
+                    MappedVar.byRows(fitValues, samplerMapping),
+//                    y,
+//                    fitValues,
                     lossFunction);
 
             // add next prediction to the fit values
 
             RFit treePred = tree.fit(df, false);
             for (int j = 0; j < df.getRowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * treePred.firstFit().getValue(j));
+                fitValues.setValue(j, fitValues.getValue(j) + shrinkage * treePred.firstFit().getValue(j));
             }
 
             // add tree in the predictors list
 
             trees.add(tree);
-        }
 
-        fitValues = NumericVar.empty();
-        for (int i = 0; i < fitLearn.getRowCount(); i++) {
-            fitValues.addValue(fitLearn.getValue(i));
+            if(runningHook()!=null)
+                runningHook().accept(this, i);
         }
         return true;
     }
@@ -193,12 +189,12 @@ public class GBTRegression extends AbstractRegression implements Printable {
     @Override
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.build(this, df, withResiduals);
-        RFit initPred = initRegression.fit(df);
+        RFit initPred = initRegression.fit(df, false);
         for (int i = 0; i < df.getRowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().getValue(i));
         }
         for (BTRegression tree : trees) {
-            RFit treePred = tree.fit(df);
+            RFit treePred = tree.fit(df, false);
             for (int i = 0; i < df.getRowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().getValue(i) + shrinkage * treePred.firstFit().getValue(i));
             }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,15 +43,15 @@ import static java.util.Collections.nCopies;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
 public class RFit implements Printable {
-    private final Regression model;
-    private final Frame df;
-    private final boolean withResiduals;
-    private final Map<String, NumericVar> fit;
-    private final Map<String, NumericVar> residuals;
-    private final Map<String, Double> tss;
-    private final Map<String, Double> ess;
-    private final Map<String, Double> rss;
-    private final Map<String, Double> rsquare;
+    protected final Regression model;
+    protected final Frame df;
+    protected final boolean withResiduals;
+    protected final Map<String, NumericVar> fit;
+    protected final Map<String, NumericVar> residuals;
+    protected final Map<String, Double> tss;
+    protected final Map<String, Double> ess;
+    protected final Map<String, Double> rss;
+    protected final Map<String, Double> rsquare;
 
     // static builder
 
@@ -144,6 +145,14 @@ public class RFit implements Printable {
         return fit.get(targetVar);
     }
 
+    public double getFirstRSquare() {
+        return getRSquare(firstTargetName());
+    }
+
+    public double getRSquare(String targetVar) {
+        return rsquare.get(targetVar);
+    }
+
     public Map<String, NumericVar> residualsMap() {
         return residuals;
     }
@@ -190,52 +199,7 @@ public class RFit implements Printable {
     public String getSummary() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Regression Fit Summary").append("\n");
-        sb.append("=======================\n");
-        sb.append("\n");
-
-        sb.append("Model type: ").append(model.name()).append("\n");
-        sb.append("Model instance: ").append(model.fullName()).append("\n");
-
-        sb.append("Predicted frame summary:\n");
-        sb.append("> rows: ").append(df.getRowCount()).append("\n");
-        sb.append("> vars: ").append(df.getVarCount()).append("\n");
-        sb.append("\n");
-
-        // inputs
-
-        sb.append("> input variables: \n");
-
-        TextTable tt = TextTable.newEmpty(model.inputNames().length, 3);
-        for (int i = 0; i < model.inputNames().length; i++) {
-            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
-            tt.set(i, 1, model.inputName(i), -1);
-            tt.set(i, 2, model.inputType(i).getCode(), -1);
-        }
-
-        tt.withHeaderRows(0);
-        tt.withMerge();
-
-        sb.append(tt.getSummary());
-
-        // targets
-
-        sb.append("> target variables: \n");
-
-        tt = TextTable.newEmpty(model.targetNames().length, 3);
-        for (int i = 0; i < model.targetNames().length; i++) {
-            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
-            tt.set(i, 1, model.targetName(i), -1);
-            tt.set(i, 2, model.targetType(i).getCode(), -1);
-        }
-
-        tt.withHeaderRows(0);
-        tt.withMerge();
-
-        sb.append(tt.getSummary());
-
-        sb.append("\n");
-
+        sb.append(model.getHeaderSummary());
 
         for (String target : model.targetNames()) {
             sb.append("Fit and residuals for ").append(target).append("\n");
@@ -259,6 +223,9 @@ public class RFit implements Printable {
                 dec++;
                 max /= 10;
             }
+
+
+
 
             sb.append(String.format("Total sum of squares     (TSS) : %" + dec + ".3f\n", tss.get(target)));
             sb.append(String.format("Explained sum of squares (ESS) : %" + dec + ".3f\n", ess.get(target)));

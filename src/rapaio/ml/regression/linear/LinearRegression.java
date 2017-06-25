@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.linear;
+package rapaio.ml.regression.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -31,15 +32,17 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.Regression;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
-public class OLSRegression extends AbstractRegression {
+public class LinearRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 8610329390138787530L;
 
@@ -47,20 +50,18 @@ public class OLSRegression extends AbstractRegression {
 
     @Override
     public Regression newInstance() {
-        return new OLSRegression();
+        return new LinearRegression();
     }
 
     @Override
     public String name() {
-        return "OLSRegression";
+        return "LinearRegression";
     }
 
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("TODO");
-        sb.append("}");
+        sb.append(name());
         return sb.toString();
     }
 
@@ -79,6 +80,14 @@ public class OLSRegression extends AbstractRegression {
         return beta.mapCol(0);
     }
 
+    public RV getCoefficients(int targetIndex) {
+        return beta.mapCol(targetIndex);
+    }
+
+    public RM getAllCoefficients() {
+        return beta;
+    }
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
         if (targetNames().length == 0) {
@@ -91,18 +100,18 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public OLSRFit fit(Frame df) {
-        return (OLSRFit) super.fit(df);
+    public LinearRFit fit(Frame df) {
+        return (LinearRFit) super.fit(df);
     }
 
     @Override
-    public OLSRFit fit(Frame df, boolean withResiduals) {
-        return (OLSRFit) super.fit(df, withResiduals);
+    public LinearRFit fit(Frame df, boolean withResiduals) {
+        return (LinearRFit) super.fit(df, withResiduals);
     }
 
     @Override
-    protected OLSRFit coreFit(Frame df, boolean withResiduals) {
-        OLSRFit rp = new OLSRFit(this, df);
+    protected LinearRFit coreFit(Frame df, boolean withResiduals) {
+        LinearRFit rp = new LinearRFit(this, df);
 
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
@@ -121,6 +130,32 @@ public class OLSRegression extends AbstractRegression {
 
     @Override
     public String getSummary() {
-        throw new IllegalArgumentException("not implemented");
+        StringBuilder sb = new StringBuilder();
+        sb.append(getHeaderSummary());
+        sb.append("\n");
+
+        if (!hasLearned) {
+            return sb.toString();
+        }
+
+        for (int i = 0; i < targetNames.length; i++) {
+            String targetName = targetNames[i];
+            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
+            sb.append("> Coefficients: \n");
+            RV coeff = beta.mapCol(i);
+
+            TextTable tt = TextTable
+                    .newEmpty(coeff.count() + 1, 2)
+                    .withHeaderRows(1);
+            tt.set(0, 0, "Name", 0);
+            tt.set(0, 1, "Estimate", 0);
+            for (int j = 0; j < coeff.count(); j++) {
+                tt.set(j + 1, 0, inputNames[j], -1);
+                tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
+            }
+            sb.append(tt.getSummary());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

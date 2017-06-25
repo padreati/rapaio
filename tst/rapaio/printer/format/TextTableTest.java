@@ -65,8 +65,7 @@ public class TextTableTest {
                 " 5.          6.9         3.1          4.9         1.5 versicolor\n" +
                 " 6.          6.3         3.3          6.0         2.5  virginica\n" +
                 " 7.          5.8         2.7          5.1         1.9  virginica\n" +
-                " 8.          7.1         3.0          5.9         2.1  virginica\n" +
-                "\n", tt.getSummary());
+                " 8.          7.1         3.0          5.9         2.1  virginica\n", tt.getSummary());
     }
 
     @Test
@@ -103,8 +102,8 @@ public class TextTableTest {
                 " 7.              5.8         2.7          5.1         1.9  virginica\n" +
                 " 8.              7.1         3.0          5.9         2.1  virginica\n" +
                 "                        centered footer text                        \n" +
-                "   centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd\n" +
-                "\n", tt.getSummary());
+                "   centered footer text bla bla bla bla bla bla blblblb bbbuewdjewhd\n",
+                tt.getSummary());
     }
 
     @Test
@@ -172,7 +171,6 @@ public class TextTableTest {
                 "  9)          5.8         2.7          5.1\n" +
                 " 10)          7.1         3.0          5.9\n" +
                 " 11)          6.3         2.9          5.6\n" +
-                "\n" +
                 "     petal-width    class  \n" +
                 "  0)         0.2   setosa  \n" +
                 "  1)         0.2   setosa  \n" +
@@ -185,7 +183,7 @@ public class TextTableTest {
                 "  8)         2.5  virginica\n" +
                 "  9)         1.9  virginica\n" +
                 " 10)         2.1  virginica\n" +
-                " 11)         1.8  virginica\n" +
-                "\n", tt.getSummary());
+                " 11)         1.8  virginica\n" ,
+                tt.getSummary());
     }
 }

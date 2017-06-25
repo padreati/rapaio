@@ -116,11 +116,11 @@ public class OneRuleTest {
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "\n" +
                 " 0. sepal-length : NUMERIC  | 1. sepal-width : NUMERIC  | 2. petal-length : NUMERIC  | 3. petal-width : NUMERIC  |          \n" +
                 "\n" +
                 "target vars:\n" +
                 "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
+                "\n" +
                 "BestRuleSet {var=petal-length, acc=0.9533333}\n" +
                 "> NumericRule {min=-Infinity, max=2.45, class=setosa, errors=0, total=50, acc=1 }\n" +
                 "> NumericRule {min=2.45, max=4.75, class=versicolor, errors=1, total=45, acc=0.9777778 }\n" +
@@ -150,7 +150,6 @@ public class OneRuleTest {
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "\n" +
                 " 0.       cap-shape : NOMINAL  |  6.             gill-spacing : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 18.         ring-type : NOMINAL  |\n" +
                 " 1.     cap-surface : NOMINAL  |  7.                gill-size : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 19. spore-print-color : NOMINAL  |\n" +
                 " 2.       cap-color : NOMINAL  |  8.               gill-color : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | 20.        population : NOMINAL  |\n" +
@@ -160,6 +159,7 @@ public class OneRuleTest {
                 "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +
+                "\n" +
                 "BestRuleSet {var=odor, acc=0.985229}\n" +
                 "> NominalRule {value=?, class=e, errors=0, total=0, acc=0}\n" +
                 "> NominalRule {value=p, class=p, errors=0, total=256, acc=1}\n" +

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -31,8 +32,8 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.RFit;
-import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
-import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.BTRegression;
+import rapaio.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.sys.WS;
 

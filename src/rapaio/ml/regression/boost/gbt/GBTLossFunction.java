@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost.gbt;
+package rapaio.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
@@ -39,6 +40,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public interface GBTLossFunction extends Serializable {
 
     String name();
@@ -104,7 +106,7 @@ public interface GBTLossFunction extends Serializable {
     class Huber implements GBTLossFunction {
 
         private static final long serialVersionUID = -8624877244857556563L;
-        double alpha = 0.25;
+        private double alpha = 0.25;
 
         @Override
         public String name() {

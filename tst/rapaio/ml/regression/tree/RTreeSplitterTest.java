@@ -84,7 +84,7 @@ public class RTreeSplitterTest {
         populate(2, 2, 3);
         assertEquals("REMAINS_IGNORED", splitter.name());
 
-        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate.getGroupPredicates());
         assertEquals(2, result._1.size());
         assertEquals(2, result._2.size());
 
@@ -107,7 +107,7 @@ public class RTreeSplitterTest {
         populate(2, 2, 3);
         assertEquals("REMAINS_TO_MAJORITY", splitter.name());
 
-        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate.getGroupPredicates());
 
         // groups
         assertEquals(2, result._1.size());
@@ -132,7 +132,7 @@ public class RTreeSplitterTest {
         populate(2, 2, 3);
         assertEquals("REMAINS_TO_ALL_WEIGHTED", splitter.name());
 
-        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate.getGroupPredicates());
 
         // groups
         assertEquals(2, result._1.size());
@@ -157,7 +157,7 @@ public class RTreeSplitterTest {
         populate(2, 20, 3);
         assertEquals("REMAINS_TO_RANDOM", splitter.name());
 
-        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate.getGroupPredicates());
 
         // groups
         assertEquals(2, result._1.size());

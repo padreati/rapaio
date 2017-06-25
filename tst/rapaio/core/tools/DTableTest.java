@@ -162,37 +162,31 @@ public class DTableTest {
                 "           x     y     z total\n" +
                 "     a 0.161 0.113 0.097 0.371\n" +
                 "     b 0.129 0.306 0.194 0.629\n" +
-                " total 0.290 0.419 0.290 1.000\n" +
-                "\n", dt2.normalizeOverall().getSummary());
+                " total 0.290 0.419 0.290 1.000\n", dt2.normalizeOverall().getSummary());
         Assert.assertEquals("" +
                 "           x     y     z total\n" +
                 "     a 0.435 0.304 0.261 1.000\n" +
                 "     b 0.205 0.487 0.308 1.000\n" +
-                " total 0.640 0.792 0.569 2.000\n" +
-                "\n", dt2.normalizeOnRows().getSummary());
+                " total 0.640 0.792 0.569 2.000\n", dt2.normalizeOnRows().getSummary());
         Assert.assertEquals("" +
                 "           x     y     z total\n" +
                 "     a 0.556 0.269 0.333 1.158\n" +
                 "     b 0.444 0.731 0.667 1.842\n" +
-                " total 1.000 1.000 1.000 3.000\n" +
-                "\n", dt2.normalizeOnCols().getSummary());
+                " total 1.000 1.000 1.000 3.000\n", dt2.normalizeOnCols().getSummary());
 
         dt2.withTotalSummary(false);
 
         Assert.assertEquals("" +
                 "       x     y     z\n" +
                 " a 0.161 0.113 0.097\n" +
-                " b 0.129 0.306 0.194\n" +
-                "\n", dt2.normalizeOverall().getSummary());
+                " b 0.129 0.306 0.194\n", dt2.normalizeOverall().getSummary());
         Assert.assertEquals("" +
                 "       x     y     z\n" +
                 " a 0.435 0.304 0.261\n" +
-                " b 0.205 0.487 0.308\n" +
-                "\n", dt2.normalizeOnRows().getSummary());
+                " b 0.205 0.487 0.308\n", dt2.normalizeOnRows().getSummary());
         Assert.assertEquals("" +
                 "       x     y     z\n" +
                 " a 0.556 0.269 0.333\n" +
-                " b 0.444 0.731 0.667\n" +
-                "\n", dt2.normalizeOnCols().getSummary());
+                " b 0.444 0.731 0.667\n", dt2.normalizeOnCols().getSummary());
     }
 }

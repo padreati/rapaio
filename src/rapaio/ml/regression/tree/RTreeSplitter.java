@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -53,6 +54,9 @@ public interface RTreeSplitter extends Serializable {
      */
     String name();
 
+    List<Mapping> performMapping(Frame df, Var weights,
+                                              List<SPredicate<FSpot>> groupPredicates);
+
     /**
      * Split the instances and produces two lists, one with the frames which
      * maps selected instances to predicates, and one which contains weights
@@ -61,12 +65,12 @@ public interface RTreeSplitter extends Serializable {
      *
      * @param df        initial set of instances
      * @param weights   weights corresponding to each instance
-     * @param candidate the node candidate which contains the rules
+     * @param groupPredicates the node candidate which contains the rules
      * @return a pair of lists, one with mapped instances for each rule and
      * one with corresponding weights
      */
     Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights,
-                                              RTree.Candidate candidate);
+                                              List<SPredicate<FSpot>> groupPredicates);
 
     /**
      * Do the regular split of instances and simply ingores the ones which do not
@@ -81,8 +85,14 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
-            RegularSplitting s = new RegularSplitting(df, weights, candidate);
+        public List<Mapping> performMapping(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
+            return s.mappings;
+        }
+
+        @Override
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
             List<Frame> frames = new ArrayList<>();
             s.mappings.forEach(mapping -> frames.add(df.mapRows(mapping)));
             return Pair.from(frames, s.weightsList);
@@ -103,8 +113,27 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
-            RegularSplitting s = new RegularSplitting(df, weights, candidate);
+        public List<Mapping> performMapping(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
+            int majorityGroup = 0;
+            int majoritySize = 0;
+            for (int i = 0; i < s.mappings.size(); i++) {
+                if (s.mappings.get(i).size() > majoritySize) {
+                    majorityGroup = i;
+                    majoritySize = s.mappings.get(i).size();
+                }
+            }
+            final int index = majorityGroup;
+            for (FSpot spot : s.missingSpots) {
+                s.mappings.get(index).add(spot.getRow());
+                s.weightsList.get(index).addValue(weights.getValue(spot.getRow()));
+            }
+            return s.mappings;
+        }
+
+        @Override
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
             int majorityGroup = 0;
             int majoritySize = 0;
             for (int i = 0; i < s.mappings.size(); i++) {
@@ -139,8 +168,29 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
-            RegularSplitting s = new RegularSplitting(df, weights, candidate);
+        public List<Mapping> performMapping(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
+            final double[] p = new double[s.mappings.size()];
+            double sum = 0;
+            for (int i = 0; i < s.mappings.size(); i++) {
+                p[i] = s.weightsList.get(i).stream().mapToDouble().sum();
+                sum += p[i];
+            }
+            for (int i = 0; i < p.length; i++) {
+                p[i] /= sum;
+            }
+            for (int i = 0; i < s.mappings.size(); i++) {
+                for (FSpot spot : s.missingSpots) {
+                    s.mappings.get(i).add(spot.getRow());
+                    s.weightsList.get(i).addValue(weights.getValue(spot.getRow()) * p[i]);
+                }
+            }
+            return s.mappings;
+        }
+
+        @Override
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
 
             final double[] p = new double[s.mappings.size()];
             double sum = 0;
@@ -178,14 +228,24 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
-            RegularSplitting s = new RegularSplitting(df, weights, candidate);
+        public List<Mapping> performMapping(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
                 s.mappings.get(next).add(spot.getRow());
                 s.weightsList.get(next).addValue(weights.getValue(spot.getRow()));
             }
-            ;
+            return s.mappings;
+        }
+
+        @Override
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
+            RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
+            for (FSpot spot : s.missingSpots) {
+                int next = RandomSource.nextInt(s.mappings.size());
+                s.mappings.get(next).add(spot.getRow());
+                s.weightsList.get(next).addValue(weights.getValue(spot.getRow()));
+            }
             List<Frame> frameList = s.mappings.stream().map(df::mapRows).collect(Collectors.toList());
             return Pair.from(frameList, s.weightsList);
         }
@@ -198,17 +258,17 @@ class RegularSplitting {
     final public List<Var> weightsList = new ArrayList<>();
     final public List<FSpot> missingSpots = new ArrayList<>();
 
-    public RegularSplitting(Frame df, Var weights, RTree.Candidate candidate) {
+    public RegularSplitting(Frame df, Var weights, List<SPredicate<FSpot>> groupPredicates) {
         // initialize the lists with one element in each list for each candidate's rule
-        for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+        for (int i = 0; i < groupPredicates.size(); i++) {
             mappings.add(Mapping.empty());
             weightsList.add(NumericVar.empty());
         }
         // each instance is distributed to one rule
         for (FSpot s : df.spotList()) {
             boolean matched = false;
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+            for (int i = 0; i < groupPredicates.size(); i++) {
+                SPredicate<FSpot> predicate = groupPredicates.get(i);
                 if (predicate.test(s)) {
                     mappings.get(i).add(s.getRow());
                     weightsList.get(i).addValue(weights.getValue(s.getRow()));

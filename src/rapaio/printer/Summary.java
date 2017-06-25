@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,6 +26,7 @@
 package rapaio.printer;
 
 import rapaio.core.stat.Mean;
+import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -43,14 +45,15 @@ import static rapaio.sys.WS.getPrinter;
  *
  * @author tutuianu
  */
-@Deprecated
 public class Summary {
     private static TypeStrategy typeStrategy;
 
+    @Deprecated
     public static String getSummary(Frame df) {
         return getSummary(df, df.getVarNames());
     }
-  
+
+    @Deprecated
     public static String getSummary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
@@ -185,6 +188,7 @@ public class Summary {
         return buffer.toString();
     }
 
+    @Deprecated
     public static String getSummary(Var v) {
 
         StringBuilder sb = new StringBuilder();
@@ -253,22 +257,27 @@ public class Summary {
         code(buffer.toString());
     }
 
+    @Deprecated
     public static void printSummary(Printable result) {
         result.printSummary();
     }
 
+    @Deprecated
     public static void lines(boolean merge, Var v) {
         head(merge, v.getRowCount(), new Var[]{v}, new String[]{""});
     }
 
+    @Deprecated
     public static void head(boolean merge, int lines, Var v) {
         head(merge, lines, new Var[]{v}, new String[]{""});
     }
 
+    @Deprecated
     public static void lines(Frame df) {
         lines(true, df);
     }
 
+    @Deprecated
     public static void lines(boolean merge, Frame df) {
         Var[] vars = new Var[df.getVarCount()];
         String[] names = df.getVarNames();
@@ -278,6 +287,7 @@ public class Summary {
         head(merge, df.getRowCount(), vars, names);
     }
 
+    @Deprecated
     public static void head(boolean merge, int lines, Frame df) {
         Var[] vars = new Var[df.getVarCount()];
         String[] names = df.getVarNames();
@@ -287,22 +297,27 @@ public class Summary {
         head(merge, Math.min(lines, df.getRowCount()), vars, names);
     }
 
+    @Deprecated
     public static void head(boolean merge, int lines, Var[] vars, String[] names) {
         WS.code(headString(merge, lines, vars, names));
     }
 
+    @Deprecated
     public static String headString(Frame df) {
         return headString(true, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
     }
 
+    @Deprecated
     public static String headString(boolean merge, Frame df) {
         return headString(merge, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
     }
 
+    @Deprecated
     public static String headString(int lines, Var[] vars, String[] names) {
         return headString(true, lines, vars, names);
     }
 
+    @Deprecated
     public static String headString(boolean merge, int lines, Var[] vars, String[] names) {
         if (lines == -1) {
             lines = vars[0].getRowCount();
@@ -326,5 +341,17 @@ public class Summary {
             }
         }
         return tt.getSummary();
+    }
+
+    public static String getHorizontalSummary5(Var var) {
+        TextTable tt1 = TextTable.newEmpty(2, 5).withHeaderRows(1);
+
+        String[] headers1 = new String[] {"Min", "1Q", "Median", "3Q","Max"};
+        double[] values1 = Quantiles.from(var, 0, 0.25, 0.5, 0.75, 1).getValues();
+        for (int i = 0; i < 5; i++) {
+            tt1.set(0, i, headers1[i], 1);
+            tt1.set(1, i, WS.formatFlex(values1[i]), -1);
+        }
+        return tt1.getSummary();
     }
 }

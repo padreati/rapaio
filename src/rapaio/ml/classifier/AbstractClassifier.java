@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -205,7 +206,7 @@ public abstract class AbstractClassifier implements Classifier {
             tt.set(i, 4, " |", 1);
         }
         tt.withMerge();
-        sb.append("\n").append(tt.getSummary());
+        sb.append(tt.getSummary()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
@@ -213,6 +214,7 @@ public abstract class AbstractClassifier implements Classifier {
                 .append(targetType(i))
                 .append(" [").append(Arrays.stream(targetLevels(targetName(i))).collect(joining(","))).append("]")
                 .append("\n"));
+        sb.append("\n");
         return sb.toString();
     }
 

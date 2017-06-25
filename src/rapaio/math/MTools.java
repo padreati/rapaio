@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -533,7 +534,7 @@ public class MTools {
      * @return the result in a range of [0,1]
      */
     public static double betaIncReg(double x, double a, double b) {
-    	boolean outOfRange = (a < 0 || b < 0);
+        boolean outOfRange = (a < 0 || b < 0);
         if (outOfRange) {
             throw new IllegalArgumentException("a and b must be positive or zero");
         }
@@ -983,5 +984,15 @@ public class MTools {
         } else {
             return Math.log1p(Math.exp(x));
         }
+    }
+
+    public static double fdist(double f, int v1, int v2) {
+        double a = (double) v1 / 2.0;
+        double b = (double) v2 / 2.0;
+        double g = a * f;
+
+        if (f <= 0.0) return 0.0;
+
+        return 1 - betaIncReg(g / (b + g), a, b);
     }
 }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -46,6 +47,7 @@ public class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
     private static DecimalFormat formatDecShort = new DecimalFormat();
+    private static DecimalFormat formatDecMedium = new DecimalFormat();
     private static DecimalFormat formatDecLong = new DecimalFormat();
     private static DecimalFormat formatDecFlex = new DecimalFormat();
     private static DecimalFormat formatDecFlexShort = new DecimalFormat();
@@ -55,6 +57,9 @@ public class WS {
         formatDecShort.setMinimumIntegerDigits(1);
         formatDecShort.setMinimumFractionDigits(3);
         formatDecShort.setMaximumFractionDigits(3);
+        formatDecMedium.setMinimumIntegerDigits(1);
+        formatDecMedium.setMinimumFractionDigits(6);
+        formatDecMedium.setMaximumFractionDigits(6);
         formatDecLong.setMinimumFractionDigits(30);
         formatDecLong.setMaximumFractionDigits(30);
         formatDecLong.setMinimumIntegerDigits(1);
@@ -80,9 +85,6 @@ public class WS {
                     "java.util.logging.ConsoleHandler.filter    =\n" +
                     "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
                     "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
-//            logManager.reset();
-//            Logger logger = new Logger();
-//            logManager.addLogger(logger);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,8 +126,22 @@ public class WS {
         return formatDecShort.format(value);
     }
 
+    public static String formatMedium(double value) {
+        return formatDecMedium.format(value);
+    }
+
     public static String formatLong(double value) {
         return formatDecLong.format(value);
+    }
+
+    public static String formatPValue(double pvalue) {
+        if (pvalue <= 1e-16) {
+            return "<2e-16";
+        }
+        if (pvalue >= 1e-6) {
+            return formatMedium(pvalue);
+        }
+        return String.format("%10.2e", pvalue);
     }
 
     public static void print(String message) {

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,6 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
@@ -59,7 +61,9 @@ public class RForest extends AbstractRegression {
 
     @Override
     public Regression newInstance() {
-        return new RForest();
+        return new RForest()
+                .withRegression(this.r)
+                .withInputFilters(this.inputFilters().toArray(new FFilter[0]));
     }
 
     @Override

@@ -125,6 +125,7 @@ If there are no notes it means the feature is considered to be fully implemented
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
+* LinearRegression (multiple targets, only numerical attributes)
 
 **Clusterization**
 
@@ -143,6 +144,10 @@ If there are no notes it means the feature is considered to be fully implemented
 * Density line KDE
 * ROC Curve
 
+**Matrices and vectors**
+
+* Numeric vector operations
+* Basic matrix operations and matrix decompositions
 
 Experminental Stage Features
 ============================
@@ -168,12 +173,6 @@ Experminental Stage Features
 
 * Boost: GBT (Gradient Boosting Tree) Regressor
 * NNet: MultiLayer Perceptron Regressor
-* Function: OLSRegressor (one target, only numerical attributes, no summary)
-
-**Matrices and vectors**
-
-* Numeric vector operations
-* Basic matrix operations and matrix decompositions
 
 **Graphics**
 

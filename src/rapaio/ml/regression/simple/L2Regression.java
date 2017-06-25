@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -87,13 +88,14 @@ public class L2Regression extends AbstractRegression {
 
     @Override
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
+        RFit fit = RFit.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
-            pred.fit(targetName(i)).stream().forEach(s -> s.setValue(mean));
+            Var v = fit.fit(targetName(i));
+            v.stream().forEach(s -> s.setValue(mean));
         }
-        pred.buildComplete();
-        return pred;
+        fit.buildComplete();
+        return fit;
     }
 
     @Override

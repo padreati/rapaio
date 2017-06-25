@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -235,7 +236,9 @@ public interface Regression extends Printable, Serializable {
      * @param df input data frame
      * @return regression fit result
      */
-    RFit fit(final Frame df);
+    default RFit fit(final Frame df) {
+        return fit(df, false);
+    }
 
     /**
      * Predict results for new data set instances
@@ -303,4 +306,6 @@ public interface Regression extends Printable, Serializable {
      * @return self-instance of the model
      */
     Regression withRunningHook(BiConsumer<Regression, Integer> runningHook);
+
+    String getHeaderSummary();
 }

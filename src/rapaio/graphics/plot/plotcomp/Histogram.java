@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -118,6 +119,9 @@ public class Histogram extends PlotComponent {
 
         double step = (maxValue - minValue) / (1. * options.getBins());
         freqTable = new double[options.getBins()];
+        if(freqTable.length==0) {
+            return;
+        }
         double total = 0;
         for (int i = 0; i < v.getRowCount(); i++) {
             if (v.isMissing(i)) {
@@ -130,6 +134,8 @@ public class Histogram extends PlotComponent {
             int index = (int) ((v.getValue(i) - minValue) / step);
             if (index == freqTable.length)
                 index--;
+            if(index < 0)
+                index++;
             freqTable[index]++;
         }
 

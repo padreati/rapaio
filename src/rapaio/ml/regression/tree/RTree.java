@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,17 +26,14 @@
 package rapaio.ml.regression.tree;
 
 import rapaio.core.stat.WeightedMean;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
-import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
-import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.BTRegression;
+import rapaio.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
 import rapaio.util.func.SPredicate;
 
@@ -203,7 +201,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         rows = df.getRowCount();
 
-        root = new Node(null, "root", spot -> true);
+        root = new Node(this, null, "root", spot -> true);
         this.varSelector.withVarNames(inputNames());
         root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
         return true;
@@ -261,6 +259,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     public static class Node implements Serializable {
 
         private static final long serialVersionUID = 385363626560575837L;
+        private final RTree tree;
         private final Node parent;
         private final String groupName;
         private final SPredicate<FSpot> predicate;
@@ -271,9 +270,11 @@ public class RTree extends AbstractRegression implements BTRegression {
         private List<Node> children = new ArrayList<>();
         private Candidate bestCandidate;
 
-        public Node(final Node parent,
+        public Node(final RTree tree,
+                    final Node parent,
                     final String groupName,
                     final SPredicate<FSpot> predicate) {
+            this.tree = tree;
             this.parent = parent;
             this.groupName = groupName;
             this.predicate = predicate;
@@ -366,10 +367,10 @@ public class RTree extends AbstractRegression implements BTRegression {
                 return;
             }
 
-            Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate);
+            Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate.groupPredicates);
             children = new ArrayList<>(frames._1.size());
             for (int i = 0; i < frames._1.size(); i++) {
-                Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+                Node child = new Node(tree, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
                 child.learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
             }
@@ -381,21 +382,19 @@ public class RTree extends AbstractRegression implements BTRegression {
                 return;
             }
 
-            Mapping[] mapping = IntStream
-                    .range(0, children.size()).boxed()
-                    .map(i -> Mapping.empty()).toArray(Mapping[]::new);
-            x.stream().forEach(spot -> {
-                for (int i = 0; i < children.size(); i++) {
-                    Node child = children.get(i);
-                    if (child.predicate.test(spot)) {
-                        mapping[i].add(spot.getRow());
-                        return;
-                    }
-                }
-            });
+            List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
+            for (Node child : children) {
+                groupPredicates.add(child.getPredicate());
+            }
+
+            List<Mapping> mappings = tree.splitter.performMapping(x, NumericVar.fill(x.getRowCount(), 1), groupPredicates);
 
             for (int i = 0; i < children.size(); i++) {
-                children.get(i).boostFit(x.mapRows(mapping[i]), y.mapRows(mapping[i]), fx.mapRows(mapping[i]), lossFunction);
+                children.get(i).boostFit(
+                        x.mapRows(mappings.get(i)),
+                        y.mapRows(mappings.get(i)),
+                        fx.mapRows(mappings.get(i)),
+                        lossFunction);
             }
         }
     }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,6 +28,7 @@ package rapaio.ml.regression;
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
+import rapaio.printer.format.TextTable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -41,15 +43,15 @@ public abstract class AbstractRegression implements Regression {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
-    private String[] inputNames;
-    private VarType[] inputTypes;
-    private String[] targetNames;
-    private VarType[] targetTypes;
-    private RowSampler sampler = RowSampler.identity();
-    private boolean hasLearned;
-    private int poolSize = Runtime.getRuntime().availableProcessors();
-    private int runs = 1;
-    private List<FFilter> inputFilters = new ArrayList<>();
+    protected String[] inputNames;
+    protected VarType[] inputTypes;
+    protected String[] targetNames;
+    protected VarType[] targetTypes;
+    protected RowSampler sampler = RowSampler.identity();
+    protected boolean hasLearned;
+    protected int poolSize = Runtime.getRuntime().availableProcessors();
+    protected int runs = 1;
+    protected List<FFilter> inputFilters = new ArrayList<>();
 
     private BiConsumer<Regression, Integer> runningHook;
 
@@ -141,12 +143,6 @@ public abstract class AbstractRegression implements Regression {
     }
 
     protected abstract boolean coreTrain(Frame df, Var weights);
-
-
-    @Override
-    public RFit fit(Frame df) {
-        return fit(df, true);
-    }
 
     @Override
     public RFit fit(Frame df, boolean withResiduals) {
@@ -241,5 +237,52 @@ public abstract class AbstractRegression implements Regression {
         public static FitSetup valueOf(Frame df, boolean withResiduals) {
             return new FitSetup(df, withResiduals);
         }
+    }
+
+    public String getHeaderSummary() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Regression Fit Summary").append("\n");
+        sb.append("=======================\n");
+        sb.append("\n");
+
+        sb.append("Model type: ").append(name()).append("\n");
+        sb.append("Model instance: ").append(fullName()).append("\n");
+        sb.append("\n");
+
+        if (!hasLearned) {
+            sb.append("> model not trained.\n");
+            return sb.toString();
+        }
+
+        // inputs
+
+        sb.append("> input variables: \n");
+
+        TextTable tt = TextTable.newEmpty(inputNames().length, 3);
+        for (int i = 0; i < inputNames().length; i++) {
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, inputName(i), -1);
+            tt.set(i, 2, inputType(i).getCode(), -1);
+        }
+        tt.withHeaderRows(0);
+        tt.withMerge();
+        sb.append(tt.getSummary());
+
+        // targets
+
+        sb.append("> target variables: \n");
+
+        tt = TextTable.newEmpty(targetNames().length, 3);
+        for (int i = 0; i < targetNames().length; i++) {
+            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
+            tt.set(i, 1, targetName(i), -1);
+            tt.set(i, 2, targetType(i).getCode(), -1);
+        }
+        tt.withHeaderRows(0);
+        tt.withMerge();
+        sb.append(tt.getSummary());
+
+        return sb.toString();
     }
 }
