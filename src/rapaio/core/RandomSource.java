@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -70,14 +71,6 @@ public final class RandomSource implements Serializable {
 
     public static int nextInt(int n) {
         return rand.nextInt(n);
-    }
-
-    public static long nextLong() {
-        return rand.nextLong();
-    }
-
-    public static String nextString(int len) {
-        return new BigInteger(len, rand).toString();
     }
 
     public static Random getRandom() {

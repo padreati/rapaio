@@ -68,6 +68,9 @@ If there are no notes it means the feature is considered to be fully implemented
     * two unpaired samples t test with same variance
     * two unpaired samples Welch t test with different variances
     * two paired samples test for testing sample mean of differences
+* Kolmogorov Smirnoff KS test
+    * one sample test for testing if a sample belongs to a distribution
+    * two samples test for testing if both samples comes from the same distribution
 
 **Frame Filters**
 
@@ -161,7 +164,6 @@ Experminental Stage Features
 
 **Hypothesis testing**
 
-* Kolmogorov Smirnoff one/two sample test
 * Pearson Chi-Square goodness of fit / independence test
 
 **Classification**
