@@ -25,18 +25,24 @@
 
 package rapaio.experiment;
 
-import rapaio.data.Frame;
-import rapaio.data.NumericVar;
-import rapaio.data.SolidFrame;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.stat.Mean;
+import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.graphics.Plotter;
+import rapaio.graphics.plot.plotcomp.CorrGram;
+import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.linear.LinearRegression;
 import rapaio.ml.regression.linear.LinearRFit;
 import rapaio.io.Csv;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.points;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/23/17.
@@ -44,32 +50,36 @@ import static rapaio.graphics.Plotter.points;
 public class Sandbox {
 
     public static void main(String[] args) {
-
-        Frame dftr = new Csv().read("/home/ati/data/estimator/download-transmit.csv");
-        Frame dfcpu = new Csv().read("/home/ati/data/estimator/download-cpu.csv");
-
-        Frame df = SolidFrame.byVars(dftr.getVar(1).withName("tb"), dfcpu.getVar(1).withName("cpu"));
-        df.printSummary();
-
         WS.setPrinter(new IdeaPrinter());
 
+        Frame df = new Csv().read("/home/ati/data/forecast/data.csv");
+//        df.printSummary();
 
-        LinearRegression lm = (LinearRegression) new LinearRegression().withInputFilters(FFAddIntercept.filter());
-        lm.train(df, "tb");
-        LinearRFit fit = (LinearRFit)lm.fit(df, true);
+        df = df.mapVars(VRange.of(IntStream.range(0, 20).toArray()));
 
-        NumericVar cpux = NumericVar.empty();
-        NumericVar tbx = NumericVar.empty();
 
-        cpux.addValue(80);
-        tbx.addValue(lm.firstCoeff().get(0) + lm.firstCoeff().get(1)*80);
+        CorrPearson.from(df).printSummary();
 
-        WS.draw(points(df.getVar(1), df.getVar(0))
-                .lines(df.getVar(1), fit.firstFit(), color(1))
-//                .points(cpux, tbx)
-        );
+        WS.draw(plot().add(new CorrGram(df)));
 
-        SolidFrame.byVars(cpux, tbx).printLines();
-        lm.firstCoeff().printSummary();
+        System.exit(0);
+
+
+
+        WS.draw(lines(df.getVar(0)));
+
+        System.exit(0);
+
+        List<Var> variables = new ArrayList<>();
+        for (Var var : df.varList()) {
+            NumericVar mean = NumericVar.empty().withName(var.getName());
+            for (int i = 0; i < var.getRowCount(); i+=12) {
+                mean.addValue(Mean.from(var.mapRows(Mapping.range(i, i+12))).getValue());
+            }
+            variables.add(mean);
+        }
+        Frame result = SolidFrame.byVars(variables);
+
+        new Csv().write(result, "/home/ati/data/forecast/data1h.csv");
     }
 }

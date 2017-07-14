@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -43,23 +44,21 @@ public class Maximum implements Printable {
     }
 
     private final String varName;
-    private final double value;
+    private double value;
     private int completeCount;
     private int missingCount;
 
     private Maximum(Var var) {
         this.varName = var.getName();
+        this.value = Double.NaN;
         for (int i = 0; i < var.getRowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
+                if (Double.isNaN(value) || value < var.getValue(i))
+                    value = var.getValue(i);
             }
-        }
-        if (completeCount == 0) {
-            value = Double.NaN;
-        } else {
-            value = var.stream().complete().mapToDouble().max().getAsDouble();
         }
     }
 

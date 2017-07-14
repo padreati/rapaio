@@ -27,9 +27,12 @@ package rapaio.core.stat;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.CoreTools;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
 import rapaio.data.*;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
+import rapaio.util.Util;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -123,6 +126,29 @@ public class CoreToolsTest {
                 1.0000000000000007);
         q4.printSummary();
         assertTrue(v4.deepEquals(NumericVar.wrap(q4.getValues())));
+    }
+
+    @Test
+    public void quantilesSpeedTest() {
+        RandomSource.setSeed(1234);
+        Normal normal = new Normal();
+
+        NumericVar x = NumericVar.from(10_000, normal::sampleNext);
+
+        Var y = x;
+        for (int i = 0; i < 100; i++) {
+            y = y.bindRows(NumericVar.from(10_000, normal::sampleNext));
+        }
+
+        Var yy = y;
+
+        Util.measure(() -> {
+                    double[] q = Quantiles.from(yy, 0.1, 0.25, 0.5, 0.75, 0.9).getValues();
+                    for (int i = 0; i < q.length; i++) {
+                        System.out.println("q[" + i + "]=" + q[i] + ", ");
+                    }
+                }
+        );
     }
 
     @Test

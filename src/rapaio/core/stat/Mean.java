@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -64,7 +65,12 @@ public final class Mean implements Printable {
             return;
         }
         final double mean = sum / completeCount;
-        final double mean2 = var.stream().complete().mapToDouble(s -> s.getValue() - mean).sum();
+        double mean2 = 0;
+        for (int i = 0; i < var.getRowCount(); i++) {
+            if(var.isMissing(i))
+                continue;
+            mean2 += var.getValue(i)-mean;
+        }
         this.value = mean + mean2 / completeCount;
     }
 

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 import rapaio.printer.Printable;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
@@ -73,43 +75,52 @@ public class Quantiles implements Printable {
     }
 
     private double[] compute(final Var var) {
-        Var complete = var.stream().complete().toMappedVar();
-        missingCount = var.getRowCount() - complete.getRowCount();
-        completeCount = complete.getRowCount();
-        if (complete.getRowCount() == 0) {
+
+        double[] x = new double[var.getRowCount()];
+        completeCount = 0;
+        for (int i = 0; i < x.length; i++) {
+            if(var.isMissing(i))
+                continue;
+            x[completeCount++] = var.getValue(i);
+        }
+        missingCount = var.getRowCount() - completeCount;
+
+        if (completeCount == 0) {
             return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
         }
-        if (complete.getRowCount() == 1) {
+        if (completeCount == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = complete.getValue(0);
+                values[i] = x[0];
             }
             return values;
         }
-        Var x = new VFSort().fitApply(complete);
+
+        Arrays.sort(x, 0, completeCount);
+
         double[] values = new double[percentiles.length];
         for (int i = 0; i < percentiles.length; i++) {
             double p = percentiles[i];
             if (type.equals(Type.R8)) {
-                int N = x.getRowCount();
+                int N = completeCount;
                 double h = (N + 1. / 3.) * p + 1. / 3.;
                 int hfloor = (int) StrictMath.floor(h);
 
                 if (p < (2. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.getValue(0);
+                    values[i] = x[0];
                     continue;
                 }
                 if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                    values[i] = x.getValue(x.getRowCount() - 1);
+                    values[i] = x[completeCount - 1];
                     continue;
                 }
-                values[i] = x.getValue(hfloor - 1) + (h - hfloor) * (x.getValue(hfloor) - x.getValue(hfloor - 1));
+                values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
             }
             if (type.equals(Type.R7)) {
-                int N = x.getRowCount();
+                int N = completeCount;
                 double h = (N - 1.0) * p + 1;
-                int hfloor = (int) Math.min(StrictMath.floor(h), x.getRowCount() - 1);
-                values[i] = x.getValue(hfloor - 1) + (h - hfloor) * (x.getValue(hfloor) - x.getValue(hfloor - 1));
+                int hfloor = (int) Math.min(StrictMath.floor(h), completeCount - 1);
+                values[i] = x[hfloor - 1] + (h - hfloor) * (x[hfloor] - x[hfloor - 1]);
             }
         }
         return values;
