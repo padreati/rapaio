@@ -24,7 +24,6 @@
 
 package rapaio.core.stat;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
@@ -89,10 +88,10 @@ public class OnlineStatTest {
 
         soA.update(soB);
 
-        Assert.assertEquals(soA.variance(), CoreTools.variance(ab).getValue(), 1e-12);
-        Assert.assertEquals(soA.mean(), CoreTools.mean(ab).getValue(), 1e-30);
+        assertEquals(soA.variance(), CoreTools.variance(ab).getValue(), 1e-12);
+        assertEquals(soA.mean(), CoreTools.mean(ab).getValue(), 1e-30);
 
-        Assert.assertEquals(soA.variance(), soAll.variance(), 1e-12);
-        Assert.assertEquals(soA.mean(), soAll.mean(), 1e-30);
+        assertEquals(soA.variance(), soAll.variance(), 1e-12);
+        assertEquals(soA.mean(), soAll.mean(), 1e-30);
     }
 }

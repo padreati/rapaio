@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,6 +28,8 @@ package rapaio.core.stat;
 import rapaio.math.MTools;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+
+import java.util.stream.DoubleStream;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -55,15 +58,41 @@ public class Sum implements Printable {
 
     private double compute(Var var) {
         double sum = 0;
+        int pos = 0;
         for (int i = 0; i < var.getRowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
-            } else {
-                completeCount++;
-                sum += var.getValue(i);
+                continue;
             }
+            sum = var.getValue(i);
+            pos = i + 1;
+            completeCount++;
+            break;
         }
-        return sum;
+
+        // A running compensation for lost low-order bits.
+        double c = 0.0;
+        for (int i = pos; i < var.getRowCount(); i++) {
+            if(var.isMissing(i)) {
+                missingCount++;
+                continue;
+            }
+
+            completeCount++;
+
+            double t = sum + var.getValue(i);
+
+            if (Math.abs(sum) >= Math.abs(var.getValue(i))) {
+                // If sum is bigger, low-order digits of input[i] are lost.
+                c += (sum - t) + var.getValue(i);
+            } else {
+                // Else low-order digits of sum are lost
+                c += (var.getValue(i) - t) + sum;
+            }
+            sum = t;
+        }
+        // Correction only applied once in the very end
+        return sum + c;
     }
 
     public double getValue() {

@@ -65,12 +65,7 @@ public final class Mean implements Printable {
             return;
         }
         final double mean = sum / completeCount;
-        double mean2 = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
-            if(var.isMissing(i))
-                continue;
-            mean2 += var.getValue(i)-mean;
-        }
+        final double mean2 = var.stream().complete().mapToDouble(s -> s.getValue() - mean).sum();
         this.value = mean + mean2 / completeCount;
     }
 
