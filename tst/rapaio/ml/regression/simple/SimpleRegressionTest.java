@@ -36,6 +36,7 @@ import rapaio.ml.regression.RFit;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
+import static org.junit.Assert.assertEquals;
 import static rapaio.graphics.Plotter.points;
 
 /**
@@ -62,13 +63,29 @@ public class SimpleRegressionTest {
         RFit fit1 = r1.fit(df);
         fit1.printSummary();
 
-        Assert.assertEquals("ConstantRegression {\n" +
+        assertEquals("Regression fit summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: ConstantRegression\n" +
+                "Model instance: ConstantRegression {\n" +
                 "\tconstant=66\n" +
-                "}\n", r1.getSummary());
+                "}\n" +
+                "\n" +
+                "\n" +
+                "> input variables: \n" +
+                " 1. Son num                                                \n" +
+                "> target variables: \n" +
+                " 1. Father num                                    \n" +
+                "\n" +
+                "Fitted values:\n" +
+                "\n" +
+                " Target Estimate\n" +
+                " Father       66\n" +
+                "\n", r1.getSummary());
 
         ConstantRegression r2 = ConstantRegression.with(1);
         r2.train(df, father);
-        RFit fit2 = r2.fit(df);
+        RFit fit2 = r2.fit(df, true);
         fit2.printSummary();
 
         Assert.assertTrue(NumericVar.fill(df.getRowCount(), 66).withName("Father")
@@ -102,15 +119,63 @@ public class SimpleRegressionTest {
     public void testL2Regression() {
 
         L2Regression r1 = L2Regression.create().newInstance();
+        assertEquals("Regression fit summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: L2Regression\n" +
+                "Model instance: L2Regression\n" +
+                "\n" +
+                "> model not trained.\n" +
+                "\n" +
+                "\n", r1.getSummary());
+
         r1.train(df, father);
-        r1.printSummary();
+        assertEquals("Regression fit summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: L2Regression\n" +
+                "Model instance: L2Regression\n" +
+                "\n" +
+                "> input variables: \n" +
+                " 1. Son num                                                \n" +
+                "> target variables: \n" +
+                " 1. Father num                                    \n" +
+                "\n" +
+                "Fitted values:\n" +
+                "\n" +
+                " Target   Estimate\n" +
+                " Father 67.6868275\n" +
+                "\n", r1.getSummary());
 
-        RFit fit1 = r1.fit(df);
-        fit1.printSummary();
-
-        WS.setPrinter(new IdeaPrinter());
-        WS.draw(points(df.getVar(father), fit1.firstFit()));
-
+        RFit fit1 = r1.fit(df, true);
+        assertEquals("Regression fit summary\n" +
+                        "=======================\n" +
+                        "\n" +
+                        "Model class: L2Regression\n" +
+                        "Model instance: L2Regression\n" +
+                        "\n" +
+                        "> input variables: \n" +
+                        " 1. Son num                                                \n" +
+                        "> target variables: \n" +
+                        " 1. Father num                                    \n" +
+                        "\n" +
+                        "Fit and residuals for Father\n" +
+                        "============================\n" +
+                        "          Father   Father-residual \n" +
+                        "   Min. : 67.687     Min. : -8.687 \n" +
+                        "1st Qu. : 67.687  1st Qu. : -1.887 \n" +
+                        " Median : 67.687   Median :  0.113 \n" +
+                        "   Mean : 67.687     Mean : -0.000 \n" +
+                        "2nd Qu. : 67.687  2nd Qu. :  1.913 \n" +
+                        "   Max. : 67.687     Max. :  7.713 \n" +
+                        "                                   \n" +
+                        "Total sum of squares     (TSS) : 8120.113\n" +
+                        "Explained sum of squares (ESS) :    0.000\n" +
+                        "Residual sum of squares  (RSS) : 8120.113\n" +
+                        "\n" +
+                        "Coeff. of determination  (R^2) :    0.000\n" +
+                        "\n",
+                fit1.getSummary());
     }
 
     @Test

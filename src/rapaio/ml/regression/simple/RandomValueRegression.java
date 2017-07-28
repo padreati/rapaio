@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,11 +34,13 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 /**
  * A trivial regression which predicts using random
  * values provided by a distribution.
- *
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class RandomValueRegression extends AbstractRegression {
@@ -105,10 +108,15 @@ public class RandomValueRegression extends AbstractRegression {
     @Override
     public String getSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append(" Summary\n");
-        sb.append("=========================\n");
+        sb.append(getHeaderSummary());
+        sb.append("\n");
 
-        sb.append("TODO: complete\n");
+        if (hasLearned()) {
+            sb.append("Model is trained.\n");
+        } else {
+            sb.append("Model is not trained.\n");
+        }
+        sb.append("\n");
         return sb.toString();
     }
 }

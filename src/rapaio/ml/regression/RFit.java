@@ -200,6 +200,7 @@ public class RFit implements Printable {
         StringBuilder sb = new StringBuilder();
 
         sb.append(model.getHeaderSummary());
+        sb.append("\n");
 
         for (String target : model.targetNames()) {
             sb.append("Fit and residuals for ").append(target).append("\n");
@@ -224,14 +225,12 @@ public class RFit implements Printable {
                 max /= 10;
             }
 
-
-
-
             sb.append(String.format("Total sum of squares     (TSS) : %" + dec + ".3f\n", tss.get(target)));
             sb.append(String.format("Explained sum of squares (ESS) : %" + dec + ".3f\n", ess.get(target)));
             sb.append(String.format("Residual sum of squares  (RSS) : %" + dec + ".3f\n", rss.get(target)));
             sb.append("\n");
             sb.append(String.format("Coeff. of determination  (R^2) : %" + dec + ".3f\n", 1 - rss.get(target) / tss.get(target)));
+            sb.append("\n");
         }
 
         return sb.toString();

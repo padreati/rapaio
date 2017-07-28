@@ -59,10 +59,10 @@ public class LinearRegressionTest {
         LinearRegression lm = new LinearRegression();
         lm.addInputFilters(FFAddIntercept.filter());
         assertEquals(
-                "Regression Fit Summary\n" +
+                "Regression fit summary\n" +
                         "=======================\n" +
                         "\n" +
-                        "Model type: LinearRegression\n" +
+                        "Model class: LinearRegression\n" +
                         "Model instance: LinearRegression\n" +
                         "\n" +
                         "> model not trained.\n" +
@@ -70,10 +70,10 @@ public class LinearRegressionTest {
 
         lm.train(df, "Radio");
         assertEquals(
-                "Regression Fit Summary\n" +
+                "Regression fit summary\n" +
                         "=======================\n" +
                         "\n" +
-                        "Model type: LinearRegression\n" +
+                        "Model class: LinearRegression\n" +
                         "Model instance: LinearRegression\n" +
                         "\n" +
                         "> input variables: \n" +
@@ -91,10 +91,10 @@ public class LinearRegressionTest {
 
         LinearRFit lmfit = lm.fit(df, true);
         assertEquals(
-                "Regression Fit Summary\n" +
+                "Regression fit summary\n" +
                         "=======================\n" +
                         "\n" +
-                        "Model type: LinearRegression\n" +
+                        "Model class: LinearRegression\n" +
                         "Model instance: LinearRegression\n" +
                         "\n" +
                         "> input variables: \n" +
@@ -122,10 +122,10 @@ public class LinearRegressionTest {
 
         LinearRFit lmfit2 = lm.fit(df, false);
         assertEquals(
-                "Regression Fit Summary\n" +
+                "Regression fit summary\n" +
                         "=======================\n" +
                         "\n" +
-                        "Model type: LinearRegression\n" +
+                        "Model class: LinearRegression\n" +
                         "Model instance: LinearRegression\n" +
                         "\n" +
                         "> input variables: \n" +

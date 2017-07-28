@@ -77,11 +77,9 @@ public class Sum implements Printable {
                 missingCount++;
                 continue;
             }
-
             completeCount++;
 
             double t = sum + var.getValue(i);
-
             if (Math.abs(sum) >= Math.abs(var.getValue(i))) {
                 // If sum is bigger, low-order digits of input[i] are lost.
                 c += (sum - t) + var.getValue(i);

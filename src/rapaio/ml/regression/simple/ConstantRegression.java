@@ -32,6 +32,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -98,13 +100,34 @@ public class ConstantRegression extends AbstractRegression {
     @Override
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit fit = RFit.build(this, df, withResiduals);
-        fit.firstFit().stream().forEach(s -> s.setValue(constantValue()));
+        for (String targetName : targetNames) {
+            fit.fit(targetName).stream().forEach(s -> s.setValue(constantValue()));
+        }
         fit.buildComplete();
         return fit;
     }
 
     @Override
     public String getSummary() {
-        return fullName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(getHeaderSummary());
+        sb.append("\n");
+
+        if (hasLearned()) {
+            sb.append("Fitted values:\n");
+            sb.append("\n");
+
+            TextTable tt = TextTable.newEmpty(1 + targetNames.length, 2);
+            tt.set(0, 0, "Target", 1);
+            tt.set(0, 1, "Estimate", 1);
+
+            for (int i = 0; i < targetNames().length; i++) {
+                tt.set(1 + i, 0, targetName(i), 1);
+                tt.set(1 + i, 1, WS.formatFlex(constant), 1);
+            }
+            sb.append(tt.getSummary());
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

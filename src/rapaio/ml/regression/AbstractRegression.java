@@ -242,11 +242,11 @@ public abstract class AbstractRegression implements Regression {
     public String getHeaderSummary() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Regression Fit Summary").append("\n");
+        sb.append("Regression fit summary").append("\n");
         sb.append("=======================\n");
         sb.append("\n");
 
-        sb.append("Model type: ").append(name()).append("\n");
+        sb.append("Model class: ").append(name()).append("\n");
         sb.append("Model instance: ").append(fullName()).append("\n");
         sb.append("\n");
 
