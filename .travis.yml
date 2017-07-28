@@ -8,4 +8,3 @@ before_install:
   - pip install --user codecov
 after_success:
   - codecov
-  - codecov --token=52f10d1d-5cb1-43d1-abe3-fddccb90c99b
