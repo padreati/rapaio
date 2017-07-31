@@ -40,7 +40,6 @@ import static rapaio.core.CoreTools.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KSTestTest {
 
     @Test
