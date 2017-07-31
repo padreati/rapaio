@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -142,7 +143,7 @@ public class DVector implements Printable, Serializable {
         total = Arrays.stream(values).sum();
     }
 
-    public boolean first() {
+    public boolean isFirstUsed() {
         return useFirst;
     }
 
@@ -368,7 +369,7 @@ public class DVector implements Printable, Serializable {
         for (int i = start; i < levels.length; i++) {
             tt.set(0, i, levels[i], 1);
             tt.set(1, i, repeat(levels[i].length(), '-'), 1);
-            tt.set(2, i, WS.formatShort(values[i]), 1);
+            tt.set(2, i, WS.formatFlex(values[i]), 1);
         }
         return tt.getSummary();
     }

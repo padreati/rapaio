@@ -24,13 +24,15 @@
 
 package rapaio.core;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.tests.ChiSquareTest;
+import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
 import rapaio.data.NumericVar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreTools.distDUnif;
 
 /**
@@ -54,7 +56,7 @@ public class SamplingToolsTest {
         }
         freq.normalize();
         for (int i = 0; i < 6; i++) {
-            Assert.assertEquals(1.0 / 6, freq.get(i), 1e-20);
+            assertEquals(1.0 / 6, freq.get(i), 1e-20);
         }
 
         freq = DVector.empty(true, w.length);
@@ -63,8 +65,8 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSquareTest test = ChiSquareTest.goodnessOfFitTest(freq, w);
-        Assert.assertTrue(test.pValue() > 0.05);
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
+        assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
 
@@ -82,8 +84,8 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSquareTest test = ChiSquareTest.goodnessOfFitTest(freq, w);
-        Assert.assertTrue(test.pValue() > 0.05);
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
+        assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
 

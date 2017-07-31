@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.core.tests.ChiSquareTest;
+import rapaio.core.tests.ChiSqIndependence;
 import rapaio.core.tools.DTable;
 import rapaio.util.Tagged;
 
@@ -133,7 +134,7 @@ public interface CTreePurityFunction extends Tagged, Serializable {
 
         @Override
         public double compute(DTable dt) {
-            return 1 - ChiSquareTest.independenceTest(dt).pValue();
+            return 1 - ChiSqIndependence.from(dt, false).pValue();
         }
 
         @Override

@@ -24,7 +24,7 @@
 
 package rapaio.core.tools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
@@ -113,34 +113,34 @@ public class DTableTest {
         dt2.printSummary();
 
         WS.println("totalColEntropy: " + WS.formatFlex(dt1.totalColEntropy()));
-        Assert.assertEquals(dt1.totalColEntropy(), dt2.totalColEntropy(), 1e-30);
+        assertEquals(dt1.totalColEntropy(), dt2.totalColEntropy(), 1e-30);
 
         WS.println("totalRowEntropy: " + WS.formatFlex(dt1.totalRowEntropy()));
-        Assert.assertEquals(dt1.totalRowEntropy(), dt2.totalRowEntropy(), 1e-30);
+        assertEquals(dt1.totalRowEntropy(), dt2.totalRowEntropy(), 1e-30);
 
         WS.println("splitByRowAverageEntropy: " + WS.formatFlex(dt1.splitByRowAverageEntropy()));
-        Assert.assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
+        assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
 
         WS.println("splitByColAverageEntropy: " + WS.formatFlex(dt1.splitByColAverageEntropy()));
-        Assert.assertEquals(dt1.splitByColAverageEntropy(), dt2.splitByColAverageEntropy(), 1e-30);
+        assertEquals(dt1.splitByColAverageEntropy(), dt2.splitByColAverageEntropy(), 1e-30);
 
         WS.println("splitByRowInfoGain: " + WS.formatFlex(dt1.splitByRowInfoGain()));
-        Assert.assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
+        assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
 
         WS.println("splitByColInfoGain: " + WS.formatFlex(dt1.splitByColInfoGain()));
-        Assert.assertEquals(dt1.splitByColInfoGain(), dt2.splitByColInfoGain(), 1e-30);
+        assertEquals(dt1.splitByColInfoGain(), dt2.splitByColInfoGain(), 1e-30);
 
         WS.println("splitByRowGainRatio: " + WS.formatFlex(dt1.splitByRowGainRatio()));
-        Assert.assertEquals(dt1.splitByRowGainRatio(), dt2.splitByRowGainRatio(), 1e-30);
+        assertEquals(dt1.splitByRowGainRatio(), dt2.splitByRowGainRatio(), 1e-30);
 
         WS.println("splitByColGainRatio: " + WS.formatFlex(dt1.splitByColGainRatio()));
-        Assert.assertEquals(dt1.splitByColGainRatio(), dt2.splitByColGainRatio(), 1e-30);
+        assertEquals(dt1.splitByColGainRatio(), dt2.splitByColGainRatio(), 1e-30);
 
         WS.println("splitByRowGiniGain: " + WS.formatFlex(dt1.splitByRowGiniGain()));
-        Assert.assertEquals(dt1.splitByRowGiniGain(), dt2.splitByRowGiniGain(), 1e-30);
+        assertEquals(dt1.splitByRowGiniGain(), dt2.splitByRowGiniGain(), 1e-30);
 
         WS.println("splitByColGiniGain: " + WS.formatFlex(dt1.splitByColGiniGain()));
-        Assert.assertEquals(dt1.splitByColGiniGain(), dt2.splitByColGiniGain(), 1e-30);
+        assertEquals(dt1.splitByColGiniGain(), dt2.splitByColGiniGain(), 1e-30);
 
         dt1.withTotalSummary(true).printSummary();
         dt1.withTotalSummary(false).printSummary();
@@ -158,35 +158,29 @@ public class DTableTest {
         dt2.update(1, 1, 19);
         dt2.update(1, 2, 12);
 
-        Assert.assertEquals("" +
-                "           x     y     z total\n" +
-                "     a 0.161 0.113 0.097 0.371\n" +
-                "     b 0.129 0.306 0.194 0.629\n" +
-                " total 0.290 0.419 0.290 1.000\n", dt2.normalizeOverall().getSummary());
-        Assert.assertEquals("" +
-                "           x     y     z total\n" +
-                "     a 0.435 0.304 0.261 1.000\n" +
-                "     b 0.205 0.487 0.308 1.000\n" +
-                " total 0.640 0.792 0.569 2.000\n", dt2.normalizeOnRows().getSummary());
-        Assert.assertEquals("" +
-                "           x     y     z total\n" +
-                "     a 0.556 0.269 0.333 1.158\n" +
-                "     b 0.444 0.731 0.667 1.842\n" +
-                " total 1.000 1.000 1.000 3.000\n", dt2.normalizeOnCols().getSummary());
+        Assert.assertEquals("               x         y         z     total\n" +
+                "     a 0.1612903 0.1129032 0.0967742 0.3709677\n" +
+                "     b 0.1290323 0.3064516 0.1935484 0.6290323\n" +
+                " total 0.2903226 0.4193548 0.2903226         1\n", dt2.normalizeOverall().getSummary());
+        Assert.assertEquals("               x         y         z total\n" +
+                "     a 0.4347826 0.3043478 0.2608696     1\n" +
+                "     b 0.2051282 0.4871795 0.3076923     1\n" +
+                " total 0.6399108 0.7915273 0.5685619     2\n", dt2.normalizeOnRows().getSummary());
+        Assert.assertEquals("               x         y         z     total\n" +
+                "     a 0.5555556 0.2692308 0.3333333 1.1581197\n" +
+                "     b 0.4444444 0.7307692 0.6666667 1.8418803\n" +
+                " total         1         1         1         3\n", dt2.normalizeOnCols().getSummary());
 
         dt2.withTotalSummary(false);
 
-        Assert.assertEquals("" +
-                "       x     y     z\n" +
-                " a 0.161 0.113 0.097\n" +
-                " b 0.129 0.306 0.194\n", dt2.normalizeOverall().getSummary());
-        Assert.assertEquals("" +
-                "       x     y     z\n" +
-                " a 0.435 0.304 0.261\n" +
-                " b 0.205 0.487 0.308\n", dt2.normalizeOnRows().getSummary());
-        Assert.assertEquals("" +
-                "       x     y     z\n" +
-                " a 0.556 0.269 0.333\n" +
-                " b 0.444 0.731 0.667\n", dt2.normalizeOnCols().getSummary());
+        Assert.assertEquals("           x         y         z\n" +
+                " a 0.1612903 0.1129032 0.0967742\n" +
+                " b 0.1290323 0.3064516 0.1935484\n", dt2.normalizeOverall().getSummary());
+        Assert.assertEquals("           x         y         z\n" +
+                " a 0.4347826 0.3043478 0.2608696\n" +
+                " b 0.2051282 0.4871795 0.3076923\n", dt2.normalizeOnRows().getSummary());
+        Assert.assertEquals("           x         y         z\n" +
+                " a 0.5555556 0.2692308 0.3333333\n" +
+                " b 0.4444444 0.7307692 0.6666667\n", dt2.normalizeOnCols().getSummary());
     }
 }

@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
-import rapaio.core.tests.ChiSquareTest;
+import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.NumericVar;
@@ -95,7 +95,7 @@ public class RowSamplerTest {
             freq.set(i, count.getValue(i));
         }
         double[] p = DoubleStream.generate(() -> 1 / 150.).limit(150).toArray();
-        ChiSquareTest chiTest = ChiSquareTest.goodnessOfFitTest(freq, p);
+        ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(p));
         chiTest.printSummary();
 
         // chi square goodness of fit

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -163,7 +164,7 @@ public final class DTable implements Printable, Serializable {
         return rowLevels.length;
     }
 
-    public int getgetColCount() {
+    public int getColCount() {
         return colLevels.length;
     }
 
@@ -431,19 +432,19 @@ public final class DTable implements Printable, Serializable {
             tt.set(rowLevels.length - start + 1, 0, "total", 1);
             for (int i = start; i < rowLevels.length; i++) {
                 for (int j = start; j < colLevels.length; j++) {
-                    tt.set(i - start + 1, j - start + 1, WS.formatShort(values[i][j]), 1);
+                    tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
                 }
             }
             double[] rowTotals = rowTotals();
             for (int i = start; i < rowLevels.length; i++) {
-                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatShort(rowTotals[i]), 1);
+                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatFlex(rowTotals[i]), 1);
             }
             double[] colTotals = colTotals();
             for (int i = start; i < colLevels.length; i++) {
-                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatShort(colTotals[i]), 1);
+                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatFlex(colTotals[i]), 1);
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
-            tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatShort(total), 1);
+            tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatFlex(total), 1);
             return tt.getSummary();
         } else {
             TextTable tt = TextTable.newEmpty(rowLevels.length - start + 1, colLevels.length - start + 1);
@@ -458,7 +459,7 @@ public final class DTable implements Printable, Serializable {
             }
             for (int i = start; i < rowLevels.length; i++) {
                 for (int j = start; j < colLevels.length; j++) {
-                    tt.set(i - start + 1, j - start + 1, WS.formatShort(values[i][j]), 1);
+                    tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
                 }
             }
             return tt.getSummary();
