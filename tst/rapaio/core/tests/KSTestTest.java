@@ -50,7 +50,7 @@ public class KSTestTest {
         test.printSummary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);
-        Assert.assertEquals(0.0000000000411316, test.pValue(), 10e-10);
+        Assert.assertEquals(0.0000000000411316, test.getPValue(), 10e-10);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class KSTestTest {
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
         Assert.assertTrue(test.d() < 0.4);
-        Assert.assertTrue(test.pValue() > 0.08);
+        Assert.assertTrue(test.getPValue() > 0.08);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class KSTestTest {
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
-        Assert.assertTrue(test.pValue() < 0.001);
+        Assert.assertTrue(test.getPValue() < 0.001);
     }
 
     @Test
@@ -82,6 +82,6 @@ public class KSTestTest {
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);
-        Assert.assertTrue(test.pValue() < 0.05);
+        Assert.assertTrue(test.getPValue() < 0.05);
     }
 }

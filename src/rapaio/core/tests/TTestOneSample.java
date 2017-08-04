@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -103,47 +104,47 @@ public class TTestOneSample implements HTest {
     private double ciLow;
     private double ciHigh;
 
-    public double mu() {
+    public double getMu() {
         return mu;
     }
 
-    public double sl() {
+    public double getSl() {
         return sl;
     }
 
-    public Alternative alt() {
+    public Alternative getAlt() {
         return alt;
     }
 
-    public int sampleSize() {
+    public int getSampleSize() {
         return sampleSize;
     }
 
-    public int df() {
+    public int getDegrees() {
         return sampleSize-1;
     }
 
-    public double sampleMean() {
+    public double getSampleMean() {
         return sampleMean;
     }
 
-    public double sampleSd() {
+    public double getSampleSd() {
         return sampleSd;
     }
 
-    public double t() {
+    public double getT() {
         return t;
     }
 
-    public double pValue() {
+    public double getPValue() {
         return pValue;
     }
 
-    public double ciLow() {
+    public double getCILow() {
         return ciLow;
     }
 
-    public double ciHigh() {
+    public double getCIHigh() {
         return ciHigh;
     }
 

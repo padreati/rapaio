@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -60,7 +61,7 @@ public class BoxPlot extends HostFigure {
     public BoxPlot(Var x, Var factor, GOpt... opts) {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.getRow()), mapping(VSpot::getValue, toList())));
-        names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
+        names = factor.getStreamLevels().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(NumericVar::copy).toArray(Var[]::new);
 
         this.options.apply(opts);

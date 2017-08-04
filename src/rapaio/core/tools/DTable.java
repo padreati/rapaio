@@ -205,26 +205,22 @@ public final class DTable implements Printable, Serializable {
 
     public double totalColEntropy() {
     	AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
-        double entropy = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return entropy;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double totalRowEntropy() {
     	AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
-        double entropy = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return entropy;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByRowAverageEntropy() {
     	AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
-        double gain = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return gain;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByColAverageEntropy() {
     	AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
-        double gain = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return gain;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByRowInfoGain() {
@@ -237,14 +233,12 @@ public final class DTable implements Printable, Serializable {
 
     public double splitByRowIntrinsicInfo() {
         AbstractSplit abstractSplit = new ConcreteRowIntrinsicInfo();
-        double splitInfo = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return splitInfo;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByColIntrinsicInfo() {
     	AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
-        double splitInfo = abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
-        return splitInfo;
+        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByRowGainRatio() {

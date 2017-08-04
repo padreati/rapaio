@@ -136,21 +136,21 @@ public class ChiSqGoodnessOfFit implements HTest {
         return df;
     }
 
-    public double chiValue() {
+    public double getChiValue() {
         return chiValue;
     }
 
     @Override
-    public double ciHigh() {
+    public double getCIHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double ciLow() {
+    public double getCILow() {
         return Double.NaN;
     }
 
-    public double pValue() {
+    public double getPValue() {
         return pValue;
     }
 

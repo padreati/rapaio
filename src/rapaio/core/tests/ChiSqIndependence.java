@@ -101,7 +101,7 @@ public class ChiSqIndependence implements HTest {
         int off = dt.useFirst() ? 0 : 1;
         df = (dt.getRowCount() - 1 - off) * (dt.getColCount() - 1 - off);
 
-        expected = DTable.empty(dt.getRowLevels(), dt.getColLevels(), true);
+        expected = DTable.empty(dt.getRowLevels(), dt.getColLevels(), dt.useFirst());
 
         double[] rowTotals = dt.rowTotals();
         double[] colTotals = dt.colTotals();
@@ -119,25 +119,26 @@ public class ChiSqIndependence implements HTest {
         pValue = 1.0 - new ChiSquare(df).cdf(sum);
     }
 
-    public int df() {
+    public int getDegrees() {
         return df;
     }
 
-    public double chiValue() {
+    public double getChiValue() {
         return chiValue;
     }
 
-    public double pValue() {
+    @Override
+    public double getPValue() {
         return pValue;
     }
 
     @Override
-    public double ciHigh() {
+    public double getCIHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double ciLow() {
+    public double getCILow() {
         return Double.NaN;
     }
 

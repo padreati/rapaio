@@ -46,20 +46,20 @@ public class TTestTwoPairedTest {
         TTestTwoPaired t1 = TTestTwoPaired.test(y, x, 0);
         t1.printSummary();
 
-        assertEquals(0, t1.mu(), TOL);
-        assertEquals(2.8372521918222215, t1.sd(), TOL);
-        assertEquals(0.05, t1.sl(), TOL);
-        assertEquals(HTest.Alternative.TWO_TAILS, t1.alt());
+        assertEquals(0, t1.getMu(), TOL);
+        assertEquals(2.8372521918222215, t1.getSd(), TOL);
+        assertEquals(0.05, t1.getSl(), TOL);
+        assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
 
-        assertEquals(2.05, t1.sampleMean(), TOL);
-        assertEquals(3.2312526655803127, t1.t(), TOL);
-        assertEquals(19, t1.df(), TOL);
-        assertEquals(0.004394965993185667, t1.pValue(), TOL);
-        assertEquals(0.7221250995807065, t1.ciLow(), TOL);
-        assertEquals(3.377874900419294, t1.ciHigh(), TOL);
-        assertEquals(0.05, t1.sl(), TOL);
+        assertEquals(2.05, t1.getSampleMean(), TOL);
+        assertEquals(3.2312526655803127, t1.getT(), TOL);
+        assertEquals(19, t1.getDegrees(), TOL);
+        assertEquals(0.004394965993185667, t1.getPValue(), TOL);
+        assertEquals(0.7221250995807065, t1.getCILow(), TOL);
+        assertEquals(3.377874900419294, t1.getCIHigh(), TOL);
+        assertEquals(0.05, t1.getSl(), TOL);
 
         TTestTwoPaired t2 = TTestTwoPaired.test(NumericVar.empty(), NumericVar.empty(), -1, 0.03, HTest.Alternative.GREATER_THAN);
-        assertTrue(Double.isNaN(t2.pValue()));
+        assertTrue(Double.isNaN(t2.getPValue()));
     }
 }

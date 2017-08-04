@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -194,7 +195,11 @@ public interface Var extends Serializable, Printable {
      */
     String[] getLevels();
 
-    default Stream<String> streamLevels() {
+    default String[] getCompleteLevels() {
+        return getStreamLevels().skip(1).toArray(String[]::new);
+    }
+
+    default Stream<String> getStreamLevels() {
         return Arrays.stream(getLevels());
     }
 

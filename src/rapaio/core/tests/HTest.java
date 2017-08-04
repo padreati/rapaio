@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,7 +34,7 @@ import rapaio.printer.Printable;
  */
 public interface HTest extends Printable {
 
-    public enum Alternative {
+    enum Alternative {
         TWO_TAILS("P > |z|"),
         GREATER_THAN("P > z"),
         LESS_THAN("P < z");
@@ -49,9 +50,9 @@ public interface HTest extends Printable {
         }
     }
 
-    double pValue();
+    double getPValue();
 
-    double ciHigh();
+    double getCIHigh();
 
-    double ciLow();
+    double getCILow();
 }

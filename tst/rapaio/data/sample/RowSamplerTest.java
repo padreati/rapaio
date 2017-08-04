@@ -100,7 +100,7 @@ public class RowSamplerTest {
 
         // chi square goodness of fit
 
-        Assert.assertTrue(chiTest.pValue() > 0.99);
+        Assert.assertTrue(chiTest.getPValue() > 0.99);
     }
 
     @Test

@@ -137,6 +137,6 @@ public class GammaTest {
 
         KSTestOneSample test = KSTestOneSample.from(sample, g);
         test.printSummary();
-        Assert.assertTrue(test.pValue()>0.05);
+        Assert.assertTrue(test.getPValue()>0.05);
     }
 }

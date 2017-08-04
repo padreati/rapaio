@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -185,59 +186,59 @@ public class ZTestTwoSamples implements HTest {
         compute();
     }
 
-    public double sampleMean() {
+    public double getSampleMean() {
         return sampleMean;
     }
 
-    public double xSampleMean() {
+    public double getXSampleMean() {
         return xSampleMean;
     }
 
-    public int xSampleSize() {
+    public int getXSampleSize() {
         return xSampleSize;
     }
 
-    public double ySampleMean() {
+    public double getYSampleMean() {
         return ySampleMean;
     }
 
-    public int ySampleSize() {
+    public int getYSampleSize() {
         return ySampleSize;
     }
 
-    public double mu() {
+    public double getMu() {
         return mu;
     }
 
-    public double xSd() {
+    public double getXSd() {
         return xSd;
     }
 
-    public double ySd() {
+    public double getYSd() {
         return ySd;
     }
 
-    public double sl() {
+    public double getSl() {
         return sl;
     }
 
-    public HTest.Alternative alt() {
+    public HTest.Alternative getAlt() {
         return alt;
     }
 
-    public double zScore() {
+    public double getZScore() {
         return zScore;
     }
 
-    public double pValue() {
+    public double getPValue() {
         return pValue;
     }
 
-    public double ciLow() {
+    public double getCILow() {
         return ciLow;
     }
 
-    public double ciHigh() {
+    public double getCIHigh() {
         return ciHigh;
     }
 
