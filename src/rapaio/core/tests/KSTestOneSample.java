@@ -28,6 +28,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
+import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -109,14 +110,6 @@ public class KSTestOneSample implements HTest {
         return D;
     }
 
-    private String getPValueStars() {
-        if (pValue > 0.1) return "";
-        if (pValue > 0.05) return ".";
-        if (pValue > 0.01) return "*";
-        if (pValue > 0.001) return "**";
-        return "***";
-    }
-
     @Override
     public double getPValue() {
         return pValue;
@@ -144,7 +137,7 @@ public class KSTestOneSample implements HTest {
 
         sb.append(String.format("densities: %s\n", cdf.name()));
         sb.append("D statistic: ").append(formatFlex(D)).append("\n");
-        sb.append("p-value: ").append(formatFlex(pValue)).append(" ").append(getPValueStars()).append("\n");
+        sb.append("p-value: ").append(formatFlex(pValue)).append(" ").append(WS.getPValueStars(pValue)).append("\n");
         sb.append("\n");
         return sb.toString();
     }

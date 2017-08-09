@@ -28,6 +28,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
+import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -102,14 +103,6 @@ public class KSTestTwoSamples implements HTest {
         return D;
     }
 
-    protected String getPValueStars() {
-        if (pValue > 0.1) return "";
-        if (pValue > 0.05) return ".";
-        if (pValue > 0.01) return "*";
-        if (pValue > 0.001) return "**";
-        return "***";
-    }
-
     @Override
     public double getPValue() {
         return pValue;
@@ -140,7 +133,7 @@ public class KSTestTwoSamples implements HTest {
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("D statistic: %.6f\n", D));
-        sb.append(String.format("p-value: %.16f %s\n", pValue, getPValueStars()));
+        sb.append(String.format("p-value: %.16f %s\n", pValue, WS.getPValueStars(pValue)));
         sb.append("\n");
         return sb.toString();
     }

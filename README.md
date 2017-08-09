@@ -72,6 +72,13 @@ If there are no notes it means the feature is considered to be fully implemented
 * Kolmogorov Smirnoff KS test
     * one sample test for testing if a sample belongs to a distribution
     * two samples test for testing if both samples comes from the same distribution
+* Pearson Chi-Square tests
+    * goodness of fit 
+    * independence test
+    * conditional independence test
+* Anderson-Darling goodness of fit
+    * normality test
+
 
 **Frame Filters**
 
@@ -162,10 +169,6 @@ Experminental Stage Features
 * Median Absolute Error
 * Receiver Operator Characteristic - ROC curves and ROC Area
 * Confusion Matrix
-
-**Hypothesis testing**
-
-* Pearson Chi-Square goodness of fit / independence test
 
 **Classification**
 

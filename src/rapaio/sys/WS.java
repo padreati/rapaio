@@ -144,6 +144,14 @@ public class WS {
         return String.format("%10.2e", pvalue);
     }
 
+    public static String getPValueStars(double pValue) {
+        if (pValue > 0.1) return "";
+        if (pValue > 0.05) return ".";
+        if (pValue > 0.01) return "*";
+        if (pValue > 0.001) return "**";
+        return "***";
+    }
+
     public static void print(String message) {
         printer.print(message);
     }
