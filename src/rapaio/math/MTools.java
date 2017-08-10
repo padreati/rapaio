@@ -986,13 +986,8 @@ public class MTools {
         }
     }
 
-    public static double fdist(double f, int v1, int v2) {
-        double a = (double) v1 / 2.0;
-        double b = (double) v2 / 2.0;
-        double g = a * f;
-
-        if (f <= 0.0) return 0.0;
-
-        return 1 - betaIncReg(g / (b + g), a, b);
+    public static double fdist(double x, double d1, double d2) {
+        if (x <= 0.0) return 0.0;
+        return 1 - betaIncReg(d1 * x / (d1 * x + d2), d1 / 2, d2 / 2);
     }
 }
