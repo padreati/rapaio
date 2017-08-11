@@ -55,6 +55,26 @@ public class LinearRFit extends RFit {
         this.lm = model;
     }
 
+    public RM getBetaHat() {
+        return beta_hat;
+    }
+
+    public RM getBetaStdError() {
+        return beta_std_error;
+    }
+
+    public RM getVetaTValue() {
+        return beta_t_value;
+    }
+
+    public RM getBetaPValue() {
+        return beta_p_value;
+    }
+
+    public String[][] getBetaSignificance() {
+        return beta_significance;
+    }
+
     @Override
     public void buildComplete() {
         super.buildComplete();
