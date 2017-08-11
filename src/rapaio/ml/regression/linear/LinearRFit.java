@@ -43,11 +43,72 @@ import rapaio.sys.WS;
  */
 public class LinearRFit extends RFit {
 
-    private LinearRegression lm;
+    private final LinearRegression lm;
+    private RM beta_hat;
+    private RM beta_std_error;
+    private RM beta_t_value;
+    private RM beta_p_value;
+    private String[][] beta_significance;
 
     public LinearRFit(LinearRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
+    }
+
+    @Override
+    public void buildComplete() {
+        super.buildComplete();
+
+        // compute artifacts
+
+        String[] inputs = lm.inputNames();
+        String[] targets = lm.targetNames();
+
+        beta_hat = lm.getAllCoefficients().solidCopy();
+        beta_std_error = SolidRM.empty(inputs.length, targets.length);
+        beta_t_value = SolidRM.empty(inputs.length, targets.length);
+        beta_p_value = SolidRM.empty(inputs.length, targets.length);
+        beta_significance = new String[inputs.length][targets.length];
+
+        for (int i = 0; i < lm.targetNames().length; i++) {
+            String targetName = lm.targetName(i);
+
+            if (!withResiduals) {
+                RV coeff = beta_hat.mapCol(i);
+            } else {
+                NumericVar res = residuals.get(targetName);
+
+                int degrees = res.getRowCount() - model.inputNames().length;
+                double var = rss.get(targetName) / degrees;
+                double rs = rsquare.get(targetName);
+                RV coeff = beta_hat.mapCol(i);
+                double rsa = (rs * (res.getRowCount() - 1) - coeff.count() + 1) / degrees;
+
+                int fdegree1 = model.inputNames().length - 1;
+                double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
+                double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
+
+                RM X = SolidRM.copy(df.mapVars(model.inputNames()));
+                RM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidRM.identity(X.getColCount()));
+
+                for (int j = 0; j < model.inputNames().length; j++) {
+                    beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));
+                    beta_t_value.set(j, i, coeff.get(j) / beta_std_error.get(j, i));
+                    double pValue = new StudentT(degrees).cdf(-Math.abs(beta_t_value.get(j, i))) * 2;
+                    beta_p_value.set(j, i, pValue);
+                    String signif = " ";
+                    if (pValue <= 0.1)
+                        signif = ".";
+                    if (pValue <= 0.05)
+                        signif = "*";
+                    if (pValue <= 0.01)
+                        signif = "**";
+                    if (pValue <= 0.001)
+                        signif = "***";
+                    beta_significance[j][i] = signif;
+                }
+            }
+        }
     }
 
     @Override
@@ -82,34 +143,10 @@ public class LinearRFit extends RFit {
                 double rs = rsquare.get(targetName);
                 RV coeff = lm.getCoefficients(i);
                 double rsa = (rs * (res.getRowCount() - 1) - coeff.count() + 1) / degrees;
-                // TODO
+
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
-
-                RM X = SolidRM.copy(df.mapVars(model.inputNames()));
-                RM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidRM.identity(X.getColCount()));
-
-                double[] beta_std_error = new double[model.inputNames().length];
-                double[] beta_t_value = new double[model.inputNames().length];
-                double[] beta_p_value = new double[model.inputNames().length];
-                String[] beta_significance = new String[model.inputNames().length];
-                for (int j = 0; j < model.inputNames().length; j++) {
-                    beta_std_error[j] = Math.sqrt(m_beta_hat.get(j, j) * var);
-                    beta_t_value[j] = coeff.get(j) / beta_std_error[j];
-                    double pValue = new StudentT(degrees).cdf(-Math.abs(beta_t_value[j])) * 2;
-                    beta_p_value[j] = pValue;
-                    String signif = " ";
-                    if (pValue <= 0.1)
-                        signif = ".";
-                    if (pValue <= 0.05)
-                        signif = "*";
-                    if (pValue <= 0.01)
-                        signif = "**";
-                    if (pValue <= 0.001)
-                        signif = "***";
-                    beta_significance[j] = signif;
-                }
 
                 sb.append("> Residuals: \n");
                 sb.append(Summary.getHorizontalSummary5(res));
@@ -128,10 +165,10 @@ public class LinearRFit extends RFit {
                 for (int j = 0; j < coeff.count(); j++) {
                     tt.set(j + 1, 0, model.inputName(j), -1);
                     tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
-                    tt.set(j + 1, 2, WS.formatMedium(beta_std_error[j]), 1);
-                    tt.set(j + 1, 3, WS.formatMedium(beta_t_value[j]), 1);
-                    tt.set(j + 1, 4, WS.formatPValue(beta_p_value[j]), 1);
-                    tt.set(j + 1, 5, beta_significance[j], -1);
+                    tt.set(j + 1, 2, WS.formatMedium(beta_std_error.get(j, i)), 1);
+                    tt.set(j + 1, 3, WS.formatMedium(beta_t_value.get(j, i)), 1);
+                    tt.set(j + 1, 4, WS.formatPValue(beta_p_value.get(j, i)), 1);
+                    tt.set(j + 1, 5, beta_significance[j][i], -1);
                 }
                 sb.append(tt.getSummary());
                 sb.append("--------\n");
@@ -151,7 +188,6 @@ public class LinearRFit extends RFit {
                 sb.append("\n");
             }
         }
-
         return sb.toString();
     }
 }

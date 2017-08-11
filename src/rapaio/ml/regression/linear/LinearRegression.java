@@ -46,7 +46,7 @@ public class LinearRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 8610329390138787530L;
 
-    RM beta;
+    private RM beta;
 
     @Override
     public Regression newInstance() {
