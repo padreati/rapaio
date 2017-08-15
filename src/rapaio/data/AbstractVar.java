@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -79,7 +80,7 @@ abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                NumericVar num = NumericVar.empty(getRowCount());
+                NumericVar num = NumericVar.empty(getRowCount()).withName(getName());
                 for (int i = 0; i < getRowCount(); i++) {
                     num.setValue(i, getValue(i));
                 }
