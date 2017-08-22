@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ import rapaio.printer.Summary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -45,7 +47,7 @@ import static java.util.stream.Collectors.toList;
 import static rapaio.core.CoreTools.*;
 
 /**
- * KMeans clusterization algorithm
+ * KMeans clustering algorithm
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -55,7 +57,7 @@ public class KMeans implements Printable {
     private int runs = Integer.MAX_VALUE;
     private Tag<KMeansInitMethod> init = KMeansInitMethod.FORGY;
     private Tag<Distance> distance = Distance.EUCLIDEAN;
-    private Consumer<KMeans> runningHook = null;
+    private BiConsumer<KMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;
     private boolean learned = false;
@@ -79,6 +81,11 @@ public class KMeans implements Printable {
         return this;
     }
 
+    public KMeans withInit(Tag<KMeansInitMethod> init) {
+        this.init = init;
+        return this;
+    }
+
     public KMeans withEps(double eps) {
         this.eps = eps;
         return this;
@@ -94,7 +101,7 @@ public class KMeans implements Printable {
         return this;
     }
 
-    public final KMeans withRunningHook(Consumer<KMeans> hook) {
+    public final KMeans withRunningHook(BiConsumer<KMeans, Integer> hook) {
         runningHook = hook;
         return this;
     }
@@ -115,8 +122,11 @@ public class KMeans implements Printable {
         while (rounds-- > 0) {
             recomputeCentroids(df);
             assignToCentroids(df);
+
             if (runningHook != null) {
-                runningHook.accept(this);
+                buildSummary(df);
+                learned = true;
+                runningHook.accept(this, runs - rounds);
             }
             int erc = errors.getRowCount();
             if (erc > 1 && Math.abs(errors.getValue(erc - 1) - errors.getValue(erc - 2)) < eps) {
@@ -225,7 +235,7 @@ public class KMeans implements Printable {
     }
 
     private void buildSummary(Frame df) {
-        IndexVar summaryId = IndexVar.seq(1, centroids.getRowCount() + 1).withName("ID");
+        IndexVar summaryId = IndexVar.seq(1, centroids.getRowCount()).withName("ID");
         IndexVar summaryCount = IndexVar.fill(centroids.getRowCount(), 0).withName("count");
         NumericVar summaryMean = NumericVar.fill(centroids.getRowCount(), 0).withName("mean");
         NumericVar summaryVar = NumericVar.fill(centroids.getRowCount(), 0).withName("var");
@@ -284,7 +294,7 @@ public class KMeans implements Printable {
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(Summary.headString(Filters.refSort(summary, summary.getVar("count").refComparator(false))));
+            sb.append(Summary.headString(false, Filters.refSort(summary, summary.getVar("count").refComparator(false))));
         }
 
         return sb.toString();
