@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -256,7 +257,7 @@ public class XWilkinson {
 
         Label best = new Label();
 
-        if (dmin == dmax) {
+        if (Math.abs(dmin - dmax) < 1e-30) {
             best.min = dmin;
             best.max = dmax;
             best.step = 0;

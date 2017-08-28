@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,11 +26,9 @@
 package rapaio.graphics.base;
 
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.sys.WS;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -302,6 +301,7 @@ public abstract class HostFigure extends BaseFigure {
         }
     }
 
+    /*
     protected void buildNumericBottomMarkers() {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
@@ -335,6 +335,39 @@ public abstract class HostFigure extends BaseFigure {
         for (double label : ylabels.getList()) {
             leftMarkersPos.add((label - range.y1()) * viewport.height / range.height());
             leftMarkersMsg.add(String.valueOf(label));
+        }
+    }
+    */
+
+    protected void buildNumericBottomMarkers() {
+        bottomMarkersPos.clear();
+        bottomMarkersMsg.clear();
+
+        int xspots = (int) Math.floor(viewport.width / thickerMinSpace);
+        if (xspots < 1) {
+            xspots = 1;
+        }
+        double xspotwidth = viewport.width / xspots;
+
+        for (int i = 0; i <= xspots; i++) {
+            bottomMarkersPos.add(i * xspotwidth);
+            bottomMarkersMsg.add(String.format("%." + getRange().getProperDecimalsX() + "f", getRange().x1() + getRange().width() * i / xspots));
+        }
+    }
+
+    protected void buildNumericLeftMarkers() {
+        leftMarkersPos.clear();
+        leftMarkersMsg.clear();
+
+        int yspots = (int) Math.floor(viewport.height / thickerMinSpace);
+        if (yspots < 1) {
+            yspots = 1;
+        }
+        double yspotwidth = viewport.height / yspots;
+
+        for (int i = 0; i <= yspots; i++) {
+            leftMarkersPos.add(i * yspotwidth);
+            leftMarkersMsg.add(String.format("%." + getRange().getProperDecimalsY() + "f", getRange().y1() + getRange().height() * i / yspots));
         }
     }
 

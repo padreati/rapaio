@@ -112,13 +112,6 @@ public class ImageGraphicsTest {
 
         JavaIO.storeToFile(plot, "/tmp/tmp.ser");
 
-        try {
-            Plot p = (Plot) JavaIO.restoreFromFile("/tmp/tmp.ser");
-            WS.draw(p);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
         if(show)
             WS.draw(plot);
         if (regenerate)

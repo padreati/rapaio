@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -48,6 +49,17 @@ public class Lines extends PlotComponent {
     }
 
     public Lines(Var x, Var y, GOpt... opts) {
+        /*
+                this.x = NumericVar.empty().withName(x.getName());
+        this.y = NumericVar.empty().withName(y.getName());
+        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+            if(x.isMissing(i)||y.isMissing(i))
+                continue;
+            this.x.addValue(x.getValue(i));
+            this.y.addValue(y.getValue(i));
+        }
+
+         */
         this.x = x;
         this.y = y;
         this.options.apply(opts);
