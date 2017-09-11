@@ -35,6 +35,7 @@ public class Range implements Serializable {
     private static final long serialVersionUID = -7868093307393360861L;
     private Range1D xRange = new Range1D();
     private Range1D yRange = new Range1D();
+    private static final double extendedFactor = 1.025;
 
     public Range() {
     }
@@ -112,5 +113,18 @@ public class Range implements Serializable {
 
     public int getProperDecimalsY() {
         return yRange.getProperDecimals();
+    }
+
+    public Range getExtendedRange() {
+        Range extended = new Range();
+        double xExtRange = (x2() - x1()) * extendedFactor;
+        double xMid = (x1() + x2()) / 2;
+        extended.setX1(xMid - xExtRange / 2);
+        extended.setX2(xMid + xExtRange / 2);
+        double yExtRange = (y2() - y1()) * extendedFactor;
+        double yMid = (y1() + y2()) / 2;
+        extended.setY1(yMid - yExtRange / 2);
+        extended.setY2(yMid + yExtRange / 2);
+        return extended;
     }
 }

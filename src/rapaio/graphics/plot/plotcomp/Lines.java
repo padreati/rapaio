@@ -49,19 +49,14 @@ public class Lines extends PlotComponent {
     }
 
     public Lines(Var x, Var y, GOpt... opts) {
-        /*
-                this.x = NumericVar.empty().withName(x.getName());
+        this.x = NumericVar.empty().withName(x.getName());
         this.y = NumericVar.empty().withName(y.getName());
         for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
-            if(x.isMissing(i)||y.isMissing(i))
+            if (x.isMissing(i) || y.isMissing(i))
                 continue;
             this.x.addValue(x.getValue(i));
             this.y.addValue(y.getValue(i));
         }
-
-         */
-        this.x = x;
-        this.y = y;
         this.options.apply(opts);
     }
 

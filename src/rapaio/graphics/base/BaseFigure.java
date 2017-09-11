@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,7 +43,9 @@ public abstract class BaseFigure implements Figure {
         if (range == null) {
             range = buildRange();
         }
-        return range;
+        if(range==null)
+            return null;
+        return range.getExtendedRange();
     }
 
     protected void setRange(Range range) {

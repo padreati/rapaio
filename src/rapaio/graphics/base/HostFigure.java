@@ -301,7 +301,6 @@ public abstract class HostFigure extends BaseFigure {
         }
     }
 
-    /*
     protected void buildNumericBottomMarkers() {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
@@ -311,12 +310,12 @@ public abstract class HostFigure extends BaseFigure {
             return;
         }
         Range range = getRange();
-        XWilkinson.Label xlabels = XWilkinson.base10().searchBounded(
+        XWilkinson.Labels xlabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
                 range.x1(), range.x2(), xspots);
 
         for (double label : xlabels.getList()) {
             bottomMarkersPos.add((label - range.x1()) * viewport.width / range.width());
-            bottomMarkersMsg.add(String.valueOf(label));
+            bottomMarkersMsg.add(xlabels.getFormattedValue(label));
         }
     }
 
@@ -329,45 +328,12 @@ public abstract class HostFigure extends BaseFigure {
             return;
         }
         Range range = getRange();
-        XWilkinson.Label ylabels = XWilkinson.base10().searchBounded(
+        XWilkinson.Labels ylabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
                 range.y1(), range.y2(), yspots);
 
         for (double label : ylabels.getList()) {
             leftMarkersPos.add((label - range.y1()) * viewport.height / range.height());
-            leftMarkersMsg.add(String.valueOf(label));
-        }
-    }
-    */
-
-    protected void buildNumericBottomMarkers() {
-        bottomMarkersPos.clear();
-        bottomMarkersMsg.clear();
-
-        int xspots = (int) Math.floor(viewport.width / thickerMinSpace);
-        if (xspots < 1) {
-            xspots = 1;
-        }
-        double xspotwidth = viewport.width / xspots;
-
-        for (int i = 0; i <= xspots; i++) {
-            bottomMarkersPos.add(i * xspotwidth);
-            bottomMarkersMsg.add(String.format("%." + getRange().getProperDecimalsX() + "f", getRange().x1() + getRange().width() * i / xspots));
-        }
-    }
-
-    protected void buildNumericLeftMarkers() {
-        leftMarkersPos.clear();
-        leftMarkersMsg.clear();
-
-        int yspots = (int) Math.floor(viewport.height / thickerMinSpace);
-        if (yspots < 1) {
-            yspots = 1;
-        }
-        double yspotwidth = viewport.height / yspots;
-
-        for (int i = 0; i <= yspots; i++) {
-            leftMarkersPos.add(i * yspotwidth);
-            leftMarkersMsg.add(String.format("%." + getRange().getProperDecimalsY() + "f", getRange().y1() + getRange().height() * i / yspots));
+            leftMarkersMsg.add(String.valueOf(ylabels.getFormattedValue(label)));
         }
     }
 

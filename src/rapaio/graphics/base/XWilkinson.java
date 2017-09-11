@@ -26,6 +26,7 @@
 package rapaio.graphics.base;
 
 import rapaio.sys.WS;
+import sun.misc.FloatingDecimal;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import java.util.List;
  */
 public class XWilkinson {
 
+    public static final double DEEFAULT_EPS = 1e-100;
+
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = w;
         this.Q = Q;
@@ -47,57 +50,57 @@ public class XWilkinson {
         this.eps = eps;
     }
 
-    private XWilkinson(double[] Q, double base) {
-        this(Q, base, new double[]{0.25, 0.2, 0.4, 0.05, 0.01}, 1e-10);
+    private XWilkinson(double[] Q, double base, double eps) {
+        this(Q, base, new double[]{0.25, 0.2, 0.4, 0.05, 0.01}, eps);
     }
 
-    public static XWilkinson of(double[] Q, double base) {
-        return new XWilkinson(Q, base);
+    public static XWilkinson of(double[] Q, double base, double eps) {
+        return new XWilkinson(Q, base, eps);
     }
 
-    public static XWilkinson base10() {
-        return XWilkinson.of(new double[]{1, 5, 2, 2.5, 4, 3}, 10);
+    public static XWilkinson base10(double eps) {
+        return XWilkinson.of(new double[]{1, 5, 2, 2.5, 4, 3}, 10, eps);
     }
 
-    public static XWilkinson base2() {
-        return XWilkinson.of(new double[]{1}, 2);
+    public static XWilkinson base2(double eps) {
+        return XWilkinson.of(new double[]{1}, 2, eps);
     }
 
-    public static XWilkinson base16() {
-        return XWilkinson.of(new double[]{1, 2, 4, 8}, 16);
+    public static XWilkinson base16(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 4, 8}, 16, eps);
     }
 
     //- Factory methods that may be useful for time-axis implementations
-    public static XWilkinson forSeconds() {
-        return XWilkinson.of(new double[]{1, 2, 3, 5, 10, 15, 20, 30}, 60);
+    public static XWilkinson forSeconds(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 3, 5, 10, 15, 20, 30}, 60, eps);
     }
 
-    public static XWilkinson forMinutes() {
-        return XWilkinson.of(new double[]{1, 2, 3, 5, 10, 15, 20, 30}, 60);
+    public static XWilkinson forMinutes(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 3, 5, 10, 15, 20, 30}, 60, eps);
     }
 
-    public static XWilkinson forHours24() {
-        return XWilkinson.of(new double[]{1, 2, 3, 4, 6, 8, 12}, 24);
+    public static XWilkinson forHours24(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 3, 4, 6, 8, 12}, 24, eps);
     }
 
-    public static XWilkinson forHours12() {
-        return XWilkinson.of(new double[]{1, 2, 3, 4, 6}, 12);
+    public static XWilkinson forHours12(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 3, 4, 6}, 12, eps);
     }
 
-    public static XWilkinson forDays() {
-        return XWilkinson.of(new double[]{1, 2}, 7);
+    public static XWilkinson forDays(double eps) {
+        return XWilkinson.of(new double[]{1, 2}, 7, eps);
     }
 
-    public static XWilkinson forWeeks() {
-        return XWilkinson.of(new double[]{1, 2, 4, 13, 26}, 52);
+    public static XWilkinson forWeeks(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 4, 13, 26}, 52, eps);
     }
 
-    public static XWilkinson forMonths() {
-        return XWilkinson.of(new double[]{1, 2, 3, 4, 6}, 12);
+    public static XWilkinson forMonths(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 3, 4, 6}, 12, eps);
     }
 
-    public static XWilkinson forYears() {
-        return XWilkinson.of(new double[]{1, 2, 5}, 10);
+    public static XWilkinson forYears(double eps) {
+        return XWilkinson.of(new double[]{1, 2, 5}, 10, eps);
     }
 
     // Loose flag
@@ -203,17 +206,22 @@ public class XWilkinson {
         return 1; // Maybe later more...
     }
 
-    public class Label implements Iterable<Double> {
+    public class Labels implements Iterable<Double> {
 
         private double min, max, step, score;
 
         @Override
         public String toString() {
-            String s = "(Score: " + WS.formatFlex(score) + ") ";
-            for (double x = min; x <= max; x = x + step) {
-                s += WS.formatFlex(x) + "\t";
+            StringBuilder s = new StringBuilder("(Score: " + WS.formatFlex(score) + ", " +
+                    "min: " + min + ", " +
+                    "max: " + max + ", " +
+                    "step: " + step + ")\n\t");
+            if (step == 0)
+                return s.toString();
+            for (Double x : getList()) {
+                s.append(x).append("\t");
             }
-            return s;
+            return s.toString();
         }
 
         @Override
@@ -222,11 +230,17 @@ public class XWilkinson {
         }
 
         public List<Double> getList() {
+            int digits = getSignificantDigits(step);
             List<Double> list = new ArrayList<>();
             for (double i = min; i <= max; i += step) {
-                list.add(i);
+                list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", i)));
             }
             return list;
+        }
+
+        public String getFormattedValue(double x) {
+            int digits = getSignificantDigits(step);
+            return String.valueOf(Double.valueOf(String.format("%." + Math.abs(digits) + "f", x)));
         }
 
         public double getMin() {
@@ -245,6 +259,22 @@ public class XWilkinson {
             return score;
         }
 
+        private int getSignificantDigits(double x) {
+            String formatted = FloatingDecimal.getBinaryToASCIIConverter(x).toJavaFormatString();
+            int indexE = formatted.indexOf("E");
+            if (indexE == -1)
+                return 0;
+            int exp = Integer.parseInt(formatted.substring(indexE + 1));
+            for (int i = 2; i < formatted.length(); i++) {
+                if (formatted.charAt(i) != 'E') {
+                    exp--;
+                }
+                break;
+            }
+            return exp;
+
+        }
+
     }
 
     /**
@@ -253,11 +283,13 @@ public class XWilkinson {
      * @param m    desired number of labels
      * @return XWilkinson.Label
      */
-    public Label search(double dmin, double dmax, int m) {
+    public Labels search(double dmin, double dmax, int m) {
 
-        Label best = new Label();
+        Labels best = new Labels();
 
-        if (Math.abs(dmin - dmax) < 1e-30) {
+        // validation
+
+        if (Math.abs(dmin - dmax) < eps || dmin > dmax) {
             best.min = dmin;
             best.max = dmax;
             best.step = 0;
@@ -324,11 +356,23 @@ public class XWilkinson {
         return best;
     }
 
-    public Label searchBounded(double min, double max, int maxM) {
-        Label best = null;
+    public Labels searchBounded(double min, double max, int maxM) {
+        Labels best = new Labels();
+
+        // validation
+
+        if (Math.abs(min - max) < eps || min > max) {
+            best.min = min;
+            best.max = max;
+            best.step = 0;
+            best.score = 0.0;
+            return best;
+        }
+
+        best = null;
         for (int i = 2; i <= maxM; i++) {
-            Label current = search(min, max, i);
-            Label bounded = new Label();
+            Labels current = search(min, max, i);
+            Labels bounded = new Labels();
             bounded.score = current.score;
             bounded.step = current.step;
             bounded.min = (current.min < min)
@@ -342,92 +386,5 @@ public class XWilkinson {
             }
         }
         return best;
-    }
-
-
-    // Demo for usage
-    public static void main(String[] args) {
-
-        XWilkinson x = XWilkinson.base10();
-
-        WS.println(x.searchBounded(0.01323, 123444, 10).toString());
-        System.exit(0);
-
-        // First examples taken from the paper pg 6, Fig 4
-        x.loose = true;
-        System.out.println(x.search(-98.0, 18.0, 3).toString());
-        x.loose = false;
-        System.out.println(x.search(-98.0, 18.0, 3).toString());
-
-        System.out.println();
-
-        x.loose = true;
-        System.out.println(x.search(-1.0, 200.0, 3).toString());
-        x.loose = false;
-        System.out.println(x.search(-1.0, 200.0, 3).toString());
-
-        System.out.println();
-
-        x.loose = true;
-        System.out.println(x.search(119.0, 178.0, 3).toString());
-        x.loose = false;
-        System.out.println(x.search(119.0, 178.0, 3).toString());
-
-        System.out.println();
-
-        x.loose = true;
-        System.out.println(x.search(-31.0, 27.0, 4).toString());
-        x.loose = false;
-        System.out.println(x.search(-31.0, 27.0, 3).toString());
-
-        System.out.println();
-
-        x.loose = true;
-        System.out.println(x.search(-55.45, -49.99, 2).toString());
-        x.loose = false;
-        System.out.println(x.search(-55.45, -49.99, 3).toString());
-
-        System.out.println();
-        x.loose = false;
-        System.out.println(x.search(0, 100, 2).toString());
-        System.out.println(x.search(0, 100, 3).toString());
-        System.out.println(x.search(0, 100, 4).toString());
-        System.out.println(x.search(0, 100, 5).toString());
-        System.out.println(x.search(0, 100, 6).toString());
-        System.out.println(x.search(0, 100, 7).toString());
-        System.out.println(x.search(0, 100, 8).toString());
-        System.out.println(x.search(0, 100, 9).toString());
-        System.out.println(x.search(0, 100, 10).toString());
-
-        System.out.println("Some additional tests: Testing with base2");
-        x = XWilkinson.base2();
-        System.out.println(x.search(0, 32, 8).toString());
-
-        System.out.println("Quick experiment with minutes: Check the logic");
-        x = XWilkinson.forMinutes();
-        System.out.println(x.search(0, 240, 16));
-        System.out.println(x.search(0, 240, 9));
-
-        System.out.println("Quick experiment with minutes: Convert values to HH:mm");
-        LocalTime start = LocalTime.now();
-        LocalTime end = start.plusMinutes(245); // add 4 hrs 5 mins (245 mins) to the start
-
-        int dmin = start.toSecondOfDay() / 60;
-        int dmax = end.toSecondOfDay() / 60;
-        if (dmin > dmax) {
-            // if adding 4 hrs exceeds the midnight simply swap the values this is just an
-            // example...
-            int swap = dmin;
-            dmin = dmax;
-            dmax = swap;
-        }
-        System.out.println("dmin: " + dmin + " dmax: " + dmax);
-        XWilkinson.Label labels = x.search(dmin, dmax, 15);
-        System.out.println("labels");
-        for (double time = labels.getMin(); time < labels.getMax(); time += labels.getStep()) {
-            LocalTime lt = LocalTime.ofSecondOfDay(Double.valueOf(time).intValue() * 60);
-            System.out.println(lt);
-        }
-
     }
 }
