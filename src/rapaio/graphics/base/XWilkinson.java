@@ -51,7 +51,7 @@ public class XWilkinson {
     }
 
     private XWilkinson(double[] Q, double base, double eps) {
-        this(Q, base, new double[]{0.25, 0.2, 0.4, 0.05, 0.01}, eps);
+        this(Q, base, new double[]{0.25,0.2,0.5,0.05}, eps);
     }
 
     public static XWilkinson of(double[] Q, double base, double eps) {
@@ -59,7 +59,7 @@ public class XWilkinson {
     }
 
     public static XWilkinson base10(double eps) {
-        return XWilkinson.of(new double[]{1, 5, 2, 2.5, 4, 3}, 10, eps);
+        return XWilkinson.of(new double[]{1,5,2,2.5,4,3}, 10, eps);
     }
 
     public static XWilkinson base2(double eps) {
@@ -262,9 +262,7 @@ public class XWilkinson {
         private int getSignificantDigits(double x) {
             String formatted = FloatingDecimal.getBinaryToASCIIConverter(x).toJavaFormatString();
             int indexE = formatted.indexOf("E");
-            if (indexE == -1)
-                return 0;
-            int exp = Integer.parseInt(formatted.substring(indexE + 1));
+            int exp = (indexE == -1) ? 0 : Integer.parseInt(formatted.substring(indexE + 1));
             for (int i = 2; i < formatted.length(); i++) {
                 if (formatted.charAt(i) != 'E') {
                     exp--;
