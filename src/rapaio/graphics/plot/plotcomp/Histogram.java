@@ -29,7 +29,8 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -53,18 +54,18 @@ public class Histogram extends PlotComponent {
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
 
-    public Histogram(Var v, GOpt... opts) {
+    public Histogram(Var v, GOption... opts) {
         this(v, Double.NaN, Double.NaN, opts);
     }
 
-    public Histogram(Var v, double minValue, double maxValue, GOpt... opts) {
+    public Histogram(Var v, double minValue, double maxValue, GOption... opts) {
         this.v = v;
         this.minValue = minValue;
         this.maxValue = maxValue;
 
         // default values for histogram
-        options.setColorDefault(gOpts -> new Color[]{gOpts.getPalette().getColor(7)});
-        options.apply(opts);
+        options.setColor(new GOptionColor(new Color[]{options.getPalette().getColor(7)}));
+        options.bind(opts);
     }
 
     private int computeFreedmanDiaconisEstimation(Var v) {
@@ -84,7 +85,7 @@ public class Histogram extends PlotComponent {
         parent.bottomThick(true);
         parent.bottomMarkers(true);
         if (options.getBins() == -1) {
-            options.apply(bins(computeFreedmanDiaconisEstimation(v)));
+            options.bind(bins(computeFreedmanDiaconisEstimation(v)));
         }
     }
 

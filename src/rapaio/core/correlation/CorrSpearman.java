@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,6 +25,7 @@
 
 package rapaio.core.correlation;
 
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
@@ -42,30 +44,28 @@ import static rapaio.sys.WS.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CorrSpearman implements Printable {
+public class CorrSpearman implements Correlation, Printable {
 
     public static CorrSpearman from(Frame df) {
-        return new CorrSpearman(df);
+        return new CorrSpearman(df.varStream().toArray(Var[]::new));
     }
 
     public static CorrSpearman from(Var... vars) {
         return new CorrSpearman(vars);
     }
 
-    private final String[] names;
-    private final Var[] vars;
-    private final double[][] rho;
+    private final DistanceMatrix d;
 
-    private CorrSpearman(Var... vars) {
+    private CorrSpearman(Var... variables) {
 
         int rowCount = Integer.MAX_VALUE;
-        for (Var var : vars) {
+        for (Var var : variables) {
             rowCount = Math.min(var.getRowCount(), rowCount);
         }
 
         Mapping map = Mapping.copy(IntStream.range(0, rowCount)
                 .filter(row -> {
-                    for (Var var : vars) {
+                    for (Var var : variables) {
                         if (var.isMissing(row))
                             return false;
                     }
@@ -73,32 +73,19 @@ public class CorrSpearman implements Printable {
                 })
                 .toArray());
 
-        this.names = new String[vars.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = "V" + i;
-        }
-        this.vars = new Var[vars.length];
+        Var[] vars = new Var[variables.length];
         for (int i = 0; i < vars.length; i++) {
-            this.vars[i] = vars[i].mapRows(map);
+            vars[i] = variables[i].mapRows(map);
         }
-        this.rho = compute();
+        d = compute(vars);
     }
 
-    private CorrSpearman(Frame df) {
-
-        Mapping map = Mapping.copy(IntStream.range(0, df.getRowCount())
-                .filter(row -> !df.isMissing(row))
-                .toArray());
-
-        this.names = df.getVarNames();
-        this.vars = new Var[df.getVarCount()];
-        for (int i = 0; i < df.getVarCount(); i++) {
-            vars[i] = df.getVar(i).mapRows(map);
+    private DistanceMatrix compute(Var[] vars) {
+        String[] names = new String[vars.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = vars[i].getName();
         }
-        this.rho = compute();
-    }
 
-    private double[][] compute() {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
@@ -124,17 +111,18 @@ public class CorrSpearman implements Printable {
         }
 
         // compute Pearson on ranks
-        return CorrPearson.from(ranks).values();
+        return CorrPearson.from(ranks).getMatrix();
     }
 
-    public double[][] values() {
-        return rho;
+    @Override
+    public DistanceMatrix getMatrix() {
+        return d;
     }
 
     @Override
     public String getSummary() {
         StringBuilder sb = new StringBuilder();
-        switch (vars.length) {
+        switch (d.getNames().length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -149,7 +137,7 @@ public class CorrSpearman implements Printable {
 
     private void summaryOne(StringBuilder sb) {
         sb.append(String.format("\n" +
-                "> spearman[%s] - Spearman's rank correlation coefficient\n", names[0]));
+                "> spearman[%s] - Spearman's rank correlation coefficient\n", d.getName(0)));
         sb.append("1\n");
         sb.append("spearman's rank correlation is 1 for identical vectors\n");
     }
@@ -157,22 +145,22 @@ public class CorrSpearman implements Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> spearman[%s, %s] - Spearman's rank correlation coefficient\n",
-                names[0], names[1]));
-        sb.append(formatFlex(rho[0][1])).append("\n");
+                d.getName(0), d.getName(1)));
+        sb.append(formatFlex(d.get(0, 1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> spearman[%s] - Spearman's rank correlation coefficient\n",
-                Arrays.deepToString(names)));
+                Arrays.deepToString(d.getNames())));
 
-        String[][] table = new String[vars.length + 1][vars.length + 1];
+        String[][] table = new String[d.getNames().length + 1][d.getNames().length + 1];
         table[0][0] = "";
-        for (int i = 1; i < vars.length + 1; i++) {
+        for (int i = 1; i < d.getNames().length + 1; i++) {
             table[0][i] = i + ".";
-            table[i][0] = i + "." + names[i - 1];
-            for (int j = 1; j < vars.length + 1; j++) {
-                table[i][j] = formatFlex(rho[i - 1][j - 1]);
+            table[i][0] = i + "." + d.getName(i - 1);
+            for (int j = 1; j < d.getNames().length + 1; j++) {
+                table[i][j] = formatFlex(d.get(i - 1, j - 1));
                 if (i == j) {
                     table[i][j] = "x";
                 }
@@ -188,7 +176,7 @@ public class CorrSpearman implements Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < vars.length + 1) {
+        while (start < d.getNames().length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;
@@ -205,8 +193,8 @@ public class CorrSpearman implements Printable {
     }
 
     public double singleValue() {
-        if (names.length == 1)
+        if (d.getNames().length == 1)
             return 1;
-        return rho[0][1];
+        return d.get(0, 1);
     }
 }

@@ -29,7 +29,7 @@ import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
@@ -44,11 +44,11 @@ public class Lines extends PlotComponent {
     private final Var x;
     private final Var y;
 
-    public Lines(Var y, GOpt... opts) {
+    public Lines(Var y, GOption... opts) {
         this(NumericVar.seq(0, y.getRowCount() - 1), y, opts);
     }
 
-    public Lines(Var x, Var y, GOpt... opts) {
+    public Lines(Var x, Var y, GOption... opts) {
         this.x = NumericVar.empty().withName(x.getName());
         this.y = NumericVar.empty().withName(y.getName());
         for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
@@ -57,7 +57,7 @@ public class Lines extends PlotComponent {
             this.x.addValue(x.getValue(i));
             this.y.addValue(y.getValue(i));
         }
-        this.options.apply(opts);
+        this.options.bind(opts);
     }
 
     @Override

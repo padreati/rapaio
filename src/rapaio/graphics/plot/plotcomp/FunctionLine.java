@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@ package rapaio.graphics.plot.plotcomp;
 import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
 import rapaio.util.func.SFunction;
 
@@ -44,11 +45,11 @@ public class FunctionLine extends PlotComponent {
     private static final long serialVersionUID = 8388944194915495215L;
     private final SFunction<Double, Double> f;
 
-    public FunctionLine(SFunction<Double, Double> f, GOpt... opts) {
+    public FunctionLine(SFunction<Double, Double> f, GOption... opts) {
         this.f = f;
         // apply default values for function line
-        this.options.apply(points(1024 * 10));
-        this.options.apply(opts);
+        this.options.bind(points(1024 * 10));
+        this.options.bind(opts);
     }
 
     @Override

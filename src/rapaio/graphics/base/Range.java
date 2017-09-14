@@ -116,15 +116,34 @@ public class Range implements Serializable {
     }
 
     public Range getExtendedRange() {
+
         Range extended = new Range();
         double xExtRange = (x2() - x1()) * extendedFactor;
         double xMid = (x1() + x2()) / 2;
-        extended.setX1(xMid - xExtRange / 2);
-        extended.setX2(xMid + xExtRange / 2);
+        if (x1() == x2()) {
+            extended.setX1(x1() - 1);
+            extended.setX2(x2() + 1);
+        } else {
+            extended.setX1(xMid - xExtRange / 2);
+            extended.setX2(xMid + xExtRange / 2);
+        }
         double yExtRange = (y2() - y1()) * extendedFactor;
         double yMid = (y1() + y2()) / 2;
-        extended.setY1(yMid - yExtRange / 2);
-        extended.setY2(yMid + yExtRange / 2);
+        if(y1()==y2()) {
+            extended.setY1(y1()-1);
+            extended.setY2(y2()+1);
+        } else {
+            extended.setY1(yMid - yExtRange / 2);
+            extended.setY2(yMid + yExtRange / 2);
+        }
         return extended;
+    }
+
+    @Override
+    public String toString() {
+        return "Range{" +
+                "xRange=" + xRange +
+                ", yRange=" + yRange +
+                '}';
     }
 }

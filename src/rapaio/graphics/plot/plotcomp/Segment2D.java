@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
@@ -43,12 +44,12 @@ public class Segment2D extends PlotComponent {
     private final double x2;
     private final double y2;
 
-    public Segment2D(double x1, double y1, double x2, double y2, GOpt... opts) {
+    public Segment2D(double x1, double y1, double x2, double y2, GOption... opts) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        this.options.apply(opts);
+        this.options.bind(opts);
     }
 
     @Override

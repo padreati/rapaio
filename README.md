@@ -26,7 +26,7 @@ Stable Features
 For each feature there are some notes regarding the development stage. 
 If there are no notes it means the feature is considered to be fully implemented and well tested.
 
-**Core Statistics**
+**Core**
 
 * Special Math functions
 * Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance, Quantiles
@@ -140,6 +140,7 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Clusterization**
 
+* Cluster Silhouette
 * KMeans clustering
 
 **Graphics**
@@ -169,6 +170,7 @@ Experminental Stage Features
 * Median Absolute Error
 * Receiver Operator Characteristic - ROC curves and ROC Area
 * Confusion Matrix
+* Distance Matrix
 
 **Classification**
 

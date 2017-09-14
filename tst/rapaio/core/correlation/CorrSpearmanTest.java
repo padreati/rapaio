@@ -29,11 +29,13 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.common.distance.Distance;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,16 +51,16 @@ public class CorrSpearmanTest {
     public void testFromWikipedia() {
         CorrSpearman sc = CorrSpearman.from(iq, tvHours);
         // according with wikipedia article rho must be −0.175757575
-        assertEquals(-0.175757575, sc.values()[0][1], 1e-8);
+        assertEquals(-0.175757575, sc.getMatrix().get(0,1), 1e-8);
     }
 
     @Test
     public void testSameVector() {
         CorrSpearman same = CorrSpearman.from(iq, iq);
-        assertEquals(1., same.values()[0][1], 1e-10);
+        assertEquals(1., same.getMatrix().get(0,1), 1e-10);
 
         same = CorrSpearman.from(tvHours, tvHours);
-        assertEquals(1., same.values()[0][1], 1e-10);
+        assertEquals(1., same.getMatrix().get(0,1), 1e-10);
     }
 
     @Test
@@ -120,12 +122,12 @@ public class CorrSpearmanTest {
         CorrSpearman cp = CoreTools.corrSpearman(x, y, z);
         cp.printSummary();
 
-        double[][] values = cp.values();
+        DistanceMatrix m = cp.getMatrix();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), values[i][j], 1e-20);
+                        exp.get(i, j), m.get(i,j), 1e-20);
             }
         }
 
@@ -135,7 +137,7 @@ public class CorrSpearmanTest {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), values[i][j], 1e-20);
+                        exp.get(i, j), m.get(i,j), 1e-20);
             }
         }
     }

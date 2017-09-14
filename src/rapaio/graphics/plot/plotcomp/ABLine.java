@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +27,8 @@ package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.Plotter;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
@@ -34,14 +36,14 @@ import java.awt.geom.Line2D;
 
 /**
  * Plot component which draws a line of the form y = f(x) = a*x + b
- * There is a generic form of the line by calling {@link #ABLine(double, double, GOpt...)}.
+ * There is a generic form of the line by calling {@link #ABLine(double, double, GOption...)}.
  * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
- * The simpler form is called by using {@link #ABLine(boolean, double, GOpt...)},
+ * The simpler form is called by using {@link #ABLine(boolean, double, GOption...)},
  * with the boolean parameter specifying if the line is horizontal or vertical.
  * <p>
- * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOpt...)}
- * and {@link Plotter#vLine(double, GOpt...)} which can be used to have the shortest code.
+ * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOption...)}
+ * and {@link Plotter#vLine(double, GOption...)} which can be used to have the shortest code.
  * <p>
  * The default color is {@link Color#LIGHT_GRAY}, making this useful for drawing guides.
  *
@@ -55,22 +57,22 @@ public class ABLine extends PlotComponent {
     private final boolean h;
     private final boolean v;
 
-    public ABLine(boolean horiz, double a, GOpt... opts) {
+    public ABLine(boolean horiz, double a, GOption... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
-        this.options.setColorDefault(gOpts -> new Color[]{Color.LIGHT_GRAY});
-        this.options.apply(opts);
+        this.options.setColor(new GOptionColor(new Color[]{Color.LIGHT_GRAY}));
+        this.options.bind(opts);
     }
 
-    public ABLine(double a, double b, GOpt... opts) {
+    public ABLine(double a, double b, GOption... opts) {
         this.a = a;
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options.apply(opts);
-        this.options.setColorDefault(gOpts -> new Color[]{Color.LIGHT_GRAY});
+        this.options.bind(opts);
+        this.options.setColor(new GOptionColor(new Color[]{Color.LIGHT_GRAY}));
     }
 
     @Override

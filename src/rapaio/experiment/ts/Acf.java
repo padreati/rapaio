@@ -65,8 +65,8 @@ public class Acf implements Printable {
         double var = Variance.from(ts).getBiasedValue();
         for (int i = 1; i <= lags.length; i++) {
             lags[i-1] = i;
-            double acf = 1.0;
-            for (int j = 0; j < lags.length - i; j++) {
+            double acf = 0.0;
+            for (int j = 0; j < ts.getRowCount() - i; j++) {
                 acf += (ts.getValue(j) - mu) * (ts.getValue(j + i) - mu);
             }
             values[i-1] = acf / (var * ts.getRowCount());

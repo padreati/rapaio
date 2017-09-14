@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ package rapaio.core.correlation;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -46,7 +48,7 @@ import static rapaio.sys.WS.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CorrPearson implements Printable {
+public class CorrPearson implements Correlation, Printable {
 
     public static CorrPearson from(Frame df) {
         return new CorrPearson(df);
@@ -56,36 +58,33 @@ public class CorrPearson implements Printable {
         return new CorrPearson(vars);
     }
 
-    private final String[] names;
-    private final double[][] pearson;
+    private final DistanceMatrix d;
 
     private CorrPearson(Frame df) {
         List<Var> varList = df.varList();
-        this.names = df.getVarNames();
-        this.pearson = new double[varList.size()][varList.size()];
+
+        d = DistanceMatrix.empty(df.getVarNames());
         for (int i = 0; i < df.getVarCount(); i++) {
-            pearson[i][i] = 1;
+            d.set(i,i, 1);
             for (int j = i + 1; j < varList.size(); j++) {
-                pearson[i][j] = compute(varList.get(i), varList.get(j));
-                pearson[j][i] = pearson[i][j];
+                d.set(i,j,compute(varList.get(i), varList.get(j)));
             }
         }
     }
 
     private CorrPearson(Var... vars) {
         List<Var> varList = Arrays.asList(vars);
-        this.names = new String[vars.length];
+        String[] names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = vars[i].getName();
             if (names[i].isEmpty())
                 names[i] = "V" + i;
         }
-        this.pearson = new double[vars.length][vars.length];
+        d = DistanceMatrix.empty(names);
         for (int i = 0; i < vars.length; i++) {
-            pearson[i][i] = 1;
+            d.set(i,i, 1);
             for (int j = i + 1; j < vars.length; j++) {
-                pearson[i][j] = compute(vars[i], vars[j]);
-                pearson[j][i] = pearson[i][j];
+                d.set(i,j, compute(vars[i], vars[j]));
             }
         }
     }
@@ -109,20 +108,21 @@ public class CorrPearson implements Printable {
         return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
     }
 
-    public double[][] values() {
-        return pearson;
+    @Override
+    public DistanceMatrix getMatrix() {
+        return d;
     }
 
     public double singleValue() {
-        if (names.length == 1)
+        if (d.getNames().length == 1)
             return 1;
-        return pearson[0][1];
+        return d.get(0,1);
     }
 
     @Override
     public String getSummary() {
         StringBuilder sb = new StringBuilder();
-        switch (names.length) {
+        switch (d.getNames().length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -138,7 +138,7 @@ public class CorrPearson implements Printable {
     private void summaryOne(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s] - Pearson product-moment correlation coefficient\n",
-                names[0]));
+                d.getName(0)));
         sb.append("1\n");
         sb.append("pearson correlation is 1 for identical vectors\n");
     }
@@ -146,22 +146,22 @@ public class CorrPearson implements Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
-                names[0], names[1]));
-        sb.append(formatFlex(pearson[0][1])).append("\n");
+                d.getName(0), d.getName(1)));
+        sb.append(formatFlex(d.get(0,1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s] - Pearson product-moment correlation coefficient\n",
-                Arrays.deepToString(names)));
+                Arrays.deepToString(d.getNames())));
 
-        String[][] table = new String[names.length + 1][names.length + 1];
+        String[][] table = new String[d.getNames().length + 1][d.getNames().length + 1];
         table[0][0] = "";
-        for (int i = 1; i < names.length + 1; i++) {
+        for (int i = 1; i < d.getNames().length + 1; i++) {
             table[0][i] = i + ".";
-            table[i][0] = i + "." + names[i - 1];
-            for (int j = 1; j < names.length + 1; j++) {
-                table[i][j] = formatShort(pearson[i - 1][j - 1]);
+            table[i][0] = i + "." + d.getName(i - 1);
+            for (int j = 1; j < d.getNames().length + 1; j++) {
+                table[i][j] = formatShort(d.get(i - 1,j - 1));
                 if (i == j) {
                     table[i][j] = "x";
                 }
@@ -177,7 +177,7 @@ public class CorrPearson implements Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < names.length + 1) {
+        while (start < d.getNames().length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;

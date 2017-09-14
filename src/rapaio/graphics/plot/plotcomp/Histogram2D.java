@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +27,8 @@ package rapaio.graphics.plot.plotcomp;
 
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -45,10 +47,11 @@ public class Histogram2D extends PlotComponent {
     private int[][] freq;
     private int maxFreq;
 
-    public Histogram2D(Var x, Var y, GOpt... opts) {
+    public Histogram2D(Var x, Var y, GOption... opts) {
         this.x = x;
         this.y = y;
-        this.options.apply(opts);
+        this.options.bind(opts);
+        this.options.setBins(new GOptionBins(10));
     }
 
     @Override
@@ -60,8 +63,6 @@ public class Histogram2D extends PlotComponent {
         parent.bottomMarkers(true);
         parent.bottomThick(true);
         parent.yLab(y.getName());
-
-        this.options.setBinsDefault(gOpts -> 10);
     }
 
     @Override

@@ -23,34 +23,34 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.opt;
 
-import rapaio.core.distributions.Distribution;
 import rapaio.data.NumericVar;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.plotcomp.Points;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class QQPlot extends Plot {
+public class GOptionSz implements GOption<Var> {
 
-    private static final long serialVersionUID = -3244871850592508515L;
+    private static final long serialVersionUID = 6568267641815981670L;
+    private final Var size;
 
-    public QQPlot(Var points, Distribution distribution, GOption... opts) {
+    public GOptionSz(Var size) {
+        this.size = size;
+    }
 
-        this.options.bind(opts);
-        Var x = new VFSort().fitApply(points);
-        Var y = NumericVar.empty(x.getRowCount());
-        for (int i = 0; i < y.getRowCount(); i++) {
-            double p = (i + 1) / (y.getRowCount() + 1.);
-            y.setValue(i, distribution.quantile(p));
-        }
-        add(new Points(y, x));
-        yLab("Sampling Quantiles");
-        xLab("Theoretical Quantiles");
-        title("QQPlot - sample vs. " + distribution.name());
+    public GOptionSz(double size) {
+        this.size = NumericVar.scalar(size);
+    }
+
+    @Override
+    public void bind(GOpts opts) {
+        opts.setSz(this);
+    }
+
+    @Override
+    public Var apply(GOpts opts) {
+        return size;
     }
 }

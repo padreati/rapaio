@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,7 +26,8 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -46,25 +48,20 @@ public class Legend extends PlotComponent {
     private final double y;
     private final int place;
 
-    public Legend(double x, double y, GOpt... opts) {
+    public Legend(double x, double y, GOption... opts) {
         this.x = x;
         this.y = y;
         this.place = -1;
-        this.options.apply(opts);
+        options.setColor(new GOptionColor(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
+        this.options.bind(opts);
     }
 
-    public Legend(int place, GOpt... opts) {
+    public Legend(int place, GOption... opts) {
         this.x = -1;
         this.y = -1;
         this.place = place;
-        this.options.apply(opts);
-    }
-
-    @Override
-    public void initialize(Plot parent) {
-        super.initialize(parent);
-
-        options.setColorDefault(gOpts -> IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new));
+        options.setColor(new GOptionColor(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
+        this.options.bind(opts);
     }
 
     @Override

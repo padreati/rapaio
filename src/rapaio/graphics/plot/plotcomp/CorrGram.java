@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,6 +26,8 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.CoreTools;
+import rapaio.core.correlation.Correlation;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.math.MTools;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
@@ -33,6 +36,7 @@ import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.PlotComponent;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.sys.WS;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -47,24 +51,20 @@ public class CorrGram extends PlotComponent {
     private static final long serialVersionUID = 7529398214880633755L;
 
     private boolean grid = false;
-    private final RM dist;
+    private boolean labels = true;
+    private final DistanceMatrix d;
     private final int[][] colors;
 
-    public CorrGram(Frame df) {
-        dist = SolidRM.empty(df.getVarCount(), df.getVarCount());
+    public CorrGram(DistanceMatrix d, boolean labels, boolean grid) {
+        this.labels = labels;
+        this.grid = grid;
+        this.d = d;
 
-        CorrPearson corr = CoreTools.corrPearson(df);
-        for (int i = 0; i < df.getVarCount(); i++) {
-            for (int j = 0; j < df.getVarCount(); j++) {
-                dist.set(i,j, corr.values()[i][j]);
-            }
-        }
+        colors = new int[d.getLength()][d.getLength()];
 
-        colors = new int[dist.getRowCount()][dist.getColCount()];
-
-        for (int i = 0; i < dist.getRowCount(); i++) {
-            for (int j = 0; j < dist.getColCount(); j++) {
-                double x = dist.get(i, j);
+        for (int i = 0; i < d.getLength(); i++) {
+            for (int j = 0; j < d.getLength(); j++) {
+                double x = d.get(i, j);
                 if (x > 1)
                     x = 1;
                 if (x < -1)
@@ -78,32 +78,55 @@ public class CorrGram extends PlotComponent {
 
     @Override
     protected Range buildRange() {
-        return new Range(0, 0, dist.getColCount(), dist.getRowCount());
+        return new Range(0, 0, d.getLength(), d.getLength());
     }
 
     @Override
     public void paint(Graphics2D g2d) {
 
-        if (grid) {
-            g2d.setColor(Color.BLACK);
-            g2d.setStroke(new BasicStroke(options.getLwd()));
+        ColorGradient gradient = ColorGradient.newHueGradient(DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
+//        ColorGradient gradient = ColorGradient.newBiColorGradient(Color.MAGENTA, Color.yellow, DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
 
-            g2d.draw(new Line2D.Double(xScale(0), yScale(0), xScale(dist.getColCount()), yScale(0)));
-            g2d.draw(new Line2D.Double(xScale(0), yScale(dist.getRowCount()), xScale(0), yScale(0)));
-            for (int i = 0; i < dist.getRowCount(); i++) {
-                for (int j = 0; j < dist.getColCount(); j++) {
-                    g2d.draw(new Line2D.Double(xScale(i + 1), yScale(j + 1), xScale(dist.getColCount()), yScale(j + 1)));
-                    g2d.draw(new Line2D.Double(xScale(i + 1), yScale(dist.getRowCount()), xScale(i + 1), yScale(j + 1)));
+        double xstep = Math.abs(xScale(1) - xScale(0));
+        double ystep = Math.abs(yScale(1) - yScale(0));
+        for (int i = 0; i < d.getLength(); i++) {
+            for (int j = 0; j < d.getLength(); j++) {
+                if (i != j) {
+                    g2d.setColor(gradient.getColor(colors[i][j]));
+                    g2d.fill(new Rectangle2D.Double(
+                            xScale(j),
+                            yScale(d.getLength() - i),
+                            xstep,
+                            ystep));
+                }
+                if (labels) {
+                    String label = WS.formatFlexShort(d.get(i, j));
+                    if (i == j) {
+                        label = d.getName(i);
+                    }
+                    Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(label, g2d);
+                    double width = bounds.getWidth();
+                    double height = bounds.getHeight();
+
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawString(label,
+                            (int) (xScale(j) + xstep / 2 - width / 2),
+                            (int) (yScale(d.getLength() - i) + ystep / 2 + height / 2));
                 }
             }
         }
 
-        ColorGradient gradient = ColorGradient.newHueGradient(DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
-//        ColorGradient gradient = ColorGradient.newBiColorGradient(Color.RED, Color.BLUE, DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
-        for (int i = dist.getRowCount()-1; i >=0 ; i--) {
-            for (int j = 0; j < dist.getColCount(); j++) {
-                g2d.setColor(gradient.getColor(colors[i][j]));
-                g2d.fill(new Rectangle2D.Double(xScale(i), yScale(j), Math.abs(xScale(i + 1) - xScale(i)), Math.abs(yScale(j + 1)-yScale(j))));
+        if (grid) {
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke(options.getLwd()));
+
+            g2d.draw(new Line2D.Double(xScale(0), yScale(0), xScale(d.getLength()), yScale(0)));
+            g2d.draw(new Line2D.Double(xScale(0), yScale(d.getLength()), xScale(0), yScale(0)));
+            for (int i = 0; i <= d.getLength(); i++) {
+                for (int j = 0; j <= d.getLength(); j++) {
+                    g2d.draw(new Line2D.Double(xScale(j), yScale(i), xScale(d.getLength()), yScale(i)));
+                    g2d.draw(new Line2D.Double(xScale(j), yScale(d.getLength()), xScale(j), yScale(i)));
+                }
             }
         }
     }

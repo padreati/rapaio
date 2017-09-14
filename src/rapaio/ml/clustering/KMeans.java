@@ -129,6 +129,12 @@ public class KMeans implements Printable {
                 runningHook.accept(this, runs - rounds);
             }
             int erc = errors.getRowCount();
+            if (erc > 1 && debug) {
+                WS.println("prev error: " + errors.getValue(erc - 2) +
+                        ", current error: " + errors.getValue(erc - 1) +
+                        ", error diff: " + (errors.getValue(erc - 2) - errors.getValue(erc - 1))
+                );
+            }
             if (erc > 1 && Math.abs(errors.getValue(erc - 1) - errors.getValue(erc - 2)) < eps) {
                 break;
             }
@@ -212,6 +218,10 @@ public class KMeans implements Printable {
             var.setIndex(i, arrows[i] + 1);
         }
         return var;
+    }
+
+    public Frame getCentroids() {
+        return centroids;
     }
 
     public NumericVar getRunningErrors() {

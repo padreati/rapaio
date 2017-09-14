@@ -158,8 +158,8 @@ public class FiltersTest {
         assertEquals(0.5788231, variance(y).sdValue(), 1e-6);
 
         corrPearson(x, y).printSummary();
-        assertEquals(0.8001133350403581, corrPearson(x, y).values()[0][1], 1e-6);
+        assertEquals(0.8001133350403581, corrPearson(x, y).getMatrix().get(0,1), 1e-6);
         corrSpearman(x, y).printSummary();
-        assertEquals(1, corrSpearman(x, y).values()[0][1], 1e-6);
+        assertEquals(1, corrSpearman(x, y).getMatrix().get(0,1), 1e-6);
     }
 }

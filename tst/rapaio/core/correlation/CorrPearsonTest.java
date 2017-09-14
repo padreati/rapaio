@@ -29,6 +29,7 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.RM;
@@ -105,12 +106,12 @@ public class CorrPearsonTest {
         CorrPearson cp = CoreTools.corrPearson(x, y, z);
         cp.printSummary();
 
-        double[][] values = cp.values();
+        DistanceMatrix m = cp.getMatrix();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), values[i][j], 1e-20);
+                        exp.get(i, j), m.get(i,j), 1e-20);
             }
         }
 
@@ -120,7 +121,7 @@ public class CorrPearsonTest {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), values[i][j], 1e-20);
+                        exp.get(i, j), m.get(i,j), 1e-20);
             }
         }
     }

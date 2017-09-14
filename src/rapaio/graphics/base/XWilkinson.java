@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class XWilkinson {
 
-    public static final double DEEFAULT_EPS = 1e-100;
+    public static final double DEEFAULT_EPS = 1e-10;
 
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = w;
@@ -287,7 +287,7 @@ public class XWilkinson {
 
         // validation
 
-        if (Math.abs(dmin - dmax) < eps || dmin > dmax) {
+        if (Math.abs(dmin - dmax) < eps || dmin > dmax || !Double.isFinite(dmin) || !Double.isFinite(dmax)) {
             best.min = dmin;
             best.max = dmax;
             best.step = 0;
@@ -359,7 +359,7 @@ public class XWilkinson {
 
         // validation
 
-        if (Math.abs(min - max) < eps || min > max) {
+        if (Math.abs(min - max) < eps || min > max || !Double.isFinite(min) || !Double.isFinite(max)) {
             best.min = min;
             best.max = max;
             best.step = 0;

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 import rapaio.ml.eval.ROC;
@@ -42,9 +43,9 @@ public class ROCCurve extends PlotComponent {
     private static final long serialVersionUID = 4110642211338491615L;
     private final ROC roc;
 
-    public ROCCurve(ROC roc, GOpt... opts) {
+    public ROCCurve(ROC roc, GOption... opts) {
         this.roc = roc;
-        this.options.apply(opts);
+        this.options.bind(opts);
     }
 
     @Override

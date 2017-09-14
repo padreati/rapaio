@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,64 +41,54 @@ import java.util.Arrays;
  */
 public class GOpts implements Serializable {
 
-    public static final GOpts DEFAULTS;
     private static final long serialVersionUID = -8407683729055712796L;
 
+    private static GOpts defaults;
+
     static {
-        DEFAULTS = new GOpts();
-        DEFAULTS.palette = gOpts -> ColorPalette.STANDARD;
-        DEFAULTS.color = gOpts -> new Color[]{Color.black};
-        DEFAULTS.lwd = gOpts -> 1.0f;
-        DEFAULTS.sz = gOpts -> NumericVar.scalar(3);
-        DEFAULTS.pch = gOpts -> IndexVar.scalar(0);
-        DEFAULTS.alpha = gOpts -> 1.0f;
-        DEFAULTS.bins = gOpts -> -1;
-        DEFAULTS.prob = gOpts -> false;
-        DEFAULTS.points = gOpts -> 256;
-        DEFAULTS.labels = gOpts -> new String[]{""};
+        defaults = new GOpts();
+        defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
+        defaults.color = new GOptionColor(Color.BLACK);
+        defaults.lwd = new GOptionLwd(1.0f);
+        defaults.sz = new GOptionSz(NumericVar.scalar(3));
+        defaults.pch = new GOptionPch(IndexVar.scalar(0));
+        defaults.alpha = new GOptionAlpha(1.0f);
+        defaults.bins = new GOptionBins(-1);
+        defaults.prob = new GOptionProb(false);
+        defaults.points = new GOptionPoints(256);
+        defaults.labels = new GOptionLabels(new String[]{""});
     }
 
     GOpts parent;
-    //
-    SFunction<GOpts, ColorPalette> paletteDefault;
-    SFunction<GOpts, Color[]> colorDefault;
-    SFunction<GOpts, Float> lwdDefault;
-    SFunction<GOpts, Var> szDefault;
-    SFunction<GOpts, Var> pchDefault;
-    SFunction<GOpts, Float> alphaDefault;
-    SFunction<GOpts, Integer> binsDefault;
-    SFunction<GOpts, Boolean> probDefault;
-    SFunction<GOpts, Integer> pointsDefault;
-    SFunction<GOpts, String[]> labelsDefault;
 
-    SFunction<GOpts, ColorPalette> palette;
-    SFunction<GOpts, Color[]> color;
-    SFunction<GOpts, Float> lwd;
-    SFunction<GOpts, Var> sz;
-    SFunction<GOpts, Var> pch;
-    SFunction<GOpts, Float> alpha;
-    SFunction<GOpts, Integer> bins;
-    SFunction<GOpts, Boolean> prob;
-    SFunction<GOpts, Integer> points;
-    SFunction<GOpts, String[]> labels;
+    GOptionPalette palette;
+    GOptionColor color;
+    GOptionLwd lwd;
+    GOptionSz sz;
+    GOptionPch pch;
+    GOptionAlpha alpha;
+    GOptionBins bins;
+    GOptionProb prob;
+    GOptionPoints points;
+    GOptionLabels labels;
 
-    public GOpts apply(GOpt... options) {
-        Arrays.stream(options).forEach(o -> o.apply(this));
+    public GOpts bind(GOption... options) {
+        Arrays.stream(options).forEach(o -> o.bind(this));
         return this;
     }
 
-    public GOpt[] toArray() {
-        return new GOpt[]{
-                opt -> opt.setPalette(palette),
-                opt -> opt.setColor(color),
-                opt -> opt.setLwd(lwd),
-                opt -> opt.setSz(sz),
-                opt -> opt.setPch(pch),
-                opt -> opt.setAlpha(alpha),
-                opt -> opt.setBins(bins),
-                opt -> opt.setProb(prob),
-                opt -> opt.setPoints(points),
-                opt -> opt.setLabels(labels)
+    public GOption[] toArray() {
+        return new GOption[]{
+                palette,
+                color,
+                lwd,
+                sz,
+                pch,
+                alpha,
+                bins,
+                prob,
+                points,
+                labels
         };
     }
 
@@ -111,315 +102,155 @@ public class GOpts implements Serializable {
         this.parent = parent;
     }
 
+    /*
+     * Color palette
+     */
+
     public ColorPalette getPalette() {
         if (palette == null) {
-            return parent != null ? parent.getPalette() : DEFAULTS.palette.apply(this);
+            return parent != null ? parent.getPalette() : defaults.palette.apply(this);
         }
         return palette.apply(this);
     }
 
-    public void setPalette(SFunction<GOpts, ColorPalette> palette) {
+    public void setPalette(GOptionPalette palette) {
         this.palette = palette;
     }
 
+    /*
+     * Color
+     */
+
     public Color getColor(int row) {
-        SFunction<GOpts, Color[]> c = getUpColor();
-        if (c == null)
-            c = getUpColorDefault();
-        if (c == null)
-            c = DEFAULTS.color;
-        return c.apply(this)[row % c.apply(this).length];
+        if (color == null) {
+            if (parent != null) {
+                return parent.getColor(row);
+            } else {
+                Color[] _color = defaults.color.apply(this);
+                return _color[row % _color.length];
+            }
+        }
+        Color[] _color = color.apply(this);
+        return _color[row % _color.length];
     }
 
-    private SFunction<GOpts, Color[]> getUpColor() {
-        if (color != null)
-            return color;
-        if (parent != null)
-            return parent.getUpColor();
-        return null;
-    }
-
-    private SFunction<GOpts, Color[]> getUpColorDefault() {
-        if (colorDefault != null)
-            return colorDefault;
-        if (parent != null)
-            return parent.getUpColorDefault();
-        return null;
-    }
-
-    public float getLwd() {
-        SFunction<GOpts, Float> c = getUpLwd();
-        if (c == null)
-            c = getUpLwdDefault();
-        if (c == null)
-            c = DEFAULTS.lwd;
-        return c.apply(this);
-    }
-
-    public void setLwd(SFunction<GOpts, Float> lwd) {
-        this.lwd = lwd;
-    }
-
-    private SFunction<GOpts, Float> getUpLwd() {
-        if (lwd != null)
-            return lwd;
-        if (parent != null)
-            return parent.getUpLwd();
-        return null;
-    }
-
-    private SFunction<GOpts, Float> getUpLwdDefault() {
-        if (lwdDefault != null)
-            return lwdDefault;
-        if (parent != null)
-            return parent.getUpLwdDefault();
-        return null;
-    }
-
-    public double getSz(int row) {
-        SFunction<GOpts, Var> c = getUpSz();
-        if (c == null)
-            c = getUpSzDefault();
-        if (c == null)
-            c = DEFAULTS.sz;
-        return c.apply(this).getValue(row % c.apply(this).getRowCount());
-    }
-
-    private SFunction<GOpts, Var> getUpSz() {
-        if (sz != null)
-            return sz;
-        if (parent != null)
-            return parent.getUpSz();
-        return null;
-    }
-
-    private SFunction<GOpts, Var> getUpSzDefault() {
-        if (szDefault != null)
-            return szDefault;
-        if (parent != null)
-            return parent.getUpSzDefault();
-        return null;
-    }
-
-    public int getPch(int row) {
-        SFunction<GOpts, Var> c = getUpPch();
-        if (c == null)
-            c = getUpPchDefault();
-        if (c == null)
-            c = DEFAULTS.pch;
-        return c.apply(this).getIndex(row % c.apply(this).getRowCount());
-    }
-
-    private SFunction<GOpts, Var> getUpPch() {
-        if (pch != null)
-            return pch;
-        if (parent != null)
-            return parent.getUpPch();
-        return null;
-    }
-
-    private SFunction<GOpts, Var> getUpPchDefault() {
-        if (pchDefault != null)
-            return pchDefault;
-        if (parent != null)
-            return parent.getUpPchDefault();
-        return null;
-    }
-
-    public float getAlpha() {
-        SFunction<GOpts, Float> c = getUpAlpha();
-        if (c == null)
-            c = getUpAlphaDefault();
-        if (c == null)
-            c = DEFAULTS.alpha;
-        return c.apply(this);
-    }
-
-    public void setAlpha(SFunction<GOpts, Float> alpha) {
-        this.alpha = alpha;
-    }
-
-    protected SFunction<GOpts, Float> getUpAlpha() {
-        if (alpha != null)
-            return alpha;
-        if (parent != null)
-            return parent.getUpAlpha();
-        return null;
-    }
-
-    protected SFunction<GOpts, Float> getUpAlphaDefault() {
-        if (alphaDefault != null)
-            return alphaDefault;
-        if (parent != null)
-            return parent.getUpAlphaDefault();
-        return null;
-    }
-
-    public int getBins() {
-        SFunction<GOpts, Integer> c = getUpBins();
-        if (c == null)
-            c = getUpBinsDefault();
-        if (c == null)
-            c = DEFAULTS.bins;
-        return c.apply(this);
-    }
-
-    public void setBins(SFunction<GOpts, Integer> bins) {
-        this.bins = bins;
-    }
-
-    protected SFunction<GOpts, Integer> getUpBins() {
-        if (bins != null)
-            return bins;
-        if (parent != null)
-            return parent.getUpBins();
-        return null;
-    }
-
-    protected SFunction<GOpts, Integer> getUpBinsDefault() {
-        if (binsDefault != null)
-            return binsDefault;
-        if (parent != null)
-            return parent.getUpBinsDefault();
-        return null;
-    }
-
-    public boolean getProb() {
-        SFunction<GOpts, Boolean> c = getUpProb();
-        if (c == null)
-            c = getUpProbDefault();
-        if (c == null)
-            c = DEFAULTS.prob;
-        return c.apply(this);
-    }
-
-    public void setProb(SFunction<GOpts, Boolean> prob) {
-        this.prob = prob;
-    }
-
-    protected SFunction<GOpts, Boolean> getUpProb() {
-        if (prob != null)
-            return prob;
-        if (parent != null)
-            return parent.getUpProb();
-        return null;
-    }
-
-    protected SFunction<GOpts, Boolean> getUpProbDefault() {
-        if (probDefault != null)
-            return probDefault;
-        if (parent != null)
-            return parent.getUpProbDefault();
-        return null;
-    }
-
-    public int getPoints() {
-        SFunction<GOpts, Integer> c = getUpPoints();
-        if (c == null)
-            c = getUpPointsDefault();
-        if (c == null)
-            c = DEFAULTS.points;
-        return c.apply(this);
-    }
-
-    public void setPoints(SFunction<GOpts, Integer> points) {
-        this.points = points;
-    }
-
-    protected SFunction<GOpts, Integer> getUpPoints() {
-        if (points != null)
-            return points;
-        if (parent != null)
-            return parent.getUpPoints();
-        return null;
-    }
-
-    protected SFunction<GOpts, Integer> getUpPointsDefault() {
-        if (pointsDefault != null)
-            return pointsDefault;
-        if (parent != null)
-            return parent.getUpPointsDefault();
-        return null;
-    }
-
-    public String[] getLabels() {
-        SFunction<GOpts, String[]> c = getUpLabels();
-        if (c == null)
-            c = getUpLabelsDefault();
-        if (c == null)
-            c = DEFAULTS.labels;
-        return c.apply(this);
-    }
-
-    public void setLabels(SFunction<GOpts, String[]> labels) {
-        this.labels = labels;
-    }
-
-    protected SFunction<GOpts, String[]> getUpLabels() {
-        if (labels != null)
-            return labels;
-        if (parent != null)
-            return parent.getUpLabels();
-        return null;
-    }
-
-    protected SFunction<GOpts, String[]> getUpLabelsDefault() {
-        if (labelsDefault != null)
-            return labelsDefault;
-        if (parent != null)
-            return parent.getUpLabelsDefault();
-        return null;
-    }
-
-    public void setColor(SFunction<GOpts, Color[]> color) {
+    public void setColor(GOptionColor color) {
         this.color = color;
     }
 
-    public void setSz(SFunction<GOpts, Var> sz) {
+    /*
+     * Line width
+     */
+
+    public float getLwd() {
+        if (lwd == null) {
+            return parent != null ? parent.getLwd() : defaults.lwd.apply(this);
+        }
+        return lwd.apply(this);
+    }
+
+    public void setLwd(GOptionLwd lwd) {
+        this.lwd = lwd;
+    }
+
+    /*
+     * Item size
+     */
+
+    public double getSz(int row) {
+        if (sz == null) {
+            if (parent != null) {
+                return parent.getSz(row);
+            } else {
+                Var _sz = defaults.sz.apply(this);
+                return _sz.getValue(row % _sz.getRowCount());
+            }
+        }
+        Var _sz = sz.apply(this);
+        return _sz.getValue(row % _sz.getRowCount());
+    }
+
+    public void setSz(GOptionSz sz) {
         this.sz = sz;
     }
 
-    public void setPch(SFunction<GOpts, Var> pch) {
+    /*
+     * Point character
+     */
+
+    public int getPch(int row) {
+        if (pch == null) {
+            if (parent != null) {
+                return parent.getPch(row);
+            } else {
+                Var _pch = defaults.pch.apply(this);
+                return _pch.getIndex(row % _pch.getRowCount());
+            }
+        }
+        Var _pch = pch.apply(this);
+        return _pch.getIndex(row % _pch.getRowCount());
+    }
+
+    public void setPch(GOptionPch pch) {
         this.pch = pch;
     }
 
-    public void setPaletteDefault(SFunction<GOpts, ColorPalette> paletteDefault) {
-        this.paletteDefault = paletteDefault;
+    /*
+     * Alpha
+     */
+
+    public float getAlpha() {
+        if (alpha == null) {
+            return parent != null ? parent.getAlpha() : defaults.alpha.apply(this);
+        }
+        return alpha.apply(this);
     }
 
-    public void setColorDefault(SFunction<GOpts, Color[]> colorDefault) {
-        this.colorDefault = colorDefault;
+    public void setAlpha(GOptionAlpha alpha) {
+        this.alpha = alpha;
     }
 
-    public void setLwdDefault(SFunction<GOpts, Float> lwdDefault) {
-        this.lwdDefault = lwdDefault;
+    public int getBins() {
+        if (bins == null) {
+            return parent != null ? parent.getBins() : defaults.bins.apply(this);
+        }
+        return bins.apply(this);
     }
 
-    public void setSzDefault(SFunction<GOpts, Var> szDefault) {
-        this.szDefault = szDefault;
+    public void setBins(GOptionBins bins) {
+        this.bins = bins;
     }
 
-    public void setPchDefault(SFunction<GOpts, Var> pchDefault) {
-        this.pchDefault = pchDefault;
+    public boolean getProb() {
+        if (prob == null) {
+            return parent != null ? parent.getProb() : defaults.prob.apply(this);
+        }
+        return prob.apply(this);
     }
 
-    public void setAlphaDefault(SFunction<GOpts, Float> alphaDefault) {
-        this.alphaDefault = alphaDefault;
+    public void setProb(GOptionProb prob) {
+        this.prob = prob;
     }
 
-    public void setBinsDefault(SFunction<GOpts, Integer> binsDefault) {
-        this.binsDefault = binsDefault;
+    public int getPoints() {
+        if (points == null) {
+            return parent != null ? parent.getPoints() : defaults.points.apply(this);
+        }
+        return points.apply(this);
     }
 
-    public void setProbDefault(SFunction<GOpts, Boolean> probDefault) {
-        this.probDefault = probDefault;
+    public void setPoints(GOptionPoints points) {
+        this.points = points;
     }
 
-    public void setPointsDefault(SFunction<GOpts, Integer> pointsDefault) {
-        this.pointsDefault = pointsDefault;
+    public String[] getLabels() {
+        if (labels == null) {
+            return parent != null ? parent.getLabels() : defaults.labels.apply(this);
+        }
+        return labels.apply(this);
     }
 
-    public void setLabelsDefault(SFunction<GOpts, String[]> labels) {
-        this.labels = labelsDefault;
+    public void setLabels(GOptionLabels labels) {
+        this.labels = labels;
     }
 }

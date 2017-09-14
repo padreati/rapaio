@@ -31,12 +31,10 @@ import rapaio.data.IndexVar;
 import rapaio.data.NumericVar;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
+import rapaio.graphics.Plotter;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.opt.GOpts;
-import rapaio.graphics.opt.PchPalette;
+import rapaio.graphics.opt.*;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -46,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.*;
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.pch;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -58,31 +58,39 @@ public class BoxPlot extends HostFigure {
     private final String[] names;
     private final GOpts options = new GOpts();
 
-    public BoxPlot(Var x, Var factor, GOpt... opts) {
+    public BoxPlot(Var x, Var factor, GOption... opts) {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.getRow()), mapping(VSpot::getValue, toList())));
         names = factor.getStreamLevels().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(NumericVar::copy).toArray(Var[]::new);
 
-        this.options.apply(opts);
+        this.options.bind(opts);
         initialize();
     }
 
-    public BoxPlot(Var x, GOpt... opts) {
+    public BoxPlot(Var x, GOption... opts) {
         this(new Var[]{x}, opts);
     }
 
-    public BoxPlot(Var[] vars, GOpt... opts) {
+    public BoxPlot(Var[] vars, GOption... opts) {
         this.vars = vars;
         this.names = Arrays.stream(vars).map(Var::getName).toArray(String[]::new);
-        this.options.apply(opts);
+
+        options.setPch(new GOptionPch(IndexVar.wrap(0, 3)));
+        options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
+        this.options.bind(opts);
+
         initialize();
     }
 
-    public BoxPlot(Frame df, GOpt... opts) {
+    public BoxPlot(Frame df, GOption... opts) {
         this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::getName).toArray(String[]::new);
-        this.options.apply(opts);
+
+        options.setPch(new GOptionPch(IndexVar.wrap(0, 3)));
+        options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
+        this.options.bind(opts);
+
         initialize();
     }
 
@@ -91,9 +99,6 @@ public class BoxPlot extends HostFigure {
         leftThick(true);
         bottomMarkers(true);
         bottomThick(true);
-
-        options.setPchDefault(gOpts -> IndexVar.wrap(0, 3));
-        options.setColorDefault(gOpts -> new Color[]{new Color(240, 240, 240)});
     }
 
     @Override

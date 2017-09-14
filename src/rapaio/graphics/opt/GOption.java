@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,6 +27,15 @@ package rapaio.graphics.opt;
 
 import java.io.Serializable;
 
-public interface GOpt extends Serializable {
-    void apply(GOpts opt);
+public interface GOption<T> extends Serializable {
+
+    /**
+     * Binds an option to a given set of graphical options
+     */
+    void bind(GOpts opts);
+
+    /**
+     * Produce the graphical option
+     */
+    T apply(GOpts opts);
 }

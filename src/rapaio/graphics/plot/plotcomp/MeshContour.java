@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@ package rapaio.graphics.plot.plotcomp;
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
@@ -47,11 +48,11 @@ public class MeshContour extends PlotComponent {
     private boolean contour = false;
     private boolean fill = false;
 
-    public MeshContour(MeshGrid mg, boolean contour, boolean fill, GOpt... opts) {
+    public MeshContour(MeshGrid mg, boolean contour, boolean fill, GOption... opts) {
         this.mg = mg;
         this.contour = contour;
         this.fill = fill;
-        this.options.apply(opts);
+        this.options.bind(opts);
     }
 
     @Override

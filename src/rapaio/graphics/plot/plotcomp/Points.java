@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,10 +25,9 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.SamplingTools;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
@@ -46,10 +46,10 @@ public class Points extends PlotComponent {
     private final Var x;
     private final Var y;
 
-    public Points(Var x, Var y, GOpt... opts) {
+    public Points(Var x, Var y, GOption... opts) {
         this.x = x;
         this.y = y;
-        this.options.apply(opts);
+        this.options.bind(opts);
     }
 
     @Override

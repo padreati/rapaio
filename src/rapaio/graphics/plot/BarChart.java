@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,12 +30,14 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -47,7 +50,7 @@ public class BarChart extends HostFigure {
     private final Var category;
     private final Var condition;
     private final Var numeric;
-    private final GOpts options = new GOpts().apply(Plotter.color(0));
+    private final GOpts options = new GOpts().bind(color(0));
     private boolean density = false;
     private Range range;
     private int[] sel;
@@ -56,15 +59,15 @@ public class BarChart extends HostFigure {
     private SortType sort = SortType.NONE;
     private int top = Integer.MAX_VALUE;
 
-    public BarChart(Var category, GOpt... opts) {
+    public BarChart(Var category, GOption... opts) {
         this(category, null, opts);
     }
 
-    public BarChart(Var category, Var condition, GOpt... opts) {
+    public BarChart(Var category, Var condition, GOption... opts) {
         this(category, condition, null, opts);
     }
 
-    public BarChart(Var category, Var condition, Var numeric, GOpt... opts) {
+    public BarChart(Var category, Var condition, Var numeric, GOption... opts) {
         List<VarType> varTypes = Arrays.asList(VarType.BINARY, VarType.NOMINAL, VarType.ORDINAL);
         if (!varTypes.contains(category.getType())) {
             throw new IllegalArgumentException("categories are nominal only");
@@ -92,8 +95,8 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.apply(Plotter.color(IndexVar.seq(shift, condition.getLevels().length)));
-        options.apply(opts);
+        options.bind(color(IndexVar.seq(shift, condition.getLevels().length)));
+        options.bind(opts);
     }
 
     public BarChart useSortType(SortType sort) {

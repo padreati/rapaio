@@ -68,7 +68,7 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-    private static final boolean show = false;
+    private static final boolean show = true;
     private static String root = "/home/ati/work/rapaio/src/test/resources";
 
     private Frame df;
