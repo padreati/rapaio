@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class XWilkinson {
 
-    public static final double DEEFAULT_EPS = 1e-50;
+    public static final double DEEFAULT_EPS = 1e-40;
 
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = w;
@@ -51,7 +51,7 @@ public class XWilkinson {
     }
 
     private XWilkinson(double[] Q, double base, double eps) {
-        this(Q, base, new double[]{0.25,0.2,0.5,0.05}, eps);
+        this(Q, base, new double[]{0.25, 0.2, 0.5, 0.05}, eps);
     }
 
     public static XWilkinson of(double[] Q, double base, double eps) {
@@ -59,7 +59,7 @@ public class XWilkinson {
     }
 
     public static XWilkinson base10(double eps) {
-        return XWilkinson.of(new double[]{1,5,2,2.5,4,3}, 10, eps);
+        return XWilkinson.of(new double[]{1, 5, 2, 2.5, 4, 3}, 10, eps);
     }
 
     public static XWilkinson base2(double eps) {
@@ -232,6 +232,17 @@ public class XWilkinson {
         public List<Double> getList() {
             int digits = getSignificantDigits(step);
             List<Double> list = new ArrayList<>();
+            if (step == 0) {
+                if(!Double.isFinite(min) || !Double.isFinite(max)) {
+                    return list;
+                }
+                list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", min)));
+                if (min < max) {
+                    list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", max)));
+                    return list;
+                }
+                return list;
+            }
             for (double i = min; i <= max; i += step) {
                 list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", i)));
             }
@@ -287,7 +298,7 @@ public class XWilkinson {
 
         // validation
 
-        if (Math.abs(dmin - dmax) < eps || dmin > dmax || !Double.isFinite(dmin) || !Double.isFinite(dmax)) {
+        if (dmax - dmin < eps || !Double.isFinite(dmin) || !Double.isFinite(dmax)) {
             best.min = dmin;
             best.max = dmax;
             best.step = 0;
@@ -359,7 +370,7 @@ public class XWilkinson {
 
         // validation
 
-        if (Math.abs(min - max) < eps || min > max || !Double.isFinite(min) || !Double.isFinite(max)) {
+        if (max - min < eps || !Double.isFinite(min) || !Double.isFinite(max)) {
             best.min = min;
             best.max = max;
             best.step = 0;

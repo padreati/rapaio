@@ -18,13 +18,13 @@ public class XWilkinsonTest {
     @Test
     public void sandboxTest() {
         XWilkinson x = XWilkinson.base10(XWilkinson.DEEFAULT_EPS);
-        XWilkinson.Labels l = x.searchBounded(1.1e-40, 3e-29, 10);
+        XWilkinson.Labels l = x.searchBounded(1.1e-100, 3e-100, 10);
         WS.println(l.toString());
 
         NumericVar xx = NumericVar.seq(l.getList().size());
         NumericVar yy = NumericVar.from(l.getList().size(), row -> l.getList().get(row));
 
-        WS.setPrinter(new IdeaPrinter());
+//        WS.setPrinter(new IdeaPrinter());
         WS.draw(Plotter.points(yy, xx));
     }
 
