@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,9 +41,9 @@ public class MovingAverage {
         int left = Math.floorDiv(window - 1, 2);
         int right = window - 1 - left;
 
-        ma = NumericVar.empty(source.getRowCount()).withName("ma-" + source.getName());
+        ma = NumericVar.empty(source.rowCount()).withName("ma-" + source.name());
 
-        for (int i = left; i < source.getRowCount() - right; i++) {
+        for (int i = left; i < source.rowCount() - right; i++) {
             double sum = 0;
             double count = 0;
 
@@ -51,7 +52,7 @@ public class MovingAverage {
                     continue;
                 }
                 count++;
-                sum += source.getValue(j);
+                sum += source.value(j);
             }
             ma.setValue(i, count > 0 ? sum / count : Double.NaN);
         }

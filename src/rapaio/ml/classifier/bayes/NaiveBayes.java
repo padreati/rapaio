@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -59,7 +60,7 @@ public class NaiveBayes extends AbstractClassifier {
     // algorithm parameters
     public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
         Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.fromWeights(false, df.getVar(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        DVector dv = DVector.fromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
         dv.normalize();
         for (int i = 1; i < nb.firstTargetLevels().length; i++) {
             priors.put(nb.firstTargetLevels()[i], dv.get(i));
@@ -155,24 +156,24 @@ public class NaiveBayes extends AbstractClassifier {
         binData.binMap = new ConcurrentHashMap<>();
 
         logger.fine("start learning...");
-        Arrays.stream(df.getVarNames()).parallel().forEach(
+        Arrays.stream(df.varNames()).parallel().forEach(
                 testCol -> {
                     if (firstTargetName().equals(testCol)) {
                         return;
                     }
-                    if (df.getVar(testCol).getType().isBinary()) {
+                    if (df.var(testCol).type().isBinary()) {
                         BinaryEstimator estimator = binData.binEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
                         binData.binMap.put(testCol, estimator);
                         return;
                     }
-                    if (df.getVar(testCol).getType().isNumeric()) {
+                    if (df.var(testCol).type().isNumeric()) {
                         NumericEstimator estimator = numData.numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numData.numMap.put(testCol, estimator);
                         return;
                     }
-                    if (df.getVar(testCol).getType().isNominal()) {
+                    if (df.var(testCol).type().isNominal()) {
                         NominalEstimator estimator = nomData.nomEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
                         nomData.nomMap.put(testCol, estimator);
@@ -188,7 +189,7 @@ public class NaiveBayes extends AbstractClassifier {
         logger.fine("start fitting values...");
 
         CFit pred = CFit.build(this, df, withClasses, withDensities);
-        IntStream.range(0, df.getRowCount()).parallel().forEach(
+        IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.empty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
@@ -224,7 +225,7 @@ public class NaiveBayes extends AbstractClassifier {
 	}
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("NaiveBayes model\n");
         sb.append("================\n\n");
@@ -233,7 +234,7 @@ public class NaiveBayes extends AbstractClassifier {
         sb.append(fullName()).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().getSummary()).append("\n");
+        sb.append(capabilities().summary()).append("\n");
 
         sb.append("Learned model:\n");
 

@@ -38,14 +38,14 @@ public class AbstractVarTest {
     public void solidNumericCopyTest() {
 
         Var main = NumericVar.copy(1, 3, 5, 8, 9);
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
 
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        assertEquals(main.getValue(0), copy.getValue(0), 10e-12);
-        assertEquals(main.getValue(1), copy.getValue(1), 10e-12);
-        assertEquals(main.getValue(2), copy.getValue(2), 10e-12);
-        assertEquals(main.getValue(3), copy.getValue(3), 10e-12);
-        assertEquals(main.getValue(4), copy.getValue(4), 10e-12);
+        assertEquals(main.rowCount(), copy.rowCount());
+        assertEquals(main.value(0), copy.value(0), 10e-12);
+        assertEquals(main.value(1), copy.value(1), 10e-12);
+        assertEquals(main.value(2), copy.value(2), 10e-12);
+        assertEquals(main.value(3), copy.value(3), 10e-12);
+        assertEquals(main.value(4), copy.value(4), 10e-12);
     }
 
     @Test
@@ -55,10 +55,10 @@ public class AbstractVarTest {
         main.addLabel("y");
         main.addLabel("x");
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        for (int i = 0; i < main.getRowCount(); i++) {
-            assertEquals(main.getLabel(i), copy.getLabel(i));
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        assertEquals(main.rowCount(), copy.rowCount());
+        for (int i = 0; i < main.rowCount(); i++) {
+            assertEquals(main.label(i), copy.label(i));
         }
     }
 
@@ -69,10 +69,10 @@ public class AbstractVarTest {
         main.addLabel("y");
         main.addLabel("x");
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        for (int i = 0; i < main.getRowCount(); i++) {
-            assertEquals(main.getLabel(i), copy.getLabel(i));
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        assertEquals(main.rowCount(), copy.rowCount());
+        for (int i = 0; i < main.rowCount(); i++) {
+            assertEquals(main.label(i), copy.label(i));
         }
     }
 
@@ -80,10 +80,10 @@ public class AbstractVarTest {
     public void solidIndexCopyTest() {
         Var main = IndexVar.wrap(1, 2, 3, 4, 5);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        for (int i = 0; i < main.getRowCount(); i++) {
-            assertEquals(main.getIndex(i), copy.getIndex(i));
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        assertEquals(main.rowCount(), copy.rowCount());
+        for (int i = 0; i < main.rowCount(); i++) {
+            assertEquals(main.index(i), copy.index(i));
         }
     }
 
@@ -91,10 +91,10 @@ public class AbstractVarTest {
     public void solidStampCopyTest() {
         Var main = StampVar.wrap(1L, 2L, 3L, 4L, 6L);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        for (int i = 0; i < main.getRowCount(); i++) {
-            assertEquals(main.getStamp(i), copy.getStamp(i));
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        assertEquals(main.rowCount(), copy.rowCount());
+        for (int i = 0; i < main.rowCount(); i++) {
+            assertEquals(main.stamp(i), copy.stamp(i));
         }
     }
 
@@ -102,10 +102,10 @@ public class AbstractVarTest {
     public void soliBinaryCopyTest() {
         Var main = BinaryVar.copy(true, false, false, true);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.getRowCount())).solidCopy();
-        assertEquals(main.getRowCount(), copy.getRowCount());
-        for (int i = 0; i < main.getRowCount(); i++) {
-            assertEquals(main.getBinary(i), copy.getBinary(i));
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        assertEquals(main.rowCount(), copy.rowCount());
+        for (int i = 0; i < main.rowCount(); i++) {
+            assertEquals(main.binary(i), copy.binary(i));
         }
     }
 
@@ -118,13 +118,13 @@ public class AbstractVarTest {
         Var d = a.bindRows(b);
         d = d.bindRows(c);
 
-        assertEquals(10, d.getRowCount());
+        assertEquals(10, d.rowCount());
 
-        double mean = Mean.from(d).getValue();
+        double mean = Mean.from(d).value();
         assertEquals(5.5, mean, 10e-12);
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i+1, d.getIndex(i));
+            assertEquals(i+1, d.index(i));
         }
     }
 }

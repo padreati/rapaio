@@ -37,7 +37,7 @@ abstract class AbstractVar implements Var {
     private static final long serialVersionUID = 2607349261526552662L;
     private String name = "?";
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
@@ -54,41 +54,41 @@ abstract class AbstractVar implements Var {
         // this implementation is useful for non-solid variables like bounded or mapped
         // all solid implementations have their own version of copy method
 
-        switch (getType()) {
+        switch (type()) {
             case NOMINAL:
-                NominalVar nom = NominalVar.empty(getRowCount(), getLevels()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    nom.setLabel(i, getLabel(i));
+                NominalVar nom = NominalVar.empty(rowCount(), levels()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    nom.setLabel(i, label(i));
                 }
                 return nom;
             case ORDINAL:
-                OrdinalVar ord = OrdinalVar.empty(getRowCount(), getLevels()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    ord.setLabel(i, getLabel(i));
+                OrdinalVar ord = OrdinalVar.empty(rowCount(), levels()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    ord.setLabel(i, label(i));
                 }
                 return ord;
             case INDEX:
-                IndexVar idx = IndexVar.empty(getRowCount()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    idx.setIndex(i, getIndex(i));
+                IndexVar idx = IndexVar.empty(rowCount()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    idx.setIndex(i, index(i));
                 }
                 return idx;
             case STAMP:
-                StampVar stamp = StampVar.empty(getRowCount()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    stamp.setStamp(i, getStamp(i));
+                StampVar stamp = StampVar.empty(rowCount()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    stamp.setStamp(i, stamp(i));
                 }
                 return stamp;
             case NUMERIC:
-                NumericVar num = NumericVar.empty(getRowCount()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    num.setValue(i, getValue(i));
+                NumericVar num = NumericVar.empty(rowCount()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    num.setValue(i, value(i));
                 }
                 return num;
             case BINARY:
-                BinaryVar bin = BinaryVar.empty(getRowCount()).withName(getName());
-                for (int i = 0; i < getRowCount(); i++) {
-                    bin.setIndex(i, getIndex(i));
+                BinaryVar bin = BinaryVar.empty(rowCount()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    bin.setIndex(i, index(i));
                 }
                 return bin;
             default:

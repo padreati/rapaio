@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -43,7 +44,7 @@ public class VFToNumeric extends AbstractVF {
                     if (s.isMissing()) {
                         return Double.NaN;
                     } else {
-                        switch (s.getVar().getType()) {
+                        switch (s.getVar().type()) {
                             case TEXT:
                             case NOMINAL:
                                 try {
@@ -110,19 +111,19 @@ public class VFToNumeric extends AbstractVF {
         Var v = vars[0];
 
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(NumericVar.collector()).withName(v.getName());
+            return v.stream().map(fSpot).collect(NumericVar.collector()).withName(v.name());
         }
         if (fValue != null) {
             return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(NumericVar.collector()).withName(v.getName());
+                    .map(fValue).collect(NumericVar.collector()).withName(v.name());
         }
         if (fIndex != null) {
             return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(NumericVar.collector()).withName(v.getName());
+                    .map(fIndex).collect(NumericVar.collector()).withName(v.name());
         }
         if (fLabel != null) {
             return v.stream().mapToString()
-                    .map(fLabel).collect(NumericVar.collector()).withName(v.getName());
+                    .map(fLabel).collect(NumericVar.collector()).withName(v.name());
         }
         throw new RuntimeException("no transform function available");
     }

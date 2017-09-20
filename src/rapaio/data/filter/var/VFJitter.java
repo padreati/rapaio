@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -70,9 +71,9 @@ public class VFJitter extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        for (int i = 0; i < vars[0].getRowCount(); i++) {
+        for (int i = 0; i < vars[0].rowCount(); i++) {
             double err = d.sampleNext();
-            vars[0].setValue(i, vars[0].getValue(i) + err);
+            vars[0].setValue(i, vars[0].value(i) + err);
         }
         return vars[0];
     }

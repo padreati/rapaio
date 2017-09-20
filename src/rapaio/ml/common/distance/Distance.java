@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,16 +37,9 @@ import java.io.Serializable;
  */
 public interface Distance extends Serializable {
 
+    String name();
+
     double distance(Frame s, int sRow, Frame t, int tRow, String... varNames);
 
-    Tag<Distance> EUCLIDEAN = Tag.valueOf("euclidean",
-            (Frame s, int sRow, Frame t, int tRow, String... varNames) -> {
-                double total = 0;
-                for (String varName : varNames) {
-                    if (s.isMissing(sRow) || t.isMissing(tRow))
-                        continue;
-                    total += Math.pow(s.getValue(sRow, varName) - t.getValue(tRow, varName), 2);
-                }
-                return Math.sqrt(total);
-            });
+    Distance EUCLIDEAN = new EuclideanDistance();
 }

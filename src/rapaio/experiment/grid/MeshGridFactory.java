@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -38,10 +39,10 @@ public class MeshGridFactory {
 
     public static MeshGrid1D buildFrom(Classifier c, Frame df, String x1Name, String x2Name, int steps, String labelName) {
 
-        double x1min = CoreTools.min(df.getVar(x1Name)).getValue();
-        double x1max = CoreTools.max(df.getVar(x1Name)).getValue();
-        double x2min = CoreTools.min(df.getVar(x2Name)).getValue();
-        double x2max = CoreTools.max(df.getVar(x2Name)).getValue();
+        double x1min = CoreTools.min(df.var(x1Name)).value();
+        double x1max = CoreTools.max(df.var(x1Name)).value();
+        double x2min = CoreTools.min(df.var(x2Name)).value();
+        double x2max = CoreTools.max(df.var(x2Name)).value();
 
         NumericVar x1 = NumericVar.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
         NumericVar x2 = NumericVar.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
@@ -51,17 +52,17 @@ public class MeshGridFactory {
         NumericVar f1 = NumericVar.empty().withName(x1Name);
         NumericVar f2 = NumericVar.empty().withName(x2Name);
 
-        for (int i = 0; i < x1.getRowCount(); i++) {
-            for (int j = 0; j < x2.getRowCount(); j++) {
-                f1.addValue(x1.getValue(i));
-                f2.addValue(x2.getValue(j));
+        for (int i = 0; i < x1.rowCount(); i++) {
+            for (int j = 0; j < x2.rowCount(); j++) {
+                f1.addValue(x1.value(i));
+                f2.addValue(x2.value(j));
             }
         }
         CFit fit = c.fit(SolidFrame.byVars(f1, f2));
         int pos = 0;
-        for (int i = 0; i < x1.getRowCount(); i++) {
-            for (int j = 0; j < x2.getRowCount(); j++) {
-                mg.setValue(i, j, fit.firstDensity().getValue(pos++, labelName));
+        for (int i = 0; i < x1.rowCount(); i++) {
+            for (int j = 0; j < x2.rowCount(); j++) {
+                mg.setValue(i, j, fit.firstDensity().value(pos++, labelName));
             }
         }
 

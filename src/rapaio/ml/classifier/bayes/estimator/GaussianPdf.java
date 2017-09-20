@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -53,14 +54,14 @@ public class GaussianPdf implements NumericEstimator {
     public void learn(Frame df, String targetVar, String testVar) {
         normals.clear();
         Map<String, OnlineStat> onlineStatMap = new HashMap<>();
-        for (String label : df.getVar(targetVar).getLevels()) {
+        for (String label : df.var(targetVar).levels()) {
             onlineStatMap.put(label, OnlineStat.empty());
         }
         df.stream().forEach(s -> {
             String label = s.getLabel(targetVar);
             onlineStatMap.get(label).update(s.getValue(testVar));
         });
-        for (String label : df.getVar(targetVar).getLevels()) {
+        for (String label : df.var(targetVar).levels()) {
             if ("?".equals(label)) {
                 continue;
             }

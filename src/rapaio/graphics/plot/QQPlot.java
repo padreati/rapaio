@@ -43,9 +43,9 @@ public class QQPlot extends Plot {
 
         this.options.bind(opts);
         Var x = new VFSort().fitApply(points);
-        Var y = NumericVar.empty(x.getRowCount());
-        for (int i = 0; i < y.getRowCount(); i++) {
-            double p = (i + 1) / (y.getRowCount() + 1.);
+        Var y = NumericVar.empty(x.rowCount());
+        for (int i = 0; i < y.rowCount(); i++) {
+            double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
         add(new Points(y, x));

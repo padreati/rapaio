@@ -52,8 +52,8 @@ public class FiltersTest {
         mean.printSummary();
         var.printSummary();
 
-        assertTrue(mean.getValue() > 0.9);
-        assertTrue(mean.getValue() < 1.1);
+        assertTrue(mean.value() > 0.9);
+        assertTrue(mean.value() < 1.1);
         assertTrue(var.sdValue() > 0.095);
         assertTrue(var.sdValue() < 1.005);
     }
@@ -67,8 +67,8 @@ public class FiltersTest {
         mean.printSummary();
         var.printSummary();
 
-        assertTrue(mean.getValue() > 0.9);
-        assertTrue(mean.getValue() < 1.1);
+        assertTrue(mean.value() > 0.9);
+        assertTrue(mean.value() < 1.1);
         assertTrue(var.sdValue() > 1.995);
         assertTrue(var.sdValue() < 2.005);
     }
@@ -82,8 +82,8 @@ public class FiltersTest {
         mean.printSummary();
         var.printSummary();
 
-        assertTrue(mean.getValue() > 5.0);
-        assertTrue(mean.getValue() < 7.0);
+        assertTrue(mean.value() > 5.0);
+        assertTrue(mean.value() < 7.0);
         assertTrue(var.sdValue() > 3.1);
         assertTrue(var.sdValue() < 3.2);
     }
@@ -93,12 +93,12 @@ public class FiltersTest {
         RandomSource.setSeed(1);
         Var x1 = NominalVar.copy("z", "q", "a", "b", "d", "c");
         Var x2 = sort(x1);
-        for (int i = 0; i < x2.getRowCount() - 1; i++) {
-            assertTrue(x2.getLabel(i).compareTo(x2.getLabel(i + 1)) <= 0);
+        for (int i = 0; i < x2.rowCount() - 1; i++) {
+            assertTrue(x2.label(i).compareTo(x2.label(i + 1)) <= 0);
         }
         Var x3 = sort(x1, false);
-        for (int i = 0; i < x3.getRowCount() - 1; i++) {
-            assertTrue(x3.getLabel(i).compareTo(x3.getLabel(i + 1)) >= 0);
+        for (int i = 0; i < x3.rowCount() - 1; i++) {
+            assertTrue(x3.label(i).compareTo(x3.label(i + 1)) >= 0);
         }
     }
 
@@ -107,12 +107,12 @@ public class FiltersTest {
         RandomSource.setSeed(1);
         Var x1 = NumericVar.copy(7, 5, 1, 2, 5, 4);
         Var x2 = sort(x1);
-        for (int i = 0; i < x2.getRowCount() - 1; i++) {
-            assertTrue(Double.compare(x2.getValue(i), x2.getValue(i + 1)) <= 0);
+        for (int i = 0; i < x2.rowCount() - 1; i++) {
+            assertTrue(Double.compare(x2.value(i), x2.value(i + 1)) <= 0);
         }
         Var x3 = sort(x1, false);
-        for (int i = 0; i < x3.getRowCount() - 1; i++) {
-            assertTrue(Double.compare(x3.getValue(i), x3.getValue(i + 1)) >= 0);
+        for (int i = 0; i < x3.rowCount() - 1; i++) {
+            assertTrue(Double.compare(x3.value(i), x3.value(i + 1)) >= 0);
         }
     }
 
@@ -123,11 +123,11 @@ public class FiltersTest {
         Var x2 = NumericVar.copy(7, 6, 1, 2, 5, 4);
         Var x3 = refSort(x2, x1);
         Var x4 = refSort(x1, x2);
-        for (int i = 0; i < x3.getRowCount() - 1; i++) {
-            assertTrue(Double.compare(x3.getValue(i), x3.getValue(i + 1)) <= 0);
+        for (int i = 0; i < x3.rowCount() - 1; i++) {
+            assertTrue(Double.compare(x3.value(i), x3.value(i + 1)) <= 0);
         }
-        for (int i = 0; i < x4.getRowCount() - 1; i++) {
-            assertTrue(x4.getLabel(i).compareTo(x4.getLabel(i + 1)) <= 0);
+        for (int i = 0; i < x4.rowCount() - 1; i++) {
+            assertTrue(x4.label(i).compareTo(x4.label(i + 1)) <= 0);
         }
     }
 
@@ -141,7 +141,7 @@ public class FiltersTest {
             Var y = shuffle(x);
             double t = y.stream().mapToDouble().sum();
             assertEquals(N * (N + 1) / 2, t, 1e-30);
-            first.addValue(y.getValue(0));
+            first.addValue(y.value(0));
         }
     }
 
@@ -158,8 +158,8 @@ public class FiltersTest {
         assertEquals(0.5788231, variance(y).sdValue(), 1e-6);
 
         corrPearson(x, y).printSummary();
-        assertEquals(0.8001133350403581, corrPearson(x, y).getMatrix().get(0,1), 1e-6);
+        assertEquals(0.8001133350403581, corrPearson(x, y).matrix().get(0,1), 1e-6);
         corrSpearman(x, y).printSummary();
-        assertEquals(1, corrSpearman(x, y).getMatrix().get(0,1), 1e-6);
+        assertEquals(1, corrSpearman(x, y).matrix().get(0,1), 1e-6);
     }
 }

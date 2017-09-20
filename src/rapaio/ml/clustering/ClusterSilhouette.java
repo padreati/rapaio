@@ -26,11 +26,8 @@
 package rapaio.ml.clustering;
 
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.data.NominalVar;
 import rapaio.data.Var;
-import rapaio.ml.common.distance.Distance;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 
 import java.util.*;
 
@@ -81,17 +78,17 @@ public class ClusterSilhouette implements Printable {
     }
 
     private int getCluster(int row) {
-        return clusterIndex.get(assignment.getLabel(row));
+        return clusterIndex.get(assignment.label(row));
     }
 
     private void compute() {
-        int len = d.getLength();
+        int len = d.length();
 
-        for (int i = 0; i < assignment.getRowCount(); i++) {
+        for (int i = 0; i < assignment.rowCount(); i++) {
             if (assignment.isMissing(i)) {
                 throw new IllegalArgumentException("Assignment variable contains missing data");
             }
-            String clusterId = assignment.getLabel(i);
+            String clusterId = assignment.label(i);
             if (clusterIndex.containsKey(clusterId))
                 continue;
             clusterIndex.put(clusterId, clusterIndex.size());
@@ -108,7 +105,7 @@ public class ClusterSilhouette implements Printable {
 
         // compute individual a and b vectors
 
-        int rows = d.getLength();
+        int rows = d.length();
 
         a = new double[rows];
         b = new double[rows];
@@ -186,7 +183,7 @@ public class ClusterSilhouette implements Printable {
         for (int i = 0; i < clusters; i++) {
             clusterOrder.add(i);
         }
-        clusterOrder.sort((o1, o2) -> (similarity?1:-1)*Double.compare(clusterScore[o1], clusterScore[o2]));
+        clusterOrder.sort((o1, o2) -> -1 * Double.compare(clusterScore[o1], clusterScore[o2]));
 
         // build instance order
 
@@ -198,13 +195,13 @@ public class ClusterSilhouette implements Printable {
                     instances.add(i);
                 }
             }
-            instances.sort((o1, o2) -> (similarity?1:-1)*Double.compare(s[o1], s[o2]));
+            instances.sort((o1, o2) -> -1 * Double.compare(s[o1], s[o2]));
             instanceOrder.add(instances);
         }
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Cluster silhouette summary\n");
         sb.append("==========================\n");
@@ -216,7 +213,7 @@ public class ClusterSilhouette implements Printable {
                 sb.append(clusterIds[cluster]).append(" ");
                 sb.append(clusterIds[n[row]]).append(" ");
                 sb.append(String.format("%.2f ", s[row]));
-                sb.append(d.getName(row)).append(" ");
+                sb.append(d.name(row)).append(" ");
                 sb.append("\n");
             }
             sb.append("\n");

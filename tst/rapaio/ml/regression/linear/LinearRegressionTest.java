@@ -24,22 +24,12 @@
 
 package rapaio.ml.regression.linear;
 
-import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.sys.WS;
-import rapaio.printer.Summary;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,7 +56,7 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression\n" +
                         "\n" +
                         "> model not trained.\n" +
-                        "\n", lm.getSummary());
+                        "\n", lm.summary());
 
         lm.train(df, "Radio");
         assertEquals(
@@ -87,7 +77,7 @@ public class LinearRegressionTest {
                         "     Name     Estimate\n" +
                         " (Intercept) 21.870319\n" +
                         " TV           0.009478\n" +
-                        "\n", lm.getSummary());
+                        "\n", lm.summary());
 
         LinearRFit lmfit = lm.fit(df, true);
         assertEquals(
@@ -118,7 +108,7 @@ public class LinearRegressionTest {
                         "Residual standard error: 14.861881 on 198 degrees of freedom\n" +
                         "Multiple R-squared:  0.003004, Adjusted R-squared:  -0.0020313\n" +
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
-                        "\n", lmfit.getSummary());
+                        "\n", lmfit.summary());
 
         LinearRFit lmfit2 = lm.fit(df, false);
         assertEquals(
@@ -139,7 +129,7 @@ public class LinearRegressionTest {
                         "     Name     Estimate \n" +
                         " (Intercept) 21.8703186\n" +
                         " TV          0.0094781 \n",
-                lmfit2.getSummary());
+                lmfit2.summary());
 
     }
 
@@ -198,6 +188,6 @@ public class LinearRegressionTest {
                     "Residual standard error: 13.9454627 on 197 degrees of freedom\n" +
                     "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +
                     "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.000002\n" +
-                    "\n", lm.fit(df, true).getSummary());
+                    "\n", lm.fit(df, true).summary());
         }
 }

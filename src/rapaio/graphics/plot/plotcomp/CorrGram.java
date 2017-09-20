@@ -25,17 +25,11 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.CoreTools;
-import rapaio.core.correlation.Correlation;
 import rapaio.core.tools.DistanceMatrix;
 import rapaio.math.MTools;
-import rapaio.core.correlation.CorrPearson;
-import rapaio.data.Frame;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.PlotComponent;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 
 import java.awt.*;
@@ -60,10 +54,10 @@ public class CorrGram extends PlotComponent {
         this.grid = grid;
         this.d = d;
 
-        colors = new int[d.getLength()][d.getLength()];
+        colors = new int[d.length()][d.length()];
 
-        for (int i = 0; i < d.getLength(); i++) {
-            for (int j = 0; j < d.getLength(); j++) {
+        for (int i = 0; i < d.length(); i++) {
+            for (int j = 0; j < d.length(); j++) {
                 double x = d.get(i, j);
                 if (x > 1)
                     x = 1;
@@ -78,7 +72,7 @@ public class CorrGram extends PlotComponent {
 
     @Override
     protected Range buildRange() {
-        return new Range(0, 0, d.getLength(), d.getLength());
+        return new Range(0, 0, d.length(), d.length());
     }
 
     @Override
@@ -89,20 +83,20 @@ public class CorrGram extends PlotComponent {
 
         double xstep = Math.abs(xScale(1) - xScale(0));
         double ystep = Math.abs(yScale(1) - yScale(0));
-        for (int i = 0; i < d.getLength(); i++) {
-            for (int j = 0; j < d.getLength(); j++) {
+        for (int i = 0; i < d.length(); i++) {
+            for (int j = 0; j < d.length(); j++) {
                 if (i != j) {
                     g2d.setColor(gradient.getColor(colors[i][j]));
                     g2d.fill(new Rectangle2D.Double(
                             xScale(j),
-                            yScale(d.getLength() - i),
+                            yScale(d.length() - i),
                             xstep,
                             ystep));
                 }
                 if (labels) {
                     String label = WS.formatFlexShort(d.get(i, j));
                     if (i == j) {
-                        label = d.getName(i);
+                        label = d.name(i);
                     }
                     Rectangle2D bounds = g2d.getFontMetrics().getStringBounds(label, g2d);
                     double width = bounds.getWidth();
@@ -111,7 +105,7 @@ public class CorrGram extends PlotComponent {
                     g2d.setColor(Color.BLACK);
                     g2d.drawString(label,
                             (int) (xScale(j) + xstep / 2 - width / 2),
-                            (int) (yScale(d.getLength() - i) + ystep / 2 + height / 2));
+                            (int) (yScale(d.length() - i) + ystep / 2 + height / 2));
                 }
             }
         }
@@ -120,12 +114,12 @@ public class CorrGram extends PlotComponent {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(options.getLwd()));
 
-            g2d.draw(new Line2D.Double(xScale(0), yScale(0), xScale(d.getLength()), yScale(0)));
-            g2d.draw(new Line2D.Double(xScale(0), yScale(d.getLength()), xScale(0), yScale(0)));
-            for (int i = 0; i <= d.getLength(); i++) {
-                for (int j = 0; j <= d.getLength(); j++) {
-                    g2d.draw(new Line2D.Double(xScale(j), yScale(i), xScale(d.getLength()), yScale(i)));
-                    g2d.draw(new Line2D.Double(xScale(j), yScale(d.getLength()), xScale(j), yScale(i)));
+            g2d.draw(new Line2D.Double(xScale(0), yScale(0), xScale(d.length()), yScale(0)));
+            g2d.draw(new Line2D.Double(xScale(0), yScale(d.length()), xScale(0), yScale(0)));
+            for (int i = 0; i <= d.length(); i++) {
+                for (int j = 0; j <= d.length(); j++) {
+                    g2d.draw(new Line2D.Double(xScale(j), yScale(i), xScale(d.length()), yScale(i)));
+                    g2d.draw(new Line2D.Double(xScale(j), yScale(d.length()), xScale(j), yScale(i)));
                 }
             }
         }

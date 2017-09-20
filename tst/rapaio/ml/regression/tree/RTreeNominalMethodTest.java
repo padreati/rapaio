@@ -46,7 +46,7 @@ public class RTreeNominalMethodTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
-        w = NumericVar.fill(df.getRowCount(), 1);
+        w = NumericVar.fill(df.rowCount(), 1);
         tree = RTree.buildDecisionStump();
     }
 

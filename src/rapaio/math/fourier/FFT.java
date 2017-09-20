@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,7 +41,7 @@ public class FFT {
     // compute the FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> fft(Pair<Var, Var> x) {
 
-        int N = x._1.getRowCount();
+        int N = x._1.rowCount();
 
         // base case
         if (N == 1) return x;
@@ -73,11 +74,11 @@ public class FFT {
             double coskth = Math.cos(kth);
             double sinkth = Math.sin(kth);
 
-            rey.setValue(k, q._1.getValue(k) + coskth * r._1.getValue(k) - sinkth * r._2.getValue(k));
-            imy.setValue(k, q._2.getValue(k) + coskth * r._2.getValue(k) + sinkth * r._1.getValue(k));
+            rey.setValue(k, q._1.value(k) + coskth * r._1.value(k) - sinkth * r._2.value(k));
+            imy.setValue(k, q._2.value(k) + coskth * r._2.value(k) + sinkth * r._1.value(k));
 
-            rey.setValue(k + N / 2, q._1.getValue(k) - coskth * r._1.getValue(k) + sinkth * r._2.getValue(k));
-            imy.setValue(k + N / 2, q._2.getValue(k) - coskth * r._2.getValue(k) - sinkth * r._1.getValue(k));
+            rey.setValue(k + N / 2, q._1.value(k) - coskth * r._1.value(k) + sinkth * r._2.value(k));
+            imy.setValue(k + N / 2, q._2.value(k) - coskth * r._2.value(k) - sinkth * r._1.value(k));
         }
         return Pair.from(rey, imy);
     }
@@ -85,31 +86,31 @@ public class FFT {
 
     // compute the inverse FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
-        int N = x._1.getRowCount();
+        int N = x._1.rowCount();
 
-        Var im2 = NumericVar.from(N, row -> -x._2.getValue(row));
+        Var im2 = NumericVar.from(N, row -> -x._2.value(row));
 
         // compute forward FFT
         Pair<Var, Var> y = fft(Pair.from(x._1, im2));
 
         // take conjugate again and divide by N
-        Var re3 = NumericVar.from(N, row -> y._1.getValue(row) / N);
-        Var im3 = NumericVar.from(N, row -> -y._2.getValue(row) / N);
+        Var re3 = NumericVar.from(N, row -> y._1.value(row) / N);
+        Var im3 = NumericVar.from(N, row -> -y._2.value(row) / N);
         return Pair.from(re3, im3);
     }
 
     // compute the circular convolution of x and y
     public static Pair<Var, Var> cconvolve(Pair<Var, Var> x, Pair<Var, Var> y) {
 
-        int len = x._1.getRowCount();
+        int len = x._1.rowCount();
 
         // should probably pad x and y with 0s so that they have same length
         // and are powers of 2
-        if ((x._2.getRowCount() != len)) {
+        if ((x._2.rowCount() != len)) {
             throw new RuntimeException("Dimensions don't agree");
         }
 
-        int N = x._1.getRowCount();
+        int N = x._1.rowCount();
 
         // compute FFT of each sequence
         Pair<Var, Var> a = fft(x);
@@ -118,8 +119,8 @@ public class FFT {
         // point-wise multiply
         Pair<Var, Var> c = Pair.from(NumericVar.fill(len, 0.0), NumericVar.fill(len, 0.0));
         for (int i = 0; i < N; i++) {
-            c._1.setValue(i, a._1.getValue(i) * b._1.getValue(i) - a._2.getValue(i) * b._2.getValue(i));
-            c._2.setValue(i, a._1.getValue(i) * b._2.getValue(i) + a._1.getValue(i) * b._2.getValue(i));
+            c._1.setValue(i, a._1.value(i) * b._1.value(i) - a._2.value(i) * b._2.value(i));
+            c._2.setValue(i, a._1.value(i) * b._2.value(i) + a._1.value(i) * b._2.value(i));
         }
 
         // compute inverse FFT
@@ -132,7 +133,7 @@ public class FFT {
         Pair<Var, Var> a = Pair.from(x._1.solidCopy(), x._2.solidCopy());
         Pair<Var, Var> b = Pair.from(y._1.solidCopy(), y._2.solidCopy());
 
-        for (int i = 0; i < x._1.getRowCount(); i++) {
+        for (int i = 0; i < x._1.rowCount(); i++) {
             a._1.addValue(0.0);
             a._2.addValue(0.0);
             b._1.addValue(0.0);

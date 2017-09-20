@@ -52,11 +52,11 @@ public class VarTest {
         dict.add("c");
         y.setLevels(dict);
 
-        assertEquals(4, x.getRowCount());
-        assertEquals(4, y.getRowCount());
+        assertEquals(4, x.rowCount());
+        assertEquals(4, y.rowCount());
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(x.getLabel(i), y.getLabel(i));
+            assertEquals(x.label(i), y.label(i));
         }
     }
 
@@ -83,16 +83,16 @@ public class VarTest {
     @Test
     public void solidCopyNameTest() {
         NumericVar num = NumericVar.seq(1, 10, 0.5).withName("num");
-        assertEquals(num.getName(), num.solidCopy().getName());
-        assertEquals(num.getName(), num.mapRows(2,5).solidCopy().getName());
+        assertEquals(num.name(), num.solidCopy().name());
+        assertEquals(num.name(), num.mapRows(2,5).solidCopy().name());
 
         IndexVar idx = IndexVar.seq(1, 10).withName("idx");
-        assertEquals(idx.getName(), idx.solidCopy().getName());
-        assertEquals(idx.getName(), idx.mapRows(2,5).solidCopy().getName());
+        assertEquals(idx.name(), idx.solidCopy().name());
+        assertEquals(idx.name(), idx.mapRows(2,5).solidCopy().name());
 
         BinaryVar bin = BinaryVar.copy(true, false, true, false, true).withName("bin");
-        assertEquals(bin.getName(), bin.solidCopy().getName());
-        assertEquals(bin.getName(), bin.mapRows(2,5).solidCopy().getName());
+        assertEquals(bin.name(), bin.solidCopy().name());
+        assertEquals(bin.name(), bin.mapRows(2,5).solidCopy().name());
 
         OrdinalVar ord = OrdinalVar.empty(0, "a", "b", "c").withName("ord");
         ord.addLabel("a");
@@ -100,16 +100,16 @@ public class VarTest {
         ord.addLabel("a");
         ord.addLabel("c");
         ord.addLabel("a");
-        assertEquals(ord.getName(), ord.solidCopy().getName());
-        assertEquals(ord.getName(), ord.mapRows(2,4).solidCopy().getName());
+        assertEquals(ord.name(), ord.solidCopy().name());
+        assertEquals(ord.name(), ord.mapRows(2,4).solidCopy().name());
 
         NominalVar nom = NominalVar.copy("a", "b", "a", "c", "a").withName("nom");
-        assertEquals(nom.getName(), nom.solidCopy().getName());
-        assertEquals(nom.getName(), nom.mapRows(2,4).solidCopy().getName());
+        assertEquals(nom.name(), nom.solidCopy().name());
+        assertEquals(nom.name(), nom.mapRows(2,4).solidCopy().name());
 
         StampVar stp = StampVar.seq(1, 10).withName("stamp");
-        assertEquals(stp.getName(), stp.solidCopy().getName());
-        assertEquals(stp.getName(), stp.mapRows(2,5).solidCopy().getName());
+        assertEquals(stp.name(), stp.solidCopy().name());
+        assertEquals(stp.name(), stp.mapRows(2,5).solidCopy().name());
 
     }
 }

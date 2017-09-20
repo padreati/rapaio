@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,7 +37,7 @@ public abstract class PlotComponent extends BaseFigure {
     private static final long serialVersionUID = -797168275849511614L;
     protected Plot parent;
 
-    public void initialize(Plot parent) {
+    public void bind(Plot parent) {
         if (parent == null) {
             throw new IllegalArgumentException("parent plot reference is null");
         }

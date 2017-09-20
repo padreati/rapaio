@@ -136,15 +136,15 @@ public class TTestOneSample implements HTest {
         return t;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
-    public double getCILow() {
+    public double ciLow() {
         return ciLow;
     }
 
-    public double getCIHigh() {
+    public double ciHigh() {
         return ciHigh;
     }
 
@@ -154,7 +154,7 @@ public class TTestOneSample implements HTest {
         this.alt = alt;
 
         Var clean = sample.stream().complete().toMappedVar();
-        sampleSize = clean.getRowCount();
+        sampleSize = clean.rowCount();
         if (sampleSize < 1) {
             sampleMean = Double.NaN;
             sampleSd = Double.NaN;
@@ -164,7 +164,7 @@ public class TTestOneSample implements HTest {
             ciHigh = Double.NaN;
             return;
         }
-        sampleMean = CoreTools.mean(clean).getValue();
+        sampleMean = CoreTools.mean(clean).value();
         sampleSd = CoreTools.variance(clean).sdValue();
         compute();
     }
@@ -200,7 +200,7 @@ public class TTestOneSample implements HTest {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> TTestOneSample\n");

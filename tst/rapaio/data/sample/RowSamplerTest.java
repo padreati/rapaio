@@ -50,7 +50,7 @@ public class RowSamplerTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadIrisDataset();
-        w = NumericVar.from(df.getRowCount(), row -> (double) df.getIndex(row, "class")).withName("w");
+        w = NumericVar.from(df.rowCount(), row -> (double) df.index(row, "class")).withName("w");
         Assert.assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
     }
 
@@ -69,11 +69,11 @@ public class RowSamplerTest {
         NumericVar count = NumericVar.empty().withName("bcount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
-            count.addValue(1.0 * s.mapping.rowStream().distinct().count() / df.getRowCount());
+            count.addValue(1.0 * s.mapping.rowStream().distinct().count() / df.rowCount());
         }
 
         // close to 1 - 1 / exp(1)
-        Assert.assertEquals(0.63328, CoreTools.mean(count).getValue(), 1e-5);
+        Assert.assertEquals(0.63328, CoreTools.mean(count).value(), 1e-5);
     }
 
     @Test
@@ -81,18 +81,18 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        NumericVar count = NumericVar.fill(df.getRowCount(), 0.0).withName("sscount");
+        NumericVar count = NumericVar.fill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
-            s.mapping.rowStream().forEach(r -> count.setValue(r, count.getValue(r) + 1));
+            s.mapping.rowStream().forEach(r -> count.setValue(r, count.value(r) + 1));
         }
 
         // uniform counts close to 500
         count.printLines();
 
-        DVector freq = DVector.empty(true, df.getRowCount());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            freq.set(i, count.getValue(i));
+        DVector freq = DVector.empty(true, df.rowCount());
+        for (int i = 0; i < df.rowCount(); i++) {
+            freq.set(i, count.value(i));
         }
         double[] p = DoubleStream.generate(() -> 1 / 150.).limit(150).toArray();
         ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(p));
@@ -100,7 +100,7 @@ public class RowSamplerTest {
 
         // chi square goodness of fit
 
-        Assert.assertTrue(chiTest.getPValue() > 0.99);
+        Assert.assertTrue(chiTest.pValue() > 0.99);
     }
 
     @Test

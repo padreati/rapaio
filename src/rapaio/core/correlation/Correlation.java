@@ -34,5 +34,5 @@ import java.io.Serializable;
  */
 public interface Correlation extends Serializable {
 
-    DistanceMatrix getMatrix();
+    DistanceMatrix matrix();
 }

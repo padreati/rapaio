@@ -26,7 +26,6 @@
 package rapaio.core.stat;
 
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -68,7 +67,7 @@ public class Quantiles implements Printable {
     private final Type type;
 
     private Quantiles(Var var, Type type, double... percentiles) {
-        this.varName = var.getName();
+        this.varName = var.name();
         this.percentiles = percentiles;
         this.type = type;
         this.quantiles = compute(var);
@@ -76,14 +75,14 @@ public class Quantiles implements Printable {
 
     private double[] compute(final Var var) {
 
-        double[] x = new double[var.getRowCount()];
+        double[] x = new double[var.rowCount()];
         completeCount = 0;
         for (int i = 0; i < x.length; i++) {
             if(var.isMissing(i))
                 continue;
-            x[completeCount++] = var.getValue(i);
+            x[completeCount++] = var.value(i);
         }
-        missingCount = var.getRowCount() - completeCount;
+        missingCount = var.rowCount() - completeCount;
 
         if (completeCount == 0) {
             return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
@@ -126,12 +125,12 @@ public class Quantiles implements Printable {
         return values;
     }
 
-    public double[] getValues() {
+    public double[] values() {
         return quantiles;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

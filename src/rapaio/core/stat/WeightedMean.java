@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -46,48 +47,48 @@ public final class WeightedMean implements Printable {
     private int completeCount;
 
     private WeightedMean(final Var var, final Var weights) {
-        this.varName = var.getName();
+        this.varName = var.name();
         this.mean = compute(var, weights);
     }
 
     private double compute(final Var var, final Var weights) {
-        if (var.getRowCount() != weights.getRowCount()) {
+        if (var.rowCount() != weights.rowCount()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i) || weights.isMissing(i)) {
                 missingCount++;
                 continue;
             }
             completeCount++;
-            total += weights.getValue(i);
+            total += weights.value(i);
         }
         if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i) || weights.isMissing(i))
                 continue;
-            sum += weights.getValue(i) * var.getValue(i);
+            sum += weights.value(i) * var.value(i);
         }
         double avg = sum / total;
         double residual = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i) || weights.isMissing(i))
                 continue;
-            residual += weights.getValue(i) * (var.getValue(i) - avg);
+            residual += weights.value(i) * (var.value(i) - avg);
         }
         return avg + residual / total;
     }
 
-    public double getValue() {
+    public double value() {
         return mean;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > weightedMean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

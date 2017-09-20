@@ -91,15 +91,15 @@ public class TTestTwoPaired implements HTest {
 
         complete = NumericVar.empty();
 
-        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
-            complete.addValue(x.getValue(i) - y.getValue(i));
+            complete.addValue(x.value(i) - y.value(i));
         }
 
-        df = complete.getRowCount()-1;
+        df = complete.rowCount()-1;
 
-        if (complete.getRowCount() < 1) {
+        if (complete.rowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             sd = Double.NaN;
@@ -111,10 +111,10 @@ public class TTestTwoPaired implements HTest {
             return;
         }
 
-        sampleMean = mean(complete).getValue();
+        sampleMean = mean(complete).value();
         sd = variance(complete).sdValue();
 
-        double sv = sd / Math.sqrt(complete.getRowCount());
+        double sv = sd / Math.sqrt(complete.rowCount());
 
         t = (sampleMean - mu) / sv;
 
@@ -162,27 +162,27 @@ public class TTestTwoPaired implements HTest {
         return t;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
-    public double getCILow() {
+    public double ciLow() {
         return ciLow;
     }
 
-    public double getCIHigh() {
+    public double ciHigh() {
         return ciHigh;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> TTestTwoPaired\n");
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("complete rows: ").append(complete.getRowCount()).append("\n");
+        sb.append("complete rows: ").append(complete.rowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");

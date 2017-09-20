@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -60,15 +61,15 @@ public final class RowComparators implements Serializable {
             if (var.isMissing(row2)) {
                 return sign;
             }
-            return sign * var.getLabel(row1).compareTo(var.getLabel(row2));
+            return sign * var.label(row1).compareTo(var.label(row2));
         };
     }
 
     public static Comparator<Integer> numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            double d1 = var.getValue(row1);
-            double d2 = var.getValue(row2);
+            double d1 = var.value(row1);
+            double d2 = var.value(row2);
             if (d1 < d2)
                 return -sign;           // Neither val is NaN, thisVal is smaller
             if (d1 > d2)
@@ -86,7 +87,7 @@ public final class RowComparators implements Serializable {
 
     public static Comparator<Integer> index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (row1, row2) -> sign * Integer.compare(var.getIndex(row1), var.getIndex(row2));
+        return (row1, row2) -> sign * Integer.compare(var.index(row1), var.index(row2));
     }
 
     public static Comparator<Integer> stamp(final Var var, final boolean asc) {
@@ -102,10 +103,10 @@ public final class RowComparators implements Serializable {
             if (var.isMissing(row2)) {
                 return sign;
             }
-            if (var.getStamp(row1) == var.getStamp(row2)) {
+            if (var.stamp(row1) == var.stamp(row2)) {
                 return 0;
             }
-            return sign * (var.getStamp(row1) < var.getStamp(row2) ? -1 : 1);
+            return sign * (var.stamp(row1) < var.stamp(row2) ? -1 : 1);
         };
     }
 }

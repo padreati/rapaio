@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -41,8 +42,8 @@ public class ChiSquareKernel extends AbstractKernel {
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            double sum = df1.getValue(row1, varName) + df2.getValue(row2, varName);
-            double diff = df1.getValue(row1, varName) - df2.getValue(row2, varName);
+            double sum = df1.value(row1, varName) + df2.value(row2, varName);
+            double diff = df1.value(row1, varName) - df2.value(row2, varName);
             result = 2 * Math.pow(diff, 2) / sum;
         }
         return 1 - result;

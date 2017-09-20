@@ -78,15 +78,15 @@ public class SolidRMTest {
 
         Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.NUMERIC));
         RM copy1 = SolidRM.copy(iris);
-        for (int i = 0; i < iris.getVarCount(); i++) {
-            for (int j = 0; j < iris.getRowCount(); j++) {
-                assertEquals(iris.getValue(j, i), copy1.get(j, i), TOL);
+        for (int i = 0; i < iris.varCount(); i++) {
+            for (int j = 0; j < iris.rowCount(); j++) {
+                assertEquals(iris.value(j, i), copy1.get(j, i), TOL);
             }
         }
 
         RM copy2 = SolidRM.copy(iris.varStream().toArray(Var[]::new));
-        for (int i = 0; i < iris.getRowCount(); i++) {
-            for (int j = 0; j < iris.getVarCount(); j++) {
+        for (int i = 0; i < iris.rowCount(); i++) {
+            for (int j = 0; j < iris.varCount(); j++) {
                 assertEquals(copy1.get(i, j), copy2.get(i, j), TOL);
             }
         }
@@ -118,7 +118,7 @@ public class SolidRMTest {
         RM copy5 = SolidRM.copy(m, 1, 3, 1, 4);
         assertEquals("       |      0|     1|     2|\n" +
                 "     0 |  6.000  7.000  8.000\n" +
-                "     1 | 10.000 11.000 12.000\n", copy5.getSummary());
+                "     1 | 10.000 11.000 12.000\n", copy5.summary());
     }
 
     @Test

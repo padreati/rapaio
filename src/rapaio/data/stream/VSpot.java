@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -81,7 +82,7 @@ public class VSpot implements Serializable {
      * @return numeric double value of the observation
      */
     public double getValue() {
-        return var.getValue(row);
+        return var.value(row);
     }
 
     /**
@@ -96,7 +97,7 @@ public class VSpot implements Serializable {
      * @return index value of the observation
      */
     public int getIndex() {
-        return var.getIndex(row);
+        return var.index(row);
     }
 
     /**
@@ -111,7 +112,7 @@ public class VSpot implements Serializable {
      * @return label value of the observation
      */
     public String getLabel() {
-        return var.getLabel(row);
+        return var.label(row);
     }
 
     /**
@@ -126,7 +127,7 @@ public class VSpot implements Serializable {
      * @return binary value of the observation
      */
     public boolean getBinary() {
-        return var.getBinary(row);
+        return var.binary(row);
     }
 
     /**
@@ -141,7 +142,7 @@ public class VSpot implements Serializable {
      * @return stamp value of the observation
      */
     public long getStamp() {
-        return var.getStamp(row);
+        return var.stamp(row);
     }
 
     /**

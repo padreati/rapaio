@@ -29,8 +29,6 @@ import rapaio.math.MTools;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import java.util.stream.DoubleStream;
-
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -52,19 +50,19 @@ public class Sum implements Printable {
     private int missingCount;
 
     private Sum(Var var) {
-        this.varName = var.getName();
+        this.varName = var.name();
         this.value = compute(var);
     }
 
     private double compute(Var var) {
         double sum = 0;
         int pos = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
                 continue;
             }
-            sum = var.getValue(i);
+            sum = var.value(i);
             pos = i + 1;
             completeCount++;
             break;
@@ -72,20 +70,20 @@ public class Sum implements Printable {
 
         // A running compensation for lost low-order bits.
         double c = 0.0;
-        for (int i = pos; i < var.getRowCount(); i++) {
+        for (int i = pos; i < var.rowCount(); i++) {
             if(var.isMissing(i)) {
                 missingCount++;
                 continue;
             }
             completeCount++;
 
-            double t = sum + var.getValue(i);
-            if (Math.abs(sum) >= Math.abs(var.getValue(i))) {
+            double t = sum + var.value(i);
+            if (Math.abs(sum) >= Math.abs(var.value(i))) {
                 // If sum is bigger, low-order digits of input[i] are lost.
-                c += (sum - t) + var.getValue(i);
+                c += (sum - t) + var.value(i);
             } else {
                 // Else low-order digits of sum are lost
-                c += (var.getValue(i) - t) + sum;
+                c += (var.value(i) - t) + sum;
             }
             sum = t;
         }
@@ -93,12 +91,12 @@ public class Sum implements Printable {
         return sum + c;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > sum['%s']\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

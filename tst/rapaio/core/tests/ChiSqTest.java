@@ -57,14 +57,14 @@ public class ChiSqTest {
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
-        assertEquals(0.9909295319532134, test1.getPValue(), 1e-20);
+        assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
         test1 = ChiSqGoodnessOfFit.from(NumericVar.copy(11, 189, 19, 17), NumericVar.wrap(0.045, 0.795, 0.085, 0.075));
         test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
-        assertEquals(0.9909295319532134, test1.getPValue(), 1e-20);
+        assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
         NominalVar x2 = NominalVar.empty();
         for (int i = 0; i < 54; i++) {
@@ -78,7 +78,7 @@ public class ChiSqTest {
 
         assertEquals(1, test2.df());
         assertEquals(0.64, test2.getChiValue(), 1e-20);
-        assertEquals(0.4237107971667936, test2.getPValue(), 1e-20);
+        assertEquals(0.4237107971667936, test2.pValue(), 1e-20);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ChiSqTest {
                 "    R1 22.3508772 26.6491228    49\n" +
                 "    R2 29.6491228 35.3508772    65\n" +
                 " total         52         62   114\n" +
-                "\n", test1.getSummary());
+                "\n", test1.summary());
 
         ChiSqIndependence test2 = ChiSqIndependence.from(SolidRM.copy(2, 2, 38, 11, 14, 51), false);
         assertEquals("> ChiSqIndependence\n" +
@@ -122,7 +122,7 @@ public class ChiSqTest {
                 "    R1 22.3508772 26.6491228    49\n" +
                 "    R2 29.6491228 35.3508772    65\n" +
                 " total         52         62   114\n" +
-                "\n", test2.getSummary());
+                "\n", test2.summary());
     }
 
     @Test
@@ -202,6 +202,6 @@ public class ChiSqTest {
         ChiSqConditionalIndependence test = ChiSqConditionalIndependence.from(scout, delinquent, status);
         assertEquals(3, test.getDegrees(), TOL);
         assertEquals(0.1602389, test.getStatistic(), TOL);
-        assertEquals(0.983737, test.getPValue(), TOL);
+        assertEquals(0.983737, test.pValue(), TOL);
     }
 }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,8 +41,8 @@ public class VFCumulativeSum extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        for (int i = 1; i < vars[0].getRowCount(); i++) {
-            vars[0].setValue(i, vars[0].getValue(i - 1));
+        for (int i = 1; i < vars[0].rowCount(); i++) {
+            vars[0].setValue(i, vars[0].value(i - 1));
         }
         return vars[0];
     }

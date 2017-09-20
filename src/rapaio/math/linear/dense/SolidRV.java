@@ -58,9 +58,9 @@ public class SolidRV implements RV {
      * @return new real dense vector
      */
     public static SolidRV from(Var v) {
-        SolidRV rdv = new SolidRV(v.getRowCount());
+        SolidRV rdv = new SolidRV(v.rowCount());
         for (int i = 0; i < rdv.count(); i++) {
-            rdv.values[i] = v.getValue(i);
+            rdv.values[i] = v.value(i);
         }
         return rdv;
     }
@@ -198,7 +198,7 @@ public class SolidRV implements RV {
         return Arrays.stream(values);
     }
 
-    public String getSummary() {
+    public String summary() {
         return Summary.headString(true, values.length, new Var[]{NumericVar.wrap(values)}, new String[]{""});
     }
 

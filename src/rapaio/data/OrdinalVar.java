@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -106,7 +107,7 @@ public final class OrdinalVar extends FactorBase {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.ORDINAL;
     }
 
@@ -121,7 +122,7 @@ public final class OrdinalVar extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return OrdinalVar.empty(rows, getLevels());
+        return OrdinalVar.empty(rows, levels());
     }
 
     @Override
@@ -131,6 +132,6 @@ public final class OrdinalVar extends FactorBase {
 
     @Override
     public String toString() {
-        return "Ordinal[name:" + getName() + ", rowCount:" + getRowCount() + "]";
+        return "Ordinal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

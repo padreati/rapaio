@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,8 +24,6 @@
  */
 
 package rapaio.data;
-
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -73,12 +72,12 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -93,7 +92,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         return data[row];
     }
 
@@ -108,7 +107,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return dict.get(data[row]);
     }
 
@@ -138,7 +137,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         return dict.toArray(new String[dict.size()]);
     }
 
@@ -178,7 +177,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
+    public boolean binary(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
@@ -193,7 +192,7 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
+    public long stamp(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
@@ -209,7 +208,7 @@ abstract class FactorBase extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return missingIndex == getIndex(row);
+        return missingIndex == index(row);
     }
 
     @Override
@@ -236,12 +235,12 @@ abstract class FactorBase extends AbstractVar {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(getRowCount());
+        out.writeInt(rowCount());
         out.writeInt(dict.size());
         for (String factor : dict) {
             out.writeUTF(factor);
         }
-        for (int i = 0; i < getRowCount(); i++) {
+        for (int i = 0; i < rowCount(); i++) {
             out.writeInt(data[i]);
         }
     }

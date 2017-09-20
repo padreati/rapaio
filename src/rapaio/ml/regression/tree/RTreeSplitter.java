@@ -126,7 +126,7 @@ public interface RTreeSplitter extends Serializable {
             final int index = majorityGroup;
             for (FSpot spot : s.missingSpots) {
                 s.mappings.get(index).add(spot.getRow());
-                s.weightsList.get(index).addValue(weights.getValue(spot.getRow()));
+                s.weightsList.get(index).addValue(weights.value(spot.getRow()));
             }
             return s.mappings;
         }
@@ -145,7 +145,7 @@ public interface RTreeSplitter extends Serializable {
             final int index = majorityGroup;
             for (FSpot spot : s.missingSpots) {
                 s.mappings.get(index).add(spot.getRow());
-                s.weightsList.get(index).addValue(weights.getValue(spot.getRow()));
+                s.weightsList.get(index).addValue(weights.value(spot.getRow()));
             }
             List<Frame> frames = new ArrayList<>();
             s.mappings.forEach(mapping -> frames.add(MappedFrame.byRow(df, mapping)));
@@ -182,7 +182,7 @@ public interface RTreeSplitter extends Serializable {
             for (int i = 0; i < s.mappings.size(); i++) {
                 for (FSpot spot : s.missingSpots) {
                     s.mappings.get(i).add(spot.getRow());
-                    s.weightsList.get(i).addValue(weights.getValue(spot.getRow()) * p[i]);
+                    s.weightsList.get(i).addValue(weights.value(spot.getRow()) * p[i]);
                 }
             }
             return s.mappings;
@@ -204,7 +204,7 @@ public interface RTreeSplitter extends Serializable {
             for (int i = 0; i < s.mappings.size(); i++) {
                 for (FSpot spot : s.missingSpots) {
                     s.mappings.get(i).add(spot.getRow());
-                    s.weightsList.get(i).addValue(weights.getValue(spot.getRow()) * p[i]);
+                    s.weightsList.get(i).addValue(weights.value(spot.getRow()) * p[i]);
                 }
             }
             List<Frame> frames = new ArrayList<>();
@@ -233,7 +233,7 @@ public interface RTreeSplitter extends Serializable {
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
                 s.mappings.get(next).add(spot.getRow());
-                s.weightsList.get(next).addValue(weights.getValue(spot.getRow()));
+                s.weightsList.get(next).addValue(weights.value(spot.getRow()));
             }
             return s.mappings;
         }
@@ -244,7 +244,7 @@ public interface RTreeSplitter extends Serializable {
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
                 s.mappings.get(next).add(spot.getRow());
-                s.weightsList.get(next).addValue(weights.getValue(spot.getRow()));
+                s.weightsList.get(next).addValue(weights.value(spot.getRow()));
             }
             List<Frame> frameList = s.mappings.stream().map(df::mapRows).collect(Collectors.toList());
             return Pair.from(frameList, s.weightsList);
@@ -271,7 +271,7 @@ class RegularSplitting {
                 SPredicate<FSpot> predicate = groupPredicates.get(i);
                 if (predicate.test(s)) {
                     mappings.get(i).add(s.getRow());
-                    weightsList.get(i).addValue(weights.getValue(s.getRow()));
+                    weightsList.get(i).addValue(weights.value(s.getRow()));
                     matched = true;
                     // first rule has priority
                     break;

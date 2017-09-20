@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -57,7 +58,7 @@ public class FFShuffle extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {

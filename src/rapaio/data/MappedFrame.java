@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -65,7 +66,7 @@ public class MappedFrame extends AbstractFrame {
     private final int[] colIndexes;
 
     private MappedFrame(Frame df, Mapping mapping) {
-        this(df, mapping, Arrays.asList(df.getVarNames()));
+        this(df, mapping, Arrays.asList(df.varNames()));
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
@@ -90,18 +91,18 @@ public class MappedFrame extends AbstractFrame {
         this.colReverse = new HashMap<>();
         this.colIndexes = new int[columns.size()];
         for(int i=0; i< names.length; i++) {
-            colIndexes[i] = source.getVarIndex(names[i]);
+            colIndexes[i] = source.varIndex(names[i]);
             colReverse.put(names[i], i);
         }
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return mapping.size();
     }
 
     @Override
-    public int getVarCount() {
+    public int varCount() {
         return names.length;
     }
 
@@ -114,12 +115,12 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public String[] getVarNames() {
+    public String[] varNames() {
         return names;
     }
 
     @Override
-    public int getVarIndex(String name) {
+    public int varIndex(String name) {
         if (!colReverse.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
         }
@@ -127,13 +128,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Var getVar(int varIndex) {
-        return MappedVar.byRows(this.source.getVar(names[varIndex]), this.mapping).withName(names[varIndex]);
+    public Var var(int varIndex) {
+        return MappedVar.byRows(this.source.var(names[varIndex]), this.mapping).withName(names[varIndex]);
     }
 
     @Override
-    public Var getVar(String varName) {
-        return getVar(getVarIndex(varName));
+    public Var var(String varName) {
+        return var(varIndex(varName));
     }
 
     @Override
@@ -148,7 +149,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame mapVars(VRange range) {
-        return MappedFrame.byRow(this, Mapping.range(0, this.getRowCount()), range);
+        return MappedFrame.byRow(this, Mapping.range(0, this.rowCount()), range);
     }
 
     @Override
@@ -167,13 +168,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public double getValue(int row, int col) {
-        return source.getValue(mapping.get(row), colIndexes[col]);
+    public double value(int row, int col) {
+        return source.value(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public double getValue(int row, String varName) {
-        return source.getValue(mapping.get(row), varName);
+    public double value(int row, String varName) {
+        return source.value(mapping.get(row), varName);
     }
 
     @Override
@@ -187,13 +188,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public int getIndex(int row, int col) {
-        return source.getIndex(mapping.get(row), colIndexes[col]);
+    public int index(int row, int col) {
+        return source.index(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public int getIndex(int row, String varName) {
-        return source.getIndex(mapping.get(row), varName);
+    public int index(int row, String varName) {
+        return source.index(mapping.get(row), varName);
     }
 
     @Override
@@ -207,13 +208,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public String getLabel(int row, int col) {
-        return source.getLabel(mapping.get(row), colIndexes[col]);
+    public String label(int row, int col) {
+        return source.label(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public String getLabel(int row, String varName) {
-        return source.getLabel(mapping.get(row), varName);
+    public String label(int row, String varName) {
+        return source.label(mapping.get(row), varName);
     }
 
     @Override
@@ -227,13 +228,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean getBinary(int row, int col) {
-        return source.getBinary(mapping.get(row), colIndexes[col]);
+    public boolean binary(int row, int col) {
+        return source.binary(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public boolean getBinary(int row, String varName) {
-        return source.getBinary(mapping.get(row), varName);
+    public boolean binary(int row, String varName) {
+        return source.binary(mapping.get(row), varName);
     }
 
     @Override

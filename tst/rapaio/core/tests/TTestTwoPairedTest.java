@@ -54,12 +54,12 @@ public class TTestTwoPairedTest {
         assertEquals(2.05, t1.getSampleMean(), TOL);
         assertEquals(3.2312526655803127, t1.getT(), TOL);
         assertEquals(19, t1.getDegrees(), TOL);
-        assertEquals(0.004394965993185667, t1.getPValue(), TOL);
-        assertEquals(0.7221250995807065, t1.getCILow(), TOL);
-        assertEquals(3.377874900419294, t1.getCIHigh(), TOL);
+        assertEquals(0.004394965993185667, t1.pValue(), TOL);
+        assertEquals(0.7221250995807065, t1.ciLow(), TOL);
+        assertEquals(3.377874900419294, t1.ciHigh(), TOL);
         assertEquals(0.05, t1.getSl(), TOL);
 
         TTestTwoPaired t2 = TTestTwoPaired.test(NumericVar.empty(), NumericVar.empty(), -1, 0.03, HTest.Alternative.GREATER_THAN);
-        assertTrue(Double.isNaN(t2.getPValue()));
+        assertTrue(Double.isNaN(t2.pValue()));
     }
 }

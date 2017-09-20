@@ -25,17 +25,12 @@
 
 package rapaio.printer;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
-
-import java.util.Arrays;
 
 import static rapaio.sys.WS.code;
 import static rapaio.sys.WS.getPrinter;
@@ -50,7 +45,7 @@ public class Summary {
 
     @Deprecated
     public static String getSummary(Frame df) {
-        return getSummary(df, df.getVarNames());
+        return getSummary(df, df.varNames());
     }
 
     @Deprecated
@@ -66,21 +61,21 @@ public class Summary {
             return buffer.toString();
         }
 
-        buffer.append("* rowCount: ").append(df.getRowCount()).append("\n");
-        buffer.append("* complete: ").append(df.stream().complete().count()).append("/").append(df.getRowCount()).append("\n");
-        buffer.append("* varCount: ").append(df.getVarCount()).append("\n");
+        buffer.append("* rowCount: ").append(df.rowCount()).append("\n");
+        buffer.append("* complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
+        buffer.append("* varCount: ").append(df.varCount()).append("\n");
         buffer.append("* varNames: \n");
 
-        TextTable tt = TextTable.newEmpty(df.getVarCount(), 5);
-        for (int i = 0; i < df.getVarCount(); i++) {
+        TextTable tt = TextTable.newEmpty(df.varCount(), 5);
+        for (int i = 0; i < df.varCount(); i++) {
             tt.set(i, 0, i + ".", 1);
-            tt.set(i, 1, df.getVar(i).getName(), 1);
+            tt.set(i, 1, df.var(i).name(), 1);
             tt.set(i, 2, ":", -1);
-            tt.set(i, 3, df.getVar(i).getType().getCode(), -1);
+            tt.set(i, 3, df.var(i).type().code(), -1);
             tt.set(i, 4, "|", 1);
         }
         tt.withMerge();
-        buffer.append("\n").append(tt.getSummary()).append("\n");
+        buffer.append("\n").append(tt.summary()).append("\n");
 
 
         String[][] first = new String[names.length][7];
@@ -93,21 +88,21 @@ public class Summary {
         }
 
         for (int k = 0; k < names.length; k++) {
-            int i = df.getVarIndex(names[k]);
+            int i = df.varIndex(names[k]);
 
-            Var v = df.getVar(i);
+            Var v = df.var(i);
             
-            if (v.getType() == VarType.BINARY) {
+            if (v.type() == VarType.BINARY) {
                 typeStrategy = new BinaryTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
-            if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
+            if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
                 typeStrategy = new NumbericTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
-            if (v.getType().isNominal()) {
+            if (v.type().isNominal()) {
                 typeStrategy = new NominalTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
@@ -192,11 +187,11 @@ public class Summary {
     public static String getSummary(Var v) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("> printSummary(var: ").append(v.getName()).append(")\n");
-        sb.append("name: ").append(v.getName()).append("\n");
-        sb.append("type: ").append(v.getType().name()).append("\n");
+        sb.append("> printSummary(var: ").append(v.name()).append(")\n");
+        sb.append("name: ").append(v.name()).append("\n");
+        sb.append("type: ").append(v.type().name()).append("\n");
         int complete = (int) v.stream().complete().count();
-        sb.append("rows: ").append(v.getRowCount()).append(", complete: ").append(complete).append(", missing: ").append(v.getRowCount() - complete).append("\n");
+        sb.append("rows: ").append(v.rowCount()).append(", complete: ").append(complete).append(", missing: ").append(v.rowCount() - complete).append("\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -205,17 +200,17 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.getType() == VarType.BINARY) {
+        if (v.type() == VarType.BINARY) {
              typeStrategy = new BinaryTypeStrategy();
              typeStrategy.getPrintSummary(v, first, second);;
         }
 
-        if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
+        if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
             typeStrategy = new NumbericTypeStrategy();
             typeStrategy.getPrintSummary(v, first, second);
         }
 
-        if (v.getType().isNominal()) {
+        if (v.type().isNominal()) {
             typeStrategy = new NominalTypeStrategy();
             typeStrategy.getPrintSummary(v, first, second);
         }
@@ -251,8 +246,8 @@ public class Summary {
     public static void printNames(Frame df) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("\n > names(frame)\n");
-        for (int i = 0; i < df.getVarCount(); i++) {
-            buffer.append(df.getVarNames()[i]).append("\n");
+        for (int i = 0; i < df.varCount(); i++) {
+            buffer.append(df.varNames()[i]).append("\n");
         }
         code(buffer.toString());
     }
@@ -264,7 +259,7 @@ public class Summary {
 
     @Deprecated
     public static void lines(boolean merge, Var v) {
-        head(merge, v.getRowCount(), new Var[]{v}, new String[]{""});
+        head(merge, v.rowCount(), new Var[]{v}, new String[]{""});
     }
 
     @Deprecated
@@ -279,22 +274,22 @@ public class Summary {
 
     @Deprecated
     public static void lines(boolean merge, Frame df) {
-        Var[] vars = new Var[df.getVarCount()];
-        String[] names = df.getVarNames();
+        Var[] vars = new Var[df.varCount()];
+        String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.getVar(i);
+            vars[i] = df.var(i);
         }
-        head(merge, df.getRowCount(), vars, names);
+        head(merge, df.rowCount(), vars, names);
     }
 
     @Deprecated
     public static void head(boolean merge, int lines, Frame df) {
-        Var[] vars = new Var[df.getVarCount()];
-        String[] names = df.getVarNames();
+        Var[] vars = new Var[df.varCount()];
+        String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.getVar(i);
+            vars[i] = df.var(i);
         }
-        head(merge, Math.min(lines, df.getRowCount()), vars, names);
+        head(merge, Math.min(lines, df.rowCount()), vars, names);
     }
 
     @Deprecated
@@ -304,12 +299,12 @@ public class Summary {
 
     @Deprecated
     public static String headString(Frame df) {
-        return headString(true, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
+        return headString(true, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
     }
 
     @Deprecated
     public static String headString(boolean merge, Frame df) {
-        return headString(merge, df.getRowCount(), df.varStream().toArray(Var[]::new), df.getVarNames());
+        return headString(merge, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
     }
 
     @Deprecated
@@ -320,7 +315,7 @@ public class Summary {
     @Deprecated
     public static String headString(boolean merge, int lines, Var[] vars, String[] names) {
         if (lines == -1) {
-            lines = vars[0].getRowCount();
+            lines = vars[0].rowCount();
         }
 
         TextTable tt = TextTable.newEmpty(lines + 1, vars.length + 1);
@@ -337,21 +332,21 @@ public class Summary {
         }
         for (int i = 0; i < lines; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.set(i + 1, j + 1, vars[j].getLabel(i), 1);
+                tt.set(i + 1, j + 1, vars[j].label(i), 1);
             }
         }
-        return tt.getSummary();
+        return tt.summary();
     }
 
     public static String getHorizontalSummary5(Var var) {
         TextTable tt1 = TextTable.newEmpty(2, 5).withHeaderRows(1);
 
         String[] headers1 = new String[] {"Min", "1Q", "Median", "3Q","Max"};
-        double[] values1 = Quantiles.from(var, 0, 0.25, 0.5, 0.75, 1).getValues();
+        double[] values1 = Quantiles.from(var, 0, 0.25, 0.5, 0.75, 1).values();
         for (int i = 0; i < 5; i++) {
             tt1.set(0, i, headers1[i], 1);
             tt1.set(1, i, WS.formatFlex(values1[i]), -1);
         }
-        return tt1.getSummary();
+        return tt1.summary();
     }
 }

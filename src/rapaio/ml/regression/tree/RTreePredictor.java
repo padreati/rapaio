@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -86,7 +87,7 @@ public interface RTreePredictor extends Serializable {
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }
-            return Pair.from(WeightedMean.from(values, weights).getValue(), Mean.from(weights).getValue());
+            return Pair.from(WeightedMean.from(values, weights).value(), Mean.from(weights).value());
         }
     };
 }

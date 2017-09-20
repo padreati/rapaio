@@ -108,7 +108,7 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public final Regression train(Frame df, String... targetVarNames) {
-        return train(df, NumericVar.fill(df.getRowCount(), 1), targetVarNames);
+        return train(df, NumericVar.fill(df.rowCount(), 1), targetVarNames);
     }
 
     @Override
@@ -127,12 +127,12 @@ public abstract class AbstractRegression implements Regression {
         Frame result = df;
         List<String> targets = VRange.of(trainSetup.targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
-        this.targetTypes = targets.stream().map(name -> result.getVar(name).getType()).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
         HashSet<String> targetSet = new HashSet<>(targets);
-        List<String> inputs = Arrays.stream(result.getVarNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(name -> result.getVar(name).getType()).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, trainSetup.w, trainSetup.targetVars);
         return TrainSetup.valueOf(df, trainSetup.w);
@@ -239,7 +239,7 @@ public abstract class AbstractRegression implements Regression {
         }
     }
 
-    public String getHeaderSummary() {
+    public String headerSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Regression fit summary").append("\n");
@@ -263,11 +263,11 @@ public abstract class AbstractRegression implements Regression {
         for (int i = 0; i < inputNames().length; i++) {
             tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
             tt.set(i, 1, inputName(i), -1);
-            tt.set(i, 2, inputType(i).getCode(), -1);
+            tt.set(i, 2, inputType(i).code(), -1);
         }
         tt.withHeaderRows(0);
         tt.withMerge();
-        sb.append(tt.getSummary());
+        sb.append(tt.summary());
 
         // targets
 
@@ -277,11 +277,11 @@ public abstract class AbstractRegression implements Regression {
         for (int i = 0; i < targetNames().length; i++) {
             tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
             tt.set(i, 1, targetName(i), -1);
-            tt.set(i, 2, targetType(i).getCode(), -1);
+            tt.set(i, 2, targetType(i).code(), -1);
         }
         tt.withHeaderRows(0);
         tt.withMerge();
-        sb.append(tt.getSummary());
+        sb.append(tt.summary());
 
         return sb.toString();
     }

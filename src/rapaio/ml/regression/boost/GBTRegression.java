@@ -137,7 +137,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
         trees = new ArrayList<>();
 
-        Var y = df.getVar(firstTargetName());
+        Var y = df.var(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.train(df, weights, firstTargetName());
@@ -172,8 +172,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
             // add next prediction to the fit values
 
             RFit treePred = tree.fit(df, false);
-            for (int j = 0; j < df.getRowCount(); j++) {
-                fitValues.setValue(j, fitValues.getValue(j) + shrinkage * treePred.firstFit().getValue(j));
+            for (int j = 0; j < df.rowCount(); j++) {
+                fitValues.setValue(j, fitValues.value(j) + shrinkage * treePred.firstFit().value(j));
             }
 
             // add tree in the predictors list
@@ -190,13 +190,13 @@ public class GBTRegression extends AbstractRegression implements Printable {
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.build(this, df, withResiduals);
         RFit initPred = initRegression.fit(df, false);
-        for (int i = 0; i < df.getRowCount(); i++) {
-            pred.firstFit().setValue(i, initPred.firstFit().getValue(i));
+        for (int i = 0; i < df.rowCount(); i++) {
+            pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
         for (BTRegression tree : trees) {
             RFit treePred = tree.fit(df, false);
-            for (int i = 0; i < df.getRowCount(); i++) {
-                pred.firstFit().setValue(i, pred.firstFit().getValue(i) + shrinkage * treePred.firstFit().getValue(i));
+            for (int i = 0; i < df.rowCount(); i++) {
+                pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }
         }
         pred.buildComplete();
@@ -204,7 +204,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

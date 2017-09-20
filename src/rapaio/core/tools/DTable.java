@@ -35,8 +35,6 @@ import rapaio.sys.WS;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static rapaio.math.MTools.log2;
-
 /**
  * Distribution table.
  * <p>
@@ -80,7 +78,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, NumericVar.fill(rowVar.getRowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, NumericVar.fill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**
@@ -119,36 +117,36 @@ public final class DTable implements Printable, Serializable {
     }
 
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
-        this(rowVar.getLevels(), colVar.getLevels(), useFirst);
+        this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(rowVar.getType().isNominal() || rowVar.getType().equals(VarType.BINARY)))
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.getType().isNominal() || colVar.getType().equals(VarType.BINARY)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY)))
             throw new IllegalArgumentException("col var is not nominal");
-        if (rowVar.getRowCount() != colVar.getRowCount())
+        if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int rowOffset = rowVar.getType().equals(VarType.BINARY) ? 1 : 0;
-        int colOffset = colVar.getType().equals(VarType.BINARY) ? 1 : 0;
-        for (int i = 0; i < rowVar.getRowCount(); i++) {
-            update(rowVar.getIndex(i) + rowOffset, colVar.getIndex(i) + colOffset, weights != null ? weights.getValue(i) : 1);
+        int rowOffset = rowVar.type().equals(VarType.BINARY) ? 1 : 0;
+        int colOffset = colVar.type().equals(VarType.BINARY) ? 1 : 0;
+        for (int i = 0; i < rowVar.rowCount(); i++) {
+            update(rowVar.index(i) + rowOffset, colVar.index(i) + colOffset, weights != null ? weights.value(i) : 1);
         }
     }
 
     private DTable(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
-        this(new String[]{"?", rowLevel, "other"}, colVar.getLevels(), useFirst);
+        this(new String[]{"?", rowLevel, "other"}, colVar.levels(), useFirst);
 
-        if (!rowVar.getType().isNominal()) throw new IllegalArgumentException("row var must be nominal");
-        if (!colVar.getType().isNominal()) throw new IllegalArgumentException("col var is not nominal");
-        if (rowVar.getRowCount() != colVar.getRowCount())
+        if (!rowVar.type().isNominal()) throw new IllegalArgumentException("row var must be nominal");
+        if (!colVar.type().isNominal()) throw new IllegalArgumentException("col var is not nominal");
+        if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col variables must have same size");
 
-        for (int i = 0; i < rowVar.getRowCount(); i++) {
+        for (int i = 0; i < rowVar.rowCount(); i++) {
             int index = 0;
             if (!rowVar.isMissing(i)) {
-                index = (rowVar.getLabel(i).equals(rowLevel)) ? 1 : 2;
+                index = (rowVar.label(i).equals(rowLevel)) ? 1 : 2;
             }
-            update(index, colVar.getIndex(i), weights != null ? weights.getValue(i) : 1);
+            update(index, colVar.index(i), weights != null ? weights.value(i) : 1);
         }
     }
 
@@ -160,19 +158,19 @@ public final class DTable implements Printable, Serializable {
         return start;
     }
 
-    public int getRowCount() {
+    public int rowCount() {
         return rowLevels.length;
     }
 
-    public int getColCount() {
+    public int colCount() {
         return colLevels.length;
     }
 
-    public String[] getRowLevels() {
+    public String[] rowLevels() {
         return rowLevels;
     }
 
-    public String[] getColLevels() {
+    public String[] colLevels() {
         return colLevels;
     }
 
@@ -409,7 +407,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
 
         if (totalSummary) {
             TextTable tt = TextTable.newEmpty(rowLevels.length - start + 2, colLevels.length - start + 2);
@@ -439,7 +437,7 @@ public final class DTable implements Printable, Serializable {
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
             tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatFlex(total), 1);
-            return tt.getSummary();
+            return tt.summary();
         } else {
             TextTable tt = TextTable.newEmpty(rowLevels.length - start + 1, colLevels.length - start + 1);
             tt.withHeaderRows(1);
@@ -456,7 +454,7 @@ public final class DTable implements Printable, Serializable {
                     tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
                 }
             }
-            return tt.getSummary();
+            return tt.summary();
         }
     }
 }

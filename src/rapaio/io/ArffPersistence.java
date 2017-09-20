@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -147,11 +148,11 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (df.getVar(j).getType().isNumeric()) {
-                        df.getVar(j).setValue(i, Double.parseDouble(tmp[j]));
+                    if (df.var(j).type().isNumeric()) {
+                        df.var(j).setValue(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.getVar(j).getType().isNominal()) {
-                        df.getVar(j).setLabel(i, fullTrim(tmp[j]));
+                    if (df.var(j).type().isNominal()) {
+                        df.var(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }
             }

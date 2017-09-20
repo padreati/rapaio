@@ -53,7 +53,7 @@ public class NaiveBayesTest {
         nb.train(df, "class");
         CFit pred = nb.fit(df);
 
-        Confusion cm = new Confusion(df.getVar("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -77,7 +77,7 @@ public class NaiveBayesTest {
         nb.train(df, "class");
         CFit pred = nb.fit(df);
 
-        Confusion cm = new Confusion(df.getVar("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -104,7 +104,7 @@ public class NaiveBayesTest {
 
         CFit cp = nb.fit(df);
 
-        Confusion cm = new Confusion(df.getVar("classes"), cp.firstClasses());
+        Confusion cm = new Confusion(df.var("classes"), cp.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.89);
@@ -131,7 +131,7 @@ public class NaiveBayesTest {
                 "\n" +
                 "Learned model:\n" +
                 "Learning phase not called\n" +
-                "\n", nb.getSummary());
+                "\n", nb.summary());
 
         nb.train(Datasets.loadIrisDataset(), "class");
 

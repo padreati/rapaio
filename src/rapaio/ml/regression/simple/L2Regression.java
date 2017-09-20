@@ -32,7 +32,6 @@ import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
-import rapaio.ml.regression.Regression;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -82,7 +81,7 @@ public class L2Regression extends AbstractRegression {
     protected boolean coreTrain(Frame df, Var weights) {
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
-            double mean = Mean.from(df.getVar(targetName(i))).getValue();
+            double mean = Mean.from(df.var(targetName(i))).value();
             means[i] = mean;
         }
         return true;
@@ -101,9 +100,9 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getHeaderSummary());
+        sb.append(headerSummary());
         sb.append("\n");
 
         if (hasLearned()) {
@@ -118,7 +117,7 @@ public class L2Regression extends AbstractRegression {
                 tt.set(1 + i, 0, targetName(i), 1);
                 tt.set(1 + i, 1, WS.formatFlex(means[i]), 1);
             }
-            sb.append(tt.getSummary());
+            sb.append(tt.summary());
         }
         sb.append("\n");
         return sb.toString();

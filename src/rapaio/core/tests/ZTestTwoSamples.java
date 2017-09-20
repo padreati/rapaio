@@ -27,7 +27,6 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
-import rapaio.printer.Printable;
 
 import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
@@ -136,7 +135,7 @@ public class ZTestTwoSamples implements HTest {
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
+        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
@@ -152,10 +151,10 @@ public class ZTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).getValue();
-        xSampleSize = xComplete.getRowCount();
-        ySampleMean = mean(yComplete).getValue();
-        ySampleSize = yComplete.getRowCount();
+        xSampleMean = mean(xComplete).value();
+        xSampleSize = xComplete.rowCount();
+        ySampleMean = mean(yComplete).value();
+        ySampleSize = yComplete.rowCount();
         sampleMean = xSampleMean - ySampleMean;
 
         compute();
@@ -230,15 +229,15 @@ public class ZTestTwoSamples implements HTest {
         return zScore;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
-    public double getCILow() {
+    public double ciLow() {
         return ciLow;
     }
 
-    public double getCIHigh() {
+    public double ciHigh() {
         return ciHigh;
     }
 
@@ -267,7 +266,7 @@ public class ZTestTwoSamples implements HTest {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.zTestTwoSamples\n");

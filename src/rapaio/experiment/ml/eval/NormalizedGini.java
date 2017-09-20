@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -69,12 +70,12 @@ NormalizedGini <- function(solution, submission) {
         Comparator<Integer> cmp = RowComparators.numeric(submission, false);
         Var sol = new VFRefSort(cmp).fitApply(solution);
         Var sub = new VFRefSort(cmp).fitApply(submission);
-        int n = sub.getRowCount();
+        int n = sub.rowCount();
         NumericVar rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(NumericVar.collector());
         double totalPos = sol.stream().mapToDouble().sum();
         Var cumPosFound = new VFCumulativeSum().fitApply(sol.solidCopy());
         Var lorentz = cumPosFound.stream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(NumericVar.collector());
-        return IntStream.range(0, n).mapToDouble(row -> lorentz.getValue(row) - rand.getValue(row)).sum();
+        return IntStream.range(0, n).mapToDouble(row -> lorentz.value(row) - rand.value(row)).sum();
     }
 
     public double getValue() {

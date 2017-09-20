@@ -109,7 +109,7 @@ public class Plot extends HostFigure {
     }
 
     public Plot add(PlotComponent pc) {
-        pc.initialize(this);
+        pc.bind(this);
         components.add(pc);
         return this;
     }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,7 +41,7 @@ public final class FrameJoin {
 
         HashMap<KeyValue, Integer> map = new HashMap<>();
         KeyField srcKeyField = new KeyField(src, keyFields);
-        for (int i = 0; i < src.getRowCount(); i++) {
+        for (int i = 0; i < src.rowCount(); i++) {
             KeyValue key = new KeyValue(srcKeyField, i);
             if(map.containsKey(key)) {
                 throw new IllegalArgumentException("We found duplicate keys in source frame.");
@@ -53,7 +54,7 @@ public final class FrameJoin {
 
         KeyField dstKeyField = new KeyField(dst, keyFields);
 
-        for (int i = 0; i < dst.getRowCount(); i++) {
+        for (int i = 0; i < dst.rowCount(); i++) {
             KeyValue key = new KeyValue(dstKeyField, i);
             if(map.containsKey(key)) {
                 dstRows.add(i);
@@ -78,7 +79,7 @@ class KeyField {
         this.keyFields = keyFields;
         keyVars = new Var[keyFields.length];
         for (int i = 0; i < keyFields.length; i++) {
-            keyVars[i] = df.getVar(keyFields[i]);
+            keyVars[i] = df.var(keyFields[i]);
         }
     }
 
@@ -114,33 +115,33 @@ class KeyValue implements Comparable<KeyValue> {
     public int compareTo(KeyValue o) {
         for (int i = 0; i < keyField.keyVars.length; i++) {
 
-            if (!keyField.keyVars[i].getName().equals(o.keyField.keyVars[i].getName())) {
+            if (!keyField.keyVars[i].name().equals(o.keyField.keyVars[i].name())) {
                 throw new IllegalArgumentException("Key field names do not match.");
             }
-            if (!keyField.keyVars[i].getType().equals(o.keyField.keyVars[i].getType())) {
+            if (!keyField.keyVars[i].type().equals(o.keyField.keyVars[i].type())) {
                 throw new IllegalArgumentException("Key field types do not match.");
             }
             int comp = 0;
             Var v1 = keyField.keyVars[i];
             Var v2 = o.keyField.keyVars[i];
 
-            switch (keyField.keyVars[i].getType()) {
+            switch (keyField.keyVars[i].type()) {
                 case BINARY:
-                    comp = Boolean.compare(v1.getBinary(row), v2.getBinary(o.row));
+                    comp = Boolean.compare(v1.binary(row), v2.binary(o.row));
                     break;
                 case TEXT:
                 case NOMINAL:
-                    comp = v1.getLabel(row).compareTo(v2.getLabel(o.row));
+                    comp = v1.label(row).compareTo(v2.label(o.row));
                     break;
                 case INDEX:
                 case ORDINAL:
-                    comp = Integer.compare(v1.getIndex(row), v2.getIndex(o.row));
+                    comp = Integer.compare(v1.index(row), v2.index(o.row));
                     break;
                 case STAMP:
-                    comp = Long.compare(v1.getStamp(row), v2.getStamp(o.row));
+                    comp = Long.compare(v1.stamp(row), v2.stamp(o.row));
                     break;
                 case NUMERIC:
-                    comp = Double.compare(v1.getValue(row), v2.getValue(o.row));
+                    comp = Double.compare(v1.value(row), v2.value(o.row));
             }
             if (comp != 0) {
                 return comp;
@@ -162,7 +163,7 @@ class KeyValue implements Comparable<KeyValue> {
     public int hashCode() {
         int result = 0;
         for (Var keyVar : keyField.keyVars) {
-            result = 31 * result + keyVar.getLabel(row).hashCode();
+            result = 31 * result + keyVar.label(row).hashCode();
         }
         return result;
     }

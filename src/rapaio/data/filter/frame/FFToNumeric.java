@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -60,17 +61,17 @@ public class FFToNumeric extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.getVarCount(), df);
+        checkRangeVars(1, df.varCount(), df);
 
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
-        Var[] vars = new Var[df.getVarCount()];
+        Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            if (!nameSet.contains(df.getVar(i).getName())) {
-                vars[i] = df.getVar(i);
+            if (!nameSet.contains(df.var(i).name())) {
+                vars[i] = df.var(i);
             } else {
-                vars[i] = VFToNumeric.byDefault().fitApply(df.getVar(i));
+                vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
             }
         }
-        return SolidFrame.byVars(df.getRowCount(), vars);
+        return SolidFrame.byVars(df.rowCount(), vars);
     }
 }

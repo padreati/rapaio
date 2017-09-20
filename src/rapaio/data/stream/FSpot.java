@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -120,7 +121,7 @@ public final class FSpot implements Serializable {
      * @return numerical value of the given variable on the current spot
      */
     public double getValue(int varIndex) {
-        return df.getValue(row, varIndex);
+        return df.value(row, varIndex);
     }
 
     /**
@@ -130,7 +131,7 @@ public final class FSpot implements Serializable {
      * @return numeric value of the given variable on the current spot
      */
     public double getValue(String varName) {
-        return df.getValue(row, varName);
+        return df.value(row, varName);
     }
 
     /**
@@ -160,7 +161,7 @@ public final class FSpot implements Serializable {
      * @return index value of the given variable on the current spot
      */
     public int getIndex(int varIndex) {
-        return df.getIndex(row, varIndex);
+        return df.index(row, varIndex);
     }
 
     /**
@@ -170,7 +171,7 @@ public final class FSpot implements Serializable {
      * @return index value of the given variable on the current spot
      */
     public int getIndex(String varName) {
-        return df.getIndex(row, varName);
+        return df.index(row, varName);
     }
 
     /**
@@ -200,7 +201,7 @@ public final class FSpot implements Serializable {
      * @return label value
      */
     public String getLabel(int varIndex) {
-        return df.getLabel(row, varIndex);
+        return df.label(row, varIndex);
     }
 
     /**
@@ -210,7 +211,7 @@ public final class FSpot implements Serializable {
      * @return label value
      */
     public String getLabel(String varName) {
-        return df.getLabel(row, varName);
+        return df.label(row, varName);
     }
 
     /**
@@ -240,7 +241,7 @@ public final class FSpot implements Serializable {
      * @return label levels
      */
     public String[] getLevels(int varIndex) {
-        return df.getVar(varIndex).getLevels();
+        return df.var(varIndex).levels();
     }
 
     /**
@@ -250,10 +251,10 @@ public final class FSpot implements Serializable {
      * @return label levels
      */
     public String[] getLevels(String varName) {
-        return df.getVar(varName).getLevels();
+        return df.var(varName).levels();
     }
 
     public boolean getBinary(String name) {
-        return df.getVar(name).getBinary(row);
+        return df.var(name).binary(row);
     }
 }

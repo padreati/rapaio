@@ -47,61 +47,61 @@ public class TTestOneSampleTest {
         assertEquals(0.05, t1.getSl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
 
-        assertEquals(CoreTools.mean(x).getValue(), t1.getSampleMean(), TOL);
-        assertEquals(x.getRowCount(), t1.getSampleSize());
-        assertEquals(x.getRowCount() - 1, t1.getDegrees());
+        assertEquals(CoreTools.mean(x).value(), t1.getSampleMean(), TOL);
+        assertEquals(x.rowCount(), t1.getSampleSize());
+        assertEquals(x.rowCount() - 1, t1.getDegrees());
 
         assertEquals(CoreTools.variance(x).sdValue(), t1.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t1.getT(), TOL);
-        assertEquals(0.006228673742479382, t1.getPValue(), TOL);
-        assertEquals(4.794757181899943, t1.getCILow(), TOL);
-        assertEquals(5.205242818100057, t1.getCIHigh(), TOL);
+        assertEquals(0.006228673742479382, t1.pValue(), TOL);
+        assertEquals(4.794757181899943, t1.ciLow(), TOL);
+        assertEquals(5.205242818100057, t1.ciHigh(), TOL);
 
 
-        TTestOneSample t2 = TTestOneSample.test(CoreTools.mean(x).getValue(), x.getRowCount(), CoreTools.variance(x).sdValue(), 4.7);
+        TTestOneSample t2 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.variance(x).sdValue(), 4.7);
         assertEquals(4.7, t2.getMu(), TOL);
         assertEquals(0.05, t2.getSl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
 
-        assertEquals(CoreTools.mean(x).getValue(), t2.getSampleMean(), TOL);
-        assertEquals(x.getRowCount(), t2.getSampleSize());
-        assertEquals(x.getRowCount() - 1, t2.getDegrees());
+        assertEquals(CoreTools.mean(x).value(), t2.getSampleMean(), TOL);
+        assertEquals(x.rowCount(), t2.getSampleSize());
+        assertEquals(x.rowCount() - 1, t2.getDegrees());
 
         assertEquals(CoreTools.variance(x).sdValue(), t2.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t2.getT(), TOL);
-        assertEquals(0.006228673742479382, t2.getPValue(), TOL);
-        assertEquals(4.794757181899943, t2.getCILow(), TOL);
-        assertEquals(5.205242818100057, t2.getCIHigh(), TOL);
+        assertEquals(0.006228673742479382, t2.pValue(), TOL);
+        assertEquals(4.794757181899943, t2.ciLow(), TOL);
+        assertEquals(5.205242818100057, t2.ciHigh(), TOL);
 
-        TTestOneSample t3 = TTestOneSample.test(CoreTools.mean(x).getValue(), x.getRowCount(), CoreTools.variance(x).sdValue(), 4.7, 0.1, HTest.Alternative.GREATER_THAN);
+        TTestOneSample t3 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.variance(x).sdValue(), 4.7, 0.1, HTest.Alternative.GREATER_THAN);
         assertEquals(4.7, t3.getMu(), TOL);
         assertEquals(0.1, t3.getSl(), TOL);
         assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
 
-        assertEquals(CoreTools.mean(x).getValue(), t3.getSampleMean(), TOL);
-        assertEquals(x.getRowCount(), t3.getSampleSize());
-        assertEquals(x.getRowCount() - 1, t3.getDegrees());
+        assertEquals(CoreTools.mean(x).value(), t3.getSampleMean(), TOL);
+        assertEquals(x.rowCount(), t3.getSampleSize());
+        assertEquals(x.rowCount() - 1, t3.getDegrees());
 
         assertEquals(CoreTools.variance(x).sdValue(), t3.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t3.getT(), TOL);
-        assertEquals(0.0031143368712397423, t3.getPValue(), TOL);
-        assertEquals(4.830175143575739, t3.getCILow(), TOL);
-        assertEquals(5.169824856424261, t3.getCIHigh(), TOL);
+        assertEquals(0.0031143368712397423, t3.pValue(), TOL);
+        assertEquals(4.830175143575739, t3.ciLow(), TOL);
+        assertEquals(5.169824856424261, t3.ciHigh(), TOL);
 
-        TTestOneSample t4 = TTestOneSample.test(CoreTools.mean(x).getValue(), x.getRowCount(), CoreTools.variance(x).sdValue(), 4.7, 0.1, HTest.Alternative.LESS_THAN);
+        TTestOneSample t4 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.variance(x).sdValue(), 4.7, 0.1, HTest.Alternative.LESS_THAN);
         assertEquals(4.7, t4.getMu(), TOL);
         assertEquals(0.1, t4.getSl(), TOL);
         assertEquals(HTest.Alternative.LESS_THAN, t4.getAlt());
 
-        assertEquals(CoreTools.mean(x).getValue(), t4.getSampleMean(), TOL);
-        assertEquals(x.getRowCount(), t4.getSampleSize());
-        assertEquals(x.getRowCount() - 1, t4.getDegrees());
+        assertEquals(CoreTools.mean(x).value(), t4.getSampleMean(), TOL);
+        assertEquals(x.rowCount(), t4.getSampleSize());
+        assertEquals(x.rowCount() - 1, t4.getDegrees());
 
         assertEquals(CoreTools.variance(x).sdValue(), t4.getSampleSd(), TOL);
         assertEquals(3.0397368307141313, t4.getT(), TOL);
-        assertEquals(0.9968856631287603, t4.getPValue(), TOL);
-        assertEquals(4.830175143575739, t4.getCILow(), TOL);
-        assertEquals(5.169824856424261, t4.getCIHigh(), TOL);
+        assertEquals(0.9968856631287603, t4.pValue(), TOL);
+        assertEquals(4.830175143575739, t4.ciLow(), TOL);
+        assertEquals(5.169824856424261, t4.ciHigh(), TOL);
 
 
         TTestOneSample t5 = TTestOneSample.test(NumericVar.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
@@ -115,9 +115,9 @@ public class TTestOneSampleTest {
 
         assertEquals(Double.NaN, t5.getSampleSd(), TOL);
         assertEquals(Double.NaN, t5.getT(), TOL);
-        assertEquals(Double.NaN, t5.getPValue(), TOL);
-        assertEquals(Double.NaN, t5.getCILow(), TOL);
-        assertEquals(Double.NaN, t5.getCIHigh(), TOL);
+        assertEquals(Double.NaN, t5.pValue(), TOL);
+        assertEquals(Double.NaN, t5.ciLow(), TOL);
+        assertEquals(Double.NaN, t5.ciHigh(), TOL);
 
 
 

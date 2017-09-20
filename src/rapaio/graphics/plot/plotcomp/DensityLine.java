@@ -52,7 +52,7 @@ public class DensityLine extends PlotComponent {
     private final KDE kde;
 
     public DensityLine(Var var, GOption... opts) {
-        this(var, new KFuncGaussian(), KDE.getSilvermanBandwidth(var), opts);
+        this(var, new KFuncGaussian(), KDE.silvermanBandwidth(var), opts);
     }
 
     public DensityLine(Var var, double bandwidth, GOption... opts) {
@@ -60,7 +60,7 @@ public class DensityLine extends PlotComponent {
     }
 
     public DensityLine(Var var, KFunc kfunc, GOption... opts) {
-        this(var, kfunc, KDE.getSilvermanBandwidth(var), opts);
+        this(var, kfunc, KDE.silvermanBandwidth(var), opts);
     }
 
     public DensityLine(Var var, KFunc kfunc, double bandwidth, GOption... opts) {
@@ -78,8 +78,8 @@ public class DensityLine extends PlotComponent {
         Pin<Double> ymax = new Pin<>(Double.NaN);
 
         var.stream().filter(s -> !s.isMissing()).forEach(s -> {
-            double xMin = kde.getKernel().minValue(s.getValue(), bandwidth);
-            double xMax = kde.getKernel().getMaxValue(s.getValue(), bandwidth);
+            double xMin = kde.kernel().minValue(s.getValue(), bandwidth);
+            double xMax = kde.kernel().maxValue(s.getValue(), bandwidth);
             double yMax = ((Function<Double, Double>) kde::pdf).apply(s.getValue());
             xmin.set(Double.isNaN(xmin.get()) ? xMin : Math.min(xmin.get(), xMin));
             xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
@@ -103,20 +103,20 @@ public class DensityLine extends PlotComponent {
         Var x = NumericVar.fill(options.getPoints() + 1, 0);
         Var y = NumericVar.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, kde.pdf(x.getValue(i)));
+            y.setValue(i, kde.pdf(x.value(i)));
         }
 
-        for (int i = 1; i < x.getRowCount(); i++) {
-            if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
+        for (int i = 1; i < x.rowCount(); i++) {
+            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        xScale(x.getValue(i - 1)),
-                        yScale(y.getValue(i - 1)),
-                        xScale(x.getValue(i)),
-                        yScale(y.getValue(i))));
+                        xScale(x.value(i - 1)),
+                        yScale(y.value(i - 1)),
+                        xScale(x.value(i)),
+                        yScale(y.value(i))));
 
             }
         }

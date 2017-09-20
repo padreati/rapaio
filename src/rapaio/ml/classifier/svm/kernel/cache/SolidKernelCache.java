@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@
 package rapaio.ml.classifier.svm.kernel.cache;
 
 import rapaio.data.Frame;
-import rapaio.ml.classifier.svm.kernel.cache.KernelCache;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
@@ -39,7 +39,7 @@ public class SolidKernelCache implements KernelCache {
 
     public SolidKernelCache(Frame df) {
         this.df = df;
-        cache = new Double[df.getRowCount()][df.getRowCount()];
+        cache = new Double[df.rowCount()][df.rowCount()];
     }
 
     @Override

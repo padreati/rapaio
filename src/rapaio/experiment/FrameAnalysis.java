@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,7 +43,7 @@ public class FrameAnalysis {
 
     public Frame buildCsvFrame(Csv csv, String file) throws IOException {
 
-        String[] varNames = csv.withEndRow(1000).read(file).getVarNames();
+        String[] varNames = csv.withEndRow(1000).read(file).varNames();
         csv.withEndRow(Integer.MAX_VALUE);
         int start = 0;
 
@@ -57,7 +58,7 @@ public class FrameAnalysis {
             h2.add(NumericVar.empty().withName("h2_" + i));
         }
 
-        Var target = csv.withSkipCols(n -> n != targetIndex).read(file).getVar(0);
+        Var target = csv.withSkipCols(n -> n != targetIndex).read(file).var(0);
 
         while (start < varNames.length && start < maxVars) {
             int pos = start;
@@ -65,14 +66,14 @@ public class FrameAnalysis {
             Frame vs = csv.read(file);
 
             vs.varStream().forEach(var -> {
-                WS.println(var.getName());
-                name.addLabel(var.getName());
-                type.addLabel(var.getType().name());
+                WS.println(var.name());
+                name.addLabel(var.name());
+                type.addLabel(var.type().name());
                 int countValue;
-                switch (var.getType()) {
+                switch (var.type()) {
                     case NOMINAL:
                     case ORDINAL:
-                        countValue = var.getLevels().length;
+                        countValue = var.levels().length;
                         break;
                     case INDEX:
                     case BINARY:
@@ -93,9 +94,9 @@ public class FrameAnalysis {
                 double[] h1v = new double[bins];
                 double[] h2v = new double[bins];
                 double[][] h = new double[][]{h1v, h2v};
-                switch (var.getType()) {
+                switch (var.type()) {
                     case BINARY:
-                        var.stream().complete().forEach(s -> h[target.getIndex(s.getRow()) - 1][s.getIndex()]++);
+                        var.stream().complete().forEach(s -> h[target.index(s.getRow()) - 1][s.getIndex()]++);
                         break;
                     case INDEX:
                     case NUMERIC:
@@ -107,7 +108,7 @@ public class FrameAnalysis {
                             int bin = (int) Math.floor((s.getValue() - min) / step);
                             if (bin == bins)
                                 bin--;
-                            h[target.getIndex(s.getRow()) - 1][bin]++;
+                            h[target.index(s.getRow()) - 1][bin]++;
                         });
                         break;
                     case STAMP:
@@ -118,16 +119,16 @@ public class FrameAnalysis {
                             int bin = (int) Math.floor((s.getValue() - min2) / step2);
                             if (bin == bins)
                                 bin--;
-                            h[target.getIndex(s.getRow()) - 1][bin]++;
+                            h[target.index(s.getRow()) - 1][bin]++;
                         });
                         break;
                     case NOMINAL:
-                        DVector dv1 = DVector.fromCount(false, var.stream().complete().filter(s -> target.getIndex(s.getRow()) == 1).toMappedVar());
+                        DVector dv1 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.getRow()) == 1).toMappedVar());
                         double[] v1 = dv1.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[0][i < bins ? i : bins - 1] += v1[i];
                         }
-                        DVector dv2 = DVector.fromCount(false, var.stream().complete().filter(s -> target.getIndex(s.getRow()) == 2).toMappedVar());
+                        DVector dv2 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.getRow()) == 2).toMappedVar());
                         double[] v2 = dv2.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[1][i < bins ? i : bins - 1] += v2[i];
@@ -135,7 +136,7 @@ public class FrameAnalysis {
                         break;
                     default:
                         HashMap<String, Integer> counts = new HashMap<>();
-                        var.stream().filter(s -> target.getIndex(s.getRow()) == 1).mapToString().forEach(txt -> {
+                        var.stream().filter(s -> target.index(s.getRow()) == 1).mapToString().forEach(txt -> {
                             if (!counts.containsKey(txt))
                                 counts.put(txt, 0);
                             counts.put(txt, counts.get(txt) + 1);
@@ -154,7 +155,7 @@ public class FrameAnalysis {
                         }
 
                         HashMap<String, Integer> counts2 = new HashMap<>();
-                        var.stream().filter(s -> target.getIndex(s.getRow()) == 1).mapToString().forEach(txt -> {
+                        var.stream().filter(s -> target.index(s.getRow()) == 1).mapToString().forEach(txt -> {
                             if (!counts2.containsKey(txt))
                                 counts2.put(txt, 0);
                             counts2.put(txt, counts2.get(txt) + 1);

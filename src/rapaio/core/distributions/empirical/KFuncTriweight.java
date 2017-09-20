@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,12 +50,12 @@ public class KFuncTriweight implements KFunc {
     }
 
     @Override
-    public double getMaxValue(double x, double bandwidth) {
+    public double maxValue(double x, double bandwidth) {
         return x + bandwidth;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "KFuncTriweight";
     }
 }

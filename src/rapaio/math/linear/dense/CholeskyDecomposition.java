@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -124,9 +125,9 @@ public class CholeskyDecomposition implements Serializable {
 //     */
 //    public CholeskyDecomposition(RM A, int rightflag) {
 //
-//        n = A.getColCount();
+//        n = A.colCount();
 //        R = new double[n][n];
-//        isspd = (A.getColCount() == n); // Main loop.
+//        isspd = (A.colCount() == n); // Main loop.
 //        for (int j = 0; j < n; j++) {
 //            double d = 0.0;
 //            for (int k = 0; k < j; k++) {

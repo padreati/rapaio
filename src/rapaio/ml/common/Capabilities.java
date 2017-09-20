@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -144,8 +145,8 @@ public class Capabilities implements Printable {
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
-            if (!targetTypes.contains(df.getVar(varName).getType())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.getVar(varName).getType().name() + " as target type vor var: " + varName);
+            if (!targetTypes.contains(df.var(varName).type())) {
+                throw new IllegalArgumentException("Algorithm does not allow " + df.var(varName).type().name() + " as target type vor var: " + varName);
             }
         }
     }
@@ -156,7 +157,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.getVar(targetName).stream().complete().count() != df.getVar(targetName).getRowCount()) {
+            if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -182,12 +183,12 @@ public class Capabilities implements Printable {
         List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
-            Var inputVar = df.getVar(inputName);
-            if (!inputTypes.contains(inputVar.getType())) {
+            Var inputVar = df.var(inputName);
+            if (!inputTypes.contains(inputVar.type())) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
-                sb.append(inputName).append("[").append(inputVar.getType().name()).append("]");
+                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
             }
         }
         if (sb.length() > 0) {
@@ -201,7 +202,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
-            if (df.getVar(inputName).stream().complete().count() != df.getVar(inputName).getRowCount()) {
+            if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -212,40 +213,40 @@ public class Capabilities implements Printable {
             throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; see : " + sb.toString());
     }
 
-    public Integer getMinInputCount() {
+    public Integer minInputCount() {
         return minInputCount;
     }
 
-    public Integer getMaxInputCount() {
+    public Integer maxInputCount() {
         return maxInputCount;
     }
 
-    public List<VarType> getInputTypes() {
+    public List<VarType> inputTypes() {
         return inputTypes;
     }
 
-    public Boolean getAllowMissingInputValues() {
+    public Boolean allowMissingInputValues() {
         return allowMissingInputValues;
     }
 
-    public Integer getMinTargetCount() {
+    public Integer minTargetCount() {
         return minTargetCount;
     }
 
-    public Integer getMaxTargetCount() {
+    public Integer maxTargetCount() {
         return maxTargetCount;
     }
 
-    public List<VarType> getTargetTypes() {
+    public List<VarType> targetTypes() {
         return targetTypes;
     }
 
-    public Boolean getAllowMissingTargetValues() {
+    public Boolean allowMissingTargetValues() {
         return allowMissingTargetValues;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
         sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")

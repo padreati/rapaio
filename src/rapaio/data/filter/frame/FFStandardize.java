@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -72,16 +73,16 @@ public class FFStandardize extends AbstractFF {
         filters.clear();
         for (String varName : varNames) {
             VFStandardize filter = new VFStandardize();
-            filter.fit(df.getVar(varName));
+            filter.fit(df.var(varName));
             filters.put(varName, filter);
         }
     }
 
     @Override
     public Frame apply(Frame df) {
-       for (String varName : df.getVarNames()) {
+       for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
-                filters.get(varName).apply(df.getVar(varName));
+                filters.get(varName).apply(df.var(varName));
             }
         }
         return df;

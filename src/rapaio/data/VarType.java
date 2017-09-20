@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -72,7 +73,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "bin";
         }
 
@@ -101,7 +102,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "idx";
         }
 
@@ -131,7 +132,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "nom";
         }
 
@@ -160,7 +161,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "num";
         }
 
@@ -191,7 +192,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "ord";
         }
 
@@ -220,7 +221,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "dat";
         }
 
@@ -249,7 +250,7 @@ public enum VarType {
         }
 
         @Override
-        public String getCode() {
+        public String code() {
             return "txt";
         }
 
@@ -278,7 +279,7 @@ public enum VarType {
         return false;
     }
 
-    public abstract String getCode();
+    public abstract String code();
 
     /**
      * Builds a new empty instance of the given type

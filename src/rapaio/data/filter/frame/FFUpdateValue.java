@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,14 +53,14 @@ public class FFUpdateValue extends AbstractFF {
     @Override
     public void train(Frame df) {
         parse(df);
-        checkRangeVars(1, df.getVarCount(), df);
+        checkRangeVars(1, df.varCount(), df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             for (String name : varNames) {
-                df.setValue(i, name, f.apply(df.getValue(i, name)));
+                df.setValue(i, name, f.apply(df.value(i, name)));
             }
         }
         return df;

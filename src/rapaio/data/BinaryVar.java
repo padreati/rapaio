@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -139,7 +140,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.BINARY;
     }
 
@@ -164,7 +165,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
@@ -178,7 +179,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         if (isMissing(row)) return -1.0;
         return values.get(row) ? 1.0 : 0.0;
     }
@@ -218,10 +219,10 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         if (isMissing(row))
             return -1;
-        return getBinary(row) ? 1 : 0;
+        return binary(row) ? 1 : 0;
     }
 
     @Override
@@ -259,8 +260,8 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
-        return isMissing(row) ? "?" : (getBinary(row) ? "true" : "false");
+    public String label(int row) {
+        return isMissing(row) ? "?" : (binary(row) ? "true" : "false");
     }
 
     @Override
@@ -300,7 +301,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         return new String[]{"?", "true", "false"};
     }
 
@@ -310,7 +311,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
+    public boolean binary(int row) {
         return values.get(row);
     }
 
@@ -329,8 +330,8 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
-        return getBinary(row) ? 1L : 0L;
+    public long stamp(int row) {
+        return binary(row) ? 1L : 0L;
     }
 
     @Override
@@ -403,7 +404,7 @@ public final class BinaryVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return BinaryVar.empty(rows).withName(getName());
+        return BinaryVar.empty(rows).withName(name());
     }
 
     @Override
@@ -412,7 +413,7 @@ public final class BinaryVar extends AbstractVar {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(getRowCount());
+        out.writeInt(rowCount());
         byte[] buff = values.toByteArray();
         out.writeInt(buff.length);
         out.write(buff);

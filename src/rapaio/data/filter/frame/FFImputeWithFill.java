@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -64,11 +65,11 @@ public class FFImputeWithFill extends AbstractFF {
         Set<String> names = Arrays.stream(varNames).collect(Collectors.toSet());
 
         for (Var var : df.varList()) {
-            if (!var.getType().isNumeric())
+            if (!var.type().isNumeric())
                 continue;
-            if (!names.contains(var.getName()))
+            if (!names.contains(var.name()))
                 continue;
-            for (int i = 0; i < var.getRowCount(); i++) {
+            for (int i = 0; i < var.rowCount(); i++) {
                 if (var.isMissing(i))
                     var.setValue(i, fill);
             }

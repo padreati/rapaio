@@ -45,32 +45,32 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOption... opts) {
-        this(NumericVar.seq(0, y.getRowCount() - 1), y, opts);
+        this(NumericVar.seq(0, y.rowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOption... opts) {
-        this.x = NumericVar.empty().withName(x.getName());
-        this.y = NumericVar.empty().withName(y.getName());
-        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+        this.x = NumericVar.empty().withName(x.name());
+        this.y = NumericVar.empty().withName(y.name());
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
-            this.x.addValue(x.getValue(i));
-            this.y.addValue(y.getValue(i));
+            this.x.addValue(x.value(i));
+            this.y.addValue(y.value(i));
         }
         this.options.bind(opts);
     }
 
     @Override
     public Range buildRange() {
-        if (x.getRowCount() == 0) {
+        if (x.rowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.getValue(i), y.getValue(i));
+            range.union(x.value(i), y.value(i));
         }
         return range;
     }
@@ -81,12 +81,12 @@ public class Lines extends PlotComponent {
         g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < x.getRowCount(); i++) {
+        for (int i = 1; i < x.rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = x.getValue(i - 1);
-            double y1 = y.getValue(i - 1);
-            double x2 = x.getValue(i);
-            double y2 = y.getValue(i);
+            double x1 = x.value(i - 1);
+            double y1 = y.value(i - 1);
+            double x2 = x.value(i);
+            double y2 = y.value(i);
 
             Range r = new Clip(parent.getRange()).lineClip(x1, y1, x2, y2);
             if (r != null) {

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -196,14 +197,14 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition summary\n");
         sb.append("========================\n");
 
-        sb.append("\nL matrix\n").append(getL().getSummary());
-        sb.append("\nU matrix:\n").append(getU().getSummary());
+        sb.append("\nL matrix\n").append(getL().summary());
+        sb.append("\nU matrix:\n").append(getU().summary());
         return sb.toString();
     }
 

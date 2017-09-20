@@ -45,12 +45,12 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.getRowCount(), t1.getXSampleSize(), TOL);
-        Assert.assertEquals(mean(x).getValue(), t1.getXSampleMean(), TOL);
+        Assert.assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        Assert.assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
         Assert.assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        Assert.assertEquals(y.getRowCount(), t1.getYSampleSize(), TOL);
-        Assert.assertEquals(mean(y).getValue(), t1.getYSampleMean(), TOL);
+        Assert.assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        Assert.assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
         Assert.assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
 
         Assert.assertEquals(true, t1.hasEqualVars());
@@ -62,9 +62,9 @@ public class TTestTwoSamplesTest {
 
         Assert.assertEquals(26, t1.getDf(), TOL);
         Assert.assertEquals(-2.307480895935302, t1.getT(), TOL);
-        Assert.assertEquals(0.029245857024058096, t1.getPValue(), TOL);
-        Assert.assertEquals(-0.12738712912378114, t1.getCIHigh(), TOL);
-        Assert.assertEquals(-2.205946204209553, t1.getCILow(), TOL);
+        Assert.assertEquals(0.029245857024058096, t1.pValue(), TOL);
+        Assert.assertEquals(-0.12738712912378114, t1.ciHigh(), TOL);
+        Assert.assertEquals(-2.205946204209553, t1.ciLow(), TOL);
 
         TTestTwoSamples t2 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.LESS_THAN);
         t2.printSummary();
@@ -77,7 +77,7 @@ public class TTestTwoSamplesTest {
         Assert.assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
 
         HTest t4 = TTestTwoSamples.test(NumericVar.empty(), x, 0);
-        Assert.assertEquals(Double.NaN, t4.getPValue(), TOL);
+        Assert.assertEquals(Double.NaN, t4.pValue(), TOL);
     }
 
     @Test
@@ -89,12 +89,12 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.getRowCount(), t1.getXSampleSize(), TOL);
-        Assert.assertEquals(mean(x).getValue(), t1.getXSampleMean(), TOL);
+        Assert.assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        Assert.assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
         Assert.assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        Assert.assertEquals(y.getRowCount(), t1.getYSampleSize(), TOL);
-        Assert.assertEquals(mean(y).getValue(), t1.getYSampleMean(), TOL);
+        Assert.assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        Assert.assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
         Assert.assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
 
         Assert.assertEquals(false, t1.hasEqualVars());
@@ -106,14 +106,14 @@ public class TTestTwoSamplesTest {
 
         Assert.assertEquals(-1.226925553339566, t1.getT(), TOL);
         Assert.assertEquals(5.109345983643555, t1.getDf(), TOL);
-        Assert.assertEquals(0.2733648790307336, t1.getPValue(), TOL);
-        Assert.assertEquals(1.2620136800377284, t1.getCIHigh(), TOL);
-        Assert.assertEquals(-3.5953470133710637, t1.getCILow(), TOL);
+        Assert.assertEquals(0.2733648790307336, t1.pValue(), TOL);
+        Assert.assertEquals(1.2620136800377284, t1.ciHigh(), TOL);
+        Assert.assertEquals(-3.5953470133710637, t1.ciLow(), TOL);
 
 
         TTestTwoSamples t2 = TTestTwoSamples.welchTest(x, y, 0, 0.05, HTest.Alternative.TWO_TAILS);
 
-        Assert.assertEquals(t1.getSummary(), t2.getSummary());
+        Assert.assertEquals(t1.summary(), t2.summary());
     }
 
 }

@@ -100,7 +100,7 @@ public class ZTestTwoPaired implements HTest {
         xComplete = x.stream().complete().toMappedVar();
         yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
+        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
 
@@ -113,13 +113,13 @@ public class ZTestTwoPaired implements HTest {
         }
 
         Var complete = NumericVar.empty();
-        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (!(x.isMissing(i) || y.isMissing(i)))
-                complete.addValue(x.getValue(i) - y.getValue(i));
+                complete.addValue(x.value(i) - y.value(i));
         }
-        sampleMean = mean(complete).getValue();
+        sampleMean = mean(complete).value();
 
-        double sv = sd / Math.sqrt(complete.getRowCount());
+        double sv = sd / Math.sqrt(complete.rowCount());
 
         zScore = (sampleMean - mu) / sv;
 
@@ -163,28 +163,28 @@ public class ZTestTwoPaired implements HTest {
         return zScore;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
-    public double getCILow() {
+    public double ciLow() {
         return ciLow;
     }
 
-    public double getCIHigh() {
+    public double ciHigh() {
         return ciHigh;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> ZTestTwoPaired\n");
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.getRowCount()).append("/").append(x.getRowCount()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.getRowCount()).append("/").append(y.getRowCount()).append("\n");
+        sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
+        sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("x sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");

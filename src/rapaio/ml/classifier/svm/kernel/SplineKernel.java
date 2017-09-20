@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -40,8 +41,8 @@ public class SplineKernel extends AbstractKernel {
 
         double value = 1;
         for (String varName : varNames) {
-            double x_i = df1.getValue(row1, varName);
-            double y_i = df2.getValue(row2, varName);
+            double x_i = df1.value(row1, varName);
+            double y_i = df2.value(row2, varName);
             double min = Math.min(x_i, y_i);
             value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
         }

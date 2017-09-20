@@ -80,16 +80,16 @@ public class ChiSqGoodnessOfFit implements HTest {
     }
 
     private static DVector buildDv(Var x) {
-        switch (x.getType()) {
+        switch (x.type()) {
             case BINARY:
             case NOMINAL:
             case ORDINAL:
                 return DVector.fromCount(false, x);
             case NUMERIC:
             case INDEX:
-                DVector dv = DVector.empty(true, x.getRowCount());
-                for (int i = 0; i < x.getRowCount(); i++) {
-                    dv.set(i, x.getValue(i));
+                DVector dv = DVector.empty(true, x.rowCount());
+                for (int i = 0; i < x.rowCount(); i++) {
+                    dv.set(i, x.value(i));
                 }
                 return dv;
             default:
@@ -102,14 +102,14 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         NumericVar expected = NumericVar.from(p, pi -> pi * dv.sum());
 
-        if (dv.getRowCount() - dv.start() != expected.getRowCount()) {
+        if (dv.getRowCount() - dv.start() != expected.rowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
         }
 
         this.dv = dv;
         this.p = p;
         this.expected = expected;
-        this.df = expected.getRowCount() - 1;
+        this.df = expected.rowCount() - 1;
         if (df <= 0) {
             throw new IllegalArgumentException("should be over 0");
         }
@@ -117,7 +117,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         double sum = 0;
         for (int i = dv.start(); i < dv.getRowCount(); i++) {
             double o = dv.get(i);
-            double e = expected.getValue(i - dv.start());
+            double e = expected.value(i - dv.start());
 
             if (Math.abs(e) < 1e-50) {
                 sum += Double.POSITIVE_INFINITY;
@@ -126,7 +126,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             if (Math.abs(e) < 1e-50 && Math.abs(o - e) < 1e50) {
                 continue;
             }
-            sum += Math.pow(o - e, 2) / expected.getValue(i - dv.start());
+            sum += Math.pow(o - e, 2) / expected.value(i - dv.start());
         }
         chiValue = sum;
         pValue = 1.0 - new ChiSquare(df).cdf(chiValue);
@@ -141,21 +141,21 @@ public class ChiSqGoodnessOfFit implements HTest {
     }
 
     @Override
-    public double getCIHigh() {
+    public double ciHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double getCILow() {
+    public double ciLow() {
         return Double.NaN;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqGoodnessOfFit\n");
         sb.append("\n");
@@ -182,14 +182,14 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         int off = dv.isFirstUsed() ? 0 : 1;
         for (int i = 0; i < dv.getRowCount() - off; i++) {
-            tt.set(0, i + 1, dv.getLabel(i + off), 1);
-            tt.set(1, i + 1, new String(new char[dv.getLabel(i + off).length()]).replace("\0", "-"), 1);
+            tt.set(0, i + 1, dv.label(i + off), 1);
+            tt.set(1, i + 1, new String(new char[dv.label(i + off).length()]).replace("\0", "-"), 1);
             tt.set(2, i + 1, WS.formatFlex(dv.get(i + off)), 1);
-            tt.set(3, i + 1, WS.formatFlex(expected.getValue(i)), 1);
-            tt.set(4, i + 1, WS.formatFlex(p.getValue(i)), 1);
+            tt.set(3, i + 1, WS.formatFlex(expected.value(i)), 1);
+            tt.set(4, i + 1, WS.formatFlex(p.value(i)), 1);
         }
 
-        sb.append(tt.getSummary());
+        sb.append(tt.summary());
         sb.append("\n");
 
         return sb.toString();

@@ -41,10 +41,10 @@ public class WeightedMeanTest {
         NumericVar values = NumericVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
         NumericVar weights = NumericVar.fill(10, 1);
-        assertEquals(5.5, WeightedMean.from(values, weights).getValue(), 10e-12);
+        assertEquals(5.5, WeightedMean.from(values, weights).value(), 10e-12);
 
         weights = NumericVar.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
-        assertEquals(5.666666666666667, WeightedMean.from(values, weights).getValue(), 10e-12);
+        assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
     }
 
     @Test
@@ -53,15 +53,15 @@ public class WeightedMeanTest {
         NumericVar values = NumericVar.copy(Double.NaN, Double.NaN);
         NumericVar weights = NumericVar.copy(1, 1);
 
-        assertTrue(Double.isNaN(WeightedMean.from(values, weights).getValue()));
+        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
         values = NumericVar.copy(1, 2);
         weights = NumericVar.copy(Double.NaN, Double.NaN);
-        assertTrue(Double.isNaN(WeightedMean.from(values, weights).getValue()));
+        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
         values = NumericVar.copy(Double.NaN, 1, 2);
         weights = NumericVar.copy(1, 2, Double.NaN);
-        assertEquals(1.0, WeightedMean.from(values, weights).getValue(), 10e-12);
+        assertEquals(1.0, WeightedMean.from(values, weights).value(), 10e-12);
     }
 
 }

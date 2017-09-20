@@ -34,8 +34,6 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
 
 /**
  * A trivial regression which predicts using random
@@ -106,9 +104,9 @@ public class RandomValueRegression extends AbstractRegression {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getHeaderSummary());
+        sb.append(headerSummary());
         sb.append("\n");
 
         if (hasLearned()) {

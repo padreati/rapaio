@@ -38,8 +38,8 @@ public class FFTTest {
     // display an array of Complex numbers to standard output
     public static void show(Pair<Var, Var> x) {
         System.out.println("-------------------");
-        for (int i = 0; i < x._1.getRowCount(); i++) {
-            System.out.println(x._1.getValue(i) + " , " + x._2.getValue(i));
+        for (int i = 0; i < x._1.rowCount(); i++) {
+            System.out.println(x._1.value(i) + " , " + x._2.value(i));
         }
         System.out.println();
     }
@@ -132,7 +132,7 @@ public class FFTTest {
             Var y2 = y._2;
 
             for (int j = 0; j < N; j++) {
-                Assert.assertEquals(x1.getValue(i), y1.getValue(i), 1e-12);
+                Assert.assertEquals(x1.value(i), y1.value(i), 1e-12);
             }
         }
     }

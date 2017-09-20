@@ -45,10 +45,10 @@ public class RandomSourceTest {
     }
 
     private void checkRandom(Var seeds) {
-        for (int i = 0; i < seeds.getRowCount(); i++) {
-            RandomSource.setSeed(seeds.getIndex(i));
+        for (int i = 0; i < seeds.rowCount(); i++) {
+            RandomSource.setSeed(seeds.index(i));
             int n1 = RandomSource.nextInt(1000);
-            RandomSource.setSeed(seeds.getIndex(i));
+            RandomSource.setSeed(seeds.index(i));
             int n2 = RandomSource.nextInt(1000);
             Assert.assertEquals(n1, n2);
         }

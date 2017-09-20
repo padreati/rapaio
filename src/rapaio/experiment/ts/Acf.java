@@ -25,7 +25,6 @@
 
 package rapaio.experiment.ts;
 
-import rapaio.core.stat.Covariance;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.NumericVar;
@@ -46,7 +45,7 @@ public class Acf implements Printable {
     }
 
     public Acf(Var ts, int maxLag) {
-        if (ts.stream().complete().count() != ts.getRowCount()) {
+        if (ts.stream().complete().count() != ts.rowCount()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
         this.ts = ts.solidCopy();
@@ -61,23 +60,23 @@ public class Acf implements Printable {
     }
 
     private void compute() {
-        double mu = Mean.from(ts).getValue();
-        double var = Variance.from(ts).getBiasedValue();
+        double mu = Mean.from(ts).value();
+        double var = Variance.from(ts).biasedValue();
         for (int i = 1; i <= lags.length; i++) {
             lags[i-1] = i;
             double acf = 0.0;
-            for (int j = 0; j < ts.getRowCount() - i; j++) {
-                acf += (ts.getValue(j) - mu) * (ts.getValue(j + i) - mu);
+            for (int j = 0; j < ts.rowCount() - i; j++) {
+                acf += (ts.value(j) - mu) * (ts.value(j + i) - mu);
             }
-            values[i-1] = acf / (var * ts.getRowCount());
+            values[i-1] = acf / (var * ts.rowCount());
         }
     }
 
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(NumericVar.wrap(values).getSummary());
+        sb.append(NumericVar.wrap(values).summary());
         return sb.toString();
     }
 }

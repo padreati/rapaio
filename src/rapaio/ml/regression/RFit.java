@@ -30,7 +30,6 @@ import rapaio.data.Frame;
 import rapaio.data.NumericVar;
 import rapaio.data.SolidFrame;
 import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,8 +66,8 @@ public class RFit implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, NumericVar.empty(df.getRowCount()).withName(targetName));
-            residuals.put(targetName, NumericVar.empty(df.getRowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, NumericVar.empty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, NumericVar.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -172,19 +171,19 @@ public class RFit implements Printable {
     public void buildComplete() {
         if (withResiduals) {
             for (String target : targetNames()) {
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    residuals.get(target).setValue(i, df.getVar(target).getValue(i) - fit(target).getValue(i));
+                for (int i = 0; i < df.rowCount(); i++) {
+                    residuals.get(target).setValue(i, df.var(target).value(i) - fit(target).value(i));
                 }
 
-                double mu = CoreTools.mean(df.getVar(target)).getValue();
+                double mu = CoreTools.mean(df.var(target)).value();
                 double tssValue = 0;
                 double essValue = 0;
                 double rssValue = 0;
 
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    tssValue += Math.pow(df.getVar(target).getValue(i) - mu, 2);
-                    essValue += Math.pow(fit(target).getValue(i) - mu, 2);
-                    rssValue += Math.pow(df.getVar(target).getValue(i) - fit(target).getValue(i), 2);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    tssValue += Math.pow(df.var(target).value(i) - mu, 2);
+                    essValue += Math.pow(fit(target).value(i) - mu, 2);
+                    rssValue += Math.pow(df.var(target).value(i) - fit(target).value(i), 2);
                 }
 
                 tss.put(target, tssValue);
@@ -196,10 +195,10 @@ public class RFit implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(model.getHeaderSummary());
+        sb.append(model.headerSummary());
         sb.append("\n");
 
         for (String target : model.targetNames()) {
@@ -207,7 +206,7 @@ public class RFit implements Printable {
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "=")));
 
-            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).getSummary();
+            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).summary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {

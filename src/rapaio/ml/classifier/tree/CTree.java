@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -296,7 +297,7 @@ public class CTree extends AbstractClassifier {
 
         this.varSelector.withVarNames(inputNames());
 
-        int rows = df.getRowCount();
+        int rows = df.rowCount();
         root = new CTreeNode(null, "root", spot -> true);
         if (runPoolSize() == 0) {
             root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth());
@@ -360,13 +361,13 @@ public class CTree extends AbstractClassifier {
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (customTestMap.containsKey(var.getName()))
+            if (customTestMap.containsKey(var.name()))
                 return;
-            if (testMap.containsKey(var.getType()))
+            if (testMap.containsKey(var.type()))
                 return;
             throw new IllegalArgumentException("can't train ctree with no " +
-                    "tests for given variable: " + var.getName() +
-                    " [" + var.getType().name() + "]");
+                    "tests for given variable: " + var.name() +
+                    " [" + var.type().name() + "]");
         });
     }
 
@@ -388,7 +389,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");
@@ -397,7 +398,7 @@ public class CTree extends AbstractClassifier {
         sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().getSummary()).append("\n");
+        sb.append(capabilities().summary()).append("\n");
 
         sb.append("Learned model:\n");
 

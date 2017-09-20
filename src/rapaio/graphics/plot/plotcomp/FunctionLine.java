@@ -63,20 +63,20 @@ public class FunctionLine extends PlotComponent {
         Var x = NumericVar.fill(options.getPoints() + 1, 0);
         Var y = NumericVar.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, f.apply(x.getValue(i)));
+            y.setValue(i, f.apply(x.value(i)));
         }
 
-        for (int i = 1; i < x.getRowCount(); i++) {
-            if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
+        for (int i = 1; i < x.rowCount(); i++) {
+            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        parent.xScale(x.getValue(i - 1)),
-                        parent.yScale(y.getValue(i - 1)),
-                        parent.xScale(x.getValue(i)),
-                        parent.yScale(y.getValue(i))));
+                        parent.xScale(x.value(i - 1)),
+                        parent.yScale(y.value(i - 1)),
+                        parent.xScale(x.value(i)),
+                        parent.yScale(y.value(i))));
 
             }
         }

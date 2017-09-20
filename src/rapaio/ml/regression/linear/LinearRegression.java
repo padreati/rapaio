@@ -32,7 +32,6 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.Regression;
@@ -115,10 +114,10 @@ public class LinearRegression extends AbstractRegression {
 
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            for (int j = 0; j < rp.fit(target).getRowCount(); j++) {
+            for (int j = 0; j < rp.fit(target).rowCount(); j++) {
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.getValue(j, inputName(k));
+                    fit += beta.get(k, i) * df.value(j, inputName(k));
                 }
                 rp.fit(target).setValue(j, fit);
             }
@@ -129,9 +128,9 @@ public class LinearRegression extends AbstractRegression {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getHeaderSummary());
+        sb.append(headerSummary());
         sb.append("\n");
 
         if (!hasLearned) {
@@ -153,7 +152,7 @@ public class LinearRegression extends AbstractRegression {
                 tt.set(j + 1, 0, inputNames[j], -1);
                 tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
             }
-            sb.append(tt.getSummary());
+            sb.append(tt.summary());
             sb.append("\n");
         }
         return sb.toString();

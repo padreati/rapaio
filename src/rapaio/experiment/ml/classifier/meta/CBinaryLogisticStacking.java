@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -108,16 +109,16 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 weak.train(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
-            return weak.fit(df).firstDensity().getVar(1);
+            return weak.fit(df).firstDensity().var(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.getName() + "^2").solidCopy())
+                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
 
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
-        vars.add(df.getVar(targets.get(0)).solidCopy());
+        vars.add(df.var(targets.get(0)).solidCopy());
 
         return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), weights, targetVars);
     }
@@ -140,11 +141,11 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
-            return weak.fit(df).firstDensity().getVar(1);
+            return weak.fit(df).firstDensity().var(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.getName() + "^2").solidCopy())
+                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
         return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

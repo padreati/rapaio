@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -56,16 +57,16 @@ public class GeometricMean implements Printable {
     private int negativeCount = 0;
 
     private GeometricMean(Var var) {
-        this.varName = var.getName();
+        this.varName = var.name();
         double sum = 0.0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += Math.log(var.getValue(i));
+                sum += Math.log(var.value(i));
             }
-            if (var.getValue(i) < 0)
+            if (var.value(i) < 0)
                 negativeCount++;
         }
         if (negativeCount > 0 || completeCount == 0) {
@@ -80,7 +81,7 @@ public class GeometricMean implements Printable {
      *
      * @return computed mean
      */
-    public double getValue() {
+    public double value() {
         return value;
     }
 
@@ -93,7 +94,7 @@ public class GeometricMean implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -67,7 +68,7 @@ public class MappedVar extends AbstractVar {
     private final Mapping mapping;
 
     private MappedVar(Var var, Mapping mapping) {
-        withName(var.getName());
+        withName(var.name());
         if (var instanceof MappedVar) {
 
             this.mapping = Mapping.wrap(mapping.rowStream().map(row -> ((MappedVar) var).getMapping().get(row)).boxed().collect(Collectors.toList()));
@@ -79,12 +80,12 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
-        return source.getType();
+    public VarType type() {
+        return source.type();
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return mapping.size();
     }
 
@@ -102,8 +103,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
-        return source.getValue(mapping.get(row));
+    public double value(int row) {
+        return source.value(mapping.get(row));
     }
 
     @Override
@@ -117,8 +118,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
-        return source.getIndex(mapping.get(row));
+    public int index(int row) {
+        return source.index(mapping.get(row));
     }
 
     @Override
@@ -132,8 +133,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
-        return source.getLabel(mapping.get(row));
+    public String label(int row) {
+        return source.label(mapping.get(row));
     }
 
     @Override
@@ -147,8 +148,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
-        return source.getLevels();
+    public String[] levels() {
+        return source.levels();
     }
 
     @Override
@@ -157,8 +158,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
-        return source.getBinary(mapping.get(row));
+    public boolean binary(int row) {
+        return source.binary(mapping.get(row));
     }
 
     @Override
@@ -172,8 +173,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
-        return source.getStamp(mapping.get(row));
+    public long stamp(int row) {
+        return source.stamp(mapping.get(row));
     }
 
     @Override
@@ -218,6 +219,6 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public String toString() {
-        return "MappedVar:" + source.getType() + "[name:" + getName() + ", rowCount:" + mapping.size() + ']';
+        return "MappedVar:" + source.type() + "[name:" + name() + ", rowCount:" + mapping.size() + ']';
     }
 }

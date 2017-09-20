@@ -65,10 +65,10 @@ public class KDETest {
     public void test(KFunc fun) {
         KDE kde = new KDE(sample, fun);
         Var z = NumericVar.from(x, kde::pdf);
-        Var delta = NumericVar.from(x.getRowCount(), row -> y.getValue(row)-z.getValue(row));
+        Var delta = NumericVar.from(x.rowCount(), row -> y.value(row)-z.value(row));
         Mean mean = Mean.from(delta);
         mean.printSummary();
-        assertTrue(Math.abs(mean.getValue())<1e-5);
+        assertTrue(Math.abs(mean.value())<1e-5);
     }
 
 }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -74,18 +75,18 @@ public class IRLSOptimizer {
     public NumericVar optimize(double eps, int iterationLimit, Function<Var, Double> f,
                                Function<Var, Double> fd, NumericVar vars, List<Var> inputs, NumericVar outputs) {
 
-        hessian = SolidRM.empty(vars.getRowCount(), vars.getRowCount());
-        coef = SolidRM.empty(inputs.size(), vars.getRowCount());
+        hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
+        coef = SolidRM.empty(inputs.size(), vars.rowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
-            for (int j = 1; j < vars.getRowCount(); j++)
-                coef.set(i, j, x_i.getValue(j - 1));
+            for (int j = 1; j < vars.rowCount(); j++)
+                coef.set(i, j, x_i.value(j - 1));
         }
 
         derivatives = SolidRV.empty(inputs.size());
-        err = SolidRV.empty(outputs.getRowCount());
-        grad = SolidRM.empty(vars.getRowCount(), 1);
+        err = SolidRV.empty(outputs.rowCount());
+        grad = SolidRM.empty(vars.rowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -99,7 +100,7 @@ public class IRLSOptimizer {
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             double y = f.apply(x_i);
-            double error = y - outputs.getValue(i);
+            double error = y - outputs.value(i);
             err.set(i, error);
             derivatives.set(i, fd.apply(x_i));
         }
@@ -127,8 +128,8 @@ public class IRLSOptimizer {
         }
         RV delta = lu.solve(grad).mapCol(0);
 
-        for (int i = 0; i < vars.getRowCount(); i++)
-            vars.setValue(i, vars.getValue(i) - delta.get(i));
+        for (int i = 0; i < vars.rowCount(); i++)
+            vars.setValue(i, vars.value(i) - delta.get(i));
 
         double max = Math.abs(delta.get(0));
         for (int i = 1; i < delta.count(); i++) {

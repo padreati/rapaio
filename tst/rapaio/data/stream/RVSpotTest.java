@@ -44,8 +44,8 @@ public class RVSpotTest {
 
         double v = 0;
         for (int i = 0; i < 10; i++) {
-            v += Math.sqrt(x.getValue(i));
+            v += Math.sqrt(x.value(i));
         }
-        assertEquals(v, Sum.from(y).getValue(), 1e-12);
+        assertEquals(v, Sum.from(y).value(), 1e-12);
     }
 }

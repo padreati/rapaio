@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,11 +50,27 @@ import java.util.logging.Logger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA extends DimensionReduction implements Printable {
+public class LDA implements Printable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
     private double tol = 1e-24;
     private int maxRuns = 10_000;
+    protected RV eigenValues;
+    protected RM eigenVectors;
+
+    protected String[] inputNames;
+    protected RV mean;
+    protected RV sd;
+
+    protected boolean scaling = true;
+
+    public RV getEigenValues() {
+        return eigenValues;
+    }
+
+    public RM getEigenVectors() {
+        return eigenVectors;
+    }
 
     private String targetName;
     private String[] targetLevels;
@@ -81,7 +98,7 @@ public class LDA extends DimensionReduction implements Printable {
         mean = SolidRV.empty(xx.getColCount());
         sd = SolidRV.empty(xx.getColCount());
         for (int i = 0; i < xx.getColCount(); i++) {
-            mean.set(i, xx.mapCol(i).mean().getValue());
+            mean.set(i, xx.mapCol(i).mean().value());
             sd.set(i, xx.mapCol(i).variance().sdValue());
         }
 
@@ -113,7 +130,7 @@ public class LDA extends DimensionReduction implements Printable {
         for (int i = 0; i < targetLevels.length; i++) {
             classMean[i] = SolidRV.empty(x[i].getColCount());
             for (int j = 0; j < x[i].getColCount(); j++) {
-                classMean[i].set(j, x[i].mapCol(j).mean().getValue());
+                classMean[i].set(j, x[i].mapCol(j).mean().value());
             }
         }
 
@@ -182,7 +199,7 @@ public class LDA extends DimensionReduction implements Printable {
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
-        return rest.getVarCount() == 0 ?
+        return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :
                 SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
     }
@@ -196,23 +213,23 @@ public class LDA extends DimensionReduction implements Printable {
 
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
         df.varStream().forEach(var -> {
-            if (targetName.equals(var.getName())) {
-                if (!var.getType().equals(VarType.NOMINAL)) {
+            if (targetName.equals(var.name())) {
+                if (!var.type().equals(VarType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
-                targetLevels = new String[var.getLevels().length - 1];
-                System.arraycopy(var.getLevels(), 1, targetLevels, 0, var.getLevels().length - 1);
+                targetLevels = new String[var.levels().length - 1];
+                System.arraycopy(var.levels(), 1, targetLevels, 0, var.levels().length - 1);
                 return;
             }
-            if (!allowedTypes.contains(var.getType())) {
+            if (!allowedTypes.contains(var.type())) {
                 throw new IllegalArgumentException("column type not allowed");
             }
         });
-        inputNames = df.varStream().filter(v -> !v.getName().equals(targetName)).map(Var::getName).toArray(String[]::new);
+        inputNames = df.varStream().filter(v -> !v.name().equals(targetName)).map(Var::name).toArray(String[]::new);
     }
 
     @Override
-	public String getSummary() {
+	public String summary() {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
@@ -233,7 +250,7 @@ public class LDA extends DimensionReduction implements Printable {
         sb.append(Summary.headString(true, eval)).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.getSummary()).append("\n");
+        sb.append(eigenVectors.summary()).append("\n");
 
         return sb.toString();
     }

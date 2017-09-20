@@ -307,5 +307,5 @@ public interface Regression extends Printable, Serializable {
      */
     Regression withRunningHook(BiConsumer<Regression, Integer> runningHook);
 
-    String getHeaderSummary();
+    String headerSummary();
 }

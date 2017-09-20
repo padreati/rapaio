@@ -41,11 +41,11 @@ public class StampTest {
     @Test
     public void smokeTest() {
         Var stamp = StampVar.empty(1);
-        assertFalse(stamp.getType().isNumeric());
-        assertFalse(stamp.getType().isNominal());
+        assertFalse(stamp.type().isNumeric());
+        assertFalse(stamp.type().isNominal());
 
         try {
-            stamp.getLevels();
+            stamp.levels();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
@@ -58,12 +58,12 @@ public class StampTest {
         }
 
         stamp.addIndex(1);
-        assertEquals(2, stamp.getRowCount());
+        assertEquals(2, stamp.rowCount());
         assertEquals(true, stamp.isMissing(0));
-        assertEquals(1, stamp.getStamp(1));
+        assertEquals(1, stamp.stamp(1));
 
         try {
-            StampVar.copy(10).getBinary(0);
+            StampVar.copy(10).binary(0);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -74,29 +74,29 @@ public class StampTest {
     @Test
     public void testEmptyStamp() {
         Var stamp = StampVar.empty();
-        assertEquals(0, stamp.getRowCount());
+        assertEquals(0, stamp.rowCount());
 
         stamp = StampVar.empty(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(StampVar.MISSING_VALUE, stamp.getStamp(i));
+            assertEquals(StampVar.MISSING_VALUE, stamp.stamp(i));
         }
     }
 
     @Test
     public void testFillVector() {
         Var stamp = NumericVar.fill(10, -1);
-        assertEquals(10, stamp.getRowCount());
-        for (int i = 0; i < stamp.getRowCount(); i++) {
-            assertEquals(-1, stamp.getStamp(i));
+        assertEquals(10, stamp.rowCount());
+        for (int i = 0; i < stamp.rowCount(); i++) {
+            assertEquals(-1, stamp.stamp(i));
         }
     }
 
     @Test
     public void testSequenceVector() {
         Var stamp = StampVar.seq(10000000000L, 10);
-        assertEquals(10, stamp.getRowCount());
-        for (int i = 0; i < stamp.getRowCount(); i++) {
-            assertEquals(i + 10000000000L, stamp.getStamp(i));
+        assertEquals(10, stamp.rowCount());
+        for (int i = 0; i < stamp.rowCount(); i++) {
+            assertEquals(i + 10000000000L, stamp.stamp(i));
         }
     }
 
@@ -105,26 +105,26 @@ public class StampTest {
 
         Var stamp = StampVar.fill(3, 0);
 
-        assertEquals(0, stamp.getStamp(0));
+        assertEquals(0, stamp.stamp(0));
         stamp.setIndex(0, 1);
         stamp.setIndex(1, 3);
 
-        assertEquals(1, stamp.getStamp(0));
-        assertEquals(3, stamp.getStamp(1));
+        assertEquals(1, stamp.stamp(0));
+        assertEquals(3, stamp.stamp(1));
 
-        assertEquals(1., stamp.getValue(0), 1e-10);
-        assertEquals(3., stamp.getValue(1), 1e-10);
+        assertEquals(1., stamp.value(0), 1e-10);
+        assertEquals(3., stamp.value(1), 1e-10);
 
         stamp.setValue(0, 2.5);
         stamp.setValue(1, 7.8);
         stamp.setValue(2, 2.51);
 
-        assertEquals(2, stamp.getStamp(0));
-        assertEquals(2., stamp.getValue(0), 1e-10);
-        assertEquals(8, stamp.getStamp(1));
-        assertEquals(8., stamp.getValue(1), 1e-10);
-        assertEquals(3, stamp.getStamp(2));
-        assertEquals(3., stamp.getValue(2), 1e-10);
+        assertEquals(2, stamp.stamp(0));
+        assertEquals(2., stamp.value(0), 1e-10);
+        assertEquals(8, stamp.stamp(1));
+        assertEquals(8., stamp.value(1), 1e-10);
+        assertEquals(3, stamp.stamp(2));
+        assertEquals(3., stamp.value(2), 1e-10);
 
         boolean exceptional = false;
         try {
@@ -138,14 +138,14 @@ public class StampTest {
     @Test
     public void testMissing() {
         Var stamp = StampVar.seq(1, 10, 1);
-        for (int i = 0; i < stamp.getRowCount(); i++) {
+        for (int i = 0; i < stamp.rowCount(); i++) {
             assertTrue(!stamp.isMissing(i));
         }
-        for (int i = 0; i < stamp.getRowCount(); i++) {
+        for (int i = 0; i < stamp.rowCount(); i++) {
             if (i % 2 == 0)
                 stamp.setMissing(i);
         }
-        for (int i = 0; i < stamp.getRowCount(); i++) {
+        for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(i % 2 == 0, stamp.isMissing(i));
         }
     }
@@ -153,12 +153,12 @@ public class StampTest {
     @Test
     public void testOneStamp() {
         Var one = StampVar.scalar(2);
-        assertEquals(1, one.getRowCount());
-        assertEquals(2, one.getStamp(0));
+        assertEquals(1, one.rowCount());
+        assertEquals(2, one.stamp(0));
 
         one = StampVar.scalar(3);
-        assertEquals(1, one.getRowCount());
-        assertEquals(3, one.getStamp(0));
+        assertEquals(1, one.rowCount());
+        assertEquals(3, one.stamp(0));
     }
 
     @Test
@@ -176,40 +176,40 @@ public class StampTest {
         x6.addStamp(4);
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(i + 1, x1.getStamp(i));
-            assertEquals(i + 1, x2.getStamp(i));
-            assertEquals(i, x3.getStamp(i));
-            assertEquals(i + 1, x4.getStamp(i));
-            assertEquals(i * 2 + 1, x5.getStamp(i));
-            assertEquals(i + 1, x6.getStamp(i));
+            assertEquals(i + 1, x1.stamp(i));
+            assertEquals(i + 1, x2.stamp(i));
+            assertEquals(i, x3.stamp(i));
+            assertEquals(i + 1, x4.stamp(i));
+            assertEquals(i * 2 + 1, x5.stamp(i));
+            assertEquals(i + 1, x6.stamp(i));
         }
 
         wrap[2] = 10;
 
-        assertEquals(10, x2.getStamp(2));
+        assertEquals(10, x2.stamp(2));
     }
 
     @Test
     public void testLabel() {
         StampVar x = StampVar.copy(1, 2, 3);
-        assertEquals("1", x.getLabel(0));
+        assertEquals("1", x.label(0));
     }
 
     @Test
     public void testAddLabel() {
         StampVar x = StampVar.copy(1, 2, 3);
         x.addLabel("10");
-        assertEquals(4, x.getRowCount());
-        assertEquals("1", x.getLabel(0));
-        assertEquals("10", x.getLabel(3));
+        assertEquals(4, x.rowCount());
+        assertEquals("1", x.label(0));
+        assertEquals("10", x.label(3));
     }
 
     @Test
     public void testSetLabel() {
         StampVar x = StampVar.copy(1, 2, 3);
         x.setLabel(0, "10");
-        assertEquals(3, x.getRowCount());
-        assertEquals("10", x.getLabel(0));
+        assertEquals(3, x.rowCount());
+        assertEquals("10", x.label(0));
     }
 
     @Test
@@ -227,13 +227,13 @@ public class StampTest {
         x.addMissing();
         x.setBinary(2, true);
 
-        assertEquals(1, x.getStamp(0));
-        assertEquals(0, x.getStamp(1));
-        assertEquals(1, x.getStamp(2));
+        assertEquals(1, x.stamp(0));
+        assertEquals(0, x.stamp(1));
+        assertEquals(1, x.stamp(2));
 
-        assertEquals(true, x.getBinary(0));
-        assertEquals(false, x.getBinary(1));
-        assertEquals(true, x.getBinary(2));
+        assertEquals(true, x.binary(0));
+        assertEquals(false, x.binary(1));
+        assertEquals(true, x.binary(2));
     }
 
     @Test
@@ -243,8 +243,8 @@ public class StampTest {
         x.addMissing();
         x.setStamp(1, 100);
 
-        assertEquals(0, x.getStamp(0));
-        assertEquals(100, x.getStamp(1));
+        assertEquals(0, x.stamp(0));
+        assertEquals(100, x.stamp(1));
     }
 
     @Test
@@ -253,12 +253,12 @@ public class StampTest {
         StampVar x = StampVar.copy(1, 3, 6, 7, 9);
         x.remove(0);
 
-        assertEquals(4, x.getRowCount());
-        assertEquals(3, x.getStamp(0));
-        assertEquals(9, x.getStamp(3));
+        assertEquals(4, x.rowCount());
+        assertEquals(3, x.stamp(0));
+        assertEquals(9, x.stamp(3));
 
         x.clear();
-        assertEquals(0, x.getRowCount());
+        assertEquals(0, x.rowCount());
 
 
         expected.expect(IndexOutOfBoundsException.class);
@@ -274,10 +274,10 @@ public class StampTest {
         Var x4 = x3.solidCopy();
         x4.addValue(8);
 
-        assertEquals(4, x4.getRowCount());
-        assertEquals(1, x4.getStamp(0));
-        assertEquals(3, x4.getStamp(2));
-        assertEquals(8, x4.getStamp(3));
+        assertEquals(4, x4.rowCount());
+        assertEquals(1, x4.stamp(0));
+        assertEquals(3, x4.stamp(2));
+        assertEquals(8, x4.stamp(3));
     }
 
 }

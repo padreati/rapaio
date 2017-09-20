@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -45,24 +46,24 @@ public class Modes implements Printable {
     private int missingCount;
 
     private Modes(Var var, boolean includeMissing) {
-        this.varName = var.getName();
+        this.varName = var.name();
         this.includeMissing = includeMissing;
         this.modes = compute(var);
     }
 
     private String[] compute(Var var) {
-        if (!var.getType().isNominal()) {
+        if (!var.type().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
-        int[] freq = new int[var.getLevels().length];
-        for (int i = 0; i < var.getRowCount(); i++) {
+        int[] freq = new int[var.levels().length];
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
                 continue;
             }
-            freq[var.getIndex(i)]++;
+            freq[var.index(i)]++;
         }
-        completeCount = var.getRowCount() - missingCount;
+        completeCount = var.rowCount() - missingCount;
         int max = 0;
         int start = includeMissing ? 0 : 1;
         for (int i = start; i < freq.length; i++) {
@@ -78,18 +79,18 @@ public class Modes implements Printable {
         String[] modes = new String[count];
         for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
-                modes[pos++] = var.getLevels()[i];
+                modes[pos++] = var.levels()[i];
             }
         }
         return modes;
     }
 
-    public String[] getValues() {
+    public String[] values() {
         return modes;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > modes[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));

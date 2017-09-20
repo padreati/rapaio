@@ -29,7 +29,6 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DTable;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
-import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.util.Arrays;
@@ -99,17 +98,17 @@ public class ChiSqIndependence implements HTest {
         this.yates = yates;
         this.dt = dt;
         int off = dt.useFirst() ? 0 : 1;
-        df = (dt.getRowCount() - 1 - off) * (dt.getColCount() - 1 - off);
+        df = (dt.rowCount() - 1 - off) * (dt.colCount() - 1 - off);
 
-        expected = DTable.empty(dt.getRowLevels(), dt.getColLevels(), dt.useFirst());
+        expected = DTable.empty(dt.rowLevels(), dt.colLevels(), dt.useFirst());
 
         double[] rowTotals = dt.rowTotals();
         double[] colTotals = dt.colTotals();
         double total = Arrays.stream(rowTotals).sum();
 
         double sum = 0.0;
-        for (int i = dt.start(); i < dt.getRowCount(); i++) {
-            for (int j = dt.start(); j < dt.getColCount(); j++) {
+        for (int i = dt.start(); i < dt.rowCount(); i++) {
+            for (int j = dt.start(); j < dt.colCount(); j++) {
                 double exp = rowTotals[i] * colTotals[j] / total;
                 expected.update(i, j, exp);
                 sum += Math.pow(Math.abs(dt.get(i, j) - exp) - (yates ? 0.5 : 0.0), 2) / exp;
@@ -128,22 +127,22 @@ public class ChiSqIndependence implements HTest {
     }
 
     @Override
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
     @Override
-    public double getCIHigh() {
+    public double ciHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double getCILow() {
+    public double ciLow() {
         return Double.NaN;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqIndependence\n");
         sb.append("\n");
@@ -157,10 +156,10 @@ public class ChiSqIndependence implements HTest {
         sb.append("\n");
 
         sb.append("Observed data:\n");
-        sb.append(dt.getSummary()).append("\n");
+        sb.append(dt.summary()).append("\n");
 
         sb.append("Expected data:\n");
-        sb.append(expected.getSummary()).append("\n");
+        sb.append(expected.summary()).append("\n");
         return sb.toString();
 
     }

@@ -61,10 +61,10 @@ public interface GBTLossFunction extends Serializable {
         @Override
         public double findMinimum(Var y, Var fx) {
             NumericVar values = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                values.addValue(y.getValue(i) - fx.getValue(i));
+            for (int i = 0; i < y.rowCount(); i++) {
+                values.addValue(y.value(i) - fx.value(i));
             }
-            double result = Quantiles.from(values, new double[]{0.5}).getValues()[0];
+            double result = Quantiles.from(values, new double[]{0.5}).values()[0];
             if (Double.isNaN(result)) {
                 WS.println();
             }
@@ -74,8 +74,8 @@ public interface GBTLossFunction extends Serializable {
         @Override
         public NumericVar gradient(Var y, Var fx) {
             NumericVar gradient = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                gradient.addValue(y.getValue(i) - fx.getValue(i) < 0 ? -1. : 1.);
+            for (int i = 0; i < y.rowCount(); i++) {
+                gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
             }
             return gradient;
         }
@@ -90,14 +90,14 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            return Mean.from(gradient(y, fx)).getValue();
+            return Mean.from(gradient(y, fx)).value();
         }
 
         @Override
         public NumericVar gradient(Var y, Var fx) {
             NumericVar delta = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                delta.addValue(y.getValue(i) - fx.getValue(i));
+            for (int i = 0; i < y.rowCount(); i++) {
+                delta.addValue(y.value(i) - fx.value(i));
             }
             return delta;
         }
@@ -130,32 +130,32 @@ public interface GBTLossFunction extends Serializable {
             // compute residuals
 
             NumericVar residual = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                residual.addValue(y.getValue(i) - fx.getValue(i));
+            for (int i = 0; i < y.rowCount(); i++) {
+                residual.addValue(y.value(i) - fx.value(i));
             }
 
             // compute median of residuals
 
-            double r_bar = Quantiles.from(residual, new double[]{0.5}).getValues()[0];
+            double r_bar = Quantiles.from(residual, new double[]{0.5}).values()[0];
 
             // compute absolute residuals
 
             NumericVar absResidual = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
+            for (int i = 0; i < y.rowCount(); i++) {
+                absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = Quantiles.from(absResidual, new double[]{alpha}).getValues()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
 
             // compute one-iteration approximation
 
             double gamma = r_bar;
-            double count = y.getRowCount();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
-                        * Math.min(rho, Math.abs(residual.getValue(i) - r_bar))
+            double count = y.rowCount();
+            for (int i = 0; i < y.rowCount(); i++) {
+                gamma += (residual.value(i) - r_bar <= 0 ? -1 : 1)
+                        * Math.min(rho, Math.abs(residual.value(i) - r_bar))
                         / count;
             }
             return gamma;
@@ -167,22 +167,22 @@ public interface GBTLossFunction extends Serializable {
             // compute absolute residuals
 
             NumericVar absResidual = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
+            for (int i = 0; i < y.rowCount(); i++) {
+                absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = Quantiles.from(absResidual, new double[]{alpha}).getValues()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
 
             // now compute gradient
 
             NumericVar gradient = NumericVar.empty();
-            for (int i = 0; i < y.getRowCount(); i++) {
-                if (absResidual.getValue(i) <= rho) {
-                    gradient.addValue(y.getValue(i) - fx.getValue(i));
+            for (int i = 0; i < y.rowCount(); i++) {
+                if (absResidual.value(i) <= rho) {
+                    gradient.addValue(y.value(i) - fx.value(i));
                 } else {
-                    gradient.addValue(rho * ((y.getValue(i) - fx.getValue(i) <= 0) ? -1 : 1));
+                    gradient.addValue(rho * ((y.value(i) - fx.value(i) <= 0) ? -1 : 1));
                 }
             }
 

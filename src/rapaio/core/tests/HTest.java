@@ -50,9 +50,9 @@ public interface HTest extends Printable {
         }
     }
 
-    double getPValue();
+    double pValue();
 
-    double getCIHigh();
+    double ciHigh();
 
-    double getCILow();
+    double ciLow();
 }

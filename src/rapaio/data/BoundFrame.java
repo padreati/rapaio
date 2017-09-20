@@ -53,18 +53,18 @@ public class BoundFrame extends AbstractFrame {
         int pos = 0;
         for (Frame df : dfs) {
             if (_rowCount == null) {
-                _rowCount = df.getVarCount() > 0 ? df.getRowCount() : null;
+                _rowCount = df.varCount() > 0 ? df.rowCount() : null;
             } else {
-                _rowCount = Math.min(_rowCount, df.getRowCount());
+                _rowCount = Math.min(_rowCount, df.rowCount());
             }
-            for (int j = 0; j < df.getVarCount(); j++) {
-                if (_namesSet.contains(df.getVar(j).getName())) {
+            for (int j = 0; j < df.varCount(); j++) {
+                if (_namesSet.contains(df.var(j).name())) {
                     throw new IllegalArgumentException("bound frame does not allow variables with the same name");
                 }
-                _vars.add(df.getVar(j));
-                _names.add(df.getVar(j).getName());
-                _namesSet.add(df.getVar(j).getName());
-                _indexes.put(df.getVar(j).getName(), pos++);
+                _vars.add(df.var(j));
+                _names.add(df.var(j).name());
+                _namesSet.add(df.var(j).name());
+                _indexes.put(df.var(j).name(), pos++);
             }
         }
         return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
@@ -95,17 +95,17 @@ public class BoundFrame extends AbstractFrame {
         int pos = 0;
         for (int i = 0; i < varList.length; i++) {
             if (i == 0) {
-                _rowCount = varList[i].getRowCount();
+                _rowCount = varList[i].rowCount();
             } else {
-                _rowCount = Math.min(_rowCount, varList[i].getRowCount());
+                _rowCount = Math.min(_rowCount, varList[i].rowCount());
             }
-            if (_namesSet.contains(varList[i].getName())) {
+            if (_namesSet.contains(varList[i].name())) {
                 throw new IllegalArgumentException("bound frame does not allow variables with the same name");
             }
             _vars.add(varList[i]);
-            _names.add(varList[i].getName());
-            _namesSet.add(varList[i].getName());
-            _indexes.put(varList[i].getName(), pos++);
+            _names.add(varList[i].name());
+            _namesSet.add(varList[i].name());
+            _indexes.put(varList[i].name(), pos++);
         }
         return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
     }
@@ -114,13 +114,13 @@ public class BoundFrame extends AbstractFrame {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
-        String[] _names = dfs[0].getVarNames();
+        String[] _names = dfs[0].varNames();
 
         // check that in each frame to exist all the variables and to have the same type
         // otherwise throw an exception
 
         for (int i = 1; i < dfs.length; i++) {
-            String[] compNames = dfs[i].getVarNames();
+            String[] compNames = dfs[i].varNames();
             nameLengthComp(_names, compNames);
             nameValueComp(_names, compNames);
             columnExistsCheck(i, _names, dfs);
@@ -137,8 +137,8 @@ public class BoundFrame extends AbstractFrame {
             List<Var> boundVars = new ArrayList<>();
 
             for (Frame df : dfs) {
-                counts.add(df.getRowCount()); // avoid to take rowCount from variable, but from frame
-                boundVars.add(df.getVar(_names[i]));
+                counts.add(df.rowCount()); // avoid to take rowCount from variable, but from frame
+                boundVars.add(df.var(_names[i]));
             }
 
             Var boundedVar = BoundVar.from(counts, boundVars).withName(_names[i]);
@@ -146,7 +146,7 @@ public class BoundFrame extends AbstractFrame {
             _indexes.put(_names[i], i);
         }
 
-        int _rowCount = Arrays.stream(dfs).mapToInt(Frame::getRowCount).sum();
+        int _rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
 
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
     }
@@ -154,7 +154,7 @@ public class BoundFrame extends AbstractFrame {
 	private static void columnExistsCheck(int i, String[] _names, Frame... dfs) {
 		for (String _name : _names) {
 		    // throw an exception if the column does not exists
-		    if (!dfs[i].getVar(_name).getType().equals(dfs[0].getVar(_name).getType())) {
+		    if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
 		        // column exists but does not have the same type
 		        throw new IllegalArgumentException("can't bind by rows variable of different types");
 		    }
@@ -190,32 +190,32 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rowCount;
     }
 
     @Override
-    public int getVarCount() {
+    public int varCount() {
         return vars.size();
     }
 
     @Override
-    public String[] getVarNames() {
+    public String[] varNames() {
         return names;
     }
 
     @Override
-    public int getVarIndex(String name) {
+    public int varIndex(String name) {
         return indexes.get(name);
     }
 
     @Override
-    public Var getVar(int pos) {
+    public Var var(int pos) {
         return vars.get(pos);
     }
 
     @Override
-    public Var getVar(String name) {
+    public Var var(String name) {
         if(!indexes.containsKey(name)) {
             throw new IllegalArgumentException("Variable with name: " + name + " does not exists.");
         }
@@ -240,7 +240,7 @@ public class BoundFrame extends AbstractFrame {
         Map<String, Integer> _indexes = new HashMap<>();
         for (int i = 0; i < parseVarNames.size(); i++) {
             _names[i] = parseVarNames.get(i);
-            _vars.add(getVar(parseVarNames.get(i)));
+            _vars.add(var(parseVarNames.get(i)));
             _indexes.put(parseVarNames.get(i), i);
         }
         return new BoundFrame(rowCount, _vars, _names, _indexes);

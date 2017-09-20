@@ -28,7 +28,6 @@ package rapaio.graphics.opt;
 import rapaio.data.IndexVar;
 import rapaio.data.NumericVar;
 import rapaio.data.Var;
-import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -163,11 +162,11 @@ public class GOpts implements Serializable {
                 return parent.getSz(row);
             } else {
                 Var _sz = defaults.sz.apply(this);
-                return _sz.getValue(row % _sz.getRowCount());
+                return _sz.value(row % _sz.rowCount());
             }
         }
         Var _sz = sz.apply(this);
-        return _sz.getValue(row % _sz.getRowCount());
+        return _sz.value(row % _sz.rowCount());
     }
 
     public void setSz(GOptionSz sz) {
@@ -184,11 +183,11 @@ public class GOpts implements Serializable {
                 return parent.getPch(row);
             } else {
                 Var _pch = defaults.pch.apply(this);
-                return _pch.getIndex(row % _pch.getRowCount());
+                return _pch.index(row % _pch.rowCount());
             }
         }
         Var _pch = pch.apply(this);
-        return _pch.getIndex(row % _pch.getRowCount());
+        return _pch.index(row % _pch.rowCount());
     }
 
     public void setPch(GOptionPch pch) {

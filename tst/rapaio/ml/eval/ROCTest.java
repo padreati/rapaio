@@ -47,8 +47,8 @@ public class ROCTest {
 
         Frame df = Datasets.loadIrisDataset();
 
-        Var score = df.getVar(0);
-        Var clazz = df.getVar("class");
+        Var score = df.var(0);
+        Var clazz = df.var("class");
 
         ROC roc = ROC.from(score, clazz, 3);
         Assert.assertEquals("> ROC printSummary\n" +
@@ -67,18 +67,18 @@ public class ROCTest {
                         "4.3       , 1         , 1         , 0.3333333 \n" +
                         "\n" +
                         "AUC: 0.8871\n",
-                roc.getSummary());
+                roc.summary());
 
         Assert.assertEquals(0.8871, roc.auc(), 1e-20);
 
 
-        double midValue = CoreTools.mean(score).getValue();
+        double midValue = CoreTools.mean(score).value();
         int midRow = roc.findRowForThreshold(midValue);
 
-        Assert.assertEquals(0.3, roc.data().getValue(midRow, ROC.fpr), 1e-20);
-        Assert.assertEquals(0.94, roc.data().getValue(midRow, ROC.tpr), 1e-20);
+        Assert.assertEquals(0.3, roc.data().value(midRow, ROC.fpr), 1e-20);
+        Assert.assertEquals(0.94, roc.data().value(midRow, ROC.tpr), 1e-20);
 
-        NominalVar pred = NominalVar.from(df.getRowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
+        NominalVar pred = NominalVar.from(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
         Assert.assertEquals("> ROC printSummary\n" +
                         "\n" +
                         "threshold , fpr       , tpr       , acc       \n" +
@@ -95,7 +95,7 @@ public class ROCTest {
                         "4.3       , 1         , 1         , 0.3333333 \n" +
                         "\n" +
                         "AUC: 0.4445\n",
-                ROC.from(score, clazz, pred).getSummary());
+                ROC.from(score, clazz, pred).summary());
 
     }
 }

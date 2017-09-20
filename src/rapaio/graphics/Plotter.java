@@ -38,7 +38,6 @@ import rapaio.ml.eval.ROC;
 import rapaio.util.func.SFunction;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public final class Plotter {
 
@@ -115,7 +114,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var y, GOption... opts) {
-        return plot().add(new Points(IndexVar.seq(y.getRowCount()).withName("pos"), y, opts));
+        return plot().add(new Points(IndexVar.seq(y.rowCount()).withName("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOption... opts) {
@@ -195,8 +194,8 @@ public final class Plotter {
     }
 
     public static GOptionPch pch(Var pchIndex, int... mapping) {
-        IndexVar pch = IndexVar.from(pchIndex.getRowCount(), row -> {
-            int i = pchIndex.getIndex(row);
+        IndexVar pch = IndexVar.from(pchIndex.rowCount(), row -> {
+            int i = pchIndex.index(row);
             if (i >= 0 && i < mapping.length) {
                 return mapping[i];
             }

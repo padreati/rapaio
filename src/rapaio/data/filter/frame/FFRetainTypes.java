@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -63,9 +64,9 @@ public class FFRetainTypes extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
         List<String> names = new ArrayList<>();
-        for (String name : df.getVarNames()) {
+        for (String name : df.varNames()) {
             for (VarType type : types) {
-                if (df.getVar(name).getType().equals(type)) {
+                if (df.var(name).type().equals(type)) {
                     names.add(name);
                     break;
                 }

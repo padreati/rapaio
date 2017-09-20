@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,9 +34,6 @@ import rapaio.data.filter.Filters;
 import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -94,30 +92,30 @@ public interface RTreeNumericMethod extends Serializable {
         @Override
         public Optional<RTree.Candidate> computeCandidate(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
-            Frame df = Filters.refSort(dfOld, dfOld.getVar(testVarName).refComparator());
-            Mapping cleanMapping = Mapping.wrap(df.getVar(testVarName).stream().complete().map(VSpot::getRow).collect(Collectors.toList()));
+            Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
+            Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::getRow).collect(Collectors.toList()));
 
-            Var test = df.getVar(testVarName).mapRows(cleanMapping);
-            Var target = df.getVar(targetVarName).mapRows(cleanMapping);
+            Var test = df.var(testVarName).mapRows(cleanMapping);
+            Var target = df.var(targetVarName).mapRows(cleanMapping);
 
-            double[] leftWeight = new double[test.getRowCount()];
-            double[] leftVar = new double[test.getRowCount()];
-            double[] rightWeight = new double[test.getRowCount()];
-            double[] rightVar = new double[test.getRowCount()];
+            double[] leftWeight = new double[test.rowCount()];
+            double[] leftVar = new double[test.rowCount()];
+            double[] rightWeight = new double[test.rowCount()];
+            double[] rightVar = new double[test.rowCount()];
 
             OnlineStat so = OnlineStat.empty();
 
             double w = 0.0;
-            for (int i = 0; i < test.getRowCount(); i++) {
-                so.update(target.getValue(i));
-                w += weights.getValue(i);
+            for (int i = 0; i < test.rowCount(); i++) {
+                so.update(target.value(i));
+                w += weights.value(i);
                 leftWeight[i] = w;
                 leftVar[i] = so.variance();
             }
             w = 0.0;
-            for (int i = test.getRowCount() - 1; i >= 0; i--) {
-                w += weights.getValue(i);
-                so.update(target.getValue(i));
+            for (int i = test.rowCount() - 1; i >= 0; i--) {
+                w += weights.value(i);
+                so.update(target.value(i));
                 rightWeight[i] = w;
                 rightVar[i] += so.variance();
             }
@@ -126,10 +124,10 @@ public interface RTreeNumericMethod extends Serializable {
             double bestScore = 0.0;
 
             RTreeTestPayload p = new RTreeTestPayload(2);
-            p.totalVar = CoreTools.variance(target).getValue();
+            p.totalVar = CoreTools.variance(target).value();
 
-            for (int i = c.minCount; i < test.getRowCount() - c.minCount - 1; i++) {
-                if (test.getValue(i) == test.getValue(i + 1)) continue;
+            for (int i = c.minCount; i < test.rowCount() - c.minCount - 1; i++) {
+                if (test.value(i) == test.value(i + 1)) continue;
 
                 p.splitVar[0] = leftVar[i];
                 p.splitVar[1] = rightVar[i];
@@ -140,7 +138,7 @@ public interface RTreeNumericMethod extends Serializable {
                     bestScore = value;
                     best = new RTree.Candidate(value, testVarName);
 
-                    double testValue = test.getValue(i);
+                    double testValue = test.value(i);
                     best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
                             spot -> !spot.isMissing(testVarName) && spot.getValue(testVarName) <= testValue);

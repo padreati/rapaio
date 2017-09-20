@@ -193,12 +193,12 @@ public class SolidRVTest {
         double[] pvalues = new double[]{Double.POSITIVE_INFINITY, 0, 0.5, 1, 1.5, 2, 100};
         for (double p : pvalues) {
             double pnorm = 0.0;
-            for (int i = 0; i < varx.getRowCount(); i++) {
-                pnorm += Math.pow(Math.abs(varx.getValue(i)), p);
+            for (int i = 0; i < varx.rowCount(); i++) {
+                pnorm += Math.pow(Math.abs(varx.value(i)), p);
             }
             pnorm = Math.pow(pnorm, p > 0 ? 1.0 / p : 1.0);
             if (Double.POSITIVE_INFINITY == p) {
-                pnorm = Maximum.from(varx).getValue();
+                pnorm = Maximum.from(varx).value();
             }
             assertEquals("pnorm failed for p=" + p, pnorm, x.norm(p), TOL);
         }
@@ -206,8 +206,8 @@ public class SolidRVTest {
 
     @Test
     public void meanVarTest() {
-        assertEquals(Mean.from(varx).getValue(), x.mean().getValue(), TOL);
-        assertEquals(Variance.from(varx).getValue(), x.variance().getValue(), TOL);
+        assertEquals(Mean.from(varx).value(), x.mean().value(), TOL);
+        assertEquals(Variance.from(varx).value(), x.variance().value(), TOL);
     }
 
     @Test

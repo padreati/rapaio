@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -65,13 +66,13 @@ public class KernelPdf implements NumericEstimator {
     @Override
     public void learn(Frame df, String targetVar, String testVar) {
         kde.clear();
-        Arrays.stream(df.getVar(targetVar).getLevels()).forEach(
+        Arrays.stream(df.var(targetVar).levels()).forEach(
                 classLabel -> {
                     if ("?".equals(classLabel))
                         return;
                     Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetVar))).toMappedFrame();
-                    Var v = cond.getVar(testVar);
-                    KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
+                    Var v = cond.var(testVar);
+                    KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.silvermanBandwidth(v) : bandwidth);
                     kde.put(classLabel, k);
                 });
     }
@@ -88,7 +89,7 @@ public class KernelPdf implements NumericEstimator {
 
     @Override
     public String learningInfo() {
-        return name() + "{ " + kfunc.getSummary() + " }";
+        return name() + "{ " + kfunc.summary() + " }";
     }
 
 }

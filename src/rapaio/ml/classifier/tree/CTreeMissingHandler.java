@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -148,7 +149,7 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
                 final int ii = i;
                 missingSpots.forEach(row -> {
                     mappings.get(ii).add(row);
-                    weightsList.get(ii).addValue(weights.isMissing(row) ? p[ii] : weights.getValue(row) * p[ii]);
+                    weightsList.get(ii).addValue(weights.isMissing(row) ? p[ii] : weights.value(row) * p[ii]);
                 });
             }
             List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());

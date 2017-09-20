@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -151,7 +152,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.getVar(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.var(firstTargetName()), cNext.fit(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
                     if (acc > bestAcc) {
@@ -181,7 +182,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.getVar(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.var(firstTargetName()), cNext.fit(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
 
@@ -226,7 +227,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
             WS.println("last test: " + testNext);
 
-            new Confusion(testFrame.getVar(firstTargetName()), best.fit(testFrame).firstClasses()).printSummary();
+            new Confusion(testFrame.var(firstTargetName()), best.fit(testFrame).firstClasses()).printSummary();
         }
 
 

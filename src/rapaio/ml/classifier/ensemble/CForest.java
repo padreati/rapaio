@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -180,9 +181,9 @@ public class CForest extends AbstractClassifier {
     public Capabilities capabilities() {
         Capabilities cc = c.capabilities();
         return new Capabilities()
-                .withInputCount(cc.getMinInputCount(), cc.getMaxInputCount())
-                .withInputTypes(cc.getInputTypes().stream().toArray(VarType[]::new))
-                .withAllowMissingInputValues(cc.getAllowMissingInputValues())
+                .withInputCount(cc.minInputCount(), cc.maxInputCount())
+                .withInputTypes(cc.inputTypes().stream().toArray(VarType[]::new))
+                .withAllowMissingInputValues(cc.allowMissingInputValues())
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
                 .withAllowMissingTargetValues(false);
@@ -208,10 +209,10 @@ public class CForest extends AbstractClassifier {
             name.addLabel(e.getKey());
             NumericVar scores = NumericVar.copy(e.getValue());
             sd.addValue(CoreTools.variance(scores).sdValue());
-            score.addValue(CoreTools.mean(scores).getValue());
+            score.addValue(CoreTools.mean(scores).value());
         }
-        double maxScore = CoreTools.max(score).getValue();
-        Var scaled = NumericVar.from(score.getRowCount(), row -> 100.0 * score.getValue(row) / maxScore).withName("scaled score");
+        double maxScore = CoreTools.max(score).value();
+        Var scaled = NumericVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
@@ -223,10 +224,10 @@ public class CForest extends AbstractClassifier {
             name.addLabel(e.getKey());
             NumericVar scores = NumericVar.copy(e.getValue());
             sd.addValue(CoreTools.variance(scores).sdValue());
-            score.addValue(CoreTools.mean(scores).getValue());
+            score.addValue(CoreTools.mean(scores).value());
         }
-        double maxScore = CoreTools.max(score).getValue();
-        Var scaled = NumericVar.from(score.getRowCount(), row -> 100.0 * score.getValue(row) / maxScore).withName("scaled score");
+        double maxScore = CoreTools.max(score).value();
+        Var scaled = NumericVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
@@ -240,7 +241,7 @@ public class CForest extends AbstractClassifier {
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
             NumericVar scores = NumericVar.copy(e.getValue());
-            double mean = CoreTools.mean(scores).getValue();
+            double mean = CoreTools.mean(scores).value();
             double sd = CoreTools.variance(scores).sdValue();
             double zscore = mean / (sd);
             double pvalue = normal.cdf(2 * normal.cdf(-Math.abs(zscore)));
@@ -259,9 +260,9 @@ public class CForest extends AbstractClassifier {
         double totalOobError = 0;
         if (oobComp) {
             oobDensities = new HashMap<>();
-            oobTrueClass = df.getVar(firstTargetName()).solidCopy();
-            oobFit = NominalVar.empty(df.getRowCount(), firstTargetLevels());
-            for (int i = 0; i < df.getRowCount(); i++) {
+            oobTrueClass = df.var(firstTargetName()).solidCopy();
+            oobFit = NominalVar.empty(df.rowCount(), firstTargetLevels());
+            for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.empty(false, firstTargetLevels()));
             }
         }
@@ -337,7 +338,7 @@ public class CForest extends AbstractClassifier {
         // build accuracy on oob data frame
         CFit fit = c.fit(oobFrame);
         double refScore = new Confusion(
-                oobFrame.getVar(firstTargetName()),
+                oobFrame.var(firstTargetName()),
                 fit.firstClasses())
                 .acceptedCases();
 
@@ -345,7 +346,7 @@ public class CForest extends AbstractClassifier {
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = Filters.shuffle(oobFrame.getVar(varName));
+            Var shuffled = Filters.shuffle(oobFrame.var(varName));
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(varName).bindVars(shuffled);
@@ -354,7 +355,7 @@ public class CForest extends AbstractClassifier {
 
             CFit pfit = c.fit(oobReduced);
             double acc = new Confusion(
-                    oobReduced.getVar(firstTargetName()),
+                    oobReduced.var(firstTargetName()),
                     pfit.firstClasses()
             ).acceptedCases();
 
@@ -417,8 +418,8 @@ public class CForest extends AbstractClassifier {
         List<Integer> oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
         CFit fit = weak._1.fit(oobTest);
-        for (int j = 0; j < oobTest.getRowCount(); j++) {
-            int fitIndex = fit.firstClasses().getIndex(j);
+        for (int j = 0; j < oobTest.rowCount(); j++) {
+            int fitIndex = fit.firstClasses().index(j);
             oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
         }
         oobFit.clear();
@@ -429,7 +430,7 @@ public class CForest extends AbstractClassifier {
                 int bestIndex = e.getValue().findBestIndex();
                 String bestLevel = firstTargetLevels()[bestIndex];
                 oobFit.setLabel(e.getKey(), bestLevel);
-                if (!bestLevel.equals(oobTrueClass.getLabel(e.getKey()))) {
+                if (!bestLevel.equals(oobTrueClass.label(e.getKey()))) {
                     totalOobError++;
                 }
                 totalOobInstances++;
@@ -450,7 +451,7 @@ public class CForest extends AbstractClassifier {
         List<Integer> oobIndexes = new ArrayList<>();
         if (oobComp) {
             Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
-            oobIndexes = IntStream.range(0, df.getRowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
+            oobIndexes = IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
         }
         return Pair.from(weak, oobIndexes);
     }
@@ -486,7 +487,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest model\n");
         sb.append("================\n\n");
@@ -495,7 +496,7 @@ public class CForest extends AbstractClassifier {
         sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().getSummary()).append("\n");
+        sb.append(capabilities().summary()).append("\n");
 
         sb.append("Learned model:\n");
 

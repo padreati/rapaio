@@ -68,9 +68,9 @@ public class RTreeSplitterTest {
                 u = new Uniform(11, 19);
         }
         NumericVar sample = u.sample(count);
-        for (int i = 0; i < sample.getRowCount(); i++) {
+        for (int i = 0; i < sample.rowCount(); i++) {
             df.addRows(1);
-            df.getVar("x").setValue(df.getRowCount() - 1, sample.getValue(i));
+            df.var("x").setValue(df.rowCount() - 1, sample.value(i));
             w.addValue(weight);
         }
     }
@@ -88,11 +88,11 @@ public class RTreeSplitterTest {
         assertEquals(2, result._1.size());
         assertEquals(2, result._2.size());
 
-        assertEquals(2, result._1.get(0).getRowCount());
-        assertEquals(2, result._2.get(0).getRowCount());
+        assertEquals(2, result._1.get(0).rowCount());
+        assertEquals(2, result._2.get(0).rowCount());
 
-        assertEquals(2, result._1.get(1).getRowCount());
-        assertEquals(2, result._2.get(1).getRowCount());
+        assertEquals(2, result._1.get(1).rowCount());
+        assertEquals(2, result._2.get(1).rowCount());
 
         assertEquals(2, result._2.get(0).stream().mapToDouble().sum(), TOL);
         assertEquals(4, result._2.get(1).stream().mapToDouble().sum(), TOL);
@@ -114,13 +114,13 @@ public class RTreeSplitterTest {
         assertEquals(2, result._2.size());
 
         // group 1
-        assertEquals(12, result._1.get(0).getRowCount());
-        assertEquals(12, result._2.get(0).getRowCount());
+        assertEquals(12, result._1.get(0).rowCount());
+        assertEquals(12, result._2.get(0).rowCount());
         assertEquals(16, result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(7, result._2.get(1).getRowCount());
-        assertEquals(7, result._2.get(1).getRowCount());
+        assertEquals(7, result._2.get(1).rowCount());
+        assertEquals(7, result._2.get(1).rowCount());
         assertEquals(14, result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 
@@ -139,13 +139,13 @@ public class RTreeSplitterTest {
         assertEquals(2, result._2.size());
 
         // group 1
-        assertEquals(12, result._1.get(0).getRowCount());
-        assertEquals(12, result._2.get(0).getRowCount());
+        assertEquals(12, result._1.get(0).rowCount());
+        assertEquals(12, result._2.get(0).rowCount());
         assertEquals(10 + 6 * 10 / 24., result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(9, result._2.get(1).getRowCount());
-        assertEquals(9, result._2.get(1).getRowCount());
+        assertEquals(9, result._2.get(1).rowCount());
+        assertEquals(9, result._2.get(1).rowCount());
         assertEquals(14 + 6 * 14 / 24., result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 
@@ -163,15 +163,15 @@ public class RTreeSplitterTest {
         assertEquals(2, result._1.size());
         assertEquals(2, result._2.size());
 
-        int g1count = result._1.get(0).getRowCount();
-        int g2count = result._1.get(1).getRowCount();
+        int g1count = result._1.get(0).rowCount();
+        int g2count = result._1.get(1).rowCount();
 
         // group 1
-        assertEquals(g1count, result._2.get(0).getRowCount());
+        assertEquals(g1count, result._2.get(0).rowCount());
         assertEquals(10 + 3 * (g1count-10), result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
-        assertEquals(g2count, result._2.get(1).getRowCount());
+        assertEquals(g2count, result._2.get(1).rowCount());
         assertEquals(14 + 3 * (g2count-7) , result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 }

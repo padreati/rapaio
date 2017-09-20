@@ -40,8 +40,8 @@ public class FFAddInterceptTest {
         Frame before = SolidFrame.byVars(NumericVar.fill(100, 1).withName("a"));
         Frame after = FFAddIntercept.filter().newInstance().fitApply(before);
 
-        Assert.assertTrue(after.getVarCount()==2);
-        Assert.assertEquals(FFAddIntercept.INTERCEPT, after.getVarNames()[0]);
+        Assert.assertTrue(after.varCount()==2);
+        Assert.assertEquals(FFAddIntercept.INTERCEPT, after.varNames()[0]);
 
         Frame again = FFAddIntercept.filter().fitApply(after);
         Assert.assertTrue(after.equals(again));

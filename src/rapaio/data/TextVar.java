@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -93,24 +94,24 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.TEXT;
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return values.size();
     }
 
     @Override
     public void addRows(int rowCount) {
-        for (int i = 0; i < getRowCount(); i++) {
+        for (int i = 0; i < rowCount(); i++) {
             addLabel("");
         }
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
@@ -125,7 +126,7 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
@@ -140,7 +141,7 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return values.get(row);
     }
 
@@ -155,7 +156,7 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         return new String[0];
     }
 
@@ -165,7 +166,7 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
+    public boolean binary(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
@@ -180,7 +181,7 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
+    public long stamp(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,7 +34,6 @@ import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,8 +106,8 @@ public interface RTreeNominalMethod extends Serializable {
             List<RTree.Candidate> result = new ArrayList<>();
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.getVar(testVarName);
-            Var targetVar = df.getVar(targetVarName);
+            Var testVar = df.var(testVarName);
+            Var targetVar = df.var(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
@@ -118,18 +118,18 @@ public interface RTreeNominalMethod extends Serializable {
                 return Optional.empty();
 
             // make the payload
-            RTreeTestPayload p = new RTreeTestPayload(testVar.getLevels().length - 1);
-            p.totalVar = CoreTools.variance(targetVar).getValue();
+            RTreeTestPayload p = new RTreeTestPayload(testVar.levels().length - 1);
+            p.totalVar = CoreTools.variance(targetVar).value();
 
-            for (int i = 1; i < testVar.getLevels().length; i++) {
+            for (int i = 1; i < testVar.levels().length; i++) {
                 p.splitWeight[i - 1] = dvWeights.get(i - 1);
-                String label = testVar.getLevels()[i];
-                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.getLabel(testVarName).equals(label)).toMappedFrame().getVar(targetVarName)).getValue();
+                String label = testVar.levels()[i];
+                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.getLabel(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
             }
             double value = tree.function.computeTestValue(p);
             RTree.Candidate candidate = new RTree.Candidate(value, testVarName);
-            for (int i = 1; i < testVar.getLevels().length; i++) {
-                String label = testVar.getLevels()[i];
+            for (int i = 1; i < testVar.levels().length; i++) {
+                String label = testVar.levels()[i];
                 candidate.addGroup(testVarName + " == " + label, spot -> spot.getLabel(testVarName).equals(label));
             }
             return Optional.of(candidate);
@@ -155,42 +155,42 @@ public interface RTreeNominalMethod extends Serializable {
 
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.getVar(testVarName);
-            Var targetVar = df.getVar(targetVarName);
+            Var testVar = df.var(testVarName);
+            Var targetVar = df.var(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
             DVector dvCount = DVector.fromCount(false, testVar);
 
             // compute online statistics for all level slices
-            OnlineStat[] os = new OnlineStat[testVar.getLevels().length - 1];
-            for (int i = 0; i < testVar.getLevels().length - 1; i++) {
+            OnlineStat[] os = new OnlineStat[testVar.levels().length - 1];
+            for (int i = 0; i < testVar.levels().length - 1; i++) {
                 os[i] = OnlineStat.empty();
             }
-            for (int i = 0; i < testVar.getRowCount(); i++) {
-                int index = testVar.getIndex(i);
+            for (int i = 0; i < testVar.rowCount(); i++) {
+                int index = testVar.index(i);
                 if (index == 0)
                     continue;
-                os[index - 1].update(targetVar.getValue(i));
+                os[index - 1].update(targetVar.value(i));
             }
 
-            double totalVar = CoreTools.variance(targetVar).getValue();
+            double totalVar = CoreTools.variance(targetVar).value();
 
             RTree.Candidate best = null;
             double bestScore = Double.NaN;
 
-            for (int i = 1; i < testVar.getLevels().length; i++) {
-                String testLabel = testVar.getLevels()[i];
+            for (int i = 1; i < testVar.levels().length; i++) {
+                String testLabel = testVar.levels()[i];
 
                 // check to see if we have enough values
 
-                if (dvCount.get(i) < tree.minCount || df.getRowCount() - dvCount.get(i) < tree.minCount)
+                if (dvCount.get(i) < tree.minCount || df.rowCount() - dvCount.get(i) < tree.minCount)
                     continue;
 
                 OnlineStat osSelect = os[i - 1];
                 OnlineStat osOther = OnlineStat.empty();
 
-                for (int j = 1; j < testVar.getLevels().length; j++) {
+                for (int j = 1; j < testVar.levels().length; j++) {
                     if (i == j)
                         continue;
                     osOther.update(os[j - 1]);

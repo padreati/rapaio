@@ -39,11 +39,11 @@ public class NumericTest {
     @Test
     public void smokeTest() {
         Var v = NumericVar.empty();
-        boolean flag = v.getType().isNumeric();
+        boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
-        assertEquals(false, v.getType().isNominal());
+        assertEquals(false, v.type().isNominal());
 
-        assertEquals(0, v.getRowCount());
+        assertEquals(0, v.rowCount());
 
         try {
             NumericVar.empty(-1);
@@ -62,8 +62,8 @@ public class NumericTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(Math.log(10 + i), v.getValue(i), 1e-10);
-            assertEquals((int) Math.rint(Math.log(10 + i)), v.getIndex(i));
+            assertEquals(Math.log(10 + i), v.value(i), 1e-10);
+            assertEquals((int) Math.rint(Math.log(10 + i)), v.index(i));
         }
 
         for (int i = 0; i < 10; i++) {
@@ -71,12 +71,12 @@ public class NumericTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i * i, v.getIndex(i));
-            assertEquals(i * i, v.getValue(i), 1e-10);
+            assertEquals(i * i, v.index(i));
+            assertEquals(i * i, v.value(i), 1e-10);
         }
 
-        for (int i = 0; i < v.getRowCount(); i++) {
-            assertEquals(String.valueOf(v.getValue(i)), v.getLabel(i));
+        for (int i = 0; i < v.rowCount(); i++) {
+            assertEquals(String.valueOf(v.value(i)), v.label(i));
         }
         try {
             v.setLabel(0, "test");
@@ -91,7 +91,7 @@ public class NumericTest {
         }
 
         try {
-            v.getLevels();
+            v.levels();
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -107,26 +107,26 @@ public class NumericTest {
     public void testOneNumeric() {
         Var one = NumericVar.scalar(Math.PI);
 
-        assertEquals(1, one.getRowCount());
-        assertEquals(Math.PI, one.getValue(0), 1e-10);
+        assertEquals(1, one.rowCount());
+        assertEquals(Math.PI, one.value(0), 1e-10);
 
         one = NumericVar.scalar(Math.E);
-        assertEquals(1, one.getRowCount());
-        assertEquals(Math.E, one.getValue(0), 1e-10);
+        assertEquals(1, one.rowCount());
+        assertEquals(Math.E, one.value(0), 1e-10);
     }
 
     @Test
     public void testWithName() {
         NumericVar x = NumericVar.copy(1, 2, 3, 5).withName("X");
-        assertEquals("X", x.getName());
+        assertEquals("X", x.name());
 
         Var y = MappedVar.byRows(x, 1, 2);
-        assertEquals("X", y.getName());
+        assertEquals("X", y.name());
         y.withName("y");
-        assertEquals("y", y.getName());
+        assertEquals("y", y.name());
 
-        assertEquals(2.0, y.getValue(0), 10e-10);
-        assertEquals(3.0, y.getValue(1), 10e-10);
+        assertEquals(2.0, y.value(0), 10e-10);
+        assertEquals(3.0, y.value(1), 10e-10);
     }
 
     @Test
@@ -144,9 +144,9 @@ public class NumericTest {
         NumericVar x4 = NumericVar.copy(doubleList);
 
         for (int i = 0; i < 3; i++) {
-            assertEquals(x1.getValue(i), x2.getValue(i), 10e-10);
-            assertEquals(x3.getValue(i), x4.getValue(i), 10e-10);
-            assertEquals(x1.getValue(i), x3.getValue(i), 10e-10);
+            assertEquals(x1.value(i), x2.value(i), 10e-10);
+            assertEquals(x3.value(i), x4.value(i), 10e-10);
+            assertEquals(x1.value(i), x3.value(i), 10e-10);
         }
 
         double[] y1v = new double[3];
@@ -157,12 +157,12 @@ public class NumericTest {
         y1v[1] = Double.NaN;
         y1v[2] = 100;
         for (int i = 0; i < 3; i++) {
-            assertEquals(y1v[i], y1.getValue(i), 10e-10);
+            assertEquals(y1v[i], y1.value(i), 10e-10);
         }
 
         NumericVar y2 = NumericVar.copy(x2);
         for (int i = 0; i < 3; i++) {
-            assertEquals(x1.getValue(i), y2.getValue(i), 10e-10);
+            assertEquals(x1.value(i), y2.value(i), 10e-10);
         }
 
         NumericVar y3 = NumericVar.copy(1, 2, 3, 4, 5);
@@ -170,15 +170,15 @@ public class NumericTest {
         Var y5 = NumericVar.copy(y4);
 
         for (int i = 0; i < 3; i++) {
-            assertEquals(y4.getValue(i), y5.getValue(i), 10e-10);
+            assertEquals(y4.value(i), y5.value(i), 10e-10);
         }
 
         NumericVar z1 = NumericVar.fill(10);
         NumericVar z2 = NumericVar.fill(10, Math.PI);
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, z1.getValue(i), 10e-10);
-            assertEquals(Math.PI, z2.getValue(i), 10e-10);
+            assertEquals(0, z1.value(i), 10e-10);
+            assertEquals(Math.PI, z2.value(i), 10e-10);
         }
     }
 
@@ -187,30 +187,30 @@ public class NumericTest {
         NumericVar x = NumericVar.copy(1, 2, 3, 4).withName("x");
 
         x.addIndex(10);
-        assertEquals(10, x.getValue(x.getRowCount() - 1), 10e-10);
+        assertEquals(10, x.value(x.rowCount() - 1), 10e-10);
 
         NumericVar b = NumericVar.empty();
         b.addBinary(true);
         b.addBinary(false);
 
-        assertEquals(true, b.getBinary(0));
-        assertEquals(false, b.getBinary(1));
+        assertEquals(true, b.binary(0));
+        assertEquals(false, b.binary(1));
 
-        assertEquals(1, b.getValue(0), 10e-10);
-        assertEquals(0, b.getValue(1), 10e-10);
+        assertEquals(1, b.value(0), 10e-10);
+        assertEquals(0, b.value(1), 10e-10);
 
         b.setBinary(1, true);
-        assertEquals(1, b.getValue(1), 10e-10);
-        assertEquals(true, b.getBinary(1));
+        assertEquals(1, b.value(1), 10e-10);
+        assertEquals(true, b.binary(1));
 
         NumericVar s = NumericVar.empty();
         s.addStamp(1);
         s.addStamp(-100000000000L);
-        assertEquals(1L, s.getStamp(0));
-        assertEquals(-100000000000d, s.getStamp(1), 10e-10);
+        assertEquals(1L, s.stamp(0));
+        assertEquals(-100000000000d, s.stamp(1), 10e-10);
 
         s.setStamp(1, 15);
-        assertEquals(15, s.getStamp(1));
+        assertEquals(15, s.stamp(1));
 
 
         NumericVar mis = NumericVar.empty();
@@ -231,17 +231,17 @@ public class NumericTest {
         NumericVar x = NumericVar.copy(1, 2, 3);
         x.remove(1);
 
-        assertEquals(1, x.getIndex(0));
-        assertEquals(3, x.getIndex(1));
+        assertEquals(1, x.index(0));
+        assertEquals(3, x.index(1));
 
         NumericVar y = x.solidCopy();
 
         x.clear();
 
-        assertEquals(0, x.getRowCount());
+        assertEquals(0, x.rowCount());
 
-        assertEquals(2, y.getRowCount());
-        assertEquals(1, y.getIndex(0));
-        assertEquals(3, y.getIndex(1));
+        assertEquals(2, y.rowCount());
+        assertEquals(1, y.index(0));
+        assertEquals(3, y.index(1));
     }
 }

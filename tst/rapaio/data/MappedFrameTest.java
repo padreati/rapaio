@@ -43,10 +43,10 @@ public class MappedFrameTest {
     @Test
     public void colsSortedTest() throws IOException, URISyntaxException {
         Frame orig = Datasets.loadIrisDataset();
-        Frame sort = new FFRefSort(RowComparators.numeric(orig.getVar(1), true)).fitApply(orig);
-        sort = new FFRefSort(RowComparators.numeric(orig.getVar(2), true)).fitApply(sort);
-        for (int i = 0; i < sort.getRowCount(); i++) {
-            assertEquals(sort.getValue(i, 0), sort.getVar(0).getValue(i), 1e-10);
+        Frame sort = new FFRefSort(RowComparators.numeric(orig.var(1), true)).fitApply(orig);
+        sort = new FFRefSort(RowComparators.numeric(orig.var(2), true)).fitApply(sort);
+        for (int i = 0; i < sort.rowCount(); i++) {
+            assertEquals(sort.value(i, 0), sort.var(0).value(i), 1e-10);
         }
     }
 
@@ -58,18 +58,18 @@ public class MappedFrameTest {
         );
 
         Frame mapped = MappedFrame.byRow(df, 0, 2, 4, 6, 8);
-        assertEquals(5, mapped.getRowCount());
-        assertEquals(2, mapped.getVarCount());
-        assertEquals(1, mapped.getValue(0, "x"), 1e-12);
-        assertEquals(9, mapped.getValue(4, "x"), 1e-12);
+        assertEquals(5, mapped.rowCount());
+        assertEquals(2, mapped.varCount());
+        assertEquals(1, mapped.value(0, "x"), 1e-12);
+        assertEquals(9, mapped.value(4, "x"), 1e-12);
 
         mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x,y");
-        assertEquals(2, mapped.getVarCount());
-        assertEquals(10, mapped.getRowCount());
+        assertEquals(2, mapped.varCount());
+        assertEquals(10, mapped.rowCount());
 
         mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x");
-        assertEquals(1, mapped.getVarCount());
-        assertEquals(10, mapped.getRowCount());
+        assertEquals(1, mapped.varCount());
+        assertEquals(10, mapped.rowCount());
     }
 
     @Test
@@ -91,44 +91,44 @@ public class MappedFrameTest {
 
         Frame df2 = a.bindVars(b).bindRows(c.bindVars(d));
 
-        assertEquals(df1.getRowCount(), df2.getRowCount());
-        assertEquals(df1.getVarCount(), df2.getVarCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            for (int j = 0; j < df1.getVarCount(); j++) {
-                assertEquals(df1.getValue(i, j), df2.getValue(i, j), 1e-12);
+        assertEquals(df1.rowCount(), df2.rowCount());
+        assertEquals(df1.varCount(), df2.varCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            for (int j = 0; j < df1.varCount(); j++) {
+                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
             }
         }
 
         df2 = df2.solidCopy();
-        assertEquals(df1.getRowCount(), df2.getRowCount());
-        assertEquals(df1.getVarCount(), df2.getVarCount());
-        for (int i = 0; i < df1.getVarNames().length; i++) {
-            assertEquals(df1.getVarNames()[i], df2.getVarNames()[i]);
+        assertEquals(df1.rowCount(), df2.rowCount());
+        assertEquals(df1.varCount(), df2.varCount());
+        for (int i = 0; i < df1.varNames().length; i++) {
+            assertEquals(df1.varNames()[i], df2.varNames()[i]);
         }
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            for (int j = 0; j < df1.getVarCount(); j++) {
-                assertEquals(df1.getValue(i, j), df2.getValue(i, j), 1e-12);
+        for (int i = 0; i < df1.rowCount(); i++) {
+            for (int j = 0; j < df1.varCount(); j++) {
+                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
             }
         }
 
         df2 = a.bindRows(c).bindVars(b.bindRows(d));
 
-        assertEquals(df1.getRowCount(), df2.getRowCount());
-        assertEquals(df1.getVarCount(), df2.getVarCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            for (int j = 0; j < df1.getVarCount(); j++) {
-                assertEquals(df1.getValue(i, j), df2.getValue(i, j), 1e-12);
+        assertEquals(df1.rowCount(), df2.rowCount());
+        assertEquals(df1.varCount(), df2.varCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            for (int j = 0; j < df1.varCount(); j++) {
+                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
             }
         }
 
         df2 = MappedFrame.byRow(df1, Mapping.range(0, 10)).mapVars("x");
         df2 = df2.bindVars(y, z);
 
-        assertEquals(df1.getRowCount(), df2.getRowCount());
-        assertEquals(df1.getVarCount(), df2.getVarCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            for (int j = 0; j < df1.getVarCount(); j++) {
-                assertEquals(df1.getValue(i, j), df2.getValue(i, j), 1e-12);
+        assertEquals(df1.rowCount(), df2.rowCount());
+        assertEquals(df1.varCount(), df2.varCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            for (int j = 0; j < df1.varCount(); j++) {
+                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
             }
         }
 
@@ -138,11 +138,11 @@ public class MappedFrameTest {
                 .mapRows(1, 3)
                 .mapVars("z");
 
-        assertTrue(df3.getVarCount() == 1);
-        assertTrue(df3.getVar(0).getType() == VarType.NUMERIC);
-        assertEquals(1.0 / 3, df3.getValue(0, 0), TOL);
-        assertEquals(1.0 / 7, df3.getValue(1, 0), TOL);
+        assertTrue(df3.varCount() == 1);
+        assertTrue(df3.var(0).type() == VarType.NUMERIC);
+        assertEquals(1.0 / 3, df3.value(0, 0), TOL);
+        assertEquals(1.0 / 7, df3.value(1, 0), TOL);
 
-        assertTrue(NumericVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.getVar(0)));
+        assertTrue(NumericVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.var(0)));
     }
 }

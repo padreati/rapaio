@@ -87,8 +87,8 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector filled with counts
      */
     public static DVector fromCount(boolean useFirst, Var var) {
-        Var weights = NumericVar.fill(var.getRowCount(), 1);
-        return new DVector(useFirst, var.getLevels(), var, weights);
+        Var weights = NumericVar.fill(var.rowCount(), 1);
+        return new DVector(useFirst, var.levels(), var, weights);
     }
 
     /**
@@ -101,7 +101,7 @@ public class DVector implements Printable, Serializable {
      * @return new distribution variable
      */
     public static DVector fromWeights(boolean useFirst, Var var, Var weights) {
-        return new DVector(useFirst, var.getLevels(), var, weights);
+        return new DVector(useFirst, var.levels(), var, weights);
     }
 
     /**
@@ -138,8 +138,8 @@ public class DVector implements Printable, Serializable {
 
     private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
         this(useFirst, labels);
-        int off = var.getType().equals(VarType.BINARY) ? 1 : 0;
-        var.stream().forEach(s -> values[s.getIndex() + off] += weights.getValue(s.getRow()));
+        int off = var.type().equals(VarType.BINARY) ? 1 : 0;
+        var.stream().forEach(s -> values[s.getIndex() + off] += weights.value(s.getRow()));
         total = Arrays.stream(values).sum();
     }
 
@@ -153,7 +153,7 @@ public class DVector implements Printable, Serializable {
         return this;
     }
 
-    public String[] getLevels() {
+    public String[] levels() {
         return levels;
     }
 
@@ -171,7 +171,7 @@ public class DVector implements Printable, Serializable {
         return get(reverse.get(name));
     }
 
-    public String getLabel(int pos) {
+    public String label(int pos) {
         return levels[pos];
     }
 
@@ -364,14 +364,14 @@ public class DVector implements Printable, Serializable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         TextTable tt = TextTable.newEmpty(3, levels.length);
         for (int i = start; i < levels.length; i++) {
             tt.set(0, i, levels[i], 1);
             tt.set(1, i, repeat(levels[i].length(), '-'), 1);
             tt.set(2, i, WS.formatFlex(values[i]), 1);
         }
-        return tt.getSummary();
+        return tt.summary();
     }
 
     private String repeat(int len, char ch) {

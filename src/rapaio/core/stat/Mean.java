@@ -27,7 +27,6 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -50,14 +49,14 @@ public final class Mean implements Printable {
     private double completeCount = 0;
 
     private Mean(Var var) {
-        this.varName = var.getName();
+        this.varName = var.name();
         double sum = 0.0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += var.getValue(i);
+                sum += var.value(i);
             }
         }
         if (completeCount == 0) {
@@ -74,12 +73,12 @@ public final class Mean implements Printable {
      *
      * @return computed mean
      */
-    public double getValue() {
+    public double value() {
         return value;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> mean[" + varName + "]\n" +
                 "total rows: " + formatFlex(completeCount + missingCount) +

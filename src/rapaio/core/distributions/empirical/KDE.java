@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -48,7 +49,7 @@ public class KDE implements Serializable {
     public KDE(Var values) {
         this.values = values.stream().mapToDouble().toArray();
         this.kernel = new KFuncGaussian();
-        this.bandwidth = getSilvermanBandwidth(values);
+        this.bandwidth = silvermanBandwidth(values);
     }
 
     public KDE(Var values, double bandwidth) {
@@ -56,7 +57,7 @@ public class KDE implements Serializable {
     }
 
     public KDE(Var values, KFunc kernel) {
-        this(values, kernel, getSilvermanBandwidth(values));
+        this(values, kernel, silvermanBandwidth(values));
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
@@ -68,7 +69,7 @@ public class KDE implements Serializable {
     public double pdf(double x) {
         int from = Arrays.binarySearch(values, kernel.minValue(x, bandwidth));
         if (from < 0) from = -from - 1;
-        int to = Arrays.binarySearch(values, kernel.getMaxValue(x, bandwidth));
+        int to = Arrays.binarySearch(values, kernel.maxValue(x, bandwidth));
         if (to < 0) to = -to - 1;
         double sum = 0;
         for (int i = from; i < to; i++) {
@@ -77,11 +78,11 @@ public class KDE implements Serializable {
         return sum / (values.length * bandwidth);
     }
 
-    public KFunc getKernel() {
+    public KFunc kernel() {
         return kernel;
     }
 
-    public double getBandwidth() {
+    public double bandwidth() {
         return bandwidth;
     }
 
@@ -98,14 +99,14 @@ public class KDE implements Serializable {
      * @param vector sample of values
      * @return teh value of the approximation for bandwidth
      */
-    public static double getSilvermanBandwidth(Var vector) {
+    public static double silvermanBandwidth(Var vector) {
         Variance var = Variance.from(vector);
-        double sd = Math.sqrt(var.getValue());
+        double sd = Math.sqrt(var.value());
         if (sd == 0) {
             sd = 1;
         }
         double count = 0;
-        for (int i = 0; i < vector.getRowCount(); i++) if (!vector.isMissing(i)) count++;
+        for (int i = 0; i < vector.rowCount(); i++) if (!vector.isMissing(i)) count++;
         return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }

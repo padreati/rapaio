@@ -124,10 +124,10 @@ public class RForest extends AbstractRegression {
                 .parallelStream()
                 .map(r -> r.fit(df, false).firstFit())
                 .collect(Collectors.toList());
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (NumericVar result : results) {
-                sum += result.getValue(i);
+                sum += result.value(i);
             }
             fit.firstFit().setValue(i, sum / regressors.size());
         }
@@ -137,7 +137,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

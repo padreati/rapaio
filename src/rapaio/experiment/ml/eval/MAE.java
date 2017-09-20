@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -69,8 +70,8 @@ public class MAE implements Printable {
         predictVars = new ArrayList<>();
 
         for (String targetName : targetNames) {
-            actualVars.add(actual.getVar(targetName));
-            predictVars.add(predict.getVar(targetName));
+            actualVars.add(actual.var(targetName));
+            predictVars.add(predict.var(targetName));
         }
 
         compute();
@@ -78,7 +79,7 @@ public class MAE implements Printable {
 
     public MAE(Var actual, Var predict) {
         targetNames = new ArrayList<>();
-        targetNames.add(actual.getName());
+        targetNames.add(actual.name());
 
         actualVars = new ArrayList<>();
         predictVars = new ArrayList<>();
@@ -94,9 +95,9 @@ public class MAE implements Printable {
         double count = 0;
 
         for (int i = 0; i < targetNames.size(); i++) {
-            for (int j = 0; j < actualVars.get(i).getRowCount(); j++) {
+            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
                 count++;
-                total += Math.abs(actualVars.get(i).getValue(j) - predictVars.get(i).getValue(j));
+                total += Math.abs(actualVars.get(i).value(j) - predictVars.get(i).value(j));
             }
         }
         value = total / count;
@@ -107,7 +108,7 @@ public class MAE implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> mean absolute error\n" +
                 "MAE: " + formatFlex(value) + "\n";

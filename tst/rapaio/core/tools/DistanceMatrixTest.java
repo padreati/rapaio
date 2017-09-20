@@ -1,6 +1,5 @@
 package rapaio.core.tools;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
@@ -51,9 +50,9 @@ public class DistanceMatrixTest {
                 assertEquals(sym.get(i, j), d.get(i, j), TOL);
             }
         }
-        assertEquals(names.length, d.getLength());
-        for (int i = 0; i < d.getLength(); i++) {
-            assertEquals(names[i], d.getName(i));
+        assertEquals(names.length, d.length());
+        for (int i = 0; i < d.length(); i++) {
+            assertEquals(names[i], d.name(i));
         }
     }
 }

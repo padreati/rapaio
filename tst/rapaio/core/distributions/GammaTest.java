@@ -84,48 +84,48 @@ public class GammaTest {
 
     @Test
     public void rPdfTest() throws IOException {
-        for (int i = 0; i < df.getRowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_1"), g_low_low.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_2"), g_low_one.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_3"), g_low_high.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_4"), g_one_low.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_5"), g_one_one.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_6"), g_one_high.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_7"), g_high_low.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_8"), g_high_one.pdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "pdf_9"), g_high_high.pdf(df.getValue(i, "x")), TOL);
+        for (int i = 0; i < df.rowCount(); i++) {
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_1"), g_low_low.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_2"), g_low_one.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_3"), g_low_high.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_4"), g_one_low.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_5"), g_one_one.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_6"), g_one_high.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_7"), g_high_low.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_8"), g_high_one.pdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_9"), g_high_high.pdf(df.value(i, "x")), TOL);
         }
     }
 
     @Test
     public void rCdfTest() throws IOException {
-        for (int i = 0; i < df.getRowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_1"), g_low_low.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_2"), g_low_one.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_3"), g_low_high.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_4"), g_one_low.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_5"), g_one_one.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_6"), g_one_high.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_7"), g_high_low.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_8"), g_high_one.cdf(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "cdf_9"), g_high_high.cdf(df.getValue(i, "x")), TOL);
+        for (int i = 0; i < df.rowCount(); i++) {
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_1"), g_low_low.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_2"), g_low_one.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_3"), g_low_high.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_4"), g_one_low.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_5"), g_one_one.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_6"), g_one_high.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_7"), g_high_low.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_8"), g_high_one.cdf(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_9"), g_high_high.cdf(df.value(i, "x")), TOL);
         }
     }
 
     @Test
     public void rQuantileTest() throws IOException {
-        for (int i = 0; i < df.getRowCount(); i++) {
-            if (df.getValue(i, "x") > 1)
+        for (int i = 0; i < df.rowCount(); i++) {
+            if (df.value(i, "x") > 1)
                 break;
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_1"), g_low_low.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_2"), g_low_one.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_3"), g_low_high.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_4"), g_one_low.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_5"), g_one_one.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_6"), g_one_high.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_7"), g_high_low.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_8"), g_high_one.quantile(df.getValue(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getValue(i, "x")), df.getValue(i, "q_9"), g_high_high.quantile(df.getValue(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_1"), g_low_low.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_2"), g_low_one.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_3"), g_low_high.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_4"), g_one_low.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_5"), g_one_one.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_6"), g_one_high.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_7"), g_high_low.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_8"), g_high_one.quantile(df.value(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_9"), g_high_high.quantile(df.value(i, "x")), TOL);
         }
     }
 
@@ -137,6 +137,6 @@ public class GammaTest {
 
         KSTestOneSample test = KSTestOneSample.from(sample, g);
         test.printSummary();
-        Assert.assertTrue(test.getPValue()>0.05);
+        Assert.assertTrue(test.pValue()>0.05);
     }
 }

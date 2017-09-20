@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -109,9 +110,9 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     private double logitReg(Var input) {
-        double z = coef.getValue(0);
-        for (int i = 1; i < coef.getRowCount(); i++)
-            z += input.getValue(i - 1) * coef.getValue(i);
+        double z = coef.value(0);
+        for (int i = 1; i < coef.rowCount(); i++)
+            z += input.value(i - 1) * coef.value(i);
         return logit(z);
     }
 
@@ -120,24 +121,24 @@ public class BinaryLogistic extends AbstractClassifier {
             throw new IllegalArgumentException("Model has not been trained");
         NumericVar inst = NumericVar.empty();
         for (int i = 0; i < inputNames().length; i++) {
-            inst.addValue(df.getValue(row, inputName(i)));
+            inst.addValue(df.value(row, inputName(i)));
         }
         return logitReg(inst);
     }
 
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
-        List<Var> inputs = new ArrayList<>(df.getRowCount());
-        for (int i = 0; i < df.getRowCount(); i++) {
+        List<Var> inputs = new ArrayList<>(df.rowCount());
+        for (int i = 0; i < df.rowCount(); i++) {
             NumericVar line = NumericVar.empty();
             for (String inputName : inputNames())
-                line.addValue(df.getValue(i, inputName));
+                line.addValue(df.value(i, inputName));
             inputs.add(line);
         }
 
         coef = NumericVar.fill(inputNames().length + 1, 0);
         NumericVar targetValues = NumericVar.empty();
-        df.getVar(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.getIndex() == 1 ? 0 : 1));
+        df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.getIndex() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
@@ -147,7 +148,7 @@ public class BinaryLogistic extends AbstractClassifier {
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.build(this, df, withClasses, withDistributions);
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {
                 cr.firstClasses().setIndex(i, p < 0.5 ? 1 : 2);

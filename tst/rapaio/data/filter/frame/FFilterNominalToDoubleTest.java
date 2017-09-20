@@ -48,14 +48,14 @@ public class FFilterNominalToDoubleTest {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
         Var v = NominalVar.empty(10, dict);
-        for (int i = 0; i < v.getRowCount(); i++) {
+        for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
         Var filtered = VFToNumeric.byDefault().fitApply(v);
-        for (int i = 0; i < v.getRowCount(); i++) {
+        for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
-            assertEquals(value, filtered.getValue(i), 1e-10);
+            assertEquals(value, filtered.value(i), 1e-10);
         }
     }
 
@@ -73,7 +73,7 @@ public class FFilterNominalToDoubleTest {
         Var filtered = NominalVar.empty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = VFToNumeric.byDefault().fitApply(filtered);
-        assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
+        assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.isMissing(0));
     }
 }

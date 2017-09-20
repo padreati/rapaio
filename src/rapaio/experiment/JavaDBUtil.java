@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -44,14 +45,14 @@ public class JavaDBUtil {
     }
 
     public void putFrame(Frame df, String tableName) throws SQLException {
-        String[] columns = df.getVarNames();
+        String[] columns = df.varNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.getVar(i).getType().isNumeric()) {
+            if (df.var(i).type().isNumeric()) {
                 types[i] = "DOUBLE";
                 continue;
             }
-            if (df.getVar(i).getType().isNominal()) {
+            if (df.var(i).type().isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }
@@ -85,14 +86,14 @@ public class JavaDBUtil {
         }
         sb.append(")");
         try (PreparedStatement ps = conn.prepareStatement(sb.toString())) {
-            for (int i = 0; i < df.getRowCount(); i++) {
+            for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
                         case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.getLabel(i, j));
+                            ps.setString(j + 1, df.label(i, j));
                             break;
                         case "DOUBLE":
-                            ps.setDouble(j + 1, df.getValue(i, j));
+                            ps.setDouble(j + 1, df.value(i, j));
                             break;
                     }
                 }

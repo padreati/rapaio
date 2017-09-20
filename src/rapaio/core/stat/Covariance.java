@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,16 +53,16 @@ public class Covariance implements Printable {
     private int missingCount;
 
     private Covariance(Var var1, Var var2) {
-        this.varName1 = var1.getName();
-        this.varName2 = var2.getName();
+        this.varName1 = var1.name();
+        this.varName2 = var2.name();
         this.value = compute(var1, var2);
     }
 
     private double compute(final Var x, final Var y) {
 
-        Mapping map = Mapping.wrap(IntStream.range(0, Math.min(x.getRowCount(), y.getRowCount())).filter(row -> !x.isMissing(row) && !y.isMissing(row)).boxed().collect(toList()));
+        Mapping map = Mapping.wrap(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.isMissing(row) && !y.isMissing(row)).boxed().collect(toList()));
         completeCount = map.size();
-        missingCount = Math.max(x.getRowCount(), y.getRowCount()) - completeCount;
+        missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
 
         if (map.size() < 2) {
             return 0;
@@ -70,21 +71,21 @@ public class Covariance implements Printable {
         Var xx = x.mapRows(map);
         Var yy = y.mapRows(map);
 
-        double m1 = mean(xx).getValue();
-        double m2 = mean(yy).getValue();
+        double m1 = mean(xx).value();
+        double m2 = mean(yy).value();
         double cov = 0;
         for (int i = 0; i < completeCount; i++) {
-            cov += (xx.getValue(i) - m1) * (yy.getValue(i) - m2);
+            cov += (xx.value(i) - m1) * (yy.value(i) - m2);
         }
         return cov / (completeCount - 1.0);
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> cov[" + varName1 + ", " + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + " )\n" +

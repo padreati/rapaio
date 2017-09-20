@@ -171,6 +171,6 @@ public class BinarySMOTest {
         }
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");
-        String out = SolidFrame.byVars(name, score).lines(name.getRowCount());
+        String out = SolidFrame.byVars(name, score).lines(name.rowCount());
     }
 }

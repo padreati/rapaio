@@ -98,11 +98,11 @@ public class LinearRFit extends RFit {
             } else {
                 NumericVar res = residuals.get(targetName);
 
-                int degrees = res.getRowCount() - model.inputNames().length;
+                int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
                 RV coeff = beta_hat.mapCol(i);
-                double rsa = (rs * (res.getRowCount() - 1) - coeff.count() + 1) / degrees;
+                double rsa = (rs * (res.rowCount() - 1) - coeff.count() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
@@ -132,9 +132,9 @@ public class LinearRFit extends RFit {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(lm.getHeaderSummary());
+        sb.append(lm.headerSummary());
         sb.append("\n");
 
         for (int i = 0; i < lm.targetNames().length; i++) {
@@ -154,15 +154,15 @@ public class LinearRFit extends RFit {
                     tt.set(j + 1, 0, lm.inputName(j), -1);
                     tt.set(j + 1, 1, WS.formatFlex(coeff.get(j)), -1);
                 }
-                sb.append(tt.getSummary());
+                sb.append(tt.summary());
             } else {
                 NumericVar res = residuals.get(targetName);
 
-                int degrees = res.getRowCount() - model.inputNames().length;
+                int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
                 RV coeff = lm.getCoefficients(i);
-                double rsa = (rs * (res.getRowCount() - 1) - coeff.count() + 1) / degrees;
+                double rsa = (rs * (res.rowCount() - 1) - coeff.count() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
@@ -190,7 +190,7 @@ public class LinearRFit extends RFit {
                     tt.set(j + 1, 4, WS.formatPValue(beta_p_value.get(j, i)), 1);
                     tt.set(j + 1, 5, beta_significance[j][i], -1);
                 }
-                sb.append(tt.getSummary());
+                sb.append(tt.summary());
                 sb.append("--------\n");
                 sb.append("Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n\n");
 

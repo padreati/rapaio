@@ -63,8 +63,8 @@ public class CorrPearson implements Correlation, Printable {
     private CorrPearson(Frame df) {
         List<Var> varList = df.varList();
 
-        d = DistanceMatrix.empty(df.getVarNames());
-        for (int i = 0; i < df.getVarCount(); i++) {
+        d = DistanceMatrix.empty(df.varNames());
+        for (int i = 0; i < df.varCount(); i++) {
             d.set(i,i, 1);
             for (int j = i + 1; j < varList.size(); j++) {
                 d.set(i,j,compute(varList.get(i), varList.get(j)));
@@ -76,7 +76,7 @@ public class CorrPearson implements Correlation, Printable {
         List<Var> varList = Arrays.asList(vars);
         String[] names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
-            names[i] = vars[i].getName();
+            names[i] = vars[i].name();
             if (names[i].isEmpty())
                 names[i] = "V" + i;
         }
@@ -92,37 +92,37 @@ public class CorrPearson implements Correlation, Printable {
     private double compute(Var x, Var y) {
 
         double sum = 0;
-        int len = Math.min(x.getRowCount(), y.getRowCount());
+        int len = Math.min(x.rowCount(), y.rowCount());
 
         Mapping map = Mapping.copy(IntStream.range(0, len)
                 .filter(i -> !(x.isMissing(i) || y.isMissing(i)))
                 .toArray());
-        double xMean = Mean.from(x.mapRows(map)).getValue();
-        double yMean = Mean.from(y.mapRows(map)).getValue();
+        double xMean = Mean.from(x.mapRows(map)).value();
+        double yMean = Mean.from(y.mapRows(map)).value();
 
         double sdp = Variance.from(x.mapRows(map)).sdValue() * Variance.from(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
-            sum += ((x.getValue(pos) - xMean) * (y.getValue(pos) - yMean));
+            sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));
         }
         return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
     }
 
     @Override
-    public DistanceMatrix getMatrix() {
+    public DistanceMatrix matrix() {
         return d;
     }
 
     public double singleValue() {
-        if (d.getNames().length == 1)
+        if (d.names().length == 1)
             return 1;
         return d.get(0,1);
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        switch (d.getNames().length) {
+        switch (d.names().length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -138,7 +138,7 @@ public class CorrPearson implements Correlation, Printable {
     private void summaryOne(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s] - Pearson product-moment correlation coefficient\n",
-                d.getName(0)));
+                d.name(0)));
         sb.append("1\n");
         sb.append("pearson correlation is 1 for identical vectors\n");
     }
@@ -146,21 +146,21 @@ public class CorrPearson implements Correlation, Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
-                d.getName(0), d.getName(1)));
+                d.name(0), d.name(1)));
         sb.append(formatFlex(d.get(0,1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
         sb.append(String.format("\n" +
                         "> pearson[%s] - Pearson product-moment correlation coefficient\n",
-                Arrays.deepToString(d.getNames())));
+                Arrays.deepToString(d.names())));
 
-        String[][] table = new String[d.getNames().length + 1][d.getNames().length + 1];
+        String[][] table = new String[d.names().length + 1][d.names().length + 1];
         table[0][0] = "";
-        for (int i = 1; i < d.getNames().length + 1; i++) {
+        for (int i = 1; i < d.names().length + 1; i++) {
             table[0][i] = i + ".";
-            table[i][0] = i + "." + d.getName(i - 1);
-            for (int j = 1; j < d.getNames().length + 1; j++) {
+            table[i][0] = i + "." + d.name(i - 1);
+            for (int j = 1; j < d.names().length + 1; j++) {
                 table[i][j] = formatShort(d.get(i - 1,j - 1));
                 if (i == j) {
                     table[i][j] = "x";
@@ -177,7 +177,7 @@ public class CorrPearson implements Correlation, Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < d.getNames().length + 1) {
+        while (start < d.names().length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;

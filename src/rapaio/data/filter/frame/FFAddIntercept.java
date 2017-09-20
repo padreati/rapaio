@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -61,11 +62,11 @@ public class FFAddIntercept extends AbstractFF {
     }
 
     public Frame apply(Frame df) {
-        List<String> names = df.varStream().map(Var::getName).collect(Collectors.toList());
+        List<String> names = df.varStream().map(Var::name).collect(Collectors.toList());
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        NumericVar intercept = NumericVar.fill(df.getRowCount(), 1.0).withName(INTERCEPT);
+        NumericVar intercept = NumericVar.fill(df.rowCount(), 1.0).withName(INTERCEPT);
         return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

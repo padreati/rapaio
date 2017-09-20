@@ -29,8 +29,6 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.data.*;
 import rapaio.sys.WS;
 
-import java.util.Arrays;
-
 /**
  * Chi-square test for conditional independence of categorical variables.
  * Scenario:
@@ -72,7 +70,7 @@ public class ChiSqConditionalIndependence implements HTest {
         this.z = z;
 
         Frame df = BoundFrame.byVars(x, y, z);
-        String[] levels = z.getLevels();
+        String[] levels = z.levels();
 
         zlevels = new String[levels.length - 1];
         ztests = new ChiSqIndependence[levels.length - 1];
@@ -81,10 +79,10 @@ public class ChiSqConditionalIndependence implements HTest {
             String level = levels[i];
             zlevels[i - 1] = levels[i];
             Frame map = df.stream().filter(s -> s.getLabel(2).equals(level)).toMappedFrame();
-            ztests[i - 1] = ChiSqIndependence.from(map.getVar(0), map.getVar(1), false);
+            ztests[i - 1] = ChiSqIndependence.from(map.var(0), map.var(1), false);
         }
 
-        degrees = (z.getLevels().length - 1) * (x.getLevels().length - 2) * (y.getLevels().length - 2);
+        degrees = (z.levels().length - 1) * (x.levels().length - 2) * (y.levels().length - 2);
         for (ChiSqIndependence ztest : ztests) {
             statistic += ztest.getChiValue();
         }
@@ -100,22 +98,22 @@ public class ChiSqConditionalIndependence implements HTest {
     }
 
     @Override
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
     @Override
-    public double getCIHigh() {
+    public double ciHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double getCILow() {
+    public double ciLow() {
         return Double.NaN;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqIndependence\n");
         sb.append("\n");
@@ -125,9 +123,9 @@ public class ChiSqConditionalIndependence implements HTest {
 
         sb.append("Null hypothesis:\n");
         sb.append("\n");
-        sb.append("  P(").append(x.getName()).append(",").append(y.getName()).append("|");
-        sb.append(z.getName()).append(") = ").append("P(").append(x.getName()).append("|").append(z.getName()).append(")");
-        sb.append(" + P(").append(y.getName()).append("|").append(z.getName()).append(")\n");
+        sb.append("  P(").append(x.name()).append(",").append(y.name()).append("|");
+        sb.append(z.name()).append(") = ").append("P(").append(x.name()).append("|").append(z.name()).append(")");
+        sb.append(" + P(").append(y.name()).append("|").append(z.name()).append(")\n");
         sb.append("\n");
 
         sb.append("X-squared = ").append(WS.formatFlex(statistic))
@@ -142,8 +140,8 @@ public class ChiSqConditionalIndependence implements HTest {
         for (int i = 0; i < zlevels.length; i++) {
             String zlevel = zlevels[i];
 
-            sb.append("> ").append(z.getName()).append(" = '").append(zlevel).append("'\n");
-            sb.append(ztests[i].getSummary()).append("\n");
+            sb.append("> ").append(z.name()).append(" = '").append(zlevel).append("'\n");
+            sb.append(ztests[i].summary()).append("\n");
         }
 
         return sb.toString();

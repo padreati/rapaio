@@ -1,3 +1,28 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.printer;
 
 import rapaio.data.Frame;
@@ -8,11 +33,11 @@ public class NominalTypeStrategy implements TypeStrategy {
 	@Override
 	public void getVarSummary(Frame df, Var v, String[][] first, String[][] second, int th) {
 		// TODO Auto-generated method stub
-		int[] hits = new int[v.getLevels().length];
-        int[] indexes = new int[v.getLevels().length];
-        for (int j = 0; j < df.getRowCount(); j++) {
-            hits[v.getIndex(j)]++;
-            indexes[v.getIndex(j)] = j;
+		int[] hits = new int[v.levels().length];
+        int[] indexes = new int[v.levels().length];
+        for (int j = 0; j < df.rowCount(); j++) {
+            hits[v.index(j)]++;
+            indexes[v.index(j)] = j;
         }
         int[] tophit = new int[6];
         int[] topindex = new int[6];
@@ -32,18 +57,18 @@ public class NominalTypeStrategy implements TypeStrategy {
             }
         }
         int nas = 0;
-        for (int j = 0; j < df.getRowCount(); j++) {
+        for (int j = 0; j < df.rowCount(); j++) {
             if (v.isMissing(j)) {
                 nas++;
             }
         }
 
-        int other = df.getRowCount();
+        int other = df.rowCount();
         int pos = 0;
         for (int j = 0; j < 6; j++) {
             if (tophit[j] != 0) {
                 other -= tophit[j];
-                first[th][j] = v.getLabel(indexes[topindex[j]]);
+                first[th][j] = v.label(indexes[topindex[j]]);
                 second[th][j] = String.valueOf(tophit[j]);
                 pos++;
             }
@@ -69,11 +94,11 @@ public class NominalTypeStrategy implements TypeStrategy {
 
 	@Override
 	public void getPrintSummary(Var v, String[] first, String[] second) {
-		int[] hits = new int[v.getRowCount() + 1];
-        int[] indexes = new int[v.getRowCount() + 1];
-        for (int j = 0; j < v.getRowCount(); j++) {
-            hits[v.getIndex(j)]++;
-            indexes[v.getIndex(j)] = j;
+		int[] hits = new int[v.rowCount() + 1];
+        int[] indexes = new int[v.rowCount() + 1];
+        for (int j = 0; j < v.rowCount(); j++) {
+            hits[v.index(j)]++;
+            indexes[v.index(j)] = j;
         }
         int[] tophit = new int[6];
         int[] topindex = new int[6];
@@ -93,18 +118,18 @@ public class NominalTypeStrategy implements TypeStrategy {
             }
         }
         int nas = 0;
-        for (int j = 0; j < v.getRowCount(); j++) {
+        for (int j = 0; j < v.rowCount(); j++) {
             if (v.isMissing(j)) {
                 nas++;
             }
         }
 
-        int other = v.getRowCount();
+        int other = v.rowCount();
         int pos = 0;
         for (int j = 0; j < 6; j++) {
             if (tophit[j] != 0) {
                 other -= tophit[j];
-                first[j] = v.getLabel(indexes[topindex[j]]);
+                first[j] = v.label(indexes[topindex[j]]);
                 second[j] = String.valueOf(tophit[j]);
                 pos++;
             }

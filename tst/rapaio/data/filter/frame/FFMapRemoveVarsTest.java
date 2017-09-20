@@ -83,11 +83,11 @@ public class FFMapRemoveVarsTest {
         FFilter map = new FFMapVars(VRange.onlyTypes(VarType.NUMERIC)).newInstance();
         map.train(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, map.apply(df).getVarCount());
+        Assert.assertEquals(2, map.apply(df).varCount());
 
         FFilter remove = new FFRemoveVars(VRange.onlyTypes(VarType.NUMERIC)).newInstance();
         remove.train(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, remove.apply(df).getVarCount());
+        Assert.assertEquals(2, remove.apply(df).varCount());
     }
 }

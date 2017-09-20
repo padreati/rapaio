@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,7 +43,7 @@ public abstract class AbstractKernel implements Kernel {
     @Override
     public void buildKernel(String[] varNames, Frame df) {
         this.varNames = varNames;
-        if (df.getRowCount() <= 10_000) {
+        if (df.rowCount() <= 10_000) {
             cache = new SolidKernelCache(df);
         } else {
             cache = new MapKernelCache();
@@ -57,7 +58,7 @@ public abstract class AbstractKernel implements Kernel {
     protected double dotProd(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            result += df1.getValue(row1, varName) * df2.getValue(row2, varName);
+            result += df1.value(row1, varName) * df2.value(row2, varName);
         }
         return result;
     }
@@ -65,7 +66,7 @@ public abstract class AbstractKernel implements Kernel {
     protected double deltaDotProd(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            result += Math.pow(df1.getValue(row1, varName) - df2.getValue(row2, varName), 2);
+            result += Math.pow(df1.value(row1, varName) - df2.value(row2, varName), 2);
         }
         return result;
     }

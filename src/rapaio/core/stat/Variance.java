@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,13 +53,13 @@ public class Variance implements Printable {
     private int missingCount;
 
     private Variance(Var var) {
-        this.varName = var.getName();
+        this.varName = var.name();
         compute(var);
     }
 
     private final void compute(final Var var) {
-        double mean = mean(var).getValue();
-        for (int i = 0; i < var.getRowCount(); i++) {
+        double mean = mean(var).value();
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
             } else {
@@ -71,27 +72,27 @@ public class Variance implements Printable {
         }
         double sum2 = 0;
         double sum3 = 0;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 continue;
             }
-            sum2 += Math.pow(var.getValue(i) - mean, 2);
-            sum3 += var.getValue(i) - mean;
+            sum2 += Math.pow(var.value(i) - mean, 2);
+            sum3 += var.value(i) - mean;
         }
         value = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (completeCount - 1.0);
         biasedValue = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (1.0 * completeCount);
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
-    public double getBiasedValue() {
+    public double biasedValue() {
         return biasedValue;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n> variance[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",

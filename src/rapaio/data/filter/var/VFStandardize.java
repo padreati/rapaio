@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ public class VFStandardize extends AbstractVF {
         checkSingleVar(vars);
 
         if (Double.isNaN(mean)) {
-            mean = Mean.from(vars[0]).getValue();
+            mean = Mean.from(vars[0]).value();
         }
         if (Double.isNaN(sd)) {
             sd = Variance.from(vars[0]).sdValue();
@@ -66,7 +67,7 @@ public class VFStandardize extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        if (!vars[0].getType().isNumeric()) {
+        if (!vars[0].type().isNumeric()) {
             return vars[0];
         }
         if(Math.abs(sd)<1e-20)

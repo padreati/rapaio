@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -59,14 +60,14 @@ public final class ExperimentalTools implements Serializable {
         HashMap<String, ArrayList<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
-                for (String colName : frame.getVarNames()) {
-                    if (!frame.getVar(colName).getType().isNominal()) {
+                for (String colName : frame.varNames()) {
+                    if (!frame.var(colName).type().isNominal()) {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new ArrayList<>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.getVar(colName).getLevels()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.var(colName).levels()));
                 }
             }
         }
@@ -74,20 +75,20 @@ public final class ExperimentalTools implements Serializable {
         // rebuild each frame according with the new consolidated data
         List<Frame> dest = new ArrayList<>();
         for (Frame frame : source) {
-            Var[] vars = new Var[frame.getVarCount()];
-            for (int i = 0; i < frame.getVarCount(); i++) {
-                Var v = frame.getVar(i);
-                String colName = frame.getVarNames()[i];
-                if (!v.getType().isNominal()) {
+            Var[] vars = new Var[frame.varCount()];
+            for (int i = 0; i < frame.varCount(); i++) {
+                Var v = frame.var(i);
+                String colName = frame.varNames()[i];
+                if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = NominalVar.empty(v.getRowCount(), dicts.get(colName)).withName(colName);
-                    for (int k = 0; k < vars[i].getRowCount(); k++) {
-                        vars[i].setLabel(k, v.getLabel(k));
+                    vars[i] = NominalVar.empty(v.rowCount(), dicts.get(colName)).withName(colName);
+                    for (int k = 0; k < vars[i].rowCount(); k++) {
+                        vars[i].setLabel(k, v.label(k));
                     }
                 }
             }
-            dest.add(SolidFrame.byVars(frame.getRowCount(), vars));
+            dest.add(SolidFrame.byVars(frame.rowCount(), vars));
         }
 
         return dest;

@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -54,9 +53,10 @@ import static rapaio.core.CoreTools.*;
 public class KMeans implements Printable {
 
     private int k = 2;
+    private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
     private Tag<KMeansInitMethod> init = KMeansInitMethod.FORGY;
-    private Tag<Distance> distance = Distance.EUCLIDEAN;
+    private Distance distance = Distance.EUCLIDEAN;
     private BiConsumer<KMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;
@@ -75,6 +75,13 @@ public class KMeans implements Printable {
 
     private NumericVar summaryAllDist;
 
+    public KMeans withNStart(int nstart) {
+        if (nstart <= 0) {
+            throw new IllegalArgumentException("nstart value should be greater than 1");
+        }
+        this.nstart = nstart;
+        return this;
+    }
 
     public KMeans withK(int k) {
         this.k = k;
@@ -110,8 +117,35 @@ public class KMeans implements Printable {
         validate(df, varNames);
 
         inputs = VRange.of(varNames).parseVarNames(df).stream().toArray(String[]::new);
-        centroids = init.get().init(df, inputs, k);
-        arrows = new int[df.getRowCount()];
+
+        Frame bestCentroids = init.get().init(df, inputs, k);
+        double bestError = computeError(df, bestCentroids);
+
+        if (debug) {
+            WS.println("Initial starting clusters done, initial computed error is: " + bestError);
+        }
+
+        // compute initial restarts if nstart is greater than 1
+        // the best restart is kept as initial centroids
+
+        if (debug) {
+            WS.println("nstart > 1, searching for alternate starting points");
+        }
+        if (nstart > 1) {
+            for (int i = 1; i < nstart; i++) {
+                Frame nextCentroids = init.get().init(df, inputs, k);
+                double nextError = computeError(df, nextCentroids);
+                if (nextError < bestError) {
+                    bestCentroids = nextCentroids;
+                    bestError = nextError;
+                    WS.println("Initial best error improved at: " + bestError + " at iteration " + (i + 1));
+                }
+            }
+        }
+
+        centroids = bestCentroids;
+
+        arrows = new int[df.rowCount()];
         errors = NumericVar.empty().withName("errors");
         clusterErrors = new HashMap<>();
         IndexVar.seq(k).stream().forEach(c -> clusterErrors.put(c.getIndex(), NumericVar.empty().withName("c" + (c.getIndex() + 1) + "_errors")));
@@ -128,14 +162,14 @@ public class KMeans implements Printable {
                 learned = true;
                 runningHook.accept(this, runs - rounds);
             }
-            int erc = errors.getRowCount();
+            int erc = errors.rowCount();
             if (erc > 1 && debug) {
-                WS.println("prev error: " + errors.getValue(erc - 2) +
-                        ", current error: " + errors.getValue(erc - 1) +
-                        ", error diff: " + (errors.getValue(erc - 2) - errors.getValue(erc - 1))
+                WS.println("prev error: " + errors.value(erc - 2) +
+                        ", current error: " + errors.value(erc - 1) +
+                        ", error diff: " + (errors.value(erc - 2) - errors.value(erc - 1))
                 );
             }
-            if (erc > 1 && Math.abs(errors.getValue(erc - 1) - errors.getValue(erc - 2)) < eps) {
+            if (erc > 1 && Math.abs(errors.value(erc - 1) - errors.value(erc - 2)) < eps) {
                 break;
             }
         }
@@ -146,26 +180,38 @@ public class KMeans implements Printable {
     private void validate(Frame df, String... varNames) {
         List<String> nameList = VRange.of(varNames).parseVarNames(df);
         for (String varName : nameList) {
-            if (!df.getVar(varName).getType().isNumeric())
+            if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.getVar(varName).stream().complete().count() != df.getRowCount()) {
+            if (df.var(varName).stream().complete().count() != df.rowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }
     }
 
+    private double computeError(Frame df, Frame centroids) {
+        return IntStream.range(0, df.rowCount()).parallel().mapToDouble(i -> {
+            double d = Double.NaN;
+            for (int j = 0; j < centroids.rowCount(); j++) {
+                double dd = distance.distance(df, i, centroids, j, inputs);
+                if (!Double.isFinite(dd)) continue;
+                d = Double.isNaN(d) ? dd : Math.min(dd, d);
+            }
+            if (Double.isNaN(d)) {
+                throw new RuntimeException("cluster could not be computed");
+            }
+            return d;
+        }).sum();
+    }
 
     private void assignToCentroids(Frame df) {
-        if (debug) WS.println("assignToCentroids called ..");
         double totalError = 0.0;
-        double[] err = new double[centroids.getRowCount()];
-        List<Pair<Integer, Double>> pairs = IntStream.range(0, df.getRowCount()).parallel().boxed().map(i -> {
+        double[] err = new double[centroids.rowCount()];
+        List<Pair<Integer, Double>> pairs = IntStream.range(0, df.rowCount()).parallel().boxed().map(i -> {
             double d = Double.NaN;
             int cluster = -1;
-            for (int j = 0; j < centroids.getRowCount(); j++) {
-                double dd = distance.get().distance(df, i, centroids, j, inputs);
+            for (int j = 0; j < centroids.rowCount(); j++) {
+                double dd = distance.distance(df, i, centroids, j, inputs);
                 if (!Double.isFinite(dd)) continue;
-                if (Double.isNaN(dd)) continue;
                 if (!Double.isNaN(d)) {
                     if (dd < d) {
                         d = dd;
@@ -195,18 +241,18 @@ public class KMeans implements Printable {
 
     private void recomputeCentroids(Frame df) {
         if (debug) WS.println("recomputeCentroids called ..");
-        Var[] means = IntStream.range(0, k).boxed().map(i -> NumericVar.fill(df.getRowCount(), 0)).toArray(NumericVar[]::new);
+        Var[] means = IntStream.range(0, k).boxed().map(i -> NumericVar.fill(df.rowCount(), 0)).toArray(NumericVar[]::new);
         for (String input : inputs) {
             for (int j = 0; j < k; j++) {
                 means[j].clear();
             }
-            for (int j = 0; j < df.getRowCount(); j++) {
-                means[arrows[j]].addValue(df.getValue(j, input));
+            for (int j = 0; j < df.rowCount(); j++) {
+                means[arrows[j]].addValue(df.value(j, input));
             }
             for (int j = 0; j < k; j++) {
-                if (means[j].getRowCount() == 0)
+                if (means[j].rowCount() == 0)
                     continue;
-                double mean = Mean.from(means[j]).getValue();
+                double mean = Mean.from(means[j]).value();
                 centroids.setValue(j, input, mean);
             }
         }
@@ -220,54 +266,54 @@ public class KMeans implements Printable {
         return var;
     }
 
-    public Frame getCentroids() {
+    public Frame centroids() {
         return centroids;
     }
 
-    public NumericVar getRunningErrors() {
+    public NumericVar runningErrors() {
         return errors.solidCopy();
     }
 
-    public double getError() {
-        return errors.getRowCount() == 0 ? Double.NaN : errors.getValue(errors.getRowCount() - 1);
+    public double error() {
+        return errors.rowCount() == 0 ? Double.NaN : errors.value(errors.rowCount() - 1);
     }
 
-    public NumericVar getRunningClusterError(int c) {
+    public NumericVar runningClusterError(int c) {
         if (c >= k)
             throw new IllegalArgumentException("cluster " + c + " does not exists");
         return clusterErrors.get(c);
     }
 
-    public double getClusterError(int c) {
+    public double clusterError(int c) {
         if (c >= k)
             throw new IllegalArgumentException("cluster " + c + " does not exists");
-        return clusterErrors.get(c).getValue(clusterErrors.get(c).getRowCount() - 1);
+        return clusterErrors.get(c).value(clusterErrors.get(c).rowCount() - 1);
     }
 
     private void buildSummary(Frame df) {
-        IndexVar summaryId = IndexVar.seq(1, centroids.getRowCount()).withName("ID");
-        IndexVar summaryCount = IndexVar.fill(centroids.getRowCount(), 0).withName("count");
-        NumericVar summaryMean = NumericVar.fill(centroids.getRowCount(), 0).withName("mean");
-        NumericVar summaryVar = NumericVar.fill(centroids.getRowCount(), 0).withName("var");
-        NumericVar summaryVarP = NumericVar.fill(centroids.getRowCount(), 0).withName("var/total");
-        NumericVar summarySd = NumericVar.fill(centroids.getRowCount(), 0).withName("sd");
+        IndexVar summaryId = IndexVar.seq(1, centroids.rowCount()).withName("ID");
+        IndexVar summaryCount = IndexVar.fill(centroids.rowCount(), 0).withName("count");
+        NumericVar summaryMean = NumericVar.fill(centroids.rowCount(), 0).withName("mean");
+        NumericVar summaryVar = NumericVar.fill(centroids.rowCount(), 0).withName("var");
+        NumericVar summaryVarP = NumericVar.fill(centroids.rowCount(), 0).withName("var/total");
+        NumericVar summarySd = NumericVar.fill(centroids.rowCount(), 0).withName("sd");
 
         summaryAllDist = NumericVar.empty().withName("all dist");
 
         Map<Integer, NumericVar> distances = new HashMap<>();
 
-        for (int i = 0; i < df.getRowCount(); i++) {
-            double d = distance.get().distance(centroids, arrows[i], df, i, inputs);
+        for (int i = 0; i < df.rowCount(); i++) {
+            double d = distance.distance(centroids, arrows[i], df, i, inputs);
             if (!distances.containsKey(arrows[i]))
                 distances.put(arrows[i], NumericVar.empty());
             distances.get(arrows[i]).addValue(d);
             summaryAllDist.addValue(d);
         }
-        double tvar = variance(summaryAllDist).getValue();
+        double tvar = variance(summaryAllDist).value();
         for (Map.Entry<Integer, NumericVar> e : distances.entrySet()) {
-            summaryCount.setIndex(e.getKey(), e.getValue().getRowCount());
-            summaryMean.setValue(e.getKey(), mean(e.getValue()).getValue());
-            double v = variance(e.getValue()).getValue();
+            summaryCount.setIndex(e.getKey(), e.getValue().rowCount());
+            summaryMean.setValue(e.getKey(), mean(e.getValue()).value());
+            double v = variance(e.getValue()).value();
             summaryVar.setValue(e.getKey(), v);
             summaryVarP.setValue(e.getKey(), v / tvar);
             summarySd.setValue(e.getKey(), Math.sqrt(v));
@@ -277,7 +323,7 @@ public class KMeans implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("KMeans clustering model\n");
         sb.append("=======================\n");
@@ -297,14 +343,14 @@ public class KMeans implements Printable {
             sb.append("KMeans did not clustered anything yet!\n");
         } else {
             sb.append("Overall: \n");
-            sb.append("> count: ").append(summaryAllDist.getRowCount()).append("\n");
-            sb.append("> mean: ").append(WS.formatFlex(mean(summaryAllDist).getValue())).append("\n");
-            sb.append("> var: ").append(WS.formatFlex(variance(summaryAllDist).getValue())).append("\n");
+            sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");
+            sb.append("> mean: ").append(WS.formatFlex(mean(summaryAllDist).value())).append("\n");
+            sb.append("> var: ").append(WS.formatFlex(variance(summaryAllDist).value())).append("\n");
             sb.append("> sd: ").append(WS.formatFlex(variance(summaryAllDist).sdValue())).append("\n");
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(Summary.headString(false, Filters.refSort(summary, summary.getVar("count").refComparator(false))));
+            sb.append(Summary.headString(false, Filters.refSort(summary, summary.var("count").refComparator(false))));
         }
 
         return sb.toString();

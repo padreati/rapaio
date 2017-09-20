@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -113,13 +114,13 @@ public final class NumericVar extends AbstractVar {
      * @return new instance of numeric variable
      */
     public static NumericVar copy(Var source) {
-        NumericVar numeric = new NumericVar(source.getRowCount(), source.getRowCount(), 0).withName(source.getName());
+        NumericVar numeric = new NumericVar(source.rowCount(), source.rowCount(), 0).withName(source.name());
         if (!(source instanceof NumericVar)) {
-            for (int i = 0; i < source.getRowCount(); i++) {
-                numeric.setValue(i, source.getValue(i));
+            for (int i = 0; i < source.rowCount(); i++) {
+                numeric.setValue(i, source.value(i));
             }
         } else {
-            numeric.data = Arrays.copyOf(((NumericVar) source).data, source.getRowCount());
+            numeric.data = Arrays.copyOf(((NumericVar) source).data, source.rowCount());
         }
         return numeric;
     }
@@ -244,7 +245,7 @@ public final class NumericVar extends AbstractVar {
      * @return new numeric variable which contains transformed variables
      */
     public static NumericVar from(Var reference, Function<Double, Double> transform) {
-        return NumericVar.from(reference.getRowCount(), i -> transform.apply(reference.getValue(i)));
+        return NumericVar.from(reference.rowCount(), i -> transform.apply(reference.value(i)));
     }
 
 
@@ -288,7 +289,7 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.NUMERIC;
     }
 
@@ -306,7 +307,7 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
@@ -320,7 +321,7 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         return data[row];
     }
 
@@ -336,8 +337,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
-        return (int) Math.rint(getValue(row));
+    public int index(int row) {
+        return (int) Math.rint(value(row));
     }
 
     @Override
@@ -352,10 +353,10 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         if (isMissing(row))
             return "?";
-        return String.valueOf(getValue(row));
+        return String.valueOf(value(row));
     }
 
     @Override
@@ -393,7 +394,7 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
@@ -403,8 +404,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
-        return getValue(row) == 1.0;
+    public boolean binary(int row) {
+        return value(row) == 1.0;
     }
 
     @Override
@@ -418,8 +419,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
-        return (long) Math.rint(getValue(row));
+    public long stamp(int row) {
+        return (long) Math.rint(value(row));
     }
 
     @Override
@@ -434,7 +435,7 @@ public final class NumericVar extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return getValue(row) != getValue(row);
+        return value(row) != value(row);
     }
 
     @Override
@@ -468,7 +469,7 @@ public final class NumericVar extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Numeric[name:" + getName() + ", rowCount:" + getRowCount() + "]";
+        return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     @Override
@@ -477,8 +478,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(getRowCount());
-        for (int i = 0; i < getRowCount(); i++) {
+        out.writeInt(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
             out.writeDouble(data[i]);
         }
     }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -67,7 +68,7 @@ public class CFeatureSelectionSummary implements Printable {
     }
 
     private void validate() {
-        if (!df.getVar(targetVar).getType().isNominal()) {
+        if (!df.var(targetVar).type().isNominal()) {
             throw new IllegalArgumentException("Target variable received as parameter does not have a nominal type");
         }
     }
@@ -76,15 +77,15 @@ public class CFeatureSelectionSummary implements Printable {
 
         if (usePearson) {
             df.varStream()
-                    .filter(v -> !v.getName().equals(targetVar))
-                    .forEach(v -> topPearson.add(Pair.from(v.getName(), CoreTools.corrPearson(df.getVar(targetVar), v).singleValue())));
+                    .filter(v -> !v.name().equals(targetVar))
+                    .forEach(v -> topPearson.add(Pair.from(v.name(), CoreTools.corrPearson(df.var(targetVar), v).singleValue())));
             topPearson.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 
         if (usePearson) {
             df.varStream()
-                    .filter(v -> !v.getName().equals(targetVar))
-                    .forEach(v -> topSpearman.add(Pair.from(v.getName(), CoreTools.corrSpearman(df.getVar(targetVar), v).singleValue())));
+                    .filter(v -> !v.name().equals(targetVar))
+                    .forEach(v -> topSpearman.add(Pair.from(v.name(), CoreTools.corrSpearman(df.var(targetVar), v).singleValue())));
             topSpearman.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 
@@ -92,7 +93,7 @@ public class CFeatureSelectionSummary implements Printable {
 
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("CFeatureSelection summary\n");

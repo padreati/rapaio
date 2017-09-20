@@ -55,9 +55,9 @@ public class ZTestTwoPairedTest {
         z1.printSummary();
         assertEquals(1.75, z1.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z1.getZScore(), TOL);
-        assertEquals(0.15729920705028522, z1.getPValue(), TOL);
-        assertEquals(1.4035240439125807, z1.getCILow(), TOL);
-        assertEquals(2.0964759560874193, z1.getCIHigh(), TOL);
+        assertEquals(0.15729920705028522, z1.pValue(), TOL);
+        assertEquals(1.4035240439125807, z1.ciLow(), TOL);
+        assertEquals(2.0964759560874193, z1.ciHigh(), TOL);
         assertEquals(0.05, z1.getSl(), TOL);
 
         ZTestTwoPaired z2 = ZTestTwoPaired.test(x, NumericVar.copy(Double.NaN, Double.NaN), 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
@@ -65,27 +65,27 @@ public class ZTestTwoPairedTest {
 
         assertEquals(Double.NaN, z2.getSampleMean(), TOL);
         assertEquals(Double.NaN, z2.getZScore(), TOL);
-        assertEquals(Double.NaN, z2.getPValue(), TOL);
-        assertEquals(Double.NaN, z2.getCILow(), TOL);
-        assertEquals(Double.NaN, z2.getCIHigh(), TOL);
+        assertEquals(Double.NaN, z2.pValue(), TOL);
+        assertEquals(Double.NaN, z2.ciLow(), TOL);
+        assertEquals(Double.NaN, z2.ciHigh(), TOL);
         assertEquals(0.05, z2.getSl(), TOL);
 
         ZTestTwoPaired z3 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
         z3.printSummary();
         assertEquals(1.75, z3.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z3.getZScore(), TOL);
-        assertEquals(0.9213503964748574, z3.getPValue(), TOL);
-        assertEquals(1.4035240439125807, z3.getCILow(), TOL);
-        assertEquals(2.0964759560874193, z3.getCIHigh(), TOL);
+        assertEquals(0.9213503964748574, z3.pValue(), TOL);
+        assertEquals(1.4035240439125807, z3.ciLow(), TOL);
+        assertEquals(2.0964759560874193, z3.ciHigh(), TOL);
         assertEquals(0.05, z3.getSl(), TOL);
 
         ZTestTwoPaired z4 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
         z4.printSummary();
         assertEquals(1.75, z4.getSampleMean(), TOL);
         assertEquals(-1.4142135623730951, z4.getZScore(), TOL);
-        assertEquals(0.07864960352514261, z4.getPValue(), TOL);
-        assertEquals(1.4035240439125807, z4.getCILow(), TOL);
-        assertEquals(2.0964759560874193, z4.getCIHigh(), TOL);
+        assertEquals(0.07864960352514261, z4.pValue(), TOL);
+        assertEquals(1.4035240439125807, z4.ciLow(), TOL);
+        assertEquals(2.0964759560874193, z4.ciHigh(), TOL);
         assertEquals(0.05, z4.getSl(), TOL);
     }
 

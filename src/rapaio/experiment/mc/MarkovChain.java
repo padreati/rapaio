@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -177,7 +178,7 @@ public class MarkovChain implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
 
         RandomSource.setSeed(1);
 
@@ -199,10 +200,10 @@ public class MarkovChain implements Printable {
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");
-        sb.append(p.getSummary());
+        sb.append(p.summary());
 
         sb.append("Matrix: \n");
-        sb.append(m.getSummary());
+        sb.append(m.summary());
 
         return sb.toString();
     }

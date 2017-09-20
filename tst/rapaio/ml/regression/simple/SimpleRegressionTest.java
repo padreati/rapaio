@@ -33,8 +33,6 @@ import rapaio.data.NumericVar;
 import rapaio.data.filter.var.VFToNumeric;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RFit;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.graphics.Plotter.points;
@@ -81,21 +79,21 @@ public class SimpleRegressionTest {
                 "\n" +
                 " Target Estimate\n" +
                 " Father       66\n" +
-                "\n", r1.getSummary());
+                "\n", r1.summary());
 
         ConstantRegression r2 = ConstantRegression.with(1);
         r2.train(df, father);
         RFit fit2 = r2.fit(df, true);
         fit2.printSummary();
 
-        Assert.assertTrue(NumericVar.fill(df.getRowCount(), 66).withName("Father")
+        Assert.assertTrue(NumericVar.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstFit()));
-        Assert.assertTrue(df.getVar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
+        Assert.assertTrue(df.var(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
-        Assert.assertTrue(NumericVar.fill(df.getRowCount(), 1).withName("Father")
+        Assert.assertTrue(NumericVar.fill(df.rowCount(), 1).withName("Father")
                 .deepEquals(fit2.firstFit()));
-        Assert.assertTrue(df.getVar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
+        Assert.assertTrue(df.var(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
     }
 
@@ -110,8 +108,8 @@ public class SimpleRegressionTest {
         RFit fit1 = r1.fit(df);
         fit1.printSummary();
 
-        double median = CoreTools.quantiles(df.getVar(father), 0.5).getValues()[0];
-        Assert.assertTrue(NumericVar.fill(df.getRowCount(), median).withName(father)
+        double median = CoreTools.quantiles(df.var(father), 0.5).values()[0];
+        Assert.assertTrue(NumericVar.fill(df.rowCount(), median).withName(father)
                 .deepEquals(fit1.firstFit()));
     }
 
@@ -127,7 +125,7 @@ public class SimpleRegressionTest {
                 "\n" +
                 "> model not trained.\n" +
                 "\n" +
-                "\n", r1.getSummary());
+                "\n", r1.summary());
 
         r1.train(df, father);
         assertEquals("Regression fit summary\n" +
@@ -145,7 +143,7 @@ public class SimpleRegressionTest {
                 "\n" +
                 " Target   Estimate\n" +
                 " Father 67.6868275\n" +
-                "\n", r1.getSummary());
+                "\n", r1.summary());
 
         RFit fit1 = r1.fit(df, true);
         assertEquals("Regression fit summary\n" +
@@ -175,7 +173,7 @@ public class SimpleRegressionTest {
                         "\n" +
                         "Coeff. of determination  (R^2) :    0.000\n" +
                         "\n",
-                fit1.getSummary());
+                fit1.summary());
     }
 
     @Test

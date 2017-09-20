@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -60,7 +61,7 @@ public class FFQuantileDiscrete extends AbstractFF {
         filters.clear();
         for (String varName : varNames) {
             VFQuantileDiscrete filter = new VFQuantileDiscrete(k);
-            filter.fit(df.getVar(varName));
+            filter.fit(df.var(varName));
             filters.put(varName, filter);
         }
     }
@@ -68,13 +69,13 @@ public class FFQuantileDiscrete extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
 
-        Var[] vars = new Var[df.getVarCount()];
+        Var[] vars = new Var[df.varCount()];
         int pos = 0;
-        for (String varName : df.getVarNames()) {
+        for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.getVar(varName));
+                vars[pos++] = filters.get(varName).apply(df.var(varName));
             } else {
-                vars[pos++] = df.getVar(varName);
+                vars[pos++] = df.var(varName);
             }
         }
         return BoundFrame.byVars(vars);

@@ -55,27 +55,27 @@ public class Histogram2D extends PlotComponent {
     }
 
     @Override
-    public void initialize(Plot parent) {
-        super.initialize(parent);
+    public void bind(Plot parent) {
+        super.bind(parent);
         parent.leftMarkers(true);
         parent.leftThick(true);
-        parent.xLab(x.getName());
+        parent.xLab(x.name());
         parent.bottomMarkers(true);
         parent.bottomThick(true);
-        parent.yLab(y.getName());
+        parent.yLab(y.name());
     }
 
     @Override
     protected Range buildRange() {
-        if (x.getRowCount() == 0) {
+        if (x.rowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.getValue(i), y.getValue(i));
+            range.union(x.value(i), y.value(i));
         }
         return range;
     }
@@ -88,12 +88,12 @@ public class Histogram2D extends PlotComponent {
 
         freq = new int[bins][bins];
 
-        for (int i = 0; i < Math.min(x.getRowCount(), y.getRowCount()); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
 
-            int xx = Math.min(bins - 1, (int) Math.floor((x.getValue(i) - range.x1()) / w));
-            int yy = Math.min(bins - 1, (int) Math.floor((y.getValue(i) - range.y1()) / h));
+            int xx = Math.min(bins - 1, (int) Math.floor((x.value(i) - range.x1()) / w));
+            int yy = Math.min(bins - 1, (int) Math.floor((y.value(i) - range.y1()) / h));
             freq[xx][yy]++;
             if (maxFreq < freq[xx][yy]) {
                 maxFreq = freq[xx][yy];

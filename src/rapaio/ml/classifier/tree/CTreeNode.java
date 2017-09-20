@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -120,15 +121,15 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
-        density = DVector.fromWeights(false, df.getVar(tree.firstTargetName()), weights);
-        counter = DVector.fromCount(false, df.getVar(tree.firstTargetName()));
+        density = DVector.fromWeights(false, df.var(tree.firstTargetName()), weights);
+        counter = DVector.fromCount(false, df.var(tree.firstTargetName()));
         bestIndex = density.findBestIndex();
 
-        if (df.getRowCount() == 0) {
+        if (df.rowCount() == 0) {
             bestIndex = parent.bestIndex;
             return;
         }
-        if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.getRowCount() <= tree.minCount()) {
+        if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
             return;
         }
 
@@ -151,13 +152,13 @@ public class CTreeNode implements Serializable {
                 if (tree.customTestMap().containsKey(testCol)) {
                     test = tree.customTestMap().get(testCol);
                 }
-                if (tree.testMap().containsKey(df.getVar(testCol).getType())) {
-                    test = tree.testMap().get(df.getVar(testCol).getType());
+                if (tree.testMap().containsKey(df.var(testCol).type())) {
+                    test = tree.testMap().get(df.var(testCol).type());
                 }
                 if (test == null) {
                     throw new IllegalArgumentException("can't train ctree with no " +
-                            "tests for given variable: " + df.getVar(testCol).getName() +
-                            " [" + df.getVar(testCol).getType().name() + "]");
+                            "tests for given variable: " + df.var(testCol).name() +
+                            " [" + df.var(testCol).type().name() + "]");
                 }
                 CTreeCandidate candidate = test.computeCandidate(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
@@ -182,13 +183,13 @@ public class CTreeNode implements Serializable {
                             if (tree.customTestMap().containsKey(testCol)) {
                                 test = tree.customTestMap().get(testCol);
                             }
-                            if (tree.testMap().containsKey(df.getVar(testCol).getType())) {
-                                test = tree.testMap().get(df.getVar(testCol).getType());
+                            if (tree.testMap().containsKey(df.var(testCol).type())) {
+                                test = tree.testMap().get(df.var(testCol).type());
                             }
                             if (test == null) {
                                 throw new IllegalArgumentException("can't train ctree with no " +
-                                        "tests for given variable: " + df.getVar(testCol).getName() +
-                                        " [" + df.getVar(testCol).getType().name() + "]");
+                                        "tests for given variable: " + df.var(testCol).name() +
+                                        " [" + df.var(testCol).type().name() + "]");
                             }
                             CTreeCandidate candidate = test.computeCandidate(
                                     tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());

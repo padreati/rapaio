@@ -51,26 +51,26 @@ public class Minimum implements Printable {
     private int missingCount;
 
     private Minimum(Var var) {
-        this.varName = var.getName();
+        this.varName = var.name();
         this.value = Double.NaN;
-        for (int i = 0; i < var.getRowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
             } else {
                 completeCount++;
-                if (Double.isNaN(value) || value > var.getValue(i)) {
-                    value = var.getValue(i);
+                if (Double.isNaN(value) || value > var.value(i)) {
+                    value = var.value(i);
                 }
             }
         }
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> minimum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +

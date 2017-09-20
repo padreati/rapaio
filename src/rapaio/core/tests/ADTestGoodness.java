@@ -78,7 +78,7 @@ public class ADTestGoodness implements HTest {
 
     private void compute() {
 
-        muHat = Double.isNaN(mu) ? Mean.from(x).getValue() : mu;
+        muHat = Double.isNaN(mu) ? Mean.from(x).value() : mu;
 
         if (!Double.isNaN(sigma)) {
             // variance is known
@@ -87,8 +87,8 @@ public class ADTestGoodness implements HTest {
             if (!Double.isNaN(mu)) {
                 // variance unknown, mean is known
                 sigmaHat = 0.0;
-                for (int i = 0; i < x.getRowCount(); i++) {
-                    sigmaHat += Math.pow(x.getValue(i) - mu, 2);
+                for (int i = 0; i < x.rowCount(); i++) {
+                    sigmaHat += Math.pow(x.value(i) - mu, 2);
                 }
                 sigmaHat = Math.sqrt(sigmaHat);
             } else {
@@ -101,9 +101,9 @@ public class ADTestGoodness implements HTest {
         Normal normal = new Normal();
 
         a2 = 0.0;
-        int n = y.getRowCount();
+        int n = y.rowCount();
         for (int i = 1; i <= n; i++) {
-            double phi = normal.cdf(y.getValue(i - 1));
+            double phi = normal.cdf(y.value(i - 1));
             a2 += (2 * i - 1) * Math.log(phi) + (2 * (n - i) + 1) * Math.log(1 - phi);
         }
         a2 = -n - a2 / n;
@@ -140,7 +140,7 @@ public class ADTestGoodness implements HTest {
     }
 
     @Override
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
@@ -149,17 +149,17 @@ public class ADTestGoodness implements HTest {
     }
 
     @Override
-    public double getCIHigh() {
+    public double ciHigh() {
         return Double.NaN;
     }
 
     @Override
-    public double getCILow() {
+    public double ciLow() {
         return Double.NaN;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> ADTestGoodness\n");
         sb.append("\n");
@@ -170,7 +170,7 @@ public class ADTestGoodness implements HTest {
         sb.append("  sample is normally distributed\n");
         sb.append("\n");
 
-        sb.append("sample size: ").append(x.getRowCount()).append("\n");
+        sb.append("sample size: ").append(x.rowCount()).append("\n");
         sb.append("given mean: ").append(WS.formatFlex(mu)).append(", used mean : ").append(WS.formatFlex(muHat)).append("\n");
         sb.append("given sd  : ").append(WS.formatFlex(sigma)).append(", used sd   : ").append(WS.formatFlex(sigmaHat)).append("\n");
         sb.append("\n");

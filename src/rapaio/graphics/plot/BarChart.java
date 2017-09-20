@@ -26,7 +26,6 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.*;
-import rapaio.graphics.Plotter;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -69,19 +68,19 @@ public class BarChart extends HostFigure {
 
     public BarChart(Var category, Var condition, Var numeric, GOption... opts) {
         List<VarType> varTypes = Arrays.asList(VarType.BINARY, VarType.NOMINAL, VarType.ORDINAL);
-        if (!varTypes.contains(category.getType())) {
+        if (!varTypes.contains(category.type())) {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = NominalVar.empty(category.getRowCount(), new ArrayList<>());
+            condition = NominalVar.empty(category.rowCount(), new ArrayList<>());
         }
-        if (!condition.getType().isNominal()) {
+        if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = NumericVar.fill(category.getRowCount(), 1);
+            numeric = NumericVar.fill(category.rowCount(), 1);
         }
-        if (!numeric.getType().isNumeric()) {
+        if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
         }
 
@@ -95,7 +94,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.bind(color(IndexVar.seq(shift, condition.getLevels().length)));
+        options.bind(color(IndexVar.seq(shift, condition.levels().length)));
         options.bind(opts);
     }
 
@@ -118,20 +117,20 @@ public class BarChart extends HostFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.getLevels().length;
-            int height = condition.getLevels().length;
+            int width = category.levels().length;
+            int height = condition.levels().length;
 
             totals = new double[width];
             hits = new double[width][height];
 
             int len = Integer.MAX_VALUE;
-            len = Math.min(len, category.getRowCount());
-            len = Math.min(len, condition.getRowCount());
-            len = Math.min(len, numeric.getRowCount());
+            len = Math.min(len, category.rowCount());
+            len = Math.min(len, condition.rowCount());
+            len = Math.min(len, numeric.rowCount());
 
             for (int i = 0; i < len; i++) {
-                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
-                totals[category.getIndex(i)] += numeric.getValue(i);
+                hits[category.index(i)][condition.index(i)] += numeric.value(i);
+                totals[category.index(i)] += numeric.value(i);
             }
 
             // this needs reworking since it does not work for negative values
@@ -209,7 +208,7 @@ public class BarChart extends HostFigure {
             if (totals[aSel] == 0)
                 continue;
             bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
-            bottomMarkersMsg.add(category.getLevels()[aSel]);
+            bottomMarkersMsg.add(category.levels()[aSel]);
             cnt++;
         }
     }
@@ -225,7 +224,7 @@ public class BarChart extends HostFigure {
             }
 
             double ystart = 0;
-            for (int j = 0; j < condition.getLevels().length; j++) {
+            for (int j = 0; j < condition.levels().length; j++) {
                 double yend = ystart + hits[aSel][j];
                 int sign = ((yend > 0) ? 1 : -1);
 

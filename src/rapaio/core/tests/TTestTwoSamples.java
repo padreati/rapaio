@@ -124,7 +124,7 @@ public class TTestTwoSamples implements HTest {
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.getRowCount() < 1 || yComplete.getRowCount() < 1) {
+        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
@@ -143,11 +143,11 @@ public class TTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).getValue();
-        xSampleSize = xComplete.getRowCount();
+        xSampleMean = mean(xComplete).value();
+        xSampleSize = xComplete.rowCount();
         xSampleSd = variance(xComplete).sdValue();
-        ySampleMean = mean(yComplete).getValue();
-        ySampleSize = yComplete.getRowCount();
+        ySampleMean = mean(yComplete).value();
+        ySampleSize = yComplete.rowCount();
         ySampleSd = variance(yComplete).sdValue();
 
         sampleMean = xSampleMean - ySampleMean;
@@ -207,15 +207,15 @@ public class TTestTwoSamples implements HTest {
         return df;
     }
 
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
-    public double getCILow() {
+    public double ciLow() {
         return ciLow;
     }
 
-    public double getCIHigh() {
+    public double ciHigh() {
         return ciHigh;
     }
 
@@ -254,7 +254,7 @@ public class TTestTwoSamples implements HTest {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.tTestTwoSamples\n");

@@ -40,8 +40,8 @@ public class SolidFrameTest {
     @Test
     public void testEmptySolidFrame() {
         Frame df = SolidFrame.byVars();
-        assertEquals(0, df.getRowCount());
-        assertEquals(0, df.getVarCount());
+        assertEquals(0, df.rowCount());
+        assertEquals(0, df.varCount());
     }
 
     @Test
@@ -51,33 +51,33 @@ public class SolidFrameTest {
                 NumericVar.empty().withName("y"),
                 NumericVar.empty().withName("z"));
 
-        assertEquals(3, df.getVarCount());
-        assertEquals("x", df.getVarNames()[0]);
-        assertEquals("z", df.getVarNames()[2]);
-        assertEquals(0, df.getVarIndex("x"));
-        assertEquals(2, df.getVarIndex("z"));
+        assertEquals(3, df.varCount());
+        assertEquals("x", df.varNames()[0]);
+        assertEquals("z", df.varNames()[2]);
+        assertEquals(0, df.varIndex("x"));
+        assertEquals(2, df.varIndex("z"));
 
         try {
-            df.getVarIndex("q");
+            df.varIndex("q");
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
         try {
-            df.getVar(10);
+            df.var(10);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
         try {
-            df.getVar(-1);
+            df.var(-1);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
-        assertEquals("x", df.getVarNames()[0]);
-        assertEquals("y", df.getVarNames()[1]);
-        assertEquals("z", df.getVarNames()[2]);
+        assertEquals("x", df.varNames()[0]);
+        assertEquals("y", df.varNames()[1]);
+        assertEquals("z", df.varNames()[2]);
     }
 
     @Test
@@ -89,37 +89,37 @@ public class SolidFrameTest {
         vars.add(IndexVar.seq(1, 4).withName("index"));
         Frame df = SolidFrame.byVars(vars);
 
-        assertEquals(1., df.getValue(0, 0), 1e-10);
+        assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);
-        assertEquals(3., df.getValue(0, 0), 1e-10);
+        assertEquals(3., df.value(0, 0), 1e-10);
 
         double t = 0;
-        for (int i = 0; i < df.getRowCount(); i++) {
-            t += df.getValue(i, 1) - 3.;
+        for (int i = 0; i < df.rowCount(); i++) {
+            t += df.value(i, 1) - 3.;
         }
         assertEquals(17., t, 1e-10);
 
-        assertTrue(df.getVar("name").isMissing(0));
-        assertTrue(df.getVar("name").isMissing(3));
+        assertTrue(df.var("name").isMissing(0));
+        assertTrue(df.var("name").isMissing(3));
 
         df.setLabel(0, 2, "ana");
         df.setLabel(1, 2, "are");
         df.setLabel(2, 2, "mere");
 
-        assertEquals("ana", df.getLabel(0, 2));
-        assertEquals("are", df.getLabel(1, 2));
-        assertEquals("mere", df.getLabel(2, 2));
+        assertEquals("ana", df.label(0, 2));
+        assertEquals("are", df.label(1, 2));
+        assertEquals("mere", df.label(2, 2));
 
         df.setIndex(1, 2, 3);
-        assertEquals("mere", df.getLabel(1, 2));
+        assertEquals("mere", df.label(1, 2));
 
-        assertEquals(1, df.getIndex(0, 3));
-        assertEquals(2, df.getIndex(1, 3));
-        assertEquals(3, df.getIndex(2, 3));
-        assertEquals(4, df.getIndex(3, 3));
+        assertEquals(1, df.index(0, 3));
+        assertEquals(2, df.index(1, 3));
+        assertEquals(3, df.index(2, 3));
+        assertEquals(4, df.index(3, 3));
 
         df.setIndex(0, 3, 5);
-        assertEquals(5, df.getIndex(0, 3));
+        assertEquals(5, df.index(0, 3));
     }
 
     @Test
@@ -129,8 +129,8 @@ public class SolidFrameTest {
 
         Frame df1 = SolidFrame.byVars(x, y);
 
-        assertEquals(2, df1.getVarCount());
-        assertEquals(4, df1.getRowCount());
+        assertEquals(2, df1.varCount());
+        assertEquals(4, df1.rowCount());
 
         try {
             SolidFrame.byVars(x, y.mapRows(Mapping.range(0, 4)));
@@ -139,38 +139,38 @@ public class SolidFrameTest {
         }
 
         Frame df2 = SolidFrame.byVars(x).bindVars(y);
-        assertEquals(2, df2.getVarCount());
-        assertEquals(4, df2.getRowCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            assertEquals(df1.getValue(i, "x"), df2.getValue(i, "x"), 1e-12);
-            assertEquals(df1.getLabel(i, "y"), df2.getLabel(i, "y"));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
         df2 = SolidFrame.byVars(x).bindVars(SolidFrame.byVars(y));
-        assertEquals(2, df2.getVarCount());
-        assertEquals(4, df2.getRowCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            assertEquals(df1.getValue(i, "x"), df2.getValue(i, "x"), 1e-12);
-            assertEquals(df1.getLabel(i, "y"), df2.getLabel(i, "y"));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
         df2 = df1.mapVars("x").bindVars(df1.mapVars("y"));
-        assertEquals(2, df2.getVarCount());
-        assertEquals(4, df2.getRowCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            assertEquals(df1.getValue(i, "x"), df2.getValue(i, "x"), 1e-12);
-            assertEquals(df1.getLabel(i, "y"), df2.getLabel(i, "y"));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
         df2 = SolidFrame.byVars(y).bindVars(
                 SolidFrame.byVars(NumericVar.wrap(1, 2).withName("x"))
                         .bindRows(SolidFrame.byVars(NumericVar.wrap(3, 4).withName("x")))
         );
-        assertEquals(2, df2.getVarCount());
-        assertEquals(4, df2.getRowCount());
-        for (int i = 0; i < df1.getRowCount(); i++) {
-            assertEquals(df1.getValue(i, "x"), df2.getValue(i, "x"), 1e-12);
-            assertEquals(df1.getLabel(i, "y"), df2.getLabel(i, "y"));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
         try {
@@ -186,12 +186,12 @@ public class SolidFrameTest {
     @Test
     public void testMatrixBuilders() {
         Frame df = SolidFrame.matrix(10, "a", "b", "c");
-        assertEquals(10, df.getRowCount());
-        assertEquals(3, df.getVarCount());
+        assertEquals(10, df.rowCount());
+        assertEquals(3, df.varCount());
 
-        for (int i = 0; i < df.getVarCount(); i++) {
-            for (int j = 0; j < df.getRowCount(); j++) {
-                assertEquals(0, df.getValue(j, i), 1e-12);
+        for (int i = 0; i < df.varCount(); i++) {
+            for (int j = 0; j < df.rowCount(); j++) {
+                assertEquals(0, df.value(j, i), 1e-12);
             }
         }
     }

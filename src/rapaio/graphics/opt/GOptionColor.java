@@ -53,9 +53,9 @@ public class GOptionColor implements GOption<Color[]> {
 
     public GOptionColor(Var color) {
         function = opt -> {
-            Color[] colors = new Color[color.getRowCount()];
+            Color[] colors = new Color[color.rowCount()];
             for (int i = 0; i < colors.length; i++) {
-                colors[i] = opt.getPalette().getColor(color.getIndex(i));
+                colors[i] = opt.getPalette().getColor(color.index(i));
             }
             return colors;
         };

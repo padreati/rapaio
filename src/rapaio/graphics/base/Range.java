@@ -129,9 +129,9 @@ public class Range implements Serializable {
         }
         double yExtRange = (y2() - y1()) * extendedFactor;
         double yMid = (y1() + y2()) / 2;
-        if(y1()==y2()) {
-            extended.setY1(y1()-1);
-            extended.setY2(y2()+1);
+        if (y1() == y2()) {
+            extended.setY1(y1() - 1);
+            extended.setY2(y2() + 1);
         } else {
             extended.setY1(yMid - yExtRange / 2);
             extended.setY2(yMid + yExtRange / 2);
@@ -141,9 +141,6 @@ public class Range implements Serializable {
 
     @Override
     public String toString() {
-        return "Range{" +
-                "xRange=" + xRange +
-                ", yRange=" + yRange +
-                '}';
+        return String.format("Range{x1=%d,y1=%d,x2=%d,y2=%d", x1(), y1(), x2(), y2());
     }
 }

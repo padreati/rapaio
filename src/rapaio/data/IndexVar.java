@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -232,12 +233,12 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.INDEX;
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
@@ -251,7 +252,7 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -268,10 +269,10 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         if(isMissing(row))
             return Double.NaN;
-        return getIndex(row);
+        return index(row);
     }
 
     @Override
@@ -285,10 +286,10 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         if (isMissing(row))
             return "?";
-        return String.valueOf(getIndex(row));
+        return String.valueOf(index(row));
     }
 
     @Override
@@ -310,7 +311,7 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
@@ -320,8 +321,8 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
-        return getIndex(row) == 1;
+    public boolean binary(int row) {
+        return index(row) == 1;
     }
 
     @Override
@@ -335,8 +336,8 @@ public final class IndexVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
-        return getIndex(row);
+    public long stamp(int row) {
+        return index(row);
     }
 
     @Override
@@ -351,7 +352,7 @@ public final class IndexVar extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return getIndex(row) == MISSING_VALUE;
+        return index(row) == MISSING_VALUE;
     }
 
     @Override
@@ -387,7 +388,7 @@ public final class IndexVar extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Index[name:" + getName() + ", rowCount:" + getRowCount() + "]";
+        return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     @Override
@@ -396,8 +397,8 @@ public final class IndexVar extends AbstractVar {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(getRowCount());
-        for (int i = 0; i < getRowCount(); i++) {
+        out.writeInt(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
             out.writeInt(data[i]);
         }
     }

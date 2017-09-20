@@ -31,14 +31,9 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
@@ -53,10 +48,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.getVarCount());
-        Assert.assertEquals("RP_1", df.getVar(0).getName());
-        Assert.assertEquals("RP_2", df.getVar(1).getName());
-        Assert.assertEquals("RP_3", df.getVar(2).getName());
+        Assert.assertEquals(3, df.varCount());
+        Assert.assertEquals("RP_1", df.var(0).name());
+        Assert.assertEquals("RP_2", df.var(1).name());
+        Assert.assertEquals("RP_3", df.var(2).name());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
@@ -71,10 +66,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.getVarCount());
-        Assert.assertEquals("RP_1", df.getVar(0).getName());
-        Assert.assertEquals("RP_2", df.getVar(1).getName());
-        Assert.assertEquals("RP_3", df.getVar(2).getName());
+        Assert.assertEquals(3, df.varCount());
+        Assert.assertEquals("RP_1", df.var(0).name());
+        Assert.assertEquals("RP_2", df.var(1).name());
+        Assert.assertEquals("RP_3", df.var(2).name());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
@@ -89,10 +84,10 @@ public class FFRandomProjectionTest {
         Frame df = Datasets.loadIrisDataset().fitApply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.getVarCount());
-        Assert.assertEquals("RP_1", df.getVar(0).getName());
-        Assert.assertEquals("RP_2", df.getVar(1).getName());
-        Assert.assertEquals("RP_3", df.getVar(2).getName());
+        Assert.assertEquals(3, df.varCount());
+        Assert.assertEquals("RP_1", df.var(0).name());
+        Assert.assertEquals("RP_2", df.var(1).name());
+        Assert.assertEquals("RP_3", df.var(2).name());
 
 
         double corr = CoreTools.corrPearson(df).singleValue();

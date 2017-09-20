@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -75,7 +76,7 @@ public interface VRange {
 
     static VRange onlyTypes(VarType... types) {
         Set<VarType> keep = Arrays.stream(types).collect(Collectors.toSet());
-        return new VRangeByPred(var -> keep.contains(var.getType()));
+        return new VRangeByPred(var -> keep.contains(var.type()));
     }
 
     List<Integer> parseVarIndexes(Frame df);
@@ -136,13 +137,13 @@ class VRangeByName implements VRange {
     public List<Integer> parseVarIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
         if (ALL.equals(rawColumnRange)) {
-            for (int i = 0; i < df.getVarCount(); i++) {
+            for (int i = 0; i < df.varCount(); i++) {
                 colIndexes.add(i);
             }
             return colIndexes;
         }
         String[] ranges = rawColumnRange.split(DELIMITER);
-        Set<String> colNames = df.varStream().map(Var::getName).collect(Collectors.toSet());
+        Set<String> colNames = df.varStream().map(Var::name).collect(Collectors.toSet());
 
         for (String range : ranges) {
             int start, end;
@@ -152,12 +153,12 @@ class VRangeByName implements VRange {
                 if (!colNames.contains(parts[0])) {
                     start = Integer.parseInt(parts[0]);
                 } else {
-                    start = df.getVarIndex(parts[0]);
+                    start = df.varIndex(parts[0]);
                 }
                 if (!colNames.contains(parts[1])) {
                     end = Integer.parseInt(parts[1]);
                 } else {
-                    end = df.getVarIndex(parts[1]);
+                    end = df.varIndex(parts[1]);
                 }
             } else {
                 if (!colNames.contains(range)) {
@@ -167,7 +168,7 @@ class VRangeByName implements VRange {
                         continue;
                     }
                 } else {
-                    start = df.getVarIndex(range);
+                    start = df.varIndex(range);
                 }
                 end = start;
             }
@@ -181,13 +182,13 @@ class VRangeByName implements VRange {
 
     @Override
     public List<String> parseVarNames(Frame df) {
-        return parseVarIndexes(df).stream().map(i -> df.getVarNames()[i]).collect(Collectors.toList());
+        return parseVarIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
     }
 
     @Override
     public List<String> parseInverseVarNames(Frame df) {
         Set<Integer> indexes = new HashSet<>(parseVarIndexes(df));
-        return IntStream.range(0, df.getVarCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.getVar(i).getName()).collect(Collectors.toList());
+        return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.var(i).name()).collect(Collectors.toList());
     }
 }
 
@@ -201,22 +202,22 @@ class VRangeByPredName implements VRange {
 
     @Override
     public List<Integer> parseVarIndexes(Frame df) {
-        return IntStream.range(0, df.getVarCount())
-                .filter(i -> predicate.test(df.getVar(i).getName()))
+        return IntStream.range(0, df.varCount())
+                .filter(i -> predicate.test(df.var(i).name()))
                 .boxed()
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<String> parseVarNames(Frame df) {
-        return df.varStream().map(Var::getName)
+        return df.varStream().map(Var::name)
                 .filter(predicate::test)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<String> parseInverseVarNames(Frame df) {
-        return df.varStream().map(Var::getName)
+        return df.varStream().map(Var::name)
                 .filter(name -> !predicate.test(name))
                 .collect(Collectors.toList());
     }
@@ -232,8 +233,8 @@ class VRangeByPred implements VRange {
 
     @Override
     public List<Integer> parseVarIndexes(Frame df) {
-        return IntStream.range(0, df.getVarCount())
-                .filter(i -> predicate.test(df.getVar(i)))
+        return IntStream.range(0, df.varCount())
+                .filter(i -> predicate.test(df.var(i)))
                 .boxed()
                 .collect(Collectors.toList());
     }
@@ -242,7 +243,7 @@ class VRangeByPred implements VRange {
     public List<String> parseVarNames(Frame df) {
         return df.varStream()
                 .filter(predicate::test)
-                .map(Var::getName)
+                .map(Var::name)
                 .collect(Collectors.toList());
     }
 
@@ -250,7 +251,7 @@ class VRangeByPred implements VRange {
     public List<String> parseInverseVarNames(Frame df) {
         return df.varStream()
                 .filter(var -> !predicate.test(var))
-                .map(Var::getName)
+                .map(Var::name)
                 .collect(Collectors.toList());
     }
 }

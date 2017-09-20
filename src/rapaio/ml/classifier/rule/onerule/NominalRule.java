@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -51,7 +52,7 @@ public class NominalRule extends Rule {
     public String toString() {
         return "NominalRule {"
                 + "value=" + testLabel
-                + ", class=" + dv.getLabel(targetIndex)
+                + ", class=" + dv.label(targetIndex)
                 + ", errors=" + WS.formatFlex(getErrorCount())
                 + ", total=" + WS.formatFlex(getTotalCount())
                 + ", acc=" + WS.formatFlex(getAcc())

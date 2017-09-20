@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -67,7 +68,7 @@ public class VFQuantileDiscrete extends AbstractVF {
         }
         Var original = vars[0];
 
-        qv = CoreTools.quantiles(original, q).getValues();
+        qv = CoreTools.quantiles(original, q).values();
 
         // first interval
 
@@ -94,12 +95,12 @@ public class VFQuantileDiscrete extends AbstractVF {
 
         Var original = vars[0];
 
-        NominalVar result = NominalVar.empty(0, dict).withName(original.getName());
-        for (int i = 0; i < original.getRowCount(); i++) {
+        NominalVar result = NominalVar.empty(0, dict).withName(original.name());
+        for (int i = 0; i < original.rowCount(); i++) {
             if (original.isMissing(i))
                 result.addMissing();
             for (Map.Entry<String, SPredicate<Double>> e : predicates.entrySet()) {
-                if (e.getValue().test(original.getValue(i))) {
+                if (e.getValue().test(original.value(i))) {
                     result.addLabel(e.getKey());
                 }
             }

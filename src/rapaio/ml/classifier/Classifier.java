@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -86,7 +87,7 @@ public interface Classifier extends Printable, Serializable {
     /**
      * Specifies the sampler to be used at learning time.
      * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link RowSampler.Identity}
+     * The default implementation is {@link rapaio.data.sample.Identity}
      * which gives all the original training instances.
      *
      * @param sampler instance of a new sampler

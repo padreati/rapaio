@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -70,8 +71,8 @@ public class RMSE implements Printable {
         predictVars = new ArrayList<>();
 
         for (String targetName : targetNames) {
-            actualVars.add(actual.getVar(targetName));
-            predictVars.add(predict.getVar(targetName));
+            actualVars.add(actual.var(targetName));
+            predictVars.add(predict.var(targetName));
         }
 
         compute();
@@ -79,7 +80,7 @@ public class RMSE implements Printable {
 
     public RMSE(Var actual, Var predict) {
         targetNames = new ArrayList<>();
-        targetNames.add(actual.getName());
+        targetNames.add(actual.name());
 
         actualVars = new ArrayList<>();
         predictVars = new ArrayList<>();
@@ -95,9 +96,9 @@ public class RMSE implements Printable {
         double count = 0;
 
         for (int i = 0; i < targetNames.size(); i++) {
-            for (int j = 0; j < actualVars.get(i).getRowCount(); j++) {
+            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
                 count++;
-                total += Math.pow(actualVars.get(i).getValue(j) - predictVars.get(i).getValue(j), 2);
+                total += Math.pow(actualVars.get(i).value(j) - predictVars.get(i).value(j), 2);
             }
         }
         value = Math.sqrt(total / count);
@@ -108,7 +109,7 @@ public class RMSE implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "\n" +
                 "> Root Mean Squared Error\n" +
                 "RMSE: " + formatFlex(value) + "\n";

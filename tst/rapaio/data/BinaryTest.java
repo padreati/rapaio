@@ -72,13 +72,13 @@ public class BinaryTest {
     public void testNumericStats() {
         BinaryVar b = BinaryVar.copy(1, 1, 0, 0, 1, 0, 1, 1);
         b.printSummary();
-        assertEquals(0.625, Mean.from(b).getValue(), 10e-10);
+        assertEquals(0.625, Mean.from(b).value(), 10e-10);
     }
 
     @Test
     public void testMissingValues() {
         BinaryVar bin = BinaryVar.copy(1, 0, 1, 0, -1, -1, 1, 0);
-        assertEquals(8, bin.getRowCount());
+        assertEquals(8, bin.rowCount());
         assertEquals(true, bin.isMissing(4));
         assertEquals(false, bin.isMissing(7));
 
@@ -87,7 +87,7 @@ public class BinaryTest {
         bin.addBinary(true);
         bin.setMissing(1);
 
-        assertEquals(2, bin.getRowCount());
+        assertEquals(2, bin.rowCount());
         assertEquals(true, bin.isMissing(0));
         assertEquals(true, bin.isMissing(1));
     }
@@ -95,11 +95,11 @@ public class BinaryTest {
     @Test
     public void testBuilders() {
         BinaryVar bin = BinaryVar.copy(true, true, false, false);
-        assertEquals(4, bin.getRowCount());
-        assertEquals(true, bin.getBinary(0));
-        assertEquals(false, bin.getBinary(3));
+        assertEquals(4, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(3));
 
-        assertEquals(4, bin.getRowCount());
+        assertEquals(4, bin.rowCount());
     }
 
     @Test
@@ -110,20 +110,20 @@ public class BinaryTest {
         bin.addIndex(1);
         bin.setIndex(1, 0);
 
-        assertEquals(0, bin.getValue(0), 10e-10);
-        assertEquals(0, bin.getIndex(1));
+        assertEquals(0, bin.value(0), 10e-10);
+        assertEquals(0, bin.index(1));
 
         BinaryVar copy = bin.solidCopy();
-        assertEquals(false, copy.getBinary(0));
-        assertEquals(false, copy.getBinary(1));
-        assertEquals(2, copy.getRowCount());
+        assertEquals(false, copy.binary(0));
+        assertEquals(false, copy.binary(1));
+        assertEquals(2, copy.rowCount());
 
         copy.remove(0);
-        assertEquals(1, copy.getRowCount());
-        assertEquals(false, copy.getBinary(0));
+        assertEquals(1, copy.rowCount());
+        assertEquals(false, copy.binary(0));
 
         copy.clear();
-        assertEquals(0, copy.getRowCount());
+        assertEquals(0, copy.rowCount());
 
         try {
             copy.remove(10);
@@ -139,9 +139,9 @@ public class BinaryTest {
         bin.addValue(0);
         bin.addValue(-1);
 
-        assertEquals(3, bin.getRowCount());
-        assertEquals(true, bin.getBinary(0));
-        assertEquals(false, bin.getBinary(1));
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
@@ -161,8 +161,8 @@ public class BinaryTest {
         bin.setValue(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.getBinary(1));
-        assertEquals(true, bin.getBinary(2));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
     }
 
     @Test
@@ -173,9 +173,9 @@ public class BinaryTest {
         bin.addIndex(0);
         bin.addIndex(-1);
 
-        assertEquals(3, bin.getRowCount());
-        assertEquals(true, bin.getBinary(0));
-        assertEquals(false, bin.getBinary(1));
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
@@ -195,8 +195,8 @@ public class BinaryTest {
         bin.setIndex(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.getBinary(1));
-        assertEquals(true, bin.getBinary(2));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
     }
 
     @Test
@@ -207,9 +207,9 @@ public class BinaryTest {
         bin.addStamp(0);
         bin.addStamp(-1);
 
-        assertEquals(3, bin.getRowCount());
-        assertEquals(true, bin.getBinary(0));
-        assertEquals(false, bin.getBinary(1));
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
@@ -229,20 +229,20 @@ public class BinaryTest {
         bin.setStamp(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.getBinary(1));
-        assertEquals(true, bin.getBinary(2));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
 
-        assertEquals(1L, bin.getStamp(0));
+        assertEquals(1L, bin.stamp(0));
     }
 
     @Test
     public void testLabelManipulation() {
         BinaryVar bin = BinaryVar.copy(true, false, true);
         bin.addMissing();
-        assertEquals("true", bin.getLabel(0));
-        assertEquals("false", bin.getLabel(1));
-        assertEquals("true", bin.getLabel(2));
-        assertEquals("?", bin.getLabel(3));
+        assertEquals("true", bin.label(0));
+        assertEquals("false", bin.label(1));
+        assertEquals("true", bin.label(2));
+        assertEquals("?", bin.label(3));
 
         try {
             bin.addLabel("x");
@@ -259,7 +259,7 @@ public class BinaryTest {
         } catch(Throwable ignored) {}
 
         try {
-            bin.getLevels();
+            bin.levels();
             assertTrue("This should raise an exception", false);
         } catch(Throwable ignored) {}
     }

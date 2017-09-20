@@ -24,7 +24,6 @@
 
 package rapaio.core;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tests.KSTestOneSample;
@@ -66,7 +65,7 @@ public class SamplingToolsTest {
             }
         }
         ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
-        assertTrue(test.getPValue() > 0.05);
+        assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
 
@@ -85,7 +84,7 @@ public class SamplingToolsTest {
             }
         }
         ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
-        assertTrue(test.getPValue() > 0.05);
+        assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
 

@@ -23,34 +23,34 @@
  *
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.graphics.plot;
+
+import rapaio.graphics.base.HostFigure;
+import rapaio.graphics.base.Range;
+import rapaio.ml.clustering.ClusterSilhouette;
+
+import java.awt.*;
 
 /**
- * BiCubic kernel function
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/17.
  */
-public class KFuncBiWeight implements KFunc {
+public class ClusterSilhuettePlot extends HostFigure {
 
-    private static final long serialVersionUID = -7870965133827784297L;
+    private final ClusterSilhouette silhouette;
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        double value = Math.abs(x - x0) / bandwidth;
-        return value <= 1 ? 15 * (1 - value * value) * (1 - value * value) / 16. : 0;
+    public ClusterSilhuettePlot(ClusterSilhouette silhouette) {
+        this.silhouette = silhouette;
     }
 
     @Override
-    public double minValue(double x, double bandwidth) {
-        return x - bandwidth;
+    protected Range buildRange() {
+        return null;
     }
 
     @Override
-    public double maxValue(double x, double bandwidth) {
-        return x + bandwidth;
-    }
+    public void paint(Graphics2D g2d, Rectangle rect) {
+        super.paint(g2d, rect);
 
-    @Override
-    public String summary() {
-        return "KFuncBiWeight";
+
     }
 }

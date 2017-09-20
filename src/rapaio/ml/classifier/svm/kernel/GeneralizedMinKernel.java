@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -54,8 +55,8 @@ public class GeneralizedMinKernel extends AbstractKernel {
         double sum = 0;
         for (String varName : varNames) {
             sum += Math.min(
-                    Math.pow(Math.abs(df1.getValue(row1, varName)), alpha),
-                    Math.pow(Math.abs(df2.getValue(row2, varName)), beta)
+                    Math.pow(Math.abs(df1.value(row1, varName)), alpha),
+                    Math.pow(Math.abs(df2.value(row2, varName)), beta)
             );
         }
         return sum;

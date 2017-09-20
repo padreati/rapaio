@@ -106,7 +106,7 @@ public class CorrPearsonTest {
         CorrPearson cp = CoreTools.corrPearson(x, y, z);
         cp.printSummary();
 
-        DistanceMatrix m = cp.getMatrix();
+        DistanceMatrix m = cp.matrix();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {

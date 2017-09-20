@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -320,24 +321,24 @@ public final class SamplingTools {
     public static List<Frame> randomSampleSlices(Frame frame, double... freq) {
         int total = 0;
         for (double f : freq) {
-            total += (int) (f * frame.getRowCount());
+            total += (int) (f * frame.rowCount());
         }
-        if (total > frame.getRowCount()) {
+        if (total > frame.rowCount()) {
             throw new IllegalArgumentException("total counts greater than available number of rows");
         }
         List<Frame> result = new ArrayList<>();
 
-        List<Integer> rows = IntStream.range(0, frame.getRowCount()).mapToObj(i -> i).collect(Collectors.toList());
+        List<Integer> rows = IntStream.range(0, frame.rowCount()).mapToObj(i -> i).collect(Collectors.toList());
         Collections.shuffle(rows, RandomSource.getRandom());
 
         int start = 0;
         for (double f : freq) {
-            int len = (int) (f * frame.getRowCount());
+            int len = (int) (f * frame.rowCount());
             result.add(frame.mapRows(Mapping.copy(rows.subList(start, start + len))));
             start += len;
         }
-        if (start < frame.getRowCount()) {
-            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.getRowCount()))));
+        if (start < frame.rowCount()) {
+            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.rowCount()))));
         }
         return result;
     }
@@ -347,10 +348,10 @@ public final class SamplingTools {
             throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
         }
         List<List<Integer>> maps = new ArrayList<>();
-        for (int i = 0; i < df.getVar(strataName).getLevels().length; i++) {
+        for (int i = 0; i < df.var(strataName).levels().length; i++) {
             maps.add(new ArrayList<>());
         }
-        df.getVar(strataName).stream().forEach(s -> maps.get(s.getIndex()).add(s.getRow()));
+        df.var(strataName).stream().forEach(s -> maps.get(s.getIndex()).add(s.getRow()));
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {
@@ -372,6 +373,6 @@ public final class SamplingTools {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.getRowCount(), (int) (percent * frame.getRowCount()))));
+        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

@@ -71,10 +71,10 @@ public class ClassifierSerializationTest {
         CFit shaddowFit = shaddow.fit(df);
 
         modelFit.printSummary();
-        assertEquals(modelFit.getSummary(), shaddowFit.getSummary());
+        assertEquals(modelFit.summary(), shaddowFit.summary());
 
         varData.addLabel(dataName);
         varModel.addLabel(model.name());
-        varAcc.addValue(new Confusion(df.getVar(target), modelFit.firstClasses()).accuracy());
+        varAcc.addValue(new Confusion(df.var(target), modelFit.firstClasses()).accuracy());
     }
 }

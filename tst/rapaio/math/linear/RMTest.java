@@ -130,8 +130,8 @@ public class RMTest {
                 {7, 8, 9}
         });
 
-        assertEquals(5, a1.mean().getValue(), TOL);
-        assertEquals(7.5, a1.var().getValue(), TOL);
+        assertEquals(5, a1.mean().value(), TOL);
+        assertEquals(7.5, a1.var().value(), TOL);
     }
 
     @Test

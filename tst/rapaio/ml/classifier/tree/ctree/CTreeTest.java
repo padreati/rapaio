@@ -107,7 +107,7 @@ public class CTreeTest {
         df = df.bindVars(pred.firstClasses().solidCopy().withName("fit"));
 
         Frame match = df.stream().filter(spot -> spot.getIndex("class") == spot.getIndex("fit")).toMappedFrame();
-        assertEquals(150, match.getRowCount());
+        assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
         df.setMissing(0, 1);
@@ -116,7 +116,7 @@ public class CTreeTest {
 
         tree.fit(df, true, false);
         match = df.stream().filter(spot -> spot.getIndex("class") == spot.getIndex("fit")).toMappedFrame();
-        assertEquals(150, match.getRowCount());
+        assertEquals(150, match.rowCount());
     }
 
 

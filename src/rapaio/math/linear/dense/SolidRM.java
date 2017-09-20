@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -173,10 +174,10 @@ public class SolidRM implements RM {
     }
 
     public static SolidRM copy(Frame df) {
-        SolidRM m = empty(df.getRowCount(), df.getVarCount());
-        for (int j = 0; j < df.getVarCount(); j++) {
-            for (int i = 0; i < df.getRowCount(); i++) {
-                m.set(i, j, df.getValue(i, j));
+        SolidRM m = empty(df.rowCount(), df.varCount());
+        for (int j = 0; j < df.varCount(); j++) {
+            for (int i = 0; i < df.rowCount(); i++) {
+                m.set(i, j, df.value(i, j));
             }
         }
         return m;
@@ -184,10 +185,10 @@ public class SolidRM implements RM {
 
     public static SolidRM copy(Var... vars) {
         Frame df = BoundFrame.byVars(vars);
-        SolidRM m = empty(df.getRowCount(), df.getVarCount());
-        for (int j = 0; j < df.getVarCount(); j++) {
-            for (int i = 0; i < df.getRowCount(); i++) {
-                m.set(i, j, df.getValue(i, j));
+        SolidRM m = empty(df.rowCount(), df.varCount());
+        for (int j = 0; j < df.varCount(); j++) {
+            for (int i = 0; i < df.rowCount(); i++) {
+                m.set(i, j, df.value(i, j));
             }
         }
         return m;

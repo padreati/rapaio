@@ -49,7 +49,7 @@ public interface Var extends Serializable, Printable {
     /**
      * @return name of the variable
      */
-    String getName();
+    String name();
 
     /**
      * Sets the variable name
@@ -61,14 +61,14 @@ public interface Var extends Serializable, Printable {
     /**
      * @return variable type
      */
-    VarType getType();
+    VarType type();
 
     /**
      * Number of observations contained by the variable.
      *
      * @return size of var
      */
-    int getRowCount();
+    int rowCount();
 
     /**
      * Builds a new variable having rows of the current variable,
@@ -112,7 +112,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return numerical setValue
      */
-    double getValue(int row);
+    double value(int row);
 
     /**
      * Set numeric value for the observation specified by {@param row} to {@param value}.
@@ -138,7 +138,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return index value
      */
-    int getIndex(int row);
+    int index(int row);
 
     /**
      * Set index value for the observation specified by {@param row}.
@@ -161,7 +161,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return label value for the observation
      */
-    String getLabel(int row);
+    String label(int row);
 
     /**
      * Set nominal label for the observation specified by {@param row}.
@@ -193,14 +193,18 @@ public interface Var extends Serializable, Printable {
      *
      * @return term levels defined by the nominal var.
      */
-    String[] getLevels();
+    String[] levels();
 
-    default String[] getCompleteLevels() {
-        return getStreamLevels().skip(1).toArray(String[]::new);
+    default String[] completeLevels() {
+        return streamLevels().skip(1).toArray(String[]::new);
     }
 
-    default Stream<String> getStreamLevels() {
-        return Arrays.stream(getLevels());
+    default Stream<String> streamLevels() {
+        return Arrays.stream(levels());
+    }
+
+    default Stream<String> streamCompleteLevels() {
+        return Arrays.stream(levels()).skip(1);
     }
 
     /**
@@ -241,7 +245,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return boolean binary value
      */
-    boolean getBinary(int row);
+    boolean binary(int row);
 
     /**
      * Set a binary/boolean value
@@ -264,7 +268,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return long integer value
      */
-    long getStamp(int row);
+    long stamp(int row);
 
     /**
      * Set long integer (stamp) value
@@ -347,14 +351,14 @@ public interface Var extends Serializable, Printable {
      * @return a stream of variables spots
      */
     default VSpots stream() {
-        return new VSpots(IntStream.range(0, getRowCount()).mapToObj(row -> new VSpot(row, this)), this);
+        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
     }
 
     /**
      * @return a stream of variables spots
      */
     default List<VSpot> spotList() {
-        return IntStream.range(0, getRowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
+        return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
     }
 
     default Var fitApply(VFilter... inputFilters) {
@@ -371,7 +375,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default Comparator<Integer> refComparator(boolean asc) {
-        switch (this.getType()) {
+        switch (this.type()) {
             case TEXT:
             case NOMINAL:
                 return RowComparators.nominal(this, asc);
@@ -393,18 +397,18 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
-        if (!getName().equals(var.getName()))
+        if (!name().equals(var.name()))
             return false;
-        if (getRowCount() != var.getRowCount())
+        if (rowCount() != var.rowCount())
             return false;
-        if (getType() != var.getType())
+        if (type() != var.type())
             return false;
-        for (int i = 0; i < getRowCount(); i++) {
-            if (var.getType().isNumeric()) {
-                if (Math.abs(getValue(i) - var.getValue(i)) > 1e-12)
+        for (int i = 0; i < rowCount(); i++) {
+            if (var.type().isNumeric()) {
+                if (Math.abs(value(i) - var.value(i)) > 1e-12)
                     return false;
             } else {
-                if (!getLabel(i).equals(var.getLabel(i)))
+                if (!label(i).equals(var.label(i)))
                     return false;
             }
         }
@@ -412,7 +416,7 @@ public interface Var extends Serializable, Printable {
     }
 
     @Override
-    default String getSummary() {
+    default String summary() {
         return Summary.getSummary(this);
     }
 

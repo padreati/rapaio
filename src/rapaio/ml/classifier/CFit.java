@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -72,10 +73,10 @@ public class CFit implements Printable {
             targetNames.add(target);
             dictionaries.put(target, model.targetLevels(target));
             if (hasClasses) {
-                classes.put(target, NominalVar.empty(df.getRowCount(), model.targetLevels(target)).withName(target));
+                classes.put(target, NominalVar.empty(df.rowCount(), model.targetLevels(target)).withName(target));
             }
             if (hasDensities) {
-                densities.put(target, SolidFrame.matrix(df.getRowCount(), model.targetLevels(target)));
+                densities.put(target, SolidFrame.matrix(df.rowCount(), model.targetLevels(target)));
             }
         }
     }
@@ -194,7 +195,7 @@ public class CFit implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");
@@ -206,15 +207,15 @@ public class CFit implements Printable {
         sb.append("\n");
 
         sb.append("Predicted frame summary:\n");
-        sb.append("> rows: ").append(df.getRowCount()).append("\n");
-        sb.append("> vars: ").append(df.getVarCount()).append("\n");
+        sb.append("> rows: ").append(df.rowCount()).append("\n");
+        sb.append("> vars: ").append(df.varCount()).append("\n");
         sb.append("> targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
         sb.append("> inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
         sb.append("\n");
 
         sb.append("Classification results:").append("\n");
-        if (Arrays.asList(df.getVarNames()).contains(firstTargetName())) {
-            sb.append(new Confusion(df.getVar(model.firstTargetName()), firstClasses()).getSummary());
+        if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
+            sb.append(new Confusion(df.var(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

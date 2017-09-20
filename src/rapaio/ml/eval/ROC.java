@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -62,9 +63,9 @@ public class ROC implements Printable, Serializable {
      * @param predict variable which contains the predicted classes
      */
     public static ROC from(Var score, Var actual, Var predict) {
-        IndexVar classes = IndexVar.empty(actual.getRowCount());
-        for (int i = 0; i < actual.getRowCount(); i++) {
-            if (actual.getLabel(i).equals(predict.getLabel(i))) {
+        IndexVar classes = IndexVar.empty(actual.rowCount());
+        for (int i = 0; i < actual.rowCount(); i++) {
+            if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
             } else {
                 classes.setIndex(i, 0);
@@ -83,7 +84,7 @@ public class ROC implements Printable, Serializable {
      * @param index  index of the class considered 1, all other index values are 0
      */
     public static ROC from(Var score, Var actual, int index) {
-        return from(score, actual, actual.getLevels()[index]);
+        return from(score, actual, actual.levels()[index]);
     }
 
     /**
@@ -96,9 +97,9 @@ public class ROC implements Printable, Serializable {
      * @param label  label of the class considered 1, all other labels values are 0
      */
     public static ROC from(Var score, Var actual, String label) {
-        IndexVar classes = IndexVar.empty(actual.getRowCount());
-        for (int i = 0; i < actual.getRowCount(); i++) {
-            if (actual.getLabel(i).equals(label)) {
+        IndexVar classes = IndexVar.empty(actual.rowCount());
+        for (int i = 0; i < actual.rowCount(); i++) {
+            if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);
             } else {
                 classes.setIndex(i, 0);
@@ -119,11 +120,11 @@ public class ROC implements Printable, Serializable {
         double prevtp = 0;
         double prevfp = 0;
         auc = 0;
-        for (int i = 0; i < classes.getRowCount(); i++) {
+        for (int i = 0; i < classes.rowCount(); i++) {
             if (classes.isMissing(i)) {
                 continue;
             }
-            if (classes.getIndex(i) > 0) p++;
+            if (classes.index(i) > 0) p++;
             else n++;
         }
 
@@ -132,13 +133,13 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(IndexVar.seq(score.getRowCount()));
+        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(IndexVar.seq(score.rowCount()));
         int len = 1;
         double prev = Double.MIN_VALUE;
-        for (int i = 0; i < rows.getRowCount(); i++) {
-            if (score.isMissing(rows.getIndex(i)) || classes.isMissing(rows.getIndex(i))) continue;
-            if (score.getValue(rows.getIndex(i)) != prev) {
-                prev = score.getValue(rows.getIndex(i));
+        for (int i = 0; i < rows.rowCount(); i++) {
+            if (score.isMissing(rows.index(i)) || classes.isMissing(rows.index(i))) continue;
+            if (score.value(rows.index(i)) != prev) {
+                prev = score.value(rows.index(i));
                 len++;
             }
         }
@@ -146,9 +147,9 @@ public class ROC implements Printable, Serializable {
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 
-        for (int i = 0; i < rows.getRowCount(); i++) {
-            if (score.isMissing(rows.getIndex(i)) || classes.isMissing(rows.getIndex(i))) continue;
-            if (score.getValue(rows.getIndex(i)) != prev) {
+        for (int i = 0; i < rows.rowCount(); i++) {
+            if (score.isMissing(rows.index(i)) || classes.isMissing(rows.index(i))) continue;
+            if (score.value(rows.index(i)) != prev) {
                 auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
                 double accValue = (tp + n - fp) / (0. + n + p);
                 data.setValue(pos, threshold, prev);
@@ -157,10 +158,10 @@ public class ROC implements Printable, Serializable {
                 data.setValue(pos, acc, accValue);
                 prevfp = fp;
                 prevtp = tp;
-                prev = score.getValue(rows.getIndex(i));
+                prev = score.value(rows.index(i));
                 pos++;
             }
-            if (classes.getIndex(rows.getIndex(i)) > 0) tp++;
+            if (classes.index(rows.index(i)) > 0) tp++;
             else fp++;
         }
         data.setValue(pos, threshold, prev);
@@ -181,9 +182,9 @@ public class ROC implements Printable, Serializable {
     }
 
     public int findRowForThreshold(double value) {
-        Var th = data.getVar(threshold);
-        for (int i = 0; i < th.getRowCount(); i++) {
-            if (th.getValue(i) <= value) {
+        Var th = data.var(threshold);
+        for (int i = 0; i < th.rowCount(); i++) {
+            if (th.value(i) <= value) {
                 return i;
             }
         }
@@ -191,39 +192,39 @@ public class ROC implements Printable, Serializable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         final String fmt = "%-10s";
 
         sb.append("> ROC printSummary").append("\n");
         sb.append("\n");
-        for (int j = 0; j < data.getVarCount(); j++) {
+        for (int j = 0; j < data.varCount(); j++) {
             if (j > 0) {
                 sb.append(", ");
             }
-            sb.append(String.format(fmt, data.getVarNames()[j]));
+            sb.append(String.format(fmt, data.varNames()[j]));
         }
         sb.append("\n");
 
         int[] rows = new int[11];
         rows[0] = 0;
-        rows[1] = data.getRowCount() / 10;
-        rows[2] = 2 * data.getRowCount() / 10;
-        rows[3] = 3 * data.getRowCount() / 10;
-        rows[4] = 4 * data.getRowCount() / 10;
-        rows[5] = 5 * data.getRowCount() / 10;
-        rows[6] = 6 * data.getRowCount() / 10;
-        rows[7] = 7 * data.getRowCount() / 10;
-        rows[8] = 8 * data.getRowCount() / 10;
-        rows[9] = 9 * data.getRowCount() / 10;
-        rows[10] = data.getRowCount() - 1;
+        rows[1] = data.rowCount() / 10;
+        rows[2] = 2 * data.rowCount() / 10;
+        rows[3] = 3 * data.rowCount() / 10;
+        rows[4] = 4 * data.rowCount() / 10;
+        rows[5] = 5 * data.rowCount() / 10;
+        rows[6] = 6 * data.rowCount() / 10;
+        rows[7] = 7 * data.rowCount() / 10;
+        rows[8] = 8 * data.rowCount() / 10;
+        rows[9] = 9 * data.rowCount() / 10;
+        rows[10] = data.rowCount() - 1;
 
         for (int i : rows) {
-            for (int j = 0; j < data.getVarCount(); j++) {
+            for (int j = 0; j < data.varCount(); j++) {
                 if (j > 0) {
                     sb.append(", ");
                 }
-                sb.append(String.format(fmt, formatFlex(data.getValue(i, j))));
+                sb.append(String.format(fmt, formatFlex(data.value(i, j))));
             }
             sb.append("\n");
         }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -80,15 +81,15 @@ public class CEvaluation {
             cc.train(train, classColName);
             CFit cp = cc.fit(test);
 
-            Confusion conf = new Confusion(test.getVar(classColName), cp.firstClasses());
+            Confusion conf = new Confusion(test.var(classColName), cp.firstClasses());
             acc.addValue(conf.accuracy());
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     conf.accuracy(),
-                    CoreTools.mean(acc).getValue(),
+                    CoreTools.mean(acc).value(),
                     CoreTools.variance(acc).sdValue()));
         }
 
-        double correct = CoreTools.mean(acc).getValue();
+        double correct = CoreTools.mean(acc).value();
         print("==============\n");
         print(String.format("Mean accuracy:%.6f\n", correct));
         print(String.format("SE: %.6f     (Standard error)\n", CoreTools.variance(acc).sdValue()));
@@ -96,10 +97,10 @@ public class CEvaluation {
     }
 
     private static List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.getVar(classColName).getLevels();
+        String[] dict = df.var(classColName).levels();
         List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            rows.get(df.getIndex(i, classColName)).add(i);
+        for (int i = 0; i < df.rowCount(); i++) {
+            rows.get(df.index(i, classColName)).add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -129,16 +130,16 @@ public class CEvaluation {
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
             Mapping testMapping = Mapping.empty();
-            if (folds >= df.getRowCount() - 1) {
+            if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
-                for (int j = 0; j < df.getRowCount(); j++) {
+                for (int j = 0; j < df.rowCount(); j++) {
                     if (j != i) {
                         trainMapping.add(j);
                     }
                 }
 
             } else {
-                for (int j = 0; j < df.getRowCount(); j++) {
+                for (int j = 0; j < df.rowCount(); j++) {
                     if (j % folds == i) {
                         testMapping.add(j);
                     } else {
@@ -153,7 +154,7 @@ public class CEvaluation {
                 Classifier c = classifiers.get(k).newInstance();
                 c.train(train, classColName);
                 CFit cp = c.fit(test);
-                Confusion cm = new Confusion(test.getVar(classColName), cp.firstClasses());
+                Confusion cm = new Confusion(test.var(classColName), cp.firstClasses());
 //                cm.printSummary();
                 double acc = cm.accuracy();
                 tacc[k] += acc;
@@ -170,7 +171,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = NumericVar.fill(df.getRowCount(), 1.0);
+        Var weights = NumericVar.fill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -179,7 +180,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = NumericVar.fill(df.getRowCount(), 1.0d);
+        Var weights = NumericVar.fill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 
@@ -189,7 +190,7 @@ public class CEvaluation {
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
 //            System.out.println("get sample...");
-            int[] rows = SamplingTools.sampleWR(df.getRowCount(), (int) (df.getRowCount() * p));
+            int[] rows = SamplingTools.sampleWR(df.rowCount(), (int) (df.rowCount() * p));
 //            System.out.println("build train set ...");
             Frame train = df.mapRows(rows);
 //            System.out.println("build test set ...");
@@ -200,7 +201,7 @@ public class CEvaluation {
 //            System.out.println("fit test cases ...");
             Var classes = cc.fit(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
-            Confusion cm = new Confusion(test.getVar(classColName), classes);
+            Confusion cm = new Confusion(test.var(classColName), classes);
             cm.printSummary();
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
@@ -223,8 +224,8 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            testAcc.addValue(new Confusion(test.getVar(targetVar), c.fit(test).firstClasses()).accuracy());
-            trainAcc.addValue(new Confusion(train.getVar(targetVar), c.fit(train).firstClasses()).accuracy());
+            testAcc.addValue(new Confusion(test.var(targetVar), c.fit(test).firstClasses()).accuracy());
+            trainAcc.addValue(new Confusion(train.var(targetVar), c.fit(train).firstClasses()).accuracy());
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(plot()
@@ -236,11 +237,11 @@ public class CEvaluation {
         c.train(train, targetVar);
 
         WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.getVar(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
         trainConfusion.printSummary();
         WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.getVar(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
@@ -268,27 +269,27 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            ROC roc = ROC.from(c.fit(test).firstDensity().getVar(label), test.getVar(targetVar), label);
+            ROC roc = ROC.from(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
             testAuc.addValue(roc.auc());
             WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
             prevAuc.set(roc.auc());
-//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().getVar(label), train.getVar(targetVar), label).auc());
+//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
 
 //            WS.draw(plot()
 //                            .lines(r, testAuc, color(1))
-//                            .title("testAuc: " + WS.formatFlex(testAuc.getValue(testAuc.getRowCount() - 1)))
+//                            .title("testAuc: " + WS.formatFlex(testAuc.value(testAuc.rowCount() - 1)))
 //            );
         });
         c.withRuns(runs);
         c.train(train, targetVar);
 
 //        WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.getVar(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
         trainConfusion.printSummary();
 //        WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.getVar(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
         testConfusion.printSummary();
 
 

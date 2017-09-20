@@ -43,8 +43,8 @@ public class FFilterSortTest {
     public void testValueVector() {
         Var unsorted = NumericVar.copy(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = new VFSort().fitApply(unsorted);
-        for (int i = 1; i < sorted.getRowCount(); i++) {
-            assertTrue(sorted.getValue(i - 1) <= sorted.getValue(i));
+        for (int i = 1; i < sorted.rowCount(); i++) {
+            assertTrue(sorted.value(i - 1) <= sorted.value(i));
         }
     }
 
@@ -65,22 +65,22 @@ public class FFilterSortTest {
         unsorted.setLabel(2, "ion");
 
         Var sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
-        assertEquals("ana", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals(sorted.rowCount(), unsorted.rowCount());
+        assertEquals("ana", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
-        assertEquals("ana", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals(sorted.rowCount(), unsorted.rowCount());
+        assertEquals("ana", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
-        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
-        assertEquals("vasile", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("ana", sorted.getLabel(2));
+        assertEquals(sorted.rowCount(), unsorted.rowCount());
+        assertEquals("vasile", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("ana", sorted.label(2));
     }
 
     @Test
@@ -91,15 +91,15 @@ public class FFilterSortTest {
         unsorted.setLabel(2, "?");
 
         Var sorted = new VFSort().fitApply(unsorted);
-        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
-        assertEquals("?", sorted.getLabel(0));
-        assertEquals("ana", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals(sorted.rowCount(), unsorted.rowCount());
+        assertEquals("?", sorted.label(0));
+        assertEquals("ana", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
-        assertEquals(sorted.getRowCount(), unsorted.getRowCount());
-        assertEquals("vasile", sorted.getLabel(0));
-        assertEquals("ana", sorted.getLabel(1));
-        assertEquals("?", sorted.getLabel(2));
+        assertEquals(sorted.rowCount(), unsorted.rowCount());
+        assertEquals("vasile", sorted.label(0));
+        assertEquals("ana", sorted.label(1));
+        assertEquals("?", sorted.label(2));
     }
 }

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -191,7 +192,7 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.STAMP;
     }
 
@@ -205,7 +206,7 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
@@ -229,8 +230,8 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public int getIndex(int row) {
-        return (int) getStamp(row);
+    public int index(int row) {
+        return (int) stamp(row);
     }
 
     @Override
@@ -244,8 +245,8 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public double getValue(int row) {
-        return getStamp(row);
+    public double value(int row) {
+        return stamp(row);
     }
 
     @Override
@@ -259,8 +260,8 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public String getLabel(int row) {
-        return String.valueOf(getStamp(row));
+    public String label(int row) {
+        return String.valueOf(stamp(row));
     }
 
     @Override
@@ -274,7 +275,7 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public String[] getLevels() {
+    public String[] levels() {
         throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
@@ -284,9 +285,9 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBinary(int row) {
-        if (getStamp(row) == 1) return true;
-        if (getStamp(row) == 0) return false;
+    public boolean binary(int row) {
+        if (stamp(row) == 1) return true;
+        if (stamp(row) == 0) return false;
         throw new IllegalArgumentException("Stamp value could not be represented as binary value");
     }
 
@@ -301,7 +302,7 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public long getStamp(int row) {
+    public long stamp(int row) {
         return data[row];
     }
 
@@ -319,7 +320,7 @@ public class StampVar extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return getStamp(row) == MISSING_VALUE;
+        return stamp(row) == MISSING_VALUE;
     }
 
     @Override
@@ -359,6 +360,6 @@ public class StampVar extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Stamp[" + getRowCount() + "]";
+        return "Stamp[" + rowCount() + "]";
     }
 }

@@ -112,7 +112,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier train(Frame df, String... targetVars) {
-        NumericVar weights = NumericVar.fill(df.getRowCount(), 1);
+        NumericVar weights = NumericVar.fill(df.rowCount(), 1);
         return train(df, weights, targetVars);
     }
 
@@ -141,14 +141,14 @@ public abstract class AbstractClassifier implements Classifier {
         Frame result = df;
         List<String> targets = VRange.of(targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
-        this.targetTypes = targets.stream().map(name -> result.getVar(name).getType()).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), result.getVar(firstTargetName()).getLevels());
+        this.dict.put(firstTargetName(), result.var(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
-        List<String> inputs = Arrays.stream(result.getVarNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(name -> result.getVar(name).getType()).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);
         return result;
@@ -188,7 +188,7 @@ public abstract class AbstractClassifier implements Classifier {
     protected abstract CFit coreFit(Frame df, boolean withClasses, boolean withDistributions);
 
     @Override
-    public String getSummary() {
+    public String summary() {
         return "not implemented";
     }
 
@@ -206,7 +206,7 @@ public abstract class AbstractClassifier implements Classifier {
             tt.set(i, 4, " |", 1);
         }
         tt.withMerge();
-        sb.append(tt.getSummary()).append("\n");
+        sb.append(tt.summary()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")

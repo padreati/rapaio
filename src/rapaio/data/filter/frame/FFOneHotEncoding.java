@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -68,16 +69,16 @@ public class FFOneHotEncoding extends AbstractFF {
         levels = new HashMap<>();
         for (String varName : varNames) {
             // for each nominal variable
-            if (df.getVar(varName).getType().isNominal()) {
+            if (df.var(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.getVar(varName).getLevels();
+                String[] dict = df.var(varName).levels();
                 levels.put(varName, dict);
             }
         }
     }
 
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.getVarCount(), df);
+        checkRangeVars(1, df.varCount(), df);
 
         // build a set for fast search
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
@@ -85,7 +86,7 @@ public class FFOneHotEncoding extends AbstractFF {
         // list of variables with encoding
         List<Var> vars = new ArrayList<>();
 
-        for (String varName : df.getVarNames()) {
+        for (String varName : df.varNames()) {
 
             // if the variable has been learned
             if (levels.keySet().contains(varName)) {
@@ -96,20 +97,20 @@ public class FFOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.length; i++) {
-                    Var v = NumericVar.fill(df.getRowCount()).withName(varName + "." + dict[i]);
+                    Var v = NumericVar.fill(df.rowCount()).withName(varName + "." + dict[i]);
                     oneHotVars.add(v);
                     index.put(dict[i], v);
                 }
                 // populate encoding variables
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    String level = df.getLabel(i, varName);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    String level = df.label(i, varName);
                     if (index.containsKey(level)) {
                         index.get(level).setValue(i, 1.0);
                     }
                 }
                 vars.addAll(oneHotVars);
             } else {
-                vars.add(df.getVar(varName));
+                vars.add(df.var(varName));
             }
         }
         return BoundFrame.byVars(vars);

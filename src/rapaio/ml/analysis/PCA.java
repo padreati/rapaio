@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -39,18 +40,33 @@ import rapaio.printer.Printable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-public class PCA extends DimensionReduction implements Printable {
+public class PCA implements Printable {
 
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
     private double tol = 1e-10;
     private int maxRuns = 2_000;
+    protected RV values;
+    protected RM eigenVectors;
+
+    protected String[] inputNames;
+    protected RV mean;
+    protected RV sd;
+
+    protected boolean scaling = true;
+
+    public RV eigenValues() {
+        return values;
+    }
+
+    public RM eigenVectors() {
+        return eigenVectors;
+    }
 
     public PCA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -77,7 +93,7 @@ public class PCA extends DimensionReduction implements Printable {
             mean = SolidRV.empty(x.getColCount());
             sd = SolidRV.empty(x.getColCount());
             for (int i = 0; i < x.getColCount(); i++) {
-                mean.set(i, x.mapCol(i).mean().getValue());
+                mean.set(i, x.mapCol(i).mean().value());
                 sd.set(i, x.mapCol(i).variance().sdValue());
             }
             for (int i = 0; i < x.getRowCount(); i++) {
@@ -94,19 +110,19 @@ public class PCA extends DimensionReduction implements Printable {
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s, maxRuns, tol);
-        eigenValues = ep.getRV();
+        values = ep.getRV();
         eigenVectors = ep.getRM();
 
         logger.fine("sort eigen values and vectors");
 
-        Integer[] rows = new Integer[eigenValues.count()];
+        Integer[] rows = new Integer[values.count()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1)).compareTo(eigenValues.get(o2)));
+        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(values.get(o1)).compareTo(values.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
+        values = values.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
         eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
@@ -132,7 +148,7 @@ public class PCA extends DimensionReduction implements Printable {
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
-        return rest.getVarCount() == 0 ?
+        return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :
                 SolidFrame.matrix(result, names).bindVars(rest);
     }
@@ -140,23 +156,23 @@ public class PCA extends DimensionReduction implements Printable {
     private void validate(Frame df) {
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
         df.varStream().forEach(var -> {
-            if (!allowedTypes.contains(var.getType())) {
-                throw new IllegalArgumentException("Var type not allowed. Var name: " + var.getName() + ", type: " + var.getType().name());
+            if (!allowedTypes.contains(var.type())) {
+                throw new IllegalArgumentException("Var type not allowed. Var name: " + var.name() + ", type: " + var.type().name());
             }
         });
 
-        inputNames = df.varStream().map(Var::getName).toArray(String[]::new);
+        inputNames = df.varStream().map(Var::name).toArray(String[]::new);
     }
 
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(eigenValues.getSummary()).append("\n");
+        sb.append(values.summary()).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.getSummary()).append("\n");
+        sb.append(eigenVectors.summary()).append("\n");
 
         return sb.toString();
     }

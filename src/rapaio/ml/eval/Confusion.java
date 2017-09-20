@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -65,38 +66,38 @@ public class Confusion implements Printable {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
-        this.factors = actual.getLevels();
+        this.factors = actual.levels();
         this.cmf = new int[factors.length - 1][factors.length - 1];
         this.percents = percents;
-        this.binary = actual.getLevels().length == 3;
+        this.binary = actual.levels().length == 3;
         compute();
     }
 
     private void validate(Var actual, Var predict) {
-        if (!actual.getType().isNominal()) {
+        if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("actual values var must be nominal");
         }
-        if (!predict.getType().isNominal()) {
+        if (!predict.type().isNominal()) {
             throw new IllegalArgumentException("fit values var must be nominal");
         }
-        if (actual.getLevels().length != predict.getLevels().length) {
+        if (actual.levels().length != predict.levels().length) {
             throw new IllegalArgumentException("actual and fit does not have the same nominal levels");
         }
-        for (int i = 0; i < actual.getLevels().length; i++) {
-            if (!actual.getLevels()[i].equals(predict.getLevels()[i])) {
+        for (int i = 0; i < actual.levels().length; i++) {
+            if (!actual.levels()[i].equals(predict.levels()[i])) {
                 throw new IllegalArgumentException(
                         String.format("not the same nominal levels (actual:%s, fit:%s)",
-                                Arrays.deepToString(actual.getLevels()),
-                                Arrays.deepToString(predict.getLevels())));
+                                Arrays.deepToString(actual.levels()),
+                                Arrays.deepToString(predict.levels())));
             }
         }
     }
 
     private void compute() {
-        for (int i = 0; i < actual.getRowCount(); i++) {
-            if (actual.getIndex(i) != 0 && predict.getIndex(i) != 0) {
+        for (int i = 0; i < actual.rowCount(); i++) {
+            if (actual.index(i) != 0 && predict.index(i) != 0) {
                 completeCases++;
-                cmf[actual.getIndex(i) - 1][predict.getIndex(i) - 1]++;
+                cmf[actual.index(i) - 1][predict.index(i) - 1]++;
             }
         }
         acc = IntStream.range(0, cmf.length).mapToDouble(i -> cmf[i][i]).sum();
@@ -124,7 +125,7 @@ public class Confusion implements Printable {
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         addConfusionMatrix(sb);
         addDetails(sb);
@@ -132,7 +133,7 @@ public class Confusion implements Printable {
     }
 
     private void addDetails(StringBuilder sb) {
-        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.getRowCount()));
+        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
         sb.append(String.format("Acc: %s         (Accuracy )\n", formatFlex(acc)));
         if (binary) {
             sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", formatFlex(f1)));
@@ -195,7 +196,7 @@ public class Confusion implements Printable {
             tt.set(i + 2, factors.length + 2, String.valueOf(rowTotals[i]), 1);
         }
         tt.set(factors.length + 2, factors.length + 2, String.valueOf(grandTotal), 1);
-        sb.append(tt.getSummary());
+        sb.append(tt.summary());
 
         if (percents && completeCases > 0.) {
 
@@ -240,7 +241,7 @@ public class Confusion implements Printable {
                 tt.set(i + 2, factors.length + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
             }
             tt.set(factors.length + 2, factors.length + 2, WS.formatShort(grandTotal / completeCases), 1);
-            sb.append(tt.getSummary());
+            sb.append(tt.summary());
 
         }
 

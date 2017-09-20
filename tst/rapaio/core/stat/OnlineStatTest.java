@@ -55,20 +55,20 @@ public class OnlineStatTest {
         Var varSum = NumericVar.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
-            onlineStat.update(v.getValue(i));
+            onlineStat.update(v.value(i));
             if (i > 0) {
                 varLeft.setValue(i, onlineStat.variance());
             }
         }
         onlineStat.clean();
         for (int i = LEN - 1; i >= 0; i--) {
-            onlineStat.update(v.getValue(i));
+            onlineStat.update(v.value(i));
             if (i < LEN - 1) {
                 varRight.setValue(i, onlineStat.variance());
             }
         }
         for (int i = 0; i < LEN; i++) {
-            varSum.setValue(i, (varLeft.getValue(i) + varRight.getValue(i)) / 2);
+            varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
         }
     }
 
@@ -88,8 +88,8 @@ public class OnlineStatTest {
 
         soA.update(soB);
 
-        assertEquals(soA.variance(), CoreTools.variance(ab).getValue(), 1e-12);
-        assertEquals(soA.mean(), CoreTools.mean(ab).getValue(), 1e-30);
+        assertEquals(soA.variance(), CoreTools.variance(ab).value(), 1e-12);
+        assertEquals(soA.mean(), CoreTools.mean(ab).value(), 1e-30);
 
         assertEquals(soA.variance(), soAll.variance(), 1e-12);
         assertEquals(soA.mean(), soAll.mean(), 1e-30);

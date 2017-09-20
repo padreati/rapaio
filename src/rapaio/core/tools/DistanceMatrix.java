@@ -25,9 +25,11 @@
 
 package rapaio.core.tools;
 
-import rapaio.core.correlation.Correlation;
+import rapaio.data.Frame;
+import rapaio.ml.common.distance.Distance;
 
 import java.io.Serializable;
+import java.util.stream.IntStream;
 
 /**
  * Holds a matrix with distances between instances for a given metric.
@@ -48,6 +50,20 @@ public class DistanceMatrix implements Serializable {
         return new DistanceMatrix(names);
     }
 
+    public static DistanceMatrix fromInstances(Frame df, String[] varNames, Distance dist) {
+        String[] names = new String[df.rowCount()];
+        for (int i = 0; i < df.rowCount(); i++) {
+            names[i] = "" + i;
+        }
+        DistanceMatrix dm = new DistanceMatrix(names);
+        IntStream.range(0, df.rowCount()).parallel().forEach(i -> {
+            for (int j = i + 1; j < df.rowCount(); j++) {
+                dm.set(i, j, dist.distance(df, i, df, j, varNames));
+            }
+        });
+        return dm;
+    }
+
     private String[] names;
     private double[] values;
 
@@ -57,15 +73,15 @@ public class DistanceMatrix implements Serializable {
         values = new double[(len + 1) * len / 2];
     }
 
-    public int getLength() {
+    public int length() {
         return names.length;
     }
 
-    public String[] getNames() {
+    public String[] names() {
         return names;
     }
 
-    public String getName(int i) {
+    public String name(int i) {
         return names[i];
     }
 

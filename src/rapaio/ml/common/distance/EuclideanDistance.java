@@ -23,45 +23,30 @@
  *
  */
 
-package rapaio.data.filter.frame;
+package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.ml.analysis.PCA;
 
-import java.util.function.BiFunction;
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/17.
+ */
+public class EuclideanDistance implements Distance {
 
-public class FFPCA extends AbstractFF {
+    private static final long serialVersionUID = -8612343329421925879L;
 
-    private static final long serialVersionUID = 2797285371357486124L;
-
-    BiFunction<RV, RM, Integer> kFun;
-    private PCA pca;
-
-    public FFPCA(BiFunction<RV, RM, Integer> kFun, VRange vRange) {
-        super(vRange);
-        this.kFun = kFun;
+    @Override
+    public String name() {
+        return "Euclidean";
     }
 
     @Override
-    public FFPCA newInstance() {
-        return new FFPCA(kFun, vRange);
-    }
-
-    @Override
-    public void train(Frame df) {
-        parse(df);
-        pca = new PCA();
-        pca.train(df.mapVars(varNames));
-    }
-
-    @Override
-    public Frame apply(Frame df) {
-        Frame rest = df.removeVars(varNames);
-        int k = kFun.apply(pca.eigenValues(), pca.eigenVectors());
-        Frame trans =  pca.fit(df.mapVars(varNames), k);
-        return rest.bindVars(trans);
+    public double distance(Frame s, int sRow, Frame t, int tRow, String... varNames) {
+        double total = 0;
+        for (String varName : varNames) {
+            if (s.isMissing(sRow) || t.isMissing(tRow))
+                continue;
+            total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
+        }
+        return Math.sqrt(total);
     }
 }

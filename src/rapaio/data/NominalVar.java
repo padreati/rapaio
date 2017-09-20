@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -163,7 +164,7 @@ public final class NominalVar extends FactorBase {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.NOMINAL;
     }
 
@@ -178,7 +179,7 @@ public final class NominalVar extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return NominalVar.empty(rows, getLevels());
+        return NominalVar.empty(rows, levels());
     }
 
     @Override
@@ -188,6 +189,6 @@ public final class NominalVar extends FactorBase {
 
     @Override
     public String toString() {
-        return "Nominal[name:" + getName() + ", rowCount:" + getRowCount() + "]";
+        return "Nominal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

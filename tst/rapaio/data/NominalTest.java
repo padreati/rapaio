@@ -38,21 +38,21 @@ public class NominalTest {
     @Test
     public void testSmoke() {
         Var v = NominalVar.empty(0);
-        assertEquals(0, v.getRowCount());
-        assertEquals(1, v.getLevels().length);
-        assertEquals("?", v.getLevels()[0]);
+        assertEquals(0, v.rowCount());
+        assertEquals(1, v.levels().length);
+        assertEquals("?", v.levels()[0]);
 
         v = NominalVar.empty();
-        assertEquals(0, v.getRowCount());
-        assertEquals(1, v.getLevels().length);
-        assertEquals("?", v.getLevels()[0]);
+        assertEquals(0, v.rowCount());
+        assertEquals(1, v.levels().length);
+        assertEquals("?", v.levels()[0]);
 
-        assertTrue(v.getType().isNominal());
-        assertFalse(v.getType().isNumeric());
+        assertTrue(v.type().isNominal());
+        assertFalse(v.type().isNumeric());
 
         v = NominalVar.empty(1, "a");
-        assertEquals(1, v.getRowCount());
-        assertEquals("?", v.getLabel(0));
+        assertEquals(1, v.rowCount());
+        assertEquals("?", v.label(0));
 
         assertEquals("Nominal[name:?, rowCount:10]", NominalVar.empty(10).toString());
     }
@@ -60,10 +60,10 @@ public class NominalTest {
     @Test
     public void testDictionary() {
         Var v = NominalVar.empty(0, "a", "a", "v", "a");
-        assertEquals(3, v.getLevels().length);
-        assertEquals("?", v.getLevels()[0]);
-        assertEquals("a", v.getLevels()[1]);
-        assertEquals("v", v.getLevels()[2]);
+        assertEquals(3, v.levels().length);
+        assertEquals("?", v.levels()[0]);
+        assertEquals("a", v.levels()[1]);
+        assertEquals("v", v.levels()[2]);
 
         ArrayList<String> set = new ArrayList<>();
         set.add("a");
@@ -71,10 +71,10 @@ public class NominalTest {
         set.add("a");
 
         v = NominalVar.empty(0, set);
-        assertEquals(3, v.getLevels().length);
-        assertEquals("?", v.getLevels()[0]);
-        assertEquals("a", v.getLevels()[1]);
-        assertEquals("v", v.getLevels()[2]);
+        assertEquals(3, v.levels().length);
+        assertEquals("?", v.levels()[0]);
+        assertEquals("a", v.levels()[1]);
+        assertEquals("v", v.levels()[2]);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class NominalTest {
         Var v = NominalVar.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
-            assertEquals(0, v.getIndex(i));
+            assertEquals(0, v.index(i));
         }
 
         // w/ index
@@ -92,20 +92,20 @@ public class NominalTest {
         v.setIndex(2, 3);
         v.setIndex(3, 0);
 
-        assertEquals("a", v.getLabel(0));
-        assertEquals("b", v.getLabel(1));
-        assertEquals("c", v.getLabel(2));
-        assertEquals("?", v.getLabel(3));
+        assertEquals("a", v.label(0));
+        assertEquals("b", v.label(1));
+        assertEquals("c", v.label(2));
+        assertEquals("?", v.label(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getIndex(0));
-        assertEquals(2, v.getIndex(1));
-        assertEquals(1, v.getIndex(2));
-        assertEquals(0, v.getIndex(3));
+        assertEquals(3, v.index(0));
+        assertEquals(2, v.index(1));
+        assertEquals(1, v.index(2));
+        assertEquals(0, v.index(3));
 
         // w/ value
 
@@ -114,20 +114,20 @@ public class NominalTest {
         v.setValue(2, 3);
         v.setValue(3, 0);
 
-        assertEquals("a", v.getLabel(0));
-        assertEquals("b", v.getLabel(1));
-        assertEquals("c", v.getLabel(2));
-        assertEquals("?", v.getLabel(3));
+        assertEquals("a", v.label(0));
+        assertEquals("b", v.label(1));
+        assertEquals("c", v.label(2));
+        assertEquals("?", v.label(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getValue(0), 1e-10);
-        assertEquals(2, v.getValue(1), 1e-10);
-        assertEquals(1, v.getValue(2), 1e-10);
-        assertEquals(0, v.getValue(3), 1e-10);
+        assertEquals(3, v.value(0), 1e-10);
+        assertEquals(2, v.value(1), 1e-10);
+        assertEquals(1, v.value(2), 1e-10);
+        assertEquals(0, v.value(3), 1e-10);
     }
 
     @Test
@@ -184,8 +184,8 @@ public class NominalTest {
 
         a.addLabel("z");
 
-        assertEquals(2, b.getRowCount());
-        assertEquals(3, a.getRowCount());
+        assertEquals(2, b.rowCount());
+        assertEquals(3, a.rowCount());
     }
 
     @Test
@@ -193,33 +193,33 @@ public class NominalTest {
         NominalVar var = NominalVar.empty(0, "x", "y");
 
         var.addMissing();
-        assertEquals(1, var.getRowCount());
+        assertEquals(1, var.rowCount());
 
         var.addIndex(1);
-        assertEquals(2, var.getRowCount());
-        assertEquals("x", var.getLabel(1));
+        assertEquals(2, var.rowCount());
+        assertEquals("x", var.label(1));
 
         var.addValue(2.4);
-        assertEquals(3, var.getRowCount());
-        assertEquals("y", var.getLabel(2));
+        assertEquals(3, var.rowCount());
+        assertEquals("y", var.label(2));
 
         var = NominalVar.empty();
         var.addLabel("x");
         var.addLabel("y");
         var.remove(0);
 
-        assertEquals(1, var.getRowCount());
-        assertEquals("y", var.getLabel(0));
+        assertEquals(1, var.rowCount());
+        assertEquals("y", var.label(0));
 
         var.clear();
-        assertEquals(0, var.getRowCount());
+        assertEquals(0, var.rowCount());
     }
 
     @Test
     public void testFactorBaseBinaryStamp() {
 
         try {
-            NominalVar.empty(1, "x").getBinary(0);
+            NominalVar.empty(1, "x").binary(0);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
@@ -237,7 +237,7 @@ public class NominalTest {
         }
 
         try {
-            NominalVar.empty(1, "x").getStamp(0);
+            NominalVar.empty(1, "x").stamp(0);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
@@ -268,11 +268,11 @@ public class NominalTest {
 
         x.setLevels("x", "y", "x");
 
-        assertEquals(3, x.getLevels().length);
-        assertEquals("x", x.getLabel(0));
-        assertEquals("y", x.getLabel(1));
-        assertEquals("x", x.getLabel(2));
-        assertEquals("x", x.getLabel(3));
+        assertEquals(3, x.levels().length);
+        assertEquals("x", x.label(0));
+        assertEquals("y", x.label(1));
+        assertEquals("x", x.label(2));
+        assertEquals("x", x.label(3));
     }
 
     @Test
@@ -288,11 +288,11 @@ public class NominalTest {
 
         x.setLevels("x", "y", "z", "p");
 
-        assertEquals(5, x.getLevels().length);
-        assertEquals("x", x.getLabel(0));
-        assertEquals("y", x.getLabel(1));
-        assertEquals("x", x.getLabel(2));
-        assertEquals("z", x.getLabel(3));
+        assertEquals(5, x.levels().length);
+        assertEquals("x", x.label(0));
+        assertEquals("y", x.label(1));
+        assertEquals("x", x.label(2));
+        assertEquals("z", x.label(3));
 
         try {
             NominalVar y = NominalVar.empty(0, "a", "b");

@@ -44,7 +44,7 @@ public class DTableTest {
 
         Frame df = Datasets.loadPlay();
 
-        DTable id = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), false);
+        DTable id = DTable.fromCounts(df.var("outlook"), df.var("class"), false);
         assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.694, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.246, id.splitByRowInfoGain(), 1e-3);
@@ -52,7 +52,7 @@ public class DTableTest {
         assertEquals(1.577, id.splitByRowIntrinsicInfo(), 1e-3);
         assertEquals(0.156, id.splitByRowGainRatio(), 1e-3);
 
-        id = DTable.fromCounts(df.getVar("windy"), df.getVar("class"), false);
+        id = DTable.fromCounts(df.var("windy"), df.var("class"), false);
         assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.892, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.048, id.splitByRowInfoGain(), 1e-3);
@@ -65,9 +65,9 @@ public class DTableTest {
     public void testPlayWithMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
-        df.getVar("outlook").setMissing(5);
+        df.var("outlook").setMissing(5);
 
-        DTable id = DTable.fromCounts(df.getVar("outlook"), df.getVar("class"), false);
+        DTable id = DTable.fromCounts(df.var("outlook"), df.var("class"), false);
         id.printSummary();
 
         assertEquals(0.961, id.totalColEntropy(), 1e-3);
@@ -161,26 +161,26 @@ public class DTableTest {
         Assert.assertEquals("               x         y         z     total\n" +
                 "     a 0.1612903 0.1129032 0.0967742 0.3709677\n" +
                 "     b 0.1290323 0.3064516 0.1935484 0.6290323\n" +
-                " total 0.2903226 0.4193548 0.2903226         1\n", dt2.normalizeOverall().getSummary());
+                " total 0.2903226 0.4193548 0.2903226         1\n", dt2.normalizeOverall().summary());
         Assert.assertEquals("               x         y         z total\n" +
                 "     a 0.4347826 0.3043478 0.2608696     1\n" +
                 "     b 0.2051282 0.4871795 0.3076923     1\n" +
-                " total 0.6399108 0.7915273 0.5685619     2\n", dt2.normalizeOnRows().getSummary());
+                " total 0.6399108 0.7915273 0.5685619     2\n", dt2.normalizeOnRows().summary());
         Assert.assertEquals("               x         y         z     total\n" +
                 "     a 0.5555556 0.2692308 0.3333333 1.1581197\n" +
                 "     b 0.4444444 0.7307692 0.6666667 1.8418803\n" +
-                " total         1         1         1         3\n", dt2.normalizeOnCols().getSummary());
+                " total         1         1         1         3\n", dt2.normalizeOnCols().summary());
 
         dt2.withTotalSummary(false);
 
         Assert.assertEquals("           x         y         z\n" +
                 " a 0.1612903 0.1129032 0.0967742\n" +
-                " b 0.1290323 0.3064516 0.1935484\n", dt2.normalizeOverall().getSummary());
+                " b 0.1290323 0.3064516 0.1935484\n", dt2.normalizeOverall().summary());
         Assert.assertEquals("           x         y         z\n" +
                 " a 0.4347826 0.3043478 0.2608696\n" +
-                " b 0.2051282 0.4871795 0.3076923\n", dt2.normalizeOnRows().getSummary());
+                " b 0.2051282 0.4871795 0.3076923\n", dt2.normalizeOnRows().summary());
         Assert.assertEquals("           x         y         z\n" +
                 " a 0.5555556 0.2692308 0.3333333\n" +
-                " b 0.4444444 0.7307692 0.6666667\n", dt2.normalizeOnCols().getSummary());
+                " b 0.4444444 0.7307692 0.6666667\n", dt2.normalizeOnCols().summary());
     }
 }

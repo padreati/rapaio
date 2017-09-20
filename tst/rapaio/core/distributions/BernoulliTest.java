@@ -54,15 +54,15 @@ public class BernoulliTest {
         Var x50 = b50.sample(N);
         Var x10 = b10.sample(N);
 
-        System.out.println(CoreTools.sum(x90).getValue()/N);
-        System.out.println(CoreTools.sum(x80).getValue()/N);
-        System.out.println(CoreTools.sum(x50).getValue()/N);
-        System.out.println(CoreTools.sum(x10).getValue()/N);
+        System.out.println(CoreTools.sum(x90).value()/N);
+        System.out.println(CoreTools.sum(x80).value()/N);
+        System.out.println(CoreTools.sum(x50).value()/N);
+        System.out.println(CoreTools.sum(x10).value()/N);
 
-        assertEquals(9024, CoreTools.sum(x90).getValue(), TOL);
-        assertEquals(8075, CoreTools.sum(x80).getValue(), TOL);
-        assertEquals(5045, CoreTools.sum(x50).getValue(), TOL);
-        assertEquals(997, CoreTools.sum(x10).getValue(), TOL);
+        assertEquals(9024, CoreTools.sum(x90).value(), TOL);
+        assertEquals(8075, CoreTools.sum(x80).value(), TOL);
+        assertEquals(5045, CoreTools.sum(x50).value(), TOL);
+        assertEquals(997, CoreTools.sum(x10).value(), TOL);
 
         assertEquals(true, b90.discrete());
         assertEquals("Ber(p=0.9)", b90.name());

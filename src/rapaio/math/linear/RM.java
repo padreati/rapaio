@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -237,7 +238,7 @@ public interface RM extends Serializable, Printable {
         RM scatter = SolidRM.empty(getColCount(), getColCount());
         double[] mean = new double[getColCount()];
         for (int i = 0; i < getColCount(); i++) {
-            mean[i] = mapCol(i).mean().getValue();
+            mean[i] = mapCol(i).mean().value();
         }
         for (int k = 0; k < getRowCount(); k++) {
             double[] row = new double[getColCount()];
@@ -285,7 +286,7 @@ public interface RM extends Serializable, Printable {
 
     RM solidCopy();
 
-    default String getSummary() {
+    default String summary() {
 
         StringBuilder sb = new StringBuilder();
 

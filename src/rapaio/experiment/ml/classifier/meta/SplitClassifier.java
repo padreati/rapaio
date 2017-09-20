@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -134,13 +135,13 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {
-                            pred.classes(targetVar).setLabel(spot.getRow(), p.classes(targetVar).getLabel(0));
+                            pred.classes(targetVar).setLabel(spot.getRow(), p.classes(targetVar).label(0));
                         }
                     }
                     if (withDensities) {
                         for (String targetVar : targetNames()) {
                             for (int j = 0; j < targetLevels(targetVar).length; j++) {
-                                pred.densities().get(targetVar).setValue(spot.getRow(), targetLevels(targetVar)[j], p.densities().get(targetVar).getValue(0, targetLevels(targetVar)[j]));
+                                pred.densities().get(targetVar).setValue(spot.getRow(), targetLevels(targetVar)[j], p.densities().get(targetVar).value(0, targetLevels(targetVar)[j]));
                             }
                         }
                     }

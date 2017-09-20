@@ -25,12 +25,9 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 import rapaio.sys.WS;
-
-import static rapaio.sys.WS.formatFlex;
 
 /**
  * Two-samples K-S test
@@ -62,11 +59,11 @@ public class KSTestTwoSamples implements HTest {
         double fn2 = 0.0;
         int i1 = 0;
         int i2 = 0;
-        double n1 = v1.getRowCount();
-        double n2 = v2.getRowCount();
+        double n1 = v1.rowCount();
+        double n2 = v2.rowCount();
         while (i1 < n1 && i2 < n2) {
-            double d1 = v1.getValue(i1);
-            double d2 = v2.getValue(i2);
+            double d1 = v1.value(i1);
+            double d2 = v2.value(i2);
             if (d1 <= d2) fn1 = i1++ / n1;
             if (d2 <= d1) fn2 = i2++ / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));
@@ -104,31 +101,31 @@ public class KSTestTwoSamples implements HTest {
     }
 
     @Override
-    public double getPValue() {
+    public double pValue() {
         return pValue;
     }
 
     @Override
-    public double getCIHigh() {
+    public double ciHigh() {
         return 0;
     }
 
     @Override
-    public double getCILow() {
+    public double ciLow() {
         return 0;
     }
 
     @Override
-    public String getSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
-        int ties1 = (int) (v1.getRowCount() - v1.stream().mapToDouble().distinct().count());
-        int ties2 = (int) (v2.getRowCount() - v2.stream().mapToDouble().distinct().count());
+        int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
+        int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());
         sb.append(String.format("first sample size: %d, ties: %d\n",
-                v1.getRowCount(), ties1));
+                v1.rowCount(), ties1));
         sb.append(String.format("second sample size: %d, ties: %d\n",
-                v2.getRowCount(), ties2));
+                v2.rowCount(), ties2));
         if (ties1 + ties2 > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -39,7 +40,7 @@ final class Identity implements RowSampler {
 
     @Override
     public Sample nextSample(Frame df, Var weights) {
-        return new Sample(df, weights, Mapping.range(0, df.getRowCount()));
+        return new Sample(df, weights, Mapping.range(0, df.rowCount()));
     }
 
     @Override
