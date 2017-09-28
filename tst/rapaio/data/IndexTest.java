@@ -47,13 +47,6 @@ public class IndexTest {
         assertEquals(1, index.rowCount());
 
         try {
-            index.levels();
-            assertTrue(false);
-        } catch (RuntimeException ex) {
-            assertTrue(true);
-        }
-
-        try {
             IndexVar.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
