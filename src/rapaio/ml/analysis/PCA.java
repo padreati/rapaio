@@ -90,14 +90,14 @@ public class PCA implements Printable {
         RM x = SolidRM.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = SolidRV.empty(x.getColCount());
-            sd = SolidRV.empty(x.getColCount());
-            for (int i = 0; i < x.getColCount(); i++) {
+            mean = SolidRV.empty(x.colCount());
+            sd = SolidRV.empty(x.colCount());
+            for (int i = 0; i < x.colCount(); i++) {
                 mean.set(i, x.mapCol(i).mean().value());
                 sd.set(i, x.mapCol(i).variance().sdValue());
             }
-            for (int i = 0; i < x.getRowCount(); i++) {
-                for (int j = 0; j < x.getColCount(); j++) {
+            for (int i = 0; i < x.rowCount(); i++) {
+                for (int j = 0; j < x.colCount(); j++) {
                     if (sd.get(j) == 0)
                         continue;
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
@@ -132,8 +132,8 @@ public class PCA implements Printable {
         RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
-            for (int i = 0; i < x.getRowCount(); i++) {
-                for (int j = 0; j < x.getColCount(); j++) {
+            for (int i = 0; i < x.rowCount(); i++) {
+                for (int j = 0; j < x.colCount(); j++) {
                     if (sd.get(j) != 0)
                         x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }

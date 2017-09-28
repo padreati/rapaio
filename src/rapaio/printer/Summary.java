@@ -282,7 +282,6 @@ public class Summary {
         head(merge, df.rowCount(), vars, names);
     }
 
-    @Deprecated
     public static void head(boolean merge, int lines, Frame df) {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
@@ -292,27 +291,22 @@ public class Summary {
         head(merge, Math.min(lines, df.rowCount()), vars, names);
     }
 
-    @Deprecated
     public static void head(boolean merge, int lines, Var[] vars, String[] names) {
         WS.code(headString(merge, lines, vars, names));
     }
 
-    @Deprecated
     public static String headString(Frame df) {
         return headString(true, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
     }
 
-    @Deprecated
     public static String headString(boolean merge, Frame df) {
         return headString(merge, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
     }
 
-    @Deprecated
     public static String headString(int lines, Var[] vars, String[] names) {
         return headString(true, lines, vars, names);
     }
 
-    @Deprecated
     public static String headString(boolean merge, int lines, Var[] vars, String[] names) {
         if (lines == -1) {
             lines = vars[0].rowCount();

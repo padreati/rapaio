@@ -26,6 +26,7 @@
 package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
+import rapaio.util.Pair;
 import rapaio.util.Tag;
 
 import java.io.Serializable;
@@ -39,7 +40,20 @@ public interface Distance extends Serializable {
 
     String name();
 
-    double distance(Frame s, int sRow, Frame t, int tRow, String... varNames);
+    /**
+     * Computes the distance and the error for that distance.
+     * The distance is the value which measures the similarity
+     * between two items, the error is an individual additive value which is used to
+     * assess the performance of an algorithm.
+     *
+     * @param s first data frame
+     * @param sRow row index of the instance from that data frame
+     * @param t second data frame
+     * @param tRow row index of the instance from the second data frame
+     * @param varNames variable names of the features used in computation
+     * @return a pair of values, first in pair is the distance, second in pair is the error
+     */
+    Pair<Double, Double> compute(Frame s, int sRow, Frame t, int tRow, String... varNames);
 
     Distance EUCLIDEAN = new EuclideanDistance();
 }

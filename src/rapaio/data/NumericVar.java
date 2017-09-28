@@ -266,7 +266,7 @@ public final class NumericVar extends AbstractVar {
             @Override
             public BinaryOperator<NumericVar> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.getValue()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }

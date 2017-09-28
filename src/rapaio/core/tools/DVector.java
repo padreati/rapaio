@@ -139,7 +139,7 @@ public class DVector implements Printable, Serializable {
     private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
         this(useFirst, labels);
         int off = var.type().equals(VarType.BINARY) ? 1 : 0;
-        var.stream().forEach(s -> values[s.getIndex() + off] += weights.value(s.getRow()));
+        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
         total = Arrays.stream(values).sum();
     }
 

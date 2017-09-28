@@ -105,15 +105,15 @@ public class IRLSOptimizer {
             derivatives.set(i, fd.apply(x_i));
         }
 
-        for (int j = 0; j < hessian.getRowCount(); j++) {
+        for (int j = 0; j < hessian.rowCount(); j++) {
             double gradTmp = 0;
-            for (int k = 0; k < coef.getRowCount(); k++) {
+            for (int k = 0; k < coef.rowCount(); k++) {
                 double coefficient_kj = coef.get(k, j);
                 gradTmp += coefficient_kj * err.get(k);
 
                 double factor = derivatives.get(k) * coefficient_kj;
 
-                for (int i = 0; i < hessian.getRowCount(); i++)
+                for (int i = 0; i < hessian.rowCount(); i++)
                     hessian.increment(j, i, coef.get(k, i) * factor);
             }
             grad.set(j, 0, gradTmp);

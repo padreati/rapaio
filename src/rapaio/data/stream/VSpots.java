@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -84,30 +85,30 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     /**
-     * Map the observations to the numerical value given by {@link VSpot#getValue()}
+     * Map the observations to the numerical value given by {@link VSpot#value()}
      *
      * @return stream of numerical values
      */
     public DoubleStream mapToDouble() {
-        return mapToDouble(VSpot::getValue);
+        return mapToDouble(VSpot::value);
     }
 
     /**
-     * Map the observations to the index value given by {@link VSpot#getIndex()}
+     * Map the observations to the index value given by {@link VSpot#index()}
      *
      * @return stream of integer values
      */
     public IntStream mapToInt() {
-        return mapToInt(VSpot::getIndex);
+        return mapToInt(VSpot::index);
     }
 
     /**
-     * Map the observations to the label value given by {@link VSpot#getLabel()}
+     * Map the observations to the label value given by {@link VSpot#label()}
      *
      * @return stream of label values
      */
     public Stream<String> mapToString() {
-        return map(VSpot::getLabel);
+        return map(VSpot::label);
     }
 
     @Override
@@ -336,7 +337,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public VSpots transValue(Function<Double, Double> trans) {
         return new VSpots(stream.map(spot -> {
-            spot.setValue(trans.apply(spot.getValue()));
+            spot.setValue(trans.apply(spot.value()));
             return spot;
         }), source);
     }
@@ -348,7 +349,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public VSpots transIndex(Function<Integer, Integer> trans) {
         return new VSpots(stream.map(spot -> {
-            spot.setIndex(trans.apply(spot.getIndex()));
+            spot.setIndex(trans.apply(spot.index()));
             return spot;
         }), source);
     }
@@ -360,7 +361,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public VSpots transLabel(Function<String, String> trans) {
         return new VSpots(stream.map(spot -> {
-            spot.setLabel(trans.apply(spot.getLabel()));
+            spot.setLabel(trans.apply(spot.label()));
             return spot;
         }), source);
     }
@@ -372,6 +373,6 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return new mapped variable
      */
     public MappedVar toMappedVar() {
-        return MappedVar.byRows(source, Mapping.wrap(stream.map(VSpot::getRow).collect(Collectors.toList())));
+        return MappedVar.byRows(source, Mapping.wrap(stream.map(VSpot::row).collect(Collectors.toList())));
     }
 }

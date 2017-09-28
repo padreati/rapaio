@@ -80,7 +80,7 @@ public class FrameAnalysis {
                         countValue = (int) var.stream().mapToInt().distinct().count();
                         break;
                     case STAMP:
-                        countValue = (int) var.stream().mapToLong(VSpot::getStamp).distinct().count();
+                        countValue = (int) var.stream().mapToLong(VSpot::stamp).distinct().count();
                         break;
                     case NUMERIC:
                         countValue = (int) var.stream().mapToDouble().distinct().count();
@@ -96,7 +96,7 @@ public class FrameAnalysis {
                 double[][] h = new double[][]{h1v, h2v};
                 switch (var.type()) {
                     case BINARY:
-                        var.stream().complete().forEach(s -> h[target.index(s.getRow()) - 1][s.getIndex()]++);
+                        var.stream().complete().forEach(s -> h[target.index(s.row()) - 1][s.index()]++);
                         break;
                     case INDEX:
                     case NUMERIC:
@@ -105,30 +105,30 @@ public class FrameAnalysis {
                         double max = var.stream().complete().mapToDouble().max().getAsDouble();
                         double step = (max - min) / bins;
                         var.stream().complete().forEach(s -> {
-                            int bin = (int) Math.floor((s.getValue() - min) / step);
+                            int bin = (int) Math.floor((s.value() - min) / step);
                             if (bin == bins)
                                 bin--;
-                            h[target.index(s.getRow()) - 1][bin]++;
+                            h[target.index(s.row()) - 1][bin]++;
                         });
                         break;
                     case STAMP:
-                        long min2 = var.stream().complete().mapToLong(VSpot::getStamp).min().getAsLong();
-                        long max2 = var.stream().complete().mapToLong(VSpot::getStamp).max().getAsLong();
+                        long min2 = var.stream().complete().mapToLong(VSpot::stamp).min().getAsLong();
+                        long max2 = var.stream().complete().mapToLong(VSpot::stamp).max().getAsLong();
                         long step2 = (max2 - min2) / bins;
                         var.stream().complete().forEach(s -> {
-                            int bin = (int) Math.floor((s.getValue() - min2) / step2);
+                            int bin = (int) Math.floor((s.value() - min2) / step2);
                             if (bin == bins)
                                 bin--;
-                            h[target.index(s.getRow()) - 1][bin]++;
+                            h[target.index(s.row()) - 1][bin]++;
                         });
                         break;
                     case NOMINAL:
-                        DVector dv1 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.getRow()) == 1).toMappedVar());
+                        DVector dv1 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.row()) == 1).toMappedVar());
                         double[] v1 = dv1.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[0][i < bins ? i : bins - 1] += v1[i];
                         }
-                        DVector dv2 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.getRow()) == 2).toMappedVar());
+                        DVector dv2 = DVector.fromCount(false, var.stream().complete().filter(s -> target.index(s.row()) == 2).toMappedVar());
                         double[] v2 = dv2.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[1][i < bins ? i : bins - 1] += v2[i];
@@ -136,7 +136,7 @@ public class FrameAnalysis {
                         break;
                     default:
                         HashMap<String, Integer> counts = new HashMap<>();
-                        var.stream().filter(s -> target.index(s.getRow()) == 1).mapToString().forEach(txt -> {
+                        var.stream().filter(s -> target.index(s.row()) == 1).mapToString().forEach(txt -> {
                             if (!counts.containsKey(txt))
                                 counts.put(txt, 0);
                             counts.put(txt, counts.get(txt) + 1);
@@ -155,7 +155,7 @@ public class FrameAnalysis {
                         }
 
                         HashMap<String, Integer> counts2 = new HashMap<>();
-                        var.stream().filter(s -> target.index(s.getRow()) == 1).mapToString().forEach(txt -> {
+                        var.stream().filter(s -> target.index(s.row()) == 1).mapToString().forEach(txt -> {
                             if (!counts2.containsKey(txt))
                                 counts2.put(txt, 0);
                             counts2.put(txt, counts2.get(txt) + 1);

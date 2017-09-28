@@ -26,9 +26,7 @@
 package rapaio.graphics.base;
 
 import rapaio.sys.WS;
-import sun.misc.FloatingDecimal;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -271,7 +269,7 @@ public class XWilkinson {
         }
 
         private int getSignificantDigits(double x) {
-            String formatted = FloatingDecimal.getBinaryToASCIIConverter(x).toJavaFormatString();
+            String formatted = Double.toString(x);
             int indexE = formatted.indexOf("E");
             int exp = (indexE == -1) ? 0 : Integer.parseInt(formatted.substring(indexE + 1));
             for (int i = 2; i < formatted.length(); i++) {

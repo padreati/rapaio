@@ -29,7 +29,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
 import rapaio.data.filter.Filters;
-import rapaio.ml.common.distance.Distance;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.distance.KMeansInitMethod;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
@@ -41,21 +42,21 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
-import static rapaio.core.CoreTools.*;
+import static rapaio.core.CoreTools.mean;
+import static rapaio.core.CoreTools.variance;
 
 /**
- * KMeans clustering algorithm
- *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
-public class KMeans implements Printable {
+public class MinkowskiWeightedKMeans implements Printable {
 
     private int k = 2;
+    private double p = 2;
+
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
     private Tag<KMeansInitMethod> init = KMeansInitMethod.FORGY;
-    private Distance distance = Distance.EUCLIDEAN;
-    private BiConsumer<KMeans, Integer> runningHook = null;
+    private BiConsumer<MinkowskiWeightedKMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;
     private boolean learned = false;
@@ -65,6 +66,7 @@ public class KMeans implements Printable {
 
     private String[] inputs;
     private Frame centroids;
+    private Frame weights;
     private IndexVar arrows;
     private NumericVar errors;
 
@@ -72,7 +74,7 @@ public class KMeans implements Printable {
 
     private NumericVar summaryAllDist;
 
-    public KMeans withNStart(int nstart) {
+    public MinkowskiWeightedKMeans withNStart(int nstart) {
         if (nstart <= 0) {
             throw new IllegalArgumentException("nstart value should be greater than 1");
         }
@@ -80,32 +82,32 @@ public class KMeans implements Printable {
         return this;
     }
 
-    public KMeans withK(int k) {
+    public MinkowskiWeightedKMeans withK(int k) {
         this.k = k;
         return this;
     }
 
-    public KMeans withInit(Tag<KMeansInitMethod> init) {
+    public MinkowskiWeightedKMeans withInit(Tag<KMeansInitMethod> init) {
         this.init = init;
         return this;
     }
 
-    public KMeans withEps(double eps) {
+    public MinkowskiWeightedKMeans withEps(double eps) {
         this.eps = eps;
         return this;
     }
 
-    public KMeans withRuns(int runs) {
+    public MinkowskiWeightedKMeans withRuns(int runs) {
         this.runs = runs;
         return this;
     }
 
-    public KMeans withDebug(boolean debug) {
+    public MinkowskiWeightedKMeans withDebug(boolean debug) {
         this.debug = debug;
         return this;
     }
 
-    public final KMeans withRunningHook(BiConsumer<KMeans, Integer> hook) {
+    public final MinkowskiWeightedKMeans withRunningHook(BiConsumer<MinkowskiWeightedKMeans, Integer> hook) {
         runningHook = hook;
         return this;
     }
@@ -114,6 +116,14 @@ public class KMeans implements Printable {
         validate(df, varNames);
 
         inputs = VRange.of(varNames).parseVarNames(df).toArray(new String[0]);
+
+        // initialize weights
+        weights = SolidFrame.emptyFrom(df.mapVars(inputs), k);
+        for (int i = 0; i < weights.rowCount(); i++) {
+            for (int j = 0; j < weights.varCount(); j++) {
+                weights.setValue(i, j, 1.0 / k);
+            }
+        }
 
         Frame bestCentroids = init.get().init(df, inputs, k);
         double bestError = computeError(df, bestCentroids);
@@ -154,6 +164,7 @@ public class KMeans implements Printable {
         while (rounds-- > 0) {
             recomputeCentroids(df);
             assignToCentroids(df);
+            weightsUpdate(df);
             repairEmptyClusters(df);
 
             if (runningHook != null) {
@@ -191,7 +202,7 @@ public class KMeans implements Printable {
         return IntStream.range(0, df.rowCount()).parallel().mapToDouble(j -> {
             double d = Double.NaN;
             for (int c = 0; c < centroids.rowCount(); c++) {
-                double dd = distance.compute(df, j, centroids, c, inputs)._2;
+                double dd = distance(df, j, centroids, c, weights)._2;
                 if (!Double.isFinite(dd)) continue;
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
             }
@@ -209,7 +220,7 @@ public class KMeans implements Printable {
             double err = Double.NaN;
             int cluster = -1;
             for (int j = 0; j < centroids.rowCount(); j++) {
-                Pair<Double, Double> comp = distance.compute(df, i, centroids, j, inputs);
+                Pair<Double, Double> comp = distance(df, i, centroids, j, weights);
                 double dd = comp._1;
                 if (!Double.isFinite(dd)) continue;
                 if (!Double.isNaN(d)) {
@@ -236,6 +247,45 @@ public class KMeans implements Printable {
             totalError += error;
         }
         errors.addValue(totalError);
+    }
+
+    private void weightsUpdate(Frame df) {
+        SolidRM d = SolidRM.fill(k, inputs.length, 0.0);
+        for (int i = 0; i < df.rowCount(); i++) {
+            for (int j = 0; j < inputs.length; j++) {
+                int c = arrows.index(i);
+                double value = Math.pow(Math.abs(df.value(i, inputs[j]) - centroids.value(c, inputs[j])), p);
+                d.set(c, j, d.get(c, j) + value);
+            }
+        }
+
+        // revert values
+
+        for (int i = 0; i < d.rowCount(); i++) {
+            for (int j = 0; j < d.colCount(); j++) {
+                double dist = Math.max(d.get(i, j), 1e-20);
+                d.set(i, j, Math.pow(1.0 / dist, 1.0 / (p - 1)));
+            }
+        }
+
+        // compute normalizing sums
+
+        SolidRV rv = SolidRV.fill(k, 0.0);
+        for (int i = 0; i < d.rowCount(); i++) {
+            double sum = 0.0;
+            for (int j = 0; j < d.colCount(); j++) {
+                sum += d.get(i, j);
+            }
+            rv.set(i, sum);
+        }
+
+        // update weights
+
+        for (int i = 0; i < weights.rowCount(); i++) {
+            for (int j = 0; j < weights.varCount(); j++) {
+                weights.setValue(i, j, d.get(i, j) / rv.get(i));
+            }
+        }
     }
 
     private void recomputeCentroids(Frame df) {
@@ -315,6 +365,17 @@ public class KMeans implements Printable {
         }
     }
 
+    private Pair<Double, Double> distance(Frame df, int i, Frame centroids, int c, Frame weights) {
+        double distance = 0;
+        for (String input : inputs) {
+            if (df.isMissing(i, input) || centroids.isMissing(c, input))
+                continue;
+            distance += Math.pow(weights.value(c, input), p)
+                    * Math.pow(Math.abs(centroids.value(c, input) - df.value(i, input)), p);
+        }
+        return Pair.from(Math.pow(distance, 1 / p), distance);
+    }
+
     private boolean checkIfEqual(Frame centroids, int c, Frame df, int i) {
         int count = 0;
         for (String input : inputs) {
@@ -355,7 +416,7 @@ public class KMeans implements Printable {
         Map<Integer, NumericVar> errors = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
-            double d = distance.compute(centroids, arrows.index(i), df, i, inputs)._2;
+            double d = distance(df, i, centroids, arrows.index(i), weights)._2;
             if (!errors.containsKey(arrows.index(i)))
                 errors.put(arrows.index(i), NumericVar.empty());
             errors.get(arrows.index(i)).addValue(d);
@@ -378,13 +439,14 @@ public class KMeans implements Printable {
     public String summary() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("KMeans clustering model\n");
+        sb.append("MinkowskiWeightedKMeans clustering model\n");
         sb.append("=======================\n");
         sb.append("\n");
         sb.append("Parameters: \n");
         sb.append("> K = ").append(k).append("\n");
+        sb.append("> p = ").append(p).append("\n");
         sb.append("> init = ").append(init.name()).append("\n");
-        sb.append("> distance = ").append(distance.name()).append("\n");
+        sb.append("> distance = Minkowski[p=").append(p).append("]\n");
         sb.append("> eps = ").append(eps).append("\n");
         sb.append("> debug = ").append(debug).append("\n");
         sb.append("\n");
@@ -393,7 +455,7 @@ public class KMeans implements Printable {
         sb.append("----------------\n");
 
         if (!learned) {
-            sb.append("KMeans did not clustered anything yet!\n");
+            sb.append("MinkowskyWeightedKMeans did not clustered anything yet!\n");
         } else {
             sb.append("Overall: \n");
             sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");

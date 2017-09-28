@@ -56,7 +56,7 @@ public final class FSpot implements Serializable {
      *
      * @return the underlying frame
      */
-    public Frame getFrame() {
+    public Frame frame() {
         return df;
     }
 
@@ -65,7 +65,7 @@ public final class FSpot implements Serializable {
      *
      * @return row number
      */
-    public int getRow() {
+    public int row() {
         return row;
     }
 
@@ -120,7 +120,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return numerical value of the given variable on the current spot
      */
-    public double getValue(int varIndex) {
+    public double value(int varIndex) {
         return df.value(row, varIndex);
     }
 
@@ -130,7 +130,7 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return numeric value of the given variable on the current spot
      */
-    public double getValue(String varName) {
+    public double value(String varName) {
         return df.value(row, varName);
     }
 
@@ -160,7 +160,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return index value of the given variable on the current spot
      */
-    public int getIndex(int varIndex) {
+    public int index(int varIndex) {
         return df.index(row, varIndex);
     }
 
@@ -170,7 +170,7 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return index value of the given variable on the current spot
      */
-    public int getIndex(String varName) {
+    public int index(String varName) {
         return df.index(row, varName);
     }
 
@@ -200,7 +200,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label value
      */
-    public String getLabel(int varIndex) {
+    public String label(int varIndex) {
         return df.label(row, varIndex);
     }
 
@@ -210,7 +210,7 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label value
      */
-    public String getLabel(String varName) {
+    public String label(String varName) {
         return df.label(row, varName);
     }
 
@@ -240,7 +240,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label levels
      */
-    public String[] getLevels(int varIndex) {
+    public String[] levels(int varIndex) {
         return df.var(varIndex).levels();
     }
 
@@ -250,11 +250,11 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label levels
      */
-    public String[] getLevels(String varName) {
+    public String[] levels(String varName) {
         return df.var(varName).levels();
     }
 
-    public boolean getBinary(String name) {
+    public boolean binary(String name) {
         return df.var(name).binary(row);
     }
 }

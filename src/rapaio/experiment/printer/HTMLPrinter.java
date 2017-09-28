@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,12 +28,12 @@ package rapaio.experiment.printer;
 import rapaio.graphics.base.Figure;
 import rapaio.printer.AbstractPrinter;
 import rapaio.printer.Printer;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Base64;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -137,19 +138,19 @@ public class HTMLPrinter extends AbstractPrinter {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         Rectangle rect = new Rectangle(newImage.getWidth(), newImage.getHeight());
         figure.paint(g2d, rect);
-        String imageString;
+        byte[] imageString;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         try {
             ImageIO.write(newImage, "png", bos);
             byte[] imageBytes = bos.toByteArray();
-            BASE64Encoder encoder = new BASE64Encoder();
+            Base64.Encoder encoder = Base64.getEncoder();
             imageString = encoder.encode(imageBytes);
             bos.close();
         } catch (IOException e) {
             throw new RuntimeException("Could not produce image", e);
         }
-        writer.append("<p><center><img src=\"data:image/png;base64,").append(imageString).append("\" alt=\"graphics\"/></center></p>\n");
+        writer.append("<p><center><img src=\"data:image/png;base64,").append(String.valueOf(imageString)).append("\" alt=\"graphics\"/></center></p>\n");
     }
 
     @Override

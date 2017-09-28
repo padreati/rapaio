@@ -3,10 +3,7 @@ package rapaio.graphics.base;
 import org.junit.Test;
 import rapaio.data.NumericVar;
 import rapaio.graphics.Plotter;
-import rapaio.graphics.plot.Plot;
-import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
-import sun.misc.FloatingDecimal;
 
 import java.time.LocalTime;
 

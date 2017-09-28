@@ -120,8 +120,8 @@ public class SolidRM implements RM {
      */
     public static SolidRM fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
         SolidRM ret = new SolidRM(rowCount, colCount);
-        for (int i = 0; i < ret.getRowCount(); i++) {
-            for (int j = 0; j < ret.getColCount(); j++) {
+        for (int i = 0; i < ret.rowCount(); i++) {
+            for (int j = 0; j < ret.colCount(); j++) {
                 ret.set(i, j, fun.apply(i, j));
             }
         }
@@ -207,12 +207,12 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rowCount;
     }
 
     @Override
-    public int getColCount() {
+    public int colCount() {
         return colCount;
     }
 

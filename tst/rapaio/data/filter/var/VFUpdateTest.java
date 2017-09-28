@@ -39,10 +39,10 @@ public class VFUpdateTest {
         VFilter vf = VFUpdate.with(spot -> {
             if (spot.isMissing())
                 spot.setValue(0);
-            if (spot.getValue() > 0)
-                spot.setValue(spot.getValue() * spot.getValue());
+            if (spot.value() > 0)
+                spot.setValue(spot.value() * spot.value());
             else
-                spot.setValue(-spot.getValue() * spot.getValue());
+                spot.setValue(-spot.value() * spot.value());
         });
 
         Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
@@ -62,7 +62,7 @@ public class VFUpdateTest {
                 return;
             }
 
-            char[] msg = s.getLabel().toCharArray();
+            char[] msg = s.label().toCharArray();
             for (int i = 0; i < msg.length / 2; i++) {
                 char tmp = msg[i];
                 msg[i] = msg[msg.length - i - 1];

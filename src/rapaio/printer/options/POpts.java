@@ -23,38 +23,22 @@
  *
  */
 
-package rapaio.data.filter.var;
-
-import rapaio.data.Var;
-
-import java.util.function.Function;
+package rapaio.printer.options;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Printing options
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/20/17.
  */
-public class VFUpdateIndex extends AbstractVF {
+public class POpts {
 
-    private static final long serialVersionUID = -9017598696178273627L;
+    private int logLevel;
 
-    public static VFUpdateIndex with(Function<Integer, Integer> f) {
-        return new VFUpdateIndex(f);
+    public int logLevel() {
+        return logLevel;
     }
 
-    private final Function<Integer, Integer> f;
-
-    private VFUpdateIndex(Function<Integer, Integer> f) {
-        this.f = f;
-    }
-
-    @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
-    }
-
-    @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.index())));
-        return vars[0];
+    public void setLogLevel(int logLevel) {
+        this.logLevel = logLevel;
     }
 }

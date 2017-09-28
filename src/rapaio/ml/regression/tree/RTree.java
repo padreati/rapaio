@@ -212,7 +212,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(spot, root);
-            pred.fit(firstTargetName()).setValue(spot.getRow(), result._1);
+            pred.fit(firstTargetName()).setValue(spot.row(), result._1);
         });
         pred.buildComplete();
         return pred;

@@ -138,7 +138,7 @@ public class BinaryLogistic extends AbstractClassifier {
 
         coef = NumericVar.fill(inputNames().length + 1, 0);
         NumericVar targetValues = NumericVar.empty();
-        df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.getIndex() == 1 ? 0 : 1));
+        df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);

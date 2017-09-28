@@ -44,22 +44,22 @@ public class VFToNumeric extends AbstractVF {
                     if (s.isMissing()) {
                         return Double.NaN;
                     } else {
-                        switch (s.getVar().type()) {
+                        switch (s.var().type()) {
                             case TEXT:
                             case NOMINAL:
                                 try {
-                                    return Double.parseDouble(s.getLabel());
+                                    return Double.parseDouble(s.label());
                                 } catch (NumberFormatException nfe) {
                                     return Double.NaN;
                                 }
                             case ORDINAL:
                             case INDEX:
                             case BINARY:
-                                return Integer.valueOf(s.getIndex()).doubleValue();
+                                return Integer.valueOf(s.index()).doubleValue();
                             case STAMP:
-                                return Long.valueOf(s.getStamp()).doubleValue();
+                                return Long.valueOf(s.stamp()).doubleValue();
                             default:
-                                return s.getValue();
+                                return s.value();
                         }
                     }
                 },

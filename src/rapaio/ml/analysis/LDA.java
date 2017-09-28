@@ -95,9 +95,9 @@ public class LDA implements Printable {
 
         // compute mean and sd
 
-        mean = SolidRV.empty(xx.getColCount());
-        sd = SolidRV.empty(xx.getColCount());
-        for (int i = 0; i < xx.getColCount(); i++) {
+        mean = SolidRV.empty(xx.colCount());
+        sd = SolidRV.empty(xx.colCount());
+        for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean().value());
             sd.set(i, xx.mapCol(i).variance().sdValue());
         }
@@ -105,8 +105,8 @@ public class LDA implements Printable {
         // scale the whole data if it is the case
 
         if (scaling) {
-            for (int i = 0; i < xx.getRowCount(); i++) {
-                for (int j = 0; j < xx.getColCount(); j++) {
+            for (int i = 0; i < xx.rowCount(); i++) {
+                for (int j = 0; j < xx.colCount(); j++) {
                     if (sd.get(j) != 0)
                         xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
                 }
@@ -119,8 +119,8 @@ public class LDA implements Printable {
         for (int i = 0; i < targetLevels.length; i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
-                    .filter(s -> s.getLabel(targetName).equals(targetLevels[index]))
-                    .mapToInt(FSpot::getRow)
+                    .filter(s -> s.label(targetName).equals(targetLevels[index]))
+                    .mapToInt(FSpot::row)
                     .toArray());
         }
 
@@ -128,8 +128,8 @@ public class LDA implements Printable {
 
         classMean = new RV[targetLevels.length];
         for (int i = 0; i < targetLevels.length; i++) {
-            classMean[i] = SolidRV.empty(x[i].getColCount());
-            for (int j = 0; j < x[i].getColCount(); j++) {
+            classMean[i] = SolidRV.empty(x[i].colCount());
+            for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean().value());
             }
         }
@@ -146,7 +146,7 @@ public class LDA implements Printable {
         RM sb = SolidRM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
             RM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
-            sb.plus(cm.dot(cm.t()).dot(x[i].getRowCount()));
+            sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
         }
 
         // inverse sw
@@ -182,8 +182,8 @@ public class LDA implements Printable {
         RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
-            for (int i = 0; i < x.getRowCount(); i++) {
-                for (int j = 0; j < x.getColCount(); j++) {
+            for (int i = 0; i < x.rowCount(); i++) {
+                for (int j = 0; j < x.colCount(); j++) {
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }

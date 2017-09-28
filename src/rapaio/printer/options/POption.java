@@ -23,38 +23,29 @@
  *
  */
 
-package rapaio.data.filter.var;
+package rapaio.printer.options;
 
-import rapaio.data.Var;
-
-import java.util.function.Function;
+import rapaio.printer.options.POpts;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Printing option
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/20/17.
  */
-public class VFUpdateIndex extends AbstractVF {
+public interface POption<T> {
 
-    private static final long serialVersionUID = -9017598696178273627L;
+    /**
+     * Bind a printing option to the given set of options
+     *
+     * @param opts set of option to bind into
+     */
+    void bind(POpts opts);
 
-    public static VFUpdateIndex with(Function<Integer, Integer> f) {
-        return new VFUpdateIndex(f);
-    }
-
-    private final Function<Integer, Integer> f;
-
-    private VFUpdateIndex(Function<Integer, Integer> f) {
-        this.f = f;
-    }
-
-    @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
-    }
-
-    @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.index())));
-        return vars[0];
-    }
+    /**
+     * Produce option value
+     *
+     * @param opts option set
+     * @return option value
+     */
+    T apply(POpts opts);
 }

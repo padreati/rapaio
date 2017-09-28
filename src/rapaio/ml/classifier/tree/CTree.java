@@ -325,10 +325,10 @@ public class CTree extends AbstractClassifier {
             int index = res._1;
             DVector dv = res._2;
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.getRow(), index);
+                prediction.firstClasses().setIndex(spot.row(), index);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.getRow(), j, dv.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, dv.get(j));
                 }
         });
         return prediction;

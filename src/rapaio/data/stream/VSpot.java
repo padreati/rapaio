@@ -53,14 +53,14 @@ public class VSpot implements Serializable {
     /**
      * @return row of the spotted variable
      */
-    public int getRow() {
+    public int row() {
         return row;
     }
 
     /**
      * @return underlying support variable
      */
-    public Var getVar() {
+    public Var var() {
         return var;
     }
 
@@ -81,7 +81,7 @@ public class VSpot implements Serializable {
     /**
      * @return numeric double value of the observation
      */
-    public double getValue() {
+    public double value() {
         return var.value(row);
     }
 
@@ -96,7 +96,7 @@ public class VSpot implements Serializable {
     /**
      * @return index value of the observation
      */
-    public int getIndex() {
+    public int index() {
         return var.index(row);
     }
 
@@ -111,7 +111,7 @@ public class VSpot implements Serializable {
     /**
      * @return label value of the observation
      */
-    public String getLabel() {
+    public String label() {
         return var.label(row);
     }
 
@@ -126,7 +126,7 @@ public class VSpot implements Serializable {
     /**
      * @return binary value of the observation
      */
-    public boolean getBinary() {
+    public boolean binary() {
         return var.binary(row);
     }
 
@@ -141,7 +141,7 @@ public class VSpot implements Serializable {
     /**
      * @return stamp value of the observation
      */
-    public long getStamp() {
+    public long stamp() {
         return var.stamp(row);
     }
 

@@ -82,8 +82,8 @@ public class CTreeTest {
     @Test
     public void testCandidate() {
         CTreeCandidate candidate = new CTreeCandidate(1, "test");
-        candidate.addGroup("test <= 0", s -> s.getValue("test") <= 0);
-        candidate.addGroup("test > 0", s -> s.getValue("test") > 0);
+        candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
+        candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
         assertEquals(1, candidate.compareTo(new CTreeCandidate(2, "test")));
         assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
@@ -106,7 +106,7 @@ public class CTreeTest {
         CFit pred = tree.fit(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("fit"));
 
-        Frame match = df.stream().filter(spot -> spot.getIndex("class") == spot.getIndex("fit")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -115,7 +115,7 @@ public class CTreeTest {
         df.setMissing(0, 3);
 
         tree.fit(df, true, false);
-        match = df.stream().filter(spot -> spot.getIndex("class") == spot.getIndex("fit")).toMappedFrame();
+        match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
 

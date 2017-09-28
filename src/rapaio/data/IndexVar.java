@@ -28,9 +28,7 @@ package rapaio.data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -198,7 +196,7 @@ public final class IndexVar extends AbstractVar {
             @Override
             public BinaryOperator<IndexVar> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.getValue()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }
@@ -270,7 +268,7 @@ public final class IndexVar extends AbstractVar {
 
     @Override
     public double value(int row) {
-        if(isMissing(row))
+        if (isMissing(row))
             return Double.NaN;
         return index(row);
     }
@@ -312,7 +310,20 @@ public final class IndexVar extends AbstractVar {
 
     @Override
     public String[] levels() {
-        throw new IllegalArgumentException("Operation not available for index vectors.");
+        TreeSet<Integer> distinctValues = new TreeSet<>();
+        for (int i = 0; i < rowCount(); i++) {
+            if (isMissing(i))
+                continue;
+            distinctValues.add(index(i));
+        }
+        String[] levels = new String[distinctValues.size() + 1];
+        levels[0] = "?";
+        int pos = 1;
+        Iterator<Integer> it = distinctValues.iterator();
+        while (it.hasNext()) {
+            levels[pos++] = String.valueOf(it.next());
+        }
+        return levels;
     }
 
     @Override

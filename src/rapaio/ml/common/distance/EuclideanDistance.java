@@ -26,6 +26,7 @@
 package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
+import rapaio.util.Pair;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/17.
@@ -39,14 +40,27 @@ public class EuclideanDistance implements Distance {
         return "Euclidean";
     }
 
+    /**
+     * The distance in the euclidean space is the square root value of the sum of squared differences for each feature.
+     * The Euclidean error is the squared distance
+     *
+     * @param s first data frame
+     * @param sRow row index of the instance from that data frame
+     * @param t second data frame
+     * @param tRow row index of the instance from the second data frame
+     * @param varNames variable names of the features used in computation
+     * @return
+     */
     @Override
-    public double distance(Frame s, int sRow, Frame t, int tRow, String... varNames) {
+    public Pair<Double, Double> compute(Frame s, int sRow, Frame t, int tRow, String... varNames) {
         double total = 0;
         for (String varName : varNames) {
-            if (s.isMissing(sRow) || t.isMissing(tRow))
+            if (s.isMissing(sRow, varName) || t.isMissing(tRow, varName))
                 continue;
             total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
         }
-        return Math.sqrt(total);
+        return Pair.from(Math.sqrt(total), total);
     }
+
+
 }

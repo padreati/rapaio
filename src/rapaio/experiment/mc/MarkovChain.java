@@ -114,7 +114,7 @@ public class MarkovChain implements Printable {
 
         // normalization
         p.normalize(1);
-        for (int i = 0; i < m.getRowCount(); i++) {
+        for (int i = 0; i < m.rowCount(); i++) {
             m.mapRow(i).normalize(1);
         }
     }

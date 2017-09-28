@@ -51,8 +51,8 @@ public class RTreeSplitterTest {
         df = SolidFrame.byVars(NumericVar.empty().withName("x"));
 
         candidate = new RTree.Candidate(0, "");
-        candidate.addGroup("x < 10", s -> s.getValue("x") < 10);
-        candidate.addGroup("x > 20", s -> s.getValue("x") > 20);
+        candidate.addGroup("x < 10", s -> s.value("x") < 10);
+        candidate.addGroup("x > 20", s -> s.value("x") > 20);
     }
 
     private void populate(int group, int count, double weight) {

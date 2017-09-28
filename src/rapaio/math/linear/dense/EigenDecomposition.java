@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -71,7 +72,7 @@ public class EigenDecomposition implements Serializable {
      * @param a Square matrix
      */
     private EigenDecomposition(RM a) {
-        dimension = a.getColCount();
+        dimension = a.colCount();
         eigenVectors = SolidRM.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];

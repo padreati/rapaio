@@ -161,8 +161,8 @@ public class SolidRMTest {
         }
 
         RM xx = x.solidCopy();
-        for (int i = 0; i < x.getRowCount(); i++) {
-            for (int j = 0; j < x.getColCount(); j++) {
+        for (int i = 0; i < x.rowCount(); i++) {
+            for (int j = 0; j < x.colCount(); j++) {
                 assertEquals(x.get(i, j), xx.get(i, j), TOL);
             }
         }

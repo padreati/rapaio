@@ -61,7 +61,7 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             df.stream().forEach(s -> {
                 for (int i = 0; i < p.size(); i++) {
                     if (p.get(i).test(s)) {
-                        mappings.get(i).add(s.getRow());
+                        mappings.get(i).add(s.row());
                         break;
                     }
                 }
@@ -90,11 +90,11 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             df.stream().forEach(s -> {
                 for (int i = 0; i < p.size(); i++) {
                     if (p.get(i).test(s)) {
-                        mappings.get(i).add(s.getRow());
+                        mappings.get(i).add(s.row());
                         return;
                     }
                 }
-                missingSpots.add(s.getRow());
+                missingSpots.add(s.row());
             });
             List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
             Collections.shuffle(lens);
@@ -128,11 +128,11 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             df.stream().forEach(s -> {
                 for (int i = 0; i < pred.size(); i++) {
                     if (pred.get(i).test(s)) {
-                        mappings.get(i).add(s.getRow());
+                        mappings.get(i).add(s.row());
                         return;
                     }
                 }
-                missingSpots.add(s.getRow());
+                missingSpots.add(s.row());
             });
 
             final double[] p = new double[mappings.size()];
@@ -173,11 +173,11 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             df.stream().forEach(s -> {
                 for (int i = 0; i < pred.size(); i++) {
                     if (pred.get(i).test(s)) {
-                        mappings.get(i).add(s.getRow());
+                        mappings.get(i).add(s.row());
                         return;
                     }
                 }
-                missingSpots.add(s.getRow());
+                missingSpots.add(s.row());
             });
             missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
             List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());

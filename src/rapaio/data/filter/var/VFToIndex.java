@@ -44,22 +44,22 @@ public class VFToIndex extends AbstractVF {
                     if (s.isMissing()) {
                         return Integer.MIN_VALUE;
                     } else {
-                        switch (s.getVar().type()) {
+                        switch (s.var().type()) {
                             case TEXT:
                             case NOMINAL:
                                 try {
-                                    return Integer.parseInt(s.getLabel());
+                                    return Integer.parseInt(s.label());
                                 } catch (NumberFormatException nfe) {
                                     return Integer.MIN_VALUE;
                                 }
                             case ORDINAL:
                             case INDEX:
                             case BINARY:
-                                return s.getIndex();
+                                return s.index();
                             case STAMP:
-                                return Long.valueOf(s.getStamp()).intValue();
+                                return Long.valueOf(s.stamp()).intValue();
                             default:
-                                return (int) Math.rint(s.getValue());
+                                return (int) Math.rint(s.value());
                         }
                     }
                 },

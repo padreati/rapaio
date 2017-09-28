@@ -50,28 +50,28 @@ public class RTreePredictorTest {
         RTree.Node root = new RTree.Node(null,null, "root", s -> true);
         root.setLeaf(false);
 
-        RTree.Node left = new RTree.Node(null, root, "x < 10", s -> s.getValue("x") < 10);
+        RTree.Node left = new RTree.Node(null, root, "x < 10", s -> s.value("x") < 10);
         left.setLeaf(false);
 
-        RTree.Node right = new RTree.Node(null, root, "x >= 10", s -> s.getValue("x") >= 10);
+        RTree.Node right = new RTree.Node(null, root, "x >= 10", s -> s.value("x") >= 10);
         right.setLeaf(false);
 
-        RTree.Node left_left = new RTree.Node(null, left, "x < 5", s -> s.getValue("x") < 5);
+        RTree.Node left_left = new RTree.Node(null, left, "x < 5", s -> s.value("x") < 5);
         left_left.setLeaf(true);
         left_left.setValue(0);
         left_left.setWeight(1);
 
-        RTree.Node left_right = new RTree.Node(null, left, "x >= 5", s -> s.getValue("x") >= 5);
+        RTree.Node left_right = new RTree.Node(null, left, "x >= 5", s -> s.value("x") >= 5);
         left_right.setLeaf(true);
         left_right.setValue(1);
         left_right.setWeight(2);
 
-        RTree.Node right_left = new RTree.Node(null, right, "x < 15", s -> s.getValue("x") < 15);
+        RTree.Node right_left = new RTree.Node(null, right, "x < 15", s -> s.value("x") < 15);
         right_left.setLeaf(true);
         right_left.setValue(2);
         right_left.setWeight(3);
 
-        RTree.Node right_right = new RTree.Node(null, right, "x >= 15", s -> s.getValue("x") >= 15);
+        RTree.Node right_right = new RTree.Node(null, right, "x >= 15", s -> s.value("x") >= 15);
         right_right.setLeaf(true);
         right_right.setValue(3);
         right_right.setWeight(4);

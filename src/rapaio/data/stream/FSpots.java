@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -273,7 +274,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public List<Integer> collectRowList() {
         final List<Integer> list = new ArrayList<>();
-        forEach(spot -> list.add(spot.getRow()));
+        forEach(spot -> list.add(spot.row()));
         return list;
     }
 
@@ -283,7 +284,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public Mapping collectMapping() {
         final Mapping m = Mapping.empty();
-        forEach(s -> m.add(s.getRow()));
+        forEach(s -> m.add(s.row()));
         return m;
     }
 

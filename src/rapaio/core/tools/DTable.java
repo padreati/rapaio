@@ -119,15 +119,15 @@ public final class DTable implements Printable, Serializable {
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
         this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY)))
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)))
             throw new IllegalArgumentException("col var is not nominal");
         if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int rowOffset = rowVar.type().equals(VarType.BINARY) ? 1 : 0;
-        int colOffset = colVar.type().equals(VarType.BINARY) ? 1 : 0;
+        int rowOffset = (rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)) ? 1 : 0;
+        int colOffset = (colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)) ? 1 : 0;
         for (int i = 0; i < rowVar.rowCount(); i++) {
             update(rowVar.index(i) + rowOffset, colVar.index(i) + colOffset, weights != null ? weights.value(i) : 1);
         }
@@ -202,22 +202,22 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double totalColEntropy() {
-    	AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
+        AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
         return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double totalRowEntropy() {
-    	AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
+        AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
         return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByRowAverageEntropy() {
-    	AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
+        AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
         return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
     public double splitByColAverageEntropy() {
-    	AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
+        AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
         return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 
@@ -235,7 +235,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double splitByColIntrinsicInfo() {
-    	AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
+        AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
         return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
     }
 

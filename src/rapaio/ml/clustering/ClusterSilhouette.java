@@ -54,6 +54,8 @@ public class ClusterSilhouette implements Printable {
     private final DistanceMatrix d;
     private final boolean similarity; // true is similarity, false if distance
 
+    private boolean debug = false;
+
     // artifacts
 
     private double[] a; // score within cluster for each instance
@@ -75,6 +77,11 @@ public class ClusterSilhouette implements Printable {
         this.similarity = similarity;
 
         compute();
+    }
+
+    public ClusterSilhouette withDebug(boolean debug) {
+        this.debug = debug;
+        return this;
     }
 
     private int getCluster(int row) {
@@ -207,18 +214,20 @@ public class ClusterSilhouette implements Printable {
         sb.append("==========================\n");
         sb.append("\n");
 
-        for (int i = 0; i < clusterOrder.size(); i++) {
-            int cluster = clusterOrder.get(i);
-            for (int row : instanceOrder.get(i)) {
-                sb.append(clusterIds[cluster]).append(" ");
-                sb.append(clusterIds[n[row]]).append(" ");
-                sb.append(String.format("%.2f ", s[row]));
-                sb.append(d.name(row)).append(" ");
+        if (debug) {
+            for (int i = 0; i < clusterOrder.size(); i++) {
+                int cluster = clusterOrder.get(i);
+                for (int row : instanceOrder.get(i)) {
+                    sb.append(clusterIds[cluster]).append(" ");
+                    sb.append(clusterIds[n[row]]).append(" ");
+                    sb.append(String.format("%.2f ", s[row]));
+                    sb.append(d.name(row)).append(" ");
+                    sb.append("\n");
+                }
                 sb.append("\n");
             }
             sb.append("\n");
         }
-        sb.append("\n");
 
         for (int i = 0; i < clusterOrder.size(); i++) {
             int cluster = clusterOrder.get(i);

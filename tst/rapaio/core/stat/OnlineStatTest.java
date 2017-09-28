@@ -79,8 +79,8 @@ public class OnlineStatTest {
         Var ab = a.bindRows(b);
         OnlineStat soA = OnlineStat.empty();
         OnlineStat soB = OnlineStat.empty();
-        a.stream().forEach(s -> soA.update(s.getValue()));
-        b.stream().forEach(s -> soB.update(s.getValue()));
+        a.stream().forEach(s -> soA.update(s.value()));
+        b.stream().forEach(s -> soB.update(s.value()));
 
         OnlineStat soAll = OnlineStat.empty();
         soAll.update(soA);

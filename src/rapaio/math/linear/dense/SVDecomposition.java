@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -64,8 +65,8 @@ public class SVDecomposition implements java.io.Serializable {
         // Derived from LINPACK code.
         // Initialize.
         RM A = Arg.solidCopy();
-        rowCount = Arg.getRowCount();
-        colCount = Arg.getColCount();
+        rowCount = Arg.rowCount();
+        colCount = Arg.colCount();
 
         if (rowCount < colCount) {
             throw new IllegalArgumentException("SVD only works for rowCount >= colCount");

@@ -23,38 +23,26 @@
  *
  */
 
-package rapaio.data.filter.var;
-
-import rapaio.data.Var;
-
-import java.util.function.Function;
+package rapaio.printer.options;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/20/17.
  */
-public class VFUpdateIndex extends AbstractVF {
+public class POptionLogLevel implements POption<Integer>{
 
-    private static final long serialVersionUID = -9017598696178273627L;
+    private final int logLevel;
 
-    public static VFUpdateIndex with(Function<Integer, Integer> f) {
-        return new VFUpdateIndex(f);
-    }
-
-    private final Function<Integer, Integer> f;
-
-    private VFUpdateIndex(Function<Integer, Integer> f) {
-        this.f = f;
+    public POptionLogLevel(int logLevel) {
+        this.logLevel = logLevel;
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void bind(POpts opts) {
+        opts.setLogLevel(logLevel);
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.index())));
-        return vars[0];
+    public Integer apply(POpts opts) {
+        return logLevel;
     }
 }

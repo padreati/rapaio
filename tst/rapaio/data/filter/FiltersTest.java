@@ -149,7 +149,7 @@ public class FiltersTest {
     public void powerTransform() {
         RandomSource.setSeed(1);
 
-        Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.getValue(), 2)).boxed().collect(NumericVar.collector());
+        Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.value(), 2)).boxed().collect(NumericVar.collector());
         Var y = transformPower(x.solidCopy(), 0.2);
 
         variance(x).printSummary();

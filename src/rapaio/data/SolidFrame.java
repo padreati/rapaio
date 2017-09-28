@@ -76,7 +76,7 @@ public class SolidFrame extends AbstractFrame {
     public static SolidFrame emptyFrom(Frame src, int rowCount) {
         Var[] vars = new Var[src.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.var(i).type().newInstance(rowCount);
+            vars[i] = src.var(i).type().newInstance(rowCount).withName(src.var(i).name());
         }
         return SolidFrame.byVars(vars);
     }
@@ -108,9 +108,9 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public static Frame matrix(RM rm, String... varNames) {
-        Frame df = matrix(rm.getRowCount(), varNames);
-        for (int i = 0; i < rm.getRowCount(); i++) {
-            for (int j = 0; j < rm.getColCount(); j++) {
+        Frame df = matrix(rm.rowCount(), varNames);
+        for (int i = 0; i < rm.rowCount(); i++) {
+            for (int j = 0; j < rm.colCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
             }
         }
@@ -147,9 +147,9 @@ public class SolidFrame extends AbstractFrame {
     // private constructor
 
     public static Frame matrix(RM rm, List<String> varNames) {
-        Frame df = matrix(rm.getRowCount(), varNames);
-        for (int i = 0; i < rm.getRowCount(); i++) {
-            for (int j = 0; j < rm.getColCount(); j++) {
+        Frame df = matrix(rm.rowCount(), varNames);
+        for (int i = 0; i < rm.rowCount(); i++) {
+            for (int j = 0; j < rm.colCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
             }
         }

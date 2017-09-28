@@ -151,30 +151,30 @@ public class BoundFrame extends AbstractFrame {
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
     }
 
-	private static void columnExistsCheck(int i, String[] _names, Frame... dfs) {
-		for (String _name : _names) {
-		    // throw an exception if the column does not exists
-		    if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
-		        // column exists but does not have the same type
-		        throw new IllegalArgumentException("can't bind by rows variable of different types");
-		    }
-		}
-	}
+    private static void columnExistsCheck(int i, String[] _names, Frame... dfs) {
+        for (String _name : _names) {
+            // throw an exception if the column does not exists
+            if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
+                // column exists but does not have the same type
+                throw new IllegalArgumentException("can't bind by rows variable of different types");
+            }
+        }
+    }
 
-	private static void nameValueComp(String[] _names, String[] compNames) {
-		for (int i = 0; i < _names.length; i++) {
-		    if (!_names[i].equals(compNames[i])) {
-		        throw new IllegalArgumentException("can't bind by rows frames with different variable " +
-		                "names or with different order of the variables");
-		    }
-		}
-	}
+    private static void nameValueComp(String[] _names, String[] compNames) {
+        for (int i = 0; i < _names.length; i++) {
+            if (!_names[i].equals(compNames[i])) {
+                throw new IllegalArgumentException("can't bind by rows frames with different variable " +
+                        "names or with different order of the variables");
+            }
+        }
+    }
 
-	private static void nameLengthComp(String[] _names, String[] compNames) {
-		if (compNames.length != _names.length) {
-		    throw new IllegalArgumentException("can't bind by rows frames with different variable count");
-		}
-	}
+    private static void nameLengthComp(String[] _names, String[] compNames) {
+        if (compNames.length != _names.length) {
+            throw new IllegalArgumentException("can't bind by rows frames with different variable count");
+        }
+    }
 
     private static final long serialVersionUID = -445349340356580788L;
     private final int rowCount;
@@ -216,7 +216,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Var var(String name) {
-        if(!indexes.containsKey(name)) {
+        if (!indexes.containsKey(name)) {
             throw new IllegalArgumentException("Variable with name: " + name + " does not exists.");
         }
         return vars.get(indexes.get(name));

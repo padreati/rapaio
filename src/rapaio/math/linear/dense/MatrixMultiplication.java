@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -35,18 +36,18 @@ import java.util.stream.IntStream;
  */
 public class MatrixMultiplication {
     public static RM jama(RM A, RM B) {
-        if (B.getRowCount() != A.getColCount()) {
+        if (B.rowCount() != A.colCount()) {
             throw new IllegalArgumentException("Matrix inner dimensions must agree.");
         }
-        RM X = SolidRM.empty(A.getRowCount(), B.getColCount());
-        double[] Bcolj = new double[A.getColCount()];
-        for (int j = 0; j < B.getColCount(); j++) {
-            for (int k = 0; k < A.getColCount(); k++) {
+        RM X = SolidRM.empty(A.rowCount(), B.colCount());
+        double[] Bcolj = new double[A.colCount()];
+        for (int j = 0; j < B.colCount(); j++) {
+            for (int k = 0; k < A.colCount(); k++) {
                 Bcolj[k] = B.get(k, j);
             }
-            for (int i = 0; i < A.getRowCount(); i++) {
+            for (int i = 0; i < A.rowCount(); i++) {
                 double s = 0;
-                for (int k = 0; k < A.getColCount(); k++) {
+                for (int k = 0; k < A.colCount(); k++) {
                     s += A.get(i, k) * Bcolj[k];
                 }
                 X.set(i, j, s);
@@ -57,10 +58,10 @@ public class MatrixMultiplication {
 
     public static RM ijkAlgorithm(RM A, RM B) {
         // Initialize C
-        RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
-        for (int i = 0; i < A.getRowCount(); i++) {
-            for (int j = 0; j < B.getColCount(); j++) {
-                for (int k = 0; k < A.getColCount(); k++) {
+        RM C = SolidRM.empty(A.rowCount(), B.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < B.colCount(); j++) {
+                for (int k = 0; k < A.colCount(); k++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
             }
@@ -70,10 +71,10 @@ public class MatrixMultiplication {
 
     public static RM ijkParallel(RM A, RM B) {
         // initialize C
-        RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
-        IntStream.range(0, A.getRowCount()).parallel().forEach(i -> {
-            for (int j = 0; j < B.getColCount(); j++) {
-                for (int k = 0; k < A.getColCount(); k++) {
+        RM C = SolidRM.empty(A.rowCount(), B.colCount());
+        IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
+            for (int j = 0; j < B.colCount(); j++) {
+                for (int k = 0; k < A.colCount(); k++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
             }
@@ -83,12 +84,12 @@ public class MatrixMultiplication {
 
     public static RM ikjAlgorithm(RM A, RM B) {
         // initialize C
-        RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
-        for (int i = 0; i < A.getRowCount(); i++) {
-            for (int k = 0; k < A.getColCount(); k++) {
+        RM C = SolidRM.empty(A.rowCount(), B.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
                     continue;
-                for (int j = 0; j < B.getColCount(); j++) {
+                for (int j = 0; j < B.colCount(); j++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
             }
@@ -97,12 +98,12 @@ public class MatrixMultiplication {
     }
 
     public static RM ikjParallel(RM A, RM B) {
-        RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
-        IntStream.range(0, A.getRowCount()).parallel().forEach(i -> {
-            for (int k = 0; k < A.getColCount(); k++) {
+        RM C = SolidRM.empty(A.rowCount(), B.colCount());
+        IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
+            for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
                     continue;
-                for (int j = 0; j < B.getColCount(); j++) {
+                for (int j = 0; j < B.colCount(); j++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
             }
@@ -111,28 +112,28 @@ public class MatrixMultiplication {
     }
 
     public static RM tiledAlgorithm(RM A, RM B) {
-        RM C = SolidRM.empty(A.getRowCount(), B.getColCount());
+        RM C = SolidRM.empty(A.rowCount(), B.colCount());
 
 //        Pick a tile size T = Θ(√M)
         int T = 1;
-        while (T < Math.sqrt(A.getColCount()))
+        while (T < Math.sqrt(A.colCount()))
             T *= 2;
 
 //        For I from 1 to n in steps of T:
-        for (int I = 0; I < A.getRowCount(); I += T) {
+        for (int I = 0; I < A.rowCount(); I += T) {
             // For J from 1 to p in steps of T:
-            for (int J = 0; J < B.getColCount(); J += T) {
+            for (int J = 0; J < B.colCount(); J += T) {
                 // For K from 1 to m in steps of T:
-                for (int K = 0; K < A.getColCount(); K += T) {
+                for (int K = 0; K < A.colCount(); K += T) {
                     // Multiply AI:I+T, K:K+T and BK:K+T, J:J+T into CI:I+T, J:J+T, that is:
                     // For i from I to min(I + T, n):
-                    for (int i = I; i < Math.min(I + T, A.getRowCount()); i++) {
+                    for (int i = I; i < Math.min(I + T, A.rowCount()); i++) {
                         // For j from J to min(J + T, p):
-                        for (int j = J; j < Math.min(J + T, B.getColCount()); j++) {
+                        for (int j = J; j < Math.min(J + T, B.colCount()); j++) {
                             // Let sum = 0
                             double sum = 0;
                             // For k from K to min(K + T, m):
-                            for (int k = K; k < Math.min(K + T, A.getColCount()); k++) {
+                            for (int k = K; k < Math.min(K + T, A.colCount()); k++) {
                                 // Set sum ← sum + Aik × Bkj
                                 sum += A.get(i, k) * B.get(k, j);
                             }
@@ -149,9 +150,9 @@ public class MatrixMultiplication {
     }
 
     private static RM add(RM A, RM B) {
-        RM C = SolidRM.empty(A.getRowCount(), A.getColCount());
-        for (int i = 0; i < A.getRowCount(); i++) {
-            for (int j = 0; j < A.getColCount(); j++) {
+        RM C = SolidRM.empty(A.rowCount(), A.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, j, A.get(i, j) + B.get(i, j));
             }
         }
@@ -159,7 +160,7 @@ public class MatrixMultiplication {
     }
 
     private static RM subtract(RM A, RM B) {
-        int n = A.getRowCount();
+        int n = A.rowCount();
         RM C = SolidRM.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -178,7 +179,7 @@ public class MatrixMultiplication {
         // Make the matrices bigger so that you can apply the strassen
         // algorithm recursively without having to deal with odd
         // matrix sizes
-        int n = A.getColCount();
+        int n = A.colCount();
         int m = nextPowerOfTwo(n);
         RM APrep = SolidRM.empty(m, m);
         RM BPrep = SolidRM.empty(m, m);
@@ -200,7 +201,7 @@ public class MatrixMultiplication {
     }
 
     private static RM strassenR(RM A, RM B, int leafSize) {
-        int n = A.getColCount();
+        int n = A.colCount();
 
         if (n <= leafSize) {
             return ikjAlgorithm(A, B);

@@ -124,13 +124,13 @@ public interface RTreeNominalMethod extends Serializable {
             for (int i = 1; i < testVar.levels().length; i++) {
                 p.splitWeight[i - 1] = dvWeights.get(i - 1);
                 String label = testVar.levels()[i];
-                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.getLabel(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
+                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
             }
             double value = tree.function.computeTestValue(p);
             RTree.Candidate candidate = new RTree.Candidate(value, testVarName);
             for (int i = 1; i < testVar.levels().length; i++) {
                 String label = testVar.levels()[i];
-                candidate.addGroup(testVarName + " == " + label, spot -> spot.getLabel(testVarName).equals(label));
+                candidate.addGroup(testVarName + " == " + label, spot -> spot.label(testVarName).equals(label));
             }
             return Optional.of(candidate);
         }
@@ -214,9 +214,9 @@ public interface RTreeNominalMethod extends Serializable {
                     bestScore = value;
                     best = new RTree.Candidate(value, testVarName);
                     best.addGroup(testVarName + " == " + testLabel,
-                            spot -> !spot.isMissing(testVarName) && spot.getLabel(testVarName).equals(testLabel));
+                            spot -> !spot.isMissing(testVarName) && spot.label(testVarName).equals(testLabel));
                     best.addGroup(testVarName + " != " + testLabel,
-                            spot -> !spot.isMissing(testVarName) && !spot.getLabel(testVarName).equals(testLabel));
+                            spot -> !spot.isMissing(testVarName) && !spot.label(testVarName).equals(testLabel));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

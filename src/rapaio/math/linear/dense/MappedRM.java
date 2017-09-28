@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -45,14 +46,14 @@ public class MappedRM implements RM {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;
-            this.colIndexes = new int[ref.getColCount()];
-            for (int i = 0; i < ref.getColCount(); i++) {
+            this.colIndexes = new int[ref.colCount()];
+            for (int i = 0; i < ref.colCount(); i++) {
                 this.colIndexes[i] = i;
             }
         } else {
             this.ref = ref;
-            this.rowIndexes = new int[ref.getRowCount()];
-            for (int i = 0; i < ref.getRowCount(); i++) {
+            this.rowIndexes = new int[ref.rowCount()];
+            for (int i = 0; i < ref.rowCount(); i++) {
                 this.rowIndexes[i] = i;
             }
             this.colIndexes = indexes;
@@ -60,12 +61,12 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rowIndexes.length;
     }
 
     @Override
-    public int getColCount() {
+    public int colCount() {
         return colIndexes.length;
     }
 

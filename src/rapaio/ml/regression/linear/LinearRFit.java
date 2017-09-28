@@ -109,7 +109,7 @@ public class LinearRFit extends RFit {
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
 
                 RM X = SolidRM.copy(df.mapVars(model.inputNames()));
-                RM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidRM.identity(X.getColCount()));
+                RM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidRM.identity(X.colCount()));
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));

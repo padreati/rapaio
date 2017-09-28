@@ -49,12 +49,12 @@ public interface RM extends Serializable, Printable {
     /**
      * @return number of rows
      */
-    int getRowCount();
+    int rowCount();
 
     /**
      * @return number of columns
      */
-    int getColCount();
+    int colCount();
 
     /**
      * @param row row index
@@ -105,9 +105,9 @@ public interface RM extends Serializable, Printable {
      */
     default RM removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] rows = new int[getRowCount() - rem.size()];
+        int[] rows = new int[rowCount() - rem.size()];
         int pos = 0;
-        for (int i = 0; i < getRowCount(); i++) {
+        for (int i = 0; i < rowCount(); i++) {
             if (rem.contains(i))
                 continue;
             rows[pos++] = i;
@@ -129,9 +129,9 @@ public interface RM extends Serializable, Printable {
 
     default RM removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] cols = new int[getColCount() - rem.size()];
+        int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
-        for (int i = 0; i < getColCount(); i++) {
+        for (int i = 0; i < colCount(); i++) {
             if (rem.contains(i))
                 continue;
             cols[pos++] = i;
@@ -149,8 +149,8 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM dot(double x) {
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * x);
             }
         }
@@ -158,8 +158,8 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM plus(double x) {
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 increment(i, j, x);
             }
         }
@@ -167,11 +167,11 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM plus(RM B) {
-        if ((getRowCount() != B.getRowCount()) || (getColCount() != B.getColCount()))
+        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
             throw new IllegalArgumentException(String.format(
-                    "Matrices are not conform for addition: [%d x %d] + [%d x %d]", getRowCount(), getColCount(), B.getRowCount(), B.getColCount()));
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+                    "Matrices are not conform for addition: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 increment(i, j, B.get(i, j));
             }
         }
@@ -183,11 +183,11 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM minus(RM B) {
-        if ((getRowCount() != B.getRowCount()) || (getColCount() != B.getColCount()))
+        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
             throw new IllegalArgumentException(String.format(
-                    "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", getRowCount(), getColCount(), B.getRowCount(), B.getColCount()));
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+                    "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 increment(i, j, -B.get(i, j));
             }
         }
@@ -205,8 +205,8 @@ public interface RM extends Serializable, Printable {
 
     default Mean mean() {
         NumericVar values = NumericVar.empty();
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
             }
         }
@@ -215,8 +215,8 @@ public interface RM extends Serializable, Printable {
 
     default Variance var() {
         NumericVar values = NumericVar.empty();
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
             }
         }
@@ -227,22 +227,22 @@ public interface RM extends Serializable, Printable {
      * Diagonal vector of values
      */
     default RV diag() {
-        RV rv = SolidRV.empty(getRowCount());
-        for (int i = 0; i < getRowCount(); i++) {
+        RV rv = SolidRV.empty(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
             rv.set(i, get(i, i));
         }
         return rv;
     }
 
     default RM scatter() {
-        RM scatter = SolidRM.empty(getColCount(), getColCount());
-        double[] mean = new double[getColCount()];
-        for (int i = 0; i < getColCount(); i++) {
+        RM scatter = SolidRM.empty(colCount(), colCount());
+        double[] mean = new double[colCount()];
+        for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean().value();
         }
-        for (int k = 0; k < getRowCount(); k++) {
-            double[] row = new double[getColCount()];
-            for (int i = 0; i < getColCount(); i++)
+        for (int k = 0; k < rowCount(); k++) {
+            double[] row = new double[colCount()];
+            for (int i = 0; i < colCount(); i++)
                 row[i] = get(k, i) - mean[i];
             for (int i = 0; i < row.length; i++) {
                 for (int j = 0; j < row.length; j++) {
@@ -269,12 +269,12 @@ public interface RM extends Serializable, Printable {
     }
 
     default boolean isEqual(RM RM, double tol) {
-        if (getRowCount() != RM.getRowCount())
+        if (rowCount() != RM.rowCount())
             return false;
-        if (getColCount() != RM.getColCount())
+        if (colCount() != RM.colCount())
             return false;
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 if (!MTools.eq(get(i, j), RM.get(i, j), tol))
                     return false;
             }
@@ -290,38 +290,38 @@ public interface RM extends Serializable, Printable {
 
         StringBuilder sb = new StringBuilder();
 
-        String[][] m = new String[getRowCount()][getColCount()];
+        String[][] m = new String[rowCount()][colCount()];
         int max = 1;
-        for (int i = 0; i < getRowCount(); i++) {
-            for (int j = 0; j < getColCount(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 m[i][j] = WS.formatShort(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }
-        max = Math.max(max, String.format("[,%d]", getRowCount()).length());
-        max = Math.max(max, String.format("[%d,]", getColCount()).length());
+        max = Math.max(max, String.format("[,%d]", rowCount()).length());
+        max = Math.max(max, String.format("[%d,]", colCount()).length());
 
         int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
-        int vCount = Math.min(getRowCount() + 1, 101);
+        int vCount = Math.min(rowCount() + 1, 101);
         int hLast = 0;
         while (true) {
 
             // take vertical stripes
-            if (hLast >= getColCount())
+            if (hLast >= colCount())
                 break;
 
             int hStart = hLast;
-            int hEnd = Math.min(hLast + hCount, getColCount());
+            int hEnd = Math.min(hLast + hCount, colCount());
             int vLast = 0;
 
             while (true) {
 
                 // print rows
-                if (vLast >= getRowCount())
+                if (vLast >= rowCount())
                     break;
 
                 int vStart = vLast;
-                int vEnd = Math.min(vLast + vCount, getRowCount());
+                int vEnd = Math.min(vLast + vCount, rowCount());
 
                 for (int i = vStart; i <= vEnd; i++) {
                     for (int j = hStart; j <= hEnd; j++) {

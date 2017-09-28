@@ -125,8 +125,8 @@ public interface RTreeSplitter extends Serializable {
             }
             final int index = majorityGroup;
             for (FSpot spot : s.missingSpots) {
-                s.mappings.get(index).add(spot.getRow());
-                s.weightsList.get(index).addValue(weights.value(spot.getRow()));
+                s.mappings.get(index).add(spot.row());
+                s.weightsList.get(index).addValue(weights.value(spot.row()));
             }
             return s.mappings;
         }
@@ -144,8 +144,8 @@ public interface RTreeSplitter extends Serializable {
             }
             final int index = majorityGroup;
             for (FSpot spot : s.missingSpots) {
-                s.mappings.get(index).add(spot.getRow());
-                s.weightsList.get(index).addValue(weights.value(spot.getRow()));
+                s.mappings.get(index).add(spot.row());
+                s.weightsList.get(index).addValue(weights.value(spot.row()));
             }
             List<Frame> frames = new ArrayList<>();
             s.mappings.forEach(mapping -> frames.add(MappedFrame.byRow(df, mapping)));
@@ -181,8 +181,8 @@ public interface RTreeSplitter extends Serializable {
             }
             for (int i = 0; i < s.mappings.size(); i++) {
                 for (FSpot spot : s.missingSpots) {
-                    s.mappings.get(i).add(spot.getRow());
-                    s.weightsList.get(i).addValue(weights.value(spot.getRow()) * p[i]);
+                    s.mappings.get(i).add(spot.row());
+                    s.weightsList.get(i).addValue(weights.value(spot.row()) * p[i]);
                 }
             }
             return s.mappings;
@@ -203,8 +203,8 @@ public interface RTreeSplitter extends Serializable {
             }
             for (int i = 0; i < s.mappings.size(); i++) {
                 for (FSpot spot : s.missingSpots) {
-                    s.mappings.get(i).add(spot.getRow());
-                    s.weightsList.get(i).addValue(weights.value(spot.getRow()) * p[i]);
+                    s.mappings.get(i).add(spot.row());
+                    s.weightsList.get(i).addValue(weights.value(spot.row()) * p[i]);
                 }
             }
             List<Frame> frames = new ArrayList<>();
@@ -232,8 +232,8 @@ public interface RTreeSplitter extends Serializable {
             RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
-                s.mappings.get(next).add(spot.getRow());
-                s.weightsList.get(next).addValue(weights.value(spot.getRow()));
+                s.mappings.get(next).add(spot.row());
+                s.weightsList.get(next).addValue(weights.value(spot.row()));
             }
             return s.mappings;
         }
@@ -243,8 +243,8 @@ public interface RTreeSplitter extends Serializable {
             RegularSplitting s = new RegularSplitting(df, weights, groupPredicates);
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
-                s.mappings.get(next).add(spot.getRow());
-                s.weightsList.get(next).addValue(weights.value(spot.getRow()));
+                s.mappings.get(next).add(spot.row());
+                s.weightsList.get(next).addValue(weights.value(spot.row()));
             }
             List<Frame> frameList = s.mappings.stream().map(df::mapRows).collect(Collectors.toList());
             return Pair.from(frameList, s.weightsList);
@@ -270,8 +270,8 @@ class RegularSplitting {
             for (int i = 0; i < groupPredicates.size(); i++) {
                 SPredicate<FSpot> predicate = groupPredicates.get(i);
                 if (predicate.test(s)) {
-                    mappings.get(i).add(s.getRow());
-                    weightsList.get(i).addValue(weights.value(s.getRow()));
+                    mappings.get(i).add(s.row());
+                    weightsList.get(i).addValue(weights.value(s.row()));
                     matched = true;
                     // first rule has priority
                     break;

@@ -64,7 +64,7 @@ public final class Mean implements Printable {
             return;
         }
         final double mean = sum / completeCount;
-        final double mean2 = var.stream().complete().mapToDouble(s -> s.getValue() - mean).sum();
+        final double mean2 = var.stream().complete().mapToDouble(s -> s.value() - mean).sum();
         this.value = mean + mean2 / completeCount;
     }
 

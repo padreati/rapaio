@@ -107,10 +107,10 @@ public interface CTreePurityTest extends Tagged, Serializable {
                     double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                     best.addGroup(
                             String.format("%s <= %s", testName, WS.formatFlex(testValue)),
-                            spot -> !spot.isMissing(testName) && spot.getValue(testName) <= testValue);
+                            spot -> !spot.isMissing(testName) && spot.value(testName) <= testValue);
                     best.addGroup(
                             String.format("%s > %s", testName, WS.formatFlex(testValue)),
-                            spot -> !spot.isMissing(testName) && spot.getValue(testName) > testValue);
+                            spot -> !spot.isMissing(testName) && spot.value(testName) > testValue);
 
                     bestScore = currentScore;
                 }
@@ -138,8 +138,8 @@ public interface CTreePurityTest extends Tagged, Serializable {
             }
 
             CTreeCandidate best = new CTreeCandidate(function.compute(dt), testName);
-            best.addGroup(testName + " == 1", spot -> spot.getBinary(testName));
-            best.addGroup(testName + " != 1", spot -> !spot.getBinary(testName));
+            best.addGroup(testName + " == 1", spot -> spot.binary(testName));
+            best.addGroup(testName + " != 1", spot -> !spot.binary(testName));
             return best;
 
         }
@@ -169,7 +169,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
                 final String label = test.levels()[i];
                 candidate.addGroup(
                         String.format("%s == %s", testName, label),
-                        spot -> !spot.isMissing(testName) && spot.getLabel(testName).equals(label));
+                        spot -> !spot.isMissing(testName) && spot.label(testName).equals(label));
             }
             return candidate;
         }
@@ -197,7 +197,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
             double bestScore = 0.0;
 
             int[] termCount = new int[test.levels().length];
-            test.stream().forEach(s -> termCount[s.getIndex()]++);
+            test.stream().forEach(s -> termCount[s.index()]++);
 
             double[] rowCounts = counts.rowTotals();
             for (int i = 1; i < test.levels().length; i++) {
@@ -214,8 +214,8 @@ public interface CTreePurityTest extends Tagged, Serializable {
                     if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                 }
                 best = new CTreeCandidate(currentScore, testName);
-                best.addGroup(testName + " == " + testLabel, spot -> spot.getLabel(testName).equals(testLabel));
-                best.addGroup(testName + " != " + testLabel, spot -> !spot.getLabel(testName).equals(testLabel));
+                best.addGroup(testName + " == " + testLabel, spot -> spot.label(testName).equals(testLabel));
+                best.addGroup(testName + " != " + testLabel, spot -> !spot.label(testName).equals(testLabel));
             }
             return best;
         }

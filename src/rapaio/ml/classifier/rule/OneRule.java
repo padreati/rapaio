@@ -172,7 +172,7 @@ public class OneRule extends AbstractClassifier {
         String[] targetDict = firstTargetLevels();
 
         DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.empty(false, targetDict)).toArray(DVector[]::new);
-        df.stream().forEach(s -> dvs[df.index(s.getRow(), testVar)].increment(df.index(s.getRow(), firstTargetName()), weights.value(s.getRow())));
+        df.stream().forEach(s -> dvs[df.index(s.row(), testVar)].increment(df.index(s.row(), firstTargetName()), weights.value(s.row())));
         for (int i = 0; i < testDict.length; i++) {
             DVector dv = dvs[i];
             int bestIndex = dv.findBestIndex();

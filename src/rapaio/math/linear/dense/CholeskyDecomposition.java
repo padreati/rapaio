@@ -75,9 +75,9 @@ public class CholeskyDecomposition implements Serializable {
     private CholeskyDecomposition(RM A) {
 
         // Initialize.
-        n = A.getRowCount();
+        n = A.rowCount();
         L = new double[n][n];
-        isspd = (A.getColCount() == n);
+        isspd = (A.colCount() == n);
 
         // Main loop.
         for (int j = 0; j < n; j++) {
@@ -180,7 +180,7 @@ public class CholeskyDecomposition implements Serializable {
      */
 
     public RM solve(RM B) {
-        if (B.getRowCount() != n) {
+        if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!isspd) {
@@ -189,7 +189,7 @@ public class CholeskyDecomposition implements Serializable {
 
         // Copy right hand side.
         RM X = B.solidCopy();
-        int nx = B.getColCount();
+        int nx = B.colCount();
 
         SubstitutionStrategy sStrategy = new ForwardSubstitution();
         

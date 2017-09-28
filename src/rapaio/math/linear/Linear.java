@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,9 +25,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.EigenDecomposition;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Linear algebra tool bag class.
@@ -37,20 +36,20 @@ import rapaio.math.linear.dense.SolidRV;
 public final class Linear {
 
     public static RM chol2inv(RM R) {
-        return chol2inv(R, SolidRM.identity(R.getRowCount()));
+        return chol2inv(R, SolidRM.identity(R.rowCount()));
     }
 
     public static RM chol2inv(RM R, RM B) {
         RM ref = R.t();
-        if (B.getRowCount() != R.getRowCount()) {
+        if (B.rowCount() != R.rowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
 
         // Copy right hand side.
         RM X = B.solidCopy();
 
-        int n = ref.getRowCount();
-        int nx = X.getColCount();
+        int n = ref.rowCount();
+        int nx = X.colCount();
         double[][] L = new double[n][n];
         for (int i = 0; i < n; i++) {
         	for (int j = 0; j < n; j++) {
@@ -78,7 +77,7 @@ public final class Linear {
         EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
         RM U = eigenPair.getRM();
         RM lambda = eigenPair.expandedValues();
-        for (int i = 0; i < lambda.getRowCount(); i++) {
+        for (int i = 0; i < lambda.rowCount(); i++) {
             //TODO quick fix
             // this is because negative numbers can be produced for small quantities
             lambda.set(i, i, Math.pow(Math.abs(lambda.get(i, i)), power));
@@ -88,8 +87,8 @@ public final class Linear {
 
     @SuppressWarnings("unused") 
 	private static boolean inTolerance(RM s, double tol) {
-        for (int i = 0; i < s.getRowCount(); i++) {
-            for (int j = i + 1; j < s.getColCount(); j++) {
+        for (int i = 0; i < s.rowCount(); i++) {
+            for (int j = i + 1; j < s.colCount(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)
                     return false;
             }

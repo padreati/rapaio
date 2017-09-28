@@ -56,27 +56,27 @@ public class ChiSqIndependence implements HTest {
     }
 
     public static ChiSqIndependence from(RM m, boolean yates) {
-        String[] rowLevels = new String[m.getRowCount()];
-        String[] colLevels = new String[m.getColCount()];
-        for (int i = 0; i < m.getRowCount(); i++) {
+        String[] rowLevels = new String[m.rowCount()];
+        String[] colLevels = new String[m.colCount()];
+        for (int i = 0; i < m.rowCount(); i++) {
             rowLevels[i] = "R" + (i + 1);
         }
-        for (int i = 0; i < m.getColCount(); i++) {
+        for (int i = 0; i < m.colCount(); i++) {
             colLevels[i] = "C" + (i + 1);
         }
         return from(m, rowLevels, colLevels, yates);
     }
 
     public static ChiSqIndependence from(RM m, String[] rowLevels, String[] colLevels, boolean yates) {
-        if (m.getRowCount() != rowLevels.length) {
+        if (m.rowCount() != rowLevels.length) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }
-        if (m.getColCount() != colLevels.length) {
+        if (m.colCount() != colLevels.length) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
         DTable dt = DTable.empty(rowLevels, colLevels, true);
-        for (int i = 0; i < m.getRowCount(); i++) {
-            for (int j = 0; j < m.getColCount(); j++) {
+        for (int i = 0; i < m.rowCount(); i++) {
+            for (int j = 0; j < m.colCount(); j++) {
                 dt.update(i, j, m.get(i, j));
             }
         }

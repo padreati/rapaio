@@ -93,7 +93,7 @@ public interface RTreeNumericMethod extends Serializable {
         public Optional<RTree.Candidate> computeCandidate(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
             Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
-            Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::getRow).collect(Collectors.toList()));
+            Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
 
             Var test = df.var(testVarName).mapRows(cleanMapping);
             Var target = df.var(targetVarName).mapRows(cleanMapping);
@@ -141,10 +141,10 @@ public interface RTreeNumericMethod extends Serializable {
                     double testValue = test.value(i);
                     best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
-                            spot -> !spot.isMissing(testVarName) && spot.getValue(testVarName) <= testValue);
+                            spot -> !spot.isMissing(testVarName) && spot.value(testVarName) <= testValue);
                     best.addGroup(
                             String.format("%s > %.6f", testVarName, testValue),
-                            spot -> !spot.isMissing(testVarName) && spot.getValue(testVarName) > testValue);
+                            spot -> !spot.isMissing(testVarName) && spot.value(testVarName) > testValue);
                 }
             }
             return (best != null) ? Optional.of(best) : Optional.empty();
