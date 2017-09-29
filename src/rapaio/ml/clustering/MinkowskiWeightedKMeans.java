@@ -465,7 +465,13 @@ public class MinkowskiWeightedKMeans implements Printable {
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(Summary.headString(false, Filters.refSort(summary, summary.var("count").refComparator(false))));
+            sb.append(Summary.headString(false,
+                    Filters.refSort(summary, summary.var("count").refComparator(false))));
+            sb.append("\n");
+            sb.append("Cluster weights:\n");
+            Frame w = SolidFrame.byVars(IndexVar.seq(k).withName("ID")).bindVars(weights);
+            sb.append(Summary.headString(w));
+            sb.append("\n");
         }
 
         return sb.toString();

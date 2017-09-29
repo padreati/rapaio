@@ -26,6 +26,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.distributions.empirical.KFunc;
+import rapaio.data.IndexVar;
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.HostFigure;
@@ -219,6 +220,16 @@ public class Plot extends HostFigure {
 
     public Plot segment2d(double x1, double y1, double x2, double y2, GOption... opts) {
         add(new Segment2D(x1, y1, x2, y2, opts));
+        return this;
+    }
+
+    public Plot dvLines(Var values) {
+        add(new DVLines(values, IndexVar.seq(values.rowCount())));
+        return this;
+    }
+
+    public Plot dvLines(Var values, Var indexes, GOption... opts) {
+        add(new DVLines(values, indexes, opts));
         return this;
     }
 }

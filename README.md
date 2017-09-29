@@ -138,10 +138,15 @@ If there are no notes it means the feature is considered to be fully implemented
 * Tree: DecisionStump
 * LinearRegression (multiple targets, only numerical attributes)
 
-**Clusterization**
+**Clustering**
 
 * Cluster Silhouette
 * KMeans clustering
+* Minkowski Weighted KMeans
+
+**Time Series**
+
+* Acf
 
 **Graphics**
 
@@ -155,6 +160,8 @@ If there are no notes it means the feature is considered to be fully implemented
 * Plot points
 * Density line KDE
 * ROC Curve
+* Discrete Vertical Lines
+* Segment2D
 
 **Matrices and vectors**
 

@@ -34,6 +34,7 @@ import java.awt.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/17.
  */
+@Deprecated
 public class ClusterSilhuettePlot extends HostFigure {
 
     private final ClusterSilhouette silhouette;

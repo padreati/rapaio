@@ -133,16 +133,24 @@ public final class Plotter {
         return new BarChart(categ, cond, numeric, opts);
     }
 
-    public Plot hLine(double a, GOption... opts) {
+    public static Plot hLine(double a, GOption... opts) {
         return plot().add(new ABLine(true, a, opts));
     }
 
-    public Plot vLine(double a, GOption... opts) {
+    public static Plot vLine(double a, GOption... opts) {
         return plot().add(new ABLine(false, a, opts));
     }
 
-    public Plot abLine(double a, double b, GOption... opts) {
+    public static Plot abLine(double a, double b, GOption... opts) {
         return plot().add(new ABLine(a, b, opts));
+    }
+
+    public static Plot dvLines(Var values, GOption... opts) {
+        return plot().add(new DVLines(values, IndexVar.seq(values.rowCount())));
+    }
+
+    public static Plot dvLines(Var values, Var indexes, GOption... opts) {
+        return plot().add(new DVLines(values, indexes, opts));
     }
 
     // GRAPHICAL OPTIONS

@@ -23,52 +23,63 @@
  *
  */
 
-package rapaio.experiment.ts;
+package rapaio.ts;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.data.IndexVar;
 import rapaio.data.NumericVar;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Summary;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 /**
+ * Sample AutoCorrelation Function
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
 public class Acf implements Printable {
 
     private final Var ts;
-    private final int[] lags;
-    private final double[] values;
+    private final IndexVar lags;
+    private final NumericVar values;
 
     public static Acf from(Var ts, int maxLag) {
-        return new Acf(ts, maxLag);
+        return new Acf(ts, IndexVar.seq(0, maxLag).withName("lags"));
     }
 
-    public Acf(Var ts, int maxLag) {
+    public static Acf from(Var ts, IndexVar lags) {
+        return new Acf(ts, lags.withName("lags"));
+    }
+
+    private Acf(Var ts, IndexVar lags) {
         if (ts.stream().complete().count() != ts.rowCount()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
         this.ts = ts.solidCopy();
-        lags = new int[maxLag];
-        values = new double[maxLag];
+        this.lags = lags.solidCopy();
+        this.values = NumericVar.fill(lags.rowCount(), 0).withName("acf");
 
         compute();
     }
 
-    public NumericVar getValues() {
-        return NumericVar.wrap(values);
+    public NumericVar values() {
+        return values;
     }
 
     private void compute() {
         double mu = Mean.from(ts).value();
         double var = Variance.from(ts).biasedValue();
-        for (int i = 1; i <= lags.length; i++) {
-            lags[i-1] = i;
+        for (int i = 0; i < lags.rowCount(); i++) {
+            int lag = lags.index(i);
             double acf = 0.0;
-            for (int j = 0; j < ts.rowCount() - i; j++) {
-                acf += (ts.value(j) - mu) * (ts.value(j + i) - mu);
+            for (int j = 0; j < ts.rowCount() - lag; j++) {
+                acf += (ts.value(j) - mu) * (ts.value(j + lag) - mu);
             }
-            values[i-1] = acf / (var * ts.rowCount());
+            values.setValue(i, acf / (var * ts.rowCount()));
         }
     }
 
@@ -76,7 +87,22 @@ public class Acf implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(NumericVar.wrap(values).summary());
+        sb.append("Acf summary\n");
+        sb.append("===========\n");
+        sb.append("\n");
+
+        TextTable tt = TextTable
+                .newEmpty(lags.rowCount()+1, 2)
+                .withHeaderRows(1)
+                ;
+        tt.set(0, 0, "Lag", 0);
+        tt.set(0, 1, "Acf", 0);
+        for (int i = 0; i < lags.rowCount(); i++) {
+            tt.set(i+1, 0, lags.label(i), 1);
+            tt.set(i+1, 1, WS.formatFlex(values.value(i)), 1);
+        }
+        sb.append(tt.summary());
+        sb.append("\n");
         return sb.toString();
     }
 }
