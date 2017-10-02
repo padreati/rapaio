@@ -57,7 +57,7 @@ public class DVLines extends PlotComponent {
     @Override
     protected Range buildRange() {
         return new Range(
-                Minimum.from(indexes).value(), 0,
+                Minimum.from(indexes).value(), Minimum.from(values).value(),
                 Maximum.from(indexes).value(), Maximum.from(values).value());
     }
 
@@ -65,13 +65,24 @@ public class DVLines extends PlotComponent {
     public void paint(Graphics2D g2d) {
 
         Range range = parent.getRange();
+
+        double x1 = parent.xScale(indexes.value(0));
+        double y1 = parent.yScale(0);
+        double x2 = parent.xScale(indexes.value(indexes.rowCount()-1));
+        double y2 = parent.yScale(0);
+        g2d.setColor(Color.BLACK);
+        Stroke oldStroke = g2d.getStroke();
+        g2d.setStroke(new BasicStroke(options.getLwd()));
+        g2d.draw(new Line2D.Double(x1, y1, x2, y2));
+        g2d.setStroke(oldStroke);
+
         for (int i = 0; i < indexes.rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = parent.xScale(indexes.value(i));
-            double y1 = parent.yScale(0);
-            double x2 = parent.xScale(indexes.value(i));
-            double y2 = parent.yScale(values.value(i));
-            Stroke oldStroke = g2d.getStroke();
+            x1 = parent.xScale(indexes.value(i));
+            y1 = parent.yScale(0);
+            x2 = parent.xScale(indexes.value(i));
+            y2 = parent.yScale(values.value(i));
+            oldStroke = g2d.getStroke();
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             g2d.setStroke(oldStroke);

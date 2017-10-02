@@ -29,10 +29,8 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.IndexVar;
 import rapaio.data.NumericVar;
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
-import rapaio.printer.Summary;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -45,7 +43,8 @@ public class Acf implements Printable {
 
     private final Var ts;
     private final IndexVar lags;
-    private final NumericVar values;
+    private final NumericVar correlation;
+    private final NumericVar covariance;
 
     public static Acf from(Var ts, int maxLag) {
         return new Acf(ts, IndexVar.seq(0, maxLag).withName("lags"));
@@ -61,13 +60,18 @@ public class Acf implements Printable {
         }
         this.ts = ts.solidCopy();
         this.lags = lags.solidCopy();
-        this.values = NumericVar.fill(lags.rowCount(), 0).withName("acf");
+        this.correlation = NumericVar.fill(lags.rowCount(), 0).withName("correlation");
+        this.covariance = NumericVar.fill(lags.rowCount(), 0).withName("covariance");
 
         compute();
     }
 
-    public NumericVar values() {
-        return values;
+    public NumericVar correlation() {
+        return correlation;
+    }
+
+    public NumericVar covariance() {
+        return covariance;
     }
 
     private void compute() {
@@ -79,7 +83,8 @@ public class Acf implements Printable {
             for (int j = 0; j < ts.rowCount() - lag; j++) {
                 acf += (ts.value(j) - mu) * (ts.value(j + lag) - mu);
             }
-            values.setValue(i, acf / (var * ts.rowCount()));
+            correlation.setValue(i, acf / (var * ts.rowCount()));
+            covariance.setValue(i, acf / ts.rowCount());
         }
     }
 
@@ -92,14 +97,16 @@ public class Acf implements Printable {
         sb.append("\n");
 
         TextTable tt = TextTable
-                .newEmpty(lags.rowCount()+1, 2)
+                .newEmpty(lags.rowCount()+1, 3)
                 .withHeaderRows(1)
                 ;
         tt.set(0, 0, "Lag", 0);
-        tt.set(0, 1, "Acf", 0);
+        tt.set(0, 1, "correlation", 0);
+        tt.set(0, 2, "covariance", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
             tt.set(i+1, 0, lags.label(i), 1);
-            tt.set(i+1, 1, WS.formatFlex(values.value(i)), 1);
+            tt.set(i+1, 1, WS.formatFlex(correlation.value(i)), 1);
+            tt.set(i+1, 2, WS.formatFlex(covariance.value(i)), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");
