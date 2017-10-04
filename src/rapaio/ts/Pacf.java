@@ -25,20 +25,94 @@
 
 package rapaio.ts;
 
+import rapaio.core.stat.Maximum;
+import rapaio.data.IndexVar;
+import rapaio.data.NumericVar;
+import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 /**
  * Partial auto correlation function
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
-@Deprecated
 public class Pacf implements Printable {
 
+    public static Pacf from(Var ts, int maxLag) {
+        return new Pacf(ts, IndexVar.seq(1, maxLag));
+    }
 
+    private final Var ts;
+    private final IndexVar lags;
+
+    private NumericVar pacf;
+
+    private Pacf(Var ts, IndexVar indexes) {
+        this.ts = ts;
+        this.lags = indexes;
+
+        computeDurbinLevinson();
+    }
+
+    private void computeDurbinLevinson() {
+        Acf acf = Acf.from(ts, (int) Maximum.from(lags).value() + 1);
+        NumericVar cor = acf.correlation();
+
+        double a, b, c;
+        int nlag = cor.rowCount()-1;
+
+        double[] v = new double[nlag];
+        double[] w = new double[nlag];
+        pacf = NumericVar.empty(lags.rowCount()).withName("pacf");
+        w[0] = cor.value(1);
+        pacf.setValue(0, cor.value(1));
+        for (int ll = 1; ll < nlag; ll++) {
+            a = cor.value(ll + 1);
+            b = 1.0;
+            for (int i = 0; i < ll; i++) {
+                a -= w[i] * cor.value(ll - i);
+                b -= w[i] * cor.value(i + 1);
+            }
+            c = a / b;
+            pacf.setValue(ll, c);
+            ;
+            if (ll + 1 == nlag) break;
+            w[ll] = c;
+            for (int i = 0; i < ll; i++)
+                v[ll - i - 1] = w[i];
+            for (int i = 0; i < ll; i++)
+                w[i] -= c * v[i];
+        }
+    }
+
+    public IndexVar lags() {
+        return lags;
+    }
+
+    public NumericVar values() {
+        return pacf;
+    }
 
     @Override
     public String summary() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Pacf summary\n");
+        sb.append("===========\n");
+        sb.append("\n");
+
+        TextTable tt = TextTable
+                .newEmpty(lags.rowCount() + 1, 2)
+                .withHeaderRows(1);
+        tt.set(0, 0, "Lag", 0);
+        tt.set(0, 1, "pacf", 0);
+        for (int i = 0; i < lags.rowCount(); i++) {
+            tt.set(i + 1, 0, lags.label(i), 1);
+            tt.set(i + 1, 1, WS.formatFlex(pacf.value(i)), 1);
+        }
+        sb.append(tt.summary());
+        sb.append("\n");
+        return sb.toString();
     }
 }

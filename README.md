@@ -146,7 +146,8 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Time Series**
 
-* Acf
+* Acf (correlation, covariance)
+* Pacf 
 
 **Graphics**
 
