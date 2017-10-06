@@ -60,7 +60,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private double shrinkage = 1.0;
 
     // prediction
-    NumericVar fitValues;
+    NumVar fitValues;
     List<BTRegression> trees;
 
     @Override
@@ -144,7 +144,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         fitValues = initRegression.fit(df, false).firstFit().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
-            NumericVar gradient = lossFunction.gradient(y, fitValues).withName("target");
+            NumVar gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
             BTRegression tree = regressor.newInstance();

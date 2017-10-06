@@ -39,7 +39,7 @@ public class BoundVarTest {
 
     @Test
     public void testBuildWrong() {
-        NumericVar a = NumericVar.copy(1, 2);
+        NumVar a = NumVar.copy(1, 2);
         BinaryVar b = BinaryVar.copy(true, false);
 
         try {
@@ -76,11 +76,11 @@ public class BoundVarTest {
 
     @Test
     public void testBind() {
-        NumericVar a = NumericVar.wrap(1, 2, 3);
-        NumericVar b = NumericVar.wrap(4, 5);
-        NumericVar c = NumericVar.wrap(6, 7, 8, 9);
-        NumericVar d = NumericVar.empty(1);
-        NumericVar e = NumericVar.wrap(Math.PI, Math.E);
+        NumVar a = NumVar.wrap(1, 2, 3);
+        NumVar b = NumVar.wrap(4, 5);
+        NumVar c = NumVar.wrap(6, 7, 8, 9);
+        NumVar d = NumVar.empty(1);
+        NumVar e = NumVar.wrap(Math.PI, Math.E);
 
         Var x = BoundVar.from(a, b);
         Var y = BoundVar.from(c, d);
@@ -134,8 +134,8 @@ public class BoundVarTest {
 
     @Test
     public void testValueBound() {
-        Var a = NumericVar.wrap(1, 2);
-        Var b = NumericVar.wrap(3, 4);
+        Var a = NumVar.wrap(1, 2);
+        Var b = NumVar.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setValue(0, 100);
@@ -151,8 +151,8 @@ public class BoundVarTest {
 
     @Test
     public void testIndexBound() {
-        Var a = IndexVar.wrap(1, 2);
-        Var b = IndexVar.wrap(3, 4);
+        Var a = IdxVar.wrap(1, 2);
+        Var b = IdxVar.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setIndex(0, 100);
@@ -200,8 +200,8 @@ public class BoundVarTest {
 
     @Test
     public void testNominalBound() {
-        Var a = NominalVar.copy("a", "b", "a");
-        Var b = NominalVar.copy("b", "a", "b");
+        Var a = NomVar.copy("a", "b", "a");
+        Var b = NomVar.copy("b", "a", "b");
 
         Var x = a.bindRows(b);
         x.setLabel(0, "b");
@@ -224,7 +224,7 @@ public class BoundVarTest {
         }
 
         try {
-            NominalVar.copy("x").bindRows(NominalVar.copy("b"));
+            NomVar.copy("x").bindRows(NomVar.copy("b"));
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -232,7 +232,7 @@ public class BoundVarTest {
 
     @Test
     public void testRemove() {
-        Var x = NumericVar.copy(1, 2, 3).bindRows(NumericVar.copy(4, 5, 6));
+        Var x = NumVar.copy(1, 2, 3).bindRows(NumVar.copy(4, 5, 6));
 
         try {
             x.remove(1);

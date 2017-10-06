@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,7 +33,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 /**
@@ -78,11 +79,11 @@ public final class CoreTools {
         return Quantiles.from(var, p);
     }
 
-    public static Quantiles quantiles(Var var, NumericVar p) {
+    public static Quantiles quantiles(Var var, NumVar p) {
         return Quantiles.from(var, p.stream().mapToDouble().toArray());
     }
 
-    public static Quantiles quantiles(Var var, Quantiles.Type type, NumericVar p) {
+    public static Quantiles quantiles(Var var, Quantiles.Type type, NumVar p) {
         return Quantiles.from(var, type, p.stream().mapToDouble().toArray());
     }
 

@@ -262,7 +262,7 @@ class RegularSplitting {
         // initialize the lists with one element in each list for each candidate's rule
         for (int i = 0; i < groupPredicates.size(); i++) {
             mappings.add(Mapping.empty());
-            weightsList.add(NumericVar.empty());
+            weightsList.add(NumVar.empty());
         }
         // each instance is distributed to one rule
         for (FSpot s : df.spotList()) {

@@ -36,9 +36,9 @@ public class FrameTest {
     @Test
     public void testRemove() {
         SolidFrame df = SolidFrame.byVars(
-                NominalVar.copy("a", "b").withName("x"),
-                NominalVar.copy("x", "y").withName("y"),
-                NumericVar.wrap(1, 2).withName("z")
+                NomVar.copy("a", "b").withName("x"),
+                NomVar.copy("x", "y").withName("y"),
+                NumVar.wrap(1, 2).withName("z")
         );
         Frame df1 = df.removeVars("x,z");
 
@@ -59,9 +59,9 @@ public class FrameTest {
     @Test
     public void testSetters() {
         SolidFrame df = SolidFrame.byVars(
-                NominalVar.copy("a", "b").withName("x"),
-                NominalVar.copy("x", "y").withName("y"),
-                NumericVar.wrap(1, 2).withName("z")
+                NomVar.copy("a", "b").withName("x"),
+                NomVar.copy("x", "y").withName("y"),
+                NumVar.wrap(1, 2).withName("z")
         );
 
         df.setValue(1, "z", 100);
@@ -77,9 +77,9 @@ public class FrameTest {
     @Test
     public void testMissing() {
         SolidFrame df = SolidFrame.byVars(
-                NominalVar.copy("a", "b").withName("x"),
-                NominalVar.copy("x", "y").withName("y"),
-                NumericVar.wrap(1, 2).withName("z")
+                NomVar.copy("a", "b").withName("x"),
+                NomVar.copy("x", "y").withName("y"),
+                NumVar.wrap(1, 2).withName("z")
         );
 
         assertEquals(false, df.isMissing(0));

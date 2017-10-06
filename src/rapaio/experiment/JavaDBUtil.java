@@ -132,7 +132,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    NumericVar v1 = NumericVar.empty(lists.get(i).size());
+                    NumVar v1 = NumVar.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
@@ -143,7 +143,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    NominalVar v2 = NominalVar.empty(lists.get(i).size(), dict);
+                    NomVar v2 = NomVar.empty(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

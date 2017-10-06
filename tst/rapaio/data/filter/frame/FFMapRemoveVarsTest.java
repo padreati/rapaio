@@ -40,10 +40,10 @@ public class FFMapRemoveVarsTest {
     @Before
     public void setUp() throws Exception {
         df = SolidFrame.byVars(
-                NumericVar.fill(10, 1).withName("a"),
-                NumericVar.fill(10, 2).withName("b"),
-                NumericVar.fill(10, 3).withName("c"),
-                NominalVar.from(10, r -> String.valueOf(r%3)).withName("d")
+                NumVar.fill(10, 1).withName("a"),
+                NumVar.fill(10, 2).withName("b"),
+                NumVar.fill(10, 3).withName("c"),
+                NomVar.from(10, r -> String.valueOf(r%3)).withName("d")
         );
     }
 

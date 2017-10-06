@@ -47,15 +47,15 @@ public class FrameAnalysis {
         csv.withEndRow(Integer.MAX_VALUE);
         int start = 0;
 
-        NominalVar name = NominalVar.empty().withName("name");
-        NominalVar type = NominalVar.empty().withName("type");
-        IndexVar count = IndexVar.empty().withName("count");
-        IndexVar missing = IndexVar.empty().withName("missing");
+        NomVar name = NomVar.empty().withName("name");
+        NomVar type = NomVar.empty().withName("type");
+        IdxVar count = IdxVar.empty().withName("count");
+        IdxVar missing = IdxVar.empty().withName("missing");
         List<Var> h1 = new ArrayList<>();
         List<Var> h2 = new ArrayList<>();
         for (int i = 0; i < bins; i++) {
-            h1.add(NumericVar.empty().withName("h1_" + i));
-            h2.add(NumericVar.empty().withName("h2_" + i));
+            h1.add(NumVar.empty().withName("h1_" + i));
+            h2.add(NumVar.empty().withName("h2_" + i));
         }
 
         Var target = csv.withSkipCols(n -> n != targetIndex).read(file).var(0);

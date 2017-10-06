@@ -28,7 +28,7 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
-import rapaio.data.IndexVar;
+import rapaio.data.IdxVar;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
@@ -80,7 +80,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
                 dt.update(row, target.index(i), weights.value(i));
             }
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(IndexVar.seq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(IdxVar.seq(df.rowCount()));
 
             CTreeCandidate best = null;
             double bestScore = 0.0;

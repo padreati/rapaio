@@ -25,7 +25,7 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.IndexVar;
+import rapaio.data.IdxVar;
 import rapaio.data.Var;
 
 /**
@@ -34,9 +34,9 @@ import rapaio.data.Var;
 public class GOptionPch implements GOption<Var> {
 
     private static final long serialVersionUID = -8246311944152824478L;
-    private final IndexVar pch;
+    private final IdxVar pch;
 
-    public GOptionPch(IndexVar pch) {
+    public GOptionPch(IdxVar pch) {
         this.pch = pch;
     }
 

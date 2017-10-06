@@ -150,7 +150,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            NumericVar r = NumericVar.empty().withName("##tt##");
+            NumVar r = NumVar.empty().withName("##tt##");
             for (int i = 0; i < df.rowCount(); i++) {
                 double y_i = (df.var(firstTargetName()).index(i) == k + 1) ? 1 : 0;
                 r.addValue(y_i - p[i][k]);
@@ -266,7 +266,7 @@ class ClassifierLossFunction implements GBTLossFunction {
     }
 
     @Override
-    public NumericVar gradient(Var y, Var fx) {
+    public NumVar gradient(Var y, Var fx) {
         return null;
     }
 }

@@ -26,8 +26,8 @@
 package rapaio.ts;
 
 import rapaio.core.stat.Maximum;
-import rapaio.data.IndexVar;
-import rapaio.data.NumericVar;
+import rapaio.data.IdxVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -41,15 +41,15 @@ import rapaio.sys.WS;
 public class Pacf implements Printable {
 
     public static Pacf from(Var ts, int maxLag) {
-        return new Pacf(ts, IndexVar.seq(1, maxLag));
+        return new Pacf(ts, IdxVar.seq(1, maxLag));
     }
 
     private final Var ts;
-    private final IndexVar lags;
+    private final IdxVar lags;
 
-    private NumericVar pacf;
+    private NumVar pacf;
 
-    private Pacf(Var ts, IndexVar indexes) {
+    private Pacf(Var ts, IdxVar indexes) {
         this.ts = ts;
         this.lags = indexes;
 
@@ -58,14 +58,14 @@ public class Pacf implements Printable {
 
     private void computeDurbinLevinson() {
         Acf acf = Acf.from(ts, (int) Maximum.from(lags).value() + 1);
-        NumericVar cor = acf.correlation();
+        NumVar cor = acf.correlation();
 
         double a, b, c;
         int nlag = cor.rowCount()-1;
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];
-        pacf = NumericVar.empty(lags.rowCount()).withName("pacf");
+        pacf = NumVar.empty(lags.rowCount()).withName("pacf");
         w[0] = cor.value(1);
         pacf.setValue(0, cor.value(1));
         for (int ll = 1; ll < nlag; ll++) {
@@ -87,11 +87,11 @@ public class Pacf implements Printable {
         }
     }
 
-    public IndexVar lags() {
+    public IdxVar lags() {
         return lags;
     }
 
-    public NumericVar values() {
+    public NumVar values() {
         return pacf;
     }
 

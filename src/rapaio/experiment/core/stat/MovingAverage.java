@@ -25,7 +25,7 @@
 
 package rapaio.experiment.core.stat;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 public class MovingAverage {
@@ -34,14 +34,14 @@ public class MovingAverage {
         return new MovingAverage(x, window);
     }
 
-    private final NumericVar ma;
+    private final NumVar ma;
 
     private MovingAverage(Var source, int window) {
 
         int left = Math.floorDiv(window - 1, 2);
         int right = window - 1 - left;
 
-        ma = NumericVar.empty(source.rowCount()).withName("ma-" + source.name());
+        ma = NumVar.empty(source.rowCount()).withName("ma-" + source.name());
 
         for (int i = left; i < source.rowCount() - right; i++) {
             double sum = 0;
@@ -58,7 +58,7 @@ public class MovingAverage {
         }
     }
 
-    public NumericVar getValue() {
+    public NumVar getValue() {
         return ma;
     }
 }

@@ -26,8 +26,8 @@
 package rapaio.ml.eval;
 
 import rapaio.core.stat.Sum;
-import rapaio.data.IndexVar;
-import rapaio.data.NumericVar;
+import rapaio.data.IdxVar;
+import rapaio.data.NumVar;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFCumulativeSum;
@@ -66,7 +66,7 @@ public class Gini {
 
     private double gini(Var actual, Var fit) {
 
-        Var index = IndexVar.seq(actual.rowCount());
+        Var index = IdxVar.seq(actual.rowCount());
         Comparator<Integer> cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
@@ -81,7 +81,7 @@ public class Gini {
     }
 
     private double wgini(Var actual, Var fit, Var weights) {
-        Var index = IndexVar.seq(actual.rowCount());
+        Var index = IdxVar.seq(actual.rowCount());
         Comparator<Integer> cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
@@ -89,9 +89,9 @@ public class Gini {
         Var w = new VFRefSort(cmp).fitApply(weights).solidCopy();
 
         double wsum = Sum.from(w).value();
-        Var random = VFCumulativeSum.filter().fitApply(NumericVar.from(w, value -> value / wsum).solidCopy());
-        double totalPositive = Sum.from(NumericVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row))).value();
-        Var lorentz = new VFCumulativeSum().fitApply(NumericVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row) / totalPositive));
+        Var random = VFCumulativeSum.filter().fitApply(NumVar.from(w, value -> value / wsum).solidCopy());
+        double totalPositive = Sum.from(NumVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row))).value();
+        Var lorentz = new VFCumulativeSum().fitApply(NumVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.rowCount() - 1; i++) {

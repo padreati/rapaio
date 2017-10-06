@@ -4,7 +4,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.VRange;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFAddIntercept;
@@ -29,9 +29,9 @@ public class RMSETest {
 
         RandomSource.setSeed(123);
         Normal normal = Normal.from(0, 10);
-        NumericVar x = normal.sample(100).withName("x");
-        NumericVar y = NumericVar.from(x, val -> val + 1).withName("y");
-        NumericVar z = NumericVar.from(x, val -> val - 2).withName("z");
+        NumVar x = normal.sample(100).withName("x");
+        NumVar y = NumVar.from(x, val -> val + 1).withName("y");
+        NumVar z = NumVar.from(x, val -> val - 2).withName("z");
 
         RMSE rmse1 = RMSE.from(x, y);
         RMSE rmse2 = RMSE.from(x, z);

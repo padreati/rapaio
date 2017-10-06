@@ -25,7 +25,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
@@ -60,8 +60,8 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        Var x = NumericVar.fill(options.getPoints() + 1, 0);
-        Var y = NumericVar.fill(options.getPoints() + 1, 0);
+        Var x = NumVar.fill(options.getPoints() + 1, 0);
+        Var y = NumVar.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);

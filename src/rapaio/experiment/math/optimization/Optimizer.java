@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 
@@ -48,8 +49,8 @@ public interface Optimizer {
      * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    NumericVar optimize(double eps, int iterationLimit,
-                        BiFunction<RV, RV, Double> fn,
-                        BiFunction<RV, RV, Double> fg,
-                        RV x0, List<Var> inputs, NumericVar outputs);
+    NumVar optimize(double eps, int iterationLimit,
+                    BiFunction<RV, RV, Double> fn,
+                    BiFunction<RV, RV, Double> fg,
+                    RV x0, List<Var> inputs, NumVar outputs);
 }

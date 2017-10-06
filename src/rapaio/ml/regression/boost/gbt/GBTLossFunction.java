@@ -27,7 +27,7 @@ package rapaio.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.sys.WS;
 
@@ -47,7 +47,7 @@ public interface GBTLossFunction extends Serializable {
 
     double findMinimum(Var y, Var fx);
 
-    NumericVar gradient(Var y, Var fx);
+    NumVar gradient(Var y, Var fx);
 
     // standard implementations
 
@@ -60,7 +60,7 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            NumericVar values = NumericVar.empty();
+            NumVar values = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 values.addValue(y.value(i) - fx.value(i));
             }
@@ -72,8 +72,8 @@ public interface GBTLossFunction extends Serializable {
         }
 
         @Override
-        public NumericVar gradient(Var y, Var fx) {
-            NumericVar gradient = NumericVar.empty();
+        public NumVar gradient(Var y, Var fx) {
+            NumVar gradient = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
             }
@@ -94,8 +94,8 @@ public interface GBTLossFunction extends Serializable {
         }
 
         @Override
-        public NumericVar gradient(Var y, Var fx) {
-            NumericVar delta = NumericVar.empty();
+        public NumVar gradient(Var y, Var fx) {
+            NumVar delta = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 delta.addValue(y.value(i) - fx.value(i));
             }
@@ -129,7 +129,7 @@ public interface GBTLossFunction extends Serializable {
 
             // compute residuals
 
-            NumericVar residual = NumericVar.empty();
+            NumVar residual = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 residual.addValue(y.value(i) - fx.value(i));
             }
@@ -140,7 +140,7 @@ public interface GBTLossFunction extends Serializable {
 
             // compute absolute residuals
 
-            NumericVar absResidual = NumericVar.empty();
+            NumVar absResidual = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
@@ -162,11 +162,11 @@ public interface GBTLossFunction extends Serializable {
         }
 
         @Override
-        public NumericVar gradient(Var y, Var fx) {
+        public NumVar gradient(Var y, Var fx) {
 
             // compute absolute residuals
 
-            NumericVar absResidual = NumericVar.empty();
+            NumVar absResidual = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
@@ -177,7 +177,7 @@ public interface GBTLossFunction extends Serializable {
 
             // now compute gradient
 
-            NumericVar gradient = NumericVar.empty();
+            NumVar gradient = NumVar.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 if (absResidual.value(i) <= rho) {
                     gradient.addValue(y.value(i) - fx.value(i));

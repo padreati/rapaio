@@ -27,7 +27,7 @@ package rapaio.ml.classifier.tree.ctree;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.tree.CTreeCandidate;
@@ -51,7 +51,7 @@ public class CTreeMissingHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        NumericVar values = NumericVar.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
+        NumVar values = NumVar.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.solidCopy().withName("x"));
         w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? x : Math.abs(x)).toMappedVar().withName("w");
         c = new CTreeCandidate(1, "test");

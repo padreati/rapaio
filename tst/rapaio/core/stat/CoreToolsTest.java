@@ -64,11 +64,11 @@ public class CoreToolsTest {
 
     @Test
     public void testEmptyMean() {
-        NumericVar num1 = NumericVar.copy(Double.NaN, Double.NaN, Double.NaN);
+        NumVar num1 = NumVar.copy(Double.NaN, Double.NaN, Double.NaN);
         double mean = mean(num1).value();
         assertTrue(Double.isNaN(mean));
 
-        NumericVar num2 = NumericVar.wrap(1, 2, 3, 4);
+        NumVar num2 = NumVar.wrap(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
         sb.append(mean(num2).summary());
 
@@ -89,31 +89,31 @@ public class CoreToolsTest {
 
     @Test
     public void testQuantiles() {
-        NumericVar v = NumericVar.seq(0, 1, 0.001);
-        Quantiles q1 = quantiles(v, NumericVar.seq(0, 1, 0.001));
-        assertTrue(v.deepEquals(NumericVar.wrap(q1.values())));
+        NumVar v = NumVar.seq(0, 1, 0.001);
+        Quantiles q1 = quantiles(v, NumVar.seq(0, 1, 0.001));
+        assertTrue(v.deepEquals(NumVar.wrap(q1.values())));
 
 
-        NumericVar vEmpty = NumericVar.empty(10);
-        NumericVar vOne = vEmpty.solidCopy();
+        NumVar vEmpty = NumVar.empty(10);
+        NumVar vOne = vEmpty.solidCopy();
         vOne.setValue(3, 10);
 
-        Quantiles q2 = quantiles(vEmpty, NumericVar.seq(0, 1, 0.1));
+        Quantiles q2 = quantiles(vEmpty, NumVar.seq(0, 1, 0.1));
         Assert.assertEquals(11, q2.values().length);
         for (int i = 0; i < q2.values().length; i++) {
             Assert.assertTrue(Double.isNaN(q2.values()[i]));
         }
 
-        Quantiles q3 = quantiles(vOne, NumericVar.seq(0, 1, 0.1));
+        Quantiles q3 = quantiles(vOne, NumVar.seq(0, 1, 0.1));
         Assert.assertEquals(11, q3.values().length);
         for (int i = 0; i < q3.values().length; i++) {
             Assert.assertEquals(10, q3.values()[i], 1e-20);
         }
 
-        Quantiles q4 = quantiles(v, Quantiles.Type.R8, NumericVar.seq(0, 1, 0.1));
+        Quantiles q4 = quantiles(v, Quantiles.Type.R8, NumVar.seq(0, 1, 0.1));
 
         Arrays.stream(q4.values()).forEach(val -> WS.println(WS.formatLong(val)));
-        NumericVar v4 = NumericVar.copy(0,
+        NumVar v4 = NumVar.copy(0,
                 0.09946666666666674,
                 0.19960000000000017,
                 0.2997333333333336,
@@ -125,7 +125,7 @@ public class CoreToolsTest {
                 0.900533333333334,
                 1.0000000000000007);
         q4.printSummary();
-        assertTrue(v4.deepEquals(NumericVar.wrap(q4.values())));
+        assertTrue(v4.deepEquals(NumVar.wrap(q4.values())));
     }
 
     @Test
@@ -133,11 +133,11 @@ public class CoreToolsTest {
         RandomSource.setSeed(1234);
         Normal normal = new Normal();
 
-        NumericVar x = NumericVar.from(10_000, normal::sampleNext);
+        NumVar x = NumVar.from(10_000, normal::sampleNext);
 
         Var y = x;
         for (int i = 0; i < 100; i++) {
-            y = y.bindRows(NumericVar.from(10_000, normal::sampleNext));
+            y = y.bindRows(NumVar.from(10_000, normal::sampleNext));
         }
 
         Var yy = y;
@@ -153,45 +153,45 @@ public class CoreToolsTest {
 
     @Test
     public void testMode() {
-        assertEquals("[a, b]", Arrays.deepToString(modes(NominalVar.copy("a", "a", "b", "a", "b", "c", "b")).values()));
-        assertEquals("[a]", Arrays.deepToString(modes(NominalVar.copy("a")).values()));
-        assertEquals("[a]", Arrays.deepToString(modes(NominalVar.copy("a", "a", "a", "b", "c", "b")).values()));
-        assertEquals("[a, c, b]", Arrays.deepToString(modes(NominalVar.copy("a", "c", "b")).values()));
-        assertEquals("[]", Arrays.deepToString(modes(NominalVar.copy()).values()));
+        assertEquals("[a, b]", Arrays.deepToString(modes(NomVar.copy("a", "a", "b", "a", "b", "c", "b")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(NomVar.copy("a")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(NomVar.copy("a", "a", "a", "b", "c", "b")).values()));
+        assertEquals("[a, c, b]", Arrays.deepToString(modes(NomVar.copy("a", "c", "b")).values()));
+        assertEquals("[]", Arrays.deepToString(modes(NomVar.copy()).values()));
     }
 
     @Test
     public void testCovariance() {
-        NumericVar v1 = NumericVar.seq(0, 200, 0.1);
-        NumericVar v2 = NumericVar.wrap(1, 201, 0.1);
+        NumVar v1 = NumVar.seq(0, 200, 0.1);
+        NumVar v2 = NumVar.wrap(1, 201, 0.1);
         assertEquals(cov(v1, v1).value(), variance(v1).value(), 1e-12);
 
-        NumericVar x = NumericVar.copy(1, 2, 3, 4);
+        NumVar x = NumVar.copy(1, 2, 3, 4);
         assertEquals(cov(x, x).value(), variance(x).value(), 1e-12);
 
-        NumericVar norm = distNormal().sample(20_000);
+        NumVar norm = distNormal().sample(20_000);
         assertEquals(cov(norm, norm).value(), variance(norm).value(), 1e-12);
 
-        Var x1 = NumericVar.seq(0, 200, 1);
-        Var x2 = NumericVar.seq(0, 50, 0.25);
+        Var x1 = NumVar.seq(0, 200, 1);
+        Var x2 = NumVar.seq(0, 50, 0.25);
         assertEquals(845.875, cov(x1, x2).value(), 1e-12);
     }
 
     @Test
     public void testGeometricMean() {
-        assertEquals(4, GeometricMean.from(NumericVar.copy(2, 8)).value(), 1e-20);
-        assertEquals(0.5, GeometricMean.from(NumericVar.copy(4, 1, 1 / 32.)).value(), 1e-16);
-        assertEquals(42.42640687119286, GeometricMean.from(NumericVar.copy(6, 50, 9, 1200)).value(), 1e-20);
-        GeometricMean.from(NumericVar.copy(6, 50, 9, 1200)).printSummary();
+        assertEquals(4, GeometricMean.from(NumVar.copy(2, 8)).value(), 1e-20);
+        assertEquals(0.5, GeometricMean.from(NumVar.copy(4, 1, 1 / 32.)).value(), 1e-16);
+        assertEquals(42.42640687119286, GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).value(), 1e-20);
+        GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).printSummary();
 
-        Assert.assertFalse(Double.NaN == GeometricMean.from(NumericVar.copy(1, -1)).value());
-        GeometricMean.from(NumericVar.wrap(1, -1)).printSummary();
+        Assert.assertFalse(Double.NaN == GeometricMean.from(NumVar.copy(1, -1)).value());
+        GeometricMean.from(NumVar.wrap(1, -1)).printSummary();
     }
 
     @Test
     public void testToolsOnNonNumeric() {
-        Var idx1 = IndexVar.wrap(1, 2, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4, 5, 6, Integer.MIN_VALUE, 7);
-        Var idx2 = IndexVar.wrap(1, 2, 3, 4, 5, 6, 7);
+        Var idx1 = IdxVar.wrap(1, 2, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4, 5, 6, Integer.MIN_VALUE, 7);
+        Var idx2 = IdxVar.wrap(1, 2, 3, 4, 5, 6, 7);
 
         Assert.assertEquals(4, CoreTools.mean(idx1).value(), 1e-20);
         Assert.assertEquals(CoreTools.variance(idx2).value(), CoreTools.variance(idx1).value(), 1e-20);

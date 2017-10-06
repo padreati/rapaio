@@ -45,9 +45,9 @@ public class ClassifierSerializationTest {
     @Test
     public void testOneRuleIris() throws IOException, URISyntaxException, ClassNotFoundException {
 
-        Var varModel = NominalVar.empty();
-        Var varData = NominalVar.empty();
-        Var varAcc = NumericVar.empty();
+        Var varModel = NomVar.empty();
+        Var varData = NomVar.empty();
+        Var varAcc = NumVar.empty();
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);

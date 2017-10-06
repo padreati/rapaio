@@ -26,7 +26,7 @@
 package rapaio.core.tools;
 
 import rapaio.core.RandomSource;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
@@ -87,7 +87,7 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector filled with counts
      */
     public static DVector fromCount(boolean useFirst, Var var) {
-        Var weights = NumericVar.fill(var.rowCount(), 1);
+        Var weights = NumVar.fill(var.rowCount(), 1);
         return new DVector(useFirst, var.levels(), var, weights);
     }
 

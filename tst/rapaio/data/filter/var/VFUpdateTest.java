@@ -26,8 +26,8 @@ package rapaio.data.filter.var;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.NominalVar;
-import rapaio.data.NumericVar;
+import rapaio.data.NomVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
@@ -45,7 +45,7 @@ public class VFUpdateTest {
                 spot.setValue(-spot.value() * spot.value());
         });
 
-        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = NumVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
@@ -55,7 +55,7 @@ public class VFUpdateTest {
         Assert.assertEquals(-144, y.value(4), 1e-20);
         Assert.assertEquals(3.1 * 3.1, y.value(5), 1e-20);
 
-        Var l1 = NominalVar.copy("ana", "?", "are", "?", "mere");
+        Var l1 = NomVar.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fitApply(VFUpdate.with(s -> {
             if (s.isMissing()) {
                 s.setLabel("missing");
@@ -87,7 +87,7 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = NumVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
@@ -107,7 +107,7 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = NumericVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
+        Var x = NumVar.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
@@ -121,7 +121,7 @@ public class VFUpdateTest {
     @Test
     public void testUpdateLabel() {
 
-        Var l1 = NominalVar.copy("ana", "?", "are", "?", "mere");
+        Var l1 = NomVar.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fitApply(VFUpdateLabel.with(l -> {
             if (l.equals("?")) {
                 return "missing";

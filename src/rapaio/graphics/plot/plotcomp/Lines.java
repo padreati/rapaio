@@ -25,7 +25,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -45,12 +45,12 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOption... opts) {
-        this(NumericVar.seq(0, y.rowCount() - 1), y, opts);
+        this(NumVar.seq(0, y.rowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOption... opts) {
-        this.x = NumericVar.empty().withName(x.name());
-        this.y = NumericVar.empty().withName(y.name());
+        this.x = NumVar.empty().withName(x.name());
+        this.y = NumVar.empty().withName(y.name());
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;

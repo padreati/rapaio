@@ -27,7 +27,7 @@ package rapaio.experiment.grid;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -44,13 +44,13 @@ public class MeshGridFactory {
         double x2min = CoreTools.min(df.var(x2Name)).value();
         double x2max = CoreTools.max(df.var(x2Name)).value();
 
-        NumericVar x1 = NumericVar.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
-        NumericVar x2 = NumericVar.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
+        NumVar x1 = NumVar.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
+        NumVar x2 = NumVar.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
 
         MeshGrid1D mg = new MeshGrid1D(x1, x2);
 
-        NumericVar f1 = NumericVar.empty().withName(x1Name);
-        NumericVar f2 = NumericVar.empty().withName(x2Name);
+        NumVar f1 = NumVar.empty().withName(x1Name);
+        NumVar f2 = NumVar.empty().withName(x2Name);
 
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

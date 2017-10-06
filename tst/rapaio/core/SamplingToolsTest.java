@@ -28,7 +28,7 @@ import org.junit.Test;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +64,7 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumVar.wrap(w));
         assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
@@ -83,7 +83,7 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumericVar.wrap(w));
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, NumVar.wrap(w));
         assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
@@ -94,7 +94,7 @@ public class SamplingToolsTest {
         double[] freq = new double[10];
         final int TRIALS = 100_000;
         final int SAMPLES = 3;
-        NumericVar v = NumericVar.empty();
+        NumVar v = NumVar.empty();
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
                 freq[next]++;

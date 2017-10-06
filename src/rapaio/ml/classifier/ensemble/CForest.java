@@ -202,45 +202,45 @@ public class CForest extends AbstractClassifier {
     }
 
     public Frame getFreqVIInfo() {
-        Var name = NominalVar.empty().withName("name");
-        Var score = NumericVar.empty().withName("score mean");
-        Var sd = NumericVar.empty().withName("score sd");
+        Var name = NomVar.empty().withName("name");
+        Var score = NumVar.empty().withName("score mean");
+        Var sd = NumVar.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            NumericVar scores = NumericVar.copy(e.getValue());
+            NumVar scores = NumVar.copy(e.getValue());
             sd.addValue(CoreTools.variance(scores).sdValue());
             score.addValue(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = NumericVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        Var scaled = NumVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getGainVIInfo() {
-        Var name = NominalVar.empty().withName("name");
-        Var score = NumericVar.empty().withName("score mean");
-        Var sd = NumericVar.empty().withName("score sd");
+        Var name = NomVar.empty().withName("name");
+        Var score = NumVar.empty().withName("score mean");
+        Var sd = NumVar.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            NumericVar scores = NumericVar.copy(e.getValue());
+            NumVar scores = NumVar.copy(e.getValue());
             sd.addValue(CoreTools.variance(scores).sdValue());
             score.addValue(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = NumericVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        Var scaled = NumVar.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getPermVIInfo() {
-        Var name = NominalVar.empty().withName("name");
-        Var score = NumericVar.empty().withName("score mean");
-        Var sds = NumericVar.empty().withName("score sd");
-        Var zscores = NumericVar.empty().withName("z-score");
-        Var pvalues = NumericVar.empty().withName("p-value");
+        Var name = NomVar.empty().withName("name");
+        Var score = NumVar.empty().withName("score mean");
+        Var sds = NumVar.empty().withName("score sd");
+        Var zscores = NumVar.empty().withName("z-score");
+        Var pvalues = NumVar.empty().withName("p-value");
         Distribution normal = CoreTools.distNormal();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            NumericVar scores = NumericVar.copy(e.getValue());
+            NumVar scores = NumVar.copy(e.getValue());
             double mean = CoreTools.mean(scores).value();
             double sd = CoreTools.variance(scores).sdValue();
             double zscore = mean / (sd);
@@ -261,7 +261,7 @@ public class CForest extends AbstractClassifier {
         if (oobComp) {
             oobDensities = new HashMap<>();
             oobTrueClass = df.var(firstTargetName()).solidCopy();
-            oobFit = NominalVar.empty(df.rowCount(), firstTargetLevels());
+            oobFit = NomVar.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.empty(false, firstTargetLevels()));
             }

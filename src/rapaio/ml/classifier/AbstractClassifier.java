@@ -112,7 +112,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier train(Frame df, String... targetVars) {
-        NumericVar weights = NumericVar.fill(df.rowCount(), 1);
+        NumVar weights = NumVar.fill(df.rowCount(), 1);
         return train(df, weights, targetVars);
     }
 

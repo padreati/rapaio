@@ -37,12 +37,12 @@ public class OrdinalTest {
 
     @Test
     public void testSmoke() {
-        Var v = OrdinalVar.empty(0);
+        Var v = OrdVar.empty(0);
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().length);
         assertEquals("?", v.levels()[0]);
 
-        v = OrdinalVar.empty();
+        v = OrdVar.empty();
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().length);
         assertEquals("?", v.levels()[0]);
@@ -50,16 +50,16 @@ public class OrdinalTest {
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
 
-        v = OrdinalVar.empty(1, "a");
+        v = OrdVar.empty(1, "a");
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
 
-        assertEquals("Ordinal[name:?, rowCount:10]", OrdinalVar.empty(10).toString());
+        assertEquals("Ordinal[name:?, rowCount:10]", OrdVar.empty(10).toString());
     }
 
     @Test
     public void testDictionary() {
-        Var v = OrdinalVar.empty(0, "a", "a", "v", "a");
+        Var v = OrdVar.empty(0, "a", "a", "v", "a");
         assertEquals(3, v.levels().length);
         assertEquals("?", v.levels()[0]);
         assertEquals("a", v.levels()[1]);
@@ -70,7 +70,7 @@ public class OrdinalTest {
         set.add("v");
         set.add("a");
 
-        v = OrdinalVar.empty(0, set);
+        v = OrdVar.empty(0, set);
         assertEquals(3, v.levels().length);
         assertEquals("?", v.levels()[0]);
         assertEquals("a", v.levels()[1]);
@@ -79,7 +79,7 @@ public class OrdinalTest {
 
     @Test
     public void testSetterGetter() {
-        Var v = OrdinalVar.empty(4, "a", "b", "c");
+        Var v = OrdVar.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
             assertEquals(0, v.index(i));
@@ -132,7 +132,7 @@ public class OrdinalTest {
 
     @Test
     public void testLabel() {
-        Var v = OrdinalVar.empty(1, "a", "b", "c");
+        Var v = OrdVar.empty(1, "a", "b", "c");
 
         boolean exceptional = false;
         try {
@@ -161,7 +161,7 @@ public class OrdinalTest {
 
     @Test
     public void testMissing() {
-        Var v = OrdinalVar.empty(1, "a", "b");
+        Var v = OrdVar.empty(1, "a", "b");
         assertTrue(v.isMissing(0));
 
         v.setLabel(0, "a");
@@ -176,11 +176,11 @@ public class OrdinalTest {
 
     @Test
     public void testCopy() {
-        OrdinalVar a = OrdinalVar.empty(0, "x", "y");
+        OrdVar a = OrdVar.empty(0, "x", "y");
         a.addLabel("x");
         a.addLabel("y");
 
-        OrdinalVar b = a.solidCopy();
+        OrdVar b = a.solidCopy();
 
         a.addLabel("z");
 

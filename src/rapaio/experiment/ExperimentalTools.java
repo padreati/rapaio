@@ -26,7 +26,7 @@
 package rapaio.experiment;
 
 import rapaio.data.Frame;
-import rapaio.data.NominalVar;
+import rapaio.data.NomVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 
@@ -82,7 +82,7 @@ public final class ExperimentalTools implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = NominalVar.empty(v.rowCount(), dicts.get(colName)).withName(colName);
+                    vars[i] = NomVar.empty(v.rowCount(), dicts.get(colName)).withName(colName);
                     for (int k = 0; k < vars[i].rowCount(); k++) {
                         vars[i].setLabel(k, v.label(k));
                     }

@@ -26,7 +26,7 @@ package rapaio.core;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.IndexVar;
+import rapaio.data.IdxVar;
 import rapaio.data.Var;
 
 /**
@@ -38,7 +38,7 @@ public class RandomSourceTest {
     @Test
     public void reproducibleTest() {
 
-        Var seeds = IndexVar.from(100, i -> i*i);
+        Var seeds = IdxVar.from(100, i -> i*i);
 
         RandomSource.withUtilRandom(0);
         checkRandom(seeds);

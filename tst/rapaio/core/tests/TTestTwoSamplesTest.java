@@ -26,7 +26,7 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 import static rapaio.core.CoreTools.mean;
@@ -39,8 +39,8 @@ public class TTestTwoSamplesTest {
     @Test
     public void testTTest() {
 
-        Var x = NumericVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = NumericVar.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = NumVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = NumVar.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
@@ -76,15 +76,15 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t3 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.GREATER_THAN);
         Assert.assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
 
-        HTest t4 = TTestTwoSamples.test(NumericVar.empty(), x, 0);
+        HTest t4 = TTestTwoSamples.test(NumVar.empty(), x, 0);
         Assert.assertEquals(Double.NaN, t4.pValue(), TOL);
     }
 
     @Test
     public void testWelchTTest() {
 
-        Var x = NumericVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = NumericVar.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = NumVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = NumVar.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();

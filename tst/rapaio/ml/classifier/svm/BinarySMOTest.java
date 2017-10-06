@@ -154,8 +154,8 @@ public class BinarySMOTest {
         kernels.add(new PowerKernel(2));
         kernels.add(new RationalQuadraticKernel(1));
 
-        NominalVar name = NominalVar.empty().withName("kernel");
-        NumericVar score = NumericVar.empty().withName("score");
+        NomVar name = NomVar.empty().withName("kernel");
+        NumVar score = NumVar.empty().withName("score");
 
         for (Kernel k : kernels) {
 

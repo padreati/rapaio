@@ -65,12 +65,12 @@ public class KMeans implements Printable {
 
     private String[] inputs;
     private Frame centroids;
-    private IndexVar arrows;
-    private NumericVar errors;
+    private IdxVar arrows;
+    private NumVar errors;
 
     // summary artifacts
 
-    private NumericVar summaryAllDist;
+    private NumVar summaryAllDist;
 
     public KMeans withNStart(int nstart) {
         if (nstart <= 0) {
@@ -144,8 +144,8 @@ public class KMeans implements Printable {
 
         centroids = bestCentroids;
 
-        arrows = IndexVar.fill(df.rowCount(), -1);
-        errors = NumericVar.empty().withName("errors");
+        arrows = IdxVar.fill(df.rowCount(), -1);
+        errors = NumVar.empty().withName("errors");
 
         assignToCentroids(df);
         repairEmptyClusters(df);
@@ -244,8 +244,8 @@ public class KMeans implements Printable {
         for (String input : inputs) {
             // collect values for each cluster in mean, for a given input feature
             Var[] means = IntStream.range(0, k).boxed()
-                    .map(i -> NumericVar.empty())
-                    .toArray(NumericVar[]::new);
+                    .map(i -> NumVar.empty())
+                    .toArray(NumVar[]::new);
             for (int i = 0; i < df.rowCount(); i++) {
                 means[arrows.index(i)].addValue(df.value(i, input));
             }
@@ -333,7 +333,7 @@ public class KMeans implements Printable {
         return centroids;
     }
 
-    public NumericVar runningErrors() {
+    public NumVar runningErrors() {
         return errors.solidCopy();
     }
 
@@ -343,26 +343,26 @@ public class KMeans implements Printable {
 
     private void buildSummary(Frame df) {
 
-        IndexVar summaryId = IndexVar.seq(1, centroids.rowCount()).withName("ID");
-        IndexVar summaryCount = IndexVar.fill(centroids.rowCount(), 0).withName("count");
-        NumericVar summaryMean = NumericVar.fill(centroids.rowCount(), 0).withName("mean");
-        NumericVar summaryVar = NumericVar.fill(centroids.rowCount(), 0).withName("var");
-        NumericVar summaryVarP = NumericVar.fill(centroids.rowCount(), 0).withName("var/total");
-        NumericVar summarySd = NumericVar.fill(centroids.rowCount(), 0).withName("sd");
+        IdxVar summaryId = IdxVar.seq(1, centroids.rowCount()).withName("ID");
+        IdxVar summaryCount = IdxVar.fill(centroids.rowCount(), 0).withName("count");
+        NumVar summaryMean = NumVar.fill(centroids.rowCount(), 0).withName("mean");
+        NumVar summaryVar = NumVar.fill(centroids.rowCount(), 0).withName("var");
+        NumVar summaryVarP = NumVar.fill(centroids.rowCount(), 0).withName("var/total");
+        NumVar summarySd = NumVar.fill(centroids.rowCount(), 0).withName("sd");
 
-        summaryAllDist = NumericVar.empty().withName("all dist");
+        summaryAllDist = NumVar.empty().withName("all dist");
 
-        Map<Integer, NumericVar> errors = new HashMap<>();
+        Map<Integer, NumVar> errors = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
             double d = distance.compute(centroids, arrows.index(i), df, i, inputs)._2;
             if (!errors.containsKey(arrows.index(i)))
-                errors.put(arrows.index(i), NumericVar.empty());
+                errors.put(arrows.index(i), NumVar.empty());
             errors.get(arrows.index(i)).addValue(d);
             summaryAllDist.addValue(d);
         }
         double tvar = variance(summaryAllDist).value();
-        for (Map.Entry<Integer, NumericVar> e : errors.entrySet()) {
+        for (Map.Entry<Integer, NumVar> e : errors.entrySet()) {
             summaryCount.setIndex(e.getKey(), e.getValue().rowCount());
             summaryMean.setValue(e.getKey(), mean(e.getValue()).value());
             double v = variance(e.getValue()).value();

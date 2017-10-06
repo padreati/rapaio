@@ -204,7 +204,7 @@ public class Apriori implements Printable {
     }
 
     public Frame buildFeatures(Frame df) {
-        List<Var> vars = rules.stream().map(r -> NominalVar.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
+        List<Var> vars = rules.stream().map(r -> NomVar.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName("Apriori_" + (i + 1));
         }

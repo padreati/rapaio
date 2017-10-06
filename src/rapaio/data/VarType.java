@@ -108,12 +108,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return IndexVar.empty();
+            return IdxVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return IndexVar.empty(rows);
+            return IdxVar.empty(rows);
         }
     },
     /**
@@ -138,12 +138,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return NominalVar.empty();
+            return NomVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return NominalVar.empty(rows);
+            return NomVar.empty(rows);
         }
     },
     /**
@@ -167,12 +167,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return NumericVar.empty();
+            return NumVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return NumericVar.empty(rows);
+            return NumVar.empty(rows);
         }
     },
     /**
@@ -198,12 +198,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return OrdinalVar.empty();
+            return OrdVar.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return OrdinalVar.empty(rows);
+            return OrdVar.empty(rows);
         }
     },
     /**

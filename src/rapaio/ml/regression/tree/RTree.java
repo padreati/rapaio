@@ -386,7 +386,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 groupPredicates.add(child.getPredicate());
             }
 
-            List<Mapping> mappings = tree.splitter.performMapping(x, NumericVar.fill(x.rowCount(), 1), groupPredicates);
+            List<Mapping> mappings = tree.splitter.performMapping(x, NumVar.fill(x.rowCount(), 1), groupPredicates);
 
             for (int i = 0; i < children.size(); i++) {
                 children.get(i).boostFit(

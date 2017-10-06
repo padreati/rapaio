@@ -106,7 +106,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vars.add(NumericVar.empty());
+                            vars.add(NumVar.empty());
                         } else//Not correct, but we aren't supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -119,7 +119,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vars.add(NominalVar.empty(0, tempMap));
+                            vars.add(NomVar.empty(0, tempMap));
                         }
                         continue;
                     }
@@ -129,11 +129,11 @@ public class ArffPersistence {
 
             List<Var> newvectors = new ArrayList<>();
             for (int i = 0; i < vars.size(); i++) {
-                if (vars.get(i) instanceof NumericVar) {
-                    newvectors.add(NumericVar.empty(data.size()));
+                if (vars.get(i) instanceof NumVar) {
+                    newvectors.add(NumVar.empty(data.size()));
                 }
-                if (vars.get(i) instanceof NominalVar) {
-                    newvectors.add(NominalVar.empty(data.size(), nomValueMap.get(names.get(i))));
+                if (vars.get(i) instanceof NomVar) {
+                    newvectors.add(NomVar.empty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             for (int i = 0; i < newvectors.size(); i++) {

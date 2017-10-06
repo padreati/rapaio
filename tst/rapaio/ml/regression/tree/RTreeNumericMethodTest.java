@@ -27,7 +27,7 @@ package rapaio.ml.regression.tree;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 
@@ -47,7 +47,7 @@ public class RTreeNumericMethodTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
-        w = NumericVar.fill(df.rowCount(), 1);
+        w = NumVar.fill(df.rowCount(), 1);
         tree = RTree.buildDecisionStump();
     }
 

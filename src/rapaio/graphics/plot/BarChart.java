@@ -72,13 +72,13 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = NominalVar.empty(category.rowCount(), new ArrayList<>());
+            condition = NomVar.empty(category.rowCount(), new ArrayList<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = NumericVar.fill(category.rowCount(), 1);
+            numeric = NumVar.fill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
@@ -94,7 +94,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.bind(color(IndexVar.seq(shift, condition.levels().length)));
+        options.bind(color(IdxVar.seq(shift, condition.levels().length)));
         options.bind(opts);
     }
 

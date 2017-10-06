@@ -25,7 +25,7 @@
 
 package rapaio.core.tools;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
@@ -78,7 +78,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, NumericVar.fill(rowVar.rowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, NumVar.fill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**

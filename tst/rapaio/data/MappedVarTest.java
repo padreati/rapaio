@@ -36,12 +36,12 @@ public class MappedVarTest {
 
     @Test
     public void testBuilders() {
-        Var a = NumericVar.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
+        Var a = NumVar.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
         assertEquals(2, a.rowCount());
         assertEquals(3, a.value(0), 1e-12);
         assertEquals(4, a.value(1), 1e-12);
 
-        Var b = a.bindRows(NumericVar.wrap(10, 11));
+        Var b = a.bindRows(NumVar.wrap(10, 11));
         assertEquals(4, b.rowCount());
         assertEquals(3, b.value(0), 1e-12);
         assertEquals(10, b.value(2), 1e-12);
@@ -49,7 +49,7 @@ public class MappedVarTest {
 
     @Test
     public void testDynamicMappedVar() {
-        Var x = NumericVar.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
+        Var x = NumVar.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
 
         try {
             x.addValue(10);
@@ -64,7 +64,7 @@ public class MappedVarTest {
         }
 
         try {
-            NominalVar.copy("x", "y").mapRows(0, 1).addLabel("z");
+            NomVar.copy("x", "y").mapRows(0, 1).addLabel("z");
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -90,7 +90,7 @@ public class MappedVarTest {
 
     @Test
     public void testMappedNominal() {
-        Var x = NominalVar.copy("a").mapRows(0);
+        Var x = NomVar.copy("a").mapRows(0);
         x.setLevels("x");
         assertEquals("x", x.label(0));
     }

@@ -26,7 +26,7 @@
 package rapaio.experiment.ml.classifier.linear;
 
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
@@ -45,7 +45,7 @@ public class BinaryLogistic extends AbstractClassifier {
 
     private static final long serialVersionUID = 1609956190070125059L;
 
-    private NumericVar coef;
+    private NumVar coef;
     private final SFunction<Var, Double> logitF = this::logitReg;
     private final SFunction<Var, Double> logitFD = var -> {
         double y = logitReg(var);
@@ -119,7 +119,7 @@ public class BinaryLogistic extends AbstractClassifier {
     private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
-        NumericVar inst = NumericVar.empty();
+        NumVar inst = NumVar.empty();
         for (int i = 0; i < inputNames().length; i++) {
             inst.addValue(df.value(row, inputName(i)));
         }
@@ -130,14 +130,14 @@ public class BinaryLogistic extends AbstractClassifier {
     protected boolean coreTrain(Frame df, Var weights) {
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            NumericVar line = NumericVar.empty();
+            NumVar line = NumVar.empty();
             for (String inputName : inputNames())
                 line.addValue(df.value(i, inputName));
             inputs.add(line);
         }
 
-        coef = NumericVar.fill(inputNames().length + 1, 0);
-        NumericVar targetValues = NumericVar.empty();
+        coef = NumVar.fill(inputNames().length + 1, 0);
+        NumVar targetValues = NumVar.empty();
         df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 

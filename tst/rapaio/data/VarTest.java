@@ -42,8 +42,8 @@ public class VarTest {
 
     @Test
     public void testDictionary() {
-        Var x = NominalVar.copy("x", "y", "x", "z");
-        Var y = NominalVar.copy("x", "y", "x", "z");
+        Var x = NomVar.copy("x", "y", "x", "z");
+        Var y = NomVar.copy("x", "y", "x", "z");
 
         x.setLevels("a", "b", "c");
         List<String> dict = new ArrayList<>();
@@ -63,8 +63,8 @@ public class VarTest {
     @Test
     public void testNumericCollector() {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
-        Var x = NumericVar.wrap(src);
-        Var y = Arrays.stream(src).boxed().parallel().collect(NumericVar.collector());
+        Var x = NumVar.wrap(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(NumVar.collector());
         y = new VFSort().fitApply(y);
 
         assertTrue(x.deepEquals(y));
@@ -73,8 +73,8 @@ public class VarTest {
     @Test
     public void testIndexCollector() {
         int[] src = IntStream.range(0, 100_000).toArray();
-        Var x = IndexVar.wrap(src);
-        Var y = Arrays.stream(src).boxed().parallel().collect(IndexVar.collector());
+        Var x = IdxVar.wrap(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(IdxVar.collector());
         y = new VFSort().fitApply(y);
 
         assertTrue(x.deepEquals(y));
@@ -82,11 +82,11 @@ public class VarTest {
 
     @Test
     public void solidCopyNameTest() {
-        NumericVar num = NumericVar.seq(1, 10, 0.5).withName("num");
+        NumVar num = NumVar.seq(1, 10, 0.5).withName("num");
         assertEquals(num.name(), num.solidCopy().name());
         assertEquals(num.name(), num.mapRows(2,5).solidCopy().name());
 
-        IndexVar idx = IndexVar.seq(1, 10).withName("idx");
+        IdxVar idx = IdxVar.seq(1, 10).withName("idx");
         assertEquals(idx.name(), idx.solidCopy().name());
         assertEquals(idx.name(), idx.mapRows(2,5).solidCopy().name());
 
@@ -94,7 +94,7 @@ public class VarTest {
         assertEquals(bin.name(), bin.solidCopy().name());
         assertEquals(bin.name(), bin.mapRows(2,5).solidCopy().name());
 
-        OrdinalVar ord = OrdinalVar.empty(0, "a", "b", "c").withName("ord");
+        OrdVar ord = OrdVar.empty(0, "a", "b", "c").withName("ord");
         ord.addLabel("a");
         ord.addLabel("b");
         ord.addLabel("a");
@@ -103,7 +103,7 @@ public class VarTest {
         assertEquals(ord.name(), ord.solidCopy().name());
         assertEquals(ord.name(), ord.mapRows(2,4).solidCopy().name());
 
-        NominalVar nom = NominalVar.copy("a", "b", "a", "c", "a").withName("nom");
+        NomVar nom = NomVar.copy("a", "b", "a", "c", "a").withName("nom");
         assertEquals(nom.name(), nom.solidCopy().name());
         assertEquals(nom.name(), nom.mapRows(2,4).solidCopy().name());
 

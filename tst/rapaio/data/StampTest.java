@@ -84,7 +84,7 @@ public class StampTest {
 
     @Test
     public void testFillVector() {
-        Var stamp = NumericVar.fill(10, -1);
+        Var stamp = NumVar.fill(10, -1);
         assertEquals(10, stamp.rowCount());
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(-1, stamp.stamp(i));

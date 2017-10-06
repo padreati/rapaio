@@ -63,7 +63,7 @@ public class ROC implements Printable, Serializable {
      * @param predict variable which contains the predicted classes
      */
     public static ROC from(Var score, Var actual, Var predict) {
-        IndexVar classes = IndexVar.empty(actual.rowCount());
+        IdxVar classes = IdxVar.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
@@ -97,7 +97,7 @@ public class ROC implements Printable, Serializable {
      * @param label  label of the class considered 1, all other labels values are 0
      */
     public static ROC from(Var score, Var actual, String label) {
-        IndexVar classes = IndexVar.empty(actual.rowCount());
+        IdxVar classes = IdxVar.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);
@@ -133,7 +133,7 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(IndexVar.seq(score.rowCount()));
+        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(IdxVar.seq(score.rowCount()));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < rows.rowCount(); i++) {

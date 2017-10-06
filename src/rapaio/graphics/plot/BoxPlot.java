@@ -27,8 +27,8 @@ package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.IndexVar;
-import rapaio.data.NumericVar;
+import rapaio.data.IdxVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.graphics.base.HostFigure;
@@ -61,7 +61,7 @@ public class BoxPlot extends HostFigure {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
         names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
-        vars = Arrays.stream(names).map(map::get).map(NumericVar::copy).toArray(Var[]::new);
+        vars = Arrays.stream(names).map(map::get).map(NumVar::copy).toArray(Var[]::new);
 
         this.options.bind(opts);
         initialize();
@@ -75,7 +75,7 @@ public class BoxPlot extends HostFigure {
         this.vars = vars;
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(IndexVar.wrap(0, 3)));
+        options.setPch(new GOptionPch(IdxVar.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
 
@@ -86,7 +86,7 @@ public class BoxPlot extends HostFigure {
         this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(IndexVar.wrap(0, 3)));
+        options.setPch(new GOptionPch(IdxVar.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
 

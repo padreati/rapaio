@@ -28,7 +28,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.sys.WS;
@@ -97,7 +97,7 @@ public class ADTestGoodness implements HTest {
             }
         }
 
-        Var y = NumericVar.from(x, value -> (value - muHat) / sigmaHat);
+        Var y = NumVar.from(x, value -> (value - muHat) / sigmaHat);
         Normal normal = new Normal();
 
         a2 = 0.0;

@@ -25,7 +25,7 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.IndexVar;
+import rapaio.data.IdxVar;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 
@@ -111,19 +111,19 @@ public class VFToIndex extends AbstractVF {
         Var v = vars[0];
 
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(IndexVar.collector()).withName(v.name());
+            return v.stream().map(fSpot).collect(IdxVar.collector()).withName(v.name());
         }
         if (fValue != null) {
             return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(IndexVar.collector()).withName(v.name());
+                    .map(fValue).collect(IdxVar.collector()).withName(v.name());
         }
         if (fIndex != null) {
             return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(IndexVar.collector()).withName(v.name());
+                    .map(fIndex).collect(IdxVar.collector()).withName(v.name());
         }
         if (fLabel != null) {
             return v.stream().mapToString()
-                    .map(fLabel).collect(IndexVar.collector()).withName(v.name());
+                    .map(fLabel).collect(IdxVar.collector()).withName(v.name());
         }
         throw new RuntimeException("no transform function available");
     }

@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.util.Pair;
@@ -47,8 +47,8 @@ public class RTreeSplitterTest {
 
     @Before
     public void setUp() throws Exception {
-        w = NumericVar.empty();
-        df = SolidFrame.byVars(NumericVar.empty().withName("x"));
+        w = NumVar.empty();
+        df = SolidFrame.byVars(NumVar.empty().withName("x"));
 
         candidate = new RTree.Candidate(0, "");
         candidate.addGroup("x < 10", s -> s.value("x") < 10);
@@ -67,7 +67,7 @@ public class RTreeSplitterTest {
             default:
                 u = new Uniform(11, 19);
         }
-        NumericVar sample = u.sample(count);
+        NumVar sample = u.sample(count);
         for (int i = 0; i < sample.rowCount(); i++) {
             df.addRows(1);
             df.var("x").setValue(df.rowCount() - 1, sample.value(i));

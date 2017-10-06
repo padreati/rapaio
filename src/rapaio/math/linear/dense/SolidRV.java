@@ -25,7 +25,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 import rapaio.printer.Summary;
@@ -199,11 +199,11 @@ public class SolidRV implements RV {
     }
 
     public String summary() {
-        return Summary.headString(true, values.length, new Var[]{NumericVar.wrap(values)}, new String[]{""});
+        return Summary.headString(true, values.length, new Var[]{NumVar.wrap(values)}, new String[]{""});
     }
 
     @Override
-    public NumericVar asNumericVar() {
-        return NumericVar.wrap(values);
+    public NumVar asNumericVar() {
+        return NumVar.wrap(values);
     }
 }

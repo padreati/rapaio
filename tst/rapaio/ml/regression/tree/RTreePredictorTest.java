@@ -25,7 +25,7 @@
 package rapaio.ml.regression.tree;
 
 import org.junit.Test;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
@@ -118,6 +118,6 @@ public class RTreePredictorTest {
     }
 
     FSpot getSpot(double value) {
-        return SolidFrame.byVars(NumericVar.wrap(value).withName("x")).stream().findFirst().get();
+        return SolidFrame.byVars(NumVar.wrap(value).withName("x")).stream().findFirst().get();
     }
 }

@@ -26,7 +26,7 @@
 package rapaio.ml.eval;
 
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -57,8 +57,8 @@ public class RMSE implements Printable {
 
     // artifacts
 
-    private NumericVar rmse = NumericVar.empty().withName("rmse");
-    private NumericVar mse = NumericVar.empty().withName("mse");
+    private NumVar rmse = NumVar.empty().withName("rmse");
+    private NumVar mse = NumVar.empty().withName("mse");
 
     private double totalRmse;
     private double totalMse;
@@ -93,11 +93,11 @@ public class RMSE implements Printable {
         totalMse = totalSum / totalCount;
     }
 
-    public NumericVar rmse() {
+    public NumVar rmse() {
         return rmse;
     }
 
-    public NumericVar mse() {
+    public NumVar mse() {
         return mse;
     }
 

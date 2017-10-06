@@ -27,7 +27,7 @@ package rapaio.ml.classifier.ensemble;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
-import rapaio.data.NominalVar;
+import rapaio.data.NomVar;
 import rapaio.ml.classifier.CFit;
 
 import java.io.Serializable;
@@ -42,7 +42,7 @@ public enum BaggingMode implements Serializable {
 
     VOTING {
         @Override
-        public void computeDensity(String[] dictionary, List<CFit> treeFits, NominalVar classes, Frame densities) {
+        public void computeDensity(String[] dictionary, List<CFit> treeFits, NomVar classes, Frame densities) {
             treeFits.stream().map(CFit::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
                     int best = d.index(i);
@@ -74,7 +74,7 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION {
         @Override
-        public void computeDensity(String[] dictionary, List<CFit> treeFits, NominalVar classes, Frame densities) {
+        public void computeDensity(String[] dictionary, List<CFit> treeFits, NomVar classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setValue(i, j, 0);
@@ -115,7 +115,7 @@ public enum BaggingMode implements Serializable {
         }
     };
 
-    abstract void computeDensity(String[] dictionary, List<CFit> treeFits, NominalVar classes, Frame densities);
+    abstract void computeDensity(String[] dictionary, List<CFit> treeFits, NomVar classes, Frame densities);
 
     abstract boolean needsClass();
 

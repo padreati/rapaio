@@ -27,7 +27,7 @@ package rapaio.ml.regression.linear;
 
 import rapaio.core.distributions.StudentT;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.math.MTools;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -96,7 +96,7 @@ public class LinearRFit extends RFit {
             if (!withResiduals) {
                 RV coeff = beta_hat.mapCol(i);
             } else {
-                NumericVar res = residuals.get(targetName);
+                NumVar res = residuals.get(targetName);
 
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
@@ -156,7 +156,7 @@ public class LinearRFit extends RFit {
                 }
                 sb.append(tt.summary());
             } else {
-                NumericVar res = residuals.get(targetName);
+                NumVar res = residuals.get(targetName);
 
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;

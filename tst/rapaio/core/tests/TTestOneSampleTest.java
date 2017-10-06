@@ -26,7 +26,7 @@ package rapaio.core.tests;
 
 import org.junit.Test;
 import rapaio.core.CoreTools;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +36,7 @@ public class TTestOneSampleTest {
 
     @Test
     public void baseTest() {
-        NumericVar x = NumericVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5);
+        NumVar x = NumVar.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5);
         CoreTools.mean(x).printSummary();
         CoreTools.variance(x).printSummary();
 
@@ -104,7 +104,7 @@ public class TTestOneSampleTest {
         assertEquals(5.169824856424261, t4.ciHigh(), TOL);
 
 
-        TTestOneSample t5 = TTestOneSample.test(NumericVar.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
+        TTestOneSample t5 = TTestOneSample.test(NumVar.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
         assertEquals(4.7, t5.getMu(), TOL);
         assertEquals(0.05, t5.getSl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, t5.getAlt());

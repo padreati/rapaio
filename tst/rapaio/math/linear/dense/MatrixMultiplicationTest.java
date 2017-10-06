@@ -27,7 +27,7 @@ package rapaio.math.linear.dense;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.RM;
 import rapaio.util.Util;
@@ -92,7 +92,7 @@ public class MatrixMultiplicationTest {
 
         System.out.println("...");
 
-        Map<String, NumericVar> times = new LinkedHashMap<>();
+        Map<String, NumVar> times = new LinkedHashMap<>();
         for (int i = 0; i < 10; i++) {
 
             System.out.println("=========================");
@@ -118,9 +118,9 @@ public class MatrixMultiplicationTest {
         SolidFrame.byVars(new ArrayList<>(times.values())).printSummary();
     }
 
-    private void put(Map<String, NumericVar> map, String key, Long value) {
+    private void put(Map<String, NumVar> map, String key, Long value) {
         if (!map.containsKey(key)) {
-            map.put(key, NumericVar.empty().withName(key));
+            map.put(key, NumVar.empty().withName(key));
         }
         map.get(key).addValue(value);
     }

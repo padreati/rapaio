@@ -27,7 +27,7 @@ package rapaio.ml.regression.tree;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
 
@@ -80,8 +80,8 @@ public interface RTreePredictor extends Serializable {
 
             // so is a missing value for the current test feature
 
-            NumericVar values = NumericVar.empty();
-            NumericVar weights = NumericVar.empty();
+            NumVar values = NumVar.empty();
+            NumVar weights = NumVar.empty();
             for (RTree.Node child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(spot, child);
                 values.addValue(prediction._1);

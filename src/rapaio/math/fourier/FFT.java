@@ -27,7 +27,7 @@
 package rapaio.math.fourier;
 
 import rapaio.data.Mapping;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.util.Pair;
 
@@ -67,8 +67,8 @@ public class FFT {
         Pair<Var, Var> r = fft(Pair.from(x._1.mapRows(oddMap), x._2.mapRows(oddMap)));
 
         // combine
-        Var rey = NumericVar.fill(N, 0.0);
-        Var imy = NumericVar.fill(N, 0.0);
+        Var rey = NumVar.fill(N, 0.0);
+        Var imy = NumVar.fill(N, 0.0);
         for (int k = 0; k < N / 2; k++) {
             double kth = -2 * k * Math.PI / N;
             double coskth = Math.cos(kth);
@@ -88,14 +88,14 @@ public class FFT {
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
         int N = x._1.rowCount();
 
-        Var im2 = NumericVar.from(N, row -> -x._2.value(row));
+        Var im2 = NumVar.from(N, row -> -x._2.value(row));
 
         // compute forward FFT
         Pair<Var, Var> y = fft(Pair.from(x._1, im2));
 
         // take conjugate again and divide by N
-        Var re3 = NumericVar.from(N, row -> y._1.value(row) / N);
-        Var im3 = NumericVar.from(N, row -> -y._2.value(row) / N);
+        Var re3 = NumVar.from(N, row -> y._1.value(row) / N);
+        Var im3 = NumVar.from(N, row -> -y._2.value(row) / N);
         return Pair.from(re3, im3);
     }
 
@@ -117,7 +117,7 @@ public class FFT {
         Pair<Var, Var> b = fft(y);
 
         // point-wise multiply
-        Pair<Var, Var> c = Pair.from(NumericVar.fill(len, 0.0), NumericVar.fill(len, 0.0));
+        Pair<Var, Var> c = Pair.from(NumVar.fill(len, 0.0), NumVar.fill(len, 0.0));
         for (int i = 0; i < N; i++) {
             c._1.setValue(i, a._1.value(i) * b._1.value(i) - a._2.value(i) * b._2.value(i));
             c._2.setValue(i, a._1.value(i) * b._2.value(i) + a._1.value(i) * b._2.value(i));

@@ -108,7 +108,7 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public final Regression train(Frame df, String... targetVarNames) {
-        return train(df, NumericVar.fill(df.rowCount(), 1), targetVarNames);
+        return train(df, NumVar.fill(df.rowCount(), 1), targetVarNames);
     }
 
     @Override

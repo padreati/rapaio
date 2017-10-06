@@ -62,7 +62,7 @@ public class CEvaluation {
         List<List<Integer>> strata = buildStrata(df, folds, classColName);
 
 
-        NumericVar acc = NumericVar.empty();
+        NumVar acc = NumVar.empty();
 
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
@@ -171,7 +171,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = NumericVar.fill(df.rowCount(), 1.0);
+        Var weights = NumVar.fill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -180,7 +180,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = NumericVar.fill(df.rowCount(), 1.0d);
+        Var weights = NumVar.fill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 
@@ -215,9 +215,9 @@ public class CEvaluation {
     public static PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
 
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
-        IndexVar r = IndexVar.empty().withName("runs");
-        NumericVar testAcc = NumericVar.empty().withName("test");
-        NumericVar trainAcc = NumericVar.empty().withName("train");
+        IdxVar r = IdxVar.empty().withName("runs");
+        NumVar testAcc = NumVar.empty().withName("test");
+        NumVar trainAcc = NumVar.empty().withName("train");
         c.withRunningHook((cs, run) -> {
 
             if (run % step != 0) {
@@ -259,9 +259,9 @@ public class CEvaluation {
 
         Classifier c = alterClassifier ? cc : cc.newInstance();
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
-        IndexVar r = IndexVar.empty().withName("runs");
-        NumericVar testAuc = NumericVar.empty().withName("test");
-        NumericVar trainAuc = NumericVar.empty().withName("train");
+        IdxVar r = IdxVar.empty().withName("runs");
+        NumVar testAuc = NumVar.empty().withName("test");
+        NumVar trainAuc = NumVar.empty().withName("train");
         Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 

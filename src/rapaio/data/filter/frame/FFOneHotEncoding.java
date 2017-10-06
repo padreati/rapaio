@@ -97,7 +97,7 @@ public class FFOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.length; i++) {
-                    Var v = NumericVar.fill(df.rowCount()).withName(varName + "." + dict[i]);
+                    Var v = NumVar.fill(df.rowCount()).withName(varName + "." + dict[i]);
                     oneHotVars.add(v);
                     index.put(dict[i], v);
                 }

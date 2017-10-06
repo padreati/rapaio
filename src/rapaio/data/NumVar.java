@@ -48,13 +48,13 @@ import java.util.stream.Collector;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class NumericVar extends AbstractVar {
+public final class NumVar extends AbstractVar {
 
     /**
      * @return new empty numeric variable of size 0
      */
-    public static NumericVar empty() {
-        return new NumericVar(0, 0, Double.NaN);
+    public static NumVar empty() {
+        return new NumVar(0, 0, Double.NaN);
     }
 
     /**
@@ -63,8 +63,8 @@ public final class NumericVar extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric var
      */
-    public static NumericVar empty(int rows) {
-        return new NumericVar(rows, rows, Double.NaN);
+    public static NumVar empty(int rows) {
+        return new NumVar(rows, rows, Double.NaN);
     }
 
     /**
@@ -73,8 +73,8 @@ public final class NumericVar extends AbstractVar {
      * @param values given values
      * @return new instance of numeric variable
      */
-    public static NumericVar copy(Collection<? extends Number> values) {
-        final NumericVar numeric = new NumericVar(0, 0, Double.NaN);
+    public static NumVar copy(Collection<? extends Number> values) {
+        final NumVar numeric = new NumVar(0, 0, Double.NaN);
         values.forEach(n -> numeric.addValue(n.doubleValue()));
         return numeric;
     }
@@ -85,8 +85,8 @@ public final class NumericVar extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static NumericVar copy(int... values) {
-        NumericVar numeric = new NumericVar(0, 0, 0);
+    public static NumVar copy(int... values) {
+        NumVar numeric = new NumVar(0, 0, 0);
         numeric.data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             numeric.data[i] = values[i];
@@ -101,8 +101,8 @@ public final class NumericVar extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static NumericVar copy(double... values) {
-        NumericVar numeric = new NumericVar(values.length, values.length, 0);
+    public static NumVar copy(double... values) {
+        NumVar numeric = new NumVar(values.length, values.length, 0);
         numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
     }
@@ -113,14 +113,14 @@ public final class NumericVar extends AbstractVar {
      * @param source source numeric var
      * @return new instance of numeric variable
      */
-    public static NumericVar copy(Var source) {
-        NumericVar numeric = new NumericVar(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (!(source instanceof NumericVar)) {
+    public static NumVar copy(Var source) {
+        NumVar numeric = new NumVar(source.rowCount(), source.rowCount(), 0).withName(source.name());
+        if (!(source instanceof NumVar)) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setValue(i, source.value(i));
             }
         } else {
-            numeric.data = Arrays.copyOf(((NumericVar) source).data, source.rowCount());
+            numeric.data = Arrays.copyOf(((NumVar) source).data, source.rowCount());
         }
         return numeric;
     }
@@ -131,8 +131,8 @@ public final class NumericVar extends AbstractVar {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static NumericVar wrap(double... values) {
-        NumericVar numeric = new NumericVar(0, 0, 0);
+    public static NumVar wrap(double... values) {
+        NumVar numeric = new NumVar(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
         return numeric;
@@ -144,8 +144,8 @@ public final class NumericVar extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric variable of given size and filled with 0
      */
-    public static NumericVar fill(int rows) {
-        return new NumericVar(rows, rows, 0);
+    public static NumVar fill(int rows) {
+        return new NumVar(rows, rows, 0);
     }
 
     /**
@@ -155,8 +155,8 @@ public final class NumericVar extends AbstractVar {
      * @param fill fill value used to set all the values
      * @return new instance of numeric variable of given size and filled with given value
      */
-    public static NumericVar fill(int rows, double fill) {
-        return new NumericVar(rows, rows, fill);
+    public static NumVar fill(int rows, double fill) {
+        return new NumVar(rows, rows, fill);
     }
 
     /**
@@ -165,20 +165,20 @@ public final class NumericVar extends AbstractVar {
      * @param value fill value
      * @return new instance of numeric variable of size 1 and filled with given fill value
      */
-    public static NumericVar scalar(double value) {
-        return new NumericVar(1, 1, value);
+    public static NumVar scalar(double value) {
+        return new NumVar(1, 1, value);
     }
 
-    public static NumericVar seq(double end) {
+    public static NumVar seq(double end) {
         return seq(0, end);
     }
 
-    public static NumericVar seq(double start, double end) {
+    public static NumVar seq(double start, double end) {
         return seq(start, end, 1.0);
     }
 
-    public static NumericVar seq(double start, double end, double step) {
-        NumericVar num = NumericVar.empty();
+    public static NumVar seq(double start, double end, double step) {
+        NumVar num = NumVar.empty();
         int i = 0;
         while (start + i * step <= end) {
             num.addValue(start + i * step);
@@ -187,8 +187,8 @@ public final class NumericVar extends AbstractVar {
         return num;
     }
 
-    public static NumericVar from(int rows, Supplier<Double> supplier) {
-        NumericVar numeric = new NumericVar(0, 0, 0);
+    public static NumVar from(int rows, Supplier<Double> supplier) {
+        NumVar numeric = new NumVar(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
@@ -206,7 +206,7 @@ public final class NumericVar extends AbstractVar {
 
     // private constructor
 
-    private NumericVar(int rows, int capacity, double fill) {
+    private NumVar(int rows, int capacity, double fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
@@ -226,8 +226,8 @@ public final class NumericVar extends AbstractVar {
      * @param transformation transformation function
      * @return new numeric variable which contains the computed values
      */
-    public static NumericVar from(int rows, Function<Integer, Double> transformation) {
-        NumericVar numeric = new NumericVar(0, 0, 0);
+    public static NumVar from(int rows, Function<Integer, Double> transformation) {
+        NumVar numeric = new NumVar(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
@@ -244,27 +244,27 @@ public final class NumericVar extends AbstractVar {
      * @param transform transformation applied to source variable
      * @return new numeric variable which contains transformed variables
      */
-    public static NumericVar from(Var reference, Function<Double, Double> transform) {
-        return NumericVar.from(reference.rowCount(), i -> transform.apply(reference.value(i)));
+    public static NumVar from(Var reference, Function<Double, Double> transform) {
+        return NumVar.from(reference.rowCount(), i -> transform.apply(reference.value(i)));
     }
 
 
     // stream collectors
-    public static Collector<Double, NumericVar, NumericVar> collector() {
+    public static Collector<Double, NumVar, NumVar> collector() {
 
-        return new Collector<Double, NumericVar, NumericVar>() {
+        return new Collector<Double, NumVar, NumVar>() {
             @Override
-            public Supplier<NumericVar> supplier() {
-                return NumericVar::empty;
+            public Supplier<NumVar> supplier() {
+                return NumVar::empty;
             }
 
             @Override
-            public BiConsumer<NumericVar, Double> accumulator() {
-                return NumericVar::addValue;
+            public BiConsumer<NumVar, Double> accumulator() {
+                return NumVar::addValue;
             }
 
             @Override
-            public BinaryOperator<NumericVar> combiner() {
+            public BinaryOperator<NumVar> combiner() {
                 return (x, y) -> {
                     y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
@@ -272,8 +272,8 @@ public final class NumericVar extends AbstractVar {
             }
 
             @Override
-            public Function<NumericVar, NumericVar> finisher() {
-                return NumericVar::solidCopy;
+            public Function<NumVar, NumVar> finisher() {
+                return NumVar::solidCopy;
             }
 
             @Override
@@ -284,8 +284,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public NumericVar withName(String name) {
-        return (NumericVar) super.withName(name);
+    public NumVar withName(String name) {
+        return (NumVar) super.withName(name);
     }
 
     @Override
@@ -315,7 +315,7 @@ public final class NumericVar extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacity(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = NumericVar.missingValue;
+            data[rows + i] = NumVar.missingValue;
         }
         rows += rowCount;
     }
@@ -464,7 +464,7 @@ public final class NumericVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return NumericVar.empty(rows);
+        return NumVar.empty(rows);
     }
 
     @Override
@@ -473,8 +473,8 @@ public final class NumericVar extends AbstractVar {
     }
 
     @Override
-    public NumericVar solidCopy() {
-        return (NumericVar) super.solidCopy();
+    public NumVar solidCopy() {
+        return (NumVar) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

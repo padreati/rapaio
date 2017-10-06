@@ -25,7 +25,7 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,8 +40,8 @@ public class TTestTwoPairedTest {
 
         final double TOL = 1e-12;
 
-        NumericVar x = NumericVar.copy(18, 21, 16, 22, 19, 24, 17, 21, 23, 18, 14, 16, 16, 19, 18, 20, 12, 22, 15, 17);
-        NumericVar y = NumericVar.copy(22, 25, 17, 24, 16, 29, 20, 23, 19, 20, 15, 15, 18, 26, 18, 24, 18, 25, 19, 16);
+        NumVar x = NumVar.copy(18, 21, 16, 22, 19, 24, 17, 21, 23, 18, 14, 16, 16, 19, 18, 20, 12, 22, 15, 17);
+        NumVar y = NumVar.copy(22, 25, 17, 24, 16, 29, 20, 23, 19, 20, 15, 15, 18, 26, 18, 24, 18, 25, 19, 16);
 
         TTestTwoPaired t1 = TTestTwoPaired.test(y, x, 0);
         t1.printSummary();
@@ -59,7 +59,7 @@ public class TTestTwoPairedTest {
         assertEquals(3.377874900419294, t1.ciHigh(), TOL);
         assertEquals(0.05, t1.getSl(), TOL);
 
-        TTestTwoPaired t2 = TTestTwoPaired.test(NumericVar.empty(), NumericVar.empty(), -1, 0.03, HTest.Alternative.GREATER_THAN);
+        TTestTwoPaired t2 = TTestTwoPaired.test(NumVar.empty(), NumVar.empty(), -1, 0.03, HTest.Alternative.GREATER_THAN);
         assertTrue(Double.isNaN(t2.pValue()));
     }
 }

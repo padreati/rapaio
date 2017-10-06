@@ -27,7 +27,7 @@ package rapaio.ml.regression;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.printer.Printable;
 
@@ -45,8 +45,8 @@ public class RFit implements Printable {
     protected final Regression model;
     protected final Frame df;
     protected final boolean withResiduals;
-    protected final Map<String, NumericVar> fit;
-    protected final Map<String, NumericVar> residuals;
+    protected final Map<String, NumVar> fit;
+    protected final Map<String, NumVar> residuals;
     protected final Map<String, Double> tss;
     protected final Map<String, Double> ess;
     protected final Map<String, Double> rss;
@@ -66,8 +66,8 @@ public class RFit implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, NumericVar.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, NumericVar.empty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, NumVar.empty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, NumVar.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -112,7 +112,7 @@ public class RFit implements Printable {
      *
      * @return map with numeric variables as predicted values
      */
-    public Map<String, NumericVar> fitMap() {
+    public Map<String, NumVar> fitMap() {
         return fit;
     }
 
@@ -130,7 +130,7 @@ public class RFit implements Printable {
      *
      * @return numeric variable with predicted values
      */
-    public NumericVar firstFit() {
+    public NumVar firstFit() {
         return fit.get(firstTargetName());
     }
 
@@ -140,7 +140,7 @@ public class RFit implements Printable {
      * @param targetVar given target variable name
      * @return numeric variable with predicted values
      */
-    public NumericVar fit(String targetVar) {
+    public NumVar fit(String targetVar) {
         return fit.get(targetVar);
     }
 
@@ -176,7 +176,7 @@ public class RFit implements Printable {
         return rss.get(targetVar);
     }
 
-    public Map<String, NumericVar> residualsMap() {
+    public Map<String, NumVar> residualsMap() {
         return residuals;
     }
 
@@ -184,11 +184,11 @@ public class RFit implements Printable {
         return SolidFrame.byVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
-    public NumericVar firstResidual() {
+    public NumVar firstResidual() {
         return residuals.get(firstTargetName());
     }
 
-    public NumericVar residual(String targetVar) {
+    public NumVar residual(String targetVar) {
         return residuals.get(targetVar);
     }
 

@@ -27,8 +27,8 @@ package rapaio.ts;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.IndexVar;
-import rapaio.data.NumericVar;
+import rapaio.data.IdxVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -42,35 +42,35 @@ import rapaio.sys.WS;
 public class Acf implements Printable {
 
     private final Var ts;
-    private final IndexVar lags;
-    private final NumericVar correlation;
-    private final NumericVar covariance;
+    private final IdxVar lags;
+    private final NumVar correlation;
+    private final NumVar covariance;
 
     public static Acf from(Var ts, int maxLag) {
-        return new Acf(ts, IndexVar.seq(0, maxLag).withName("lags"));
+        return new Acf(ts, IdxVar.seq(0, maxLag).withName("lags"));
     }
 
-    public static Acf from(Var ts, IndexVar lags) {
+    public static Acf from(Var ts, IdxVar lags) {
         return new Acf(ts, lags.withName("lags"));
     }
 
-    private Acf(Var ts, IndexVar lags) {
+    private Acf(Var ts, IdxVar lags) {
         if (ts.stream().complete().count() != ts.rowCount()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
         this.ts = ts.solidCopy();
         this.lags = lags.solidCopy();
-        this.correlation = NumericVar.fill(lags.rowCount(), 0).withName("correlation");
-        this.covariance = NumericVar.fill(lags.rowCount(), 0).withName("covariance");
+        this.correlation = NumVar.fill(lags.rowCount(), 0).withName("correlation");
+        this.covariance = NumVar.fill(lags.rowCount(), 0).withName("covariance");
 
         compute();
     }
 
-    public NumericVar correlation() {
+    public NumVar correlation() {
         return correlation;
     }
 
-    public NumericVar covariance() {
+    public NumVar covariance() {
         return covariance;
     }
 

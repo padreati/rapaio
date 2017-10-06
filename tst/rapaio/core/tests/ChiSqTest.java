@@ -25,8 +25,8 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.NominalVar;
-import rapaio.data.NumericVar;
+import rapaio.data.NomVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.SolidRM;
 
@@ -38,7 +38,7 @@ public class ChiSqTest {
 
     @Test
     public void testBasicGoodnessOfFit() {
-        NominalVar x1 = NominalVar.empty();
+        NomVar x1 = NomVar.empty();
         for (int i = 0; i < 11; i++) {
             x1.addLabel("Heavy");
         }
@@ -52,28 +52,28 @@ public class ChiSqTest {
             x1.addLabel("Regul");
         }
 
-        ChiSqGoodnessOfFit test1 = ChiSqGoodnessOfFit.from(x1, NumericVar.wrap(0.045, 0.795, 0.085, 0.075));
+        ChiSqGoodnessOfFit test1 = ChiSqGoodnessOfFit.from(x1, NumVar.wrap(0.045, 0.795, 0.085, 0.075));
         test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
         assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        test1 = ChiSqGoodnessOfFit.from(NumericVar.copy(11, 189, 19, 17), NumericVar.wrap(0.045, 0.795, 0.085, 0.075));
+        test1 = ChiSqGoodnessOfFit.from(NumVar.copy(11, 189, 19, 17), NumVar.wrap(0.045, 0.795, 0.085, 0.075));
         test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
         assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        NominalVar x2 = NominalVar.empty();
+        NomVar x2 = NomVar.empty();
         for (int i = 0; i < 54; i++) {
             x2.addLabel("Male");
         }
         for (int i = 0; i < 46; i++) {
             x2.addLabel("Female");
         }
-        ChiSqGoodnessOfFit test2 = ChiSqGoodnessOfFit.from(x2, NumericVar.wrap(0.5, 0.5));
+        ChiSqGoodnessOfFit test2 = ChiSqGoodnessOfFit.from(x2, NumVar.wrap(0.5, 0.5));
         test2.printSummary();
 
         assertEquals(1, test2.df());
@@ -127,9 +127,9 @@ public class ChiSqTest {
 
     @Test
     public void testConditionalIndependence() {
-        Var status = NominalVar.empty().withName("status");
-        Var scout = NominalVar.empty().withName("scout");
-        Var delinquent = NominalVar.empty().withName("delinquent");
+        Var status = NomVar.empty().withName("status");
+        Var scout = NomVar.empty().withName("scout");
+        Var delinquent = NomVar.empty().withName("delinquent");
 
         for (int i = 0; i < 11; i++) {
             status.addLabel("low");

@@ -27,8 +27,7 @@ package rapaio.ml.eval;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.NumericVar;
-import rapaio.sys.WS;
+import rapaio.data.NumVar;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,8 +41,8 @@ public class GiniTest {
     @Test
     public void testSmoke() {
 
-        NumericVar x = NumericVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        NumericVar y = NumericVar.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
+        NumVar x = NumVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        NumVar y = NumVar.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
 
         double eval = Gini.from(x, y).normalizedGini();
         System.out.println(eval);
@@ -57,20 +56,20 @@ public class GiniTest {
      */
     @Test
     public void kaggleTests() {
-        test(NumericVar.wrap(5.1, 3.2, 1.7, 6.2, 8.1), NumericVar.wrap(3.1, 5.2, 2.7, 5.1, 1.1), -0.043621399177, -0.335443037975);
-        test(NumericVar.wrap(1, 2, 3), NumericVar.wrap(10, 20, 30), 0.111111, 1);
-        test(NumericVar.wrap(1, 2, 3), NumericVar.wrap(30, 20, 10), -0.111111, -1);
-        test(NumericVar.wrap(1, 2, 3), NumericVar.wrap(0, 0, 0), -0.111111, -1);
-        test(NumericVar.wrap(3, 2, 1), NumericVar.wrap(0, 0, 0), 0.111111, 1);
-        test(NumericVar.wrap(1, 2, 4, 3), NumericVar.wrap(0, 0, 0, 0), -0.1, -0.8);
-        test(NumericVar.wrap(2, 1, 4, 3), NumericVar.wrap(0, 0, 2, 1), 0.125, 1);
-        test(NumericVar.wrap(0, 20, 40, 0, 10), NumericVar.wrap(40, 40, 10, 5, 5), 0, 0);
-        test(NumericVar.wrap(40, 0, 20, 0, 10), NumericVar.wrap(1000000, 40, 40, 5, 5), 0.171428, 0.6);
-        test(NumericVar.wrap(40, 20, 10, 0, 0), NumericVar.wrap(40, 20, 10, 0, 0), 0.285714, 1);
-        test(NumericVar.wrap(1, 1, 0, 1), NumericVar.wrap(0.86, 0.26, 0.52, 0.32), -0.041666, -0.333333);
+        test(NumVar.wrap(5.1, 3.2, 1.7, 6.2, 8.1), NumVar.wrap(3.1, 5.2, 2.7, 5.1, 1.1), -0.043621399177, -0.335443037975);
+        test(NumVar.wrap(1, 2, 3), NumVar.wrap(10, 20, 30), 0.111111, 1);
+        test(NumVar.wrap(1, 2, 3), NumVar.wrap(30, 20, 10), -0.111111, -1);
+        test(NumVar.wrap(1, 2, 3), NumVar.wrap(0, 0, 0), -0.111111, -1);
+        test(NumVar.wrap(3, 2, 1), NumVar.wrap(0, 0, 0), 0.111111, 1);
+        test(NumVar.wrap(1, 2, 4, 3), NumVar.wrap(0, 0, 0, 0), -0.1, -0.8);
+        test(NumVar.wrap(2, 1, 4, 3), NumVar.wrap(0, 0, 2, 1), 0.125, 1);
+        test(NumVar.wrap(0, 20, 40, 0, 10), NumVar.wrap(40, 40, 10, 5, 5), 0, 0);
+        test(NumVar.wrap(40, 0, 20, 0, 10), NumVar.wrap(1000000, 40, 40, 5, 5), 0.171428, 0.6);
+        test(NumVar.wrap(40, 20, 10, 0, 0), NumVar.wrap(40, 20, 10, 0, 0), 0.285714, 1);
+        test(NumVar.wrap(1, 1, 0, 1), NumVar.wrap(0.86, 0.26, 0.52, 0.32), -0.041666, -0.333333);
     }
 
-    private void test(NumericVar x, NumericVar y, double g1, double g2) {
+    private void test(NumVar x, NumVar y, double g1, double g2) {
         Gini ng = Gini.from(x, y);
         assertEquals(g1, ng.gini(), TOL);
         assertEquals(g2, ng.normalizedGini(), TOL);
@@ -82,21 +81,21 @@ public class GiniTest {
     @Test
     public void weightedGiniTest() {
         Gini gini = Gini.from(
-                NumericVar.wrap(0, 0, 1, 0, 1),
-                NumericVar.wrap(0.1, 0.4, 0.3, 1.2, 0.0),
-                NumericVar.wrap(1, 2, 5, 4, 3)
+                NumVar.wrap(0, 0, 1, 0, 1),
+                NumVar.wrap(0.1, 0.4, 0.3, 1.2, 0.0),
+                NumVar.wrap(1, 2, 5, 4, 3)
         );
         assertEquals(-0.821428571428572, gini.normalizedGini(), TOL);
 
         RandomSource.setSeed(1234);
-        NumericVar x = Normal.std().sample(100);
-        NumericVar y = Normal.std().sample(100);
+        NumVar x = Normal.std().sample(100);
+        NumVar y = Normal.std().sample(100);
 
         /*
         This does not work, and I do not understand why.
          */
         /*
-        Gini gini1 = Gini.from(x, y, NumericVar.fill(x.rowCount(), 1));
+        Gini gini1 = Gini.from(x, y, NumVar.fill(x.rowCount(), 1));
         Gini gini2 = Gini.from(x, y);
 
         assertEquals(gini1.gini(), gini2.gini(), TOL);

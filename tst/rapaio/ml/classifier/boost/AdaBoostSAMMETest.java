@@ -27,7 +27,7 @@ package rapaio.ml.classifier.boost;
 import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
@@ -56,9 +56,9 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
-        NumericVar runs = NumericVar.empty().withName("runs");
-        NumericVar errTr = NumericVar.empty().withName("tr");
-        NumericVar errTe = NumericVar.empty().withName("te");
+        NumVar runs = NumVar.empty().withName("runs");
+        NumVar errTr = NumVar.empty().withName("tr");
+        NumVar errTe = NumVar.empty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addValue(run);

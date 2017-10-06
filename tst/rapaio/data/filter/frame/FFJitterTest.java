@@ -38,10 +38,10 @@ public class FFJitterTest {
     public void testSmoke() {
 
         Frame a = SolidFrame.byVars(
-                NumericVar.fill(100, 0).withName("num1"),
-                NumericVar.fill(100, 0).withName("num2"),
+                NumVar.fill(100, 0).withName("num1"),
+                NumVar.fill(100, 0).withName("num2"),
                 BinaryVar.fill(100, true).withName("bin"),
-                NominalVar.from(100, r -> String.valueOf(r % 10)).withName("nom")
+                NomVar.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
         Frame df1 = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).fitApply(a.solidCopy());

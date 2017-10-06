@@ -233,8 +233,8 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                NumericVar.empty(eigenValues.count()).withName("values"),
-                NumericVar.empty(eigenValues.count()).withName("percent")
+                NumVar.empty(eigenValues.count()).withName("values"),
+                NumVar.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {

@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.NominalVar;
+import rapaio.data.NomVar;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 
@@ -78,7 +78,7 @@ public class ROCTest {
         Assert.assertEquals(0.3, roc.data().value(midRow, ROC.fpr), 1e-20);
         Assert.assertEquals(0.94, roc.data().value(midRow, ROC.tpr), 1e-20);
 
-        NominalVar pred = NominalVar.from(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
+        NomVar pred = NomVar.from(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
         Assert.assertEquals("> ROC printSummary\n" +
                         "\n" +
                         "threshold , fpr       , tpr       , acc       \n" +

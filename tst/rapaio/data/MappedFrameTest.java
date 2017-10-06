@@ -53,8 +53,8 @@ public class MappedFrameTest {
     @Test
     public void testBuilders() {
         Frame df = SolidFrame.byVars(
-                NumericVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
-                IndexVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
+                NumVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
+                IdxVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
 
         Frame mapped = MappedFrame.byRow(df, 0, 2, 4, 6, 8);
@@ -76,9 +76,9 @@ public class MappedFrameTest {
     public void testMapAndBound() {
         final int N = 10;
 
-        Var x = NumericVar.from(N, row -> row * 1.0).withName("x");
-        Var y = IndexVar.from(N, row -> row * 2).withName("y");
-        Var z = NumericVar.from(N, row -> 1.0 / row).withName("z");
+        Var x = NumVar.from(N, row -> row * 1.0).withName("x");
+        Var y = IdxVar.from(N, row -> row * 2).withName("y");
+        Var z = NumVar.from(N, row -> 1.0 / row).withName("z");
         Frame df1 = SolidFrame.byVars(x, y, z);
 
         Frame a = df1
@@ -143,6 +143,6 @@ public class MappedFrameTest {
         assertEquals(1.0 / 3, df3.value(0, 0), TOL);
         assertEquals(1.0 / 7, df3.value(1, 0), TOL);
 
-        assertTrue(NumericVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.var(0)));
+        assertTrue(NumVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.var(0)));
     }
 }

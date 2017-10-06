@@ -56,19 +56,19 @@ abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                NominalVar nom = NominalVar.empty(rowCount(), levels()).withName(name());
+                NomVar nom = NomVar.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     nom.setLabel(i, label(i));
                 }
                 return nom;
             case ORDINAL:
-                OrdinalVar ord = OrdinalVar.empty(rowCount(), levels()).withName(name());
+                OrdVar ord = OrdVar.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     ord.setLabel(i, label(i));
                 }
                 return ord;
             case INDEX:
-                IndexVar idx = IndexVar.empty(rowCount()).withName(name());
+                IdxVar idx = IdxVar.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     idx.setIndex(i, index(i));
                 }
@@ -80,7 +80,7 @@ abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                NumericVar num = NumericVar.empty(rowCount()).withName(name());
+                NumVar num = NumVar.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setValue(i, value(i));
                 }

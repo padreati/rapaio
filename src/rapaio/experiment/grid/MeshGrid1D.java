@@ -26,7 +26,7 @@
 package rapaio.experiment.grid;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -42,14 +42,14 @@ public class MeshGrid1D implements Serializable {
     final Var y;
     final int len;
 
-    NumericVar grid;
+    NumVar grid;
 
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
         this.y = y;
         this.len = y.rowCount();
 
-        this.grid = NumericVar.empty(x.rowCount() * y.rowCount());
+        this.grid = NumVar.empty(x.rowCount() * y.rowCount());
     }
 
     public Var getX() {

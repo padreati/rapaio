@@ -25,7 +25,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -72,8 +72,8 @@ public class IRLSOptimizer {
      * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    public NumericVar optimize(double eps, int iterationLimit, Function<Var, Double> f,
-                               Function<Var, Double> fd, NumericVar vars, List<Var> inputs, NumericVar outputs) {
+    public NumVar optimize(double eps, int iterationLimit, Function<Var, Double> f,
+                           Function<Var, Double> fd, NumVar vars, List<Var> inputs, NumVar outputs) {
 
         hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
         coef = SolidRM.empty(inputs.size(), vars.rowCount());
@@ -96,7 +96,7 @@ public class IRLSOptimizer {
         return vars;
     }
 
-    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, NumericVar vars, List<Var> inputs, NumericVar outputs) {
+    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, NumVar vars, List<Var> inputs, NumVar outputs) {
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             double y = f.apply(x_i);

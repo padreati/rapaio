@@ -47,9 +47,9 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Frame df = SolidFrame.byVars(
-                NumericVar.empty().withName("x"),
-                NumericVar.empty().withName("y"),
-                NumericVar.empty().withName("z"));
+                NumVar.empty().withName("x"),
+                NumVar.empty().withName("y"),
+                NumVar.empty().withName("z"));
 
         assertEquals(3, df.varCount());
         assertEquals("x", df.varNames()[0]);
@@ -83,10 +83,10 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         List<Var> vars = new ArrayList<>();
-        vars.add(NumericVar.copy(1., 2., 3., 4.).withName("x"));
-        vars.add(NumericVar.copy(3., 5., 9., 12.).withName("y"));
-        vars.add(NominalVar.empty(4, "ana", "are", "mere").withName("name"));
-        vars.add(IndexVar.seq(1, 4).withName("index"));
+        vars.add(NumVar.copy(1., 2., 3., 4.).withName("x"));
+        vars.add(NumVar.copy(3., 5., 9., 12.).withName("y"));
+        vars.add(NomVar.empty(4, "ana", "are", "mere").withName("name"));
+        vars.add(IdxVar.seq(1, 4).withName("index"));
         Frame df = SolidFrame.byVars(vars);
 
         assertEquals(1., df.value(0, 0), 1e-10);
@@ -124,8 +124,8 @@ public class SolidFrameTest {
 
     @Test
     public void testBuilders() {
-        Var x = NumericVar.wrap(1, 2, 3, 4).withName("x");
-        Var y = NominalVar.copy("a", "c", "b", "a").withName("y");
+        Var x = NumVar.wrap(1, 2, 3, 4).withName("x");
+        Var y = NomVar.copy("a", "c", "b", "a").withName("y");
 
         Frame df1 = SolidFrame.byVars(x, y);
 
@@ -163,8 +163,8 @@ public class SolidFrameTest {
         }
 
         df2 = SolidFrame.byVars(y).bindVars(
-                SolidFrame.byVars(NumericVar.wrap(1, 2).withName("x"))
-                        .bindRows(SolidFrame.byVars(NumericVar.wrap(3, 4).withName("x")))
+                SolidFrame.byVars(NumVar.wrap(1, 2).withName("x"))
+                        .bindRows(SolidFrame.byVars(NumVar.wrap(3, 4).withName("x")))
         );
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
@@ -175,8 +175,8 @@ public class SolidFrameTest {
 
         try {
             SolidFrame.byVars(
-                    NumericVar.wrap(1, 2).withName("x"),
-                    BoundVar.from(NumericVar.wrap(3, 4).withName("y"))
+                    NumVar.wrap(1, 2).withName("x"),
+                    BoundVar.from(NumVar.wrap(3, 4).withName("y"))
             );
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {

@@ -26,7 +26,7 @@ package rapaio.data.sample;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.IndexVar;
+import rapaio.data.IdxVar;
 import rapaio.data.SolidFrame;
 import rapaio.ml.common.VarSelector;
 
@@ -42,15 +42,15 @@ public class UniformRandomSelectorTest {
     public void testNaive() {
         Frame df = SolidFrame.byVars(
                 0,
-                IndexVar.scalar(1).withName("a"),
-                IndexVar.scalar(1).withName("b"),
-                IndexVar.scalar(1).withName("c"),
-                IndexVar.scalar(1).withName("d"),
-                IndexVar.scalar(1).withName("e"),
-                IndexVar.scalar(1).withName("f"),
-                IndexVar.scalar(1).withName("g"),
-                IndexVar.scalar(1).withName("h"),
-                IndexVar.scalar(1).withName("class"));
+                IdxVar.scalar(1).withName("a"),
+                IdxVar.scalar(1).withName("b"),
+                IdxVar.scalar(1).withName("c"),
+                IdxVar.scalar(1).withName("d"),
+                IdxVar.scalar(1).withName("e"),
+                IdxVar.scalar(1).withName("f"),
+                IdxVar.scalar(1).withName("g"),
+                IdxVar.scalar(1).withName("h"),
+                IdxVar.scalar(1).withName("class"));
         String classColName = "class";
         int mcols = 4;
 

@@ -37,7 +37,7 @@ public class AbstractVarTest {
     @Test
     public void solidNumericCopyTest() {
 
-        Var main = NumericVar.copy(1, 3, 5, 8, 9);
+        Var main = NumVar.copy(1, 3, 5, 8, 9);
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
 
         assertEquals(main.rowCount(), copy.rowCount());
@@ -50,7 +50,7 @@ public class AbstractVarTest {
 
     @Test
     public void solidNominalCopyTest() {
-        Var main = NominalVar.empty();
+        Var main = NomVar.empty();
         main.addLabel("x");
         main.addLabel("y");
         main.addLabel("x");
@@ -64,7 +64,7 @@ public class AbstractVarTest {
 
     @Test
     public void solidOrdinalCopyTest() {
-        Var main = OrdinalVar.empty();
+        Var main = OrdVar.empty();
         main.addLabel("x");
         main.addLabel("y");
         main.addLabel("x");
@@ -78,7 +78,7 @@ public class AbstractVarTest {
 
     @Test
     public void solidIndexCopyTest() {
-        Var main = IndexVar.wrap(1, 2, 3, 4, 5);
+        Var main = IdxVar.wrap(1, 2, 3, 4, 5);
         main.addMissing();
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
         assertEquals(main.rowCount(), copy.rowCount());
@@ -111,9 +111,9 @@ public class AbstractVarTest {
 
     @Test
     public void testBoundVar() {
-        NumericVar a = NumericVar.wrap(1, 2, 3);
-        NumericVar b = NumericVar.wrap(4, 5, 6);
-        NumericVar c = NumericVar.wrap(7, 8, 9, 10);
+        NumVar a = NumVar.wrap(1, 2, 3);
+        NumVar b = NumVar.wrap(4, 5, 6);
+        NumVar c = NumVar.wrap(7, 8, 9, 10);
 
         Var d = a.bindRows(b);
         d = d.bindRows(c);

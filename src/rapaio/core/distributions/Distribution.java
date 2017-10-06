@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@
 package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 
 import java.io.Serializable;
 
@@ -118,8 +119,8 @@ public interface Distribution extends Serializable {
      * @param n number of elements in sample
      * @return sample values
      */
-    default NumericVar sample(final int n) {
-        return NumericVar.from(n, i -> sampleNext());
+    default NumVar sample(final int n) {
+        return NumVar.from(n, i -> sampleNext());
     }
 
     /**

@@ -25,7 +25,7 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.NominalVar;
+import rapaio.data.NomVar;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFToNumeric;
 
@@ -47,7 +47,7 @@ public class FFilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
-        Var v = NominalVar.empty(10, dict);
+        Var v = NomVar.empty(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
@@ -70,7 +70,7 @@ public class FFilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Var filtered = NominalVar.empty(1, "abc");
+        Var filtered = NomVar.empty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = VFToNumeric.byDefault().fitApply(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);

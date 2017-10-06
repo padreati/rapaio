@@ -1,8 +1,7 @@
 package rapaio.core.tests;
 
-import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +14,7 @@ public class ADTestGoodnessTest {
 
     @Test
     public void basicTest() {
-        NumericVar x = NumericVar.wrap(6.0747159,  -8.9637424,  -1.1363964,   1.5831864,  -3.4660379,   2.6695147,   3.0571496,   0.8348192, -11.3294910,  13.8572907);
+        NumVar x = NumVar.wrap(6.0747159,  -8.9637424,  -1.1363964,   1.5831864,  -3.4660379,   2.6695147,   3.0571496,   0.8348192, -11.3294910,  13.8572907);
         x.printLines();
 
         ADTestGoodness test = ADTestGoodness.from(x, 1, 5);

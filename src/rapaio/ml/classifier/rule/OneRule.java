@@ -184,7 +184,7 @@ public class OneRule extends AbstractClassifier {
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
         Var sort = new VFRefSort(RowComparators.numeric(df.var(testCol), true),
-                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(IndexVar.seq(weights.rowCount()));
+                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(IdxVar.seq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.isMissing(sort.index(pos), testCol)) {

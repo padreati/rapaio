@@ -37,12 +37,12 @@ public class NominalTest {
 
     @Test
     public void testSmoke() {
-        Var v = NominalVar.empty(0);
+        Var v = NomVar.empty(0);
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().length);
         assertEquals("?", v.levels()[0]);
 
-        v = NominalVar.empty();
+        v = NomVar.empty();
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().length);
         assertEquals("?", v.levels()[0]);
@@ -50,16 +50,16 @@ public class NominalTest {
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
 
-        v = NominalVar.empty(1, "a");
+        v = NomVar.empty(1, "a");
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
 
-        assertEquals("Nominal[name:?, rowCount:10]", NominalVar.empty(10).toString());
+        assertEquals("Nominal[name:?, rowCount:10]", NomVar.empty(10).toString());
     }
 
     @Test
     public void testDictionary() {
-        Var v = NominalVar.empty(0, "a", "a", "v", "a");
+        Var v = NomVar.empty(0, "a", "a", "v", "a");
         assertEquals(3, v.levels().length);
         assertEquals("?", v.levels()[0]);
         assertEquals("a", v.levels()[1]);
@@ -70,7 +70,7 @@ public class NominalTest {
         set.add("v");
         set.add("a");
 
-        v = NominalVar.empty(0, set);
+        v = NomVar.empty(0, set);
         assertEquals(3, v.levels().length);
         assertEquals("?", v.levels()[0]);
         assertEquals("a", v.levels()[1]);
@@ -79,7 +79,7 @@ public class NominalTest {
 
     @Test
     public void testSetterGetter() {
-        Var v = NominalVar.empty(4, "a", "b", "c");
+        Var v = NomVar.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
             assertEquals(0, v.index(i));
@@ -132,7 +132,7 @@ public class NominalTest {
 
     @Test
     public void testLabel() {
-        Var v = NominalVar.empty(1, "a", "b", "c");
+        Var v = NomVar.empty(1, "a", "b", "c");
 
         boolean exceptional = false;
         try {
@@ -161,7 +161,7 @@ public class NominalTest {
 
     @Test
     public void testMissing() {
-        Var v = NominalVar.empty(1, "a", "b");
+        Var v = NomVar.empty(1, "a", "b");
         assertTrue(v.isMissing(0));
 
         v.setLabel(0, "a");
@@ -176,11 +176,11 @@ public class NominalTest {
 
     @Test
     public void testCopy() {
-        NominalVar a = NominalVar.empty(0, "x", "y");
+        NomVar a = NomVar.empty(0, "x", "y");
         a.addLabel("x");
         a.addLabel("y");
 
-        NominalVar b = a.solidCopy();
+        NomVar b = a.solidCopy();
 
         a.addLabel("z");
 
@@ -190,7 +190,7 @@ public class NominalTest {
 
     @Test
     public void testFactorBaseAddRemove() {
-        NominalVar var = NominalVar.empty(0, "x", "y");
+        NomVar var = NomVar.empty(0, "x", "y");
 
         var.addMissing();
         assertEquals(1, var.rowCount());
@@ -203,7 +203,7 @@ public class NominalTest {
         assertEquals(3, var.rowCount());
         assertEquals("y", var.label(2));
 
-        var = NominalVar.empty();
+        var = NomVar.empty();
         var.addLabel("x");
         var.addLabel("y");
         var.remove(0);
@@ -219,37 +219,37 @@ public class NominalTest {
     public void testFactorBaseBinaryStamp() {
 
         try {
-            NominalVar.empty(1, "x").binary(0);
+            NomVar.empty(1, "x").binary(0);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
 
         try {
-            NominalVar.empty().addBinary(true);
+            NomVar.empty().addBinary(true);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
 
         try {
-            NominalVar.empty(1, "x").setBinary(0, true);
+            NomVar.empty(1, "x").setBinary(0, true);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
 
         try {
-            NominalVar.empty(1, "x").stamp(0);
+            NomVar.empty(1, "x").stamp(0);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
 
         try {
-            NominalVar.empty().addStamp(1);
+            NomVar.empty().addStamp(1);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
 
         try {
-            NominalVar.empty(1, "x").setStamp(0, 1);
+            NomVar.empty(1, "x").setStamp(0, 1);
             assertTrue(false);
         } catch (Throwable ignored) {
         }
@@ -257,7 +257,7 @@ public class NominalTest {
 
     @Test
     public void testJoinTermsDictionary() {
-        NominalVar x = NominalVar.empty(0, "a", "b", "c");
+        NomVar x = NomVar.empty(0, "a", "b", "c");
         x.addLabel("a");
         x.addLabel("b");
         x.addLabel("a");
@@ -277,7 +277,7 @@ public class NominalTest {
 
     @Test
     public void testAddTermsDictionary() {
-        NominalVar x = NominalVar.empty(0, "a", "b", "c");
+        NomVar x = NomVar.empty(0, "a", "b", "c");
         x.addLabel("a");
         x.addLabel("b");
         x.addLabel("a");
@@ -295,7 +295,7 @@ public class NominalTest {
         assertEquals("z", x.label(3));
 
         try {
-            NominalVar y = NominalVar.empty(0, "a", "b");
+            NomVar y = NomVar.empty(0, "a", "b");
             y.setLevels("x");
             assertTrue(false);
         } catch (Throwable ignored) {

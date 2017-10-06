@@ -26,7 +26,7 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.StudentT;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 import static rapaio.core.CoreTools.mean;
@@ -89,7 +89,7 @@ public class TTestTwoPaired implements HTest {
         this.sl = sl;
         this.alt = alt;
 
-        complete = NumericVar.empty();
+        complete = NumVar.empty();
 
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))

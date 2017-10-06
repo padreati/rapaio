@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.NumericVar;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -91,8 +91,8 @@ public class FFTTest {
          * 4.01805098805014E-17i
          ***************************************************************************/
 
-        NumericVar xre = NumericVar.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
-        NumericVar xim = NumericVar.copy(0, 0, 0, 0);
+        NumVar xre = NumVar.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
+        NumVar xim = NumVar.copy(0, 0, 0, 0);
 
         int len = 10;
 
@@ -123,8 +123,8 @@ public class FFTTest {
 
         for (int i = 0; i < 10; i++) {
 
-            NumericVar x1 = NumericVar.from(N, normal::sampleNext);
-            NumericVar x2 = NumericVar.from(N, normal::sampleNext);
+            NumVar x1 = NumVar.from(N, normal::sampleNext);
+            NumVar x2 = NumVar.from(N, normal::sampleNext);
 
             Pair<Var, Var> y = FFT.ifft(FFT.fft(Pair.from(x1, x2)));
 
