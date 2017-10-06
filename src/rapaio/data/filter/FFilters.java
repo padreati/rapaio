@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,27 +23,20 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.data.filter;
 
-import org.junit.Test;
-import rapaio.data.NumericVar;
-import rapaio.experiment.ml.eval.NormalizedGini;
+import rapaio.data.Frame;
+import rapaio.data.filter.frame.FFRefSort;
+
+import java.util.Comparator;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
  */
-public class NormalizedGiniTest {
+public class FFilters {
 
-    @Test
-    public void testSmoke() {
-
-        NumericVar x = NumericVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        NumericVar y = NumericVar.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
-
-        double eval = new NormalizedGini(x, y).getValue();
-        System.out.println(eval);
-
-        System.out.println(new NormalizedGini(x, x).getValue());
-        System.out.println(new NormalizedGini(y, x).getValue());
+    public static Frame refSort(Frame df, Comparator<Integer> comp) {
+        return new FFRefSort(comp).fitApply(df);
     }
+
 }

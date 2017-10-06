@@ -32,6 +32,12 @@ If there are no notes it means the feature is considered to be fully implemented
 * Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance, Quantiles
 * Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
 
+**Core tools**
+
+* DVector
+* DTable
+* Distance Matrix
+
 **Correlations**
 
 * Pearson product-moment coefficient
@@ -105,6 +111,14 @@ If there are no notes it means the feature is considered to be fully implemented
 * VFUpdateLabel - updates a variable using a lambda on label value
 * VFUpdateValue - updates a variable using a lambda on double value
 
+**Evaluation**
+
+* Confusion Matrix
+* Receiver Operator Characteristic - ROC curves and ROC Area
+* Root Mean Square Error
+* Mean Absolute Error
+* Gini / Normalized Gini
+
 **Analysis**
 
 * Fast Fourier Transform
@@ -171,14 +185,6 @@ If there are no notes it means the feature is considered to be fully implemented
 
 Experminental Stage Features
 ============================
-
-**Core Statistics**
-
-* Root Mean Squared Error
-* Median Absolute Error
-* Receiver Operator Characteristic - ROC curves and ROC Area
-* Confusion Matrix
-* Distance Matrix
 
 **Classification**
 

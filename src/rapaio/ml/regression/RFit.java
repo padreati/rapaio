@@ -144,12 +144,36 @@ public class RFit implements Printable {
         return fit.get(targetVar);
     }
 
-    public double getFirstRSquare() {
-        return getRSquare(firstTargetName());
+    public double firstRSquare() {
+        return rSquare(firstTargetName());
     }
 
-    public double getRSquare(String targetVar) {
+    public double rSquare(String targetVar) {
         return rsquare.get(targetVar);
+    }
+
+    public double firstTss() {
+        return tss(firstTargetName());
+    }
+
+    public double tss(String targetVar) {
+        return tss.get(targetVar);
+    }
+
+    public double firstEss() {
+        return ess(firstTargetName());
+    }
+
+    public double ess(String targetVar) {
+        return ess.get(targetVar);
+    }
+
+    public double firstRss() {
+        return rss(firstTargetName());
+    }
+
+    public double rss(String targetVar) {
+        return rss.get(targetVar);
     }
 
     public Map<String, NumericVar> residualsMap() {

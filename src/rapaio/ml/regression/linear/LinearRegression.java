@@ -28,6 +28,7 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.RM;
@@ -42,6 +43,10 @@ import rapaio.sys.WS;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class LinearRegression extends AbstractRegression {
+
+    public static LinearRegression newLm() {
+        return new LinearRegression();
+    }
 
     private static final long serialVersionUID = 8610329390138787530L;
 
@@ -65,6 +70,11 @@ public class LinearRegression extends AbstractRegression {
     }
 
     @Override
+    public LinearRegression withInputFilters(FFilter... filters) {
+        return (LinearRegression) super.withInputFilters(filters);
+    }
+
+    @Override
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
@@ -79,11 +89,11 @@ public class LinearRegression extends AbstractRegression {
         return beta.mapCol(0);
     }
 
-    public RV getCoefficients(int targetIndex) {
+    public RV coefficients(int targetIndex) {
         return beta.mapCol(targetIndex);
     }
 
-    public RM getAllCoefficients() {
+    public RM allCoefficients() {
         return beta;
     }
 

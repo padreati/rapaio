@@ -29,9 +29,8 @@ import rapaio.data.NominalVar;
 import rapaio.data.Var;
 
 /**
- * @author tutuianu
+ * @author  <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ConfusionTest {
 
     @Test

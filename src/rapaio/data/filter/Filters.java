@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -60,10 +61,6 @@ public class Filters {
      */
     public static Var jitter(Var x, Distribution d) {
         return new VFJitter(d).fitApply(x);
-    }
-
-    public static Frame refSort(Frame df, Comparator<Integer> comp) {
-        return new FFRefSort(comp).fitApply(df);
     }
 
     /**

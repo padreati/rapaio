@@ -71,8 +71,5 @@ public class PacfTest {
         for (int i = 0; i < pacf3.values().rowCount(); i++) {
             assertEquals("err at i=" + i , ref3.value(i), pacf3.values().value(i), TOL);
         }
-
-        WS.setPrinter(new IdeaPrinter());
-        WS.draw(dvLines(pacf3.values()).yLim(-1, 1));
     }
 }

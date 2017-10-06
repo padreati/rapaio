@@ -39,6 +39,10 @@ import java.util.List;
  */
 public class VFRefSort extends AbstractVF {
 
+    public static VFRefSort filter(Comparator<Integer>... rowComparators) {
+        return new VFRefSort(rowComparators);
+    }
+
     private static final long serialVersionUID = -1075060445963356550L;
     private final Comparator<Integer> aggregateComparator;
 

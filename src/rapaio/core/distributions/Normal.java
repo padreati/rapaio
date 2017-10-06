@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,6 +31,14 @@ import static rapaio.sys.WS.formatFlex;
  * @author <a href="mailto:padreatiyahoo.com">Aurelian Tutuianu</a>
  */
 public class Normal implements Distribution {
+
+    public static Normal std() {
+        return new Normal();
+    }
+
+    public static Normal from(double mean, double sd) {
+        return new Normal(mean, sd);
+    }
 
     private static final long serialVersionUID = 3618971055326379083L;
     private final double mu;

@@ -89,8 +89,5 @@ public class AcfTest {
         for (int i = 0; i < acf3.correlation().rowCount(); i++) {
             assertEquals(cov3.value(i), acf3.covariance().value(i), TOL);
         }
-
-        WS.setPrinter(new IdeaPrinter());
-        WS.draw(dvLines(acf3.covariance()));
     }
 }

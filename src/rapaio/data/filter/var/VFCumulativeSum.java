@@ -32,6 +32,10 @@ import rapaio.data.Var;
  */
 public class VFCumulativeSum extends AbstractVF {
 
+    public static VFCumulativeSum filter() {
+        return new VFCumulativeSum();
+    }
+
     private static final long serialVersionUID = -4903712768679690937L;
 
     @Override
@@ -42,7 +46,7 @@ public class VFCumulativeSum extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         for (int i = 1; i < vars[0].rowCount(); i++) {
-            vars[0].setValue(i, vars[0].value(i - 1));
+            vars[0].setValue(i, vars[0].value(i - 1) + vars[0].value(i));
         }
         return vars[0];
     }

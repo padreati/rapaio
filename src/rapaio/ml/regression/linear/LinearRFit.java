@@ -63,7 +63,7 @@ public class LinearRFit extends RFit {
         return beta_std_error;
     }
 
-    public RM getVetaTValue() {
+    public RM getBetaTValue() {
         return beta_t_value;
     }
 
@@ -84,7 +84,7 @@ public class LinearRFit extends RFit {
         String[] inputs = lm.inputNames();
         String[] targets = lm.targetNames();
 
-        beta_hat = lm.getAllCoefficients().solidCopy();
+        beta_hat = lm.allCoefficients().solidCopy();
         beta_std_error = SolidRM.empty(inputs.length, targets.length);
         beta_t_value = SolidRM.empty(inputs.length, targets.length);
         beta_p_value = SolidRM.empty(inputs.length, targets.length);
@@ -143,7 +143,7 @@ public class LinearRFit extends RFit {
 
             if (!withResiduals) {
                 sb.append("> Coefficients: \n");
-                RV coeff = lm.getCoefficients(i);
+                RV coeff = lm.coefficients(i);
 
                 TextTable tt = TextTable
                         .newEmpty(coeff.count() + 1, 2)
@@ -161,7 +161,7 @@ public class LinearRFit extends RFit {
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
-                RV coeff = lm.getCoefficients(i);
+                RV coeff = lm.coefficients(i);
                 double rsa = (rs * (res.rowCount() - 1) - coeff.count() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;

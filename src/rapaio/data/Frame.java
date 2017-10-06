@@ -83,6 +83,13 @@ public interface Frame extends Serializable, Printable {
     String[] varNames();
 
     /**
+     * Returns the name of a variable for a given index.
+     */
+    default String varName(int i) {
+        return varNames()[i];
+    }
+
+    /**
      * Returns the index (position) of the var inside the frame given the var name as parameter.
      *
      * @param name var name
