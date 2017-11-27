@@ -196,18 +196,18 @@ public class RFit implements Printable {
         if (withResiduals) {
             for (String target : targetNames()) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(target).setValue(i, df.var(target).value(i) - fit(target).value(i));
+                    residuals.get(target).setValue(i, df.rvar(target).value(i) - fit(target).value(i));
                 }
 
-                double mu = CoreTools.mean(df.var(target)).value();
+                double mu = CoreTools.mean(df.rvar(target)).value();
                 double tssValue = 0;
                 double essValue = 0;
                 double rssValue = 0;
 
                 for (int i = 0; i < df.rowCount(); i++) {
-                    tssValue += Math.pow(df.var(target).value(i) - mu, 2);
+                    tssValue += Math.pow(df.rvar(target).value(i) - mu, 2);
                     essValue += Math.pow(fit(target).value(i) - mu, 2);
-                    rssValue += Math.pow(df.var(target).value(i) - fit(target).value(i), 2);
+                    rssValue += Math.pow(df.rvar(target).value(i) - fit(target).value(i), 2);
                 }
 
                 tss.put(target, tssValue);

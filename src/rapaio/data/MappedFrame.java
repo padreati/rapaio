@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A frame which is build on the base of another frame with
@@ -90,7 +91,7 @@ public class MappedFrame extends AbstractFrame {
         }
         this.colReverse = new HashMap<>();
         this.colIndexes = new int[columns.size()];
-        for(int i=0; i< names.length; i++) {
+        for (int i = 0; i < names.length; i++) {
             colIndexes[i] = source.varIndex(names[i]);
             colReverse.put(names[i], i);
         }
@@ -120,6 +121,11 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
+    public String varName(int i) {
+        return names[i];
+    }
+
+    @Override
     public int varIndex(String name) {
         if (!colReverse.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
@@ -127,14 +133,23 @@ public class MappedFrame extends AbstractFrame {
         return colReverse.get(name);
     }
 
+    private ConcurrentHashMap<String, Var> mappedVarCache = new ConcurrentHashMap<>();
+
     @Override
-    public Var var(int varIndex) {
-        return MappedVar.byRows(this.source.var(names[varIndex]), this.mapping).withName(names[varIndex]);
+    public Var rvar(int varIndex) {
+        Var var = this.source.rvar(names[varIndex]);
+        if (var == null) {
+            throw new IllegalArgumentException("Variable with index " + varIndex + " does not exists in parent frame");
+        }
+        if(!mappedVarCache.containsKey(names[varIndex])) {
+            mappedVarCache.put(names[varIndex], MappedVar.byRows(var, this.mapping).withName(names[varIndex]));
+        }
+        return mappedVarCache.get(names[varIndex]);
     }
 
     @Override
-    public Var var(String varName) {
-        return var(varIndex(varName));
+    public Var rvar(String varName) {
+        return rvar(varIndex(varName));
     }
 
     @Override
@@ -225,6 +240,16 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public void setLabel(int row, String varName, String value) {
         source.setLabel(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public String[] levels(String varName) {
+        return source.levels(varName);
+    }
+
+    @Override
+    public String[] completeLevels(String varName) {
+        return source.completeLevels(varName);
     }
 
     @Override

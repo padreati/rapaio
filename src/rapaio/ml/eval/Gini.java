@@ -32,33 +32,38 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFCumulativeSum;
 import rapaio.data.filter.var.VFRefSort;
+import rapaio.printer.Printable;
+import rapaio.sys.WS;
 
 import java.util.Comparator;
 
 /**
  * This evaluation tool computes Gini and Normalized Gini Coefficients
  * int the normal and weighted versions, depending if a weight is provided.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
-public class Gini {
+public class Gini implements Printable {
 
-    public static Gini from(Var x, Var y) {
-        return new Gini(x, y, null);
+    public static Gini from(Var actual, Var fit) {
+        return new Gini(actual, fit, null);
     }
 
-    public static Gini from(Var x, Var y, Var w) {
-        return new Gini(x, y, w);
+    public static Gini from(Var actual, Var fit, Var w) {
+        return new Gini(actual, fit, w);
     }
 
     private final double gini;
     private final double normalizedGini;
+    private final boolean weighted;
 
     private Gini(Var actual, Var fit, Var weights) {
         if (weights == null) {
+            weighted = false;
             gini = gini(actual, fit);
             normalizedGini = gini / gini(actual, actual);
         } else {
+            weighted = true;
             gini = wgini(actual, fit, weights);
             normalizedGini = gini / wgini(actual, actual, weights);
         }
@@ -107,5 +112,18 @@ public class Gini {
 
     public double normalizedGini() {
         return normalizedGini;
+    }
+
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("> Gini" + (weighted ? " (Weighted):\n" : ":\n"));
+        sb.append("\n");
+        sb.append("gini coefficient: " + WS.formatFlex(gini) + "\n");
+        sb.append("normalized gini coefficient: " + WS.formatFlex(normalizedGini) + "\n");
+        sb.append("\n");
+
+        return sb.toString();
     }
 }

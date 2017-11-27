@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class XWilkinson {
 
-    public static final double DEEFAULT_EPS = 1e-40;
+    public static final double DEEFAULT_EPS = 1e-10;
 
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = w;

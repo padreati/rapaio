@@ -32,7 +32,8 @@ import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.ml.regression.boost.gbt.GBTRegressionLossHuber;
 import rapaio.ml.regression.simple.L2Regression;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
@@ -53,7 +54,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private static final long serialVersionUID = 4559540258922653130L;
 
     // parameters
-    private GBTLossFunction lossFunction = new GBTLossFunction.Huber();
+    private GBTRegressionLoss lossFunction = new GBTRegressionLossHuber();
 
     private Regression initRegression = L2Regression.create();
     private BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
@@ -104,7 +105,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
                 .withAllowMissingTargetValues(false);
     }
 
-    public GBTRegression withLossFunction(GBTLossFunction lossFunction) {
+    public GBTRegression withLossFunction(GBTRegressionLoss lossFunction) {
         this.lossFunction = lossFunction;
         return this;
     }
@@ -137,7 +138,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
         trees = new ArrayList<>();
 
-        Var y = df.var(firstTargetName());
+        Var y = df.rvar(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.train(df, weights, firstTargetName());
@@ -161,7 +162,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             // fit residuals
 
-            tree.boostFit(
+            tree.boostUpdate(
                     xmLearn,
                     MappedVar.byRows(y, samplerMapping),
                     MappedVar.byRows(fitValues, samplerMapping),

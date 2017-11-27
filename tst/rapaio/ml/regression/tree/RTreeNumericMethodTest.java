@@ -26,9 +26,16 @@ package rapaio.ml.regression.tree;
 
 import org.junit.Before;
 import org.junit.Test;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Uniform;
+import rapaio.core.stat.OnlineStat;
+import rapaio.core.stat.Sum;
+import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.datasets.Datasets;
 
 import java.util.Optional;
@@ -54,7 +61,7 @@ public class RTreeNumericMethodTest {
     @Test
     public void ignoreTest() {
         RTreeNumericMethod m = RTreeNumericMethod.IGNORE;
-        Optional<RTree.Candidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
+        Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
                 RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("IGNORE", m.name());
@@ -66,11 +73,30 @@ public class RTreeNumericMethodTest {
         RTreeNumericMethod m = RTreeNumericMethod.BINARY;
 
         assertEquals("BINARY", m.name());
-        Optional<RTree.Candidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
+
+        Var target = df.rvar(TARGET).fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var test = df.rvar(NUM_TEST).fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var weights = w.fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+
+        double variance = Variance.from(target).value();
+        for(int i=1; i<test.rowCount()-2; i++) {
+            double value = test.value(i);
+
+            Var left = target.stream().filter(s -> test.value(s.row()) <= value).toMappedVar();
+            Var right = target.stream().filter(s -> test.value(s.row()) > value).toMappedVar();
+
+            double varLeft = Variance.from(left).value();
+            double varRight = Variance.from(right).value();
+
+            System.out.println(value + "  => " + varLeft + " | " + varRight + "    -> "
+                    + (variance - varLeft*left.rowCount()/test.rowCount() - varRight*right.rowCount()/test.rowCount()));
+        }
+
+        Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
                 RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(c.isPresent());
-        assertEquals("Candidate{score=20.54116483516485, testName='temp', groupNames=[temp <= 69.000000, temp > 69.000000]}",
+        assertEquals("Candidate{score=24.765337043908488, testName='temp', groupNames=[temp <= 69.000000, temp > 69.000000]}",
                 c.get().toString());
     }
 }

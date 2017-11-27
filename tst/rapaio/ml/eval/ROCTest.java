@@ -47,8 +47,8 @@ public class ROCTest {
 
         Frame df = Datasets.loadIrisDataset();
 
-        Var score = df.var(0);
-        Var clazz = df.var("class");
+        Var score = df.rvar(0);
+        Var clazz = df.rvar("class");
 
         ROC roc = ROC.from(score, clazz, 3);
         Assert.assertEquals("> ROC printSummary\n" +

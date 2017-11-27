@@ -260,7 +260,7 @@ public class CForest extends AbstractClassifier {
         double totalOobError = 0;
         if (oobComp) {
             oobDensities = new HashMap<>();
-            oobTrueClass = df.var(firstTargetName()).solidCopy();
+            oobTrueClass = df.rvar(firstTargetName()).solidCopy();
             oobFit = NomVar.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.empty(false, firstTargetLevels()));
@@ -338,7 +338,7 @@ public class CForest extends AbstractClassifier {
         // build accuracy on oob data frame
         CFit fit = c.fit(oobFrame);
         double refScore = new Confusion(
-                oobFrame.var(firstTargetName()),
+                oobFrame.rvar(firstTargetName()),
                 fit.firstClasses())
                 .acceptedCases();
 
@@ -346,7 +346,7 @@ public class CForest extends AbstractClassifier {
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = Filters.shuffle(oobFrame.var(varName));
+            Var shuffled = Filters.shuffle(oobFrame.rvar(varName));
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(varName).bindVars(shuffled);
@@ -355,7 +355,7 @@ public class CForest extends AbstractClassifier {
 
             CFit pfit = c.fit(oobReduced);
             double acc = new Confusion(
-                    oobReduced.var(firstTargetName()),
+                    oobReduced.rvar(firstTargetName()),
                     pfit.firstClasses()
             ).acceptedCases();
 
@@ -498,13 +498,11 @@ public class CForest extends AbstractClassifier {
         sb.append("Capabilities:\n");
         sb.append(capabilities().summary()).append("\n");
 
-        sb.append("Learned model:\n");
-
         if (!hasLearned()) {
-            sb.append("Learning phase not called\n\n");
             return sb.toString();
         }
 
+        sb.append("Learned model:\n");
         sb.append(baseSummary());
 
         // stuff specific to rf

@@ -45,6 +45,15 @@ public class WeightedMeanTest {
 
         weights = NumVar.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
         assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
+
+        WeightedOnlineStat wos = WeightedOnlineStat.empty();
+        for (int i = 0; i < values.rowCount(); i++) {
+            wos.update(values.value(i), weights.value(i));
+        }
+
+        System.out.println(WeightedMean.from(values, weights).value());
+        System.out.println(wos.mean());
+
     }
 
     @Test

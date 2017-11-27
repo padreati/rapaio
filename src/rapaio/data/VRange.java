@@ -188,7 +188,7 @@ class VRangeByName implements VRange {
     @Override
     public List<String> parseInverseVarNames(Frame df) {
         Set<Integer> indexes = new HashSet<>(parseVarIndexes(df));
-        return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.var(i).name()).collect(Collectors.toList());
+        return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.rvar(i).name()).collect(Collectors.toList());
     }
 }
 
@@ -203,7 +203,7 @@ class VRangeByPredName implements VRange {
     @Override
     public List<Integer> parseVarIndexes(Frame df) {
         return IntStream.range(0, df.varCount())
-                .filter(i -> predicate.test(df.var(i).name()))
+                .filter(i -> predicate.test(df.rvar(i).name()))
                 .boxed()
                 .collect(Collectors.toList());
     }
@@ -234,7 +234,7 @@ class VRangeByPred implements VRange {
     @Override
     public List<Integer> parseVarIndexes(Frame df) {
         return IntStream.range(0, df.varCount())
-                .filter(i -> predicate.test(df.var(i)))
+                .filter(i -> predicate.test(df.rvar(i)))
                 .boxed()
                 .collect(Collectors.toList());
     }

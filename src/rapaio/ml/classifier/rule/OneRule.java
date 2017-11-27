@@ -91,7 +91,7 @@ public class OneRule extends AbstractClassifier {
         bestRuleSet = null;
         for (String testCol : inputNames()) {
             RuleSet ruleSet;
-            switch (df.var(testCol).type()) {
+            switch (df.rvar(testCol).type()) {
                 case BINARY:
                 case INDEX:
                 case NUMERIC:
@@ -135,13 +135,13 @@ public class OneRule extends AbstractClassifier {
             return Pair.from("?", DVector.empty(true, firstTargetLevels().length));
         }
         String testVar = bestRuleSet.getVarName();
-        switch (df.var(testVar).type()) {
+        switch (df.rvar(testVar).type()) {
             case BINARY:
             case INDEX:
             case NUMERIC:
             case ORDINAL:
             case STAMP:
-                boolean missing = df.var(testVar).isMissing(row);
+                boolean missing = df.rvar(testVar).isMissing(row);
                 double value = df.value(row, testVar);
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NumericRule numRule = (NumericRule) oneRule;
@@ -168,7 +168,7 @@ public class OneRule extends AbstractClassifier {
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVar);
 
-        String[] testDict = df.var(testVar).levels();
+        String[] testDict = df.rvar(testVar).levels();
         String[] targetDict = firstTargetLevels();
 
         DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.empty(false, targetDict)).toArray(DVector[]::new);
@@ -183,8 +183,8 @@ public class OneRule extends AbstractClassifier {
 
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = new VFRefSort(RowComparators.numeric(df.var(testCol), true),
-                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(IdxVar.seq(weights.rowCount()));
+        Var sort = new VFRefSort(RowComparators.numeric(df.rvar(testCol), true),
+                RowComparators.nominal(df.rvar(firstTargetName()), true)).fitApply(IdxVar.seq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.isMissing(sort.index(pos), testCol)) {

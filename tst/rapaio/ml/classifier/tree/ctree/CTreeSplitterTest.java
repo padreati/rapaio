@@ -31,7 +31,8 @@ import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.tree.CTreeCandidate;
-import rapaio.ml.classifier.tree.CTreeMissingHandler;
+import rapaio.ml.classifier.tree.CTreeSplitter;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
 import java.util.List;
@@ -43,7 +44,7 @@ import static org.junit.Assert.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
  */
-public class CTreeMissingHandlerTest {
+public class CTreeSplitterTest {
 
     private Frame df;
     private Var w;
@@ -53,15 +54,15 @@ public class CTreeMissingHandlerTest {
     public void setUp() throws Exception {
         NumVar values = NumVar.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.solidCopy().withName("x"));
-        w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? x : Math.abs(x)).toMappedVar().withName("w");
+        w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? 1 : Math.abs(x)).toMappedVar().withName("w");
         c = new CTreeCandidate(1, "test");
-        c.addGroup("> 0", s -> s.value("x") > 0);
-        c.addGroup("< 0", s -> s.value("x") < 0);
+        c.addGroup(RowPredicate.numGreater("x", 0));
+        c.addGroup(RowPredicate.numLess("x", 0));
     }
 
     @Test
     public void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.Ignored.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.Ignored.performSplit(df, w, c);
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
@@ -74,7 +75,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToMajority.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToMajority.performSplit(df, w, c);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -88,7 +89,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToAllWeighted.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToAllWeighted.performSplit(df, w, c);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -99,13 +100,13 @@ public class CTreeMissingHandlerTest {
         assertEquals(6, pairs._1.get(1).stream().filter(s -> s.isMissing() || s.value("x") < 0).count());
         assertEquals(6, pairs._2.get(1).stream().filter(s -> s.isMissing() || s.value() > 0).count());
 
-        assertEquals(1 + 2 + 3 + 4 + 3 * 4 / 7.0, pairs._2.get(0).stream().mapToDouble().sum(), 1e-20);
-        assertEquals(1 + 2 + 3 + 3 * 3 / 7.0, pairs._2.get(1).stream().mapToDouble().sum(), 1e-20);
+        assertEquals(1 + 2 + 3 + 4 + 3 * 10 / 16., pairs._2.get(0).stream().mapToDouble().sum(), 1e-20);
+        assertEquals(1 + 2 + 3 + 3 * 6 / 16., pairs._2.get(1).stream().mapToDouble().sum(), 1e-20);
     }
 
     @Test
     public void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToRandom.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c);
 
         df.printLines();
 

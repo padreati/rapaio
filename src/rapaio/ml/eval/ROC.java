@@ -182,7 +182,7 @@ public class ROC implements Printable, Serializable {
     }
 
     public int findRowForThreshold(double value) {
-        Var th = data.var(threshold);
+        Var th = data.rvar(threshold);
         for (int i = 0; i < th.rowCount(); i++) {
             if (th.value(i) <= value) {
                 return i;

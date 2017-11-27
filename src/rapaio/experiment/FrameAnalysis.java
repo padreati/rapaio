@@ -58,7 +58,7 @@ public class FrameAnalysis {
             h2.add(NumVar.empty().withName("h2_" + i));
         }
 
-        Var target = csv.withSkipCols(n -> n != targetIndex).read(file).var(0);
+        Var target = csv.withSkipCols(n -> n != targetIndex).read(file).rvar(0);
 
         while (start < varNames.length && start < maxVars) {
             int pos = start;

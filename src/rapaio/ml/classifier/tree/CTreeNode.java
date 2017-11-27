@@ -28,10 +28,9 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.stream.FSpot;
 import rapaio.ml.common.VarSelector;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
-import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,7 +49,7 @@ public class CTreeNode implements Serializable {
     private static final long serialVersionUID = -5045581827808911763L;
     private final CTreeNode parent;
     private final String groupName;
-    private final SPredicate<FSpot> predicate;
+    private final RowPredicate predicate;
     private final List<CTreeNode> children = new ArrayList<>();
     private int id;
     private boolean leaf = true;
@@ -60,7 +58,7 @@ public class CTreeNode implements Serializable {
     private int bestIndex;
     private CTreeCandidate bestCandidate;
 
-    public CTreeNode(final CTreeNode parent, final String groupName, final SPredicate<FSpot> predicate) {
+    public CTreeNode(final CTreeNode parent, final String groupName, final RowPredicate predicate) {
         this.parent = parent;
         this.groupName = groupName;
         this.predicate = predicate;
@@ -78,7 +76,7 @@ public class CTreeNode implements Serializable {
         return groupName;
     }
 
-    public Predicate<FSpot> getPredicate() {
+    public RowPredicate getPredicate() {
         return predicate;
     }
 
@@ -121,8 +119,8 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
-        density = DVector.fromWeights(false, df.var(tree.firstTargetName()), weights);
-        counter = DVector.fromCount(false, df.var(tree.firstTargetName()));
+        density = DVector.fromWeights(false, df.rvar(tree.firstTargetName()), weights);
+        counter = DVector.fromCount(false, df.rvar(tree.firstTargetName()));
         bestIndex = density.findBestIndex();
 
         if (df.rowCount() == 0) {
@@ -148,20 +146,19 @@ public class CTreeNode implements Serializable {
                     continue;
                 }
 
-                CTreePurityTest test = null;
+                CTreeTest test = null;
                 if (tree.customTestMap().containsKey(testCol)) {
                     test = tree.customTestMap().get(testCol);
                 }
-                if (tree.testMap().containsKey(df.var(testCol).type())) {
-                    test = tree.testMap().get(df.var(testCol).type());
+                if (tree.testMap().containsKey(df.rvar(testCol).type())) {
+                    test = tree.testMap().get(df.rvar(testCol).type());
                 }
                 if (test == null) {
                     throw new IllegalArgumentException("can't train ctree with no " +
-                            "tests for given variable: " + df.var(testCol).name() +
-                            " [" + df.var(testCol).type().name() + "]");
+                            "tests for given variable: " + df.rvar(testCol).name() +
+                            " [" + df.rvar(testCol).type().name() + "]");
                 }
-                CTreeCandidate candidate = test.computeCandidate(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
+                CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                 if (candidate != null) {
                     candidateList.add(candidate);
                     m--;
@@ -179,20 +176,19 @@ public class CTreeNode implements Serializable {
                         .mapToObj(i -> nextVarNames[i])
                         .filter(testCol -> !testCol.equals(tree.firstTargetName()))
                         .map(testCol -> {
-                            CTreePurityTest test = null;
+                            CTreeTest test = null;
                             if (tree.customTestMap().containsKey(testCol)) {
                                 test = tree.customTestMap().get(testCol);
                             }
-                            if (tree.testMap().containsKey(df.var(testCol).type())) {
-                                test = tree.testMap().get(df.var(testCol).type());
+                            if (tree.testMap().containsKey(df.rvar(testCol).type())) {
+                                test = tree.testMap().get(df.rvar(testCol).type());
                             }
                             if (test == null) {
                                 throw new IllegalArgumentException("can't train ctree with no " +
-                                        "tests for given variable: " + df.var(testCol).name() +
-                                        " [" + df.var(testCol).type().name() + "]");
+                                        "tests for given variable: " + df.rvar(testCol).name() +
+                                        " [" + df.rvar(testCol).type().name() + "]");
                             }
-                            CTreeCandidate candidate = test.computeCandidate(
-                                    tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
+                            CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                             if (candidate == null) {
                                 exhaustList.add(testCol);
                             }
@@ -206,7 +202,7 @@ public class CTreeNode implements Serializable {
             }
         }
         Collections.sort(candidateList);
-        if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
+        if (candidateList.isEmpty() || candidateList.get(0).getGroupPredicates().isEmpty()) {
             return;
         }
         // leave as leaf if the gain is not bigger than minimum gain
@@ -219,10 +215,10 @@ public class CTreeNode implements Serializable {
         String testName = bestCandidate.getTestName();
 
         // now that we have a best candidate, do the effective split
-        Pair<List<Frame>, List<Var>> frames = tree.getMissingHandler().performSplit(df, weights, bestCandidate);
+        Pair<List<Frame>, List<Var>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
 
-        for (int i = 0; i < bestCandidate.getGroupNames().size(); i++) {
-            CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+        for (RowPredicate predicate : bestCandidate.getGroupPredicates()) {
+            CTreeNode child = new CTreeNode(this, predicate.toString(), predicate);
             children.add(child);
         }
         tree.varSelector().removeVarNames(exhaustList);

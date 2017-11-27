@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,6 +24,8 @@
  */
 
 package rapaio.core.stat;
+
+import rapaio.math.MTools;
 
 /**
  * Class which implements core online statistics. This class does not hold
@@ -115,11 +118,19 @@ public class OnlineStat {
     }
 
     public double variance() {
-        return m2 / (n - 1.0);
+        return m2 / n;
     }
 
     public double sd() {
-        return Math.sqrt(variance());
+        return MTools.sqrt(variance());
+    }
+
+    public double sampleVariance() {
+        return m2 / (n - 1.0);
+    }
+
+    public double sampleSd() {
+        return MTools.sqrt(sampleVariance());
     }
 
     public double skewness() {

@@ -28,11 +28,11 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
-import rapaio.data.stream.FSpot;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 import rapaio.util.Tagged;
-import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.*;
@@ -43,9 +43,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface CTreeMissingHandler extends Tagged, Serializable {
+public interface CTreeSplitter extends Tagged, Serializable {
 
-    CTreeMissingHandler Ignored = new CTreeMissingHandler() {
+    CTreeSplitter Ignored = new CTreeSplitter() {
         private static final long serialVersionUID = -9017265383541294518L;
 
         @Override
@@ -55,17 +55,17 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
+            List<RowPredicate> p = candidate.getGroupPredicates();
             List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
-            df.stream().forEach(s -> {
+            for (int row = 0; row < df.rowCount(); row++) {
                 for (int i = 0; i < p.size(); i++) {
-                    if (p.get(i).test(s)) {
-                        mappings.get(i).add(s.row());
+                    if (p.get(i).test(row, df)) {
+                        mappings.get(i).add(row);
                         break;
                     }
                 }
-            });
+            }
             return Pair.from(
                     mappings.stream().map(df::mapRows).collect(toList()),
                     mappings.stream().map(weights::mapRows).collect(toList())
@@ -73,7 +73,7 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
         }
 
     };
-    CTreeMissingHandler ToMajority = new CTreeMissingHandler() {
+    CTreeSplitter ToMajority = new CTreeSplitter() {
         private static final long serialVersionUID = -5858151664805703831L;
 
         @Override
@@ -83,19 +83,22 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
+            List<RowPredicate> p = candidate.getGroupPredicates();
             List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
             List<Integer> missingSpots = new LinkedList<>();
-            df.stream().forEach(s -> {
+            for (int row = 0; row < df.rowCount(); row++) {
+                boolean consumed = false;
                 for (int i = 0; i < p.size(); i++) {
-                    if (p.get(i).test(s)) {
-                        mappings.get(i).add(s.row());
-                        return;
+                    if (p.get(i).test(row, df)) {
+                        mappings.get(i).add(row);
+                        consumed = true;
+                        break;
                     }
                 }
-                missingSpots.add(s.row());
-            });
+                if (!consumed)
+                    missingSpots.add(row);
+            }
             List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
             Collections.shuffle(lens);
             int majorityGroup = 0;
@@ -116,44 +119,49 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             );
         }
     };
-    CTreeMissingHandler ToAllWeighted = new CTreeMissingHandler() {
+    CTreeSplitter ToAllWeighted = new CTreeSplitter() {
         private static final long serialVersionUID = 5936044048099571710L;
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
-            List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
+            List<RowPredicate> pred = candidate.getGroupPredicates();
 
-            List<Integer> missingSpots = new ArrayList<>();
-            df.stream().forEach(s -> {
-                for (int i = 0; i < pred.size(); i++) {
-                    if (pred.get(i).test(s)) {
-                        mappings.get(i).add(s.row());
-                        return;
-                    }
-                }
-                missingSpots.add(s.row());
-            });
+            List<Mapping> mappings = new ArrayList<>();
+            List<Var> weighting = new ArrayList<>();
+            for (int i = 0; i < pred.size(); i++) {
+                mappings.add(Mapping.empty());
+                weighting.add(NumVar.empty());
+            }
 
             final double[] p = new double[mappings.size()];
-            double n = 0;
-            for (int i = 0; i < mappings.size(); i++) {
-                p[i] = mappings.get(i).size();
-                n += p[i];
+            double psum = 0;
+            List<Integer> missingRows = new ArrayList<>();
+            for (int row = 0; row < df.rowCount(); row++) {
+                boolean consumed = false;
+                for (int i = 0; i < pred.size(); i++) {
+                    if (pred.get(i).test(row, df)) {
+                        mappings.get(i).add(row);
+                        weighting.get(i).addValue(weights.value(row));
+                        p[i] += weights.value(row);
+                        psum += weights.value(row);
+                        consumed = true;
+                        break;
+                    }
+                }
+                if (!consumed)
+                    missingRows.add(row);
             }
             for (int i = 0; i < p.length; i++) {
-                p[i] /= n;
+                p[i] /= psum;
             }
-            List<Var> weightsList = mappings.stream().map(weights::mapRows).map(Var::solidCopy).collect(toList());
             for (int i = 0; i < mappings.size(); i++) {
-                final int ii = i;
-                missingSpots.forEach(row -> {
-                    mappings.get(ii).add(row);
-                    weightsList.get(ii).addValue(weights.isMissing(row) ? p[ii] : weights.value(row) * p[ii]);
-                });
+                for(int row : missingRows) {
+                    mappings.get(i).add(row);
+                    weighting.get(i).addValue(weights.value(row) * p[i]);
+                }
             }
             List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
-            return Pair.from(frames, weightsList);
+            return Pair.from(frames, weighting);
         }
 
         @Override
@@ -161,24 +169,27 @@ public interface CTreeMissingHandler extends Tagged, Serializable {
             return "ToAllWeighted";
         }
     };
-    CTreeMissingHandler ToRandom = new CTreeMissingHandler() {
+    CTreeSplitter ToRandom = new CTreeSplitter() {
         private static final long serialVersionUID = -4762758695801141929L;
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
+            List<RowPredicate> pred = candidate.getGroupPredicates();
             List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
             final Set<Integer> missingSpots = new HashSet<>();
-            df.stream().forEach(s -> {
+            for (int row = 0; row < df.rowCount(); row++) {
+                boolean consumed = false;
                 for (int i = 0; i < pred.size(); i++) {
-                    if (pred.get(i).test(s)) {
-                        mappings.get(i).add(s.row());
-                        return;
+                    if (pred.get(i).test(row, df)) {
+                        mappings.get(i).add(row);
+                        consumed = true;
+                        break;
                     }
                 }
-                missingSpots.add(s.row());
-            });
+                if (!consumed)
+                    missingSpots.add(row);
+            }
             missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
             List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
             List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());

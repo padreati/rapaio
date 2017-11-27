@@ -66,10 +66,10 @@ public class FFToNumeric extends AbstractFF {
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            if (!nameSet.contains(df.var(i).name())) {
-                vars[i] = df.var(i);
+            if (!nameSet.contains(df.rvar(i).name())) {
+                vars[i] = df.rvar(i);
             } else {
-                vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
+                vars[i] = VFToNumeric.byDefault().fitApply(df.rvar(i));
             }
         }
         return SolidFrame.byVars(df.rowCount(), vars);

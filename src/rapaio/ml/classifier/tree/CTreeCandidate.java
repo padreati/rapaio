@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,6 +26,7 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.data.stream.FSpot;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
@@ -40,27 +42,18 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
 
     private final double score;
     private final String testName;
-    private final List<String> groupNames = new ArrayList<>();
-    private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
+    private final List<RowPredicate> groupPredicates = new ArrayList<>();
 
     public CTreeCandidate(double score, String testName) {
         this.score = score;
         this.testName = testName;
     }
 
-    public void addGroup(String name, SPredicate<FSpot> predicate) {
-        if (groupNames.contains(name)) {
-            throw new IllegalArgumentException("group name already defined");
-        }
-        groupNames.add(name);
+    public void addGroup(RowPredicate predicate) {
         groupPredicates.add(predicate);
     }
 
-    public List<String> getGroupNames() {
-        return groupNames;
-    }
-
-    public List<SPredicate<FSpot>> getGroupPredicates() {
+    public List<RowPredicate> getGroupPredicates() {
         return groupPredicates;
     }
 

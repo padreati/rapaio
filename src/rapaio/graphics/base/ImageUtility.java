@@ -28,6 +28,7 @@ package rapaio.graphics.base;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -62,5 +63,16 @@ public class ImageUtility {
     public static void saveImage(Figure figure, int width, int height, OutputStream os) throws IOException {
         BufferedImage bi = buildImage(figure, width, height);
         ImageIO.write(bi, "png", os);
+    }
+
+    public static byte[] byteImage(Figure figure) throws IOException {
+        return byteImage(figure, 1024, 800);
+    }
+
+    public static byte[] byteImage(Figure figure, int width, int height) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BufferedImage bi = buildImage(figure, width, height);
+        ImageIO.write(bi, "png", baos);
+        return baos.toByteArray();
     }
 }

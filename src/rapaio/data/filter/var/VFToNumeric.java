@@ -44,7 +44,7 @@ public class VFToNumeric extends AbstractVF {
                     if (s.isMissing()) {
                         return Double.NaN;
                     } else {
-                        switch (s.var().type()) {
+                        switch (s.rvar().type()) {
                             case TEXT:
                             case NOMINAL:
                                 try {

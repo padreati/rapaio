@@ -80,7 +80,7 @@ public class PCATest {
 
         pca.printSummary();
 
-        Frame fit = pca.fit(x, 4).bindVars(iris.var("class"));
+        Frame fit = pca.fit(x, 4).bindVars(iris.rvar("class"));
 
         CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
         CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
@@ -91,8 +91,8 @@ public class PCATest {
         rf2.train(fit.mapVars("0,1,class"), "class");
         CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
 
-        double acc1 = new Confusion(iris.var("class"), fit1.firstClasses()).accuracy();
-        double acc2 = new Confusion(iris.var("class"), fit2.firstClasses()).accuracy();
+        double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
+        double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();
 
         WS.println(acc1);
         WS.println(acc2);

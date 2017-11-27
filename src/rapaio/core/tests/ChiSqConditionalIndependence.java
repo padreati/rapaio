@@ -79,7 +79,7 @@ public class ChiSqConditionalIndependence implements HTest {
             String level = levels[i];
             zlevels[i - 1] = levels[i];
             Frame map = df.stream().filter(s -> s.label(2).equals(level)).toMappedFrame();
-            ztests[i - 1] = ChiSqIndependence.from(map.var(0), map.var(1), false);
+            ztests[i - 1] = ChiSqIndependence.from(map.rvar(0), map.rvar(1), false);
         }
 
         degrees = (z.levels().length - 1) * (x.levels().length - 2) * (y.levels().length - 2);

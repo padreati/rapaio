@@ -60,7 +60,7 @@ public class NaiveBayes extends AbstractClassifier {
     // algorithm parameters
     public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
         Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.fromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        DVector dv = DVector.fromWeights(false, df.rvar(nb.firstTargetName()), weights);
         dv.normalize();
         for (int i = 1; i < nb.firstTargetLevels().length; i++) {
             priors.put(nb.firstTargetLevels()[i], dv.get(i));
@@ -161,19 +161,19 @@ public class NaiveBayes extends AbstractClassifier {
                     if (firstTargetName().equals(testCol)) {
                         return;
                     }
-                    if (df.var(testCol).type().isBinary()) {
+                    if (df.rvar(testCol).type().isBinary()) {
                         BinaryEstimator estimator = binData.binEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
                         binData.binMap.put(testCol, estimator);
                         return;
                     }
-                    if (df.var(testCol).type().isNumeric()) {
+                    if (df.rvar(testCol).type().isNumeric()) {
                         NumericEstimator estimator = numData.numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numData.numMap.put(testCol, estimator);
                         return;
                     }
-                    if (df.var(testCol).type().isNominal()) {
+                    if (df.rvar(testCol).type().isNominal()) {
                         NominalEstimator estimator = nomData.nomEstimator.newInstance();
                         estimator.learn(this, df, weights, firstTargetName(), testCol);
                         nomData.nomMap.put(testCol, estimator);

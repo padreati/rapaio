@@ -69,9 +69,9 @@ public class Summary {
         TextTable tt = TextTable.newEmpty(df.varCount(), 5);
         for (int i = 0; i < df.varCount(); i++) {
             tt.set(i, 0, i + ".", 1);
-            tt.set(i, 1, df.var(i).name(), 1);
+            tt.set(i, 1, df.rvar(i).name(), 1);
             tt.set(i, 2, ":", -1);
-            tt.set(i, 3, df.var(i).type().code(), -1);
+            tt.set(i, 3, df.rvar(i).type().code(), -1);
             tt.set(i, 4, "|", 1);
         }
         tt.withMerge();
@@ -90,7 +90,7 @@ public class Summary {
         for (int k = 0; k < names.length; k++) {
             int i = df.varIndex(names[k]);
 
-            Var v = df.var(i);
+            Var v = df.rvar(i);
             
             if (v.type() == VarType.BINARY) {
                 typeStrategy = new BinaryTypeStrategy();
@@ -277,7 +277,7 @@ public class Summary {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.rvar(i);
         }
         head(merge, df.rowCount(), vars, names);
     }
@@ -286,7 +286,7 @@ public class Summary {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.rvar(i);
         }
         head(merge, Math.min(lines, df.rowCount()), vars, names);
     }

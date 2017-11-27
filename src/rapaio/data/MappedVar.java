@@ -70,8 +70,10 @@ public class MappedVar extends AbstractVar {
     private MappedVar(Var var, Mapping mapping) {
         withName(var.name());
         if (var instanceof MappedVar) {
-
-            this.mapping = Mapping.wrap(mapping.rowStream().map(row -> ((MappedVar) var).getMapping().get(row)).boxed().collect(Collectors.toList()));
+            this.mapping = Mapping.empty();
+            for(int row : mapping) {
+                this.mapping.add(((MappedVar) var).getMapping().get(row));
+            }
             this.source = ((MappedVar) var).source();
         } else {
             this.mapping = mapping;

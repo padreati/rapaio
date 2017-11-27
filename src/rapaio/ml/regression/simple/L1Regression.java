@@ -90,7 +90,7 @@ public class L1Regression extends AbstractRegression {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            medians[i] = Quantiles.from(df.var(target), 0.5).values()[0];
+            medians[i] = Quantiles.from(df.rvar(target), 0.5).values()[0];
         }
         return true;
     }

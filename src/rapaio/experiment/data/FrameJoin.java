@@ -79,7 +79,7 @@ class KeyField {
         this.keyFields = keyFields;
         keyVars = new Var[keyFields.length];
         for (int i = 0; i < keyFields.length; i++) {
-            keyVars[i] = df.var(keyFields[i]);
+            keyVars[i] = df.rvar(keyFields[i]);
         }
     }
 

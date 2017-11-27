@@ -43,16 +43,16 @@ public class RTreeSplitterTest {
 
     private Frame df;
     private Var w;
-    private RTree.Candidate candidate;
+    private RTreeCandidate candidate;
 
     @Before
     public void setUp() throws Exception {
         w = NumVar.empty();
         df = SolidFrame.byVars(NumVar.empty().withName("x"));
 
-        candidate = new RTree.Candidate(0, "");
-        candidate.addGroup("x < 10", s -> s.value("x") < 10);
-        candidate.addGroup("x > 20", s -> s.value("x") > 20);
+        candidate = new RTreeCandidate(0, "");
+        candidate.addGroup("x < 10", (row, frame) -> frame.value(row, "x") < 10);
+        candidate.addGroup("x > 20", (row, frame) -> frame.value(row, "x") > 20);
     }
 
     private void populate(int group, int count, double weight) {
@@ -70,7 +70,7 @@ public class RTreeSplitterTest {
         NumVar sample = u.sample(count);
         for (int i = 0; i < sample.rowCount(); i++) {
             df.addRows(1);
-            df.var("x").setValue(df.rowCount() - 1, sample.value(i));
+            df.rvar("x").setValue(df.rowCount() - 1, sample.value(i));
             w.addValue(weight);
         }
     }

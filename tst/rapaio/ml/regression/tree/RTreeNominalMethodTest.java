@@ -54,7 +54,7 @@ public class RTreeNominalMethodTest {
     public void ignoreTest() {
 
         RTreeNominalMethod m = RTreeNominalMethod.IGNORE;
-        Optional<RTree.Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
                 RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("IGNORE", m.name());
@@ -65,13 +65,13 @@ public class RTreeNominalMethodTest {
     public void fullTest() {
 
         RTreeNominalMethod m = RTreeNominalMethod.FULL;
-        Optional<RTree.Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
                 RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("FULL", m.name());
         assertTrue(cs.isPresent());
 
-        RTree.Candidate c = cs.get();
+        RTreeCandidate c = cs.get();
         assertEquals(NOM_TEST, c.getTestName());
 
         assertEquals(3, c.getGroupNames().size());
@@ -88,7 +88,7 @@ public class RTreeNominalMethodTest {
     public void fullTestFailed() {
 
         RTreeNominalMethod m = RTreeNominalMethod.FULL;
-        Optional<RTree.Candidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
                 NOM_TEST, TARGET, RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("FULL", m.name());
@@ -101,12 +101,12 @@ public class RTreeNominalMethodTest {
 
         assertEquals("BINARY", m.name());
 
-        Optional<RTree.Candidate> cs = m.computeCandidate(tree, df, w,
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w,
                 NOM_TEST, TARGET, RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(cs.isPresent());
 
-        assertEquals("Candidate{score=-3.323565323565319, testName='outlook', groupNames=[outlook == overcast, outlook != overcast]}",
+        assertEquals("Candidate{score=11.235164835164838, testName='outlook', groupNames=[outlook == overcast, outlook != overcast]}",
                 cs.get().toString());
     }
 }

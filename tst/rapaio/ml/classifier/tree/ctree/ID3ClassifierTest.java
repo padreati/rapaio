@@ -34,7 +34,7 @@ import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreePurityFunction;
-import rapaio.ml.classifier.tree.CTreePurityTest;
+import rapaio.ml.classifier.tree.CTreeTest;
 
 import java.io.IOException;
 
@@ -55,8 +55,8 @@ public class ID3ClassifierTest {
         id3.fit(df);
         id3.printSummary();
 
-        DTable dtWindy = DTable.fromCounts(df.var("windy"), df.var("class"), true);
-        DTable dtOutlook = DTable.fromCounts(df.var("outlook"), df.var("class"), true);
+        DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);
+        DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), true);
         String splitCol = (dtWindy.splitByRowAverageEntropy() < dtOutlook.splitByRowAverageEntropy()) ? "windy" : "outlook";
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
@@ -71,14 +71,14 @@ public class ID3ClassifierTest {
         df.printSummary();
 
         CTree id3 = new CTree()
-                .withTest(VarType.NOMINAL, CTreePurityTest.NominalFull)
+                .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
                 .withFunction(CTreePurityFunction.InfoGain);
         id3.train(df, className);
         id3.fit(df);
         id3.printSummary();
 
-        DTable dtWindy = DTable.fromCounts(df.var("windy"), df.var("class"), true);
-        DTable dtOutlook = DTable.fromCounts(df.var("outlook"), df.var("class"), true);
+        DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);
+        DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), true);
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 

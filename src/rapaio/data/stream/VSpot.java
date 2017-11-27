@@ -60,7 +60,7 @@ public class VSpot implements Serializable {
     /**
      * @return underlying support variable
      */
-    public Var var() {
+    public Var rvar() {
         return var;
     }
 

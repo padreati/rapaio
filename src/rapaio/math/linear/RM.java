@@ -148,6 +148,10 @@ public interface RM extends Serializable, Printable {
         return MatrixMultiplication.ikjParallel(this, B);
     }
 
+    default RV dot(RV b) {
+        return MatrixMultiplication.ikjParallel(this, b);
+    }
+
     default RM dot(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {

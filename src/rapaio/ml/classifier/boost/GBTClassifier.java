@@ -27,13 +27,14 @@ package rapaio.ml.classifier.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
+import rapaio.data.sample.Sample;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.GBTLossDeviance;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.sys.WS;
 
@@ -50,6 +51,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     double[][] f;
     double[][] p;
     private double shrinkage = 1.0;
+    private boolean debug = false;
 
     // prediction artifact
     private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
@@ -93,6 +95,11 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
                 .withAllowMissingTargetValues(false);
     }
 
+    public GBTClassifier withDebug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
     public GBTClassifier withTree(BTRegression rTree) {
         this.classifier = rTree;
         return this;
@@ -114,14 +121,25 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().length - 1;
-        f = new double[df.rowCount()][K];
-        p = new double[df.rowCount()][K];
+        f = new double[K][df.rowCount()];
+        p = new double[K][df.rowCount()];
         trees = new ArrayList<>();
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
         }
+
+        // build individual regression targets for each class
+
+        List<NumVar> yk = new ArrayList<>();
+        for (int k = 0; k < K; k++) {
+            yk.add(NumVar.fill(df.rowCount(), 0));
+        }
+        for (int i = 0; i < df.rowCount(); i++) {
+            yk.get(df.rvar(firstTargetName()).index(i) - 1).setValue(i, 1);
+        }
+
         for (int m = 0; m < runs(); m++) {
-            buildAdditionalTree(df, weights);
+            buildAdditionalTree(df, weights, yk);
             if (runningHook() != null) {
                 runningHook().accept(this, m);
             }
@@ -129,49 +147,61 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         return true;
     }
 
-    private void buildAdditionalTree(Frame df, Var weights) {
+    private void buildAdditionalTree(Frame df, Var w, List<NumVar> yk) {
 
         // a) Set p_k(x)
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
-                sum += Math.pow(Math.E, f[i][k]);
+                sum += f[k][i];
+                if(!Double.isFinite(sum)) {
+                    WS.println("ERROR");
+                }
             }
             for (int k = 0; k < K; k++) {
-                p[i][k] = Math.pow(Math.E, f[i][k]) / sum;
-                if (Double.isNaN(p[i][k])) {
+                p[k][i] = yk.get(k).value(i) - Math.exp(f[k][i]-sum);
+                if (Double.isNaN(p[k][i])) {
                     WS.println("ERROR");
                 }
             }
         }
 
+        if (debug) {
+            WS.println("pks");
+            List<Var> pks = new ArrayList<>();
+            for (int i = 0; i < p.length; i++) {
+                pks.add(NumVar.wrap(p[i]).withName("" + (i + 1)));
+            }
+            SolidFrame.byVars(pks).printLines(30);
+            WS.println("f");
+            List<Var> fs = new ArrayList<>();
+            for (int i = 0; i < f.length; i++) {
+                fs.add(NumVar.wrap(f[i]).withName("" + (i + 1)));
+            }
+            SolidFrame.byVars(fs).printLines(30);
+        }
+
         // b)
+
+        Frame x = df.removeVars(targetNames());
+        Sample sample = sampler().nextSample(x, w);
 
         for (int k = 0; k < K; k++) {
 
-            NumVar r = NumVar.empty().withName("##tt##");
-            for (int i = 0; i < df.rowCount(); i++) {
-                double y_i = (df.var(firstTargetName()).index(i) == k + 1) ? 1 : 0;
-                r.addValue(y_i - p[i][k]);
-            }
-
-            Frame x = df.removeVars(targetNames());
-            Frame train = x.bindVars(r);
+            NumVar pk = NumVar.wrap(p[k]).withName("##tt##");
+            Frame train = sample.df.bindVars(pk.mapRows(sample.mapping));
 
             BTRegression tree = classifier.newInstance();
-
-            Mapping samplerMapping = sampler().nextSample(x, weights).mapping;
-            tree.train(train.mapRows(samplerMapping), weights.mapRows(samplerMapping), "##tt##");
-
-            tree.boostFit(x, r, r, new ClassifierLossFunction(K));
-
-            RFit rr = tree.fit(train, true);
-
-            for (int i = 0; i < df.rowCount(); i++) {
-                f[i][k] += shrinkage * rr.firstFit().value(i);
-            }
+            tree.train(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
+
+            tree.boostUpdate(x, pk, pk, new GBTLossDeviance(K));
+
+            RFit rr = tree.fit(df, false);
+            for (int i = 0; i < df.rowCount(); i++) {
+                f[k][i] += shrinkage * rr.firstFit().value(i);
+            }
         }
     }
 
@@ -206,67 +236,15 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         for (int i = 0; i < df.rowCount(); i++) {
             int maxIndex = 0;
             double maxValue = Double.NEGATIVE_INFINITY;
-            double total = 0;
             for (int k = 0; k < K; k++) {
                 if (cr.firstDensity().value(i, k + 1) > maxValue) {
                     maxValue = cr.firstDensity().value(i, k + 1);
                     maxIndex = k + 1;
                 }
-                total += cr.firstDensity().value(i, k + 1);
             }
-            // this does not work directly since we have also negative scores
-            // why is that happening?
-
-//            for (int k = 0; k < K; k++) {
-//                double p = cr.firstDensity().value(i, k + 1);
-//                p /= total;
-//                cr.firstDensity().setValue(i, k + 1, p);
-//            }
             cr.firstClasses().setIndex(i, maxIndex);
         }
         return cr;
     }
 }
 
-class ClassifierLossFunction implements GBTLossFunction {
-
-    private static final long serialVersionUID = -2622054975826334290L;
-    private final double K;
-
-    public ClassifierLossFunction(int K) {
-        this.K = K;
-    }
-
-    @Override
-    public String name() {
-        return "ClassifierLossFunction";
-    }
-
-    @Override
-    public double findMinimum(Var y, Var fx) {
-        // this must implement
-
-        double up = 0.0;
-        double down = 0.0;
-
-        for (int i = 0; i < y.rowCount(); i++) {
-            up += y.value(i);
-            down += Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
-        }
-
-        if (down == 0) {
-            return 0;
-        }
-
-        if (Double.isNaN(up) || Double.isNaN(down)) {
-            return 0;
-        }
-
-        return ((K - 1) * up) / (K * down);
-    }
-
-    @Override
-    public NumVar gradient(Var y, Var fx) {
-        return null;
-    }
-}

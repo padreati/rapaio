@@ -46,17 +46,9 @@ public class BinaryLogistic extends AbstractClassifier {
     private static final long serialVersionUID = 1609956190070125059L;
 
     private NumVar coef;
-    private final SFunction<Var, Double> logitF = this::logitReg;
-    private final SFunction<Var, Double> logitFD = var -> {
-        double y = logitReg(var);
-        return y * (1 - y);
-    };
+
     private int maxRuns = 1_000_000;
     private double tol = 1e-5;
-
-    private static double logit(double z) {
-        return 1 / (1 + Math.exp(-z));
-    }
 
     @Override
     public BinaryLogistic newInstance() {
@@ -109,6 +101,10 @@ public class BinaryLogistic extends AbstractClassifier {
         return this;
     }
 
+    private double logit(double z) {
+        return 1 / (1 + Math.exp(-z));
+    }
+
     private double logitReg(Var input) {
         double z = coef.value(0);
         for (int i = 1; i < coef.rowCount(); i++)
@@ -126,8 +122,17 @@ public class BinaryLogistic extends AbstractClassifier {
         return logitReg(inst);
     }
 
+    private final SFunction<Var, Double> logitF = this::logitReg;
+    private final SFunction<Var, Double> logitFD = var -> {
+        double y = logitReg(var);
+        return y * (1 - y);
+    };
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
+
+        // inputs contains transposed X
+
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             NumVar line = NumVar.empty();
@@ -137,8 +142,9 @@ public class BinaryLogistic extends AbstractClassifier {
         }
 
         coef = NumVar.fill(inputNames().length + 1, 0);
+
         NumVar targetValues = NumVar.empty();
-        df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
+        df.rvar(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);

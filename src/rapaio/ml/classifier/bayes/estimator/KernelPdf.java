@@ -66,12 +66,12 @@ public class KernelPdf implements NumericEstimator {
     @Override
     public void learn(Frame df, String targetVar, String testVar) {
         kde.clear();
-        Arrays.stream(df.var(targetVar).levels()).forEach(
+        Arrays.stream(df.rvar(targetVar).levels()).forEach(
                 classLabel -> {
                     if ("?".equals(classLabel))
                         return;
                     Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetVar))).toMappedFrame();
-                    Var v = cond.var(testVar);
+                    Var v = cond.rvar(testVar);
                     KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.silvermanBandwidth(v) : bandwidth);
                     kde.put(classLabel, k);
                 });

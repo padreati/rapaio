@@ -87,8 +87,7 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector filled with counts
      */
     public static DVector fromCount(boolean useFirst, Var var) {
-        Var weights = NumVar.fill(var.rowCount(), 1);
-        return new DVector(useFirst, var.levels(), var, weights);
+        return new DVector(useFirst, var.levels(), var, null);
     }
 
     /**
@@ -139,8 +138,11 @@ public class DVector implements Printable, Serializable {
     private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
         this(useFirst, labels);
         int off = var.type().equals(VarType.BINARY) ? 1 : 0;
-        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
-        total = Arrays.stream(values).sum();
+        for (int i = 0; i < var.rowCount(); i++) {
+            double w = weights == null ? 1 : weights.value(i);
+            values[var.index(i) + off] += w;
+            total += w;
+        }
     }
 
     public boolean isFirstUsed() {

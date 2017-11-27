@@ -59,7 +59,7 @@ public class Apriori implements Printable {
                 .filter(var -> !var.name().equals(target))
                 .collect(Collectors.toList());
         this.inputDf = SolidFrame.byVars(inputVars);
-        this.targetVar = df.var(target);
+        this.targetVar = df.rvar(target);
         this.filter = filter;
 
         List<AprioriRule> C = new ArrayList<>();
@@ -68,7 +68,7 @@ public class Apriori implements Printable {
         // build dictionary of rules $C0$
 
         for (int i = 0; i < inputDf.varCount(); i++) {
-            Var input = inputDf.var(i);
+            Var input = inputDf.rvar(i);
             for (String level : input.levels()) {
                 AprioriRuleClause clause = new AprioriRuleClause(input.name(), level);
                 AprioriRule rule = new AprioriRule();

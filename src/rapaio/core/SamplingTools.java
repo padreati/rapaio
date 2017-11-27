@@ -348,10 +348,10 @@ public final class SamplingTools {
             throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
         }
         List<List<Integer>> maps = new ArrayList<>();
-        for (int i = 0; i < df.var(strataName).levels().length; i++) {
+        for (int i = 0; i < df.rvar(strataName).levels().length; i++) {
             maps.add(new ArrayList<>());
         }
-        df.var(strataName).stream().forEach(s -> maps.get(s.index()).add(s.row()));
+        df.rvar(strataName).stream().forEach(s -> maps.get(s.index()).add(s.row()));
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {

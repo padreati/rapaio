@@ -145,8 +145,8 @@ public class Capabilities implements Printable {
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
-            if (!targetTypes.contains(df.var(varName).type())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.var(varName).type().name() + " as target type vor var: " + varName);
+            if (!targetTypes.contains(df.rvar(varName).type())) {
+                throw new IllegalArgumentException("Algorithm does not allow " + df.rvar(varName).type().name() + " as target type vor var: " + varName);
             }
         }
     }
@@ -157,7 +157,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
+            if (df.rvar(targetName).stream().complete().count() != df.rvar(targetName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -183,7 +183,7 @@ public class Capabilities implements Printable {
         List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
-            Var inputVar = df.var(inputName);
+            Var inputVar = df.rvar(inputName);
             if (!inputTypes.contains(inputVar.type())) {
                 if (sb.length() != 0) {
                     sb.append(", ");
@@ -202,7 +202,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
-            if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {
+            if (df.rvar(inputName).stream().complete().count() != df.rvar(inputName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }

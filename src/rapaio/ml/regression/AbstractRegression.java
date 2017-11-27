@@ -127,12 +127,12 @@ public abstract class AbstractRegression implements Regression {
         Frame result = df;
         List<String> targets = VRange.of(trainSetup.targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
-        this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, trainSetup.w, trainSetup.targetVars);
         return TrainSetup.valueOf(df, trainSetup.w);

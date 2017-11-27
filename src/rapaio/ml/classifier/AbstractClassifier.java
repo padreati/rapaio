@@ -53,7 +53,7 @@ public abstract class AbstractClassifier implements Classifier {
     private Map<String, String[]> dict;
     private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
-    private int poolSize = Runtime.getRuntime().availableProcessors();
+    private int poolSize = 0;
     private int runs = 1;
     private BiConsumer<Classifier, Integer> runningHook;
 
@@ -141,14 +141,14 @@ public abstract class AbstractClassifier implements Classifier {
         Frame result = df;
         List<String> targets = VRange.of(targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
-        this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), result.var(firstTargetName()).levels());
+        this.dict.put(firstTargetName(), result.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);
         return result;

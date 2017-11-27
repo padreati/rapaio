@@ -54,12 +54,12 @@ public class CoreToolsTest {
 
     @Test
     public void testRReference() throws IOException {
-        mean(df.var(0)).printSummary();
-        variance(df.var(0)).printSummary();
-        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
-        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(Variance.from(df.var(0)).value()), 1e-12);
-        Assert.assertEquals(996.343866540788, Minimum.from(df.var(0)).value(), 1e-12);
-        Assert.assertEquals(1004.24956126934, Maximum.from(df.var(0)).value(), 1e-12);
+        mean(df.rvar(0)).printSummary();
+        variance(df.rvar(0)).printSummary();
+        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.rvar(0)).value(), 1e-12);
+        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(Variance.from(df.rvar(0)).value()), 1e-12);
+        Assert.assertEquals(996.343866540788, Minimum.from(df.rvar(0)).value(), 1e-12);
+        Assert.assertEquals(1004.24956126934, Maximum.from(df.rvar(0)).value(), 1e-12);
     }
 
     @Test

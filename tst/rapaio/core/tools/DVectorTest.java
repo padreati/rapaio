@@ -47,8 +47,7 @@ public class DVectorTest {
                 .equalsFull(DVector.fromWeights(
                         true,
                         NomVar.copy("a", "a", "b", "c"),
-                        NumVar.copy(0.5, 1.5, 1, 1),
-                        "?", "a", "b", "c")));
+                        NumVar.copy(0.5, 1.5, 1, 1))));
     }
 
     @Test

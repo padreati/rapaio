@@ -62,7 +62,7 @@ public interface RTreeNominalMethod extends Serializable {
      * @param testFunction  test function used to compute the score
      * @return the best candidate
      */
-    Optional<RTree.Candidate> computeCandidate(RTree tree,
+    Optional<RTreeCandidate> computeCandidate(RTree tree,
                                                Frame df, Var w,
                                                String testVarName, String targetVarName,
                                                RTreeTestFunction testFunction);
@@ -80,7 +80,7 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTree.Candidate> computeCandidate(
+        public Optional<RTreeCandidate> computeCandidate(
                 RTree tree, Frame df, Var w,
                 String testVarName, String targetVarName, RTreeTestFunction testFunction) {
             return Optional.empty();
@@ -101,13 +101,14 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
-            List<RTree.Candidate> result = new ArrayList<>();
+            List<RTreeCandidate> result = new ArrayList<>();
+
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testVarName);
-            Var targetVar = df.var(targetVarName);
+            Var testVar = df.rvar(testVarName);
+            Var targetVar = df.rvar(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
@@ -124,13 +125,14 @@ public interface RTreeNominalMethod extends Serializable {
             for (int i = 1; i < testVar.levels().length; i++) {
                 p.splitWeight[i - 1] = dvWeights.get(i - 1);
                 String label = testVar.levels()[i];
-                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
+                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().rvar(targetVarName)).value();
             }
             double value = tree.function.computeTestValue(p);
-            RTree.Candidate candidate = new RTree.Candidate(value, testVarName);
+            RTreeCandidate candidate = new RTreeCandidate(value, testVarName);
             for (int i = 1; i < testVar.levels().length; i++) {
                 String label = testVar.levels()[i];
-                candidate.addGroup(testVarName + " == " + label, spot -> spot.label(testVarName).equals(label));
+                candidate.addGroup(testVarName + " == " + label,
+                        (row, frame) -> frame.label(row, testVarName).equals(label));
             }
             return Optional.of(candidate);
         }
@@ -151,12 +153,12 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testVarName);
-            Var targetVar = df.var(targetVarName);
+            Var testVar = df.rvar(testVarName);
+            Var targetVar = df.rvar(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
@@ -176,7 +178,7 @@ public interface RTreeNominalMethod extends Serializable {
 
             double totalVar = CoreTools.variance(targetVar).value();
 
-            RTree.Candidate best = null;
+            RTreeCandidate best = null;
             double bestScore = Double.NaN;
 
             for (int i = 1; i < testVar.levels().length; i++) {
@@ -212,11 +214,11 @@ public interface RTreeNominalMethod extends Serializable {
                 double value = tree.function.computeTestValue(p);
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
-                    best = new RTree.Candidate(value, testVarName);
+                    best = new RTreeCandidate(value, testVarName);
                     best.addGroup(testVarName + " == " + testLabel,
-                            spot -> !spot.isMissing(testVarName) && spot.label(testVarName).equals(testLabel));
+                            (row, frame) -> !frame.isMissing(row, testVarName) && frame.label(row, testVarName).equals(testLabel));
                     best.addGroup(testVarName + " != " + testLabel,
-                            spot -> !spot.isMissing(testVarName) && !spot.label(testVarName).equals(testLabel));
+                            (row, frame) -> !frame.isMissing(row, testVarName) && !frame.label(row, testVarName).equals(testLabel));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

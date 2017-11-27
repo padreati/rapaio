@@ -109,7 +109,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 weak.train(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
-            return weak.fit(df).firstDensity().var(1);
+            return weak.fit(df).firstDensity().rvar(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
@@ -118,7 +118,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         vars.addAll(quadratic);
 
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
-        vars.add(df.var(targets.get(0)).solidCopy());
+        vars.add(df.rvar(targets.get(0)).solidCopy());
 
         return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), weights, targetVars);
     }
@@ -141,7 +141,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
-            return weak.fit(df).firstDensity().var(1);
+            return weak.fit(df).firstDensity().rvar(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()

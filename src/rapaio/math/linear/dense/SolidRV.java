@@ -103,10 +103,11 @@ public class SolidRV implements RV {
     /**
      * Builds a new random vector which wraps a double array.
      * It uses the same reference.
+     *
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static SolidRV wrap(double...values) {
+    public static SolidRV wrap(double... values) {
         Objects.requireNonNull(values);
         return new SolidRV(values);
     }
@@ -127,7 +128,7 @@ public class SolidRV implements RV {
         values = new double[n];
     }
 
-    private SolidRV(double[] values){
+    private SolidRV(double[] values) {
         this.values = values;
     }
 
@@ -205,5 +206,21 @@ public class SolidRV implements RV {
     @Override
     public NumVar asNumericVar() {
         return NumVar.wrap(values);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RV[" + count() + "]{");
+        for (int i = 0; i < count(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(values[i]);
+            if (i > 10) {
+                sb.append("...");
+                break;
+            }
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

@@ -39,10 +39,10 @@ public class MeshGridFactory {
 
     public static MeshGrid1D buildFrom(Classifier c, Frame df, String x1Name, String x2Name, int steps, String labelName) {
 
-        double x1min = CoreTools.min(df.var(x1Name)).value();
-        double x1max = CoreTools.max(df.var(x1Name)).value();
-        double x2min = CoreTools.min(df.var(x2Name)).value();
-        double x2max = CoreTools.max(df.var(x2Name)).value();
+        double x1min = CoreTools.min(df.rvar(x1Name)).value();
+        double x1max = CoreTools.max(df.rvar(x1Name)).value();
+        double x2min = CoreTools.min(df.rvar(x2Name)).value();
+        double x2max = CoreTools.max(df.rvar(x2Name)).value();
 
         NumVar x1 = NumVar.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
         NumVar x2 = NumVar.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);

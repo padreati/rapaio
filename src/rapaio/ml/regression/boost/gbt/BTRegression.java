@@ -40,5 +40,5 @@ public interface BTRegression extends Regression {
     @Override
     BTRegression newInstance();
 
-    void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction);
+    void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
 }

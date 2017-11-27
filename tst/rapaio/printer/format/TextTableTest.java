@@ -45,14 +45,14 @@ public class TextTableTest {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 50, 51, 52, 100, 101, 102);
         TextTable tt = TextTable.newEmpty(iris.rowCount() + 1, iris.varCount() + 1);
         for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 1);
+            tt.set(0, i + 1, iris.rvar(i).name(), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 1);
+                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 1);
             }
         }
         tt.printSummary();
@@ -73,14 +73,14 @@ public class TextTableTest {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 50, 51, 52, 100, 101, 102);
         TextTable tt = TextTable.newEmpty(iris.rowCount() + 3, iris.varCount() + 1);
         for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+            tt.set(0, i + 1, iris.rvar(i).name(), 0);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
 
@@ -111,14 +111,14 @@ public class TextTableTest {
         Frame iris = Datasets.loadIrisDataset().mapRows(Mapping.range(0, 23));
         TextTable tt = TextTable.newEmpty(iris.rowCount() + 3, iris.varCount() + 2);
         for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+            tt.set(0, i + 1, iris.rvar(i).name(), 0);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + "."), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
         for (int i = 0; i < iris.rowCount(); i++) {
@@ -142,14 +142,14 @@ public class TextTableTest {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 3, 50, 51, 52, 53, 100, 101, 102, 103);
         TextTable tt = TextTable.newEmpty(iris.rowCount() + 1, iris.varCount() + 1);
         for (int i = 0; i < iris.varCount(); i++) {
-            tt.set(0, i + 1, iris.var(i).name(), 0);
+            tt.set(0, i + 1, iris.rvar(i).name(), 0);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             tt.set(i + 1, 0, String.valueOf(i + ")"), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.var(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
 

@@ -45,7 +45,7 @@ public abstract class BaseFigure implements Figure {
         }
         if(range==null)
             return null;
-        return range.getExtendedRange();
+        return range;
     }
 
     protected void setRange(Range range) {

@@ -27,15 +27,14 @@ package rapaio.ml.regression.tree;
 
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.*;
-import rapaio.data.stream.FSpot;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.util.Pair;
-import rapaio.util.func.SPredicate;
+import rapaio.util.func.SBiPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Stream;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -66,7 +66,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     VarSelector varSelector = VarSelector.ALL;
 
     // tree root node
-    private Node root;
+    private RTreeNode root;
     private int rows;
 
     private RTree() {
@@ -96,7 +96,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withFunction(RTreeTestFunction.WEIGHTED_SD_GAIN)
+                .withFunction(RTreeTestFunction.WEIGHTED_VAR_GAIN)
                 .withMinCount(1);
     }
 
@@ -145,8 +145,8 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
-        root.boostFit(x, y, fx, lossFunction);
+    public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
+        root.boostUpdate(x, y, fx, lossFunction);
     }
 
     public RTree withVarSelector(VarSelector varSelector) {
@@ -184,7 +184,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         return this;
     }
 
-    public RTree.Node getRoot() {
+    public RTreeNode getRoot() {
         return root;
     }
 
@@ -200,7 +200,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         rows = df.rowCount();
 
-        root = new Node(this, null, "root", spot -> true);
+        root = new RTreeNode(this, null, "root", (row, frame) -> true);
         this.varSelector.withVarNames(inputNames());
         root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
         return true;
@@ -210,10 +210,10 @@ public class RTree extends AbstractRegression implements BTRegression {
     protected RFit coreFit(Frame df, boolean withResiduals) {
         RFit pred = RFit.build(this, df, withResiduals);
 
-        df.stream().forEach(spot -> {
-            Pair<Double, Double> result = predictor.predict(spot, root);
-            pred.fit(firstTargetName()).setValue(spot.row(), result._1);
-        });
+        for (int i = 0; i < df.rowCount(); i++) {
+            Pair<Double, Double> result = predictor.predict(i, df, root);
+            pred.fit(firstTargetName()).setValue(i, result._1);
+        }
         pred.buildComplete();
         return pred;
     }
@@ -233,7 +233,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         return sb.toString();
     }
 
-    private void buildSummary(StringBuilder sb, Node node, int level) {
+    private void buildSummary(StringBuilder sb, RTreeNode node, int level) {
         sb.append("|");
         for (int i = 0; i < level; i++) {
             sb.append("   |");
@@ -249,210 +249,6 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         if (!node.isLeaf()) {
             node.getChildren().forEach(child -> buildSummary(sb, child, level + 1));
-        }
-    }
-
-    /**
-     * RTree node which describes in a recursive manner a regression tree
-     */
-    public static class Node implements Serializable {
-
-        private static final long serialVersionUID = 385363626560575837L;
-        private final RTree tree;
-        private final Node parent;
-        private final String groupName;
-        private final SPredicate<FSpot> predicate;
-
-        private boolean leaf = true;
-        private double value;
-        private double weight;
-        private List<Node> children = new ArrayList<>();
-        private Candidate bestCandidate;
-
-        public Node(final RTree tree,
-                    final Node parent,
-                    final String groupName,
-                    final SPredicate<FSpot> predicate) {
-            this.tree = tree;
-            this.parent = parent;
-            this.groupName = groupName;
-            this.predicate = predicate;
-        }
-
-        public Node getParent() {
-            return parent;
-        }
-
-        public String getGroupName() {
-            return groupName;
-        }
-
-        public SPredicate<FSpot> getPredicate() {
-            return predicate;
-        }
-
-        public boolean isLeaf() {
-            return leaf;
-        }
-
-        public void setLeaf(boolean leaf) {
-            this.leaf = leaf;
-        }
-
-        public List<Node> getChildren() {
-            return children;
-        }
-
-        public Candidate getBestCandidate() {
-            return bestCandidate;
-        }
-
-        public double getValue() {
-            return value;
-        }
-
-        public void setValue(double value) {
-            this.value = value;
-        }
-
-        public double getWeight() {
-            return weight;
-        }
-
-        public void setWeight(double weight) {
-            this.weight = weight;
-        }
-
-        public void learn(RTree tree, Frame df, Var weights, int depth) {
-            value = WeightedMean.from(df.var(tree.firstTargetName()), weights).value();
-            weight = weights.stream().complete().mapToDouble().sum();
-            if (weight == 0) {
-                value = parent!=null ? parent.value : Double.NaN;
-            }
-
-            if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
-                return;
-            }
-
-            List<Candidate> candidateList = new ArrayList<>();
-
-            ConcurrentLinkedQueue<Candidate> candidates = new ConcurrentLinkedQueue<>();
-            Arrays.stream(tree.varSelector.nextVarNames()).forEach(testCol -> {
-                if (testCol.equals(tree.firstTargetName())) return;
-
-                if (df.var(testCol).type().isNumeric()) {
-                    tree.numericMethod.computeCandidate(
-                            tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                            .ifPresent(candidates::add);
-                } else {
-                    tree.nominalMethod.computeCandidate(
-                            tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                            .ifPresent(candidates::add);
-                }
-            });
-            candidateList.addAll(candidates);
-            Collections.sort(candidateList);
-
-            if (candidateList.isEmpty()) {
-                return;
-            }
-            leaf = false;
-            bestCandidate = candidateList.get(0);
-
-            // now that we have a best candidate,do the effective split
-
-            if (bestCandidate.getGroupNames().isEmpty()) {
-                leaf = true;
-                return;
-            }
-
-            Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate.groupPredicates);
-            children = new ArrayList<>(frames._1.size());
-            for (int i = 0; i < frames._1.size(); i++) {
-                Node child = new Node(tree, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
-                children.add(child);
-                child.learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
-            }
-        }
-
-        public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
-            if (leaf) {
-                value = lossFunction.findMinimum(y, fx);
-                return;
-            }
-
-            List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
-            for (Node child : children) {
-                groupPredicates.add(child.getPredicate());
-            }
-
-            List<Mapping> mappings = tree.splitter.performMapping(x, NumVar.fill(x.rowCount(), 1), groupPredicates);
-
-            for (int i = 0; i < children.size(); i++) {
-                children.get(i).boostFit(
-                        x.mapRows(mappings.get(i)),
-                        y.mapRows(mappings.get(i)),
-                        fx.mapRows(mappings.get(i)),
-                        lossFunction);
-            }
-        }
-    }
-
-    /**
-     * RTree split candidate.
-     * <p>
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
-     */
-    public static class Candidate implements Comparable<Candidate>, Serializable {
-
-        private static final long serialVersionUID = 6698766675237089849L;
-        private final double score;
-        private final String testName;
-        private final List<String> groupNames = new ArrayList<>();
-        private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
-
-        public Candidate(double score, String testName) {
-            this.score = score;
-            this.testName = testName;
-        }
-
-        public void addGroup(String name, SPredicate<FSpot> predicate) {
-            if (groupNames.contains(name)) {
-                throw new IllegalArgumentException("group name already defined");
-            }
-            groupNames.add(name);
-            groupPredicates.add(predicate);
-        }
-
-        public List<String> getGroupNames() {
-            return groupNames;
-        }
-
-        public List<SPredicate<FSpot>> getGroupPredicates() {
-            return groupPredicates;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public String getTestName() {
-            return testName;
-        }
-
-        @Override
-        public int compareTo(Candidate o) {
-            if (o == null) return 1;
-            return -Double.compare(score, o.score);
-        }
-
-        @Override
-        public String toString() {
-            return "Candidate{" +
-                    "score=" + score +
-                    ", testName='" + testName + '\'' +
-                    ", groupNames=" + groupNames +
-                    '}';
         }
     }
 }

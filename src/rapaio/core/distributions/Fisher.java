@@ -31,27 +31,27 @@ import static rapaio.math.MTools.*;
 import rapaio.sys.WS;
 
 /**
- * F distribution, also known as Fischer-Snedecor distribution.
+ * F distribution, also known as Fisher-Snedecor distribution.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
  *
  * @see <a href="https://en.wikipedia.org/wiki/F-distribution">https://en.wikipedia.org/wiki/F-distribution</a>
  */
-public class Fischer implements Distribution {
+public class Fisher implements Distribution {
 
     private static final long serialVersionUID = 2272786897584427248L;
 
     private final double df1;
     private final double df2;
 
-    public Fischer(double df1, double df2) {
+    public Fisher(double df1, double df2) {
         this.df1 = df1;
         this.df2 = df2;
     }
 
     @Override
     public String name() {
-        return "Fischer(" + WS.formatFlex(df1) + "," + WS.formatFlex(df2) + ")";
+        return "Fisher(" + WS.formatFlex(df1) + "," + WS.formatFlex(df2) + ")";
     }
 
     @Override

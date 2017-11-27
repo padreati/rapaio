@@ -74,12 +74,12 @@ public class BinomialTest {
         Binomial b3 = new Binomial(0.9, 100);
         Binomial b4 = new Binomial(0.9, 2000);
 
-        Var x = df.var("x");
+        Var x = df.rvar("x");
 
-        Var pdf1 = df.var("pdf_10_0.1");
-        Var pdf2 = df.var("pdf_100_0.1");
-        Var pdf3 = df.var("pdf_100_0.9");
-        Var pdf4 = df.var("pdf_2000_0.9");
+        Var pdf1 = df.rvar("pdf_10_0.1");
+        Var pdf2 = df.rvar("pdf_100_0.1");
+        Var pdf3 = df.rvar("pdf_100_0.9");
+        Var pdf4 = df.rvar("pdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(pdf1.value(i), b1.pdf(x.value(i)), TOL);
@@ -97,12 +97,12 @@ public class BinomialTest {
         Binomial b3 = new Binomial(0.9, 100);
         Binomial b4 = new Binomial(0.9, 2000);
 
-        Var x = df.var("x");
+        Var x = df.rvar("x");
 
-        Var cdf1 = df.var("cdf_10_0.1");
-        Var cdf2 = df.var("cdf_100_0.1");
-        Var cdf3 = df.var("cdf_100_0.9");
-        Var cdf4 = df.var("cdf_2000_0.9");
+        Var cdf1 = df.rvar("cdf_10_0.1");
+        Var cdf2 = df.rvar("cdf_100_0.1");
+        Var cdf3 = df.rvar("cdf_100_0.9");
+        Var cdf4 = df.rvar("cdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(cdf1.value(i), b1.cdf(x.value(i)), TOL);
@@ -120,12 +120,12 @@ public class BinomialTest {
         Binomial b3 = new Binomial(0.9, 100);
         Binomial b4 = new Binomial(0.9, 2000);
 
-        Var x = df.var("x");
+        Var x = df.rvar("x");
 
-        Var q1 = df.var("q_10_0.1");
-        Var q2 = df.var("q_100_0.1");
-        Var q3 = df.var("q_100_0.9");
-        Var q4 = df.var("q_2000_0.9");
+        Var q1 = df.rvar("q_10_0.1");
+        Var q2 = df.rvar("q_100_0.1");
+        Var q3 = df.rvar("q_100_0.9");
+        Var q4 = df.rvar("q_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(q1.value(i), b1.quantile(x.value(i)), TOL);

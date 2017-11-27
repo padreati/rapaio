@@ -69,9 +69,9 @@ public class FFOneHotEncoding extends AbstractFF {
         levels = new HashMap<>();
         for (String varName : varNames) {
             // for each nominal variable
-            if (df.var(varName).type().isNominal()) {
+            if (df.rvar(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.var(varName).levels();
+                String[] dict = df.rvar(varName).levels();
                 levels.put(varName, dict);
             }
         }
@@ -110,7 +110,7 @@ public class FFOneHotEncoding extends AbstractFF {
                 }
                 vars.addAll(oneHotVars);
             } else {
-                vars.add(df.var(varName));
+                vars.add(df.rvar(varName));
             }
         }
         return BoundFrame.byVars(vars);

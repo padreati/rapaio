@@ -64,13 +64,13 @@ public class SolidFrameTest {
         }
 
         try {
-            df.var(10);
+            df.rvar(10);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
         try {
-            df.var(-1);
+            df.rvar(-1);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
@@ -99,8 +99,8 @@ public class SolidFrameTest {
         }
         assertEquals(17., t, 1e-10);
 
-        assertTrue(df.var("name").isMissing(0));
-        assertTrue(df.var("name").isMissing(3));
+        assertTrue(df.rvar("name").isMissing(0));
+        assertTrue(df.rvar("name").isMissing(3));
 
         df.setLabel(0, 2, "ana");
         df.setLabel(1, 2, "are");

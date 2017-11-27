@@ -73,8 +73,12 @@ class ReducedErrorPruning {
             topDown.put(id, ValuePair.empty());
         });
 
-        df.stream().forEach(s -> bottomUpCollect(s, tree, tree.getRoot(), bottomUp));
-        df.stream().forEach(s -> topDownCollect(s, tree, tree.getRoot(), topDown));
+        for (int i = 0; i < df.rowCount(); i++) {
+            bottomUpCollect(i, df, tree, tree.getRoot(), bottomUp);
+        }
+        for (int i = 0; i < df.rowCount(); i++) {
+            topDownCollect(i, df, tree, tree.getRoot(), topDown);
+        }
 
         // test for pruning
 
@@ -153,17 +157,17 @@ class ReducedErrorPruning {
         return nodes;
     }
 
-    private static ValuePair bottomUpCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
+    private static ValuePair bottomUpCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
 
         if (node.isLeaf()) {
-            ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+            ValuePair err = df.index(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
             bottomUp.get(node.getId()).increment(err);
             return err;
         }
 
         for (CTreeNode child : node.getChildren()) {
-            if (child.getPredicate().test(spot)) {
-                ValuePair err = bottomUpCollect(spot, tree, child, bottomUp);
+            if (child.getPredicate().test(row, df)) {
+                ValuePair err = bottomUpCollect(row, df, tree, child, bottomUp);
                 bottomUp.get(node.getId()).increment(err);
                 return err;
             }
@@ -171,14 +175,14 @@ class ReducedErrorPruning {
         return ValuePair.empty();
     }
 
-    private static void topDownCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
+    private static void topDownCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
 
-        ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+        ValuePair err = df.index(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
         topDown.get(node.getId()).increment(err);
 
         for (CTreeNode child : node.getChildren()) {
-            if (child.getPredicate().test(spot)) {
-                topDownCollect(spot, tree, child, topDown);
+            if (child.getPredicate().test(row, df)) {
+                topDownCollect(row, df, tree, child, topDown);
                 return;
             }
         }

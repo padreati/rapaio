@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,12 +26,15 @@
 package rapaio.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A mapping is a collection of row numbers used to build a mapped frame as a
@@ -44,7 +48,7 @@ import java.util.stream.IntStream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Mapping extends Serializable {
+public interface Mapping extends Iterable<Integer>, Serializable {
 
     // static builders
 
@@ -156,6 +160,40 @@ public interface Mapping extends Serializable {
     default int[] toArray() {
         return rowStream().toArray();
     }
+
+    static Collector<Integer, List<Integer>, Mapping> collector() {
+        return new Collector<Integer, List<Integer>, Mapping>() {
+            @Override
+            public Supplier<List<Integer>> supplier() {
+                return ArrayList::new;
+            }
+
+            @Override
+            public BiConsumer<List<Integer>, Integer> accumulator() {
+                return List::add;
+            }
+
+            @Override
+            public BinaryOperator<List<Integer>> combiner() {
+                return (list1, list2) -> {
+                    list1.addAll(list2);
+                    return list1;
+                };
+            }
+
+            @Override
+            public Function<List<Integer>, Mapping> finisher() {
+                return Mapping::wrap;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
+    }
+
+    Stream<Integer> stream();
 }
 
 final class ListMapping implements Mapping {
@@ -213,6 +251,16 @@ final class ListMapping implements Mapping {
 
     public IntStream rowStream() {
         return mapping.stream().mapToInt(i -> i);
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return mapping.iterator();
+    }
+
+    @Override
+    public Stream<Integer> stream() {
+        return mapping.stream();
     }
 }
 
@@ -294,5 +342,28 @@ final class IntervalMapping implements Mapping {
         if (onList)
             return listMapping.rowStream();
         return IntStream.range(start, end);
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return onList ? listMapping.iterator() : new Iterator<Integer>() {
+            int s = start;
+            @Override
+            public boolean hasNext() {
+                return s < end;
+            }
+
+            @Override
+            public Integer next() {
+                int next = s;
+                s++;
+                return next;
+            }
+        };
+    }
+
+    @Override
+    public Stream<Integer> stream() {
+        return onList ? listMapping.stream() : IntStream.range(start, end).boxed();
     }
 }

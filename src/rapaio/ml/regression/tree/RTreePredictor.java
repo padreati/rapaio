@@ -26,7 +26,9 @@
 package rapaio.ml.regression.tree;
 
 import rapaio.core.stat.Mean;
+import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
+import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
@@ -47,17 +49,20 @@ public interface RTreePredictor extends Serializable {
      * Fits a given instance to the regression tree, by following nodes
      * and predicates until a fitting decision is found.
      *
-     * @param spot frame spot which contains the values to be fitted
+     * @param row  from frame which contains the values to be fitted
+     * @param df   frame which contains the row to be fitted
      * @param root tree node where the fitting starts from, recursively
      * @return a pair of values: first is the regression fit, second is the weight
      * of the result
      */
-    Pair<Double, Double> predict(FSpot spot, RTree.Node root);
+    Pair<Double, Double> predict(int row, Frame df, RTreeNode root);
 
     /**
      * Standard tree predictor.
      */
     RTreePredictor STANDARD = new RTreePredictor() {
+
+        private static final long serialVersionUID = 6223796672194285760L;
 
         @Override
         public String name() {
@@ -65,7 +70,7 @@ public interface RTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Double, Double> predict(FSpot spot, RTree.Node node) {
+        public Pair<Double, Double> predict(int row, Frame df, RTreeNode node) {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
@@ -73,17 +78,17 @@ public interface RTreePredictor extends Serializable {
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
-            for (RTree.Node child : node.getChildren())
-                if (child.getPredicate().test(spot)) {
-                    return predict(spot, child);
+            for (RTreeNode child : node.getChildren())
+                if (child.getPredicate().test(row, df)) {
+                    return predict(row, df, child);
                 }
 
             // so is a missing value for the current test feature
 
             NumVar values = NumVar.empty();
             NumVar weights = NumVar.empty();
-            for (RTree.Node child : node.getChildren()) {
-                Pair<Double, Double> prediction = predict(spot, child);
+            for (RTreeNode child : node.getChildren()) {
+                Pair<Double, Double> prediction = predict(row, df, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }

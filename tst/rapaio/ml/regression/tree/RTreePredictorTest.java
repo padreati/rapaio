@@ -25,6 +25,7 @@
 package rapaio.ml.regression.tree;
 
 import org.junit.Test;
+import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
 import rapaio.data.stream.FSpot;
@@ -47,31 +48,31 @@ public class RTreePredictorTest {
 
         // nodes
 
-        RTree.Node root = new RTree.Node(null,null, "root", s -> true);
+        RTreeNode root = new RTreeNode(null,null, "root", (row, frame) -> true);
         root.setLeaf(false);
 
-        RTree.Node left = new RTree.Node(null, root, "x < 10", s -> s.value("x") < 10);
+        RTreeNode left = new RTreeNode(null, root, "x < 10", (row, frame) -> frame.value(row, "x") < 10);
         left.setLeaf(false);
 
-        RTree.Node right = new RTree.Node(null, root, "x >= 10", s -> s.value("x") >= 10);
+        RTreeNode right = new RTreeNode(null, root, "x >= 10", (row, frame) -> frame.value(row, "x") >= 10);
         right.setLeaf(false);
 
-        RTree.Node left_left = new RTree.Node(null, left, "x < 5", s -> s.value("x") < 5);
+        RTreeNode left_left = new RTreeNode(null, left, "x < 5", (row, frame) -> frame.value(row, "x") < 5);
         left_left.setLeaf(true);
         left_left.setValue(0);
         left_left.setWeight(1);
 
-        RTree.Node left_right = new RTree.Node(null, left, "x >= 5", s -> s.value("x") >= 5);
+        RTreeNode left_right = new RTreeNode(null, left, "x >= 5", (row, frame) -> frame.value(row, "x") >= 5);
         left_right.setLeaf(true);
         left_right.setValue(1);
         left_right.setWeight(2);
 
-        RTree.Node right_left = new RTree.Node(null, right, "x < 15", s -> s.value("x") < 15);
+        RTreeNode right_left = new RTreeNode(null, right, "x < 15", (row, frame) -> frame.value(row, "x") < 15);
         right_left.setLeaf(true);
         right_left.setValue(2);
         right_left.setWeight(3);
 
-        RTree.Node right_right = new RTree.Node(null, right, "x >= 15", s -> s.value("x") >= 15);
+        RTreeNode right_right = new RTreeNode(null, right, "x >= 15", (row, frame) -> frame.value(row, "x") >= 15);
         right_right.setLeaf(true);
         right_right.setValue(3);
         right_right.setWeight(4);
@@ -87,37 +88,37 @@ public class RTreePredictorTest {
         right.getChildren().add(right_left);
         right.getChildren().add(right_right);
 
-        Pair<Double, Double> fit_0 = pred.predict(getSpot(0), root);
+        Pair<Double, Double> fit_0 = pred.predict(0, getFrame(0), root);
         assertEquals(0, fit_0._1, TOL);
         assertEquals(1, fit_0._2, TOL);
 
-        Pair<Double, Double> fit_7 = pred.predict(getSpot(7), root);
+        Pair<Double, Double> fit_7 = pred.predict(0, getFrame(7), root);
         assertEquals(1, fit_7._1, TOL);
         assertEquals(2, fit_7._2, TOL);
 
-        Pair<Double, Double> fit_11 = pred.predict(getSpot(11), root);
+        Pair<Double, Double> fit_11 = pred.predict(0, getFrame(11), root);
         assertEquals(2, fit_11._1, TOL);
         assertEquals(3, fit_11._2, TOL);
 
-        Pair<Double, Double> fit_20 = pred.predict(getSpot(20), root);
+        Pair<Double, Double> fit_20 = pred.predict(0, getFrame(20), root);
         assertEquals(3, fit_20._1, TOL);
         assertEquals(4, fit_20._2, TOL);
 
 
         // missing
 
-        Pair<Double, Double> fit_na = pred.predict(getSpot(Double.NaN), left);
+        Pair<Double, Double> fit_na = pred.predict(0, getFrame(Double.NaN), left);
         assertEquals((0.0 * 1.0 + 1.0 * 2.0) / 3.0, fit_na._1, TOL);
         assertEquals((1.0 + 2.0) / 2.0, fit_na._2, TOL);
 
-        Pair<Double, Double> fit_na_root = pred.predict(getSpot(Double.NaN), root);
+        Pair<Double, Double> fit_na_root = pred.predict(0, getFrame(Double.NaN), root);
         assertEquals((0.0 * 1.0 + 1.0 * 2.0 + 2.0 * 3.0 + 3.0 * 4.0) / (1.0 + 2.0 + 3.0 + 4.0), fit_na_root._1, TOL);
         assertEquals((1.0 + 2.0 + 3.0 + 4.0) / 4.0, fit_na_root._2, TOL);
 
 
     }
 
-    FSpot getSpot(double value) {
-        return SolidFrame.byVars(NumVar.wrap(value).withName("x")).stream().findFirst().get();
+    Frame getFrame(double value) {
+        return SolidFrame.byVars(NumVar.wrap(value).withName("x"));
     }
 }

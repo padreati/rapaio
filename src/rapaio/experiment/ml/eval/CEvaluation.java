@@ -56,12 +56,8 @@ public class CEvaluation {
 
     public static double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
-//        print("Model: \n");
-//        c.newInstance().printSummary();
 
         List<List<Integer>> strata = buildStrata(df, folds, classColName);
-
-
         NumVar acc = NumVar.empty();
 
         for (int i = 0; i < folds; i++) {
@@ -81,7 +77,7 @@ public class CEvaluation {
             cc.train(train, classColName);
             CFit cp = cc.fit(test);
 
-            Confusion conf = new Confusion(test.var(classColName), cp.firstClasses());
+            Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
             acc.addValue(conf.accuracy());
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     conf.accuracy(),
@@ -97,7 +93,7 @@ public class CEvaluation {
     }
 
     private static List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.var(classColName).levels();
+        String[] dict = df.rvar(classColName).levels();
         List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.index(i, classColName)).add(i);
@@ -154,8 +150,7 @@ public class CEvaluation {
                 Classifier c = classifiers.get(k).newInstance();
                 c.train(train, classColName);
                 CFit cp = c.fit(test);
-                Confusion cm = new Confusion(test.var(classColName), cp.firstClasses());
-//                cm.printSummary();
+                Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
                 print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.name()));
@@ -201,7 +196,7 @@ public class CEvaluation {
 //            System.out.println("fit test cases ...");
             Var classes = cc.fit(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
-            Confusion cm = new Confusion(test.var(classColName), classes);
+            Confusion cm = new Confusion(test.rvar(classColName), classes);
             cm.printSummary();
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
@@ -224,8 +219,8 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            testAcc.addValue(new Confusion(test.var(targetVar), c.fit(test).firstClasses()).accuracy());
-            trainAcc.addValue(new Confusion(train.var(targetVar), c.fit(train).firstClasses()).accuracy());
+            testAcc.addValue(new Confusion(test.rvar(targetVar), c.fit(test).firstClasses()).accuracy());
+            trainAcc.addValue(new Confusion(train.rvar(targetVar), c.fit(train).firstClasses()).accuracy());
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(plot()
@@ -237,11 +232,11 @@ public class CEvaluation {
         c.train(train, targetVar);
 
         WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.fit(train).firstClasses());
         trainConfusion.printSummary();
         WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.fit(test).firstClasses());
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
@@ -269,12 +264,12 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            ROC roc = ROC.from(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
+            ROC roc = ROC.from(c.fit(test).firstDensity().rvar(label), test.rvar(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
             testAuc.addValue(roc.auc());
             WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
             prevAuc.set(roc.auc());
-//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
+//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().rvar(label), train.rvar(targetVar), label).auc());
 
 //            WS.draw(plot()
 //                            .lines(r, testAuc, color(1))
@@ -285,11 +280,11 @@ public class CEvaluation {
         c.train(train, targetVar);
 
 //        WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.fit(train).firstClasses());
         trainConfusion.printSummary();
 //        WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.fit(test).firstClasses());
         testConfusion.printSummary();
 
 

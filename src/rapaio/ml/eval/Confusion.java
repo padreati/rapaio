@@ -25,6 +25,7 @@
 
 package rapaio.ml.eval;
 
+import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -41,6 +42,14 @@ import static rapaio.sys.WS.formatFlex;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Confusion implements Printable {
+
+    public static Confusion from(Var actual, Var predict) {
+        return new Confusion(actual, predict);
+    }
+
+    public static Confusion from(Var actual, Var predict, boolean percents) {
+        return new Confusion(actual, predict, percents);
+    }
 
     private final Var actual;
     private final Var predict;
@@ -244,7 +253,7 @@ public class Confusion implements Printable {
             sb.append(tt.summary());
 
         }
-
+        sb.append("\n");
     }
 
     private String line(int len) {

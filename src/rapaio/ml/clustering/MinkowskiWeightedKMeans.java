@@ -190,9 +190,9 @@ public class MinkowskiWeightedKMeans implements Printable {
     private void validate(Frame df, String... varNames) {
         List<String> nameList = VRange.of(varNames).parseVarNames(df);
         for (String varName : nameList) {
-            if (!df.var(varName).type().isNumeric())
+            if (!df.rvar(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.var(varName).stream().complete().count() != df.rowCount()) {
+            if (df.rvar(varName).stream().complete().count() != df.rowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }
@@ -466,7 +466,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
             sb.append("Per cluster: \n");
             sb.append(Summary.headString(false,
-                    Filters.refSort(summary, summary.var("count").refComparator(false))));
+                    Filters.refSort(summary, summary.rvar("count").refComparator(false))));
             sb.append("\n");
             sb.append("Cluster weights:\n");
             Frame w = SolidFrame.byVars(IdxVar.seq(k).withName("ID")).bindVars(weights);

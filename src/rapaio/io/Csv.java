@@ -245,7 +245,7 @@ public class Csv {
                                 }
                             }
                             if (found) {
-                                varSlots.add(new VarSlot(this, template.var(colName), 0));
+                                varSlots.add(new VarSlot(this, template.rvar(colName), 0));
                                 continue;
                             }
                         }
@@ -286,7 +286,7 @@ public class Csv {
         List<Var> variables = new ArrayList<>();
         for (int i = 0; i < varSlots.size(); i++) {
             String name = names.size() > i ? names.get(i) : "V" + (i + 1);
-            variables.add(varSlots.get(i).var().withName(name));
+            variables.add(varSlots.get(i).rvar().withName(name));
         }
         return SolidFrame.byVars(rows - startRow, variables);
     }
@@ -410,11 +410,11 @@ public class Csv {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.var(j).isMissing(i)) {
+                    if (df.rvar(j).isMissing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.var(j).type().isNominal() || df.var(j).type().equals(VarType.TEXT)) {
+                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VarType.TEXT)) {
                         writer.append(unclean(df.label(i, j)));
                     } else {
                         writer.append(format.format(df.value(i, j)));
@@ -541,7 +541,7 @@ public class Csv {
             }
         }
 
-        public Var var() {
+        public Var rvar() {
             return var;
         }
     }

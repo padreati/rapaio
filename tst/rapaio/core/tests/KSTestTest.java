@@ -46,7 +46,7 @@ public class KSTestTest {
     public void testPearson() throws IOException, URISyntaxException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
-        KSTestTwoSamples test = KSTestTwoSamples.from(df.var("Son"), df.var("Father"));
+        KSTestTwoSamples test = KSTestTwoSamples.from(df.rvar("Son"), df.rvar("Father"));
         test.printSummary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);

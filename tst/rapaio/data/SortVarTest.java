@@ -142,9 +142,9 @@ public class SortVarTest {
                 .withTypes(VarType.INDEX, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
-        Var nominal = df.var(0);
-        Var index = df.var(1);
-        Var numeric = df.var(2);
+        Var nominal = df.rvar(0);
+        Var index = df.rvar(1);
+        Var numeric = df.rvar(2);
 
         // nominal
 

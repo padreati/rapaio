@@ -147,7 +147,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
         for (String varName : df.varNames()) {
-            if (df.var(varName).type().isNominal()) {
+            if (df.rvar(varName).type().isNominal()) {
                 throw new IllegalArgumentException("perceptrons can't train nominal features");
             }
         }

@@ -71,7 +71,7 @@ public class FFBoxCoxT extends AbstractFF {
     public Frame apply(Frame df) {
         String[] names = parse(df);
         for (String name : names) {
-            bct.fitApply(df.var(name));
+            bct.fitApply(df.rvar(name));
         }
         return df;
     }

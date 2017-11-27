@@ -33,6 +33,7 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.classifier.tree.CTreeNode;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.printer.Summary;
 
 import java.io.IOException;
@@ -61,12 +62,12 @@ public class CTreeTest {
         String testName = root.getBestCandidate().getTestName();
         if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.getBestCandidate().getTestName());
-            assertEquals("petal-width <= 0.8", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-width > 0.8", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-width <= 0.8", root.getBestCandidate().getGroupPredicates().get(0).toString());
+            assertEquals("petal-width > 0.8", root.getBestCandidate().getGroupPredicates().get(1).toString());
         } else {
             assertEquals("petal-length", root.getBestCandidate().getTestName());
-            assertEquals("petal-length <= 2.45", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-length > 2.45", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-length <= 2.45", root.getBestCandidate().getGroupPredicates().get(0).toString());
+            assertEquals("petal-length > 2.45", root.getBestCandidate().getGroupPredicates().get(1).toString());
         }
     }
 
@@ -82,18 +83,12 @@ public class CTreeTest {
     @Test
     public void testCandidate() {
         CTreeCandidate candidate = new CTreeCandidate(1, "test");
-        candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
-        candidate.addGroup("test > 0", s -> s.value("test") > 0);
+        candidate.addGroup(RowPredicate.numLessEqual("test", 0));
+        candidate.addGroup(RowPredicate.numGreater("test", 0));
 
         assertEquals(1, candidate.compareTo(new CTreeCandidate(2, "test")));
         assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
         assertEquals(-1, candidate.compareTo(new CTreeCandidate(0.5, "test")));
-
-        try {
-            candidate.addGroup("test <= 0", s -> true);
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
     }
 
     @Test

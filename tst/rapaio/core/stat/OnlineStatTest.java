@@ -88,7 +88,7 @@ public class OnlineStatTest {
 
         soA.update(soB);
 
-        assertEquals(soA.variance(), CoreTools.variance(ab).value(), 1e-12);
+        assertEquals(soA.variance(), CoreTools.variance(ab).biasedValue(), 1e-12);
         assertEquals(soA.mean(), CoreTools.mean(ab).value(), 1e-30);
 
         assertEquals(soA.variance(), soAll.variance(), 1e-12);

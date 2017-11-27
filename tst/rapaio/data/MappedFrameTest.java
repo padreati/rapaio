@@ -43,10 +43,10 @@ public class MappedFrameTest {
     @Test
     public void colsSortedTest() throws IOException, URISyntaxException {
         Frame orig = Datasets.loadIrisDataset();
-        Frame sort = new FFRefSort(RowComparators.numeric(orig.var(1), true)).fitApply(orig);
-        sort = new FFRefSort(RowComparators.numeric(orig.var(2), true)).fitApply(sort);
+        Frame sort = new FFRefSort(RowComparators.numeric(orig.rvar(1), true)).fitApply(orig);
+        sort = new FFRefSort(RowComparators.numeric(orig.rvar(2), true)).fitApply(sort);
         for (int i = 0; i < sort.rowCount(); i++) {
-            assertEquals(sort.value(i, 0), sort.var(0).value(i), 1e-10);
+            assertEquals(sort.value(i, 0), sort.rvar(0).value(i), 1e-10);
         }
     }
 
@@ -139,10 +139,10 @@ public class MappedFrameTest {
                 .mapVars("z");
 
         assertTrue(df3.varCount() == 1);
-        assertTrue(df3.var(0).type() == VarType.NUMERIC);
+        assertTrue(df3.rvar(0).type() == VarType.NUMERIC);
         assertEquals(1.0 / 3, df3.value(0, 0), TOL);
         assertEquals(1.0 / 7, df3.value(1, 0), TOL);
 
-        assertTrue(NumVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.var(0)));
+        assertTrue(NumVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
     }
 }

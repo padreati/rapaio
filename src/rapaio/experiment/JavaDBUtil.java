@@ -48,11 +48,11 @@ public class JavaDBUtil {
         String[] columns = df.varNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.var(i).type().isNumeric()) {
+            if (df.rvar(i).type().isNumeric()) {
                 types[i] = "DOUBLE";
                 continue;
             }
-            if (df.var(i).type().isNominal()) {
+            if (df.rvar(i).type().isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }

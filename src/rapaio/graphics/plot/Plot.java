@@ -68,6 +68,8 @@ public class Plot extends HostFigure {
 
         if (range == null) {
             range = new Range(0, 0, 1, 1);
+        } else {
+            range = range.getExtendedRange();
         }
 
         if (x1 == x1 && x2 == x2) {

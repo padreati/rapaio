@@ -169,7 +169,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
+            if (fit.firstClasses().index(j) != df.index(j, firstTargetName())) {
                 err += w.value(j);
             }
         }
@@ -189,7 +189,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
+            if (fit.firstClasses().index(j) != df.index(j, firstTargetName())) {
                 w.setValue(j, w.value(j) * Math.exp(alpha * shrinkage));
             }
         }

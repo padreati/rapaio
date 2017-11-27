@@ -112,13 +112,13 @@ public class CStacking extends AbstractClassifier {
                                 weaks.get(i).train(df, w, targetVars);
                             }
                             logger.fine("started fitting weak learner...");
-                            return weaks.get(i).fit(df).firstDensity().var(1).solidCopy()
+                            return weaks.get(i).fit(df).firstDensity().rvar(1).solidCopy()
                                     .withName("V" + i);
                         })
                         .collect(toList());
 
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
-        vars.add(df.var(targets.get(0)).solidCopy());
+        vars.add(df.rvar(targets.get(0)).solidCopy());
 
         return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);
     }
@@ -142,7 +142,7 @@ public class CStacking extends AbstractClassifier {
                     return weaks.get(i)
                             .fit(df)
                             .firstDensity()
-                            .var(1)
+                            .rvar(1)
                             .solidCopy()
                             .withName("V" + i);
                 }).collect(toList());

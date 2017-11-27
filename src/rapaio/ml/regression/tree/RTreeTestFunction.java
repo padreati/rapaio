@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -59,6 +60,28 @@ public interface RTreeTestFunction extends Serializable {
             return (down == 0) ? 0.0 : p.totalVar - up / down;
         }
     };
+
+    RTreeTestFunction WEIGHTED_SS_GAIN = new RTreeTestFunction() {
+
+        private static final long serialVersionUID = 5119966657929147020L;
+
+        @Override
+        public String name() {
+            return "WEIGHTED_SS_GAIN";
+        }
+
+        @Override
+        public double computeTestValue(RTreeTestPayload p) {
+            double down = 0.0;
+            double up = 0.0;
+            for (int i = 0; i < p.splits; i++) {
+                down += p.splitWeight[i];
+                up += p.splitWeight[i] * p.splitVar[i];
+            }
+            return (down == 0) ? 0.0 : p.totalVar - up / down;
+        }
+    };
+
     RTreeTestFunction WEIGHTED_SD_GAIN = new RTreeTestFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
@@ -80,5 +103,4 @@ public interface RTreeTestFunction extends Serializable {
             return (down == 0) ? Double.MIN_VALUE : result;
         }
     };
-
 }

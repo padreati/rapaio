@@ -26,6 +26,7 @@
 package rapaio.math.linear.dense;
 
 import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.stream.IntStream;
 
@@ -106,6 +107,24 @@ public class MatrixMultiplication {
                 for (int j = 0; j < B.colCount(); j++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
+            }
+        });
+        return C;
+    }
+
+    public static RV ikjParallel(RM A, RV b) {
+
+        if (A.colCount() != b.count()) {
+            throw new IllegalArgumentException(
+                    String.format("Matrix [%d,%d] and vector[%d,1] are not conform for multiplication.",
+                            A.rowCount(), A.colCount(), b.count()
+                    ));
+        }
+
+        RV C = SolidRV.empty(A.rowCount());
+        IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
+            for (int j = 0; j < A.colCount(); j++) {
+                C.increment(i, A.get(i, j) * b.get(j));
             }
         });
         return C;

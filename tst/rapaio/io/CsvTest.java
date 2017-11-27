@@ -135,7 +135,7 @@ public class CsvTest {
 
         // x1 is binary
 
-        assertEquals(VarType.BINARY, df.var("x1").type());
+        assertEquals(VarType.BINARY, df.rvar("x1").type());
         assertEquals(false, df.binary(0, "x1"));
         assertEquals(true, df.binary(1, "x1"));
         assertEquals(false, df.binary(2, "x1"));
@@ -146,7 +146,7 @@ public class CsvTest {
 
         // x2 is index
 
-        assertEquals(VarType.INDEX, df.var("x2").type());
+        assertEquals(VarType.INDEX, df.rvar("x2").type());
         assertEquals(0, df.index(0, "x2"));
         assertEquals(1, df.index(1, "x2"));
         assertEquals(0, df.index(2, "x2"));
@@ -157,7 +157,7 @@ public class CsvTest {
 
         // x3 is numeric
 
-        assertEquals(VarType.NUMERIC, df.var("x3").type());
+        assertEquals(VarType.NUMERIC, df.rvar("x3").type());
         assertEquals(0.0, df.value(0, "x3"), 10e-12);
         assertEquals(1.0, df.value(1, "x3"), 10e-12);
         assertEquals(0.0, df.value(2, "x3"), 10e-12);
@@ -168,7 +168,7 @@ public class CsvTest {
 
         // x4 nominal
 
-        assertEquals(VarType.NOMINAL, df.var("x4").type());
+        assertEquals(VarType.NOMINAL, df.rvar("x4").type());
         assertEquals("0", df.label(0, "x4"));
         assertEquals("1", df.label(1, "x4"));
         assertEquals("false", df.label(2, "x4"));
@@ -208,7 +208,7 @@ public class CsvTest {
 
         Frame r5 = new Csv().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(25, r5.rowCount());
-        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.var("class").levels());
+        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.rvar("class").levels());
 
         // test skip vars 0 and 2
 

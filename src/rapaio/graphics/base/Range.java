@@ -141,6 +141,6 @@ public class Range implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Range{x1=%d,y1=%d,x2=%d,y2=%d", x1(), y1(), x2(), y2());
+        return String.format("Range{x1=%f,y1=%f,x2=%f,y2=%f", x1(), y1(), x2(), y2());
     }
 }

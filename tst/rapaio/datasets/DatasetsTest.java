@@ -65,7 +65,7 @@ public class DatasetsTest {
         int nas = 0;
         for (int i = 0; i < df.varCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
-                if (df.var(i).isMissing(j)) {
+                if (df.rvar(i).isMissing(j)) {
                     nas++;
                 }
             }

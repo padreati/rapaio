@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public class SolidFrame extends AbstractFrame {
 
-    public static SolidFrame byVars(List<Var> vars) {
+    public static SolidFrame byVars(List<? extends Var> vars) {
         int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
         return byVars(rows, vars);
     }
@@ -58,7 +58,7 @@ public class SolidFrame extends AbstractFrame {
         return byVars(rows, Arrays.asList(vars));
     }
 
-    public static SolidFrame byVars(int rows, List<Var> vars) {
+    public static SolidFrame byVars(int rows, List<? extends Var> vars) {
         for (Var var : vars) {
             rows = Math.min(rows, var.rowCount());
         }
@@ -76,7 +76,7 @@ public class SolidFrame extends AbstractFrame {
     public static SolidFrame emptyFrom(Frame src, int rowCount) {
         Var[] vars = new Var[src.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.var(i).type().newInstance(rowCount).withName(src.var(i).name());
+            vars[i] = src.rvar(i).type().newInstance(rowCount).withName(src.rvar(i).name());
         }
         return SolidFrame.byVars(vars);
     }
@@ -125,7 +125,7 @@ public class SolidFrame extends AbstractFrame {
 
     // public builders
 
-    private SolidFrame(int rows, List<Var> vars) {
+    private SolidFrame(int rows, List<? extends Var> vars) {
         for (Var var : vars) {
             if (var instanceof MappedVar)
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
@@ -172,6 +172,11 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
+    public String varName(int i) {
+        return names[i];
+    }
+
+    @Override
     public int varIndex(String name) {
         if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException("Invalid column name: " + name);
@@ -180,7 +185,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int col) {
+    public Var rvar(int col) {
         if (col >= 0 && col < vars.length) {
             return vars[col];
         }
@@ -188,8 +193,8 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(String name) {
-        return var(varIndex(name));
+    public Var rvar(String name) {
+        return rvar(varIndex(name));
     }
 
     @Override
@@ -205,7 +210,7 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public Frame mapVars(VRange range) {
         List<String> varNames = range.parseVarNames(this);
-        List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
+        List<Var> vars = varNames.stream().map(this::rvar).collect(Collectors.toList());
         return SolidFrame.byVars(rowCount(), vars);
     }
 
@@ -224,5 +229,115 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public Frame mapRows(Mapping mapping) {
         return MappedFrame.byRow(this, mapping);
+    }
+
+    @Override
+    public double value(int row, int varIndex) {
+        return vars[varIndex].value(row);
+    }
+
+    @Override
+    public double value(int row, String varName) {
+        return vars[varIndex(varName)].value(row);
+    }
+
+    @Override
+    public void setValue(int row, int col, double value) {
+        vars[col].setValue(row, value);
+    }
+
+    @Override
+    public void setValue(int row, String varName, double value) {
+        vars[varIndex(varName)].setValue(row, value);
+    }
+
+    @Override
+    public int index(int row, int varIndex) {
+        return vars[varIndex].index(row);
+    }
+
+    @Override
+    public int index(int row, String varName) {
+        return vars[varIndex(varName)].index(row);
+    }
+
+    @Override
+    public void setIndex(int row, int col, int value) {
+        vars[col].setIndex(row, value);
+    }
+
+    @Override
+    public void setIndex(int row, String varName, int value) {
+        vars[varIndex(varName)].setIndex(row, value);
+    }
+
+    @Override
+    public String label(int row, int col) {
+        return vars[col].label(row);
+    }
+
+    @Override
+    public String label(int row, String varName) {
+        return vars[varIndex(varName)].label(row);
+    }
+
+    @Override
+    public void setLabel(int row, int col, String value) {
+        vars[col].setLabel(row, value);
+    }
+
+    @Override
+    public void setLabel(int row, String varName, String value) {
+        vars[varIndex(varName)].setLabel(row, value);
+    }
+
+    @Override
+    public String[] levels(String varName) {
+        return vars[varIndex(varName)].levels();
+    }
+
+    @Override
+    public String[] completeLevels(String varName) {
+        return vars[varIndex(varName)].completeLevels();
+    }
+
+    @Override
+    public boolean binary(int row, int col) {
+        return vars[col].binary(row);
+    }
+
+    @Override
+    public boolean binary(int row, String varName) {
+        return vars[varIndex(varName)].binary(row);
+    }
+
+    @Override
+    public void setBinary(int row, int col, boolean value) {
+        vars[col].setBinary(row, value);
+    }
+
+    @Override
+    public void setBinary(int row, String varName, boolean value) {
+        vars[varIndex(varName)].setBinary(row, value);
+    }
+
+    @Override
+    public boolean isMissing(int row, int col) {
+        return vars[col].isMissing(row);
+    }
+
+    @Override
+    public boolean isMissing(int row, String varName) {
+        return vars[varIndex(varName)].isMissing(row);
+    }
+
+    @Override
+    public void setMissing(int row, int col) {
+        vars[col].setMissing(row);
+    }
+
+    @Override
+    public void setMissing(int row, String varName) {
+        vars[varIndex(varName)].setMissing(row);
     }
 }

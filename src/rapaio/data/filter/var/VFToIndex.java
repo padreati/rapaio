@@ -44,7 +44,7 @@ public class VFToIndex extends AbstractVF {
                     if (s.isMissing()) {
                         return Integer.MIN_VALUE;
                     } else {
-                        switch (s.var().type()) {
+                        switch (s.rvar().type()) {
                             case TEXT:
                             case NOMINAL:
                                 try {
