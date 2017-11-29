@@ -133,18 +133,13 @@ public class MappedFrame extends AbstractFrame {
         return colReverse.get(name);
     }
 
-    private ConcurrentHashMap<String, Var> mappedVarCache = new ConcurrentHashMap<>();
-
     @Override
     public Var rvar(int varIndex) {
         Var var = this.source.rvar(names[varIndex]);
         if (var == null) {
             throw new IllegalArgumentException("Variable with index " + varIndex + " does not exists in parent frame");
         }
-        if(!mappedVarCache.containsKey(names[varIndex])) {
-            mappedVarCache.put(names[varIndex], MappedVar.byRows(var, this.mapping).withName(names[varIndex]));
-        }
-        return mappedVarCache.get(names[varIndex]);
+        return MappedVar.byRows(var, this.mapping).withName(names[varIndex]);
     }
 
     @Override

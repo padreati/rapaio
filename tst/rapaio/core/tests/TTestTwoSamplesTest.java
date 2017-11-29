@@ -26,15 +26,35 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
 
+import static org.junit.Assert.assertEquals;
 import static rapaio.core.CoreTools.mean;
 import static rapaio.core.CoreTools.variance;
 
 public class TTestTwoSamplesTest {
 
     private static final double TOL = 1e-12;
+
+    @Test
+    public void precomputedTest() {
+        Normal n = Normal.from(0, 10);
+        Var x = NumVar.from(100, n::sampleNext).withName("x");
+        Var y = NumVar.from(100, n::sampleNext).withName("y");
+        Var z = NumVar.from(40, n::sampleNext).withName("z");
+
+        TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
+        TTestTwoSamples t2 = TTestTwoSamples.test(Mean.from(x).value(), x.rowCount(), Mean.from(y).value(), y.rowCount(), 0, Variance.from(x).sdValue(), Variance.from(y).sdValue());
+        TTestTwoSamples t3 = TTestTwoSamples.welchTest(x, z, 0);
+        TTestTwoSamples t4 = TTestTwoSamples.welchTest(Mean.from(x).value(), x.rowCount(), Mean.from(z).value(), z.rowCount(), 0, Variance.from(x).sdValue(), Variance.from(z).sdValue());
+
+        assertEquals(t1.pValue(), t2.pValue(), TOL);
+        assertEquals(t3.pValue(), t4.pValue(), TOL);
+    }
 
     @Test
     public void testTTest() {
@@ -45,39 +65,39 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
-        Assert.assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
-        Assert.assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
+        assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
+        assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        Assert.assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
-        Assert.assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
-        Assert.assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
+        assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
+        assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
 
-        Assert.assertEquals(true, t1.hasEqualVars());
-        Assert.assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
+        assertEquals(true, t1.hasEqualVars());
+        assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
 
-        Assert.assertEquals(0, t1.getMu(), TOL);
-        Assert.assertEquals(0.05, t1.getSl(), TOL);
-        Assert.assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
+        assertEquals(0, t1.getMu(), TOL);
+        assertEquals(0.05, t1.getSl(), TOL);
+        assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
 
-        Assert.assertEquals(26, t1.getDf(), TOL);
-        Assert.assertEquals(-2.307480895935302, t1.getT(), TOL);
-        Assert.assertEquals(0.029245857024058096, t1.pValue(), TOL);
-        Assert.assertEquals(-0.12738712912378114, t1.ciHigh(), TOL);
-        Assert.assertEquals(-2.205946204209553, t1.ciLow(), TOL);
+        assertEquals(26, t1.getDf(), TOL);
+        assertEquals(-2.307480895935302, t1.getT(), TOL);
+        assertEquals(0.029245857024058096, t1.pValue(), TOL);
+        assertEquals(-0.12738712912378114, t1.ciHigh(), TOL);
+        assertEquals(-2.205946204209553, t1.ciLow(), TOL);
 
         TTestTwoSamples t2 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.LESS_THAN);
         t2.printSummary();
 
-        Assert.assertEquals(2, t2.getMu(), TOL);
-        Assert.assertEquals(0.1, t2.getSl(), TOL);
-        Assert.assertEquals(HTest.Alternative.LESS_THAN, t2.getAlt());
+        assertEquals(2, t2.getMu(), TOL);
+        assertEquals(0.1, t2.getSl(), TOL);
+        assertEquals(HTest.Alternative.LESS_THAN, t2.getAlt());
 
         TTestTwoSamples t3 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.GREATER_THAN);
-        Assert.assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
+        assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
 
         HTest t4 = TTestTwoSamples.test(NumVar.empty(), x, 0);
-        Assert.assertEquals(Double.NaN, t4.pValue(), TOL);
+        assertEquals(Double.NaN, t4.pValue(), TOL);
     }
 
     @Test
@@ -89,31 +109,31 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();
 
-        Assert.assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
-        Assert.assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
-        Assert.assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
+        assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
+        assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        Assert.assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
-        Assert.assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
-        Assert.assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
+        assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
+        assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
 
-        Assert.assertEquals(false, t1.hasEqualVars());
-        Assert.assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
+        assertEquals(false, t1.hasEqualVars());
+        assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
 
-        Assert.assertEquals(0, t1.getMu(), TOL);
-        Assert.assertEquals(0.05, t1.getSl(), TOL);
-        Assert.assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
+        assertEquals(0, t1.getMu(), TOL);
+        assertEquals(0.05, t1.getSl(), TOL);
+        assertEquals(HTest.Alternative.TWO_TAILS, t1.getAlt());
 
-        Assert.assertEquals(-1.226925553339566, t1.getT(), TOL);
-        Assert.assertEquals(5.109345983643555, t1.getDf(), TOL);
-        Assert.assertEquals(0.2733648790307336, t1.pValue(), TOL);
-        Assert.assertEquals(1.2620136800377284, t1.ciHigh(), TOL);
-        Assert.assertEquals(-3.5953470133710637, t1.ciLow(), TOL);
+        assertEquals(-1.226925553339566, t1.getT(), TOL);
+        assertEquals(5.109345983643555, t1.getDf(), TOL);
+        assertEquals(0.2733648790307336, t1.pValue(), TOL);
+        assertEquals(1.2620136800377284, t1.ciHigh(), TOL);
+        assertEquals(-3.5953470133710637, t1.ciLow(), TOL);
 
 
         TTestTwoSamples t2 = TTestTwoSamples.welchTest(x, y, 0, 0.05, HTest.Alternative.TWO_TAILS);
 
-        Assert.assertEquals(t1.summary(), t2.summary());
+        assertEquals(t1.summary(), t2.summary());
     }
 
 }

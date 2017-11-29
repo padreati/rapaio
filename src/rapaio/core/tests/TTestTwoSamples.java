@@ -39,12 +39,74 @@ import static rapaio.sys.WS.formatFlex;
 public class TTestTwoSamples implements HTest {
 
     /**
-     * Two unpaired samples with equal variances t test for difference of the means with default values
+     * Two unpaired samples t test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
-     * @param x    first given sample
-     * @param y    second given sample
-     * @param mean null hypothesis mean
+     * @param xSampleMean
+     *         sample mean for the first sample
+     * @param xSampleSize
+     *         sample size for the first sample
+     * @param ySampleMean
+     *         sample mean for the second sample
+     * @param ySampleSize
+     *         sample size for the second sample
+     * @param mean
+     *         null hypothesis mean
+     * @param xSd
+     *         standard deviation of the first sample
+     * @param ySd
+     *         standard deviation of the second sample
+     *
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean,
+                                       int ySampleSize, double mean, double xSd, double ySd) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd,
+                ySd, 0.05, true, HTest.Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two unpaired samples t test for difference of the means
+     *
+     * @param xSampleMean
+     *         sample mean for the first sample
+     * @param xSampleSize
+     *         sample size for the first sample
+     * @param ySampleMean
+     *         sample mean for the second sample
+     * @param ySampleSize
+     *         sample size for the second sample
+     * @param mean
+     *         null hypothesis mean
+     * @param xSd
+     *         standard deviation of the first sample
+     * @param ySd
+     *         standard deviation of the second sample
+     * @param sl
+     *         significance level (usual value 0.05)
+     * @param alt
+     *         alternative hypothesis (usual value two tails)
+     *
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean,
+                                       int ySampleSize, double mean, double xSd, double ySd,
+                                       double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd,
+                ySd, sl, true, alt);
+    }
+
+    /**
+     * Two unpaired samples with equal variances t test for difference of the means with default
+     * values for significance level (0.05) and alternative (two tails)
+     *
+     * @param x
+     *         first given sample
+     * @param y
+     *         second given sample
+     * @param mean
+     *         null hypothesis mean
+     *
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples test(Var x, Var y, double mean) {
@@ -54,24 +116,93 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples with equal variances t test for difference of the means
      *
-     * @param x    first given sample
-     * @param y    second given sample
-     * @param mean null hypothesis mean
-     * @param sl   significance level (usual value 0.05)
-     * @param alt  alternative hypothesis (usual value two tails)
+     * @param x
+     *         first given sample
+     * @param y
+     *         second given sample
+     * @param mean
+     *         null hypothesis mean
+     * @param sl
+     *         significance level (usual value 0.05)
+     * @param alt
+     *         alternative hypothesis (usual value two tails)
+     *
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestTwoSamples test(Var x, Var y, double mean, double sl, HTest.Alternative alt) {
+    public static TTestTwoSamples test(Var x, Var y, double mean, double sl,
+                                       HTest.Alternative alt) {
         return new TTestTwoSamples(x, y, mean, true, sl, alt);
     }
 
     /**
-     * Two unpaired samples with unequal variances Welch t test for difference of the means with default values
-     * for significance level (0.05) and alternative (two tails)
+     * Two unpaired samples with unequal variances Welch t test for difference of the means
+     * default values for significance level (0.05) and alternative (two tails)
      *
-     * @param x    first given sample
-     * @param y    second given sample
-     * @param mean null hypothesis mean
+     * @param xSampleMean
+     *         sample mean for the first sample
+     * @param xSampleSize
+     *         sample size for the first sample
+     * @param ySampleMean
+     *         sample mean for the second sample
+     * @param ySampleSize
+     *         sample size for the second sample
+     * @param mean
+     *         null hypothesis mean
+     * @param xSd
+     *         standard deviation of the first sample
+     * @param ySd
+     *         standard deviation of the second sample
+     *
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples welchTest(double xSampleMean, int xSampleSize, double ySampleMean,
+                                            int ySampleSize, double mean, double xSd, double ySd) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd,
+                ySd, 0.05, false, HTest.Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two unpaired samples with unequal variances Welch t test for difference of the means
+     *
+     * @param xSampleMean
+     *         sample mean for the first sample
+     * @param xSampleSize
+     *         sample size for the first sample
+     * @param ySampleMean
+     *         sample mean for the second sample
+     * @param ySampleSize
+     *         sample size for the second sample
+     * @param mean
+     *         null hypothesis mean
+     * @param xSd
+     *         standard deviation of the first sample
+     * @param ySd
+     *         standard deviation of the second sample
+     * @param sl
+     *         significance level (usual value 0.05)
+     * @param alt
+     *         alternative hypothesis (usual value two tails)
+     *
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples welchTest(double xSampleMean, int xSampleSize, double ySampleMean,
+                                            int ySampleSize, double mean, double xSd, double ySd,
+                                            double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd,
+                ySd, sl, false, alt);
+    }
+
+    /**
+     * Two unpaired samples with unequal variances Welch t test for difference of the means with
+     * default values for significance level (0.05) and alternative (two tails)
+     *
+     * @param x
+     *         first given sample
+     * @param y
+     *         second given sample
+     * @param mean
+     *         null hypothesis mean
+     *
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples welchTest(Var x, Var y, double mean) {
@@ -81,41 +212,46 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples with unequal variances Welch t test for difference of the means
      *
-     * @param x    first given sample
-     * @param y    second given sample
-     * @param mean null hypothesis mean
-     * @param sl   significance level (usual value 0.05)
-     * @param alt  alternative hypothesis (usual value two tails)
+     * @param x
+     *         first given sample
+     * @param y
+     *         second given sample
+     * @param mean
+     *         null hypothesis mean
+     * @param sl
+     *         significance level (usual value 0.05)
+     * @param alt
+     *         alternative hypothesis (usual value two tails)
+     *
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestTwoSamples welchTest(Var x, Var y, double mean, double sl, HTest.Alternative alt) {
+    public static TTestTwoSamples welchTest(Var x, Var y, double mean, double sl,
+                                            HTest.Alternative alt) {
         return new TTestTwoSamples(x, y, mean, false, sl, alt);
     }
 
-    // parameters
 
     private final double sampleMean;
     private final double xSampleMean;
     private final int xSampleSize;
     private final double xSampleSd;
+
+    // parameters
     private final double ySampleMean;
     private final int ySampleSize;
     private final double ySampleSd;
     private final boolean equalVars;
-    private double df;
     private final double mu;
     private final double sl;
     private final HTest.Alternative alt;
-
-
-    // computed
-
+    private double df;
     private double t;
     private double pValue;
     private double ciLow;
     private double ciHigh;
 
-    private TTestTwoSamples(Var x, Var y, double mu, boolean equalVars, double sl, HTest.Alternative alt) {
+    private TTestTwoSamples(Var x, Var y, double mu, boolean equalVars, double sl,
+                            HTest.Alternative alt) {
         this.mu = mu;
         this.sl = sl;
         this.alt = alt;
@@ -143,14 +279,34 @@ public class TTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).value();
-        xSampleSize = xComplete.rowCount();
-        xSampleSd = variance(xComplete).sdValue();
-        ySampleMean = mean(yComplete).value();
-        ySampleSize = yComplete.rowCount();
-        ySampleSd = variance(yComplete).sdValue();
+        this.xSampleMean = mean(xComplete).value();
+        this.xSampleSize = xComplete.rowCount();
+        this.xSampleSd = variance(xComplete).sdValue();
+        this.ySampleMean = mean(yComplete).value();
+        this.ySampleSize = yComplete.rowCount();
+        this.ySampleSd = variance(yComplete).sdValue();
 
-        sampleMean = xSampleMean - ySampleMean;
+        this.sampleMean = xSampleMean - ySampleMean;
+
+        compute();
+    }
+
+    private TTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean,
+                            int ySampleSize, double mu, double xSd, double ySd, double sl,
+                            boolean equalVars, HTest.Alternative alt) {
+        this.mu = mu;
+        this.sl = sl;
+        this.alt = alt;
+        this.equalVars = equalVars;
+
+        this.xSampleMean = xSampleMean;
+        this.xSampleSize = xSampleSize;
+        this.xSampleSd = xSd;
+        this.ySampleMean = ySampleMean;
+        this.ySampleSize = ySampleSize;
+        this.ySampleSd = ySd;
+
+        this.sampleMean = xSampleMean - ySampleMean;
 
         compute();
     }
@@ -281,11 +437,14 @@ public class TTestTwoSamples implements HTest {
         sb.append("\ntest results:\n");
         sb.append("df: ").append(df).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
+        sb.append("alternative hypothesis: ")
+                .append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ")
+                .append(alt.pCondition()).append("\n");
         sb.append("t: ").append(formatFlex(t)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh)).append("]\n");
+        sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh))
+                .append("]\n");
 
         return sb.toString();
     }
