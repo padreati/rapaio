@@ -39,6 +39,8 @@ public class RTreeTestFunctionTest {
         RTreeTestPayload payload = new RTreeTestPayload(2);
 
         payload.totalVar = 100.;
+        payload.totalWeight = 1;
+
         payload.splitVar[0] = 40;
         payload.splitWeight[0] = 0.5;
         payload.splitVar[1] = 40;
@@ -65,5 +67,23 @@ public class RTreeTestFunctionTest {
         assertEquals("WEIGHTED_SD_GAIN", test.name());
         double score = test.computeTestValue(payload);
         assertEquals(60.0, score, TOL);
+    }
+
+    @Test
+    public void testWeightedSSGain() {
+        RTreeTestPayload payload = new RTreeTestPayload(2);
+
+        payload.totalVar = 100.;
+        payload.totalWeight = 1;
+
+        payload.splitVar[0] = 40;
+        payload.splitWeight[0] = 0.5;
+        payload.splitVar[1] = 40;
+        payload.splitWeight[1] = 0.5;
+
+        RTreeTestFunction test = RTreeTestFunction.WEIGHTED_SS_GAIN;
+        assertEquals("WEIGHTED_SS_GAIN", test.name());
+        double score = test.computeTestValue(payload);
+        assertEquals(80.0, score, TOL);
     }
 }

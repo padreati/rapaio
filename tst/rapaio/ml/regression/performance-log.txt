@@ -1,0 +1,19 @@
+2017-11-29
+===========
+===========
+RegressionsPerformanceTest.performanceRCartDepth12Serial50k: [measured 10 out of 12 rounds, threads: 1 (sequential)]
+ round: 1.32 [+- 0.08], round.block: 0.01 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 11, GC.time: 0.04, time.total: 19.32, time.warmup: 6.16, time.bench: 13.16
+
+2017-11-29
+===========
+
+Remove lambda, add class predicate
+===========
+RegressionsPerformanceTest.performanceRCartDepth12Serial50k: [measured 10 out of 12 rounds, threads: 1 (sequential)]
+ round: 1.13 [+- 0.05], round.block: 0.02 [+- 0.01], round.gc: 0.00 [+- 0.00], GC.calls: 27, GC.time: 0.10, time.total: 16.56, time.warmup: 5.24, time.bench: 11.32
+2017-12-01
+==========
+remove collection of candidates
+==========
+RegressionsPerformanceTest.performanceRCartDepth12Serial50k: [measured 10 out of 12 rounds, threads: 1 (sequential)]
+ round: 1.11 [+- 0.03], round.block: 0.03 [+- 0.02], round.gc: 0.00 [+- 0.00], GC.calls: 10, GC.time: 0.04, time.total: 16.52, time.warmup: 5.45, time.bench: 11.07

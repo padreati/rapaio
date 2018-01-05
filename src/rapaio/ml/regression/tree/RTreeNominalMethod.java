@@ -27,10 +27,12 @@ package rapaio.ml.regression.tree;
 
 import rapaio.core.CoreTools;
 import rapaio.core.stat.OnlineStat;
+import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -63,9 +65,9 @@ public interface RTreeNominalMethod extends Serializable {
      * @return the best candidate
      */
     Optional<RTreeCandidate> computeCandidate(RTree tree,
-                                               Frame df, Var w,
-                                               String testVarName, String targetVarName,
-                                               RTreeTestFunction testFunction);
+                                              Frame df, Var w,
+                                              String testVarName, String targetVarName,
+                                              RTreeTestFunction testFunction);
 
     /**
      * Ignore nominal variables
@@ -101,38 +103,57 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
-            List<RTreeCandidate> result = new ArrayList<>();
+            // we ignore the missing data points, thus we need only non missing levels
+            String[] testLevels = df.levels(testVarName);
+            int len = testLevels.length - 1;
+            WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
-            Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.rvar(testVarName);
-            Var targetVar = df.rvar(targetVarName);
-            Var weights = weightsOld.mapRows(cleanMapping);
+            // initialize
+            for (int i = 0; i < len; i++) {
+                onlineStats[i] = new WeightedOnlineStat();
+            }
 
-            DVector dvWeights = DVector.fromWeights(false, testVar, weights);
-            DVector dvCount = DVector.fromCount(false, testVar);
+            // compute weighted statistics
+
+            for (int i = 0; i < df.rowCount(); i++) {
+                if (df.isMissing(i, testVarName))
+                    continue;
+                int index = df.index(i, testVarName);
+                onlineStats[index - 1].update(df.value(i, targetVarName), w.value(i));
+            }
 
             // check to see if we have enough instances in at least 2 child nodes
-            if (dvCount.countValues(x -> x >= tree.minCount) <= 1)
+            int validCount = 0;
+            for (int i = 0; i < len; i++) {
+                if (onlineStats[i].count() >= tree.minCount) {
+                    validCount++;
+                }
+            }
+            if (validCount <= 1) {
                 return Optional.empty();
+            }
 
             // make the payload
-            RTreeTestPayload p = new RTreeTestPayload(testVar.levels().length - 1);
-            p.totalVar = CoreTools.variance(targetVar).value();
+            WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);
+            RTreeTestPayload p = new RTreeTestPayload(len);
 
-            for (int i = 1; i < testVar.levels().length; i++) {
-                p.splitWeight[i - 1] = dvWeights.get(i - 1);
-                String label = testVar.levels()[i];
-                p.splitVar[i - 1] = CoreTools.variance(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().rvar(targetVarName)).value();
+            p.totalWeight = wos.weightSum();
+            p.totalVar = wos.variance();
+
+            for (int i = 0; i < len; i++) {
+                p.splitWeight[i] = onlineStats[i].weightSum();
+                p.splitVar[i] = onlineStats[i].variance();
             }
+
+            // compute the candidate score
+
             double value = tree.function.computeTestValue(p);
             RTreeCandidate candidate = new RTreeCandidate(value, testVarName);
-            for (int i = 1; i < testVar.levels().length; i++) {
-                String label = testVar.levels()[i];
-                candidate.addGroup(testVarName + " == " + label,
-                        (row, frame) -> frame.label(row, testVarName).equals(label));
+            for (int i = 0; i < len; i++) {
+                String label = testLevels[i + 1];
+                candidate.addGroup(RowPredicate.nomEqual(testVarName, label));
             }
             return Optional.of(candidate);
         }
@@ -153,72 +174,67 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.isMissing(testVarName)).collectMapping();
-            Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.rvar(testVarName);
-            Var targetVar = df.rvar(targetVarName);
-            Var weights = weightsOld.mapRows(cleanMapping);
+            // we ignore the missing data points, thus we need only non missing levels
+            String[] testLevels = df.levels(testVarName);
+            int len = testLevels.length - 1;
+            WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
-            DVector dvWeights = DVector.fromWeights(false, testVar, weights);
-            DVector dvCount = DVector.fromCount(false, testVar);
-
-            // compute online statistics for all level slices
-            OnlineStat[] os = new OnlineStat[testVar.levels().length - 1];
-            for (int i = 0; i < testVar.levels().length - 1; i++) {
-                os[i] = OnlineStat.empty();
+            // initialize
+            for (int i = 0; i < len; i++) {
+                onlineStats[i] = new WeightedOnlineStat();
             }
-            for (int i = 0; i < testVar.rowCount(); i++) {
-                int index = testVar.index(i);
-                if (index == 0)
+
+            // compute weighted statistics
+            for (int i = 0; i < df.rowCount(); i++) {
+                if (df.isMissing(i, testVarName))
                     continue;
-                os[index - 1].update(targetVar.value(i));
+                int index = df.index(i, testVarName);
+                onlineStats[index - 1].update(df.value(i, targetVarName), w.value(i));
             }
 
-            double totalVar = CoreTools.variance(targetVar).value();
+            WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);
 
             RTreeCandidate best = null;
             double bestScore = Double.NaN;
 
-            for (int i = 1; i < testVar.levels().length; i++) {
-                String testLabel = testVar.levels()[i];
+            // for each class compute a possible split
+            for (int i = 0; i < len; i++) {
 
-                // check to see if we have enough values
+                WeightedOnlineStat wosTest = onlineStats[i];
 
-                if (dvCount.get(i) < tree.minCount || df.rowCount() - dvCount.get(i) < tree.minCount)
+                // check if we have enough instances
+                if (wosTest.count() < tree.minCount || wos.count() - wosTest.count() < tree.minCount) {
                     continue;
-
-                OnlineStat osSelect = os[i - 1];
-                OnlineStat osOther = OnlineStat.empty();
-
-                for (int j = 1; j < testVar.levels().length; j++) {
-                    if (i == j)
-                        continue;
-                    osOther.update(os[j - 1]);
                 }
 
+                // compute remaining stats
+                WeightedOnlineStat wosRemain = WeightedOnlineStat.empty();
+                for (int j = 0; j < len; j++) {
+                    if (j != i)
+                        wosRemain.update(onlineStats[j]);
+                }
+
+                // build payload to compute score
                 RTreeTestPayload p = new RTreeTestPayload(2);
-                p.totalVar = totalVar;
+                p.totalVar = wos.variance();
+                p.totalWeight = wos.weightSum();
 
                 // payload for current node
-
-                p.splitWeight[0] = dvWeights.get(i);
-                p.splitVar[0] = osSelect.variance();
+                p.splitVar[0] = wosTest.variance();
+                p.splitWeight[0] = wosTest.weightSum();
 
                 // payload for the others
-
-                p.splitWeight[1] = dvWeights.sum() - dvWeights.get(i);
-                p.splitVar[1] = osOther.variance();
+                p.splitVar[1] = wosRemain.variance();
+                p.splitWeight[1] = wosRemain.weightSum();
 
                 double value = tree.function.computeTestValue(p);
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
                     best = new RTreeCandidate(value, testVarName);
-                    best.addGroup(testVarName + " == " + testLabel,
-                            (row, frame) -> !frame.isMissing(row, testVarName) && frame.label(row, testVarName).equals(testLabel));
-                    best.addGroup(testVarName + " != " + testLabel,
-                            (row, frame) -> !frame.isMissing(row, testVarName) && !frame.label(row, testVarName).equals(testLabel));
+                    best.addGroup(RowPredicate.nomEqual(testVarName, testLevels[i+1]));
+                    best.addGroup(RowPredicate.nomNotEqual(testVarName, testLevels[i+1]));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

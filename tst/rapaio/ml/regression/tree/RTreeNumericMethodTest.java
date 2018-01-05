@@ -96,7 +96,7 @@ public class RTreeNumericMethodTest {
                 RTreeTestFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(c.isPresent());
-        assertEquals("Candidate{score=24.765337043908488, testName='temp', groupNames=[temp <= 69.000000, temp > 69.000000]}",
+        assertEquals("Candidate{score=23.02926213396995, testName='temp', groupNames=[temp <= 69, temp > 69]}",
                 c.get().toString());
     }
 }

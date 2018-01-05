@@ -95,7 +95,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 .withMaxDepth(-1)
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
-                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
+                .withSplitter(RTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
                 .withFunction(RTreeTestFunction.WEIGHTED_VAR_GAIN)
                 .withMinCount(1);
     }

@@ -64,7 +64,7 @@ public class WeightedOnlineStatTest {
         NumVar wnorm = w.solidCopy();
         double wsum = Sum.from(w).value();
         for (int i = 0; i < wnorm.rowCount(); i++) {
-            wnorm.setValue(i, wnorm.value(i)/wsum);
+            wnorm.setValue(i, wnorm.value(i) / wsum);
         }
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
@@ -82,5 +82,47 @@ public class WeightedOnlineStatTest {
 
         assertEquals(wnstat.mean(), stat.mean(), TOL);
         assertEquals(wstat.variance(), stat.variance(), TOL);
+    }
+
+    @Test
+    public void multipleStats() {
+
+        WeightedOnlineStat wos1 = WeightedOnlineStat.empty();
+        WeightedOnlineStat wos2 = WeightedOnlineStat.empty();
+        WeightedOnlineStat wos3 = WeightedOnlineStat.empty();
+
+        WeightedOnlineStat wosTotal = WeightedOnlineStat.empty();
+
+        RandomSource.setSeed(1234L);
+        Normal normal = Normal.from(0, 1);
+        Uniform uniform = new Uniform(0, 1);
+
+        NumVar x = NumVar.from(100, normal::sampleNext);
+        NumVar w = NumVar.from(100, uniform::sampleNext);
+
+        double wsum = Sum.from(w).value();
+        for (int i = 0; i < w.rowCount(); i++) {
+            w.setValue(i, w.value(i)/wsum);
+        }
+
+        for (int i = 0; i < 20; i++) {
+            wos1.update(x.value(i), w.value(i));
+        }
+        for (int i = 20; i < 65; i++) {
+            wos2.update(x.value(i), w.value(i));
+        }
+        for (int i = 65; i < 100; i++) {
+            wos3.update(x.value(i), w.value(i));
+        }
+
+        for (int i = 0; i < 100; i++) {
+            wosTotal.update(x.value(i), w.value(i));
+        }
+
+        WeightedOnlineStat t1 = WeightedOnlineStat.from(wos1, wos2, wos3);
+
+        assertEquals(wosTotal.mean(), t1.mean(), TOL);
+        assertEquals(wosTotal.variance(), t1.variance(), TOL);
+        assertEquals(wosTotal.count(), t1.count(), TOL);
     }
 }

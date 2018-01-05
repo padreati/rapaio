@@ -34,6 +34,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.filter.Filters;
 import rapaio.data.stream.VSpot;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.*;
@@ -86,6 +87,9 @@ public interface RTreeNumericMethod extends Serializable {
     };
 
     RTreeNumericMethod BINARY = new RTreeNumericMethod() {
+
+        private static final long serialVersionUID = 7573765926645246027L;
+
         @Override
         public String name() {
             return "BINARY";
@@ -100,6 +104,9 @@ public interface RTreeNumericMethod extends Serializable {
                 if (!df.rvar(testVarName).isMissing(i))
                     rows[len++] = i;
             }
+            if(len<=0) {
+                return Optional.empty();
+            }
             Arrays.sort(rows, 0, len, Comparator.comparingDouble(o -> df.value(o, testVarName)));
 
             double[] leftWeight = new double[rows.length];
@@ -109,24 +116,28 @@ public interface RTreeNumericMethod extends Serializable {
 
             WeightedOnlineStat so = WeightedOnlineStat.empty();
 
-            for (int i = 0; i < len; i++) {
+            so.update(df.value(rows[0], targetVarName), weights.value(rows[0]));
+            for (int i = 1; i < len; i++) {
                 so.update(df.value(rows[i], targetVarName), weights.value(rows[i]));
-                leftWeight[i] = weights.value(rows[i]) + (i > 0 ? leftWeight[i - 1] : 0);
+                leftWeight[i] = weights.value(rows[i]) + leftWeight[i - 1];
                 leftVar[i] = so.variance();
             }
             so = WeightedOnlineStat.empty();
-            for (int i = len - 1; i >= 0; i--) {
+            so.update(df.value(rows[len - 1], targetVarName), weights.value(rows[len - 1]));
+            for (int i = len - 2; i >= 0; i--) {
                 so.update(df.value(rows[i], targetVarName), weights.value(rows[i]));
-                rightWeight[i] = weights.value(rows[i]) + (i < len - 1 ? rightWeight[i + 1] : 0);
+                rightWeight[i] = weights.value(rows[i]) + rightWeight[i + 1];
                 rightVar[i] = so.variance();
             }
 
             RTreeCandidate best = null;
-            double bestScore = 0.0;
+            double bestScore = -1000000000;
 
             RTreeTestPayload p = new RTreeTestPayload(2);
 
             p.totalVar = (rightVar.length == 0) ? Double.NaN : rightVar[0];
+            p.totalWeight = (rightVar.length == 0) ? Double.NaN : rightWeight[0];
+
             for (int i = c.minCount; i < len - c.minCount - 1; i++) {
                 if (df.value(rows[i], testVarName) == df.value(rows[i + 1], testVarName)) continue;
 
@@ -140,12 +151,8 @@ public interface RTreeNumericMethod extends Serializable {
                     best = new RTreeCandidate(value, testVarName);
 
                     double testValue = df.value(rows[i], testVarName);
-                    best.addGroup(
-                            String.format("%s <= %.6f", testVarName, testValue),
-                            (row, frame) -> !frame.isMissing(row, testVarName) && frame.value(row, testVarName) <= testValue);
-                    best.addGroup(
-                            String.format("%s > %.6f", testVarName, testValue),
-                            (row, frame) -> !frame.isMissing(row, testVarName) && frame.value(row, testVarName) > testValue);
+                    best.addGroup(RowPredicate.numLessEqual(testVarName, testValue));
+                    best.addGroup(RowPredicate.numGreater(testVarName, testValue));
                 }
             }
             return (best != null) ? Optional.of(best) : Optional.empty();

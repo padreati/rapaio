@@ -30,16 +30,15 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.util.Pair;
 import rapaio.util.func.SBiPredicate;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -51,7 +50,7 @@ public class RTreeNode implements Serializable {
     private final RTree tree;
     private final RTreeNode parent;
     private final String groupName;
-    private final SBiPredicate<Integer, Frame> predicate;
+    private final RowPredicate predicate;
 
     private boolean leaf = true;
     private double value;
@@ -60,9 +59,9 @@ public class RTreeNode implements Serializable {
     private RTreeCandidate bestCandidate;
 
     public RTreeNode(final RTree tree,
-                final RTreeNode parent,
-                final String groupName,
-                final SBiPredicate<Integer, Frame> predicate) {
+                     final RTreeNode parent,
+                     final String groupName,
+                     final RowPredicate predicate) {
         this.tree = tree;
         this.parent = parent;
         this.groupName = groupName;
@@ -77,7 +76,7 @@ public class RTreeNode implements Serializable {
         return groupName;
     }
 
-    public SBiPredicate<Integer, Frame> getPredicate() {
+    public RowPredicate getPredicate() {
         return predicate;
     }
 
@@ -124,41 +123,37 @@ public class RTreeNode implements Serializable {
             return;
         }
 
-        List<RTreeCandidate> candidateList = new ArrayList<>();
-
-        ConcurrentLinkedQueue<RTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Stream<String> stream = Arrays.stream(tree.varSelector.nextVarNames());
         if (tree.poolSize() > 0) {
             stream = stream.parallel();
         }
-        stream.forEach(testCol -> {
-            if (testCol.equals(tree.firstTargetName())) return;
+        List<RTreeCandidate> candidates = stream.map(testCol -> {
+            if (testCol.equals(tree.firstTargetName())) return null;
 
             if (df.rvar(testCol).type().isNumeric()) {
-                tree.numericMethod.computeCandidate(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                        .ifPresent(candidates::add);
+                return tree.numericMethod.computeCandidate(
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.function).orElse(null);
             } else {
-                tree.nominalMethod.computeCandidate(
+                return tree.nominalMethod.computeCandidate(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                        .ifPresent(candidates::add);
+                        .orElse(null);
             }
-        });
-        candidateList.addAll(candidates);
-        Collections.sort(candidateList);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
 
-        if (candidateList.isEmpty()) {
+        bestCandidate = null;
+        for (RTreeCandidate candidate : candidates) {
+            if (bestCandidate == null || candidate.getScore() >= bestCandidate.getScore()) {
+                bestCandidate = candidate;
+            }
+        }
+
+        if (bestCandidate == null || bestCandidate.getGroupNames().isEmpty()) {
             return;
         }
         leaf = false;
-        bestCandidate = candidateList.get(0);
 
         // now that we have a best candidate,do the effective split
 
-        if (bestCandidate.getGroupNames().isEmpty()) {
-            leaf = true;
-            return;
-        }
 
         Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(
                 df, weights, bestCandidate.getGroupPredicates());
@@ -176,7 +171,7 @@ public class RTreeNode implements Serializable {
             return;
         }
 
-        List<SBiPredicate<Integer, Frame>> groupPredicates = new ArrayList<>();
+        List<RowPredicate> groupPredicates = new ArrayList<>();
         for (RTreeNode child : children) {
             groupPredicates.add(child.getPredicate());
         }

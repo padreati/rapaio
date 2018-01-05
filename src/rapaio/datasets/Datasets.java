@@ -145,4 +145,9 @@ public class Datasets {
     public static Frame loadSonar() throws IOException {
         return new ArffPersistence().read(Datasets.class.getResourceAsStream("UCI/sonar.arff"));
     }
+
+    public static Frame loadCoverType() throws IOException {
+        return new Csv()
+                .read(Datasets.class.getResourceAsStream("covtype.csv"));
+    }
 }

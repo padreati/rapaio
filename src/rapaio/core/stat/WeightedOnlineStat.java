@@ -36,13 +36,24 @@ public class WeightedOnlineStat {
         return new WeightedOnlineStat();
     }
 
+    public static WeightedOnlineStat from(WeightedOnlineStat... woss) {
+        WeightedOnlineStat wos = new WeightedOnlineStat();
+        for (WeightedOnlineStat w : woss) {
+            wos.update(w);
+        }
+        return wos;
+    }
+
+    private int count = 0;
     private double wsum = 0;
-    private double wsum2 = 0;
     private double mean = 0;
     private double S = 0;
 
     public WeightedOnlineStat() {
+    }
 
+    public int count() {
+        return count;
     }
 
     public double weightSum() {
@@ -58,13 +69,39 @@ public class WeightedOnlineStat {
     }
 
     public WeightedOnlineStat update(double x, double w) {
-        if (w == 0.0 || !Double.isFinite(x) || !Double.isFinite(w))
+        if (w <= 0.0 || !Double.isFinite(x) || !Double.isFinite(w)) {
             return this;
+        }
+        if (count == 0) {
+            wsum = w;
+            mean = x;
+            count = 1;
+            S = 0;
+            return this;
+        }
+        count++;
         wsum += w;
-        wsum2 += w * w;
         double meanOld = mean;
         mean = meanOld + (w / wsum) * (x - meanOld);
         S += w * (x - meanOld) * (x - mean);
+        return this;
+    }
+
+    public WeightedOnlineStat update(WeightedOnlineStat wos) {
+        if (count == 0) {
+            wsum = wos.wsum;
+            mean = wos.mean;
+            count = wos.count;
+            S = wos.S;
+            return this;
+        }
+
+        double delta = wos.mean - mean;
+        double sumw = wos.wsum + wsum;
+        mean = (mean * wsum + wos.mean * wos.wsum) / sumw;
+        S += wos.S + (delta * delta * wsum * wos.wsum) / sumw;
+        wsum = sumw;
+        count += wos.count;
         return this;
     }
 }

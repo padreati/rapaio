@@ -25,10 +25,7 @@
 
 package rapaio.ml.regression.tree;
 
-import rapaio.data.Frame;
-import rapaio.data.stream.FSpot;
-import rapaio.util.func.SBiPredicate;
-import rapaio.util.func.SPredicate;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,14 +40,15 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
     private final double score;
     private final String testName;
     private final List<String> groupNames = new ArrayList<>();
-    private final List<SBiPredicate<Integer, Frame>> groupPredicates = new ArrayList<>();
+    private final List<RowPredicate> groupPredicates = new ArrayList<>();
 
     public RTreeCandidate(double score, String testName) {
         this.score = score;
         this.testName = testName;
     }
 
-    public void addGroup(String name, SBiPredicate<Integer, Frame> predicate) {
+    public void addGroup(RowPredicate predicate) {
+        String name = predicate.toString();
         if (groupNames.contains(name)) {
             throw new IllegalArgumentException("group name already defined");
         }
@@ -62,7 +60,7 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
         return groupNames;
     }
 
-    public List<SBiPredicate<Integer, Frame>> getGroupPredicates() {
+    public List<RowPredicate> getGroupPredicates() {
         return groupPredicates;
     }
 

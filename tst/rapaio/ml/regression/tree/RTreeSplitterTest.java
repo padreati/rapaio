@@ -27,15 +27,14 @@ package rapaio.ml.regression.tree;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.distributions.Uniform;
-import rapaio.data.Frame;
-import rapaio.data.NumVar;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
+import rapaio.data.*;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class RTreeSplitterTest {
 
@@ -51,8 +50,8 @@ public class RTreeSplitterTest {
         df = SolidFrame.byVars(NumVar.empty().withName("x"));
 
         candidate = new RTreeCandidate(0, "");
-        candidate.addGroup("x < 10", (row, frame) -> frame.value(row, "x") < 10);
-        candidate.addGroup("x > 20", (row, frame) -> frame.value(row, "x") > 20);
+        candidate.addGroup(RowPredicate.numLess("x", 10));
+        candidate.addGroup(RowPredicate.numGreater("x", 20));
     }
 
     private void populate(int group, int count, double weight) {
@@ -96,6 +95,11 @@ public class RTreeSplitterTest {
 
         assertEquals(2, result._2.get(0).stream().mapToDouble().sum(), TOL);
         assertEquals(4, result._2.get(1).stream().mapToDouble().sum(), TOL);
+
+        List<Mapping> mappings = splitter.performMapping(df, w, candidate.getGroupPredicates());
+        for (int i = 0; i < mappings.size(); i++) {
+            assertTrue(result._1.get(i).deepEquals(df.mapRows(mappings.get(i))));
+        }
     }
 
     @Test
@@ -122,6 +126,11 @@ public class RTreeSplitterTest {
         assertEquals(7, result._2.get(1).rowCount());
         assertEquals(7, result._2.get(1).rowCount());
         assertEquals(14, result._2.get(1).stream().mapToDouble().sum(), TOL);
+
+        List<Mapping> mappings = splitter.performMapping(df, w, candidate.getGroupPredicates());
+        for (int i = 0; i < mappings.size(); i++) {
+            assertTrue(result._1.get(i).deepEquals(df.mapRows(mappings.get(i))));
+        }
     }
 
     @Test
@@ -147,6 +156,11 @@ public class RTreeSplitterTest {
         assertEquals(9, result._2.get(1).rowCount());
         assertEquals(9, result._2.get(1).rowCount());
         assertEquals(14 + 6 * 14 / 24., result._2.get(1).stream().mapToDouble().sum(), TOL);
+
+        List<Mapping> mappings = splitter.performMapping(df, w, candidate.getGroupPredicates());
+        for (int i = 0; i < mappings.size(); i++) {
+            assertTrue(result._1.get(i).deepEquals(df.mapRows(mappings.get(i))));
+        }
     }
 
     @Test
@@ -168,10 +182,10 @@ public class RTreeSplitterTest {
 
         // group 1
         assertEquals(g1count, result._2.get(0).rowCount());
-        assertEquals(10 + 3 * (g1count-10), result._2.get(0).stream().mapToDouble().sum(), TOL);
+        assertEquals(10 + 3 * (g1count - 10), result._2.get(0).stream().mapToDouble().sum(), TOL);
 
         // group 2
         assertEquals(g2count, result._2.get(1).rowCount());
-        assertEquals(14 + 3 * (g2count-7) , result._2.get(1).stream().mapToDouble().sum(), TOL);
+        assertEquals(14 + 3 * (g2count - 7), result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 }

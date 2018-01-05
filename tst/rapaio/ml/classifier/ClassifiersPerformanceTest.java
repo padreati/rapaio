@@ -76,7 +76,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     @Before
     public void setUp() throws IOException, URISyntaxException {
         Frame src = Datasets.loadIrisDataset();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 8; i++) {
             Frame copy = src.solidCopy();
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < copy.rowCount(); k++) {
@@ -90,12 +90,25 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
 
     @Test
     @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
-    public void performanceCartNumericRandomRunsDepth12Serial5k() throws Exception {
+    public void performanceCartNumericRandomRunsDepth12Serial150k() throws Exception {
 
         RandomSource.setSeed(1234);
 
         Classifier c = CTree.newCART()
                 .withTest(VarType.NUMERIC, CTreeTest.NumericRandom)
+                .withMaxDepth(12)
+                .withSampler(RowSampler.bootstrap(1));
+        test(c);
+    }
+
+    @Test
+    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
+    public void performanceCartNumericBinaryRunsDepth12Serial150k() throws Exception {
+
+        RandomSource.setSeed(1234);
+
+        Classifier c = CTree.newCART()
+                .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(c);

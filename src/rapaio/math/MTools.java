@@ -37,7 +37,7 @@ import static rapaio.core.CoreTools.distNormal;
  */
 public class MTools {
 
-	/* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */
+    /* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */
 
     public static final double M_SQRT_2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
     /* 1/sqrt(2) */
@@ -53,6 +53,7 @@ public class MTools {
     public static final double M_2PI = 6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
     public static final double M_LOG_PI = 1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
 
+    public static final double PI = Math.PI;
     /* 1/pi */
     public static final double M_1_PI = 0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
 
@@ -80,7 +81,7 @@ public class MTools {
     public static final double ME_PRECISION = 4;
     public static final double ME_UNDERFLOW = 5;
 
-	/* constants taken from float.h for gcc 2.90.29 for Linux 2.0 i386  */
+    /* constants taken from float.h for gcc 2.90.29 for Linux 2.0 i386  */
     /* -- should match Java since both are supposed to be IEEE 754 compliant */
 
     /* Radix of exponent representation */
@@ -322,9 +323,9 @@ public class MTools {
         if ((ix | lx) == 0 || hx < 0) {
             return Double.NaN;
         }
-        if (ix < 0x3b900000) {	/*
-             * |x|<2**-70, return -log(|x|)
-             */
+        if (ix < 0x3b900000) {    /*
+         * |x|<2**-70, return -log(|x|)
+         */
 
             return -Math.log(x);
         }
@@ -337,9 +338,9 @@ public class MTools {
         } /*
          * for x < 2.0
          */ else if (ix < 0x40000000) {
-            if (ix <= 0x3feccccc) { 	/*
-                 * lgamma(x) = lgamma(x+1)-log(x)
-                 */
+            if (ix <= 0x3feccccc) {    /*
+             * lgamma(x) = lgamma(x+1)-log(x)
+             */
 
                 r = -Math.log(x);
                 if (ix >= 0x3FE76944) {
@@ -381,7 +382,7 @@ public class MTools {
                 case 1:
                     z = y * y;
                     w = z * y;
-                    p1 = t0 + w * (t3 + w * (t6 + w * (t9 + w * t12)));	/*
+                    p1 = t0 + w * (t3 + w * (t6 + w * (t9 + w * t12)));    /*
                      * parallel comp
                      */
 
@@ -395,9 +396,9 @@ public class MTools {
                     p2 = 1 + y * (v1 + y * (v2 + y * (v3 + y * (v4 + y * v5))));
                     r += (-0.5 * y + p1 / p2);
             }
-        } else if (ix < 0x40200000) { 			/*
-             * x < 8.0
-             */
+        } else if (ix < 0x40200000) {            /*
+         * x < 8.0
+         */
 
             i = (int) x;
             y = x - (double) i;
@@ -902,7 +903,7 @@ public class MTools {
         else /* Taylor expansion, more accurate in this range */
             y = (x / 2 + 1) * x;
 
-	    /* Newton step for solving   log(1 + y) = x   for y : */
+        /* Newton step for solving   log(1 + y) = x   for y : */
         /* WARNING: does not work for y ~ -1: bug in 1.5.0 */
         y -= (1 + y) * (Math.log1p(y) - x);
         return y;
@@ -989,5 +990,11 @@ public class MTools {
     public static double fdist(double x, double d1, double d2) {
         if (x <= 0.0) return 0.0;
         return 1 - betaIncReg(d1 * x / (d1 * x + d2), d1 / 2, d2 / 2);
+    }
+
+    /// math wappers
+
+    public static double sin(double x) {
+        return Math.sin(x);
     }
 }

@@ -53,6 +53,7 @@ public class GBTLossDeviance implements GBTRegressionLoss {
         for (int i = 0; i < y.rowCount(); i++) {
             up += y.value(i);
             down += Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
+//            down += y.value(i) * (1.0 - y.value(i));
         }
 
         if (down == 0) {

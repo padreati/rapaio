@@ -76,9 +76,9 @@ public interface RTreeTestFunction extends Serializable {
             double up = 0.0;
             for (int i = 0; i < p.splits; i++) {
                 down += p.splitWeight[i];
-                up += p.splitWeight[i] * p.splitVar[i];
+                up += p.splitWeight[i] * p.splitWeight[i] * p.splitVar[i];
             }
-            return (down == 0) ? 0.0 : p.totalVar - up / down;
+            return (down == 0) ? 0.0 : p.totalVar*p.totalWeight - up / down;
         }
     };
 

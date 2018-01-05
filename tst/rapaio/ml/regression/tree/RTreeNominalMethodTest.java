@@ -77,11 +77,11 @@ public class RTreeNominalMethodTest {
         assertEquals(3, c.getGroupNames().size());
         assertEquals(3, c.getGroupPredicates().size());
 
-        assertEquals("outlook == sunny", c.getGroupNames().get(0));
-        assertEquals("outlook == overcast", c.getGroupNames().get(1));
-        assertEquals("outlook == rain", c.getGroupNames().get(2));
+        assertEquals("outlook = 'sunny'", c.getGroupNames().get(0));
+        assertEquals("outlook = 'overcast'", c.getGroupNames().get(1));
+        assertEquals("outlook = 'rain'", c.getGroupNames().get(2));
 
-        assertEquals(-0.8092796092796135, c.getScore(), 1e-20);
+        assertEquals(4.432653061224499, c.getScore(), 1e-20);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class RTreeNominalMethodTest {
 
         assertTrue(cs.isPresent());
 
-        assertEquals("Candidate{score=11.235164835164838, testName='outlook', groupNames=[outlook == overcast, outlook != overcast]}",
+        assertEquals("Candidate{score=4.318367346938771, testName='outlook', groupNames=[outlook = 'overcast', outlook != 'overcast']}",
                 cs.get().toString());
     }
 }
