@@ -196,7 +196,7 @@ public class RFit implements Printable {
         if (withResiduals) {
             for (String target : targetNames()) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(target).setValue(i, df.rvar(target).value(i) - fit(target).value(i));
+                    residuals.get(target).setValue(i, df.value(i, target) - fit(target).value(i));
                 }
 
                 double mu = CoreTools.mean(df.rvar(target)).value();
@@ -205,9 +205,9 @@ public class RFit implements Printable {
                 double rssValue = 0;
 
                 for (int i = 0; i < df.rowCount(); i++) {
-                    tssValue += Math.pow(df.rvar(target).value(i) - mu, 2);
+                    tssValue += Math.pow(df.value(i, target) - mu, 2);
                     essValue += Math.pow(fit(target).value(i) - mu, 2);
-                    rssValue += Math.pow(df.rvar(target).value(i) - fit(target).value(i), 2);
+                    rssValue += Math.pow(df.value(i, target) - fit(target).value(i), 2);
                 }
 
                 tss.put(target, tssValue);

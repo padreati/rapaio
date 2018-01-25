@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A frame which is build on the base of another frame with
@@ -145,6 +144,11 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public Var rvar(String varName) {
         return rvar(varIndex(varName));
+    }
+
+    @Override
+    public VarType type(String varName) {
+        return source.type(varName);
     }
 
     @Override

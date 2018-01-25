@@ -154,7 +154,6 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             Mapping samplerMapping = sampler().nextSample(xm, weights).mapping;
             Frame xmLearn = xm.mapRows(samplerMapping);
-//            Frame xLearn = x.mapRows(samplerMapping);
 
             // build regions
 
@@ -166,8 +165,6 @@ public class GBTRegression extends AbstractRegression implements Printable {
                     xmLearn,
                     MappedVar.byRows(y, samplerMapping),
                     MappedVar.byRows(fitValues, samplerMapping),
-//                    y,
-//                    fitValues,
                     lossFunction);
 
             // add next prediction to the fit values

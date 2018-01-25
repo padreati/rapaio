@@ -33,11 +33,9 @@ import rapaio.data.Var;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.util.Pair;
-import rapaio.util.func.SBiPredicate;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -113,7 +111,7 @@ public class RTreeNode implements Serializable {
     }
 
     public void learn(RTree tree, Frame df, Var weights, int depth) {
-        value = WeightedMean.from(df.rvar(tree.firstTargetName()), weights).value();
+        value = WeightedMean.from(df, weights, tree.firstTargetName()).value();
         weight = weights.stream().complete().mapToDouble().sum();
         if (weight == 0) {
             value = parent != null ? parent.value : Double.NaN;
@@ -130,7 +128,7 @@ public class RTreeNode implements Serializable {
         List<RTreeCandidate> candidates = stream.map(testCol -> {
             if (testCol.equals(tree.firstTargetName())) return null;
 
-            if (df.rvar(testCol).type().isNumeric()) {
+            if (df.type(testCol).isNumeric()) {
                 return tree.numericMethod.computeCandidate(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.function).orElse(null);
             } else {

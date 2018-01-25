@@ -150,13 +150,13 @@ public class CTreeNode implements Serializable {
                 if (tree.customTestMap().containsKey(testCol)) {
                     test = tree.customTestMap().get(testCol);
                 }
-                if (tree.testMap().containsKey(df.rvar(testCol).type())) {
-                    test = tree.testMap().get(df.rvar(testCol).type());
+                if (tree.testMap().containsKey(df.type(testCol))) {
+                    test = tree.testMap().get(df.type(testCol));
                 }
                 if (test == null) {
                     throw new IllegalArgumentException("can't train ctree with no " +
-                            "tests for given variable: " + df.rvar(testCol).name() +
-                            " [" + df.rvar(testCol).type().name() + "]");
+                            "tests for given variable: " + testCol +
+                            " [" + df.type(testCol).name() + "]");
                 }
                 CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                 if (candidate != null) {
@@ -180,13 +180,13 @@ public class CTreeNode implements Serializable {
                             if (tree.customTestMap().containsKey(testCol)) {
                                 test = tree.customTestMap().get(testCol);
                             }
-                            if (tree.testMap().containsKey(df.rvar(testCol).type())) {
-                                test = tree.testMap().get(df.rvar(testCol).type());
+                            if (tree.testMap().containsKey(df.type(testCol))) {
+                                test = tree.testMap().get(df.type(testCol));
                             }
                             if (test == null) {
                                 throw new IllegalArgumentException("can't train ctree with no " +
-                                        "tests for given variable: " + df.rvar(testCol).name() +
-                                        " [" + df.rvar(testCol).type().name() + "]");
+                                        "tests for given variable: " + testCol +
+                                        " [" + df.type(testCol).name() + "]");
                             }
                             CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                             if (candidate == null) {

@@ -101,7 +101,7 @@ public interface RTreeNumericMethod extends Serializable {
             Integer[] rows = new Integer[df.rowCount()];
             int len = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                if (!df.rvar(testVarName).isMissing(i))
+                if (!df.isMissing(i, testVarName))
                     rows[len++] = i;
             }
             if(len<=0) {
