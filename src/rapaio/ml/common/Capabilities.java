@@ -157,7 +157,7 @@ public class Capabilities implements Printable {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.rvar(targetName).stream().complete().count() != df.rvar(targetName).rowCount()) {
+            if (df.rvar(targetName).stream().complete().count() != df.rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -183,12 +183,11 @@ public class Capabilities implements Printable {
         List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
-            Var inputVar = df.rvar(inputName);
-            if (!inputTypes.contains(inputVar.type())) {
+            if (!inputTypes.contains(df.type(inputName))) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
-                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
+                sb.append(inputName).append("[").append(df.type(inputName).name()).append("]");
             }
         }
         if (sb.length() > 0) {

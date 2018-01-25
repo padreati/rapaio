@@ -228,6 +228,11 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
+    public VarType type(String varName) {
+        return vars.get(indexes.get(varName)).type();
+    }
+
+    @Override
     public Frame bindVars(Var... vars) {
         return BoundFrame.byVars(this, BoundFrame.byVars(vars));
     }

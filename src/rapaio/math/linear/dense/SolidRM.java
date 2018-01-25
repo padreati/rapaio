@@ -25,16 +25,16 @@
 
 package rapaio.math.linear.dense;
 
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.stream.DoubleStream;
+
 import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-
-import java.util.Arrays;
-import java.util.function.BiFunction;
-import java.util.stream.DoubleStream;
 
 /**
  * Dense 2 dimensional matrix with values in double floating point precision
@@ -219,6 +219,10 @@ public class SolidRM implements RM {
     @Override
     public double get(int row, int col) {
         return values[row][col];
+    }
+    @Override
+    public double[] getRow(int row) {
+        return values[row];
     }
 
     @Override

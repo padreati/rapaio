@@ -54,14 +54,14 @@ public class GaussianPdf implements NumericEstimator {
     public void learn(Frame df, String targetVar, String testVar) {
         normals.clear();
         Map<String, OnlineStat> onlineStatMap = new HashMap<>();
-        for (String label : df.rvar(targetVar).levels()) {
+        for (String label : df.levels(targetVar)) {
             onlineStatMap.put(label, OnlineStat.empty());
         }
         df.stream().forEach(s -> {
             String label = s.label(targetVar);
             onlineStatMap.get(label).update(s.value(testVar));
         });
-        for (String label : df.rvar(targetVar).levels()) {
+        for (String label : df.levels(targetVar)) {
             if ("?".equals(label)) {
                 continue;
             }

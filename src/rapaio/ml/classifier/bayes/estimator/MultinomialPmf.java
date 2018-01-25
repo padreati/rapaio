@@ -58,8 +58,8 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
     @Override
     public void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar) {
 
-        String[] targetDict = df.rvar(targetVar).levels();
-        String[] testDict = df.rvar(testVar).levels();
+        String[] targetDict = df.levels(targetVar);
+        String[] testDict = df.levels(testVar);
 
         defaultP = 1.0 / testDict.length;
 

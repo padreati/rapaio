@@ -25,19 +25,23 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.NumVar;
-import rapaio.math.MTools;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.NumVar;
+import rapaio.math.MTools;
+import rapaio.math.linear.dense.MappedRM;
+import rapaio.math.linear.dense.MatrixMultiplication;
+import rapaio.math.linear.dense.SVDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.Printable;
+import rapaio.sys.WS;
 
 /**
  * Dense matrix with double precision floating point values
@@ -351,4 +355,10 @@ public interface RM extends Serializable, Printable {
         }
         return sb.toString();
     }
+
+    /**
+     * @param row
+     * @return
+     */
+    double[] getRow(int row);
 }

@@ -40,12 +40,12 @@ import java.util.stream.Collectors;
  */
 public class Apriori implements Printable {
 
-    private Var targetVar;
     private Frame inputDf;
     private BiPredicate<Integer, DVector> filter;
 
     private List<List<Pair<AprioriRule, DVector>>> P;
     private List<AprioriRule> rules;
+    private String[] targetLevels;
     private double coverage;
 
     public String[] inputVarNames() {
@@ -59,7 +59,7 @@ public class Apriori implements Printable {
                 .filter(var -> !var.name().equals(target))
                 .collect(Collectors.toList());
         this.inputDf = SolidFrame.byVars(inputVars);
-        this.targetVar = df.rvar(target);
+        this.targetLevels = df.levels(target);
         this.filter = filter;
 
         List<AprioriRule> C = new ArrayList<>();
@@ -78,13 +78,13 @@ public class Apriori implements Printable {
         }
 
         List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.from(rule,
-                DVector.empty(false, targetVar.levels())))
+                DVector.empty(false, df.levels(target))))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < df.rowCount(); i++) {
             for (Pair<AprioriRule, DVector> cnt : counts) {
                 if (cnt._1.matchRow(df, i)) {
-                    cnt._2.increment(targetVar.index(i), 1);
+                    cnt._2.increment(df.index(i, target), 1);
                 }
             }
         }
@@ -116,9 +116,9 @@ public class Apriori implements Printable {
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, targetVar.levels())));
+                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, df.levels(target))));
                         }
-                        cnts.get(next.toString())._2.increment(targetVar.index(i), 1);
+                        cnts.get(next.toString())._2.increment(df.index(i, target), 1);
                     }
                 }
             }
@@ -190,7 +190,7 @@ public class Apriori implements Printable {
                 sb.append(j + 1).append(". ").append(P.get(i).get(j)._1.toString())
                         .append(" ")
                         .append(WS.formatFlex(P.get(i).get(j)._2.sum())).append(" [");
-                for (int k = 1; k < targetVar.levels().length; k++) {
+                for (int k = 1; k < targetLevels.length; k++) {
                     sb.append(WS.formatShort(P.get(i).get(j)._2.get(k))).append(",");
                 }
                 sb.append("]\n");

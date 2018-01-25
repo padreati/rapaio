@@ -112,6 +112,13 @@ public interface Frame extends Serializable, Printable {
     Var rvar(String name);
 
     /**
+     * Returns the type of the given var
+     * @param name variable name
+     * @return variable type
+     */
+    VarType type(String name);
+
+    /**
      * Adds the given variables to the variables of the current frame to build a new frame.
      * New variables must have the same number of rows.
      *

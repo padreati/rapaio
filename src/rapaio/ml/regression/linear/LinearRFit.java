@@ -43,14 +43,15 @@ import rapaio.sys.WS;
  */
 public class LinearRFit extends RFit {
 
-    private final LinearRegression lm;
+    private final RidgeRegression lm;
     private RM beta_hat;
     private RM beta_std_error;
     private RM beta_t_value;
     private RM beta_p_value;
     private String[][] beta_significance;
 
-    public LinearRFit(LinearRegression model, Frame df, boolean withResiduals) {
+    
+    public LinearRFit(RidgeRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -192,7 +193,7 @@ public class LinearRFit extends RFit {
                 }
                 sb.append(tt.summary());
                 sb.append("--------\n");
-                sb.append("Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1\n\n");
+                sb.append("Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n\n");
 
 
                 sb.append(String.format("Residual standard error: %s on %d degrees of freedom\n",

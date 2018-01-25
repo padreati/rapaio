@@ -141,7 +141,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             yk.add(NumVar.fill(df.rowCount(), 0));
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            yk.get(df.rvar(firstTargetName()).index(i) - 1).setValue(i, 1);
+            yk.get(df.index(i, firstTargetName()) - 1).setValue(i, 1);
         }
 
         for (int m = 0; m < runs(); m++) {
