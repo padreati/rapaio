@@ -1,0 +1,17 @@
+treatment	response
+none	3
+low	6
+medium	7
+high	5
+none	2
+low	6
+medium	8
+high	4
+none	3
+low	5
+medium	6
+high	5
+none	2
+low	4
+medium	7
+high	4

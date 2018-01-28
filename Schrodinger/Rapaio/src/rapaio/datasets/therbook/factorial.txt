@@ -1,0 +1,13 @@
+growth	diet	coat
+6.6	A	light
+7.2	A	light
+6.9	B	light
+8.3	B	light
+7.9	C	light
+9.2	C	light
+8.3	A	dark
+8.7	A	dark
+8.1	B	dark
+8.5	B	dark
+9.1	C	dark
+9	C	dark

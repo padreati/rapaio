@@ -1,0 +1,6 @@
+      Genus       species  lifeform
+     Acer   platanoides        tree
+      Acer      palmatum       tree
+     Ajuga       reptans       herb
+     Conyza   sumatrensis      annual
+    Lamium         album        herb

@@ -1,0 +1,10 @@
+species	stigma	stem.hairs	glandular.hairs	seeds	pappilose	stolons	petals	base
+hirsutum	lobed	spreading	absent	none	uniform	absent	>9mm	rounded
+parviflorum	lobed	spreading	absent	none	uniform	absent	<10mm	rounded
+montanum	lobed	spreading	present	none	uniform	absent	<10mm	rounded
+lanceolatum	lobed	spreading	present	none	uniform	absent	<10mm	cuneate
+tetragonum	clavate	appressed	present	none	uniform	absent	<10mm	rounded
+obscurum	clavate	appressed	present	none	uniform	stolons	<10mm	rounded
+roseum	clavate	spreading	present	none	uniform	absent	<10mm	cuneate
+palustre	clavate	spreading	present	appendage	uniform	absent	<10mm	rounded
+ciliatum	clavate	spreading	present	appendage	ridged	absent	<10mm	rounded

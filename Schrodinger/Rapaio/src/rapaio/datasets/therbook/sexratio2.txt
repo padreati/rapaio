@@ -1,0 +1,15 @@
+male	total	genotype
+3	17	A
+8	22	A
+1	11	A
+2	9	A
+0	3	B
+5	28	B
+7	14	C
+6	14	C
+10	21	C
+1	17	D
+0	8	D
+0	9	D
+3	15	D
+4	12	D

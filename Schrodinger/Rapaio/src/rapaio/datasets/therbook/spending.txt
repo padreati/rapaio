@@ -1,0 +1,9 @@
+spend	country
+25	Argentina
+18	Australia
+7	Austria
+21	Bahrain
+31	"""Balearic Islands"""
+15	Bangladesh
+12	Belgium
+22	Belize

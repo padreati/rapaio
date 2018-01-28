@@ -1,0 +1,13 @@
+bubble.plot<-function(xv,yv,rv,bs=0.1){
+r<-rv/max(rv)
+yscale<-max(yv)-min(yv)
+xscale<-max(xv)-min(xv)
+plot(xv,yv,type="n")
+
+for (i in 1:length(xv)) bubble(xv[i],yv[i],r[i],bs,xscale,yscale) }
+
+bubble<-function (x,y,r,bubble.size,xscale,yscale) {
+theta<-seq(0,2*pi,pi/200)
+yv<-r*sin(theta)*bubble.size*yscale
+xv<-r*cos(theta)* bubble.size*xscale
+lines(x+xv,y+yv) }

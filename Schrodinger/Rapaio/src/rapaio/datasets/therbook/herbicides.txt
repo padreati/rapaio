@@ -1,0 +1,13 @@
+Type	Herbicide
+Woodland	Fusilade
+Conifer	Weedwipe
+Arable	Twinspan
+Hill	Weedwipe
+Bracken	Fusilade
+Scrub	Weedwipe
+Grassland	Allclear
+Chalk	Vanquish
+Meadow	Propinol
+Lawn	Vanquish
+Orchard	Fusilade
+Verge	Allclear

@@ -1,0 +1,7 @@
+ name spring summer autumn winter
+      Jane.Smith     14     18     11     12
+    Robert.Jones     17     18     10     13
+     Dick.Rogers     12     16      9     14
+ William.Edwards     15     14     11     10
+     Janet.Jones     11     17     11     16
+

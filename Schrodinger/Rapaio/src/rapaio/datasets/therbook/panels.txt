@@ -1,0 +1,15 @@
+age	weight	gender
+0	1.2	male
+1	2.3	male
+2	3.5	male
+3	4.8	male
+4	5.8	male
+5	6.9	male
+6	8	male
+0	0.9	female
+1	1.9	female
+2	2.8	female
+3	3.9	female
+4	4.8	female
+5	5.8	female
+6	7	female
