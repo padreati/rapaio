@@ -25,6 +25,7 @@
 
 package rapaio.ml.regression.linear;
 
+import rapaio.data.filter.FFilter;
 import rapaio.ml.regression.Regression;
 
 /**
@@ -45,6 +46,10 @@ public class LinearRegression extends RidgeRegression {
 
     private static final long serialVersionUID = 8610329390138787530L;
 
+    @Override
+    public LinearRegression withInputFilters(FFilter... filters) {
+        return (LinearRegression) super.withInputFilters(filters);
+    }
 
     @Override
     public Regression newInstance() {
