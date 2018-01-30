@@ -25,7 +25,12 @@
 
 package rapaio.ml.regression.linear;
 
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.data.filter.FFilter;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.regression.Regression;
 
 /**
@@ -33,32 +38,43 @@ import rapaio.ml.regression.Regression;
  */
 public class LinearRegression extends RidgeRegression {
 
-    /**
+  /**
    * @param alpha
    */
   public LinearRegression() {
     super(0);
   }
 
-    public static LinearRegression newLm() {
-        return new LinearRegression();
-    }
+  public static LinearRegression newLm() {
+    return new LinearRegression();
+  }
 
-    private static final long serialVersionUID = 8610329390138787530L;
+  private static final long serialVersionUID = 8610329390138787530L;
 
-    @Override
-    public LinearRegression withInputFilters(FFilter... filters) {
-        return (LinearRegression) super.withInputFilters(filters);
-    }
+  @Override
+  public LinearRegression withInputFilters(FFilter... filters) {
+    return (LinearRegression) super.withInputFilters(filters);
+  }
 
-    @Override
-    public Regression newInstance() {
-        return new LinearRegression();
+  @Override
+  protected boolean coreTrain(Frame df, Var weights) {
+    if (targetNames().length == 0) {
+      throw new IllegalArgumentException("OLS must specify at least one target variable name");
     }
+    RM X = SolidRM.copy(df.mapVars(inputNames()));
+    RM Y = SolidRM.copy(df.mapVars(targetNames()));
+    beta = QRDecomposition.from(X).solve(Y);
+    return true;
+  }
 
-    @Override
-    public String name() {
-        return "LinearRegression";
-    }
+  @Override
+  public Regression newInstance() {
+    return new LinearRegression();
+  }
+
+  @Override
+  public String name() {
+    return "LinearRegression";
+  }
 
 }
