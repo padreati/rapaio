@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -48,6 +49,9 @@ public class StudentT implements Distribution {
     }
 
     public StudentT(double df, double mu, double sigma) {
+        if(df < 1) {
+            throw new IllegalArgumentException("degrees of freedom in student t distribution must have a value greater than 0.");
+        }
         this.df = df;
         this.mu = mu;
         this.sigma = sigma;
