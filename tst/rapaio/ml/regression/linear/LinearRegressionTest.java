@@ -108,7 +108,7 @@ public class LinearRegressionTest {
                         " (Intercept) 21.870319   2.088102 10.473778   <2e-16 ***\n" +
                         " TV           0.009478   0.012271  0.772387 0.440806    \n" +
                         "--------\n" +
-                        "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n" +
+                        "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                         "\n" +
                         "Residual standard error: 14.861881 on 198 degrees of freedom\n" +
                         "Multiple R-squared:  0.003004, Adjusted R-squared:  -0.0020313\n" +
@@ -170,7 +170,7 @@ public class LinearRegressionTest {
                 " TV          0.046901   0.002581 18.172707   <2e-16 ***\n" +
                 " Newspaper   0.044219   0.010174  4.346276 0.000022 ***\n" +
                 "--------\n" +
-                "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n" +
+                "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +
                 "Residual standard error: 3.1207199 on 197 degrees of freedom\n" +
                 "Multiple R-squared:  0.6458355, Adjusted R-squared:  0.6422399\n" +
@@ -188,7 +188,7 @@ public class LinearRegressionTest {
                 " TV           0.006029   0.011533 0.522724   0.601754    \n" +
                 " Newspaper    0.240052   0.045465 5.279958   3.40e-07 ***\n" +
                 "--------\n" +
-                "Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n" +
+                "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +
                 "Residual standard error: 13.9454627 on 197 degrees of freedom\n" +
                 "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +

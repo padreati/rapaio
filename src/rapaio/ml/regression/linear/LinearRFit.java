@@ -193,7 +193,7 @@ public class LinearRFit extends RFit {
                 }
                 sb.append(tt.summary());
                 sb.append("--------\n");
-                sb.append("Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1\n\n");
+                sb.append("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n");
 
 
                 sb.append(String.format("Residual standard error: %s on %d degrees of freedom\n",
