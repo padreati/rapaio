@@ -38,18 +38,15 @@ import rapaio.ml.regression.Regression;
  */
 public class LinearRegression extends RidgeRegression {
 
-  /**
-   * @param alpha
-   */
-  public LinearRegression() {
+  private static final long serialVersionUID = 8610329390138787530L;
+
+  protected LinearRegression() {
     super(0);
   }
 
   public static LinearRegression newLm() {
     return new LinearRegression();
   }
-
-  private static final long serialVersionUID = 8610329390138787530L;
 
   @Override
   public LinearRegression withInputFilters(FFilter... filters) {
