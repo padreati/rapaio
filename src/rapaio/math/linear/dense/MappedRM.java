@@ -25,11 +25,11 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
+
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -131,6 +131,15 @@ public class MappedRM implements RM {
             }
         }
         return copy;
+    }
+
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public double[] getRow(int row) {
+      //TODO
+      return null;
     }
 
 }

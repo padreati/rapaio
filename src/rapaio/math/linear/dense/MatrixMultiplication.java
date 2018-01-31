@@ -1,3 +1,4 @@
+
 /*
  * Apache License
  * Version 2.0, January 2004
@@ -312,5 +313,14 @@ public class MatrixMultiplication {
             }
             return C;
         }
+    }
+    public static RM mul(RM A, double scalar){
+      RM X = SolidRM.empty(A.rowCount(), A.colCount());
+      for(int i=0;i<A.rowCount();i++){
+        for (int j=0;j<A.colCount();j++){
+          X.set(i, j, A.get(i, j)*scalar);
+        }
+      }
+      return X;
     }
 }
