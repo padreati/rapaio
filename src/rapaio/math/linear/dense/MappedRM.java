@@ -132,14 +132,4 @@ public class MappedRM implements RM {
         }
         return copy;
     }
-
-    /** 
-     * {@inheritDoc}
-     */
-    @Override
-    public double[] getRow(int row) {
-      //TODO
-      return null;
-    }
-
 }

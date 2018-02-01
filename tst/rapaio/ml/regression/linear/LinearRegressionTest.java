@@ -25,7 +25,6 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
-import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
@@ -58,7 +57,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression\n" +
+                        "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> model not trained.\n" +
                         "\n", lm.summary());
@@ -69,7 +68,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression\n" +
+                        "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
                         " 1. (Intercept) num 2. TV num                     \n" +
@@ -90,7 +89,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression\n" +
+                        "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
                         " 1. (Intercept) num 2. TV num                     \n" +
@@ -121,7 +120,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression\n" +
+                        "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
                         " 1. (Intercept) num 2. TV num                     \n" +
@@ -151,7 +150,7 @@ public class LinearRegressionTest {
                 "=======================\n" +
                 "\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression\n" +
+                "Model instance: LinearRegression()\n" +
                 "\n" +
                 "> input variables: \n" +
                 " 1. (Intercept) num 2. TV num 3. Newspaper num                  \n" +
@@ -240,7 +239,8 @@ public class LinearRegressionTest {
         double procAtTargetPerHour = 12.0 * lmfit.firstFit().value(0); // 12 * 5Min = 1H
 
         lmfit.printSummary();
-
     }
+
+
 
 }

@@ -39,19 +39,18 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
  */
 public class LinearRFit extends RFit {
 
-    private final RidgeRegression lm;
-    private RM beta_hat;
-    private RM beta_std_error;
-    private RM beta_t_value;
-    private RM beta_p_value;
-    private String[][] beta_significance;
+    protected final AbstractLinearRegression lm;
+    protected RM beta_hat;
+    protected RM beta_std_error;
+    protected RM beta_t_value;
+    protected RM beta_p_value;
+    protected String[][] beta_significance;
 
-    
-    public LinearRFit(RidgeRegression model, Frame df, boolean withResiduals) {
+    protected LinearRFit(AbstractLinearRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -211,4 +210,5 @@ public class LinearRFit extends RFit {
         }
         return sb.toString();
     }
+
 }

@@ -220,10 +220,6 @@ public class SolidRM implements RM {
     public double get(int row, int col) {
         return values[row][col];
     }
-    @Override
-    public double[] getRow(int row) {
-        return values[row];
-    }
 
     @Override
     public void set(int row, int col, double value) {

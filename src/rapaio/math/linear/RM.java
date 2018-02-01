@@ -355,10 +355,4 @@ public interface RM extends Serializable, Printable {
         }
         return sb.toString();
     }
-
-    /**
-     * @param row
-     * @return
-     */
-    double[] getRow(int row);
 }

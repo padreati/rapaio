@@ -29,41 +29,43 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.Regression;
-import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 /**
  * @author VHG6KOR
  */
-public class RidgeRegression extends AbstractRegression {
+public class RidgeRegression extends AbstractLinearRegression {
 
     private static final long serialVersionUID = -6014222985456365210L;
 
-    public static RidgeRegression newRr(double alpha) {
-        return new RidgeRegression(alpha);
+    /**
+     * Builds a new ridge regression model.
+     *
+     * @param lambda regularization parameter: 0 means no regularization, infinity means all coefficients shrink to 0
+     * @return new ridge regression model
+     */
+    public static RidgeRegression newRidgeLm(double lambda) {
+        return new RidgeRegression(lambda);
     }
 
-    private double alpha = 0;
-
-    protected RM beta;
-
-    /**
-     * @param alpha Regularization strength; must be a positive float. Regularization improves the conditioning of the problem and reduces the variance of the estimates. Larger values specify stronger regularization
+    /*
+    Regularization strength; must be a positive float. Regularization improves the conditioning
+    of the problem and reduces the variance of the estimates.
+    Larger values specify stronger regularization
      */
-    public RidgeRegression(double alpha) {
-        this.alpha = alpha;
+    private double lambda;
+
+    protected RidgeRegression(double lambda) {
+        this.lambda = lambda;
     }
 
     @Override
     public Regression newInstance() {
-        return new RidgeRegression(alpha);
+        return new RidgeRegression(lambda);
     }
 
     @Override
@@ -75,6 +77,8 @@ public class RidgeRegression extends AbstractRegression {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
+        sb.append("(lambda=").append(WS.formatFlex(lambda));
+        sb.append(")");
         return sb.toString();
     }
 
@@ -94,31 +98,26 @@ public class RidgeRegression extends AbstractRegression {
                 .withAllowMissingTargetValues(false);
     }
 
-    public RV firstCoeff() {
-        return beta.mapCol(0);
+    @Override
+    public RidgeRegression train(Frame df, String... targetVarNames) {
+        return (RidgeRegression) super.train(df, targetVarNames);
     }
 
-    public RV coefficients(int targetIndex) {
-        return beta.mapCol(targetIndex);
-    }
-
-    public RM allCoefficients() {
-        return beta;
+    @Override
+    public RidgeRegression train(Frame df, Var weights, String... targetVarNames) {
+        return (RidgeRegression) super.train(df, weights, targetVarNames);
     }
 
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
-        if (targetNames().length == 0) {
-            throw new IllegalArgumentException("OLS must specify at least one target variable name");
-        }
-        if (alpha < 0) {
-            throw new IllegalArgumentException("Alpha- Regularization strength cannot be negative");
+        if (lambda < 0) {
+            throw new IllegalArgumentException("lambda - regularization strength cannot be negative");
         }
 
         RM X = SolidRM.empty(df.rowCount() + inputNames.length, inputNames.length);
         RM Y = SolidRM.empty(df.rowCount() + inputNames.length, targetNames.length);
 
-        double sqrt = Math.sqrt(this.alpha);
+        double sqrt = Math.sqrt(this.lambda);
         for (int i = 0; i < inputNames.length; i++) {
             int varIndex = df.varIndex(inputNames[i]);
             for (int j = 0; j < df.rowCount(); j++) {
@@ -136,65 +135,4 @@ public class RidgeRegression extends AbstractRegression {
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }
-
-    @Override
-    public LinearRFit fit(Frame df) {
-        return (LinearRFit) super.fit(df);
-    }
-
-    @Override
-    public LinearRFit fit(Frame df, boolean withResiduals) {
-        return (LinearRFit) super.fit(df, withResiduals);
-    }
-
-    @Override
-    protected LinearRFit coreFit(Frame df, boolean withResiduals) {
-        LinearRFit rp = new LinearRFit(this, df, withResiduals);
-        for (int i = 0; i < targetNames().length; i++) {
-            String target = targetName(i);
-            for (int j = 0; j < rp.fit(target).rowCount(); j++) {
-                double fit = 0.0;
-                for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.value(j, inputName(k));
-                }
-                rp.fit(target).setValue(j, fit);
-            }
-        }
-
-        rp.buildComplete();
-        return rp;
-    }
-
-    @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(headerSummary());
-        sb.append("\n");
-
-        if (!hasLearned) {
-            return sb.toString();
-        }
-
-        for (int i = 0; i < targetNames.length; i++) {
-            String targetName = targetNames[i];
-            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
-            sb.append("> Coefficients: \n");
-            RV coeff = beta.mapCol(i);
-
-            TextTable tt = TextTable
-                    .newEmpty(coeff.count() + 1, 2)
-                    .withHeaderRows(1);
-            tt.set(0, 0, "Name", 0);
-            tt.set(0, 1, "Estimate", 0);
-            for (int j = 0; j < coeff.count(); j++) {
-                tt.set(j + 1, 0, inputNames[j], -1);
-                tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
-            }
-            sb.append(tt.summary());
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
-
-
 }

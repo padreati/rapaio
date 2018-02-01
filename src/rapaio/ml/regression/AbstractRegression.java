@@ -107,12 +107,12 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public final Regression train(Frame df, String... targetVarNames) {
+    public Regression train(Frame df, String... targetVarNames) {
         return train(df, NumVar.fill(df.rowCount(), 1), targetVarNames);
     }
 
     @Override
-    public final Regression train(Frame df, Var weights, String... targetVarNames) {
+    public Regression train(Frame df, Var weights, String... targetVarNames) {
         TrainSetup setup = prepareTrainSetup(df, weights, targetVarNames);
         setup = prepareTraining(setup);
         hasLearned = coreTrain(setup.df, setup.w);
