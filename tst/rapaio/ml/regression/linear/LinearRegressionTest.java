@@ -25,17 +25,23 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.NumVar;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Test for linear regression.
@@ -240,7 +246,5 @@ public class LinearRegressionTest {
 
         lmfit.printSummary();
     }
-
-
 
 }

@@ -25,10 +25,9 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.filter.FFilter;
+import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
@@ -41,14 +40,20 @@ import rapaio.ml.regression.Regression;
 public class LinearRegression extends AbstractLinearRegression {
 
     public static LinearRegression newLm() {
-        return new LinearRegression();
+        return new LinearRegression()
+                .withIntercept(true)
+                .withCentering(false)
+                .withScaling(false);
     }
 
     private static final long serialVersionUID = 8610329390138787530L;
 
     @Override
     public Regression newInstance() {
-        return new LinearRegression();
+        return new LinearRegression()
+                .withIntercept(intercept)
+                .withCentering(centering)
+                .withScaling(scaling);
     }
 
     @Override
@@ -82,6 +87,21 @@ public class LinearRegression extends AbstractLinearRegression {
     }
 
     @Override
+    public LinearRegression withIntercept(boolean intercept) {
+        return (LinearRegression) super.withIntercept(intercept);
+    }
+
+    @Override
+    public LinearRegression withCentering(boolean centering) {
+        return (LinearRegression) super.withCentering(centering);
+    }
+
+    @Override
+    public LinearRegression withScaling(boolean scaling) {
+        return (LinearRegression) super.withScaling(scaling);
+    }
+
+    @Override
     public LinearRegression train(Frame df, String... targetVarNames) {
         return (LinearRegression) super.train(df, targetVarNames);
     }
@@ -92,13 +112,54 @@ public class LinearRegression extends AbstractLinearRegression {
     }
 
     @Override
+    protected TrainSetup prepareTraining(TrainSetup trainSetup) {
+        if (intercept) {
+            boolean exists = false;
+            Frame prepared = trainSetup.df;
+            for (String varName : prepared.varNames()) {
+                if (varName.equals(INTERCEPT)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                NumVar var = NumVar.fill(prepared.rowCount(), 1).withName(INTERCEPT);
+                prepared = SolidFrame.byVars(var).bindVars(prepared);
+                return super.prepareTraining(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
+            }
+        }
+        return super.prepareTraining(trainSetup);
+    }
+
+    @Override
     protected boolean coreTrain(Frame df, Var weights) {
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
+
         RM X = SolidRM.copy(df.mapVars(inputNames()));
         RM Y = SolidRM.copy(df.mapVars(targetNames()));
         beta = QRDecomposition.from(X).solve(Y);
         return true;
+    }
+
+    @Override
+    protected FitSetup prepareFit(FitSetup fitSetup) {
+        if (intercept) {
+            boolean exists = false;
+            Frame prepared = fitSetup.df;
+            for (String varName : prepared.varNames()) {
+                if (varName.equals(INTERCEPT)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                NumVar var = NumVar.fill(prepared.rowCount(), 1).withName(INTERCEPT);
+                prepared = SolidFrame.byVars(var).bindVars(prepared);
+                return super.prepareFit(FitSetup.valueOf(prepared, fitSetup.withResiduals));
+            }
+        }
+        return super.prepareFit(fitSetup);
     }
 }

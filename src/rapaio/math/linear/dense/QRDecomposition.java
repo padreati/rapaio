@@ -217,6 +217,6 @@ public class QRDecomposition implements Serializable {
                 }
             }
         }
-        return X.rangeRows(0, QR.colCount()).rangeCols(0, B.colCount());
+        return X.rangeRows(0, QR.colCount()).rangeCols(0, B.colCount()).solidCopy();
     }
 }
