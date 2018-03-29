@@ -99,7 +99,7 @@ class VRangeByName implements VRange {
      * @param indexes list of var indexes
      */
     public VRangeByName(int... indexes) {
-        if (indexes.length == 0) {
+        if (indexes == null || indexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
         StringBuilder sb = new StringBuilder();
@@ -162,11 +162,7 @@ class VRangeByName implements VRange {
                 }
             } else {
                 if (!colNames.contains(range)) {
-                    try {
-                        start = Integer.parseInt(range);
-                    } catch (NumberFormatException ex) {
-                        continue;
-                    }
+                    start = Integer.parseInt(range);
                 } else {
                     start = df.varIndex(range);
                 }
@@ -211,7 +207,7 @@ class VRangeByPredName implements VRange {
     @Override
     public List<String> parseVarNames(Frame df) {
         return df.varStream().map(Var::name)
-                .filter(predicate::test)
+                .filter(predicate)
                 .collect(Collectors.toList());
     }
 
@@ -242,7 +238,7 @@ class VRangeByPred implements VRange {
     @Override
     public List<String> parseVarNames(Frame df) {
         return df.varStream()
-                .filter(predicate::test)
+                .filter(predicate)
                 .map(Var::name)
                 .collect(Collectors.toList());
     }
