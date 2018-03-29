@@ -134,7 +134,7 @@ public class MatrixMultiplication {
     public static RM tiledAlgorithm(RM A, RM B) {
         RM C = SolidRM.empty(A.rowCount(), B.colCount());
 
-//        Pick a tile size T = Θ(√M)
+//        Pick a tile size T = theta(sqrt(M))
         int T = 1;
         while (T < Math.sqrt(A.colCount()))
             T *= 2;
@@ -154,10 +154,10 @@ public class MatrixMultiplication {
                             double sum = 0;
                             // For k from K to min(K + T, m):
                             for (int k = K; k < Math.min(K + T, A.colCount()); k++) {
-                                // Set sum ← sum + Aik × Bkj
+                                // Set sum := sum + Aik x Bkj
                                 sum += A.get(i, k) * B.get(k, j);
                             }
-                            // Set Cij ← sum
+                            // Set Cij := sum
                             C.increment(i, j, sum);
 
                         }

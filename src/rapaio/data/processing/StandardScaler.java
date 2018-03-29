@@ -25,7 +25,6 @@
 
 package rapaio.data.processing;
 
-import com.sun.java_cup.internal.runtime.Scanner;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;

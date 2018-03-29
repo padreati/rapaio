@@ -49,7 +49,7 @@ public class CorrSpearmanTest {
     @Test
     public void testFromWikipedia() {
         CorrSpearman sc = CorrSpearman.from(iq, tvHours);
-        // according with wikipedia article rho must be −0.175757575
+        // according with wikipedia article rho must be -0.175757575
         assertEquals(-0.175757575, sc.matrix().get(0,1), 1e-8);
     }
 

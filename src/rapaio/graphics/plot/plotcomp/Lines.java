@@ -149,7 +149,7 @@ class Clip {
         return code;
     }
 
-    // Cohen–Sutherland clipping algorithm clips a line from
+    // Cohen-Sutherland clipping algorithm clips a line from
     // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
     // diagonal from (xmin, ymin) to (xmax, ymax).
     public Range lineClip(double x0, double y0, double x1, double y1) {

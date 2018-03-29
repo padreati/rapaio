@@ -5,22 +5,15 @@ import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TestRule;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeTest;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.ml.regression.tree.RTreeNumericMethod;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/30/17.

@@ -1,24 +1,14 @@
 package rapaio.ml.regression.linear;
 
-import com.sun.org.apache.xpath.internal.operations.Minus;
-import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
-import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.ml.regression.RFit;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
