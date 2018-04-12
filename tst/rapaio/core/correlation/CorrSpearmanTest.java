@@ -152,4 +152,15 @@ public class CorrSpearmanTest {
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
     }
 
+
+    @Test
+    public void testCollisions() {
+        NumVar x = NumVar.wrap(1, 2, 3, 3, 3, 3, 4, 5, 6);
+        NumVar y = NumVar.from(x, value -> value*value);
+
+        CorrSpearman cp = CorrSpearman.from(x, y);
+        cp.printSummary();
+
+        Assert.assertEquals(1.0, cp.singleValue(), 1e-20);
+    }
 }

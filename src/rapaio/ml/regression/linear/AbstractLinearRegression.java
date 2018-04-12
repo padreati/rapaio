@@ -48,6 +48,11 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
     protected boolean scaling = false;
     protected RM beta;
 
+    /**
+     * Configure the model to introduce an intercept or not.
+     * @param intercept if true an intercept variable will be generated, false otherwise
+     * @return linear model instance
+     */
     public AbstractLinearRegression withIntercept(boolean intercept) {
         this.intercept = intercept;
         return this;

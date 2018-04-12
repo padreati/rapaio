@@ -24,7 +24,7 @@
 
 package rapaio.data;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;

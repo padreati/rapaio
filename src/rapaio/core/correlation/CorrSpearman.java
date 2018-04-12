@@ -46,6 +46,8 @@ import static rapaio.sys.WS.*;
  */
 public class CorrSpearman implements Correlation, Printable {
 
+    private static final long serialVersionUID = -270091303091388587L;
+
     public static CorrSpearman from(Frame df) {
         return new CorrSpearman(df.varStream().toArray(Var[]::new));
     }
@@ -99,7 +101,8 @@ public class CorrSpearman implements Correlation, Printable {
             int start = 0;
             while (start < sorted[i].rowCount()) {
                 int end = start;
-                while (end < sorted[i].rowCount() - 1 && sorted[i].value(end) == sorted[i].value(end + 1)) {
+                while (end < sorted[i].rowCount() - 1 &&
+                        vars[i].value(sorted[i].index(end)) == vars[i].value(sorted[i].index(end + 1))) {
                     end++;
                 }
                 double value = 1 + (start + end) / 2.;

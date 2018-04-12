@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -41,9 +42,9 @@ public class Binomial implements Distribution {
     private static final long serialVersionUID = 8813621560796556828L;
 
     private final double p;
-    private final double n;
+    private final int n;
 
-    public Binomial(double p, double n) {
+    public Binomial(double p, int n) {
         this.p = p;
         this.n = n;
     }
@@ -55,7 +56,7 @@ public class Binomial implements Distribution {
 
     @Override
     public String name() {
-        return "Binomial(p=" + WS.formatFlex(p) + ",n=" + ((int) n) + ")";
+        return "Binomial(p=" + WS.formatFlex(p) + ",n=" + n + ")";
     }
 
     @Override
@@ -105,12 +106,12 @@ public class Binomial implements Distribution {
         sigma = sqrt(n * pr * q);
         gamma = (q - pr) / sigma;
 
-	/* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
+        /* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
          * FIXME: This is far from optimal [cancellation for p ~= 1, etc]: */
         /* temporary hack --- FIXME --- */
         if (p + 1.01 * DBL_EPSILON >= 1.) return n;
 
-		/* y := approx.value (Cornish-Fisher expansion) :  */
+        /* y := approx.value (Cornish-Fisher expansion) :  */
         z = new Normal(0, 1).quantile(p);
         //y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
         y = rint(mu + sigma * (z + gamma * (z * z - 1) / 6));
@@ -119,24 +120,22 @@ public class Binomial implements Distribution {
 
         z = new Binomial(pr, n).cdf(y);
 
-		/* fuzz to ensure left continuity: */
+        /* fuzz to ensure left continuity: */
         p *= 1 - 64 * DBL_EPSILON;
 
         double[] zp = new double[]{z};
         if (n < 1e5) return do_search(y, zp, p, n, pr, 1);
         /* Otherwise be a bit cleverer in the search */
-        {
-            double incr = floor(n * 0.001), oldincr;
-            do {
-                oldincr = incr;
-                y = do_search(y, zp, p, n, pr, incr);
-                incr = Math.max(1, floor(incr / 100));
-            } while (oldincr > 1 && incr > n * 1e-15);
-            return y;
-        }
+        double incr = floor(n * 0.001), oldincr;
+        do {
+            oldincr = incr;
+            y = do_search(y, zp, p, n, pr, incr);
+            incr = Math.max(1, floor(incr / 100));
+        } while (oldincr > 1 && incr > n * 1e-20);
+        return y;
     }
 
-    private static double do_search(double y, double[] z, double p, double n, double pr, double incr) {
+    private static double do_search(double y, double[] z, double p, int n, double pr, double incr) {
         if (z[0] >= p) {
             /* search to the left */
             while (true) {
@@ -146,7 +145,7 @@ public class Binomial implements Distribution {
                 y = Math.max(0, y - incr);
                 z[0] = newz;
             }
-        } else {		/* search to the right */
+        } else {        /* search to the right */
             while (true) {
                 y = Math.min(y + incr, n);
                 if (y == n || (z[0] = new Binomial(pr, n).cdf(y)) >= p)

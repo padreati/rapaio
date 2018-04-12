@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -31,6 +32,8 @@ import java.io.Serializable;
  */
 @Deprecated
 public class CommandBytes implements Serializable {
+
+    private static final long serialVersionUID = -2188530209904804396L;
 
     public enum Type {
         DRAW,

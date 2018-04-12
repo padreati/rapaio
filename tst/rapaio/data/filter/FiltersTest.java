@@ -33,8 +33,8 @@ import rapaio.data.NomVar;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreTools.*;
 import static rapaio.data.filter.Filters.*;
 

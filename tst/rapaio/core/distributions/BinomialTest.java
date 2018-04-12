@@ -31,6 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.io.Csv;
 
+import static org.junit.Assert.assertEquals;
 import static rapaio.graphics.Plotter.lines;
 
 /**
@@ -51,19 +52,30 @@ public class BinomialTest {
     }
 
     @Test
+    public void nameTest() {
+        assertEquals("Binomial(p=0.5,n=10)", new Binomial(0.5, 10).name());
+    }
+
+    @Test
+    public void bigN() {
+        Binomial b = new Binomial(0.5, 10000000);
+        assertEquals(10000000/2, b.quantile(0.5), TOL);
+    }
+
+    @Test
     public void testVariousArtifacts() {
 
         Binomial b = new Binomial(0.2, 120);
         Assert.assertTrue(b.discrete());
-        Assert.assertEquals(0, b.min(), TOL);
-        Assert.assertEquals(120, b.max(), TOL);
-        Assert.assertEquals(24, b.mean(), TOL);
-        Assert.assertEquals(24, b.mode(), TOL);
-        Assert.assertEquals(19.2, b.var(), TOL);
+        assertEquals(0, b.min(), TOL);
+        assertEquals(120, b.max(), TOL);
+        assertEquals(24, b.mean(), TOL);
+        assertEquals(24, b.mode(), TOL);
+        assertEquals(19.2, b.var(), TOL);
 
-        Assert.assertEquals(0.13693063937629152, b.skewness(), TOL);
-        Assert.assertEquals(0.0020833333333333233, b.kurtosis(), TOL);
-        Assert.assertEquals(4.1786127880975386, b.entropy(), TOL);
+        assertEquals(0.13693063937629152, b.skewness(), TOL);
+        assertEquals(0.0020833333333333233, b.kurtosis(), TOL);
+        assertEquals(4.1786127880975386, b.entropy(), TOL);
     }
 
     @Test
@@ -82,10 +94,10 @@ public class BinomialTest {
         Var pdf4 = df.rvar("pdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(pdf1.value(i), b1.pdf(x.value(i)), TOL);
-            Assert.assertEquals(pdf2.value(i), b2.pdf(x.value(i)), TOL);
-            Assert.assertEquals(pdf3.value(i), b3.pdf(x.value(i)), TOL);
-            Assert.assertEquals(pdf4.value(i), b4.pdf(x.value(i)), TOL);
+            assertEquals(pdf1.value(i), b1.pdf(x.value(i)), TOL);
+            assertEquals(pdf2.value(i), b2.pdf(x.value(i)), TOL);
+            assertEquals(pdf3.value(i), b3.pdf(x.value(i)), TOL);
+            assertEquals(pdf4.value(i), b4.pdf(x.value(i)), TOL);
         }
     }
 
@@ -105,10 +117,10 @@ public class BinomialTest {
         Var cdf4 = df.rvar("cdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(cdf1.value(i), b1.cdf(x.value(i)), TOL);
-            Assert.assertEquals(cdf2.value(i), b2.cdf(x.value(i)), TOL);
-            Assert.assertEquals(cdf3.value(i), b3.cdf(x.value(i)), TOL);
-            Assert.assertEquals(cdf4.value(i), b4.cdf(x.value(i)), TOL);
+            assertEquals(cdf1.value(i), b1.cdf(x.value(i)), TOL);
+            assertEquals(cdf2.value(i), b2.cdf(x.value(i)), TOL);
+            assertEquals(cdf3.value(i), b3.cdf(x.value(i)), TOL);
+            assertEquals(cdf4.value(i), b4.cdf(x.value(i)), TOL);
         }
     }
 
@@ -128,10 +140,10 @@ public class BinomialTest {
         Var q4 = df.rvar("q_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(q1.value(i), b1.quantile(x.value(i)), TOL);
-            Assert.assertEquals(q2.value(i), b2.quantile(x.value(i)), TOL);
-            Assert.assertEquals(q3.value(i), b3.quantile(x.value(i)), TOL);
-            Assert.assertEquals(q4.value(i), b4.quantile(x.value(i)), TOL);
+            assertEquals(q1.value(i), b1.quantile(x.value(i)), TOL);
+            assertEquals(q2.value(i), b2.quantile(x.value(i)), TOL);
+            assertEquals(q3.value(i), b3.quantile(x.value(i)), TOL);
+            assertEquals(q4.value(i), b4.quantile(x.value(i)), TOL);
         }
     }
 }

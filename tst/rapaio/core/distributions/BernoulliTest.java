@@ -96,4 +96,9 @@ public class BernoulliTest {
         assertEquals(0.3250829733914482, b90.entropy(), TOL);
 
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidProbabilityTest() {
+        new Bernoulli(12);
+    }
 }

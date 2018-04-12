@@ -34,7 +34,6 @@ import rapaio.data.Var;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.*;
@@ -50,6 +49,8 @@ import static rapaio.sys.WS.*;
  */
 public class CorrPearson implements Correlation, Printable {
 
+    private static final long serialVersionUID = -7342261109217205843L;
+
     public static CorrPearson from(Frame df) {
         return new CorrPearson(df);
     }
@@ -61,30 +62,19 @@ public class CorrPearson implements Correlation, Printable {
     private final DistanceMatrix d;
 
     private CorrPearson(Frame df) {
-        List<Var> varList = df.varList();
-
-        d = DistanceMatrix.empty(df.varNames());
-        for (int i = 0; i < df.varCount(); i++) {
-            d.set(i,i, 1);
-            for (int j = i + 1; j < varList.size(); j++) {
-                d.set(i,j,compute(varList.get(i), varList.get(j)));
-            }
-        }
+        this(df.varStream().toArray(Var[]::new), df.varNames());
     }
 
     private CorrPearson(Var... vars) {
-        List<Var> varList = Arrays.asList(vars);
-        String[] names = new String[vars.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = vars[i].name();
-            if (names[i].isEmpty())
-                names[i] = "V" + i;
-        }
+        this(vars, Arrays.stream(vars).map(Var::name).toArray(String[]::new));
+    }
+
+    private CorrPearson(Var[] vars, String[] names) {
         d = DistanceMatrix.empty(names);
         for (int i = 0; i < vars.length; i++) {
             d.set(i,i, 1);
             for (int j = i + 1; j < vars.length; j++) {
-                d.set(i,j, compute(vars[i], vars[j]));
+                d.set(i,j,compute(vars[i], vars[j]));
             }
         }
     }
