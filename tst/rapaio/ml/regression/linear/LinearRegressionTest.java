@@ -25,8 +25,6 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
@@ -59,7 +57,7 @@ public class LinearRegressionTest {
         LinearRegression lm = new LinearRegression();
         lm.addInputFilters(FFAddIntercept.filter());
         assertEquals(
-                "Regression fit summary\n" +
+                "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
@@ -68,9 +66,9 @@ public class LinearRegressionTest {
                         "> model not trained.\n" +
                         "\n", lm.summary());
 
-        lm.train(df, "Radio");
+        lm.fit(df, "Radio");
         assertEquals(
-                "Regression fit summary\n" +
+                "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
@@ -89,9 +87,9 @@ public class LinearRegressionTest {
                         " TV           0.009478\n" +
                         "\n", lm.summary());
 
-        LinearRFit lmfit = lm.fit(df, true);
+        LinearRPrediction lmfit = lm.predict(df, true);
         assertEquals(
-                "Regression fit summary\n" +
+                "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
@@ -120,9 +118,9 @@ public class LinearRegressionTest {
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
                         "\n", lmfit.summary());
 
-        LinearRFit lmfit2 = lm.fit(df, false);
+        LinearRPrediction lmfit2 = lm.predict(df, false);
         assertEquals(
-                "Regression fit summary\n" +
+                "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
@@ -150,9 +148,9 @@ public class LinearRegressionTest {
         LinearRegression lm = new LinearRegression();
         lm.addInputFilters(FFAddIntercept.filter());
 
-        lm.train(df, "Sales", "Radio");
+        lm.fit(df, "Sales", "Radio");
 
-        assertEquals("Regression fit summary\n" +
+        assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
                 "Model class: LinearRegression\n" +
@@ -198,7 +196,7 @@ public class LinearRegressionTest {
                 "Residual standard error: 13.9454627 on 197 degrees of freedom\n" +
                 "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +
                 "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.000002\n" +
-                "\n", lm.fit(df, true).summary());
+                "\n", lm.predict(df, true).summary());
     }
 
     @Test
@@ -236,12 +234,12 @@ public class LinearRegressionTest {
         Var trainProc = procClean.withName("proc");
         Frame train = SolidFrame.byVars(trainCpu, trainProc);
         LinearRegression lm = LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
-        lm.train(train, "proc");
+        lm.fit(train, "proc");
         Var cpuTarget = NumVar.empty().withName("cpu");
         cpuTarget.addValue(45);
         Var procDummy = NumVar.empty().withName("proc");
         procDummy.addValue(0.0);
-        LinearRFit lmfit = lm.fit(SolidFrame.byVars(cpuTarget, procDummy), true);
+        LinearRPrediction lmfit = lm.predict(SolidFrame.byVars(cpuTarget, procDummy), true);
         double procAtTargetPerHour = 12.0 * lmfit.firstFit().value(0); // 12 * 5Min = 1H
 
         lmfit.printSummary();

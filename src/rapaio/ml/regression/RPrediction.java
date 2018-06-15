@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 import static java.util.Collections.nCopies;
 
 /**
- * Result of a regression fit.
+ * Result of a regression predict.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RFit implements Printable {
+public class RPrediction implements Printable {
     protected final Regression model;
     protected final Frame df;
     protected final boolean withResiduals;
@@ -54,7 +54,7 @@ public class RFit implements Printable {
 
     // static builder
 
-    protected RFit(final Regression model, final Frame df, final boolean withResiduals) {
+    protected RPrediction(final Regression model, final Frame df, final boolean withResiduals) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
@@ -77,8 +77,8 @@ public class RFit implements Printable {
 
     // private constructor
 
-    public static RFit build(Regression model, Frame df, boolean withResiduals) {
-        return new RFit(model, df, withResiduals);
+    public static RPrediction build(Regression model, Frame df, boolean withResiduals) {
+        return new RPrediction(model, df, withResiduals);
     }
 
     public Frame getFrame() {
@@ -108,7 +108,7 @@ public class RFit implements Printable {
     }
 
     /**
-     * Returns predicted target fit for each target variable name
+     * Returns predicted target predict for each target variable name
      *
      * @return map with numeric variables as predicted values
      */
@@ -117,7 +117,7 @@ public class RFit implements Printable {
     }
 
     /**
-     * Returns predicted target fit for each target variable name
+     * Returns predicted target predict for each target variable name
      *
      * @return frame with fitted variables as columns
      */

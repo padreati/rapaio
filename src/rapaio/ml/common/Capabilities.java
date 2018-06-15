@@ -38,7 +38,7 @@ import java.util.List;
 import static java.util.stream.Collectors.*;
 
 /**
- * Capabilities describes what a machine learning algorithm can train and fit.
+ * Capabilities describes what a machine learning algorithm can predict and predict.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */

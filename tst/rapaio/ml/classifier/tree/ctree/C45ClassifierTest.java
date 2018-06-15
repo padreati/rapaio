@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
@@ -51,7 +51,7 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45();
         classifier.train(df, className);
-        CFit pred = classifier.fit(df);
+        CPrediction pred = classifier.predict(df);
 
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), false);
         DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), false);
@@ -74,7 +74,7 @@ public class C45ClassifierTest {
         classifier.train(df, className);
         Summary.printSummary(classifier);
 
-        CFit pred = classifier.fit(df);
+        CPrediction pred = classifier.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
         Summary.printSummary(cm);
@@ -89,7 +89,7 @@ public class C45ClassifierTest {
         classifier.train(df, className);
         Summary.printSummary(classifier);
 
-        CFit pred = classifier.fit(df);
+        CPrediction pred = classifier.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
         Summary.printSummary(cm);

@@ -29,7 +29,7 @@ import rapaio.core.tools.DVector;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.rule.onerule.NominalRule;
 import rapaio.ml.classifier.rule.onerule.NumericRule;
 import rapaio.ml.classifier.rule.onerule.Rule;
@@ -110,8 +110,8 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(final Frame test, final boolean withClasses, final boolean withDensities) {
-        CFit pred = CFit.build(this, test, withClasses, withDensities);
+    protected CPrediction coreFit(final Frame test, final boolean withClasses, final boolean withDensities) {
+        CPrediction pred = CPrediction.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {

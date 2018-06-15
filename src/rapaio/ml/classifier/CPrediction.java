@@ -34,13 +34,13 @@ import rapaio.printer.Printable;
 import java.util.*;
 
 /**
- * Classification fit result.
+ * Classification predict result.
  * <p>
  * This object holds the result of a classification fitting.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CFit implements Printable {
+public class CPrediction implements Printable {
 
     private final Classifier model;
     private final Frame df;
@@ -53,17 +53,17 @@ public class CFit implements Printable {
 
     // builder
 
-    public static CFit build(
+    public static CPrediction build(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
-        return new CFit(model, df, withClasses, withDensities);
+        return new CPrediction(model, df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private CFit(final Classifier model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
+    private CPrediction(final Classifier model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
         this.model = model;
         this.df = df;
         this.hasClasses = hasClasses;

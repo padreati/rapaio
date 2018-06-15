@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
 
 /**
@@ -94,8 +94,8 @@ public class RandomValueRegression extends AbstractRegression {
     }
 
     @Override
-    protected RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
+    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+        RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
         }

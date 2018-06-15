@@ -33,7 +33,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.printer.Summary;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -41,7 +41,7 @@ import rapaio.sys.WS;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
  */
-public class LinearRFit extends RFit {
+public class LinearRPrediction extends RPrediction {
 
     protected final AbstractLinearRegression lm;
     protected RM beta_hat;
@@ -50,7 +50,7 @@ public class LinearRFit extends RFit {
     protected RM beta_p_value;
     protected String[][] beta_significance;
 
-    protected LinearRFit(AbstractLinearRegression model, Frame df, boolean withResiduals) {
+    protected LinearRPrediction(AbstractLinearRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }

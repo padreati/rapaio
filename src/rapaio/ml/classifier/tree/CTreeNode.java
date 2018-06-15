@@ -154,7 +154,7 @@ public class CTreeNode implements Serializable {
                     test = tree.testMap().get(df.type(testCol));
                 }
                 if (test == null) {
-                    throw new IllegalArgumentException("can't train ctree with no " +
+                    throw new IllegalArgumentException("can't predict ctree with no " +
                             "tests for given variable: " + testCol +
                             " [" + df.type(testCol).name() + "]");
                 }
@@ -184,7 +184,7 @@ public class CTreeNode implements Serializable {
                                 test = tree.testMap().get(df.type(testCol));
                             }
                             if (test == null) {
-                                throw new IllegalArgumentException("can't train ctree with no " +
+                                throw new IllegalArgumentException("can't predict ctree with no " +
                                         "tests for given variable: " + testCol +
                                         " [" + df.type(testCol).name() + "]");
                             }

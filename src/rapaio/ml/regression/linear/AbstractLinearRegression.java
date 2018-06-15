@@ -26,8 +26,6 @@
 package rapaio.ml.regression.linear;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
-import rapaio.data.SolidFrame;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -96,18 +94,18 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
     }
 
     @Override
-    public LinearRFit fit(Frame df) {
-        return (LinearRFit) super.fit(df);
+    public LinearRPrediction predict(Frame df) {
+        return (LinearRPrediction) super.predict(df);
     }
 
     @Override
-    public LinearRFit fit(Frame df, boolean withResiduals) {
-        return (LinearRFit) super.fit(df, withResiduals);
+    public LinearRPrediction predict(Frame df, boolean withResiduals) {
+        return (LinearRPrediction) super.predict(df, withResiduals);
     }
 
     @Override
-    protected LinearRFit coreFit(Frame df, boolean withResiduals) {
-        LinearRFit rp = new LinearRFit(this, df, withResiduals);
+    protected LinearRPrediction coreFit(Frame df, boolean withResiduals) {
+        LinearRPrediction rp = new LinearRPrediction(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             for (int j = 0; j < rp.fit(target).rowCount(); j++) {

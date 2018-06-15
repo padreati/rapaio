@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -88,8 +88,8 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    protected RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit fit = RFit.build(this, df, withResiduals);
+    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+        RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
             Var v = fit.fit(targetName(i));

@@ -50,7 +50,7 @@ import java.io.Serializable;
  * <p>
  * However, ofter a filter is used only to alter the data into a single
  * step. For this purpose one can use {@link VFilter#fitApply(Var...)} method
- * which executes both steps (fit and apply) with a single method call.
+ * which executes both steps (predict and apply) with a single method call.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
@@ -74,7 +74,7 @@ public interface VFilter extends Serializable, Printable {
 
     /**
      * Method which allows one to make a single
-     * call to fit filter parameters and apply those filter
+     * call to predict filter parameters and apply those filter
      * on the same data in a single call.
      *
      * @param vars input variable

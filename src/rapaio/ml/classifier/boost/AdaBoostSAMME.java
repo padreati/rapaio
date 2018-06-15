@@ -32,7 +32,7 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
@@ -165,7 +165,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
         Sample sample = sampler().nextSample(df, w);
         hh.train(sample.df, sample.weights.solidCopy(), targetNames());
 
-        CFit fit = hh.fit(df, true, false);
+        CPrediction fit = hh.predict(df, true, false);
 
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -202,17 +202,17 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit fit = CFit.build(this, df, withClasses, true);
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+        CPrediction fit = CPrediction.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
-            CFit hp = h.get(i).fit(df, true, false);
+            CPrediction hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().index(j);
                 fit.firstDensity().setValue(j, index, fit.firstDensity().value(j, index) + a.get(i));
             }
         }
 
-        // simply fit
+        // simply predict
         for (int i = 0; i < fit.firstDensity().rowCount(); i++) {
 
             double max = 0;

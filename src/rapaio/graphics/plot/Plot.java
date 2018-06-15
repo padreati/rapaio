@@ -117,6 +117,36 @@ public class Plot extends HostFigure {
         return this;
     }
 
+    @Override
+    public Plot title(String title) {
+        super.title(title);
+        return this;
+    }
+
+    @Override
+    public Plot bottomMarkers(boolean bottomMarkers) {
+        super.bottomMarkers(bottomMarkers);
+        return this;
+    }
+
+    @Override
+    public Plot leftMarkers(boolean leftMarkers) {
+        super.leftMarkers(leftMarkers);
+        return this;
+    }
+
+    @Override
+    public Plot xLab(String xLab) {
+        super.xLab(xLab);
+        return this;
+    }
+
+    @Override
+    public Plot yLab(String yLab) {
+        super.yLab(yLab);
+        return this;
+    }
+
     // OPTIONS
 
     public Plot xLim(double start, double end) {

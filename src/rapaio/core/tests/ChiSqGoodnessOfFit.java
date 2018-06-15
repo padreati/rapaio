@@ -33,7 +33,7 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 /**
- * Pearson Chi Square goodness of fit test.
+ * Pearson Chi Square goodness of predict test.
  * <p>
  * This test allows one to test if a given observed frequency of a categorical variable
  * differs from a theoretical distribution.
@@ -160,7 +160,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         sb.append("> ChiSqGoodnessOfFit\n");
         sb.append("\n");
 
-        sb.append("Chi-squared test for given probabilities (goodness of fit)\n");
+        sb.append("Chi-squared test for given probabilities (goodness of predict)\n");
         sb.append("\n");
         sb.append("X-squared = ").append(WS.formatFlex(chiValue))
                 .append(", df = ").append(df)

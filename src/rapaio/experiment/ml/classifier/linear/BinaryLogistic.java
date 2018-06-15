@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.common.Capabilities;
 import rapaio.util.func.SFunction;
 
@@ -152,8 +152,8 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.build(this, df, withClasses, withDistributions);
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {

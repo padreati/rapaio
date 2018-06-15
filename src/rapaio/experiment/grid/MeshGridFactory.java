@@ -29,7 +29,7 @@ import rapaio.core.CoreTools;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 
 /**
@@ -58,7 +58,7 @@ public class MeshGridFactory {
                 f2.addValue(x2.value(j));
             }
         }
-        CFit fit = c.fit(SolidFrame.byVars(f1, f2));
+        CPrediction fit = c.predict(SolidFrame.byVars(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

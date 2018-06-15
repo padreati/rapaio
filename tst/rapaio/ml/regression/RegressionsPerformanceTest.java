@@ -57,8 +57,8 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
         long next = seed == null ? RandomSource.getRandom().nextLong() : seed;
         RandomSource.setSeed(next);
         try {
-            c.train(df, "Sales");
-            c.fit(df, true);
+            c.fit(df, "Sales");
+            c.predict(df, true);
         } catch (Throwable th) {
             System.out.println("seed: " + next);
             System.out.println(th.getMessage());

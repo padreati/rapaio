@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
@@ -322,8 +322,8 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
-        CFit prediction = CFit.build(this, df, withClasses, withDensities);
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
+        CPrediction prediction = CPrediction.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<Integer, DVector> res = fitPoint(this, root, i, df);
             int index = res._1;
@@ -369,7 +369,7 @@ public class CTree extends AbstractClassifier {
                 return;
             if (testMap.containsKey(var.type()))
                 return;
-            throw new IllegalArgumentException("can't train ctree with no " +
+            throw new IllegalArgumentException("can't predict ctree with no " +
                     "tests for given variable: " + var.name() +
                     " [" + var.type().name() + "]");
         });

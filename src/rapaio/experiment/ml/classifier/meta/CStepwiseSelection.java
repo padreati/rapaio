@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.Confusion;
@@ -152,7 +152,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
                     if (acc > bestAcc) {
@@ -182,7 +182,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
                     Classifier cNext = c.newInstance();
                     cNext.train(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.fit(testFrame).firstClasses());
+                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
 
@@ -227,7 +227,7 @@ public class CStepwiseSelection extends AbstractClassifier {
 
             WS.println("last test: " + testNext);
 
-            new Confusion(testFrame.rvar(firstTargetName()), best.fit(testFrame).firstClasses()).printSummary();
+            new Confusion(testFrame.rvar(firstTargetName()), best.predict(testFrame).firstClasses()).printSummary();
         }
 
 
@@ -235,8 +235,8 @@ public class CStepwiseSelection extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        return best.fit(df, withClasses, withDistributions);
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+        return best.predict(df, withClasses, withDistributions);
     }
 
 }

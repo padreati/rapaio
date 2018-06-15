@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.bayes.estimator.*;
 import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
@@ -184,11 +184,11 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected CPrediction coreFit(Frame df, final boolean withClasses, final boolean withDensities) {
 
         logger.fine("start fitting values...");
 
-        CFit pred = CFit.build(this, df, withClasses, withDensities);
+        CPrediction pred = CPrediction.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.empty(false, firstTargetLevels());

@@ -27,7 +27,7 @@ package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
@@ -99,7 +99,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
     @Override
     protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
-        logger.config("train method called.");
+        logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
         logger.config("check learners for learning.... ");
@@ -109,7 +109,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 weak.train(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
-            return weak.fit(df).firstDensity().rvar(1);
+            return weak.predict(df).firstDensity().rvar(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
@@ -130,18 +130,18 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         log.withMaxRuns(maxRuns);
         log.train(df, weights, targetNames());
 
-        logger.config("end train method call");
+        logger.config("end predict method call");
         return true;
     }
 
     @Override
     protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.config("fit method called.");
+        logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
 
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
-            return weak.fit(df).firstDensity().rvar(1);
+            return weak.predict(df).firstDensity().rvar(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
@@ -152,11 +152,11 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting binary logistic regression.. ");
-        CFit fit = log.fit(df);
+        CPrediction fit = log.predict(df);
 
-        logger.config("end fit method call");
+        logger.config("end predict method call");
         return fit;
     }
 }

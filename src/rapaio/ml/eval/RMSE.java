@@ -67,7 +67,7 @@ public class RMSE implements Printable {
         this.actual = actual;
         this.fit = fit;
         if (actual.varCount()!=fit.varCount()) {
-            throw new IllegalArgumentException("actual and fit frames have not the same size.");
+            throw new IllegalArgumentException("actual and predict frames have not the same size.");
         }
         compute();
     }

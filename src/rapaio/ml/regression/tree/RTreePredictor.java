@@ -52,7 +52,7 @@ public interface RTreePredictor extends Serializable {
      * @param row  from frame which contains the values to be fitted
      * @param df   frame which contains the row to be fitted
      * @param root tree node where the fitting starts from, recursively
-     * @return a pair of values: first is the regression fit, second is the weight
+     * @return a pair of values: first is the regression predict, second is the weight
      * of the result
      */
     Pair<Double, Double> predict(int row, Frame df, RTreeNode root);

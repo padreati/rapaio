@@ -130,13 +130,13 @@ public class RidgeRegression extends AbstractLinearRegression {
     }
 
     @Override
-    public RidgeRegression train(Frame df, String... targetVarNames) {
-        return (RidgeRegression) super.train(df, targetVarNames);
+    public RidgeRegression fit(Frame df, String... targetVarNames) {
+        return (RidgeRegression) super.fit(df, targetVarNames);
     }
 
     @Override
-    public RidgeRegression train(Frame df, Var weights, String... targetVarNames) {
-        return (RidgeRegression) super.train(df, weights, targetVarNames);
+    public RidgeRegression fit(Frame df, Var weights, String... targetVarNames) {
+        return (RidgeRegression) super.fit(df, weights, targetVarNames);
     }
 
     @Override

@@ -98,7 +98,7 @@ public class RowSamplerTest {
         ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, NumVar.wrap(p));
         chiTest.printSummary();
 
-        // chi square goodness of fit
+        // chi square goodness of predict
 
         Assert.assertTrue(chiTest.pValue() > 0.99);
     }

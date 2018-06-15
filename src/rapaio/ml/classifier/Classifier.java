@@ -117,7 +117,7 @@ public interface Classifier extends Printable, Serializable {
      * </ol>
      * <p>
      * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
-     * {@link #train(Frame, String...)}, {@link #fit(Frame)} and {@link #fit(Frame, boolean, boolean)} methods.
+     * {@link #train(Frame, String...)}, {@link #predict(Frame)} and {@link #predict(Frame, boolean, boolean)} methods.
      *
      * @return list of filter to transform data into input variables.
      */
@@ -263,7 +263,7 @@ public interface Classifier extends Printable, Serializable {
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetNames
      *
-     * @param df         train frame
+     * @param df         predict frame
      * @param weights    instance weights
      * @param targetVars target variables
      */
@@ -275,7 +275,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    CFit fit(Frame df);
+    CPrediction predict(Frame df);
 
     /**
      * Predict classes for given instances, generating classes if specified and
@@ -285,7 +285,7 @@ public interface Classifier extends Printable, Serializable {
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    CFit fit(Frame df, boolean withClasses, boolean withDistributions);
+    CPrediction predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * set the pool size for fork join tasks

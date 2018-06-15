@@ -218,26 +218,26 @@ public interface Regression extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    Regression train(Frame df, String... targetVars);
+    Regression fit(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetName
      *
-     * @param df             train frame
+     * @param df             predict frame
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    Regression train(Frame df, Var weights, String... targetVarNames);
+    Regression fit(Frame df, Var weights, String... targetVarNames);
 
     /**
      * Predict results for given data set of instances
      * and also produce residuals and other derivatives.
      *
      * @param df input data frame
-     * @return regression fit result
+     * @return regression predict result
      */
-    default RFit fit(final Frame df) {
-        return fit(df, false);
+    default RPrediction predict(final Frame df) {
+        return predict(df, false);
     }
 
     /**
@@ -246,7 +246,7 @@ public interface Regression extends Printable, Serializable {
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    RFit fit(Frame df, boolean withResiduals);
+    RPrediction predict(Frame df, boolean withResiduals);
 
     /**
      * set the pool size for fork join tasks

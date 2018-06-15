@@ -87,10 +87,10 @@ public class LDA implements Printable {
         return this;
     }
     
-    public void train(Frame df, String... targetVars) {
+    public void fit(Frame df, String... targetVars) {
     	validate(df, targetVars);
 
-        logger.fine("start lda train");
+        logger.fine("start lda predict");
         RM xx = SolidRM.copy(df.removeVars(targetName));
 
         // compute mean and sd
@@ -178,7 +178,7 @@ public class LDA implements Printable {
         eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
-    public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
+    public Frame predict(Frame df, BiFunction<RV, RM, Integer> kFunction) {
         RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {

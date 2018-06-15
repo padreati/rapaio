@@ -27,7 +27,6 @@ package rapaio.ml.regression.linear;
 
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
@@ -102,13 +101,13 @@ public class LinearRegression extends AbstractLinearRegression {
     }
 
     @Override
-    public LinearRegression train(Frame df, String... targetVarNames) {
-        return (LinearRegression) super.train(df, targetVarNames);
+    public LinearRegression fit(Frame df, String... targetVarNames) {
+        return (LinearRegression) super.fit(df, targetVarNames);
     }
 
     @Override
-    public LinearRegression train(Frame df, Var weights, String... targetVarNames) {
-        return (LinearRegression) super.train(df, weights, targetVarNames);
+    public LinearRegression fit(Frame df, Var weights, String... targetVarNames) {
+        return (LinearRegression) super.fit(df, weights, targetVarNames);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class MAE implements Printable {
 
     private MAE(Frame actual, Frame fit, String... targetVarNames) {
         if (actual.varCount() != fit.varCount()) {
-            throw new IllegalArgumentException("Number of actual and fit variables is not the same");
+            throw new IllegalArgumentException("Number of actual and predict variables is not the same");
         }
 
         this.actual = actual;

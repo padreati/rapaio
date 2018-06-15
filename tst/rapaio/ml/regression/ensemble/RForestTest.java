@@ -56,11 +56,11 @@ public class RForestTest {
         Frame test = dfs.get(1);
 
 
-        tree.train(train, "Sales");
-        tree.fit(test, true).printSummary();
+        tree.fit(train, "Sales");
+        tree.predict(test, true).printSummary();
 
-        rf.train(train, "Sales");
-        rf.fit(test, true).printSummary();
+        rf.fit(train, "Sales");
+        rf.predict(test, true).printSummary();
     }
 
 

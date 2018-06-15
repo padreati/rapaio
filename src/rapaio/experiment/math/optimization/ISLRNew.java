@@ -254,7 +254,7 @@ public class ISLRNew {
 //        LinearRegression lm =
 //                LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
 //
-//        lm.train(df, "Sales");
-//        lm.fit(df, true).printSummary();
+//        lm.predict(df, "Sales");
+//        lm.predict(df, true).printSummary();
     }
 }

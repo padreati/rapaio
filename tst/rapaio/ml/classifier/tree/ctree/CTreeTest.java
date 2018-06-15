@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.classifier.tree.CTreeNode;
@@ -98,10 +98,10 @@ public class CTreeTest {
         tree.train(df, "class");
         tree.printSummary();
 
-        CFit pred = tree.fit(df, true, true);
-        df = df.bindVars(pred.firstClasses().solidCopy().withName("fit"));
+        CPrediction pred = tree.predict(df, true, true);
+        df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
-        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -109,8 +109,8 @@ public class CTreeTest {
         df.setMissing(0, 2);
         df.setMissing(0, 3);
 
-        tree.fit(df, true, false);
-        match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
+        tree.predict(df, true, false);
+        match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
 

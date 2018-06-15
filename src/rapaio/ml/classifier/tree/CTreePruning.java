@@ -64,7 +64,7 @@ class ReducedErrorPruning {
 
         HashMap<Integer, CTreeNode> nodes = collectNodes(tree, tree.getRoot(), new HashMap<>());
 
-        // collect fit produced in each node, in a cumulative way
+        // collect predict produced in each node, in a cumulative way
 
         HashMap<Integer, ValuePair> bottomUp = new HashMap<>();
         HashMap<Integer, ValuePair> topDown = new HashMap<>();

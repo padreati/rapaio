@@ -29,11 +29,10 @@ import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTLossDeviance;
 import rapaio.ml.regression.tree.RTree;
@@ -185,12 +184,12 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
             BTRegression tree = classifier.newInstance();
-            tree.train(train, sample.weights, "##tt##");
+            tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
             tree.boostUpdate(x, resk, resk, new GBTLossDeviance(K));
 
-            RFit rr = tree.fit(df, false);
+            RPrediction rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 f[k][i] += shrinkage * rr.firstFit().value(i);
             }
@@ -209,11 +208,11 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.build(this, df, withClasses, withDistributions);
+    public CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int k = 0; k < K; k++) {
             for (BTRegression tree : trees.get(k)) {
-                RFit rr = tree.fit(df, false);
+                RPrediction rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);

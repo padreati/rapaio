@@ -39,7 +39,7 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
@@ -370,12 +370,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             } else {
 
                 // This code implements Modification 1 from Keerthi et al.'s paper
-//                int offset = RandomSource.nextInt(train.rowCount());
-//                for (int i = offset; i < train.rowCount() + offset; i++) {
+//                int offset = RandomSource.nextInt(predict.rowCount());
+//                for (int i = offset; i < predict.rowCount() + offset; i++) {
 //
 //                    int pos = i;
-//                    if (pos >= train.rowCount())
-//                        pos -= train.rowCount();
+//                    if (pos >= predict.rowCount())
+//                        pos -= predict.rowCount();
 //
 //                    if (alpha[pos] > 0 && alpha[pos] < C * weights.value(pos)) {
 //                        if (examineExample(pos)) {
@@ -444,8 +444,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.build(this, df, withClasses, withDistributions);
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
 

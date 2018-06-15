@@ -69,7 +69,7 @@ public interface FFilter extends Serializable {
     Frame apply(Frame df);
 
     /**
-     * A chained call to train and apply methods.
+     * A chained call to predict and apply methods.
      *
      * @param df given data frame
      * @return transformed data frame

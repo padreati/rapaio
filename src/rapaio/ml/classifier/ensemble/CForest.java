@@ -34,7 +34,7 @@ import rapaio.data.filter.Filters;
 import rapaio.data.sample.Sample;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreeNode;
@@ -336,7 +336,7 @@ public class CForest extends AbstractClassifier {
         Frame oobFrame = df.mapRows(Mapping.wrap(oobIndexes));
 
         // build accuracy on oob data frame
-        CFit fit = c.fit(oobFrame);
+        CPrediction fit = c.predict(oobFrame);
         double refScore = new Confusion(
                 oobFrame.rvar(firstTargetName()),
                 fit.firstClasses())
@@ -353,7 +353,7 @@ public class CForest extends AbstractClassifier {
 
             // compute accuracy on oob shuffled frame
 
-            CFit pfit = c.fit(oobReduced);
+            CPrediction pfit = c.predict(oobReduced);
             double acc = new Confusion(
                     oobReduced.rvar(firstTargetName()),
                     pfit.firstClasses()
@@ -417,7 +417,7 @@ public class CForest extends AbstractClassifier {
         double totalOobInstances;
         List<Integer> oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
-        CFit fit = weak._1.fit(oobTest);
+        CPrediction fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().index(j);
             oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
@@ -457,10 +457,10 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
-        CFit cp = CFit.build(this, df, true, true);
-        List<CFit> treeFits = predictors.stream().parallel()
-                .map(pred -> pred.fit(df, baggingMode.needsClass(), baggingMode.needsDensity()))
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
+        CPrediction cp = CPrediction.build(this, df, true, true);
+        List<CPrediction> treeFits = predictors.stream().parallel()
+                .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
         baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());
         return cp;

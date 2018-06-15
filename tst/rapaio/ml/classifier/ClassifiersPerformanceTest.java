@@ -33,32 +33,17 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
 import rapaio.data.VarType;
-import rapaio.data.filter.frame.FFShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.ml.classifier.tree.CTreeTest;
-import rapaio.ml.eval.Confusion;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.RTreeTestFunction;
-import rapaio.util.Pair;
-import rapaio.util.Util;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static rapaio.sys.WS.print;
 
 /**
  * This test is not intended as a benchmark. It's sole purpose
@@ -167,7 +152,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(next);
         try {
             c.train(df, "class");
-            c.fit(df, true, true);
+            c.predict(df, true, true);
         } catch (Throwable th) {
             System.out.println("seed: " + next);
             System.out.println(th.getMessage());

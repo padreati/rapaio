@@ -33,7 +33,7 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.tree.RTree;
 
@@ -104,7 +104,7 @@ public class RForest extends AbstractRegression {
         IntStream.range(0, runs()).forEach(i -> {
                 Regression rnew = r.newInstance();
                 Sample sample = sampler().nextSample(df, weights);
-                rnew.train(sample.df, sample.weights, firstTargetName());
+                rnew.fit(sample.df, sample.weights, firstTargetName());
                 regressors.add(rnew);
                 if (runningHook() != null) {
                     runningHook().accept(this, i + 1);
@@ -118,11 +118,11 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    protected RFit coreFit(Frame df, boolean withResiduals) {
-        RFit fit = RFit.build(this, df, withResiduals);
+    protected RPrediction coreFit(Frame df, boolean withResiduals) {
+        RPrediction fit = RPrediction.build(this, df, withResiduals);
         List<NumVar> results = regressors
                 .parallelStream()
-                .map(r -> r.fit(df, false).firstFit())
+                .map(r -> r.predict(df, false).firstFit())
                 .collect(Collectors.toList());
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;

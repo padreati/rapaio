@@ -29,7 +29,7 @@ import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
@@ -141,8 +141,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
         Var y = df.rvar(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
-        initRegression.train(df, weights, firstTargetName());
-        fitValues = initRegression.fit(df, false).firstFit().solidCopy();
+        initRegression.fit(df, weights, firstTargetName());
+        fitValues = initRegression.predict(df, false).firstFit().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
             NumVar gradient = lossFunction.gradient(y, fitValues).withName("target");
@@ -157,9 +157,9 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             // build regions
 
-            tree.train(xmLearn, "target");
+            tree.fit(xmLearn, "target");
 
-            // fit residuals
+            // predict residuals
 
             tree.boostUpdate(
                     xmLearn,
@@ -167,9 +167,9 @@ public class GBTRegression extends AbstractRegression implements Printable {
                     MappedVar.byRows(fitValues, samplerMapping),
                     lossFunction);
 
-            // add next prediction to the fit values
+            // add next prediction to the predict values
 
-            RFit treePred = tree.fit(df, false);
+            RPrediction treePred = tree.predict(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitValues.setValue(j, fitValues.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -185,14 +185,14 @@ public class GBTRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    protected RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
-        RFit initPred = initRegression.fit(df, false);
+    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+        RPrediction pred = RPrediction.build(this, df, withResiduals);
+        RPrediction initPred = initRegression.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
         for (BTRegression tree : trees) {
-            RFit treePred = tree.fit(df, false);
+            RPrediction treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }

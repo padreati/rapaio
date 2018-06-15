@@ -58,6 +58,6 @@ public class VFImputeWithClassifier extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        return model.fit(BoundFrame.byVars(vars).mapVars(inputRange)).firstClasses().withName(target);
+        return model.predict(BoundFrame.byVars(vars).mapVars(inputRange)).firstClasses().withName(target);
     }
 }

@@ -1,14 +1,10 @@
 package rapaio.ml.classifier.boost;
 
-import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
-import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.io.Csv;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ensemble.CForest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -46,7 +42,7 @@ public class GBTClassifierTest {
         for (Classifier cf : c) {
 
             cf.train(train, "Cover_Type");
-            CFit fit = cf.fit(test, true, true);
+            CPrediction fit = cf.predict(test, true, true);
 
             fit.printSummary();
         }

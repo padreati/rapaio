@@ -30,7 +30,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFShuffle;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.eval.Confusion;
 import rapaio.ml.eval.ROC;
@@ -75,7 +75,7 @@ public class CEvaluation {
 
             Classifier cc = c.newInstance();
             cc.train(train, classColName);
-            CFit cp = cc.fit(test);
+            CPrediction cp = cc.predict(test);
 
             Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
             acc.addValue(conf.accuracy());
@@ -149,7 +149,7 @@ public class CEvaluation {
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
                 c.train(train, classColName);
-                CFit cp = c.fit(test);
+                CPrediction cp = c.predict(test);
                 Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
@@ -186,15 +186,15 @@ public class CEvaluation {
         for (int i = 0; i < bootstraps; i++) {
 //            System.out.println("get sample...");
             int[] rows = SamplingTools.sampleWR(df.rowCount(), (int) (df.rowCount() * p));
-//            System.out.println("build train set ...");
+//            System.out.println("build predict set ...");
             Frame train = df.mapRows(rows);
 //            System.out.println("build test set ...");
             Frame test = df.removeRows(rows);
-//            System.out.println("learn train set ...");
+//            System.out.println("learn predict set ...");
             Classifier cc = c.newInstance();
             cc.train(train, weights.mapRows(rows), classColName);
-//            System.out.println("fit test cases ...");
-            Var classes = cc.fit(test).firstClasses();
+//            System.out.println("predict test cases ...");
+            Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
             Confusion cm = new Confusion(test.rvar(classColName), classes);
             cm.printSummary();
@@ -212,15 +212,15 @@ public class CEvaluation {
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         IdxVar r = IdxVar.empty().withName("runs");
         NumVar testAcc = NumVar.empty().withName("test");
-        NumVar trainAcc = NumVar.empty().withName("train");
+        NumVar trainAcc = NumVar.empty().withName("predict");
         c.withRunningHook((cs, run) -> {
 
             if (run % step != 0) {
                 return;
             }
             r.addIndex(run);
-            testAcc.addValue(new Confusion(test.rvar(targetVar), c.fit(test).firstClasses()).accuracy());
-            trainAcc.addValue(new Confusion(train.rvar(targetVar), c.fit(train).firstClasses()).accuracy());
+            testAcc.addValue(new Confusion(test.rvar(targetVar), c.predict(test).firstClasses()).accuracy());
+            trainAcc.addValue(new Confusion(train.rvar(targetVar), c.predict(train).firstClasses()).accuracy());
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(plot()
@@ -232,11 +232,11 @@ public class CEvaluation {
         c.train(train, targetVar);
 
         WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());
         trainConfusion.printSummary();
         WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.predict(test).firstClasses());
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
@@ -256,7 +256,7 @@ public class CEvaluation {
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         IdxVar r = IdxVar.empty().withName("runs");
         NumVar testAuc = NumVar.empty().withName("test");
-        NumVar trainAuc = NumVar.empty().withName("train");
+        NumVar trainAuc = NumVar.empty().withName("predict");
         Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 
@@ -264,12 +264,12 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            ROC roc = ROC.from(c.fit(test).firstDensity().rvar(label), test.rvar(targetVar), label);
+            ROC roc = ROC.from(c.predict(test).firstDensity().rvar(label), test.rvar(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
             testAuc.addValue(roc.auc());
             WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
             prevAuc.set(roc.auc());
-//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().rvar(label), train.rvar(targetVar), label).auc());
+//            trainAuc.addValue(new ROC(c.predict(predict).firstDensity().rvar(label), predict.rvar(targetVar), label).auc());
 
 //            WS.draw(plot()
 //                            .lines(r, testAuc, color(1))
@@ -280,11 +280,11 @@ public class CEvaluation {
         c.train(train, targetVar);
 
 //        WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.fit(train).firstClasses());
+        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());
         trainConfusion.printSummary();
 //        WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.fit(test).firstClasses());
+        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.predict(test).firstClasses());
         testConfusion.printSummary();
 
 

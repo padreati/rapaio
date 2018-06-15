@@ -25,24 +25,14 @@
 
 package rapaio.ml.regression.tree;
 
-import rapaio.core.stat.WeightedMean;
 import rapaio.data.*;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.util.Pair;
-import rapaio.util.func.SBiPredicate;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Stream;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -195,7 +185,7 @@ public class RTree extends AbstractRegression implements BTRegression {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
         }
         if (targetNames().length > 1) {
-            throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
+            throw new IllegalArgumentException("tree classifier can't predict more than one target variable");
         }
 
         rows = df.rowCount();
@@ -207,8 +197,8 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    protected RFit coreFit(Frame df, boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
+    protected RPrediction coreFit(Frame df, boolean withResiduals) {
+        RPrediction pred = RPrediction.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<Double, Double> result = predictor.predict(i, df, root);

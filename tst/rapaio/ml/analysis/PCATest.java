@@ -36,7 +36,7 @@ import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.Confusion;
 import rapaio.sys.WS;
@@ -63,9 +63,9 @@ public class PCATest {
         RM x = SolidRM.copy(df.removeVars("y"));
 
         PCA pca = new PCA();
-        pca.train(df.removeVars("y"));
+        pca.fit(df.removeVars("y"));
 
-        Frame fit = pca.fit(df.removeVars("y"), 2);
+        Frame fit = pca.predict(df.removeVars("y"), 2);
         pca.printSummary();
     }
 
@@ -76,20 +76,20 @@ public class PCATest {
         Frame x = iris.removeVars("class");
 
         PCA pca = new PCA();
-        pca.train(x);
+        pca.fit(x);
 
         pca.printSummary();
 
-        Frame fit = pca.fit(x, 4).bindVars(iris.rvar("class"));
+        Frame fit = pca.predict(x, 4).bindVars(iris.rvar("class"));
 
         CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
         CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
 
         rf1.train(iris, "class");
-        CFit fit1 = rf1.fit(iris);
+        CPrediction fit1 = rf1.predict(iris);
 
         rf2.train(fit.mapVars("0,1,class"), "class");
-        CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
+        CPrediction fit2 = rf2.predict(fit.mapVars("0~1,class"));
 
         double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();
@@ -107,7 +107,7 @@ public class PCATest {
         Var z = NumVar.copy(4, 2, 6, 9).withName("z");
 
         PCA pca = new PCA();
-        pca.train(SolidFrame.byVars(x, y, z));
+        pca.fit(SolidFrame.byVars(x, y, z));
         pca.printSummary();
     }
 }

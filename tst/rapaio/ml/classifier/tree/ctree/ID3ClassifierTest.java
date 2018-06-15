@@ -52,7 +52,7 @@ public class ID3ClassifierTest {
 
         CTree id3 = CTree.newID3();
         id3.train(df, className);
-        id3.fit(df);
+        id3.predict(df);
         id3.printSummary();
 
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);
@@ -74,7 +74,7 @@ public class ID3ClassifierTest {
                 .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
                 .withFunction(CTreePurityFunction.InfoGain);
         id3.train(df, className);
-        id3.fit(df);
+        id3.predict(df);
         id3.printSummary();
 
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);

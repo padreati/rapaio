@@ -27,23 +27,17 @@ package rapaio.ml.regression.tree;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.SamplingTools;
-import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
-import rapaio.data.Var;
 import rapaio.data.filter.frame.FFRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.ensemble.RForest;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.List;
-
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Test for regression decision trees
@@ -66,7 +60,7 @@ public class RTreeTest {
                 .withMaxDepth(10)
                 .withMinCount(4)
                 .withFunction(RTreeTestFunction.WEIGHTED_SD_GAIN);
-        tree.train(t, "Sales");
+        tree.fit(t, "Sales");
 
         Assert.assertEquals("\n" +
                 " > TreeClassifier {  varSelector=VarSelector[ALL],\n" +
@@ -145,7 +139,7 @@ public class RTreeTest {
                 "|   |   |   |   |   |   |TV <= 287.6  21.4 (5)  *\n" +
                 "|   |   |   |   |   |   |TV > 287.6  20.82 (5)  *\n", tree.summary());
 
-        RFit fit = tree.fit(t, true);
+        RPrediction fit = tree.predict(t, true);
         fit.printSummary();
 
     }
@@ -165,15 +159,15 @@ public class RTreeTest {
                 .withMaxDepth(10)
                 .withMinCount(2)
                 .withFunction(RTreeTestFunction.WEIGHTED_VAR_GAIN);
-        tree.train(train, "Sales");
-        tree.fit(test, true).printSummary();
+        tree.fit(train, "Sales");
+        tree.predict(test, true).printSummary();
 
         RForest rf = (RForest) RForest.newRF()
                 .withRegression(tree)
                 .withSampler(RowSampler.subsampler(0.8))
                 .withRuns(1000);
 
-        rf.train(train, "Sales");
-        rf.fit(test, true).printSummary();
+        rf.fit(train, "Sales");
+        rf.predict(test, true).printSummary();
     }
 }

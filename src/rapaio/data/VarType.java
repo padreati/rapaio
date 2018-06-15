@@ -35,7 +35,7 @@ package rapaio.data;
  * <p>
  * Suppose a given variable X has 3 possible values: 1, 2, 3. All these values
  * are integer numbers. As a consequence, one can consider a numerical
- * representation to be a best fit for this variable. However, it is also
+ * representation to be a best predict for this variable. However, it is also
  * possible that those values to be the result of a category encoding
  * where the textual corresponding labels are: low, medium and high.
  * Thus, values like 1.5 are not possible under this meaning. And even if we

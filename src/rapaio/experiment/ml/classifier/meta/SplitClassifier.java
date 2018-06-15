@@ -31,7 +31,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.printer.Printable;
 
@@ -123,15 +123,15 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
+    public CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
 
-        CFit pred = CFit.build(this, df, withClasses, withDensities);
+        CPrediction pred = CPrediction.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 
                     Frame f = MappedFrame.byRow(df, spot.row());
-                    CFit p = split.classifier.fit(f, withClasses, withDensities);
+                    CPrediction p = split.classifier.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {

@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.filter.var.VFToNumeric;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.graphics.Plotter.points;
@@ -57,11 +57,11 @@ public class SimpleRegressionTest {
     public void testConstantRegression() {
 
         ConstantRegression r1 = ConstantRegression.with(66).newInstance();
-        r1.train(df, father);
-        RFit fit1 = r1.fit(df);
+        r1.fit(df, father);
+        RPrediction fit1 = r1.predict(df);
         fit1.printSummary();
 
-        assertEquals("Regression fit summary\n" +
+        assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
                 "Model class: ConstantRegression\n" +
@@ -82,8 +82,8 @@ public class SimpleRegressionTest {
                 "\n", r1.summary());
 
         ConstantRegression r2 = ConstantRegression.with(1);
-        r2.train(df, father);
-        RFit fit2 = r2.fit(df, true);
+        r2.fit(df, father);
+        RPrediction fit2 = r2.predict(df, true);
         fit2.printSummary();
 
         Assert.assertTrue(NumVar.fill(df.rowCount(), 66).withName("Father")
@@ -101,11 +101,11 @@ public class SimpleRegressionTest {
     public void testL1Regression() {
 
         L1Regression r1 = L1Regression.create().newInstance();
-        r1.train(df, father);
+        r1.fit(df, father);
 
         r1.printSummary();
 
-        RFit fit1 = r1.fit(df);
+        RPrediction fit1 = r1.predict(df);
         fit1.printSummary();
 
         double median = CoreTools.quantiles(df.rvar(father), 0.5).values()[0];
@@ -117,7 +117,7 @@ public class SimpleRegressionTest {
     public void testL2Regression() {
 
         L2Regression r1 = L2Regression.create().newInstance();
-        assertEquals("Regression fit summary\n" +
+        assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
                 "Model class: L2Regression\n" +
@@ -127,8 +127,8 @@ public class SimpleRegressionTest {
                 "\n" +
                 "\n", r1.summary());
 
-        r1.train(df, father);
-        assertEquals("Regression fit summary\n" +
+        r1.fit(df, father);
+        assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
                 "Model class: L2Regression\n" +
@@ -145,8 +145,8 @@ public class SimpleRegressionTest {
                 " Father 67.6868275\n" +
                 "\n", r1.summary());
 
-        RFit fit1 = r1.fit(df, true);
-        assertEquals("Regression fit summary\n" +
+        RPrediction fit1 = r1.predict(df, true);
+        assertEquals("Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: L2Regression\n" +
@@ -179,8 +179,8 @@ public class SimpleRegressionTest {
     @Test
     public void testRandomValueRegression() {
         RandomValueRegression r1 = RandomValueRegression.create();
-        r1.train(df, father);
-        RFit fit1 = r1.fit(df);
+        r1.fit(df, father);
+        RPrediction fit1 = r1.predict(df);
         fit1.printSummary();
     }
 }

@@ -27,7 +27,7 @@ package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.common.Capabilities;
@@ -100,7 +100,7 @@ public class CStacking extends AbstractClassifier {
     }
 
     protected BaseTrainSetup baseTrain(Frame df, Var w, String... targetVars) {
-        logger.fine("train method called.");
+        logger.fine("predict method called.");
         int pos = 0;
         logger.fine("check learners for learning.... ");
         List<Var> vars =
@@ -112,7 +112,7 @@ public class CStacking extends AbstractClassifier {
                                 weaks.get(i).train(df, w, targetVars);
                             }
                             logger.fine("started fitting weak learner...");
-                            return weaks.get(i).fit(df).firstDensity().rvar(1).solidCopy()
+                            return weaks.get(i).predict(df).firstDensity().rvar(1).solidCopy()
                                     .withName("V" + i);
                         })
                         .collect(toList());
@@ -129,18 +129,18 @@ public class CStacking extends AbstractClassifier {
         logger.fine("started learning for stacker classifier...");
         stacker.train(df, weights, targetNames());
 
-        logger.fine("end train method call");
+        logger.fine("end predict method call");
         return true;
     }
 
     protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.fine("fit method called.");
+        logger.fine("predict method called.");
         List<Var> vars = Util.rangeStream(weaks.size(), true)
                 .boxed()
                 .map(i -> {
                     logger.fine("started fitting weak learner ...");
                     return weaks.get(i)
-                            .fit(df)
+                            .predict(df)
                             .firstDensity()
                             .rvar(1)
                             .solidCopy()
@@ -150,11 +150,11 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("started fitting stacker classifier .. ");
-        CFit fit = stacker.fit(df);
+        CPrediction fit = stacker.predict(df);
 
-        logger.fine("end fit method call");
+        logger.fine("end predict method call");
         return fit;
     }
 }

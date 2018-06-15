@@ -161,12 +161,12 @@ public abstract class AbstractClassifier implements Classifier {
     protected abstract boolean coreTrain(Frame df, Var weights);
 
     @Override
-    public final CFit fit(Frame df) {
-        return fit(df, true, true);
+    public final CPrediction predict(Frame df) {
+        return predict(df, true, true);
     }
 
     @Override
-    public final CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    public final CPrediction predict(Frame df, boolean withClasses, boolean withDistributions) {
         BaseFitSetup setup = baseFit(df, withClasses, withDistributions);
         Frame workDf = prepareFit(setup.df);
         return coreFit(workDf, setup.withClasses, setup.withDistributions);
@@ -185,7 +185,7 @@ public abstract class AbstractClassifier implements Classifier {
         return result;
     }
 
-    protected abstract CFit coreFit(Frame df, boolean withClasses, boolean withDistributions);
+    protected abstract CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions);
 
     @Override
     public String summary() {

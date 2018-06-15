@@ -83,10 +83,10 @@ public class PCA implements Printable {
         return this;
     }
 
-    public void train(Frame df) {
+    public void fit(Frame df) {
         validate(df);
 
-        logger.fine("start pca train");
+        logger.fine("start pca predict");
         RM x = SolidRM.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
@@ -126,7 +126,7 @@ public class PCA implements Printable {
         eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
-    public Frame fit(Frame df, int k) {
+    public Frame predict(Frame df, int k) {
         // TODO check if we have all the initial columns
 
         RM x = SolidRM.copy(df.mapVars(inputNames));

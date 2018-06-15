@@ -107,12 +107,12 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public Regression train(Frame df, String... targetVarNames) {
-        return train(df, NumVar.fill(df.rowCount(), 1), targetVarNames);
+    public Regression fit(Frame df, String... targetVarNames) {
+        return fit(df, NumVar.fill(df.rowCount(), 1), targetVarNames);
     }
 
     @Override
-    public Regression train(Frame df, Var weights, String... targetVarNames) {
+    public Regression fit(Frame df, Var weights, String... targetVarNames) {
         TrainSetup setup = prepareTrainSetup(df, weights, targetVarNames);
         setup = prepareTraining(setup);
         hasLearned = coreTrain(setup.df, setup.w);
@@ -145,7 +145,7 @@ public abstract class AbstractRegression implements Regression {
     protected abstract boolean coreTrain(Frame df, Var weights);
 
     @Override
-    public RFit fit(Frame df, boolean withResiduals) {
+    public RPrediction predict(Frame df, boolean withResiduals) {
         FitSetup setup = prepareFitSetup(df, withResiduals);
         setup = prepareFit(setup);
         return coreFit(setup.df, setup.withResiduals);
@@ -165,7 +165,7 @@ public abstract class AbstractRegression implements Regression {
         return FitSetup.valueOf(result, fitSetup.withResiduals);
     }
 
-    protected abstract RFit coreFit(Frame df, boolean withResiduals);
+    protected abstract RPrediction coreFit(Frame df, boolean withResiduals);
 
     @Override
     public boolean hasLearned() {
@@ -242,7 +242,7 @@ public abstract class AbstractRegression implements Regression {
     public String headerSummary() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Regression fit summary").append("\n");
+        sb.append("Regression predict summary").append("\n");
         sb.append("=======================\n");
         sb.append("\n");
 

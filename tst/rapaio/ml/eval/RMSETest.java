@@ -9,7 +9,7 @@ import rapaio.data.VRange;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.linear.LinearRFit;
+import rapaio.ml.regression.linear.LinearRPrediction;
 import rapaio.ml.regression.linear.LinearRegression;
 
 import java.io.IOException;
@@ -66,9 +66,9 @@ public class RMSETest {
 
         LinearRegression lm = LinearRegression.newLm()
                 .withInputFilters(FFAddIntercept.filter());
-        lm.train(df, targets);
+        lm.fit(df, targets);
 
-        LinearRFit fit = lm.fit(df, true);
+        LinearRPrediction fit = lm.predict(df, true);
         RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.fitFrame());
 
         for (int i = 0; i < targets.length; i++) {

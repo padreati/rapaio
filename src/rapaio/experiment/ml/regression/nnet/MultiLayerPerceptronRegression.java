@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
 
 import java.util.Arrays;
@@ -148,17 +148,17 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     protected boolean coreTrain(Frame df, Var weights) {
         for (String varName : df.varNames()) {
             if (df.rvar(varName).type().isNominal()) {
-                throw new IllegalArgumentException("perceptrons can't train nominal features");
+                throw new IllegalArgumentException("perceptrons can't predict nominal features");
             }
         }
 
         // validate
 
         if (this.targetNames().length != net[net.length - 1].length) {
-            throw new IllegalArgumentException("target var names does not fit output nodes");
+            throw new IllegalArgumentException("target var names does not predict output nodes");
         }
         if (inputNames().length != net[0].length - 1) {
-            throw new IllegalArgumentException("input var names does not fit input nodes");
+            throw new IllegalArgumentException("input var names does not predict input nodes");
         }
 
         // learn network
@@ -227,8 +227,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    protected RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
+    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+        RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (int pos = 0; pos < df.rowCount(); pos++) {
 
             // set inputs

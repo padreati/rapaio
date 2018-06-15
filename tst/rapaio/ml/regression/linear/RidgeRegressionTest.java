@@ -28,9 +28,9 @@ public class RidgeRegressionTest {
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
         df.printSummary();
 
-        LinearRFit lmFit = lm.train(df, "Sales").fit(df, true);
+        LinearRPrediction lmFit = lm.fit(df, "Sales").predict(df, true);
         lmFit.printSummary();
-        LinearRFit ridgeFit = rlm.train(df, "Sales").fit(df, true);
+        LinearRPrediction ridgeFit = rlm.fit(df, "Sales").predict(df, true);
         ridgeFit.printSummary();
 
         for (int i = 0; i < 3; i++) {
@@ -46,9 +46,9 @@ public class RidgeRegressionTest {
         df.printSummary();
 
         RidgeRegression.newRidgeLm(0).withIntercept(false).withCentering(true).withScaling(true)
-                .train(df, "Sales").fit(df, true).printSummary();
+                .fit(df, "Sales").predict(df, true).printSummary();
         LinearRegression.newLm().withIntercept(true).withCentering(true).withScaling(true)
-                .train(df, "Sales").fit(df, true).printSummary();
+                .fit(df, "Sales").predict(df, true).printSummary();
     }
 
     @Test
@@ -61,7 +61,7 @@ public class RidgeRegressionTest {
 
         for (int i = 0; i < lambda.rowCount(); i++) {
             RidgeRegression rr = RidgeRegression.newRidgeLm(lambda.value(i));
-            LinearRFit fit = rr.train(df, "Sales").fit(df, true);
+            LinearRPrediction fit = rr.fit(df, "Sales").predict(df, true);
 
             fit.printSummary();
         }

@@ -28,7 +28,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.CPrediction;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -66,7 +66,7 @@ public class OneRuleTest {
 
         oneRule = oneRule.withMinCount(1);
         oneRule.train(df, "class");
-        CFit pred = oneRule.fit(df);
+        CPrediction pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             assertEquals(labels[i], pred.firstClasses().label(i));
@@ -74,7 +74,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(2);
         oneRule.train(df, "class");
-        pred = oneRule.fit(df);
+        pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             assertTrue(labels[i].contains(pred.firstClasses().label(i)));
@@ -82,7 +82,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(3);
         oneRule.train(df, "class");
-        pred = oneRule.fit(df);
+        pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             assertTrue(labels[i].equals(pred.firstClasses().label(i)));
@@ -90,7 +90,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(4);
         oneRule.train(df, "class");
-        pred = oneRule.fit(df);
+        pred = oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
             assertTrue(pred.firstClasses().label(i).equals(pred.firstClasses().label(0)));
         }
@@ -182,7 +182,7 @@ public class OneRuleTest {
         oneRule1.train(df1, "classes");
 
         oneRule1.printSummary();
-        CFit fit1 = oneRule1.fit(df1, true, true);
+        CPrediction fit1 = oneRule1.predict(df1, true, true);
         fit1.printSummary();
 
 
@@ -191,7 +191,7 @@ public class OneRuleTest {
         oneRule2.train(df2, "class");
 
         oneRule2.printSummary();
-        CFit fit2 = oneRule2.fit(df2, true, true);
+        CPrediction fit2 = oneRule2.predict(df2, true, true);
         fit2.printSummary();
 
 

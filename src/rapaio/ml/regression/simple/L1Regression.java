@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.RPrediction;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -96,8 +96,8 @@ public class L1Regression extends AbstractRegression {
     }
 
     @Override
-    public RFit coreFit(final Frame df, final boolean withResiduals) {
-        RFit pred = RFit.build(this, df, withResiduals);
+    public RPrediction coreFit(final Frame df, final boolean withResiduals) {
+        RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];
