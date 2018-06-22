@@ -73,7 +73,7 @@ public class LDA implements Printable {
     }
 
     private String targetName;
-    private String[] targetLevels;
+    private List<String> targetLevels;
 
     private RV[] classMean;
 
@@ -115,19 +115,19 @@ public class LDA implements Printable {
 
         // compute sliced data for each class
 
-        RM[] x = new RM[targetLevels.length];
-        for (int i = 0; i < targetLevels.length; i++) {
+        RM[] x = new RM[targetLevels.size()];
+        for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
-                    .filter(s -> s.label(targetName).equals(targetLevels[index]))
+                    .filter(s -> s.label(targetName).equals(targetLevels.get(index)))
                     .mapToInt(FSpot::row)
                     .toArray());
         }
 
         // compute class means
 
-        classMean = new RV[targetLevels.length];
-        for (int i = 0; i < targetLevels.length; i++) {
+        classMean = new RV[targetLevels.size()];
+        for (int i = 0; i < targetLevels.size(); i++) {
             classMean[i] = SolidRV.empty(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean().value());
@@ -137,14 +137,14 @@ public class LDA implements Printable {
         // build within scatter matrix
 
         RM sw = SolidRM.empty(inputNames.length, inputNames.length);
-        for (int i = 0; i < targetLevels.length; i++) {
+        for (int i = 0; i < targetLevels.size(); i++) {
             sw.plus(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
         RM sb = SolidRM.empty(inputNames.length, inputNames.length);
-        for (int i = 0; i < targetLevels.length; i++) {
+        for (int i = 0; i < targetLevels.size(); i++) {
             RM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
             sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
         }
@@ -217,8 +217,8 @@ public class LDA implements Printable {
                 if (!var.type().equals(VarType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
-                targetLevels = new String[var.levels().length - 1];
-                System.arraycopy(var.levels(), 1, targetLevels, 0, var.levels().length - 1);
+                List<String> varLevels = var.levels();
+                targetLevels = var.levels().subList(1, varLevels.size());
                 return;
             }
             if (!allowedTypes.contains(var.type())) {

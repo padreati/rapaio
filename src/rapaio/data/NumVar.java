@@ -29,10 +29,7 @@ package rapaio.data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -394,7 +391,7 @@ public final class NumVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public List<String> levels() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 

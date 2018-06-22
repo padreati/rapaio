@@ -112,12 +112,15 @@ public interface CTreeTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+
+            int testNameIndex = df.varIndex(testName);
+            int targetNameIndex = df.varIndex(targetName);
             DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName), false);
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                int row = (df.isMissing(i, testName)) ? 0 : 2;
-                if (df.isMissing(i, testName)) misCount++;
-                dt.update(row, df.index(i, targetName), weights.value(i));
+                int row = (df.isMissing(i, testNameIndex)) ? 0 : 2;
+                if (df.isMissing(i, testNameIndex)) misCount++;
+                dt.update(row, df.index(i, targetNameIndex), weights.value(i));
             }
 
 //            Var sort = new VFRefSort(RowComparators.numeric(df.rvar(testName), true)).fitApply(IdxVar.seq(df.rowCount()));
@@ -125,7 +128,7 @@ public interface CTreeTest extends Tagged, Serializable {
             double[] values = new double[df.rowCount()];
             for (int i = 0; i < df.rowCount(); i++) {
                 rows[i] = i;
-                values[i] = df.value(i, testName);
+                values[i] = df.value(i, testNameIndex);
             }
 
             Arrays.sort(rows, 0, df.rowCount(), Comparator.comparingDouble(o -> values[o]));
@@ -136,14 +139,16 @@ public interface CTreeTest extends Tagged, Serializable {
             for (int i = 0; i < df.rowCount(); i++) {
                 int row = rows[i];
 
-                if (df.isMissing(row, testName)) continue;
+                if (df.isMissing(row, testNameIndex)) continue;
 
-                dt.update(2, df.index(row, targetName), -weights.value(row));
-                dt.update(1, df.index(row, targetName), +weights.value(row));
+                int index = df.index(row, targetNameIndex);
+                double w = weights.value(row);
+                dt.update(2, index, -w);
+                dt.update(1, index, +w);
 
                 if (i >= misCount + c.minCount() - 1 &&
                         i < df.rowCount() - c.minCount() &&
-                        df.value(rows[i], testName) < df.value(rows[i+1], testName)) {
+                        values[rows[i]] < values[rows[i + 1]]) {
 
                     double currentScore = function.compute(dt);
                     if (best != null) {
@@ -152,7 +157,7 @@ public interface CTreeTest extends Tagged, Serializable {
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                     }
                     best = new CTreeCandidate(bestScore, testName);
-                    double testValue = (df.value(rows[i], testName) + df.value(rows[i+1], testName)) / 2.0;
+                    double testValue = (values[rows[i]] + values[rows[i + 1]]) / 2.0;
                     best.addGroup(RowPredicate.numLessEqual(testName, testValue));
                     best.addGroup(RowPredicate.numGreater(testName, testValue));
 
@@ -200,19 +205,13 @@ public interface CTreeTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            Var test = df.rvar(testName);
-            Var target = df.rvar(targetName);
-
-            if (!DTable.fromCounts(test, target, false).hasColsWithMinimumCount(c.minCount(), 2)) {
+            if (!DTable.fromCounts(df, testName, targetName, false).hasColsWithMinimumCount(c.minCount(), 2)) {
                 return null;
             }
-
-            DTable dt = DTable.fromWeights(test, target, weights, false);
+            DTable dt = DTable.fromWeights(df, testName, targetName, weights, false);
             double value = function.compute(dt);
-
             CTreeCandidate candidate = new CTreeCandidate(value, testName);
-            for (int i = 1; i < test.levels().length; i++) {
-                final String label = test.levels()[i];
+            for (String label : df.completeLevels(testName)) {
                 candidate.addGroup(RowPredicate.nomEqual(testName, label));
             }
             return candidate;
@@ -230,9 +229,7 @@ public interface CTreeTest extends Tagged, Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            Var test = df.rvar(testName);
-            Var target = df.rvar(targetName);
-            DTable counts = DTable.fromCounts(test, target, false);
+            DTable counts = DTable.fromCounts(df, testName, targetName, false);
             if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
             }
@@ -240,17 +237,19 @@ public interface CTreeTest extends Tagged, Serializable {
             CTreeCandidate best = null;
             double bestScore = 0.0;
 
-            int[] termCount = new int[test.levels().length];
-            test.stream().forEach(s -> termCount[s.index()]++);
+            int[] termCount = new int[df.levels(testName).size()];
+            for (int i = 0; i < df.rowCount(); i++) {
+                termCount[df.index(i, testName)]++;
+            }
 
             double[] rowCounts = counts.rowTotals();
-            for (int i = 1; i < test.levels().length; i++) {
+            for (int i = 1; i < df.levels(testName).size(); i++) {
                 if (rowCounts[i] < c.minCount())
                     continue;
 
-                String testLabel = df.rvar(testName).levels()[i];
+                String testLabel = df.rvar(testName).levels().get(i);
 
-                DTable dt = DTable.binaryFromWeights(test, target, weights, testLabel, false);
+                DTable dt = DTable.binaryFromWeights(df, testName, targetName, weights, testLabel, false);
                 double currentScore = function.compute(dt);
                 if (best != null) {
                     int comp = Double.compare(bestScore, currentScore);

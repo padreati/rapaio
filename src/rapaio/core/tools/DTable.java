@@ -25,6 +25,7 @@
 
 package rapaio.core.tools;
 
+import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -33,7 +34,9 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Distribution table.
@@ -44,10 +47,10 @@ import java.util.Arrays;
  */
 public final class DTable implements Printable, Serializable {
 
-    public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
+    public static final List<String> NUMERIC_DEFAULT_LABELS = List.of("?", "less-equals", "greater");
     private static final long serialVersionUID = 4359080329548577980L;
-    private final String[] rowLevels;
-    private final String[] colLevels;
+    private final List<String> rowLevels;
+    private final List<String> colLevels;
 
     // table with frequencies
     private final int start;
@@ -63,7 +66,7 @@ public final class DTable implements Printable, Serializable {
      * @param colLevels labels for columns
      * @param useFirst  true if using the first row and col, false otherwise
      */
-    public static DTable empty(String[] rowLevels, String[] colLevels, boolean useFirst) {
+    public static DTable empty(List<String> rowLevels, List<String> colLevels, boolean useFirst) {
         return new DTable(rowLevels, colLevels, useFirst);
     }
 
@@ -95,6 +98,32 @@ public final class DTable implements Printable, Serializable {
     }
 
     /**
+     * Builds a density table from two nominal vectors built from counts
+     *
+     * @param df         source data frame
+     * @param rowVarName var on vertical axis
+     * @param colVarName var on horizontal axis
+     * @param useFirst   true if using the first row and col, false otherwise
+     */
+    public static DTable fromCounts(Frame df, String rowVarName, String colVarName, boolean useFirst) {
+        return new DTable(df, rowVarName, colVarName, NumVar.fill(df.rowCount(), 1), useFirst);
+    }
+
+    /**
+     * Builds a density table from two nominal vectors.
+     * If not null, weights are used instead of counts.
+     *
+     * @param df         source data frame
+     * @param rowVarName row var
+     * @param colVarName col var
+     * @param weights    weights used instead of counts, if not null
+     * @param useFirst   true if using the first row and col, false otherwise
+     */
+    public static DTable fromWeights(Frame df, String rowVarName, String colVarName, Var weights, boolean useFirst) {
+        return new DTable(df, rowVarName, colVarName, weights, useFirst);
+    }
+
+    /**
      * Builds a density table with a binary split, from two nominal vectors.
      * The first row contains instances which have test label equal with given testLabel,
      * second row contains frequencies for the rest of the instances.
@@ -109,11 +138,27 @@ public final class DTable implements Printable, Serializable {
         return new DTable(rowVar, colVar, weights, rowLevel, useFirst);
     }
 
-    private DTable(String[] rowLevels, String[] colLevels, boolean useFirst) {
+    /**
+     * Builds a density table with a binary split, from two nominal vectors.
+     * The first row contains instances which have test label equal with given testLabel,
+     * second row contains frequencies for the rest of the instances.
+     *
+     * @param df         source data frame
+     * @param rowVarName row var
+     * @param colVarName col var
+     * @param weights    if not null, weights used instead of counts
+     * @param rowLevel   row label used for binary split
+     * @param useFirst   true if using the first row and col, false otherwise
+     */
+    public static DTable binaryFromWeights(Frame df, String rowVarName, String colVarName, Var weights, String rowLevel, boolean useFirst) {
+        return new DTable(df, rowVarName, colVarName, weights, rowLevel, useFirst);
+    }
+
+    private DTable(List<String> rowLevels, List<String> colLevels, boolean useFirst) {
         this.rowLevels = rowLevels;
         this.colLevels = colLevels;
         this.start = useFirst ? 0 : 1;
-        this.values = new double[rowLevels.length][colLevels.length];
+        this.values = new double[rowLevels.size()][colLevels.size()];
     }
 
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
@@ -133,8 +178,25 @@ public final class DTable implements Printable, Serializable {
         }
     }
 
+    private DTable(Frame df, String rowVarName, String colVarName, Var weights, boolean useFirst) {
+        this(df.levels(rowVarName), df.levels(colVarName), useFirst);
+
+        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INDEX)))
+            throw new IllegalArgumentException("row var must be nominal");
+        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INDEX)))
+            throw new IllegalArgumentException("col var is not nominal");
+
+        int rowOffset = (df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INDEX)) ? 1 : 0;
+        int colOffset = (df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INDEX)) ? 1 : 0;
+        int rowVarIndex = df.varIndex(rowVarName);
+        int colVarIndex = df.varIndex(colVarName);
+        for (int i = 0; i < df.rowCount(); i++) {
+            update(df.index(i, rowVarIndex) + rowOffset, df.index(i, colVarIndex) + colOffset, weights != null ? weights.value(i) : 1);
+        }
+    }
+
     private DTable(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
-        this(new String[]{"?", rowLevel, "other"}, colVar.levels(), useFirst);
+        this(List.of("?", rowLevel, "other"), colVar.levels(), useFirst);
 
         if (!rowVar.type().isNominal()) throw new IllegalArgumentException("row var must be nominal");
         if (!colVar.type().isNominal()) throw new IllegalArgumentException("col var is not nominal");
@@ -150,6 +212,23 @@ public final class DTable implements Printable, Serializable {
         }
     }
 
+    private DTable(Frame df, String rowVarName, String colVarName, Var weights, String rowLevel, boolean useFirst) {
+        this(List.of("?", rowLevel, "other"), df.levels(colVarName), useFirst);
+
+        if (!df.type(rowVarName).isNominal()) throw new IllegalArgumentException("row var must be nominal");
+        if (!df.type(colVarName).isNominal()) throw new IllegalArgumentException("col var is not nominal");
+
+        int rowVarIndex = df.varIndex(rowVarName);
+        int colVarIndex = df.varIndex(colVarName);
+        for (int i = 0; i < df.rowCount(); i++) {
+            int index = 0;
+            if (!df.isMissing(i, rowVarIndex)) {
+                index = (df.label(i, rowVarIndex).equals(rowLevel)) ? 1 : 2;
+            }
+            update(index, df.index(i, colVarIndex), weights != null ? weights.value(i) : 1);
+        }
+    }
+
     public boolean useFirst() {
         return start == 0;
     }
@@ -159,18 +238,18 @@ public final class DTable implements Printable, Serializable {
     }
 
     public int rowCount() {
-        return rowLevels.length;
+        return rowLevels.size();
     }
 
     public int colCount() {
-        return colLevels.length;
+        return colLevels.size();
     }
 
-    public String[] rowLevels() {
+    public List<String> rowLevels() {
         return rowLevels;
     }
 
-    public String[] colLevels() {
+    public List<String> colLevels() {
         return colLevels;
     }
 
@@ -203,22 +282,22 @@ public final class DTable implements Printable, Serializable {
 
     public double totalColEntropy() {
         AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double totalRowEntropy() {
         AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByRowAverageEntropy() {
         AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByColAverageEntropy() {
         AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByRowInfoGain() {
@@ -231,12 +310,12 @@ public final class DTable implements Printable, Serializable {
 
     public double splitByRowIntrinsicInfo() {
         AbstractSplit abstractSplit = new ConcreteRowIntrinsicInfo();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByColIntrinsicInfo() {
         AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
-        return abstractSplit.getSplitInfo(start, rowLevels.length, colLevels.length, values);
+        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByRowGainRatio() {
@@ -254,9 +333,9 @@ public final class DTable implements Printable, Serializable {
      */
     public boolean hasColsWithMinimumCount(double minWeight, int minCounts) {
         int count = 0;
-        for (int i = start; i < rowLevels.length; i++) {
+        for (int i = start; i < rowLevels.size(); i++) {
             double total = 0;
-            for (int j = 1; j < colLevels.length; j++) {
+            for (int j = 1; j < colLevels.size(); j++) {
                 total += values[i][j];
             }
             if (total >= minWeight) {
@@ -270,11 +349,11 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double splitByRowGiniGain() {
-        double[] rowTotals = new double[rowLevels.length];
-        double[] colTotals = new double[colLevels.length];
+        double[] rowTotals = new double[rowLevels.size()];
+        double[] colTotals = new double[colLevels.size()];
         double total = 0.0;
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 rowTotals[i] += values[i][j];
                 colTotals[j] += values[i][j];
                 total += values[i][j];
@@ -285,13 +364,13 @@ public final class DTable implements Printable, Serializable {
         }
 
         double gini = 1.0;
-        for (int i = start; i < colLevels.length; i++) {
+        for (int i = start; i < colLevels.size(); i++) {
             gini -= Math.pow(colTotals[i] / total, 2);
         }
 
-        for (int i = start; i < rowLevels.length; i++) {
+        for (int i = start; i < rowLevels.size(); i++) {
             double gini_k = 1;
-            for (int j = start; j < colLevels.length; j++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 if (rowTotals[i] > 0)
                     gini_k -= Math.pow(values[i][j] / rowTotals[i], 2);
             }
@@ -301,11 +380,11 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double splitByColGiniGain() {
-        double[] rowTotals = new double[rowLevels.length];
-        double[] colTotals = new double[colLevels.length];
+        double[] rowTotals = new double[rowLevels.size()];
+        double[] colTotals = new double[colLevels.size()];
         double total = 0.0;
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 rowTotals[i] += values[i][j];
                 colTotals[j] += values[i][j];
                 total += values[i][j];
@@ -316,13 +395,13 @@ public final class DTable implements Printable, Serializable {
         }
 
         double gini = 1.0;
-        for (int i = start; i < rowLevels.length; i++) {
+        for (int i = start; i < rowLevels.size(); i++) {
             gini -= Math.pow(rowTotals[i] / total, 2);
         }
 
-        for (int i = start; i < colLevels.length; i++) {
+        for (int i = start; i < colLevels.size(); i++) {
             double gini_k = 1;
-            for (int j = start; j < rowLevels.length; j++) {
+            for (int j = start; j < rowLevels.size(); j++) {
                 if (colTotals[i] > 0)
                     gini_k -= Math.pow(values[j][i] / colTotals[i], 2);
             }
@@ -332,9 +411,9 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double[] rowTotals() {
-        double[] totals = new double[rowLevels.length];
-        for (int i = 0; i < rowLevels.length; i++) {
-            for (int j = 0; j < colLevels.length; j++) {
+        double[] totals = new double[rowLevels.size()];
+        for (int i = 0; i < rowLevels.size(); i++) {
+            for (int j = 0; j < colLevels.size(); j++) {
                 totals[i] += values[i][j];
             }
         }
@@ -342,9 +421,9 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double[] colTotals() {
-        double[] totals = new double[colLevels.length];
-        for (int i = 0; i < rowLevels.length; i++) {
-            for (int j = 0; j < colLevels.length; j++) {
+        double[] totals = new double[colLevels.size()];
+        for (int i = 0; i < rowLevels.size(); i++) {
+            for (int j = 0; j < colLevels.size(); j++) {
                 totals[j] += values[i][j];
             }
         }
@@ -354,15 +433,15 @@ public final class DTable implements Printable, Serializable {
     public DTable normalizeOverall() {
         DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
         double total = 0;
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 norm.values[i][j] = values[i][j];
                 total += values[i][j];
             }
         }
         if (total > 0) {
-            for (int i = start; i < rowLevels.length; i++) {
-                for (int j = start; j < colLevels.length; j++) {
+            for (int i = start; i < rowLevels.size(); i++) {
+                for (int j = start; j < colLevels.size(); j++) {
                     norm.values[i][j] /= total;
                 }
             }
@@ -372,16 +451,16 @@ public final class DTable implements Printable, Serializable {
 
     public DTable normalizeOnRows() {
         DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
-        double[] rowTotals = new double[rowLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
+        double[] rowTotals = new double[rowLevels.size()];
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 norm.values[i][j] = values[i][j];
                 rowTotals[i] += values[i][j];
             }
         }
-        for (int i = start; i < rowLevels.length; i++) {
+        for (int i = start; i < rowLevels.size(); i++) {
             if (rowTotals[i] > 0)
-                for (int j = start; j < colLevels.length; j++) {
+                for (int j = start; j < colLevels.size(); j++) {
                     norm.values[i][j] /= rowTotals[i];
                 }
         }
@@ -390,16 +469,16 @@ public final class DTable implements Printable, Serializable {
 
     public DTable normalizeOnCols() {
         DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
-        double[] colTotals = new double[colLevels.length];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
+        double[] colTotals = new double[colLevels.size()];
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
                 norm.values[i][j] = values[i][j];
                 colTotals[j] += values[i][j];
             }
         }
-        for (int i = start; i < colLevels.length; i++) {
+        for (int i = start; i < colLevels.size(); i++) {
             if (colTotals[i] > 0)
-                for (int j = start; j < rowLevels.length; j++) {
+                for (int j = start; j < rowLevels.size(); j++) {
                     norm.values[j][i] /= colTotals[i];
                 }
         }
@@ -410,47 +489,47 @@ public final class DTable implements Printable, Serializable {
     public String summary() {
 
         if (totalSummary) {
-            TextTable tt = TextTable.newEmpty(rowLevels.length - start + 2, colLevels.length - start + 2);
+            TextTable tt = TextTable.newEmpty(rowLevels.size() - start + 2, colLevels.size() - start + 2);
             tt.withHeaderRows(1);
             tt.withSplit(WS.getPrinter().textWidth());
 
-            for (int i = start; i < rowLevels.length; i++) {
-                tt.set(i - start + 1, 0, rowLevels[i], 1);
+            for (int i = start; i < rowLevels.size(); i++) {
+                tt.set(i - start + 1, 0, rowLevels.get(i), 1);
             }
-            for (int i = start; i < colLevels.length; i++) {
-                tt.set(0, i - start + 1, colLevels[i], 1);
+            for (int i = start; i < colLevels.size(); i++) {
+                tt.set(0, i - start + 1, colLevels.get(i), 1);
             }
-            tt.set(0, colLevels.length - start + 1, "total", 1);
-            tt.set(rowLevels.length - start + 1, 0, "total", 1);
-            for (int i = start; i < rowLevels.length; i++) {
-                for (int j = start; j < colLevels.length; j++) {
+            tt.set(0, colLevels.size() - start + 1, "total", 1);
+            tt.set(rowLevels.size() - start + 1, 0, "total", 1);
+            for (int i = start; i < rowLevels.size(); i++) {
+                for (int j = start; j < colLevels.size(); j++) {
                     tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
                 }
             }
             double[] rowTotals = rowTotals();
-            for (int i = start; i < rowLevels.length; i++) {
-                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatFlex(rowTotals[i]), 1);
+            for (int i = start; i < rowLevels.size(); i++) {
+                tt.set(i - start + 1, colLevels.size() - start + 1, WS.formatFlex(rowTotals[i]), 1);
             }
             double[] colTotals = colTotals();
-            for (int i = start; i < colLevels.length; i++) {
-                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatFlex(colTotals[i]), 1);
+            for (int i = start; i < colLevels.size(); i++) {
+                tt.set(rowLevels.size() - start + 1, i - start + 1, WS.formatFlex(colTotals[i]), 1);
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
-            tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatFlex(total), 1);
+            tt.set(rowLevels.size() - start + 1, colLevels.size() - start + 1, WS.formatFlex(total), 1);
             return tt.summary();
         } else {
-            TextTable tt = TextTable.newEmpty(rowLevels.length - start + 1, colLevels.length - start + 1);
+            TextTable tt = TextTable.newEmpty(rowLevels.size() - start + 1, colLevels.size() - start + 1);
             tt.withHeaderRows(1);
             tt.withSplit(WS.getPrinter().textWidth());
 
-            for (int i = start; i < rowLevels.length; i++) {
-                tt.set(i - start + 1, 0, rowLevels[i], 1);
+            for (int i = start; i < rowLevels.size(); i++) {
+                tt.set(i - start + 1, 0, rowLevels.get(i), 1);
             }
-            for (int i = start; i < colLevels.length; i++) {
-                tt.set(0, i - start + 1, colLevels[i], 1);
+            for (int i = start; i < colLevels.size(); i++) {
+                tt.set(0, i - start + 1, colLevels.get(i), 1);
             }
-            for (int i = start; i < rowLevels.length; i++) {
-                for (int j = start; j < colLevels.length; j++) {
+            for (int i = start; i < rowLevels.size(); i++) {
+                for (int j = start; j < colLevels.size(); j++) {
                     tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
                 }
             }

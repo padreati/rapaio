@@ -39,13 +39,13 @@ public class NominalTest {
     public void testSmoke() {
         Var v = NomVar.empty(0);
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.levels().length);
-        assertEquals("?", v.levels()[0]);
+        assertEquals(1, v.levels().size());
+        assertEquals("?", v.levels().get(0));
 
         v = NomVar.empty();
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.levels().length);
-        assertEquals("?", v.levels()[0]);
+        assertEquals(1, v.levels().size());
+        assertEquals("?", v.levels().get(0));
 
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
@@ -60,10 +60,10 @@ public class NominalTest {
     @Test
     public void testDictionary() {
         Var v = NomVar.empty(0, "a", "a", "v", "a");
-        assertEquals(3, v.levels().length);
-        assertEquals("?", v.levels()[0]);
-        assertEquals("a", v.levels()[1]);
-        assertEquals("v", v.levels()[2]);
+        assertEquals(3, v.levels().size());
+        assertEquals("?", v.levels().get(0));
+        assertEquals("a", v.levels().get(1));
+        assertEquals("v", v.levels().get(2));
 
         ArrayList<String> set = new ArrayList<>();
         set.add("a");
@@ -71,10 +71,10 @@ public class NominalTest {
         set.add("a");
 
         v = NomVar.empty(0, set);
-        assertEquals(3, v.levels().length);
-        assertEquals("?", v.levels()[0]);
-        assertEquals("a", v.levels()[1]);
-        assertEquals("v", v.levels()[2]);
+        assertEquals(3, v.levels().size());
+        assertEquals("?", v.levels().get(0));
+        assertEquals("a", v.levels().get(1));
+        assertEquals("v", v.levels().get(2));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class NominalTest {
 
         x.setLevels("x", "y", "x");
 
-        assertEquals(3, x.levels().length);
+        assertEquals(3, x.levels().size());
         assertEquals("x", x.label(0));
         assertEquals("y", x.label(1));
         assertEquals("x", x.label(2));
@@ -288,7 +288,7 @@ public class NominalTest {
 
         x.setLevels("x", "y", "z", "p");
 
-        assertEquals(5, x.levels().length);
+        assertEquals(5, x.levels().size());
         assertEquals("x", x.label(0));
         assertEquals("y", x.label(1));
         assertEquals("x", x.label(2));

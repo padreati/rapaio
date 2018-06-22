@@ -328,7 +328,7 @@ public final class SamplingTools {
         }
         List<Frame> result = new ArrayList<>();
 
-        List<Integer> rows = IntStream.range(0, frame.rowCount()).mapToObj(i -> i).collect(Collectors.toList());
+        List<Integer> rows = IntStream.range(0, frame.rowCount()).boxed().collect(Collectors.toList());
         Collections.shuffle(rows, RandomSource.getRandom());
 
         int start = 0;
@@ -348,7 +348,7 @@ public final class SamplingTools {
             throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
         }
         List<List<Integer>> maps = new ArrayList<>();
-        for (int i = 0; i < df.levels(strataName).length; i++) {
+        for (int i = 0; i < df.levels(strataName).size(); i++) {
             maps.add(new ArrayList<>());
         }
         for (int i = 0; i < df.rowCount(); i++) {

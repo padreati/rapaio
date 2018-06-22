@@ -26,6 +26,7 @@
 package rapaio.data;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -275,7 +276,7 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public List<String> levels() {
         throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 

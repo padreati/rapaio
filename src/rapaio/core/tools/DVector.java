@@ -36,8 +36,10 @@ import rapaio.sys.WS;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.DoublePredicate;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
@@ -55,8 +57,18 @@ public class DVector implements Printable, Serializable {
      * @param labels used to name values
      * @return new empty distribution vector
      */
-    public static DVector empty(boolean useFirst, String... labels) {
+    public static DVector empty(boolean useFirst, List<String> labels) {
         return new DVector(useFirst, labels);
+    }
+
+    /**
+     * Builds a distribution vector with given levels
+     *
+     * @param labels used to name values
+     * @return new empty distribution vector
+     */
+    public static DVector empty(boolean useFirst, String... labels) {
+        return new DVector(useFirst, Arrays.asList(labels));
     }
 
     /**
@@ -74,7 +86,7 @@ public class DVector implements Printable, Serializable {
                 labels[i] = "v" + i;
             }
         }
-        return new DVector(useFirst, labels);
+        return new DVector(useFirst, Arrays.asList(labels));
     }
 
     /**
@@ -113,29 +125,29 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector
      */
     public static DVector fromWeights(boolean useFirst, Var var, Var weights, String... labels) {
-        return new DVector(useFirst, labels, var, weights);
+        return new DVector(useFirst, Arrays.asList(labels), var, weights);
     }
 
     private static final long serialVersionUID = -546802690694348698L;
-    private final String[] levels;
+    private final List<String> levels;
     private final Map<String, Integer> reverse = new HashMap<>();
     private final double[] values;
     private boolean useFirst;
     private int start;
     private double total;
 
-    private DVector(boolean useFirst, String[] labels) {
+    private DVector(boolean useFirst, List<String> labels) {
         this.useFirst = useFirst;
         this.start = useFirst ? 0 : 1;
 
         this.levels = labels;
-        for (int i = 0; i < labels.length; i++) {
-            reverse.put(labels[i], i);
+        for (int i = 0; i < labels.size(); i++) {
+            reverse.put(labels.get(i), i);
         }
-        this.values = new double[this.levels.length];
+        this.values = new double[this.levels.size()];
     }
 
-    private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
+    private DVector(boolean useFirst, List<String> labels, Var var, Var weights) {
         this(useFirst, labels);
         int off = var.type().equals(VarType.BINARY) ? 1 : 0;
         for (int i = 0; i < var.rowCount(); i++) {
@@ -155,7 +167,7 @@ public class DVector implements Printable, Serializable {
         return this;
     }
 
-    public String[] levels() {
+    public List<String> levels() {
         return levels;
     }
 
@@ -174,7 +186,7 @@ public class DVector implements Printable, Serializable {
     }
 
     public String label(int pos) {
-        return levels[pos];
+        return levels.get(pos);
     }
 
     /**
@@ -311,7 +323,7 @@ public class DVector implements Printable, Serializable {
     }
 
     public int getRowCount() {
-        return levels.length;
+        return levels.size();
     }
 
     /**
@@ -321,7 +333,7 @@ public class DVector implements Printable, Serializable {
      */
     public DVector solidCopy() {
         DVector d = new DVector(useFirst, levels);
-        System.arraycopy(values, 0, d.values, 0, levels.length);
+        System.arraycopy(values, 0, d.values, 0, levels.size());
         d.total = total;
         return d;
     }
@@ -340,21 +352,21 @@ public class DVector implements Printable, Serializable {
     @Override
     public String toString() {
         return "DVector{" +
-                "levels=" + Arrays.toString(levels) +
+                "levels=" + levels.stream().collect(Collectors.joining(",")) +
                 ", values=" + Arrays.toString(values) +
                 ", total=" + total +
                 '}';
     }
 
     public boolean equalsFull(DVector o) {
-        if (levels.length - start != o.levels.length - o.start) {
+        if (levels.size() - start != o.levels.size() - o.start) {
             return false;
         }
         if (values.length - start != o.values.length - o.start) {
             return false;
         }
-        for (int i = 0; i < levels.length - start; i++) {
-            if (!levels[i + start].equals(o.levels[i + o.start]))
+        for (int i = 0; i < levels.size() - start; i++) {
+            if (!levels.get(i + start).equals(o.levels.get(i + o.start)))
                 return false;
         }
         for (int i = 0; i < values.length - start; i++) {
@@ -367,10 +379,10 @@ public class DVector implements Printable, Serializable {
 
     @Override
     public String summary() {
-        TextTable tt = TextTable.newEmpty(3, levels.length);
-        for (int i = start; i < levels.length; i++) {
-            tt.set(0, i, levels[i], 1);
-            tt.set(1, i, repeat(levels[i].length(), '-'), 1);
+        TextTable tt = TextTable.newEmpty(3, levels.size());
+        for (int i = start; i < levels.size(); i++) {
+            tt.set(0, i, levels.get(i), 1);
+            tt.set(1, i, repeat(levels.get(i).length(), '-'), 1);
             tt.set(2, i, WS.formatFlex(values[i]), 1);
         }
         return tt.summary();

@@ -25,6 +25,7 @@
 
 package rapaio.data;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -150,7 +151,7 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public List<String> levels() {
         return source.levels();
     }
 

@@ -106,7 +106,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         weaks.parallelStream().map(weak -> {
             if (!weak.hasLearned()) {
                 logger.config("started learning for weak learner ...");
-                weak.train(df, weights, targetVars);
+                weak.fit(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
             return weak.predict(df).firstDensity().rvar(1);
@@ -128,7 +128,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         logger.config("started learning for binary logistic...");
         log.withTol(tol);
         log.withMaxRuns(maxRuns);
-        log.train(df, weights, targetNames());
+        log.fit(df, weights, targetNames());
 
         logger.config("end predict method call");
         return true;

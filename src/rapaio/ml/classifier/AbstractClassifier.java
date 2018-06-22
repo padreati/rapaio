@@ -50,7 +50,7 @@ public abstract class AbstractClassifier implements Classifier {
     private VarType[] inputTypes;
     private String[] targetNames;
     private VarType[] targetTypes;
-    private Map<String, String[]> dict;
+    private Map<String, List<String>> dict;
     private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
     private int poolSize = 0;
@@ -102,7 +102,7 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public Map<String, String[]> targetLevels() {
+    public Map<String, List<String>> targetLevels() {
         return dict;
     }
 
@@ -111,13 +111,13 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public final Classifier train(Frame df, String... targetVars) {
+    public final Classifier fit(Frame df, String... targetVars) {
         NumVar weights = NumVar.fill(df.rowCount(), 1);
-        return train(df, weights, targetVars);
+        return fit(df, weights, targetVars);
     }
 
     @Override
-    public final Classifier train(Frame df, Var weights, String... targetVars) {
+    public final Classifier fit(Frame df, Var weights, String... targetVars) {
         BaseTrainSetup setup = baseTrain(df, weights, targetVars);
         Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
         learned = coreTrain(workDf, setup.w);
@@ -212,7 +212,7 @@ public abstract class AbstractClassifier implements Classifier {
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
                 .append(targetName(i)).append(" : ")
                 .append(targetType(i))
-                .append(" [").append(Arrays.stream(targetLevels(targetName(i))).collect(joining(","))).append("]")
+                .append(" [").append(targetLevels(targetName(i)).stream().collect(joining(","))).append("]")
                 .append("\n"));
         sb.append("\n");
         return sb.toString();

@@ -125,7 +125,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         // algorithm described by ESTL pag. 387
 
-        K = firstTargetLevels().length - 1;
+        K = firstTargetLevels().size() - 1;
         f = new double[K][df.rowCount()];
         residual = new double[K][df.rowCount()];
         trees = new ArrayList<>();

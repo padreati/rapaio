@@ -213,9 +213,9 @@ public class BoundVarTest {
         } catch (Throwable ignore) {
         }
 
-        assertEquals("a", x.levels()[1]);
-        assertEquals("b", x.levels()[2]);
-        assertEquals(3, x.levels().length);
+        assertEquals("a", x.levels().get(1));
+        assertEquals("b", x.levels().get(2));
+        assertEquals(3, x.levels().size());
 
         try {
             x.setLevels("c", "d");

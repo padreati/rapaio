@@ -28,6 +28,7 @@ package rapaio.data.stream;
 import rapaio.data.Frame;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Frame spot is a reference to an observation from a frame and usually is used in context of streams
@@ -240,7 +241,7 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label levels
      */
-    public String[] levels(int varIndex) {
+    public List<String> levels(int varIndex) {
         return df.rvar(varIndex).levels();
     }
 
@@ -250,7 +251,7 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label levels
      */
-    public String[] levels(String varName) {
+    public List<String> levels(String varName) {
         return df.levels(varName);
     }
 

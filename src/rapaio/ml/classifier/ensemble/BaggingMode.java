@@ -42,7 +42,7 @@ public enum BaggingMode implements Serializable {
 
     VOTING {
         @Override
-        public void computeDensity(String[] dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
             treeFits.stream().map(CPrediction::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
                     int best = d.index(i);
@@ -51,11 +51,11 @@ public enum BaggingMode implements Serializable {
             });
             for (int i = 0; i < classes.rowCount(); i++) {
                 DVector dv = DVector.empty(false, dictionary);
-                for (int j = 1; j < dictionary.length; j++) {
+                for (int j = 1; j < dictionary.size(); j++) {
                     dv.increment(j, densities.value(i, j));
                 }
                 dv.normalize();
-                for (int j = 1; j < dictionary.length; j++) {
+                for (int j = 1; j < dictionary.size(); j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
                 classes.setValue(i, dv.findBestIndex());
@@ -74,7 +74,7 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION {
         @Override
-        public void computeDensity(String[] dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setValue(i, j, 0);
@@ -93,11 +93,11 @@ public enum BaggingMode implements Serializable {
             });
             for (int i = 0; i < classes.rowCount(); i++) {
                 DVector dv = DVector.empty(false, dictionary);
-                for (int j = 0; j < dictionary.length; j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     dv.increment(j, densities.value(i, j));
                 }
                 dv.normalize();
-                for (int j = 0; j < dictionary.length; j++) {
+                for (int j = 0; j < dictionary.size(); j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
                 classes.setValue(i, dv.findBestIndex());
@@ -115,7 +115,7 @@ public enum BaggingMode implements Serializable {
         }
     };
 
-    abstract void computeDensity(String[] dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities);
+    abstract void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities);
 
     abstract boolean needsClass();
 

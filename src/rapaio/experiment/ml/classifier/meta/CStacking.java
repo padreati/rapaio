@@ -109,7 +109,7 @@ public class CStacking extends AbstractClassifier {
                         .map(i -> {
                             if (!weaks.get(i).hasLearned()) {
                                 logger.fine("started learning for weak learner ...");
-                                weaks.get(i).train(df, w, targetVars);
+                                weaks.get(i).fit(df, w, targetVars);
                             }
                             logger.fine("started fitting weak learner...");
                             return weaks.get(i).predict(df).firstDensity().rvar(1).solidCopy()
@@ -127,7 +127,7 @@ public class CStacking extends AbstractClassifier {
     protected boolean coreTrain(Frame df, Var weights) {
 
         logger.fine("started learning for stacker classifier...");
-        stacker.train(df, weights, targetNames());
+        stacker.fit(df, weights, targetNames());
 
         logger.fine("end predict method call");
         return true;

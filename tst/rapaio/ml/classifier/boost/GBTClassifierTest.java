@@ -41,7 +41,7 @@ public class GBTClassifierTest {
 
         for (Classifier cf : c) {
 
-            cf.train(train, "Cover_Type");
+            cf.fit(train, "Cover_Type");
             CPrediction fit = cf.predict(test, true, true);
 
             fit.printSummary();

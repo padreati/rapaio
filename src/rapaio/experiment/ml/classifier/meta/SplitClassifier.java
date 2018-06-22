@@ -117,7 +117,7 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);
             split.classifier.withRuns(runs());
-            split.classifier.train(frames.get(i), weightList.get(i), targetNames());
+            split.classifier.fit(frames.get(i), weightList.get(i), targetNames());
         }
         return true;
     }
@@ -140,8 +140,8 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
                     }
                     if (withDensities) {
                         for (String targetVar : targetNames()) {
-                            for (int j = 0; j < targetLevels(targetVar).length; j++) {
-                                pred.densities().get(targetVar).setValue(spot.row(), targetLevels(targetVar)[j], p.densities().get(targetVar).value(0, targetLevels(targetVar)[j]));
+                            for (int j = 0; j < targetLevels(targetVar).size(); j++) {
+                                pred.densities().get(targetVar).setValue(spot.row(), targetLevels(targetVar).get(j), p.densities().get(targetVar).value(0, targetLevels(targetVar).get(j)));
                             }
                         }
                     }

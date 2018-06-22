@@ -135,7 +135,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
-        k = firstTargetLevels().length - 1;
+        k = firstTargetLevels().size() - 1;
 
         h = new ArrayList<>();
         a = new ArrayList<>();
@@ -163,7 +163,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
         Classifier hh = weak.newInstance();
 
         Sample sample = sampler().nextSample(df, w);
-        hh.train(sample.df, sample.weights.solidCopy(), targetNames());
+        hh.fit(sample.df, sample.weights.solidCopy(), targetNames());
 
         CPrediction fit = hh.predict(df, true, false);
 

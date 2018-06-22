@@ -331,7 +331,7 @@ public class CTree extends AbstractClassifier {
             if (withClasses)
                 prediction.firstClasses().setIndex(i, index);
             if (withDensities)
-                for (int j = 0; j < firstTargetLevels().length; j++) {
+                for (int j = 0; j < firstTargetLevels().size(); j++) {
                     prediction.firstDensity().setValue(i, j, dv.get(j));
                 }
         }
@@ -348,7 +348,7 @@ public class CTree extends AbstractClassifier {
             }
         }
 
-        String[] dict = tree.firstTargetLevels();
+        List<String> dict = tree.firstTargetLevels();
         DVector dv = DVector.empty(false, dict);
         double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
@@ -357,7 +357,7 @@ public class CTree extends AbstractClassifier {
             dv.increment(d, wc);
             w += wc;
         }
-        for (int i = 0; i < dict.length; i++) {
+        for (int i = 0; i < dict.size(); i++) {
             dv.set(i, dv.get(i) / w);
         }
         return Pair.from(dv.findBestIndex(), dv);
@@ -447,9 +447,9 @@ public class CTree extends AbstractClassifier {
         sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
         sb.append(WS.formatFlexShort(node.getCounter().sum())).append("/");
         sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
-        sb.append(firstTargetLevels()[node.getBestIndex()]).append(" (");
+        sb.append(firstTargetLevels().get(node.getBestIndex())).append(" (");
         DVector d = node.getDensity().solidCopy().normalize();
-        for (int i = 1; i < firstTargetLevels().length; i++) {
+        for (int i = 1; i < firstTargetLevels().size(); i++) {
             sb.append(WS.formatFlexShort(d.get(i))).append(" ");
         }
         sb.append(") ");
@@ -460,7 +460,7 @@ public class CTree extends AbstractClassifier {
         }
         sb.append("\n");
 
-        node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
+        node.getChildren().forEach(child -> buildSummary(sb, child, level + 1));
     }
 
 }

@@ -208,7 +208,8 @@ public class CsvTest {
 
         Frame r5 = new Csv().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(25, r5.rowCount());
-        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.rvar("class").levels());
+        assertEquals("?", r5.rvar("class").levels().get(0));
+        assertEquals("virginica", r5.rvar("class").levels().get(1));
 
         // test skip vars 0 and 2
 

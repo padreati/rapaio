@@ -118,10 +118,10 @@ public class OneRule extends AbstractClassifier {
                 pred.firstClasses().setLabel(i, p._1);
             }
             if (withDensities) {
-                String[] dict = firstTargetLevels();
+                List<String> dict = firstTargetLevels();
                 DVector dv = p._2.solidCopy();
                 dv.normalize();
-                for (int j = 0; j < dict.length; j++) {
+                for (int j = 0; j < dict.size(); j++) {
                     pred.firstDensity().setValue(i, j, dv.get(j));
                 }
             }
@@ -132,7 +132,7 @@ public class OneRule extends AbstractClassifier {
     private Pair<String, DVector> predict(Frame df, int row) {
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return Pair.from("?", DVector.empty(true, firstTargetLevels().length));
+            return Pair.from("?", DVector.empty(true, firstTargetLevels().size()));
         }
         String testVar = bestRuleSet.getVarName();
         switch (df.rvar(testVar).type()) {
@@ -162,21 +162,21 @@ public class OneRule extends AbstractClassifier {
                     }
                 }
         }
-        return Pair.from("?", DVector.empty(true, firstTargetLevels().length));
+        return Pair.from("?", DVector.empty(true, firstTargetLevels().size()));
     }
 
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVar);
 
-        String[] testDict = df.rvar(testVar).levels();
-        String[] targetDict = firstTargetLevels();
+        List<String> testDict = df.rvar(testVar).levels();
+        List<String> targetDict = firstTargetLevels();
 
-        DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.empty(false, targetDict)).toArray(DVector[]::new);
+        DVector[] dvs = IntStream.range(0, testDict.size()).boxed().map(i -> DVector.empty(false, targetDict)).toArray(DVector[]::new);
         df.stream().forEach(s -> dvs[df.index(s.row(), testVar)].increment(df.index(s.row(), firstTargetName()), weights.value(s.row())));
-        for (int i = 0; i < testDict.length; i++) {
+        for (int i = 0; i < testDict.size(); i++) {
             DVector dv = dvs[i];
             int bestIndex = dv.findBestIndex();
-            set.getRules().add(new NominalRule(testDict[i], bestIndex, dv));
+            set.getRules().add(new NominalRule(testDict.get(i), bestIndex, dv));
         }
         return set;
     }

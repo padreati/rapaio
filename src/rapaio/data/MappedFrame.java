@@ -242,12 +242,12 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public String[] levels(String varName) {
+    public List<String> levels(String varName) {
         return source.levels(varName);
     }
 
     @Override
-    public String[] completeLevels(String varName) {
+    public List<String> completeLevels(String varName) {
         return source.completeLevels(varName);
     }
 

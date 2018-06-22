@@ -32,7 +32,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
@@ -56,37 +58,57 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     @Rule
     public TestRule benchmarkRun = new BenchmarkRule();
 
-    private Frame df;
+    private Frame df_5k;
+    private Frame df_50k;
+    private Frame df_200k;
+
+    public ClassifiersPerformanceTest() throws IOException {
+        RandomSource.setSeed(1234);
+        Frame src = Datasets.loadCoverType();
+        Mapping mapping_5 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 5_000));
+        df_5k = src.mapRows(mapping_5).solidCopy();
+        Mapping mapping_50 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 50_000));
+        df_50k = src.mapRows(mapping_50).solidCopy();
+        Mapping mapping_200 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 200_000));
+        df_200k = src.mapRows(mapping_200).solidCopy();
+    }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException {
-        Frame src = Datasets.loadIrisDataset();
-        for (int i = 0; i < 8; i++) {
-            Frame copy = src.solidCopy();
-            for (int j = 0; j < 4; j++) {
-                for (int k = 0; k < copy.rowCount(); k++) {
-                    copy.setValue(k, j, copy.value(k, j) + RandomSource.nextDouble());
-                }
-            }
-            src = src.bindRows(copy);
-        }
-        df = src.solidCopy();
-    }
-
-    @Test
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
-    public void performanceCartNumericRandomRunsDepth12Serial150k() throws Exception {
-
+    public void setUp() {
         RandomSource.setSeed(1234);
-
-        Classifier c = CTree.newCART()
-                .withTest(VarType.NUMERIC, CTreeTest.NumericRandom)
-                .withMaxDepth(12)
-                .withSampler(RowSampler.bootstrap(1));
-        test(c);
     }
 
     @Test
+    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+    public void performanceCartRuns12Serial5k() {
+        Classifier c = CTree.newCART()
+                .withMaxDepth(12)
+                .withMinCount(5)
+                .withSampler(RowSampler.bootstrap(1));
+        test(c, df_5k);
+    }
+
+    @Test
+    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+    public void performanceCartRuns12Serial50k() {
+        Classifier c = CTree.newCART()
+                .withMaxDepth(12)
+                .withMinCount(5)
+                .withSampler(RowSampler.bootstrap(1));
+        test(c, df_50k);
+    }
+
+    @Test
+    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+    public void performanceCartRuns12Serial200k() {
+        Classifier c = CTree.newCART()
+                .withMaxDepth(12)
+                .withMinCount(5)
+                .withSampler(RowSampler.bootstrap(1));
+        test(c, df_200k);
+    }
+
+    //    @Test
     @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
     public void performanceCartNumericBinaryRunsDepth12Serial150k() throws Exception {
 
@@ -96,7 +118,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
                 .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
-        test(c);
+        test(c, df_5k);
     }
 
     //    @Test
@@ -104,7 +126,6 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     public void performanceRFCartNumericRandomRuns200Depth12Serial5k() throws Exception {
 
         RandomSource.setSeed(1234);
-
         Classifier c = CForest.newRF()
                 .withClassifier(CTree.newCART()
                         .withTest(VarType.NUMERIC, CTreeTest.NumericRandom)
@@ -112,7 +133,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
                 )
                 .withRuns(200)
                 .withSampler(RowSampler.bootstrap(1));
-        test(c);
+        test(c, df_5k);
     }
 
     //    @Test
@@ -129,7 +150,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
                 )
                 .withRuns(200)
                 .withSampler(RowSampler.bootstrap(1));
-        test(c);
+        test(c, df_5k);
     }
 
     //    @Test
@@ -140,22 +161,22 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
                 .withSampler(RowSampler.bootstrap(1))
                 .withTree(RTree.buildCART().withMaxDepth(6))
                 .withRuns(10);
-        test(c);
+        test(c, df_5k);
     }
 
-    private void test(Classifier c) {
-        test(c, null);
+    private void test(Classifier c, Frame df) {
+        test(c, df, null);
     }
 
-    private void test(Classifier c, Long seed) {
+    private void test(Classifier c, Frame df, Long seed) {
         long next = seed == null ? RandomSource.getRandom().nextLong() : seed;
         RandomSource.setSeed(next);
         try {
-            c.train(df, "class");
+            c.fit(df, "Cover_Type");
             c.predict(df, true, true);
         } catch (Throwable th) {
             System.out.println("seed: " + next);
-            System.out.println(th.getMessage());
+            System.out.println("Exception: " + th.getMessage());
         }
     }
 }

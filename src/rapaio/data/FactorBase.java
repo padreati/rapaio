@@ -45,7 +45,7 @@ abstract class FactorBase extends AbstractVar {
     protected static final int missingIndex = 0;
 
     int rows = 0;
-    List<String> dict;
+    ArrayList<String> dict;
     int[] data;
     Map<String, Integer> reverse;
 
@@ -137,8 +137,8 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
-        return dict.toArray(new String[dict.size()]);
+    public List<String> levels() {
+        return dict;
     }
 
     @Override

@@ -59,7 +59,7 @@ public class ClassifierSerializationTest {
     }
 
     private <T extends Classifier> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
-        model.train(df, target);
+        model.fit(df, target);
         model.printSummary();
 
         File tmp = File.createTempFile("model-", "ser");

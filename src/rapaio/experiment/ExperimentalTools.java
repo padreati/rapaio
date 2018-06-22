@@ -67,7 +67,7 @@ public final class ExperimentalTools implements Serializable {
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new ArrayList<>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.rvar(colName).levels()));
+                    dicts.get(colName).addAll(frame.rvar(colName).levels());
                 }
             }
         }

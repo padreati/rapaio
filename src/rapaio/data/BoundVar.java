@@ -201,7 +201,7 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public List<String> levels() {
         return vars.get(0).levels();
     }
 

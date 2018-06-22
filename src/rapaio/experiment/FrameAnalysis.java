@@ -73,7 +73,7 @@ public class FrameAnalysis {
                 switch (var.type()) {
                     case NOMINAL:
                     case ORDINAL:
-                        countValue = var.levels().length;
+                        countValue = var.levels().size();
                         break;
                     case INDEX:
                     case BINARY:

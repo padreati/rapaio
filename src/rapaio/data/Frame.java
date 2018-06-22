@@ -358,9 +358,9 @@ public interface Frame extends Serializable, Printable {
      */
     void setLabel(int row, String varName, String value);
 
-    String[] levels(String varName);
+    List<String> levels(String varName);
 
-    String[] completeLevels(String varName);
+    List<String> completeLevels(String varName);
 
     /**
      * Returns binary value from the given cell

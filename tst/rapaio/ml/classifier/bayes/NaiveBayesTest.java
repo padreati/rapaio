@@ -50,7 +50,7 @@ public class NaiveBayesTest {
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes();
-        nb.train(df, "class");
+        nb.fit(df, "class");
         CPrediction pred = nb.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
@@ -74,7 +74,7 @@ public class NaiveBayesTest {
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
-        nb.train(df, "class");
+        nb.fit(df, "class");
         CPrediction pred = nb.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
@@ -98,7 +98,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadMushrooms();
 
         NaiveBayes nb = new NaiveBayes();
-        nb.train(df, "classes");
+        nb.fit(df, "classes");
 
         nb.printSummary();
 
@@ -133,7 +133,7 @@ public class NaiveBayesTest {
                 "Learning phase not called\n" +
                 "\n", nb.summary());
 
-        nb.train(Datasets.loadIrisDataset(), "class");
+        nb.fit(Datasets.loadIrisDataset(), "class");
 
 
         nb.printSummary();

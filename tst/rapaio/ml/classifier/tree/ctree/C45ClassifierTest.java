@@ -50,7 +50,7 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45();
-        classifier.train(df, className);
+        classifier.fit(df, className);
         CPrediction pred = classifier.predict(df);
 
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), false);
@@ -71,7 +71,7 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45();
-        classifier.train(df, className);
+        classifier.fit(df, className);
         Summary.printSummary(classifier);
 
         CPrediction pred = classifier.predict(df);
@@ -86,7 +86,7 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45().withMinCount(1);
-        classifier.train(df, className);
+        classifier.fit(df, className);
         Summary.printSummary(classifier);
 
         CPrediction pred = classifier.predict(df);

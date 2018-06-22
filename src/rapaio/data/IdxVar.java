@@ -309,19 +309,17 @@ public final class IdxVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
+    public List<String> levels() {
         TreeSet<Integer> distinctValues = new TreeSet<>();
         for (int i = 0; i < rowCount(); i++) {
             if (isMissing(i))
                 continue;
             distinctValues.add(index(i));
         }
-        String[] levels = new String[distinctValues.size() + 1];
-        levels[0] = "?";
-        int pos = 1;
-        Iterator<Integer> it = distinctValues.iterator();
-        while (it.hasNext()) {
-            levels[pos++] = String.valueOf(it.next());
+        List<String> levels = new ArrayList<>();
+        levels.add("?");
+        for (Integer value : distinctValues) {
+            levels.add(String.valueOf(value));
         }
         return levels;
     }

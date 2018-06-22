@@ -45,7 +45,7 @@ public class Apriori implements Printable {
 
     private List<List<Pair<AprioriRule, DVector>>> P;
     private List<AprioriRule> rules;
-    private String[] targetLevels;
+    private List<String> targetLevels;
     private double coverage;
 
     public String[] inputVarNames() {
@@ -190,7 +190,7 @@ public class Apriori implements Printable {
                 sb.append(j + 1).append(". ").append(P.get(i).get(j)._1.toString())
                         .append(" ")
                         .append(WS.formatFlex(P.get(i).get(j)._2.sum())).append(" [");
-                for (int k = 1; k < targetLevels.length; k++) {
+                for (int k = 1; k < targetLevels.size(); k++) {
                     sb.append(WS.formatShort(P.get(i).get(j)._2.get(k))).append(",");
                 }
                 sb.append("]\n");

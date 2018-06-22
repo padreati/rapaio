@@ -25,6 +25,7 @@
 package rapaio.core.stat;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
@@ -37,8 +38,7 @@ import rapaio.util.Util;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static rapaio.core.CoreTools.*;
 
 /**
@@ -46,10 +46,14 @@ import static rapaio.core.CoreTools.*;
  */
 public class CoreToolsTest {
 
-    private final Frame df;
+    private static final double TOL = 1e-20;
+    private Normal normal = new Normal(0, 10);
+    private Frame df;
 
-    public CoreToolsTest() throws IOException {
-        this.df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
+    @Before
+    public void setUp() throws IOException {
+        df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
+        RandomSource.setSeed(123);
     }
 
     @Test
@@ -178,13 +182,36 @@ public class CoreToolsTest {
     }
 
     @Test
+    public void testCorrelation() {
+        Var x = NumVar.from(100, normal::sampleNext).withName("x");
+        Var y = x.solidCopy().withName("y");
+
+        Covariance cov = Covariance.from(x, y);
+        Variance var = Variance.from(x);
+        assertEquals(var.value(), cov.value(), TOL);
+
+        assertEquals("> cov[x, y]\n" +
+                "total rows: 100 (complete: 100, missing: 0 )\n" +
+                "covariance: 97.7342133\n", cov.summary());
+    }
+
+    @Test
+    public void testCovarianceInvalid() {
+        Var x = NumVar.from(1, normal::sampleNext).withName("x");
+        Var y = x.solidCopy().withName("y");
+
+        Covariance cov = Covariance.from(x, y);
+        cov.printSummary();
+    }
+
+    @Test
     public void testGeometricMean() {
         assertEquals(4, GeometricMean.from(NumVar.copy(2, 8)).value(), 1e-20);
         assertEquals(0.5, GeometricMean.from(NumVar.copy(4, 1, 1 / 32.)).value(), 1e-16);
         assertEquals(42.42640687119286, GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).value(), 1e-20);
         GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).printSummary();
 
-        Assert.assertFalse(Double.NaN == GeometricMean.from(NumVar.copy(1, -1)).value());
+        assertTrue(Double.isNaN(GeometricMean.from(NumVar.copy(1, -1)).value()));
         GeometricMean.from(NumVar.wrap(1, -1)).printSummary();
     }
 

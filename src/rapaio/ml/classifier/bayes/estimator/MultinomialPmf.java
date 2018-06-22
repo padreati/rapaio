@@ -30,6 +30,7 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,34 +59,34 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
     @Override
     public void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar) {
 
-        String[] targetDict = df.levels(targetVar);
-        String[] testDict = df.levels(testVar);
+        List<String> targetDict = df.levels(targetVar);
+        List<String> testDict = df.levels(testVar);
 
-        defaultP = 1.0 / testDict.length;
+        defaultP = 1.0 / testDict.size();
 
         invTreeTarget = new HashMap<>();
         invTreeTest = new HashMap<>();
 
-        for (int i = 0; i < targetDict.length; i++) {
-            invTreeTarget.put(targetDict[i], i);
+        for (int i = 0; i < targetDict.size(); i++) {
+            invTreeTarget.put(targetDict.get(i), i);
         }
-        for (int i = 0; i < testDict.length; i++) {
-            invTreeTest.put(testDict[i], i);
+        for (int i = 0; i < testDict.size(); i++) {
+            invTreeTest.put(testDict.get(i), i);
         }
 
-        density = new double[targetDict.length][testDict.length];
-            for (int i = 0; i < targetDict.length; i++) {
-                for (int j = 0; j < testDict.length; j++) {
+        density = new double[targetDict.size()][testDict.size()];
+            for (int i = 0; i < targetDict.size(); i++) {
+                for (int j = 0; j < testDict.size(); j++) {
                     density[i][j] = nb.laplaceSmoother();
                 }
             }
         df.stream().forEach(s -> density[invTreeTarget.get(df.label(s.row(), targetVar))][invTreeTest.get(df.label(s.row(), testVar))] += weights.value(s.row()));
-        for (int i = 0; i < targetDict.length; i++) {
+        for (int i = 0; i < targetDict.size(); i++) {
             double t = 0;
-            for (int j = 0; j < testDict.length; j++) {
+            for (int j = 0; j < testDict.size(); j++) {
                 t += density[i][j];
             }
-            for (int j = 0; j < testDict.length; j++) {
+            for (int j = 0; j < testDict.size(); j++) {
                 density[i][j] /= t;
             }
         }

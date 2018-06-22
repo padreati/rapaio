@@ -62,16 +62,16 @@ public class NaiveBayes extends AbstractClassifier {
         Map<String, Double> priors = new HashMap<>();
         DVector dv = DVector.fromWeights(false, df.rvar(nb.firstTargetName()), weights);
         dv.normalize();
-        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
-            priors.put(nb.firstTargetLevels()[i], dv.get(i));
+        for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
+            priors.put(nb.firstTargetLevels().get(i), dv.get(i));
         }
         return priors;
     });
     public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
         Map<String, Double> priors = new HashMap<>();
-        double p = 1.0 / nb.firstTargetLevels().length;
-        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
-            priors.put(nb.firstTargetLevels()[i], p);
+        double p = 1.0 / nb.firstTargetLevels().size();
+        for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
+            priors.put(nb.firstTargetLevels().get(i), p);
         }
         return priors;
     });
@@ -192,7 +192,7 @@ public class NaiveBayes extends AbstractClassifier {
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.empty(false, firstTargetLevels());
-                    for (int j = 1; j < firstTargetLevels().length; j++) {
+                    for (int j = 1; j < firstTargetLevels().size(); j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
                         sumLog += buildSumLog(df, i, j, numData);
                         sumLog += buildSumLog(df, i, j, nomData);
@@ -205,7 +205,7 @@ public class NaiveBayes extends AbstractClassifier {
                         pred.firstClasses().setIndex(i, dv.findBestIndex());
                     }
                     if (withDensities) {
-                        for (int j = 1; j < firstTargetLevels().length; j++) {
+                        for (int j = 1; j < firstTargetLevels().size(); j++) {
                             pred.firstDensity().setValue(i, j, dv.get(j));
                         }
                     }
@@ -247,15 +247,15 @@ public class NaiveBayes extends AbstractClassifier {
 
         sb.append("prior probabilities:\n");
         String targetName = firstTargetName();
-        Arrays.stream(firstTargetLevels()).skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(WS.formatFlex(priors.get(label))).append("\n"));
+        firstTargetLevels().stream().skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(WS.formatFlex(priors.get(label))).append("\n"));
 
         if (!numData.numMap.isEmpty()) {
             sb.append("numerical estimators:\n");
-            numData.numMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
+            numData.numMap.forEach((key, value) -> sb.append("> ").append(key).append(" : ").append(value.learningInfo()).append("\n"));
         }
         if (!nomData.nomMap.isEmpty()) {
             sb.append("nominal estimators:\n");
-            nomData.nomMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
+            nomData.nomMap.forEach((key, value) -> sb.append("> ").append(key).append(" : ").append(value.learningInfo()).append("\n"));
         }
         return sb.toString();
     }

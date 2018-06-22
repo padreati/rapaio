@@ -193,18 +193,19 @@ public interface Var extends Serializable, Printable {
      *
      * @return term levels defined by the nominal var.
      */
-    String[] levels();
+    List<String> levels();
 
-    default String[] completeLevels() {
-        return streamLevels().skip(1).toArray(String[]::new);
+    default List<String> completeLevels() {
+        List<String> levels = levels();
+        return levels.subList(1, levels.size());
     }
 
     default Stream<String> streamLevels() {
-        return Arrays.stream(levels());
+        return levels().stream();
     }
 
     default Stream<String> streamCompleteLevels() {
-        return Arrays.stream(levels()).skip(1);
+        return levels().stream().skip(1);
     }
 
     /**
@@ -433,6 +434,6 @@ public interface Var extends Serializable, Printable {
     }
 
     default void printLines(boolean merge, int n) {
-        Summary.lines(merge, this.mapRows(Mapping.range(0, n)));
+        Summary.lines(merge, this.mapRows(Mapping.range(0, Math.min(n, this.rowCount()))));
     }
 }

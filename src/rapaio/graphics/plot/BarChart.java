@@ -94,7 +94,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.bind(color(IdxVar.seq(shift, condition.levels().length)));
+        options.bind(color(IdxVar.seq(shift, condition.levels().size())));
         options.bind(opts);
     }
 
@@ -117,8 +117,8 @@ public class BarChart extends HostFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.levels().length;
-            int height = condition.levels().length;
+            int width = category.levels().size();
+            int height = condition.levels().size();
 
             totals = new double[width];
             hits = new double[width][height];
@@ -208,7 +208,7 @@ public class BarChart extends HostFigure {
             if (totals[aSel] == 0)
                 continue;
             bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
-            bottomMarkersMsg.add(category.levels()[aSel]);
+            bottomMarkersMsg.add(category.levels().get(aSel));
             cnt++;
         }
     }
@@ -224,7 +224,7 @@ public class BarChart extends HostFigure {
             }
 
             double ystart = 0;
-            for (int j = 0; j < condition.levels().length; j++) {
+            for (int j = 0; j < condition.levels().size(); j++) {
                 double yend = ystart + hits[aSel][j];
                 int sign = ((yend > 0) ? 1 : -1);
 

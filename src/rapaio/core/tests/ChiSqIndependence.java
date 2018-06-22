@@ -31,7 +31,9 @@ import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.sys.WS;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Pearson Chi Square independence test.
@@ -56,22 +58,22 @@ public class ChiSqIndependence implements HTest {
     }
 
     public static ChiSqIndependence from(RM m, boolean yates) {
-        String[] rowLevels = new String[m.rowCount()];
-        String[] colLevels = new String[m.colCount()];
+        List<String> rowLevels = new ArrayList<>();
+        List<String> colLevels = new ArrayList<>();
         for (int i = 0; i < m.rowCount(); i++) {
-            rowLevels[i] = "R" + (i + 1);
+            rowLevels.add("R" + (i + 1));
         }
         for (int i = 0; i < m.colCount(); i++) {
-            colLevels[i] = "C" + (i + 1);
+            colLevels.add("C" + (i + 1));
         }
         return from(m, rowLevels, colLevels, yates);
     }
 
-    public static ChiSqIndependence from(RM m, String[] rowLevels, String[] colLevels, boolean yates) {
-        if (m.rowCount() != rowLevels.length) {
+    public static ChiSqIndependence from(RM m, List<String> rowLevels, List<String> colLevels, boolean yates) {
+        if (m.rowCount() != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }
-        if (m.colCount() != colLevels.length) {
+        if (m.colCount() != colLevels.size()) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
         DTable dt = DTable.empty(rowLevels, colLevels, true);

@@ -33,8 +33,8 @@ public class NominalTypeStrategy implements TypeStrategy {
 	@Override
 	public void getVarSummary(Frame df, Var v, String[][] first, String[][] second, int th) {
 		// TODO Auto-generated method stub
-		int[] hits = new int[v.levels().length];
-        int[] indexes = new int[v.levels().length];
+		int[] hits = new int[v.levels().size()];
+        int[] indexes = new int[v.levels().size()];
         for (int j = 0; j < df.rowCount(); j++) {
             hits[v.index(j)]++;
             indexes[v.index(j)] = j;

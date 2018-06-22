@@ -53,7 +53,7 @@ public class CTreeTest {
         CTree tree = CTree.newDecisionStump();
         assertEquals(1, tree.maxDepth());
 
-        tree.train(df, "class");
+        tree.fit(df, "class");
 
         tree.printSummary();
         CTreeNode root = tree.getRoot();
@@ -95,7 +95,7 @@ public class CTreeTest {
     public void testPredictorStandard() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
-        tree.train(df, "class");
+        tree.fit(df, "class");
         tree.printSummary();
 
         CPrediction pred = tree.predict(df, true, true);

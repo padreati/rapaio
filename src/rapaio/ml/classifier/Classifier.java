@@ -116,8 +116,8 @@ public interface Classifier extends Printable, Serializable {
      * <li>collect input variable as all the variables which are not considered target variables</li>
      * </ol>
      * <p>
-     * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
-     * {@link #train(Frame, String...)}, {@link #predict(Frame)} and {@link #predict(Frame, boolean, boolean)} methods.
+     * This algorithm is executed each time for {@link #fit(Frame, Var, String...)},
+     * {@link #fit(Frame, String...)}, {@link #predict(Frame)} and {@link #predict(Frame, boolean, boolean)} methods.
      *
      * @return list of filter to transform data into input variables.
      */
@@ -227,9 +227,9 @@ public interface Classifier extends Printable, Serializable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    Map<String, String[]> targetLevels();
+    Map<String, List<String>> targetLevels();
 
-    default String[] targetLevels(String key) {
+    default List<String> targetLevels(String key) {
         return targetLevels().get(key);
     }
 
@@ -238,12 +238,12 @@ public interface Classifier extends Printable, Serializable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    default String[] firstTargetLevels() {
+    default List<String> firstTargetLevels() {
         return targetLevels().get(firstTargetName());
     }
 
     default String firstTargetLevel(int pos) {
-        return targetLevels().get(firstTargetName())[pos];
+        return targetLevels().get(firstTargetName()).get(pos);
     }
 
     /**
@@ -258,7 +258,7 @@ public interface Classifier extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    Classifier train(Frame df, String... targetVars);
+    Classifier fit(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetNames
@@ -267,7 +267,7 @@ public interface Classifier extends Printable, Serializable {
      * @param weights    instance weights
      * @param targetVars target variables
      */
-    Classifier train(Frame df, Var weights, String... targetVars);
+    Classifier fit(Frame df, Var weights, String... targetVars);
 
     /**
      * Predict classes for new data set instances, with

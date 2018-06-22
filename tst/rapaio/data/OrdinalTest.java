@@ -39,13 +39,13 @@ public class OrdinalTest {
     public void testSmoke() {
         Var v = OrdVar.empty(0);
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.levels().length);
-        assertEquals("?", v.levels()[0]);
+        assertEquals(1, v.levels().size());
+        assertEquals("?", v.levels().get(0));
 
         v = OrdVar.empty();
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.levels().length);
-        assertEquals("?", v.levels()[0]);
+        assertEquals(1, v.levels().size());
+        assertEquals("?", v.levels().get(0));
 
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
@@ -60,10 +60,10 @@ public class OrdinalTest {
     @Test
     public void testDictionary() {
         Var v = OrdVar.empty(0, "a", "a", "v", "a");
-        assertEquals(3, v.levels().length);
-        assertEquals("?", v.levels()[0]);
-        assertEquals("a", v.levels()[1]);
-        assertEquals("v", v.levels()[2]);
+        assertEquals(3, v.levels().size());
+        assertEquals("?", v.levels().get(0));
+        assertEquals("a", v.levels().get(1));
+        assertEquals("v", v.levels().get(2));
 
         TreeSet<String> set = new TreeSet<>();
         set.add("a");
@@ -71,10 +71,10 @@ public class OrdinalTest {
         set.add("a");
 
         v = OrdVar.empty(0, set);
-        assertEquals(3, v.levels().length);
-        assertEquals("?", v.levels()[0]);
-        assertEquals("a", v.levels()[1]);
-        assertEquals("v", v.levels()[2]);
+        assertEquals(3, v.levels().size());
+        assertEquals("?", v.levels().get(0));
+        assertEquals("a", v.levels().get(1));
+        assertEquals("v", v.levels().get(2));
     }
 
     @Test

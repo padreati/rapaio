@@ -148,6 +148,7 @@ public class Datasets {
 
     public static Frame loadCoverType() throws IOException {
         return new Csv()
+                .withQuotes(true)
                 .read(Datasets.class.getResourceAsStream("covtype.csv"));
     }
 }

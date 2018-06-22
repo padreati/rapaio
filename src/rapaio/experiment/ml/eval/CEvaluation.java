@@ -74,7 +74,7 @@ public class CEvaluation {
             Frame test = MappedFrame.byRow(df, testMapping);
 
             Classifier cc = c.newInstance();
-            cc.train(train, classColName);
+            cc.fit(train, classColName);
             CPrediction cp = cc.predict(test);
 
             Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
@@ -93,13 +93,13 @@ public class CEvaluation {
     }
 
     private static List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.rvar(classColName).levels();
-        List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
+        List<String> dict = df.rvar(classColName).levels();
+        List<List<Integer>> rows = IntStream.range(0, dict.size()).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.index(i, classColName)).add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
-        for (int i = 0; i < dict.length; i++) {
+        for (int i = 0; i < dict.size(); i++) {
             Collections.shuffle(rows.get(i), RandomSource.getRandom());
             shuffle.addAll(rows.get(i));
         }
@@ -148,7 +148,7 @@ public class CEvaluation {
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
-                c.train(train, classColName);
+                c.fit(train, classColName);
                 CPrediction cp = c.predict(test);
                 Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
@@ -192,7 +192,7 @@ public class CEvaluation {
             Frame test = df.removeRows(rows);
 //            System.out.println("learn predict set ...");
             Classifier cc = c.newInstance();
-            cc.train(train, weights.mapRows(rows), classColName);
+            cc.fit(train, weights.mapRows(rows), classColName);
 //            System.out.println("predict test cases ...");
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
@@ -229,7 +229,7 @@ public class CEvaluation {
             );
         });
         c.withRuns(runs);
-        c.train(train, targetVar);
+        c.fit(train, targetVar);
 
         WS.println("Confusion matrix on training data set: ");
         Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());
@@ -277,7 +277,7 @@ public class CEvaluation {
 //            );
         });
         c.withRuns(runs);
-        c.train(train, targetVar);
+        c.fit(train, targetVar);
 
 //        WS.println("Confusion matrix on training data set: ");
         Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());

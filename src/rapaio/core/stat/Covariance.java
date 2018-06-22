@@ -65,7 +65,7 @@ public class Covariance implements Printable {
         missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
 
         if (map.size() < 2) {
-            return 0;
+            return Double.NaN;
         }
 
         Var xx = x.mapRows(map);
@@ -86,8 +86,7 @@ public class Covariance implements Printable {
 
     @Override
     public String summary() {
-        return "\n" +
-                "> cov[" + varName1 + ", " + varName2 + "]\n" +
+        return "> cov[" + varName1 + ", " + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + " )\n" +
                 "covariance: " + formatFlex(value) + "\n";
     }

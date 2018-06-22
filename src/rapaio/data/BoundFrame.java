@@ -332,12 +332,12 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public String[] levels(String varName) {
+    public List<String> levels(String varName) {
         return vars.get(varIndex(varName)).levels();
     }
 
     @Override
-    public String[] completeLevels(String varName) {
+    public List<String> completeLevels(String varName) {
         return vars.get(varIndex(varName)).completeLevels();
     }
 

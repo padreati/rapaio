@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.BitSet;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -301,8 +302,8 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
-        return new String[]{"?", "true", "false"};
+    public List<String> levels() {
+        return List.of("?", "true", "false");
     }
 
     @Override

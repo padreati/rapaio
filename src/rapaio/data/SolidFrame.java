@@ -297,12 +297,12 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public String[] levels(String varName) {
+    public List<String> levels(String varName) {
         return vars[varIndex(varName)].levels();
     }
 
     @Override
-    public String[] completeLevels(String varName) {
+    public List<String> completeLevels(String varName) {
         return vars[varIndex(varName)].completeLevels();
     }
 

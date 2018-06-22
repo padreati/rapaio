@@ -65,7 +65,7 @@ public class AdaBoostSAMMETest {
             errTr.addValue(new Confusion(tr.rvar(target), ab.predict(tr).classes(target)).error());
             errTe.addValue(new Confusion(te.rvar(target), ab.predict(te).classes(target)).error());
         });
-        ab.train(tr, target);
+        ab.fit(tr, target);
         ab.printSummary();
 
         new Confusion(tr.rvar(target), ab.predict(tr).firstClasses()).printSummary();

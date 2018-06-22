@@ -428,7 +428,7 @@ public class CForest extends AbstractClassifier {
         for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
             if (e.getValue().sum() > 0) {
                 int bestIndex = e.getValue().findBestIndex();
-                String bestLevel = firstTargetLevels()[bestIndex];
+                String bestLevel = firstTargetLevels().get(bestIndex);
                 oobFit.setLabel(e.getKey(), bestLevel);
                 if (!bestLevel.equals(oobTrueClass.label(e.getKey()))) {
                     totalOobError++;
@@ -447,7 +447,7 @@ public class CForest extends AbstractClassifier {
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;
 
-        weak.train(trainFrame, trainWeights, firstTargetName());
+        weak.fit(trainFrame, trainWeights, firstTargetName());
         List<Integer> oobIndexes = new ArrayList<>();
         if (oobComp) {
             Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());

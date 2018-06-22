@@ -156,8 +156,8 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public String[] levels() {
-        return new String[0];
+    public List<String> levels() {
+        return new ArrayList<>();
     }
 
     @Override

@@ -29,6 +29,8 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.data.*;
 import rapaio.sys.WS;
 
+import java.util.List;
+
 /**
  * Chi-square test for conditional independence of categorical variables.
  * Scenario:
@@ -70,19 +72,19 @@ public class ChiSqConditionalIndependence implements HTest {
         this.z = z;
 
         Frame df = BoundFrame.byVars(x, y, z);
-        String[] levels = z.levels();
+        List<String> levels = z.levels();
 
-        zlevels = new String[levels.length - 1];
-        ztests = new ChiSqIndependence[levels.length - 1];
+        zlevels = new String[levels.size() - 1];
+        ztests = new ChiSqIndependence[levels.size() - 1];
 
-        for (int i = 1; i < levels.length; i++) {
-            String level = levels[i];
-            zlevels[i - 1] = levels[i];
+        for (int i = 1; i < levels.size(); i++) {
+            String level = levels.get(i);
+            zlevels[i - 1] = levels.get(i);
             Frame map = df.stream().filter(s -> s.label(2).equals(level)).toMappedFrame();
             ztests[i - 1] = ChiSqIndependence.from(map.rvar(0), map.rvar(1), false);
         }
 
-        degrees = (z.levels().length - 1) * (x.levels().length - 2) * (y.levels().length - 2);
+        degrees = (z.levels().size() - 1) * (x.levels().size() - 2) * (y.levels().size() - 2);
         for (ChiSqIndependence ztest : ztests) {
             statistic += ztest.getChiValue();
         }

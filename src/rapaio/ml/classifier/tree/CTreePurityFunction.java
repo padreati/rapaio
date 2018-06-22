@@ -83,12 +83,12 @@ public interface CTreePurityFunction extends Tagged, Serializable {
 
         @Override
         public double compute(DTable dt) {
-            double[] rowTotals = new double[dt.rowLevels().length];
-            double[] colTotals = new double[dt.colLevels().length];
+            double[] rowTotals = new double[dt.rowLevels().size()];
+            double[] colTotals = new double[dt.colLevels().size()];
             double total = 0.0;
-            for (int i = 0; i < dt.rowLevels().length; i++) {
+            for (int i = 0; i < dt.rowLevels().size(); i++) {
                 // j = 1 just for optimization, we know that we should not have missing targets
-                for (int j = 1; j < dt.colLevels().length; j++) {
+                for (int j = 1; j < dt.colLevels().size(); j++) {
                     rowTotals[i] += dt.get(i, j);
                     if (i != 0) {
                         colTotals[j] += dt.get(i, j);
@@ -103,14 +103,14 @@ public interface CTreePurityFunction extends Tagged, Serializable {
 
             // compute before split gini impurity
             double gini = 1.0;
-            for (int i = 1; i < dt.colLevels().length; i++) {
+            for (int i = 1; i < dt.colLevels().size(); i++) {
                 gini -= Math.pow(colTotals[i] / total, 2);
             }
 
             // compute after split gini impurity for each test level
-            for (int i = 1; i < dt.rowLevels().length; i++) {
+            for (int i = 1; i < dt.rowLevels().size(); i++) {
                 double gini_k = 1;
-                for (int j = 1; j < dt.colLevels().length; j++) {
+                for (int j = 1; j < dt.colLevels().size(); j++) {
                     if (rowTotals[i] > 0)
                         gini_k -= Math.pow(dt.get(i, j) / rowTotals[i], 2);
                 }

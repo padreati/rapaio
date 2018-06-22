@@ -32,6 +32,8 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
@@ -53,7 +55,7 @@ public class Confusion implements Printable {
 
     private final Var actual;
     private final Var predict;
-    private final String[] factors;
+    private final List<String> factors;
     private final int[][] cmf;
     private final boolean binary;
     private final boolean percents;
@@ -76,9 +78,9 @@ public class Confusion implements Printable {
         this.actual = actual;
         this.predict = predict;
         this.factors = actual.levels();
-        this.cmf = new int[factors.length - 1][factors.length - 1];
+        this.cmf = new int[factors.size() - 1][factors.size() - 1];
         this.percents = percents;
-        this.binary = actual.levels().length == 3;
+        this.binary = actual.levels().size() == 3;
         compute();
     }
 
@@ -89,15 +91,15 @@ public class Confusion implements Printable {
         if (!predict.type().isNominal()) {
             throw new IllegalArgumentException("predict values var must be nominal");
         }
-        if (actual.levels().length != predict.levels().length) {
+        if (actual.levels().size() != predict.levels().size()) {
             throw new IllegalArgumentException("actual and predict does not have the same nominal levels");
         }
-        for (int i = 0; i < actual.levels().length; i++) {
-            if (!actual.levels()[i].equals(predict.levels()[i])) {
+        for (int i = 0; i < actual.levels().size(); i++) {
+            if (!actual.levels().get(i).equals(predict.levels().get(i))) {
                 throw new IllegalArgumentException(
                         String.format("not the same nominal levels (actual:%s, predict:%s)",
-                                Arrays.deepToString(actual.levels()),
-                                Arrays.deepToString(predict.levels())));
+                                actual.levels().stream().collect(Collectors.joining(",")),
+                                predict.levels().stream().collect(Collectors.joining(","))));
             }
         }
     }
@@ -157,99 +159,99 @@ public class Confusion implements Printable {
         sb.append("> Confusion\n");
 
         sb.append("\n");
-        TextTable tt = TextTable.newEmpty(factors.length + 3, factors.length + 3);
+        TextTable tt = TextTable.newEmpty(factors.size() + 3, factors.size() + 3);
         tt.withSplit();
 
         tt.set(0, 0, "Ac\\Pr", 0);
 
-        for (int i = 0; i < factors.length - 1; i++) {
-            tt.set(i + 2, 0, factors[i + 1], 1);
+        for (int i = 0; i < factors.size() - 1; i++) {
+            tt.set(i + 2, 0, factors.get(i + 1), 1);
             tt.set(i + 2, 1, "|", 0);
-            tt.set(i + 2, factors.length + 1, "|", 0);
-            tt.set(0, i + 2, factors[i + 1], 1);
-            tt.set(1, i + 2, line(factors[i + 1].length()), 1);
-            tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 1);
+            tt.set(i + 2, factors.size() + 1, "|", 0);
+            tt.set(0, i + 2, factors.get(i + 1), 1);
+            tt.set(1, i + 2, line(factors.get(i + 1).length()), 1);
+            tt.set(factors.size() + 1, i + 2, line(factors.get(i + 1).length()), 1);
         }
-        tt.set(factors.length + 2, 0, "total", 1);
-        tt.set(0, factors.length + 2, "total", 1);
+        tt.set(factors.size() + 2, 0, "total", 1);
+        tt.set(0, factors.size() + 2, "total", 1);
 
         tt.set(1, 0, line("Ac\\Pr".length()), 0);
-        tt.set(factors.length + 1, 0, line("Ac\\Pr".length()), 0);
-        tt.set(1, factors.length + 2, line("Ac\\Pr".length()), 0);
-        tt.set(factors.length + 1, factors.length + 2, line("Ac\\Pr".length()), 0);
+        tt.set(factors.size() + 1, 0, line("Ac\\Pr".length()), 0);
+        tt.set(1, factors.size() + 2, line("Ac\\Pr".length()), 0);
+        tt.set(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()), 0);
 
         tt.set(0, 1, "|", 0);
         tt.set(1, 1, "|", 0);
-        tt.set(factors.length + 1, 1, "|", 0);
-        tt.set(factors.length + 2, 1, "|", 0);
+        tt.set(factors.size() + 1, 1, "|", 0);
+        tt.set(factors.size() + 2, 1, "|", 0);
 
-        tt.set(0, factors.length + 1, "|", 0);
-        tt.set(1, factors.length + 1, "|", 0);
-        tt.set(factors.length + 1, factors.length + 1, "|", 0);
-        tt.set(factors.length + 2, factors.length + 1, "|", 0);
+        tt.set(0, factors.size() + 1, "|", 0);
+        tt.set(1, factors.size() + 1, "|", 0);
+        tt.set(factors.size() + 1, factors.size() + 1, "|", 0);
+        tt.set(factors.size() + 2, factors.size() + 1, "|", 0);
 
-        int[] rowTotals = new int[factors.length - 1];
-        int[] colTotals = new int[factors.length - 1];
+        int[] rowTotals = new int[factors.size() - 1];
+        int[] colTotals = new int[factors.size() - 1];
         int grandTotal = 0;
 
-        for (int i = 0; i < factors.length - 1; i++) {
-            for (int j = 0; j < factors.length - 1; j++) {
+        for (int i = 0; i < factors.size() - 1; i++) {
+            for (int j = 0; j < factors.size() - 1; j++) {
                 tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + cmf[i][j], 1);
                 grandTotal += cmf[i][j];
                 rowTotals[i] += cmf[i][j];
                 colTotals[j] += cmf[i][j];
             }
         }
-        for (int i = 0; i < factors.length - 1; i++) {
-            tt.set(factors.length + 2, i + 2, String.valueOf(colTotals[i]), 1);
-            tt.set(i + 2, factors.length + 2, String.valueOf(rowTotals[i]), 1);
+        for (int i = 0; i < factors.size() - 1; i++) {
+            tt.set(factors.size() + 2, i + 2, String.valueOf(colTotals[i]), 1);
+            tt.set(i + 2, factors.size() + 2, String.valueOf(rowTotals[i]), 1);
         }
-        tt.set(factors.length + 2, factors.length + 2, String.valueOf(grandTotal), 1);
+        tt.set(factors.size() + 2, factors.size() + 2, String.valueOf(grandTotal), 1);
         sb.append(tt.summary());
 
         if (percents && completeCases > 0.) {
 
-            tt = TextTable.newEmpty(factors.length + 3, factors.length + 3);
+            tt = TextTable.newEmpty(factors.size() + 3, factors.size() + 3);
             tt.withSplit();
 
             tt.set(0, 0, "Ac\\Pr", 0);
 
-            for (int i = 0; i < factors.length - 1; i++) {
-                tt.set(i + 2, 0, factors[i + 1], 1);
+            for (int i = 0; i < factors.size() - 1; i++) {
+                tt.set(i + 2, 0, factors.get(i + 1), 1);
                 tt.set(i + 2, 1, "|", 0);
-                tt.set(i + 2, factors.length + 1, "|", 0);
-                tt.set(0, i + 2, factors[i + 1], 1);
-                tt.set(1, i + 2, line(factors[i + 1].length()), 1);
-                tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 1);
+                tt.set(i + 2, factors.size() + 1, "|", 0);
+                tt.set(0, i + 2, factors.get(i + 1), 1);
+                tt.set(1, i + 2, line(factors.get(i + 1).length()), 1);
+                tt.set(factors.size() + 1, i + 2, line(factors.get(i + 1).length()), 1);
             }
-            tt.set(factors.length + 2, 0, "total", 1);
-            tt.set(0, factors.length + 2, "total", 1);
+            tt.set(factors.size() + 2, 0, "total", 1);
+            tt.set(0, factors.size() + 2, "total", 1);
 
             tt.set(1, 0, line("Ac\\Pr".length()), 0);
-            tt.set(factors.length + 1, 0, line("Ac\\Pr".length()), 0);
-            tt.set(1, factors.length + 2, line("Ac\\Pr".length()), 0);
-            tt.set(factors.length + 1, factors.length + 2, line("Ac\\Pr".length()), 0);
+            tt.set(factors.size() + 1, 0, line("Ac\\Pr".length()), 0);
+            tt.set(1, factors.size() + 2, line("Ac\\Pr".length()), 0);
+            tt.set(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()), 0);
 
             tt.set(0, 1, "|", 0);
             tt.set(1, 1, "|", 0);
-            tt.set(factors.length + 1, 1, "|", 0);
-            tt.set(factors.length + 2, 1, "|", 0);
+            tt.set(factors.size() + 1, 1, "|", 0);
+            tt.set(factors.size() + 2, 1, "|", 0);
 
-            tt.set(0, factors.length + 1, "|", 0);
-            tt.set(1, factors.length + 1, "|", 0);
-            tt.set(factors.length + 1, factors.length + 1, "|", 0);
-            tt.set(factors.length + 2, factors.length + 1, "|", 0);
+            tt.set(0, factors.size() + 1, "|", 0);
+            tt.set(1, factors.size() + 1, "|", 0);
+            tt.set(factors.size() + 1, factors.size() + 1, "|", 0);
+            tt.set(factors.size() + 2, factors.size() + 1, "|", 0);
 
-            for (int i = 0; i < factors.length - 1; i++) {
-                for (int j = 0; j < factors.length - 1; j++) {
+            for (int i = 0; i < factors.size() - 1; i++) {
+                for (int j = 0; j < factors.size() - 1; j++) {
                     tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + WS.formatShort(cmf[i][j] / completeCases), 1);
                 }
             }
-            for (int i = 0; i < factors.length - 1; i++) {
-                tt.set(factors.length + 2, i + 2, WS.formatShort(colTotals[i] / completeCases), 1);
-                tt.set(i + 2, factors.length + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
+            for (int i = 0; i < factors.size() - 1; i++) {
+                tt.set(factors.size() + 2, i + 2, WS.formatShort(colTotals[i] / completeCases), 1);
+                tt.set(i + 2, factors.size() + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
             }
-            tt.set(factors.length + 2, factors.length + 2, WS.formatShort(grandTotal / completeCases), 1);
+            tt.set(factors.size() + 2, factors.size() + 2, WS.formatShort(grandTotal / completeCases), 1);
             sb.append(tt.summary());
 
         }

@@ -106,8 +106,8 @@ public interface RTreeNominalMethod extends Serializable {
         public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
             // we ignore the missing data points, thus we need only non missing levels
-            String[] testLevels = df.levels(testVarName);
-            int len = testLevels.length - 1;
+            List<String> testLevels = df.levels(testVarName);
+            int len = testLevels.size() - 1;
             WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
             // initialize
@@ -152,7 +152,7 @@ public interface RTreeNominalMethod extends Serializable {
             double value = tree.function.computeTestValue(p);
             RTreeCandidate candidate = new RTreeCandidate(value, testVarName);
             for (int i = 0; i < len; i++) {
-                String label = testLevels[i + 1];
+                String label = testLevels.get(i + 1);
                 candidate.addGroup(RowPredicate.nomEqual(testVarName, label));
             }
             return Optional.of(candidate);
@@ -177,8 +177,8 @@ public interface RTreeNominalMethod extends Serializable {
         public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
             // we ignore the missing data points, thus we need only non missing levels
-            String[] testLevels = df.levels(testVarName);
-            int len = testLevels.length - 1;
+            List<String> testLevels = df.levels(testVarName);
+            int len = testLevels.size() - 1;
             WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
             // initialize
@@ -233,8 +233,8 @@ public interface RTreeNominalMethod extends Serializable {
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
                     best = new RTreeCandidate(value, testVarName);
-                    best.addGroup(RowPredicate.nomEqual(testVarName, testLevels[i+1]));
-                    best.addGroup(RowPredicate.nomNotEqual(testVarName, testLevels[i+1]));
+                    best.addGroup(RowPredicate.nomEqual(testVarName, testLevels.get(i+1)));
+                    best.addGroup(RowPredicate.nomNotEqual(testVarName, testLevels.get(i+1)));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

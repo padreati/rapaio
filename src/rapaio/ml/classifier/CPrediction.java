@@ -47,7 +47,7 @@ public class CPrediction implements Printable {
     private final List<String> targetNames = new ArrayList<>();
     private final boolean hasClasses;
     private final boolean hasDensities;
-    private final Map<String, String[]> dictionaries = new HashMap<>();
+    private final Map<String, List<String>> dictionaries = new HashMap<>();
     private final Map<String, NomVar> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
@@ -112,7 +112,7 @@ public class CPrediction implements Printable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    public Map<String, String[]> dictionaries() {
+    public Map<String, List<String>> dictionaries() {
         return dictionaries;
     }
 
@@ -121,14 +121,14 @@ public class CPrediction implements Printable {
      *
      * @return map with target variable names as key and levels as variables
      */
-    public String[] firstDictionary() {
+    public List<String> firstDictionary() {
         return dictionaries.get(firstTargetName());
     }
 
     /**
      * Returns levels used at learning time for the given target variable
      */
-    public String[] dictionary(String targetVar) {
+    public List<String> dictionary(String targetVar) {
         return dictionaries.get(targetVar);
     }
 

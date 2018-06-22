@@ -47,7 +47,7 @@ public class FFOneHotEncoding extends AbstractFF {
 
     private static final long serialVersionUID = 4893532203594639069L;
 
-    private Map<String, String[]> levels;
+    private Map<String, List<String>> levels;
 
     public FFOneHotEncoding(String... varNames) {
         super(VRange.of(varNames));
@@ -71,7 +71,7 @@ public class FFOneHotEncoding extends AbstractFF {
             // for each nominal variable
             if (df.rvar(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.rvar(varName).levels();
+                List<String> dict = df.rvar(varName).levels();
                 levels.put(varName, dict);
             }
         }
@@ -92,14 +92,14 @@ public class FFOneHotEncoding extends AbstractFF {
             if (levels.keySet().contains(varName)) {
 
                 // get the learned dictionary
-                String[] dict = levels.get(varName);
+                List<String> dict = levels.get(varName);
                 List<Var> oneHotVars = new ArrayList<>();
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
-                for (int i = 1; i < dict.length; i++) {
-                    Var v = NumVar.fill(df.rowCount()).withName(varName + "." + dict[i]);
+                for (int i = 1; i < dict.size(); i++) {
+                    Var v = NumVar.fill(df.rowCount()).withName(varName + "." + dict.get(i));
                     oneHotVars.add(v);
-                    index.put(dict[i], v);
+                    index.put(dict.get(i), v);
                 }
                 // populate encoding variables
                 for (int i = 0; i < df.rowCount(); i++) {
