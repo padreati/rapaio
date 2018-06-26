@@ -54,7 +54,7 @@ public class UniformRandomSelectorTest {
         String classColName = "class";
         int mcols = 4;
 
-        VarSelector colSelector = new VarSelector(mcols);
+        VarSelector colSelector = VarSelector.fixed(mcols);
         colSelector.withVarNames("a", "b", "c", "d", "e", "f", "g", "h");
 
         final int TESTS = 10_000;

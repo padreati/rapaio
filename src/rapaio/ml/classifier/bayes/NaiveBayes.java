@@ -143,7 +143,7 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         // build priors
 
@@ -184,7 +184,7 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected CPrediction corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         logger.fine("start fitting values...");
 

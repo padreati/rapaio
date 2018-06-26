@@ -19,3 +19,15 @@ ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 5 out of 7
  round: 9.17 [+- 0.10], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 15, GC.time: 1.18, time.total: 65.40, time.warmup: 19.54, time.bench: 45.87
 ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 5 out of 7 rounds, threads: 1 (sequential)]
  round: 0.19 [+- 0.04], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 2, GC.time: 0.14, time.total: 1.24, time.warmup: 0.31, time.bench: 0.93
+
+2018-06-26
+==========
+
+sorting with fastutil tools
+
+ClassifiersPerformanceTest.performanceCartRuns12Serial50k: [measured 5 out of 7 rounds, threads: 1 (sequential)]
+ round: 1.41 [+- 0.56], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 5, GC.time: 0.05, time.total: 11.69, time.warmup: 4.67, time.bench: 7.02
+ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 5 out of 7 rounds, threads: 1 (sequential)]
+ round: 4.38 [+- 0.06], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 4, GC.time: 0.12, time.total: 30.99, time.warmup: 9.08, time.bench: 21.91
+ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 5 out of 7 rounds, threads: 1 (sequential)]
+ round: 0.09 [+- 0.00], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 0, GC.time: 0.00, time.total: 0.67, time.warmup: 0.20, time.bench: 0.47

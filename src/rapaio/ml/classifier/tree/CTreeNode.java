@@ -33,10 +33,7 @@ import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -127,7 +124,7 @@ public class CTreeNode implements Serializable {
             bestIndex = parent.bestIndex;
             return;
         }
-        if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
+        if (counter.countValues(x -> x > 0) == 1 || (tree.maxDepth()>0 && depth > tree.maxDepth()) || df.rowCount() <= tree.minCount()) {
             return;
         }
 
@@ -158,7 +155,8 @@ public class CTreeNode implements Serializable {
                             "tests for given variable: " + testCol +
                             " [" + df.type(testCol).name() + "]");
                 }
-                CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
+                CTreeCandidate candidate = test.computeCandidate(
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                 if (candidate != null) {
                     candidateList.add(candidate);
                     m--;
@@ -188,13 +186,14 @@ public class CTreeNode implements Serializable {
                                         "tests for given variable: " + testCol +
                                         " [" + df.type(testCol).name() + "]");
                             }
-                            CTreeCandidate candidate = test.computeCandidate(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
+                            CTreeCandidate candidate = test.computeCandidate(
+                                    tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                             if (candidate == null) {
                                 exhaustList.add(testCol);
                             }
                             return candidate;
                         })
-                        .filter(c -> c != null)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
                 candidateList.addAll(next);
                 start += m;
@@ -223,7 +222,7 @@ public class CTreeNode implements Serializable {
         }
         tree.varSelector().removeVarNames(exhaustList);
         for (int i = 0; i < children.size(); i++) {
-            children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
+            children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth + 1);
         }
         tree.varSelector().addVarNames(exhaustList);
     }

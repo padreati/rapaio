@@ -156,8 +156,12 @@ public interface CTreeSplitter extends Tagged, Serializable {
             }
             for (int i = 0; i < mappings.size(); i++) {
                 for(int row : missingRows) {
-                    mappings.get(i).add(row);
-                    weighting.get(i).addValue(weights.value(row) * p[i]);
+                    // we distribute something to a node only if it has
+                    // already something
+                    if(p[i]>0) {
+                        mappings.get(i).add(row);
+                        weighting.get(i).addValue(weights.value(row) * p[i]);
+                    }
                 }
             }
             List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());

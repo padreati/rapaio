@@ -87,7 +87,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         bestRuleSet = null;
         for (String testCol : inputNames()) {
             RuleSet ruleSet;
@@ -110,7 +110,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(final Frame test, final boolean withClasses, final boolean withDensities) {
+    protected CPrediction corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
         CPrediction pred = CPrediction.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);

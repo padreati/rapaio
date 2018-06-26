@@ -121,7 +121,7 @@ public class CStepwiseSelection extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         selection = VRange.of(startSelection).parseVarNames(df);
         Frame testFrame = test != null ? test : df;
@@ -235,7 +235,7 @@ public class CStepwiseSelection extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return best.predict(df, withClasses, withDistributions);
     }
 

@@ -81,7 +81,7 @@ public class CForest extends AbstractClassifier {
     private CForest() {
         withRuns(10);
         this.baggingMode = BaggingMode.DISTRIBUTION;
-        this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
+        this.c = CTree.newCART().withVarSelector(VarSelector.auto());
         this.oobComp = false;
         this.withSampler(RowSampler.bootstrap());
     }
@@ -162,20 +162,12 @@ public class CForest extends AbstractClassifier {
         return this;
     }
 
-    public CForest withMCols(int mcols) {
-        if (c instanceof CTree) {
-            ((CTree) c).withMCols(mcols);
-        }
-        return this;
-    }
-
     public CForest withVarSelector(VarSelector varSelector) {
         if (c instanceof CTree) {
             ((CTree) c).withVarSelector(varSelector);
         }
         return this;
     }
-
 
     @Override
     public Capabilities capabilities() {
@@ -254,7 +246,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         double totalOobInstances = 0;
         double totalOobError = 0;
@@ -457,7 +449,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
         CPrediction cp = CPrediction.build(this, df, true, true);
         List<CPrediction> treeFits = predictors.stream().parallel()
                 .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))

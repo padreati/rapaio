@@ -25,12 +25,12 @@
 
 package rapaio.ml.classifier.tree;
 
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
-import rapaio.data.Frame;
-import rapaio.data.IdxVar;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Tagged;
@@ -38,6 +38,8 @@ import rapaio.util.Tagged;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Impurity test implementation
@@ -56,7 +58,9 @@ public interface CTreeTest extends Tagged, Serializable {
         }
 
         @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function) {
+        public CTreeCandidate computeCandidate(
+                CTree c, Frame df, Var w, String testName, String targetName,
+                CTreePurityFunction function) {
             return null;
         }
     };
@@ -71,7 +75,9 @@ public interface CTreeTest extends Tagged, Serializable {
         }
 
         @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function) {
+        public CTreeCandidate computeCandidate(
+                CTree c, Frame df, Var w, String testName, String targetName,
+                CTreePurityFunction function) {
 
             int split;
             while (true) {
@@ -116,27 +122,30 @@ public interface CTreeTest extends Tagged, Serializable {
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
             DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName), false);
-            int misCount = 0;
+
+            int[] rows = new int[df.rowCount()];
+            int len = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                int row = (df.isMissing(i, testNameIndex)) ? 0 : 2;
-                if (df.isMissing(i, testNameIndex)) misCount++;
+                boolean missing = df.isMissing(i, testNameIndex);
+                int row = missing ? 0 : 2;
+                if (!missing) {
+                    rows[len++] = i;
+                }
                 dt.update(row, df.index(i, targetNameIndex), weights.value(i));
             }
+            int misCount = df.rowCount() - len;
 
-//            Var sort = new VFRefSort(RowComparators.numeric(df.rvar(testName), true)).fitApply(IdxVar.seq(df.rowCount()));
-            Integer[] rows = new Integer[df.rowCount()];
-            double[] values = new double[df.rowCount()];
-            for (int i = 0; i < df.rowCount(); i++) {
-                rows[i] = i;
+            double[] values = new double[len];
+            for (int i = 0; i < len; i++) {
                 values[i] = df.value(i, testNameIndex);
             }
-
-            Arrays.sort(rows, 0, df.rowCount(), Comparator.comparingDouble(o -> values[o]));
+            IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);
+            IntArrays.quickSort(rows, comparator);
 
             CTreeCandidate best = null;
             double bestScore = 0.0;
 
-            for (int i = 0; i < df.rowCount(); i++) {
+            for (int i = 0; i < len; i++) {
                 int row = rows[i];
 
                 if (df.isMissing(row, testNameIndex)) continue;
@@ -178,7 +187,9 @@ public interface CTreeTest extends Tagged, Serializable {
         }
 
         @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function) {
+        public CTreeCandidate computeCandidate(
+                CTree c, Frame df, Var w, String testName, String targetName,
+                CTreePurityFunction function) {
 
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
@@ -189,7 +200,7 @@ public interface CTreeTest extends Tagged, Serializable {
 
             CTreeCandidate best = new CTreeCandidate(function.compute(dt), testName);
             best.addGroup(RowPredicate.binEqual(testName, true));
-            best.addGroup(RowPredicate.binNotEqual(testName, true));
+            best.addGroup(RowPredicate.binEqual(testName, false));
             return best;
 
         }
@@ -204,7 +215,9 @@ public interface CTreeTest extends Tagged, Serializable {
         }
 
         @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+        public CTreeCandidate computeCandidate(
+                CTree c, Frame df, Var weights, String testName, String targetName,
+                CTreePurityFunction function) {
             if (!DTable.fromCounts(df, testName, targetName, false).hasColsWithMinimumCount(c.minCount(), 2)) {
                 return null;
             }
@@ -228,7 +241,9 @@ public interface CTreeTest extends Tagged, Serializable {
         }
 
         @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+        public CTreeCandidate computeCandidate(
+                CTree c, Frame df, Var weights, String testName, String targetName,
+                CTreePurityFunction function) {
             DTable counts = DTable.fromCounts(df, testName, targetName, false);
             if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
@@ -264,5 +279,7 @@ public interface CTreeTest extends Tagged, Serializable {
         }
     };
 
-    CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function);
+    CTreeCandidate computeCandidate(
+            CTree c, Frame df, Var w,
+            String testName, String targetName, CTreePurityFunction function);
 }

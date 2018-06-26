@@ -53,7 +53,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     RTreeTestFunction function = RTreeTestFunction.WEIGHTED_VAR_GAIN;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     RTreePredictor predictor = RTreePredictor.STANDARD;
-    VarSelector varSelector = VarSelector.ALL;
+    VarSelector varSelector = VarSelector.all();
 
     // tree root node
     private RTreeNode root;

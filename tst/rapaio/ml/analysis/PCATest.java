@@ -88,8 +88,8 @@ public class PCATest {
         rf1.fit(iris, "class");
         CPrediction fit1 = rf1.predict(iris);
 
-        rf2.fit(fit.mapVars("0,1,class"), "class");
-        CPrediction fit2 = rf2.predict(fit.mapVars("0~1,class"));
+        rf2.fit(fit.mapVars("0~2,class"), "class");
+        CPrediction fit2 = rf2.predict(fit.mapVars("0~2,class"));
 
         double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();

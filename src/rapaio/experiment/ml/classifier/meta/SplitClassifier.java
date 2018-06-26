@@ -85,7 +85,7 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    public boolean coreFit(Frame df, Var weights) {
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
         }
@@ -123,7 +123,7 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
     }
 
     @Override
-    public CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
+    public CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
 
         CPrediction pred = CPrediction.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {

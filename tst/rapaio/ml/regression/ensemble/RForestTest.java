@@ -43,7 +43,7 @@ public class RForestTest {
         Regression tree = RTree.buildCART().withMaxDepth(7);
 
         Regression rf = RForest.newRF()
-                .withRegression(RTree.buildCART().withMaxDepth(7).withVarSelector(new VarSelector(2)))
+                .withRegression(RTree.buildCART().withMaxDepth(7).withVarSelector(VarSelector.fixed(2)))
                 .withRuns(1_000);
 
 

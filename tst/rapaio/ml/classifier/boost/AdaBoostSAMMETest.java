@@ -31,6 +31,7 @@ import rapaio.data.NumVar;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -47,7 +48,7 @@ public class AdaBoostSAMMETest {
 
         WS.setPrinter(new IdeaPrinter());
         Classifier ab = new AdaBoostSAMME()
-                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withMCols(5))
+                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withVarSelector(VarSelector.fixed(5)))
                 .withRuns(10);
         Frame df = Datasets.loadSpamBase();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);

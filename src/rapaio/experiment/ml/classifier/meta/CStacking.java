@@ -99,7 +99,7 @@ public class CStacking extends AbstractClassifier {
                 .withTargetCount(1, 1);
     }
 
-    protected BaseTrainSetup baseTrain(Frame df, Var w, String... targetVars) {
+    protected BaseTrainSetup baseFit(Frame df, Var w, String... targetVars) {
         logger.fine("predict method called.");
         int pos = 0;
         logger.fine("check learners for learning.... ");
@@ -124,7 +124,7 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         logger.fine("started learning for stacker classifier...");
         stacker.fit(df, weights, targetNames());
@@ -150,7 +150,7 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("started fitting stacker classifier .. ");
         CPrediction fit = stacker.predict(df);
 

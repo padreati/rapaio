@@ -113,8 +113,10 @@ final class NumLessEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        double value = df.value(row, testName);
-        return !Double.isNaN(value) && value <= testValue;
+        if(df.isMissing(row, testName)) {
+            return false;
+        }
+        return df.value(row, testName)<= testValue;
     }
 
     @Override
@@ -136,8 +138,9 @@ final class NumGreaterEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        double value = df.value(row, testName);
-        return !Double.isNaN(value) && value >= testValue;
+        if(df.isMissing(row, testName))
+            return false;
+        return df.value(row, testName) >= testValue;
     }
 
     @Override
@@ -159,8 +162,10 @@ final class NumLess implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
+        if(df.isMissing(row, testName))
+            return false;
         double value = df.value(row, testName);
-        return !Double.isNaN(value) && value < testValue;
+        return value < testValue;
     }
 
     @Override
@@ -182,8 +187,10 @@ final class NumGreater implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
+        if(df.isMissing(row, testName))
+            return false;
         double value = df.value(row, testName);
-        return !Double.isNaN(value) && value > testValue;
+        return value > testValue;
     }
 
     @Override
@@ -206,7 +213,9 @@ final class BinaryEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        return !df.isMissing(row) && df.binary(row, testName) == testValue;
+        if(df.isMissing(row, testName))
+            return false;
+        return df.binary(row, testName) == testValue;
     }
 
     @Override
@@ -229,7 +238,9 @@ final class BinaryNotEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        return !df.isMissing(row) && df.binary(row, testName) != testValue;
+        if(df.isMissing(row, testName))
+            return false;
+        return df.binary(row, testName) != testValue;
     }
 
     @Override
@@ -252,6 +263,8 @@ final class NominalEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
+        if(df.isMissing(row, testName))
+            return false;
         return df.label(row, testName).equals(testValue);
     }
 
@@ -275,6 +288,8 @@ final class NominalNotEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
+        if(df.isMissing(row, testName))
+            return false;
         return !df.label(row, testName).equals(testValue);
     }
 

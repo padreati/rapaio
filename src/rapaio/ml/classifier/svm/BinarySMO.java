@@ -213,7 +213,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter); 
     }
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         // process classes
 
@@ -444,7 +444,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);

@@ -129,7 +129,7 @@ public class BinaryLogistic extends AbstractClassifier {
     };
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         // inputs contains transposed X
 
@@ -152,7 +152,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);

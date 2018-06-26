@@ -40,20 +40,26 @@ public class VarSelector implements Serializable {
 
     private static final long serialVersionUID = -6800363806127327947L;
 
+    public static VarSelector all() {
+        return new VarSelector(M_ALL);
+    }
+
+    public static VarSelector auto() {
+        return new VarSelector(M_ALL);
+    }
+
+    public static VarSelector fixed(int m) {
+        return new VarSelector(m);
+    }
+
     private static final int M_ALL = 0;
     private static final int M_AUTO = -1;
-    public static VarSelector ALL = new VarSelector(M_ALL);
-    public static VarSelector AUTO = new VarSelector(M_AUTO);
+
     private final int mVars;
     private int mCount = 0;
     private Set<String> varNames = new HashSet<>();
 
-
-    public VarSelector() {
-        this(M_ALL);
-    }
-
-    public VarSelector(int mVars) {
+    private VarSelector(int mVars) {
         this.mVars = mVars;
     }
 

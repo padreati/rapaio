@@ -118,9 +118,9 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier fit(Frame df, Var weights, String... targetVars) {
-        BaseTrainSetup setup = baseTrain(df, weights, targetVars);
-        Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
-        learned = coreTrain(workDf, setup.w);
+        BaseTrainSetup setup = baseFit(df, weights, targetVars);
+        Frame workDf = prepareFit(setup.df, setup.w, setup.targetVars);
+        learned = coreFit(workDf, setup.w);
         return this;
     }
 
@@ -133,7 +133,7 @@ public abstract class AbstractClassifier implements Classifier {
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    protected Frame prepareTraining(Frame dfOld, final Var weights, final String... targetVars) {
+    protected Frame prepareFit(Frame dfOld, final Var weights, final String... targetVars) {
         Frame df = dfOld;
         for (FFilter filter : inputFilters) {
             df = filter.fitApply(df);
@@ -154,11 +154,11 @@ public abstract class AbstractClassifier implements Classifier {
         return result;
     }
 
-    protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
+    protected BaseTrainSetup baseFit(Frame df, Var weights, String... targetVars) {
         return BaseTrainSetup.valueOf(df, weights, targetVars);
     }
 
-    protected abstract boolean coreTrain(Frame df, Var weights);
+    protected abstract boolean coreFit(Frame df, Var weights);
 
     @Override
     public final CPrediction predict(Frame df) {
@@ -167,17 +167,17 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final CPrediction predict(Frame df, boolean withClasses, boolean withDistributions) {
-        BaseFitSetup setup = baseFit(df, withClasses, withDistributions);
-        Frame workDf = prepareFit(setup.df);
-        return coreFit(workDf, setup.withClasses, setup.withDistributions);
+        BaseFitSetup setup = basePredict(df, withClasses, withDistributions);
+        Frame workDf = preparePredict(setup.df);
+        return corePredict(workDf, setup.withClasses, setup.withDistributions);
     }
 
     // by default do nothing, it is only for two stage training
-    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected BaseFitSetup basePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return BaseFitSetup.valueOf(df, withClasses, withDistributions);
     }
 
-    protected Frame prepareFit(Frame df) {
+    protected Frame preparePredict(Frame df) {
         Frame result = df;
         for (FFilter filter : inputFilters) {
             result = filter.apply(result);
@@ -185,7 +185,7 @@ public abstract class AbstractClassifier implements Classifier {
         return result;
     }
 
-    protected abstract CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions);
+    protected abstract CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions);
 
     @Override
     public String summary() {

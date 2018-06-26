@@ -98,7 +98,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
+    protected BaseTrainSetup baseFit(Frame df, Var weights, String... targetVars) {
         logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
@@ -124,7 +124,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         logger.config("started learning for binary logistic...");
         log.withTol(tol);
         log.withMaxRuns(maxRuns);
@@ -135,7 +135,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected BaseFitSetup basePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
 
@@ -152,7 +152,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting binary logistic regression.. ");
         CPrediction fit = log.predict(df);
 

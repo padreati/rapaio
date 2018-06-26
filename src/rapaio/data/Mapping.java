@@ -161,6 +161,8 @@ public interface Mapping extends Iterable<Integer>, Serializable {
         return rowStream().toArray();
     }
 
+    List<Integer> toList();
+
     static Collector<Integer, List<Integer>, Mapping> collector() {
         return new Collector<Integer, List<Integer>, Mapping>() {
             @Override
@@ -261,6 +263,11 @@ final class ListMapping implements Mapping {
     @Override
     public Stream<Integer> stream() {
         return mapping.stream();
+    }
+
+    @Override
+    public List<Integer> toList() {
+        return mapping;
     }
 }
 
@@ -365,5 +372,15 @@ final class IntervalMapping implements Mapping {
     @Override
     public Stream<Integer> stream() {
         return onList ? listMapping.stream() : IntStream.range(start, end).boxed();
+    }
+
+    @Override
+    public List<Integer> toList() {
+        List<Integer> list = new ArrayList<>();
+        Iterator<Integer> it = iterator();
+        while(it.hasNext()) {
+            list.add(it.next());
+        }
+        return list;
     }
 }

@@ -26,10 +26,7 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -63,7 +60,7 @@ public class CTree extends AbstractClassifier {
     private int maxDepth = -1;
     private double minGain = -1000;
 
-    private VarSelector varSelector = VarSelector.ALL;
+    private VarSelector varSelector = VarSelector.all();
     private Map<String, CTreeTest> customTestMap = new HashMap<>();
     private Map<VarType, CTreeTest> testMap = new HashMap<>();
     private CTreePurityFunction function = CTreePurityFunction.InfoGain;
@@ -91,7 +88,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withMaxDepth(-1)
                 .withMinCount(1)
-                .withVarSelector(VarSelector.ALL)
+                .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
@@ -103,7 +100,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withMaxDepth(-1)
                 .withMinCount(1)
-                .withVarSelector(VarSelector.ALL)
+                .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
                 .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
@@ -114,7 +111,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withMaxDepth(1)
                 .withMinCount(1)
-                .withVarSelector(VarSelector.ALL)
+                .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withFunction(CTreePurityFunction.GainRatio)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
@@ -125,7 +122,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withMaxDepth(-1)
                 .withMinCount(1)
-                .withVarSelector(VarSelector.ALL)
+                .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
                 .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
@@ -161,11 +158,6 @@ public class CTree extends AbstractClassifier {
 
     public VarSelector varSelector() {
         return varSelector;
-    }
-
-    public CTree withMCols(int mcols) {
-        this.varSelector = new VarSelector(mcols);
-        return this;
     }
 
     public CTree withVarSelector(VarSelector varSelector) {
@@ -291,7 +283,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         additionalValidation(df);
 
@@ -304,9 +296,9 @@ public class CTree extends AbstractClassifier {
 
         // start learning the root node (this one will fire learning recursively
         if (runPoolSize() == 0) {
-            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth());
+            root.learn(this, df, weights, 0);
         } else {
-            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth));
+            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, 0));
         }
         this.root.fillId(1);
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
@@ -322,7 +314,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    protected CPrediction coreFit(Frame df, boolean withClasses, boolean withDensities) {
+    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
         CPrediction prediction = CPrediction.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<Integer, DVector> res = fitPoint(this, root, i, df);

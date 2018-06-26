@@ -78,8 +78,8 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(1234);
     }
 
-    @Test
-    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+//    @Test
+    @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial5k() {
         Classifier c = CTree.newCART()
                 .withMaxDepth(12)
@@ -89,7 +89,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     }
 
     @Test
-    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+    @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial50k() {
         Classifier c = CTree.newCART()
                 .withMaxDepth(12)
@@ -98,8 +98,8 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         test(c, df_50k);
     }
 
-    @Test
-    @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
+//    @Test
+    @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial200k() {
         Classifier c = CTree.newCART()
                 .withMaxDepth(12)

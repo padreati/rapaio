@@ -121,7 +121,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    public boolean coreFit(Frame df, Var weights) {
 
         // algorithm described by ESTL pag. 387
 
@@ -208,7 +208,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public CPrediction coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    public CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
         for (int k = 0; k < K; k++) {
             for (BTRegression tree : trees.get(k)) {
