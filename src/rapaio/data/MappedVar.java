@@ -26,7 +26,6 @@
 package rapaio.data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A variable which wraps rows from another variable. The row selection
@@ -61,7 +60,7 @@ public class MappedVar extends AbstractVar {
      * @return mapped variable
      */
     public static MappedVar byRows(Var source, int... rows) {
-        return new MappedVar(source, Mapping.copy(rows));
+        return new MappedVar(source, Mapping.wrap(rows));
     }
 
     private static final long serialVersionUID = -2293127457462742840L;
@@ -71,11 +70,9 @@ public class MappedVar extends AbstractVar {
     private MappedVar(Var var, Mapping mapping) {
         withName(var.name());
         if (var instanceof MappedVar) {
-            this.mapping = Mapping.empty();
-            for(int row : mapping) {
-                this.mapping.add(((MappedVar) var).getMapping().get(row));
-            }
-            this.source = ((MappedVar) var).source();
+            Mapping srcMap = ((MappedVar) var).getMapping();
+            this.mapping = mapping.reMapCopy(srcMap::get);
+            this.source = ((MappedVar) var).source;
         } else {
             this.mapping = mapping;
             this.source = var;

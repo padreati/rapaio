@@ -52,17 +52,17 @@ public class FFT {
         }
 
         // fft of even terms
-        Mapping evenMap = Mapping.empty();
+        int[] evenMap = new int[N / 2];
         for (int k = 0; k < N / 2; k++) {
-            evenMap.add(2 * k);
+            evenMap[k] = 2 * k;
         }
         Pair<Var, Var> even = Pair.from(x._1.mapRows(evenMap), x._2.mapRows(evenMap));
         Pair<Var, Var> q = fft(even);
 
         // fft of odd terms
-        Mapping oddMap = Mapping.empty();
+        int[] oddMap = new int[N / 2];
         for (int k = 0; k < N / 2; k++) {
-            oddMap.add(2 * k + 1);
+            oddMap[k] = 2 * k + 1;
         }
         Pair<Var, Var> r = fft(Pair.from(x._1.mapRows(oddMap), x._2.mapRows(oddMap)));
 

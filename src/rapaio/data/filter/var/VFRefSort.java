@@ -25,6 +25,9 @@
 
 package rapaio.data.filter.var;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
@@ -39,15 +42,14 @@ import java.util.List;
  */
 public class VFRefSort extends AbstractVF {
 
-    public static VFRefSort filter(Comparator<Integer>... rowComparators) {
+    public static VFRefSort filter(IntComparator... rowComparators) {
         return new VFRefSort(rowComparators);
     }
 
     private static final long serialVersionUID = -1075060445963356550L;
-    private final Comparator<Integer> aggregateComparator;
+    private final IntComparator aggregateComparator;
 
-    @SafeVarargs
-    public VFRefSort(Comparator<Integer>... rowComparators) {
+    public VFRefSort(IntComparator... rowComparators) {
         if (rowComparators == null || rowComparators.length == 0) {
             throw new IllegalArgumentException("Filter requires at least a row comparator");
         }
@@ -62,11 +64,11 @@ public class VFRefSort extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        List<Integer> rows = new ArrayList<>(vars[0].rowCount());
+        int[] rows = new int[vars[0].rowCount()];
         for (int i = 0; i < vars[0].rowCount(); i++) {
-            rows.add(i);
+            rows[i] = i;
         }
-        Collections.sort(rows, aggregateComparator);
-        return vars[0].mapRows(Mapping.wrap(rows));
+        IntArrays.quickSort(rows, aggregateComparator);
+        return vars[0].mapRows(Mapping.wrap(IntArrayList.wrap(rows)));
     }
 }

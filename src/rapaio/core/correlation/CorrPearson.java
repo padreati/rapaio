@@ -84,7 +84,7 @@ public class CorrPearson implements Correlation, Printable {
         double sum = 0;
         int len = Math.min(x.rowCount(), y.rowCount());
 
-        Mapping map = Mapping.copy(IntStream.range(0, len)
+        Mapping map = Mapping.wrap(IntStream.range(0, len)
                 .filter(i -> !(x.isMissing(i) || y.isMissing(i)))
                 .toArray());
         double xMean = Mean.from(x.mapRows(map)).value();

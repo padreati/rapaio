@@ -31,3 +31,16 @@ ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 5 out of 7
  round: 4.38 [+- 0.06], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 4, GC.time: 0.12, time.total: 30.99, time.warmup: 9.08, time.bench: 21.91
 ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 5 out of 7 rounds, threads: 1 (sequential)]
  round: 0.09 [+- 0.00], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 0, GC.time: 0.00, time.total: 0.67, time.warmup: 0.20, time.bench: 0.47
+
+2018-06-27
+==========
+
+introducing in mappings IntArrayList - no big performance, but it will help in future
+=> total marriage with fastutil
+
+ClassifiersPerformanceTest.performanceCartRuns12Serial50k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 1.12 [+- 0.04], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 4, GC.time: 0.03, time.total: 14.18, time.warmup: 6.38, time.bench: 7.80
+ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 4.45 [+- 0.17], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 9, GC.time: 0.08, time.total: 42.00, time.warmup: 10.85, time.bench: 31.14
+ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 0.11 [+- 0.02], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 1, GC.time: 0.05, time.total: 1.40, time.warmup: 0.61, time.bench: 0.79

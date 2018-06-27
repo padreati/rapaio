@@ -25,6 +25,7 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Frame;
 import rapaio.data.filter.frame.FFRefSort;
 
@@ -35,8 +36,7 @@ import java.util.Comparator;
  */
 public class FFilters {
 
-    public static Frame refSort(Frame df, Comparator<Integer> comp) {
+    public static Frame refSort(Frame df, IntComparator comp) {
         return new FFRefSort(comp).fitApply(df);
     }
-
 }

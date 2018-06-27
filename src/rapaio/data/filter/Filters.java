@@ -25,6 +25,7 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -79,8 +80,7 @@ public class Filters {
         return new VFSort(asc).fitApply(x);
     }
 
-    @SafeVarargs
-    public static Var refSort(Var x, Comparator<Integer>... comp) {
+    public static Var refSort(Var x, IntComparator... comp) {
         return new VFRefSort(comp).fitApply(x);
     }
 
@@ -92,7 +92,7 @@ public class Filters {
         return new VFRefSort(ref.refComparator(asc)).fitApply(x);
     }
 
-    public static Frame refSort(Frame df, Comparator<Integer>... comp) {
+    public static Frame refSort(Frame df, IntComparator... comp) {
         return new FFRefSort(comp).fitApply(df);
     }
 

@@ -25,6 +25,9 @@
 
 package rapaio.experiment.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -39,7 +42,8 @@ public final class FrameJoin {
 
     public static Frame leftJoinComplete(Frame dst, Frame src, String... keyFields) {
 
-        HashMap<KeyValue, Integer> map = new HashMap<>();
+        Object2IntOpenHashMap<KeyValue> map = new Object2IntOpenHashMap<>(dst.rowCount());
+
         KeyField srcKeyField = new KeyField(src, keyFields);
         for (int i = 0; i < src.rowCount(); i++) {
             KeyValue key = new KeyValue(srcKeyField, i);
@@ -49,8 +53,8 @@ public final class FrameJoin {
             map.put(key, i);
         }
 
-        List<Integer> dstRows = new ArrayList<>();
-        List<Integer> srcRows = new ArrayList<>();
+        IntList dstRows = new IntArrayList();
+        IntList srcRows = new IntArrayList();
 
         KeyField dstKeyField = new KeyField(dst, keyFields);
 
@@ -62,8 +66,8 @@ public final class FrameJoin {
             }
         }
 
-        MappedFrame dstMap = MappedFrame.byRow(dst, Mapping.copy(dstRows));
-        MappedFrame srcMap = MappedFrame.byRow(src, Mapping.copy(srcRows));
+        MappedFrame dstMap = MappedFrame.byRow(dst, Mapping.wrap(dstRows));
+        MappedFrame srcMap = MappedFrame.byRow(src, Mapping.wrap(srcRows));
         return dstMap.bindVars(srcMap.removeVars(keyFields));
     }
 }

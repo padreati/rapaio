@@ -25,6 +25,8 @@
 
 package rapaio.ml.classifier.ensemble;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.CoreTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.tools.DVector;
@@ -271,7 +273,7 @@ public class CForest extends AbstractClassifier {
         if (runPoolSize() == 0) {
             predictors = new ArrayList<>();
             for (int i = 0; i < runs(); i++) {
-                Pair<Classifier, List<Integer>> weak = buildWeakPredictor(df, weights);
+                Pair<Classifier, IntList> weak = buildWeakPredictor(df, weights);
                 predictors.add(weak._1);
                 if (oobComp) {
                     oobCompute(df, weak);
@@ -294,11 +296,11 @@ public class CForest extends AbstractClassifier {
             // same moment when weak tree was built
             // for a real running hook behavior run without threading
             predictors = new ArrayList<>();
-            List<Pair<Classifier, List<Integer>>> list = Util.rangeStream(runs(), runPoolSize() > 0).boxed()
+            List<Pair<Classifier, IntList>> list = Util.rangeStream(runs(), runPoolSize() > 0).boxed()
                     .map(s -> buildWeakPredictor(df, weights))
                     .collect(Collectors.toList());
             for (int i = 0; i < list.size(); i++) {
-                Pair<Classifier, List<Integer>> weak = list.get(i);
+                Pair<Classifier, IntList> weak = list.get(i);
                 predictors.add(weak._1);
                 if (oobComp) {
                     oobCompute(df, weak);
@@ -320,9 +322,9 @@ public class CForest extends AbstractClassifier {
         return true;
     }
 
-    private void permVICompute(Frame df, Pair<Classifier, List<Integer>> weak) {
+    private void permVICompute(Frame df, Pair<Classifier, IntList> weak) {
         Classifier c = weak._1;
-        List<Integer> oobIndexes = weak._2;
+        IntList oobIndexes = weak._2;
 
         // build oob data frame
         Frame oobFrame = df.mapRows(Mapping.wrap(oobIndexes));
@@ -358,7 +360,7 @@ public class CForest extends AbstractClassifier {
         }
     }
 
-    private void gainVICompute(Pair<Classifier, List<Integer>> weak) {
+    private void gainVICompute(Pair<Classifier, IntList> weak) {
         CTree weakTree = (CTree) weak._1;
         DVector scores = DVector.empty(false, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
@@ -381,7 +383,7 @@ public class CForest extends AbstractClassifier {
         node.getChildren().forEach(child -> collectGainVI(child, dv));
     }
 
-    private void freqVICompute(Pair<Classifier, List<Integer>> weak) {
+    private void freqVICompute(Pair<Classifier, IntList> weak) {
         CTree weakTree = (CTree) weak._1;
         DVector scores = DVector.empty(false, inputNames());
         collectFreqVI(weakTree.getRoot(), scores);
@@ -404,10 +406,10 @@ public class CForest extends AbstractClassifier {
         node.getChildren().forEach(child -> collectFreqVI(child, dv));
     }
 
-    private void oobCompute(Frame df, Pair<Classifier, List<Integer>> weak) {
+    private void oobCompute(Frame df, Pair<Classifier, IntList> weak) {
         double totalOobError;
         double totalOobInstances;
-        List<Integer> oobIndexes = weak._2;
+        IntList oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
         CPrediction fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
@@ -431,7 +433,7 @@ public class CForest extends AbstractClassifier {
         oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
     }
 
-    private Pair<Classifier, List<Integer>> buildWeakPredictor(Frame df, Var weights) {
+    private Pair<Classifier, IntList> buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
         Sample sample = sampler().nextSample(df, weights);
@@ -440,10 +442,10 @@ public class CForest extends AbstractClassifier {
         Var trainWeights = sample.weights;
 
         weak.fit(trainFrame, trainWeights, firstTargetName());
-        List<Integer> oobIndexes = new ArrayList<>();
+        IntList oobIndexes = new IntArrayList();
         if (oobComp) {
             Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
-            oobIndexes = IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
+            oobIndexes = IntArrayList.wrap(IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).toArray());
         }
         return Pair.from(weak, oobIndexes);
     }

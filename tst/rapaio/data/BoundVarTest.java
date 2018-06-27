@@ -116,7 +116,7 @@ public class BoundVarTest {
             }
         }
 
-        z = x.mapRows(Mapping.copy(0, 7, 9));
+        z = x.mapRows(Mapping.wrap(0, 7, 9));
         assertEquals(3, z.rowCount());
         assertEquals(1, z.value(0), 1e-12);
         assertEquals(8, z.value(1), 1e-12);

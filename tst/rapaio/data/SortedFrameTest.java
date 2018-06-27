@@ -24,6 +24,7 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
@@ -32,12 +33,9 @@ import rapaio.io.Csv;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Comparator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static rapaio.data.RowComparators.nominal;
-import static rapaio.data.RowComparators.numeric;
+import static org.junit.Assert.*;
+import static rapaio.data.RowComparators.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -155,7 +153,7 @@ public class SortedFrameTest {
         for (int i = 0; i < 10_000; i++) {
             int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            Comparator<Integer> comp = sorted.rvar(col).type().isNominal() ?
+            IntComparator comp = sorted.rvar(col).type().isNominal() ?
                     nominal(sorted.rvar(0), asc) :
                     numeric(sorted.rvar(0), asc);
             sorted = new FFRefSort(comp).fitApply(sorted);

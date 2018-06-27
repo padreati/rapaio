@@ -25,6 +25,10 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import rapaio.data.filter.FFilter;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
@@ -113,6 +117,7 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Returns the type of the given var
+     *
      * @param name variable name
      * @return variable type
      */
@@ -223,7 +228,7 @@ public interface Frame extends Serializable, Printable {
      * @return new mapped frame with given rows
      */
     default Frame mapRows(int... rows) {
-        return mapRows(Mapping.copy(rows));
+        return mapRows(Mapping.wrap(rows));
     }
 
     /**
@@ -238,15 +243,20 @@ public interface Frame extends Serializable, Printable {
      * Builds a new frame only with rows not specified in mapping.
      */
     default Frame removeRows(int... rows) {
-        return removeRows(Mapping.copy(rows));
+        return removeRows(Mapping.wrap(rows));
     }
 
     /**
      * Builds a new frame only with rows not specified in mapping.
      */
     default Frame removeRows(Mapping mapping) {
-        Set<Integer> remove = mapping.rowStream().boxed().collect(Collectors.toSet());
-        List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).boxed().collect(toList());
+        IntSet remove = new IntOpenHashSet(mapping.toList());
+        IntList map = new IntArrayList(Math.min(0, rowCount() - remove.size()));
+        for (int i = 0; i < rowCount(); i++) {
+            if (!remove.contains(i)) {
+                map.add(i);
+            }
+        }
         return mapRows(Mapping.wrap(map));
     }
 

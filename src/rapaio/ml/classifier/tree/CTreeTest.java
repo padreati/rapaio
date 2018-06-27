@@ -135,8 +135,8 @@ public interface CTreeTest extends Tagged, Serializable {
             }
             int misCount = df.rowCount() - len;
 
-            double[] values = new double[len];
-            for (int i = 0; i < len; i++) {
+            double[] values = new double[df.rowCount()];
+            for (int i = 0; i < df.rowCount(); i++) {
                 values[i] = df.value(i, testNameIndex);
             }
             IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);

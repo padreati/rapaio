@@ -85,21 +85,24 @@ public class MappedFrameTest {
                 .mapRows(Mapping.range(0, 10))
                 .mapRows(Mapping.range(0, 4))
                 .mapVars("x,y");
+
+        df1.printLines();
+
         Frame b = df1.mapRows(Mapping.range(0, 4)).mapVars("z");
         Frame c = df1.mapRows(Mapping.range(4, 10)).mapVars("x,y");
         Frame d = df1.mapRows(Mapping.range(4, 10)).mapVars("z");
 
         Frame df2 = a.bindVars(b).bindRows(c.bindVars(d));
+        df2.printLines();
 
         assertEquals(df1.rowCount(), df2.rowCount());
         assertEquals(df1.varCount(), df2.varCount());
-        for (int i = 0; i < df1.rowCount(); i++) {
-            for (int j = 0; j < df1.varCount(); j++) {
-                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
-            }
-        }
+
+        assertTrue(df1.deepEquals(df2));
 
         df2 = df2.solidCopy();
+        df2.printLines();
+
         assertEquals(df1.rowCount(), df2.rowCount());
         assertEquals(df1.varCount(), df2.varCount());
         for (int i = 0; i < df1.varNames().length; i++) {
@@ -112,31 +115,22 @@ public class MappedFrameTest {
         }
 
         df2 = a.bindRows(c).bindVars(b.bindRows(d));
+        df2.printLines();
 
-        assertEquals(df1.rowCount(), df2.rowCount());
-        assertEquals(df1.varCount(), df2.varCount());
-        for (int i = 0; i < df1.rowCount(); i++) {
-            for (int j = 0; j < df1.varCount(); j++) {
-                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
-            }
-        }
+        assertTrue(df1.deepEquals(df2));
 
         df2 = MappedFrame.byRow(df1, Mapping.range(0, 10)).mapVars("x");
         df2 = df2.bindVars(y, z);
+        df2.printLines();
 
-        assertEquals(df1.rowCount(), df2.rowCount());
-        assertEquals(df1.varCount(), df2.varCount());
-        for (int i = 0; i < df1.rowCount(); i++) {
-            for (int j = 0; j < df1.varCount(); j++) {
-                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
-            }
-        }
+        assertTrue(df1.deepEquals(df2));
 
         Frame df3 = df1
                 .mapRows(1, 3, 5, 7, 9)
                 .mapVars("x,z")
                 .mapRows(1, 3)
                 .mapVars("z");
+        df3.printLines();
 
         assertTrue(df3.varCount() == 1);
         assertTrue(df3.rvar(0).type() == VarType.NUMERIC);

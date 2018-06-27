@@ -25,6 +25,8 @@
 
 package rapaio.ml.classifier.tree;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -56,7 +58,10 @@ public interface CTreeSplitter extends Tagged, Serializable {
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<RowPredicate> p = candidate.getGroupPredicates();
-            List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
+            List<IntArrayList> mappings = new ArrayList<>(p.size());
+            for (int i = 0; i < p.size(); i++) {
+                mappings.add(new IntArrayList());
+            }
 
             for (int row = 0; row < df.rowCount(); row++) {
                 for (int i = 0; i < p.size(); i++) {
@@ -67,8 +72,8 @@ public interface CTreeSplitter extends Tagged, Serializable {
                 }
             }
             return Pair.from(
-                    mappings.stream().map(df::mapRows).collect(toList()),
-                    mappings.stream().map(weights::mapRows).collect(toList())
+                    mappings.stream().map(Mapping::wrap).map(df::mapRows).collect(toList()),
+                    mappings.stream().map(Mapping::wrap).map(weights::mapRows).collect(toList())
             );
         }
 
@@ -84,9 +89,12 @@ public interface CTreeSplitter extends Tagged, Serializable {
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<RowPredicate> p = candidate.getGroupPredicates();
-            List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
+            List<IntArrayList> mappings = new ArrayList<>(p.size());
+            for (int i = 0; i < p.size(); i++) {
+                mappings.add(new IntArrayList());
+            }
 
-            List<Integer> missingSpots = new LinkedList<>();
+            IntList missingSpots = new IntArrayList();
             for (int row = 0; row < df.rowCount(); row++) {
                 boolean consumed = false;
                 for (int i = 0; i < p.size(); i++) {
@@ -99,7 +107,7 @@ public interface CTreeSplitter extends Tagged, Serializable {
                 if (!consumed)
                     missingSpots.add(row);
             }
-            List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
+            List<Integer> lens = mappings.stream().map(Mapping::wrap).map(Mapping::size).collect(toList());
             Collections.shuffle(lens);
             int majorityGroup = 0;
             int majoritySize = 0;
@@ -114,8 +122,8 @@ public interface CTreeSplitter extends Tagged, Serializable {
             mappings.get(index).addAll(missingSpots);
 
             return Pair.from(
-                    mappings.stream().map(df::mapRows).collect(toList()),
-                    mappings.stream().map(weights::mapRows).collect(toList())
+                    mappings.stream().map(Mapping::wrap).map(df::mapRows).collect(toList()),
+                    mappings.stream().map(Mapping::wrap).map(weights::mapRows).collect(toList())
             );
         }
     };

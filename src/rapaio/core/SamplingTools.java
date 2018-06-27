@@ -25,6 +25,9 @@
 
 package rapaio.core;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -328,17 +331,17 @@ public final class SamplingTools {
         }
         List<Frame> result = new ArrayList<>();
 
-        List<Integer> rows = IntStream.range(0, frame.rowCount()).boxed().collect(Collectors.toList());
-        Collections.shuffle(rows, RandomSource.getRandom());
+        int[] rows = IntStream.range(0, frame.rowCount()).toArray();
+        IntArrays.shuffle(rows, RandomSource.getRandom());
 
         int start = 0;
         for (double f : freq) {
             int len = (int) (f * frame.rowCount());
-            result.add(frame.mapRows(Mapping.copy(rows.subList(start, start + len))));
+            result.add(frame.mapRows(Arrays.copyOfRange(rows, start, start + len)));
             start += len;
         }
         if (start < frame.rowCount()) {
-            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.rowCount()))));
+            result.add(frame.mapRows(Arrays.copyOfRange(rows, start, frame.rowCount())));
         }
         return result;
     }
@@ -347,15 +350,15 @@ public final class SamplingTools {
         if (p <= 0 || p >= 1) {
             throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
         }
-        List<List<Integer>> maps = new ArrayList<>();
+        List<IntList> maps = new ArrayList<>();
         for (int i = 0; i < df.levels(strataName).size(); i++) {
-            maps.add(new ArrayList<>());
+            maps.add(new IntArrayList());
         }
         for (int i = 0; i < df.rowCount(); i++) {
             maps.get(df.index(i, strataName)).add(i);
         }
-        List<Integer> left = new ArrayList<>();
-        List<Integer> right = new ArrayList<>();
+        IntList left = new IntArrayList();
+        IntList right = new IntArrayList();
         for (List<Integer> map : maps) {
             Collections.shuffle(map, RandomSource.getRandom());
             left.addAll(map.subList(0, (int) (p * map.size())));
@@ -375,6 +378,6 @@ public final class SamplingTools {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
+        return MappedFrame.byRow(frame, Mapping.wrap(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

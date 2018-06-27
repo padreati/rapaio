@@ -25,6 +25,7 @@
 
 package rapaio.data.filter.frame;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -33,6 +34,7 @@ import rapaio.data.filter.FFilter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
@@ -57,13 +59,8 @@ public class FFShuffle extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            mapping.add(i);
-        }
-        for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
-        }
+        int[] mapping = IntStream.range(0, df.rowCount()).toArray();
+        IntArrays.shuffle(mapping, RandomSource.getRandom());
         return df.mapRows(Mapping.wrap(mapping));
     }
 }

@@ -65,7 +65,7 @@ public class CorrSpearman implements Correlation, Printable {
             rowCount = Math.min(var.rowCount(), rowCount);
         }
 
-        Mapping map = Mapping.copy(IntStream.range(0, rowCount)
+        Mapping map = Mapping.wrap(IntStream.range(0, rowCount)
                 .filter(row -> {
                     for (Var var : variables) {
                         if (var.isMissing(row))

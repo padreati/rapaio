@@ -25,6 +25,7 @@
 
 package rapaio.ml.eval;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.Sum;
 import rapaio.data.IdxVar;
 import rapaio.data.NumVar;
@@ -72,7 +73,7 @@ public class Gini implements Printable {
     private double gini(Var actual, Var fit) {
 
         Var index = IdxVar.seq(actual.rowCount());
-        Comparator<Integer> cmp = RowComparators.from(
+        IntComparator cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
         Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();
@@ -87,7 +88,7 @@ public class Gini implements Printable {
 
     private double wgini(Var actual, Var fit, Var weights) {
         Var index = IdxVar.seq(actual.rowCount());
-        Comparator<Integer> cmp = RowComparators.from(
+        IntComparator cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
         Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();

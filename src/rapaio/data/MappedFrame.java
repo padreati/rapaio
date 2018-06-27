@@ -25,7 +25,6 @@
 
 package rapaio.data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ import java.util.List;
 public class MappedFrame extends AbstractFrame {
 
     public static MappedFrame byRow(Frame df, int... mapping) {
-        return new MappedFrame(df, Mapping.copy(mapping));
+        return new MappedFrame(df, Mapping.wrap(mapping));
     }
 
     public static MappedFrame byRow(Frame df, Mapping mapping) {
@@ -74,12 +73,8 @@ public class MappedFrame extends AbstractFrame {
             mapping = Mapping.empty();
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
-            this.source = mappedFrame.sourceFrame();
-            List<Integer> rows = new ArrayList<>();
-            for (int i = 0; i < mapping.size(); i++) {
-                rows.add(mappedFrame.mapping().get(mapping.get(i)));
-            }
-            this.mapping = Mapping.wrap(rows);
+            this.source = mappedFrame.source;
+            this.mapping = mapping.reMapCopy(mappedFrame.mapping::get);
         } else {
             this.source = df;
             this.mapping = mapping;
@@ -104,14 +99,6 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public int varCount() {
         return names.length;
-    }
-
-    protected Frame sourceFrame() {
-        return source;
-    }
-
-    protected Mapping mapping() {
-        return mapping;
     }
 
     @Override

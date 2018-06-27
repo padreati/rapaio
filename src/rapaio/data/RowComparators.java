@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
+
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -35,8 +37,7 @@ public final class RowComparators implements Serializable {
 
     private static final long serialVersionUID = -3396667513004042385L;
 
-    @SafeVarargs
-    public static Comparator<Integer> from(final Comparator<Integer>... comparators) {
+    public static IntComparator from(final IntComparator... comparators) {
         return (row1, row2) -> {
             for (Comparator<Integer> comparator : comparators) {
                 int comp = comparator.compare(row1, row2);
@@ -48,7 +49,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> nominal(final Var var, final boolean asc) {
+    public static IntComparator nominal(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
@@ -65,7 +66,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> numeric(final Var var, final boolean asc) {
+    public static IntComparator numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
             double d1 = var.value(row1);
@@ -85,12 +86,12 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> index(final Var var, final boolean asc) {
+    public static IntComparator index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> sign * Integer.compare(var.index(row1), var.index(row2));
     }
 
-    public static Comparator<Integer> stamp(final Var var, final boolean asc) {
+    public static IntComparator stamp(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {

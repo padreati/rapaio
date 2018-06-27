@@ -223,7 +223,7 @@ public class BoundFrameTest {
             assertEquals(1 / (i + 1.), df.value(i, 1), 1e-12);
         }
 
-        df = df.mapRows(Mapping.copy(0, 2, 4));
+        df = df.mapRows(Mapping.wrap(0, 2, 4));
         assertEquals(2, df.varCount());
         assertEquals(3, df.rowCount());
         assertEquals(1.0, df.value(0, "x"), 1e-12);

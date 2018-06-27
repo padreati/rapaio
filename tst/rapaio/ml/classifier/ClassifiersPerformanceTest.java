@@ -28,6 +28,7 @@ import com.carrotsearch.junitbenchmarks.AbstractBenchmark;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -53,6 +54,7 @@ import java.net.URISyntaxException;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+//@Ignore
 public class ClassifiersPerformanceTest extends AbstractBenchmark {
 
     @Rule
@@ -65,11 +67,11 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     public ClassifiersPerformanceTest() throws IOException {
         RandomSource.setSeed(1234);
         Frame src = Datasets.loadCoverType();
-        Mapping mapping_5 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 5_000));
+        Mapping mapping_5 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 5_000));
         df_5k = src.mapRows(mapping_5).solidCopy();
-        Mapping mapping_50 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 50_000));
+        Mapping mapping_50 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 50_000));
         df_50k = src.mapRows(mapping_50).solidCopy();
-        Mapping mapping_200 = Mapping.copy(SamplingTools.sampleWR(src.rowCount(), 200_000));
+        Mapping mapping_200 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 200_000));
         df_200k = src.mapRows(mapping_200).solidCopy();
     }
 
@@ -78,7 +80,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(1234);
     }
 
-//    @Test
+    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial5k() {
         Classifier c = CTree.newCART()
@@ -98,7 +100,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         test(c, df_50k);
     }
 
-//    @Test
+    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial200k() {
         Classifier c = CTree.newCART()

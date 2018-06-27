@@ -25,6 +25,7 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
@@ -98,7 +99,7 @@ public interface Var extends Serializable, Printable {
      * @return new frame with selected rows
      */
     default Var mapRows(int... rows) {
-        return mapRows(Mapping.copy(rows));
+        return mapRows(Mapping.wrap(rows));
     }
 
     void addRows(int rowCount);
@@ -371,11 +372,11 @@ public interface Var extends Serializable, Printable {
     }
 
 
-    default Comparator<Integer> refComparator() {
+    default IntComparator refComparator() {
         return refComparator(true);
     }
 
-    default Comparator<Integer> refComparator(boolean asc) {
+    default IntComparator refComparator(boolean asc) {
         switch (this.type()) {
             case TEXT:
             case NOMINAL:

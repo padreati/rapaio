@@ -24,6 +24,9 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollections;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,12 +46,12 @@ public class MappingTest {
         Mapping m = Mapping.empty();
         assertEquals(0, m.size());
 
-        m = Mapping.copy(1, 3, 5, 7);
+        m = Mapping.wrap(1, 3, 5, 7);
         assertEquals(4, m.size());
         assertEquals(1, m.get(0));
         assertEquals(7, m.get(3));
 
-        m = Mapping.copy(Arrays.asList(1, 3, 5, 7));
+        m = Mapping.wrap(IntArrayList.wrap(new int[] {1, 3, 5, 7}));
         assertEquals(4, m.size());
         assertEquals(1, m.get(0));
         assertEquals(7, m.get(3));
@@ -64,7 +67,7 @@ public class MappingTest {
         }
 
         try {
-            m.addAll(Arrays.asList(1, 0));
+            m.addAll(IntArrayList.wrap(new int[] {1, 0}));
         } catch (IllegalArgumentException ignored) {
             assertTrue("should not raise an exception", false);
         }
@@ -72,12 +75,12 @@ public class MappingTest {
 
     @Test
     public void testListMappingManage() {
-        Mapping m = Mapping.copy(IntStream.range(0, 100).mapToObj(i -> i).collect(Collectors.toList()));
+        Mapping m = Mapping.wrap(IntStream.range(0, 100).toArray());
 
         m.add(1000);
         assertEquals(1000, m.get(m.size() - 1));
 
-        m = Mapping.copy(0, 1, 3, 4);
+        m = Mapping.wrap(0, 1, 3, 4);
 
         try {
             m.get(10000);
@@ -88,7 +91,7 @@ public class MappingTest {
         assertEquals(4, m.get(3));
         assertEquals(1, m.get(1));
 
-        m.addAll(Arrays.asList(100, 101));
+        m.addAll(IntArrayList.wrap(new int[] {100, 101}));
 
         assertEquals(100, m.get(4));
         assertEquals(101, m.get(5));

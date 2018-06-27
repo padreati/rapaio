@@ -25,6 +25,7 @@
 
 package rapaio.core.stat;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -60,7 +61,15 @@ public class Covariance implements Printable {
 
     private double compute(final Var x, final Var y) {
 
-        Mapping map = Mapping.wrap(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.isMissing(row) && !y.isMissing(row)).boxed().collect(toList()));
+        IntArrayList rows = new IntArrayList();
+        int len = Math.min(x.rowCount(), y.rowCount());
+        for (int i = 0; i < len; i++) {
+            if(x.isMissing(i) || y.isMissing(i)) {
+                continue;
+            }
+            rows.add(i);
+        }
+        Mapping map = Mapping.wrap(rows);
         completeCount = map.size();
         missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
 

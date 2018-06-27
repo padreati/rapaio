@@ -25,6 +25,8 @@
 
 package rapaio.experiment.ml.eval;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
@@ -57,7 +59,7 @@ public class CEvaluation {
     public static double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
 
-        List<List<Integer>> strata = buildStrata(df, folds, classColName);
+        List<IntList> strata = buildStrata(df, folds, classColName);
         NumVar acc = NumVar.empty();
 
         for (int i = 0; i < folds; i++) {
@@ -92,20 +94,23 @@ public class CEvaluation {
         return correct;
     }
 
-    private static List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
+    private static List<IntList> buildStrata(Frame df, int folds, String classColName) {
         List<String> dict = df.rvar(classColName).levels();
-        List<List<Integer>> rows = IntStream.range(0, dict.size()).boxed().map(ArrayList<Integer>::new).collect(toList());
+        List<IntList> rows = new ArrayList<>();
+        for (int i = 0; i < dict.size(); i++) {
+            rows.add(new IntArrayList());
+        }
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.index(i, classColName)).add(i);
         }
-        List<Integer> shuffle = new ArrayList<>();
+        IntList shuffle = new IntArrayList();
         for (int i = 0; i < dict.size(); i++) {
             Collections.shuffle(rows.get(i), RandomSource.getRandom());
             shuffle.addAll(rows.get(i));
         }
-        List<List<Integer>> strata = new ArrayList<>();
+        List<IntList> strata = new ArrayList<>();
         for (int i = 0; i < folds; i++) {
-            strata.add(new ArrayList<>());
+            strata.add(new IntArrayList());
         }
         int fold = 0;
         for (int next : shuffle) {
@@ -124,8 +129,8 @@ public class CEvaluation {
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.empty();
-            Mapping testMapping = Mapping.empty();
+            IntArrayList trainMapping = new IntArrayList();
+            IntArrayList testMapping = new IntArrayList();
             if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -143,8 +148,8 @@ public class CEvaluation {
                     }
                 }
             }
-            Frame train = MappedFrame.byRow(df, trainMapping);
-            Frame test = MappedFrame.byRow(df, testMapping);
+            Frame train = MappedFrame.byRow(df, trainMapping.toIntArray());
+            Frame test = MappedFrame.byRow(df, testMapping.toIntArray());
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();

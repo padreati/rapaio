@@ -25,12 +25,15 @@
 
 package rapaio.data.filter.var;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -46,13 +49,8 @@ public class VFShuffle extends AbstractVF {
 
     @Override
     public Var apply(Var... vars) {
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < vars[0].rowCount(); i++) {
-            mapping.add(i);
-        }
-        for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
-        }
+        int[] mapping = IntStream.range(0, vars[0].rowCount()).toArray();
+        IntArrays.shuffle(mapping, RandomSource.getRandom());
         return vars[0].mapRows(Mapping.wrap(mapping));
     }
 }

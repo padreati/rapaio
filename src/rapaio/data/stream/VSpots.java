@@ -25,6 +25,7 @@
 
 package rapaio.data.stream;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -373,6 +374,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return new mapped variable
      */
     public MappedVar toMappedVar() {
-        return MappedVar.byRows(source, Mapping.wrap(stream.map(VSpot::row).collect(Collectors.toList())));
+        int[] rows = stream.mapToInt(VSpot::row).toArray();
+        return MappedVar.byRows(source, Mapping.wrap(IntArrayList.wrap(rows)));
     }
 }

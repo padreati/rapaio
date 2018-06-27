@@ -25,6 +25,8 @@
 
 package rapaio.data.stream;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -283,9 +285,9 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return mapping of collected row numbers
      */
     public Mapping collectMapping() {
-        final Mapping m = Mapping.empty();
+        final IntList m = new IntArrayList();
         forEach(s -> m.add(s.row()));
-        return m;
+        return Mapping.wrap(m);
     }
 
     /**

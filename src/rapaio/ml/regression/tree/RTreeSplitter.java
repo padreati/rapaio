@@ -25,6 +25,8 @@
 
 package rapaio.ml.regression.tree;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.ml.common.predicate.RowPredicate;
@@ -32,10 +34,7 @@ import rapaio.util.Pair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -258,8 +257,8 @@ Regular splitting performs a split for each candidate rule and keep the missing 
  */
 final class RegularSplit {
 
-    final public List<List<Integer>> rows = new ArrayList<>();
-    final public List<Integer> missingRows = new ArrayList<>();
+    final public List<IntList> rows = new ArrayList<>();
+    final public IntList missingRows = new IntArrayList();
 
     private final Frame df;
     private final Var weights;
@@ -271,7 +270,7 @@ final class RegularSplit {
 
         // initialize the lists with one element in each list for each candidate's rule
         for (int i = 0; i < groupPredicates.size(); i++) {
-            rows.add(new ArrayList<>());
+            rows.add(new IntArrayList());
         }
 
         // each instance is distributed to one rule
@@ -295,7 +294,7 @@ final class RegularSplit {
 
     public List<Mapping> toMappings() {
         List<Mapping> mappings = new ArrayList<>();
-        for (List<Integer> list : rows) {
+        for (IntList list : rows) {
             mappings.add(Mapping.wrap(list));
         }
         return mappings;
@@ -303,7 +302,7 @@ final class RegularSplit {
 
     public List<Frame> toFrames() {
         List<Frame> frames = new ArrayList<>();
-        for (List<Integer> list : rows) {
+        for (IntList list : rows) {
             frames.add(df.mapRows(Mapping.wrap(list)));
         }
         return frames;

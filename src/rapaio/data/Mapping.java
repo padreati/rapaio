@@ -25,14 +25,19 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.*;
+import rapaio.data.mapping.IntervalMapping;
+import rapaio.data.mapping.ListMapping;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,7 +53,7 @@ import java.util.stream.Stream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Mapping extends Iterable<Integer>, Serializable {
+public interface Mapping extends Serializable {
 
     // static builders
 
@@ -66,7 +71,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      * @param mapping list of mapped values
      * @return new mapping which wraps the given list of indexed values
      */
-    static Mapping wrap(List<Integer> mapping) {
+    static Mapping wrap(IntList mapping) {
         return new ListMapping(mapping, false);
     }
 
@@ -77,8 +82,19 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      * @param mapping list of mapped values
      * @return new mapping which is build on a copy of the list of values
      */
-    static Mapping copy(List<Integer> mapping) {
+    static Mapping copy(IntList mapping) {
         return new ListMapping(mapping, false);
+    }
+
+    /**
+     * Builds a mapping having the mapped values given as a list of indexed values,
+     * a copy of the list of values is used.
+     *
+     * @param mapping list of mapped values
+     * @return new mapping which is build on a copy of the list of values
+     */
+    static Mapping copy(IntList mapping, Int2IntFunction fun) {
+        return new ListMapping(mapping, fun);
     }
 
     /**
@@ -88,7 +104,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      * @param mapping array of mapped values
      * @return new mapping which is build on a copy of the array of values
      */
-    static Mapping copy(int... mapping) {
+    static Mapping wrap(int... mapping) {
         return new ListMapping(mapping);
     }
 
@@ -99,6 +115,8 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     static Mapping range(int start, int end) {
         return new IntervalMapping(start, end);
     }
+
+    Mapping reMapCopy(Int2IntFunction fun);
 
     /**
      * @return the size of mapping
@@ -125,7 +143,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param rows collection of row numbers to be added to the mapping
      */
-    void addAll(Collection<Integer> rows);
+    void addAll(IntCollection rows);
 
     /**
      * Removes the element from the given position.
@@ -139,13 +157,14 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param positions collection with positions which will be removed
      */
-    void removeAll(Collection<Integer> positions);
+    void removeAll(IntCollection positions);
 
     /**
      * Removes all elements from mapping
      */
     void clear();
 
+    IntListIterator iterator();
 
     /**
      * Builds a stream of indexes values
@@ -161,22 +180,22 @@ public interface Mapping extends Iterable<Integer>, Serializable {
         return rowStream().toArray();
     }
 
-    List<Integer> toList();
+    IntList toList();
 
-    static Collector<Integer, List<Integer>, Mapping> collector() {
-        return new Collector<Integer, List<Integer>, Mapping>() {
+    static Collector<Integer, IntList, Mapping> collector() {
+        return new Collector<>() {
             @Override
-            public Supplier<List<Integer>> supplier() {
-                return ArrayList::new;
+            public Supplier<IntList> supplier() {
+                return IntArrayList::new;
             }
 
             @Override
-            public BiConsumer<List<Integer>, Integer> accumulator() {
+            public BiConsumer<IntList, Integer> accumulator() {
                 return List::add;
             }
 
             @Override
-            public BinaryOperator<List<Integer>> combiner() {
+            public BinaryOperator<IntList> combiner() {
                 return (list1, list2) -> {
                     list1.addAll(list2);
                     return list1;
@@ -184,7 +203,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
             }
 
             @Override
-            public Function<List<Integer>, Mapping> finisher() {
+            public Function<IntList, Mapping> finisher() {
                 return Mapping::wrap;
             }
 
@@ -198,189 +217,3 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     Stream<Integer> stream();
 }
 
-final class ListMapping implements Mapping {
-
-    private static final long serialVersionUID = 5485844129188037454L;
-    private final List<Integer> mapping;
-
-    ListMapping() {
-        this.mapping = new ArrayList<>();
-    }
-
-    ListMapping(int[] rows) {
-        mapping = new ArrayList<>();
-        for (int row : rows) {
-            mapping.add(row);
-        }
-    }
-
-    ListMapping(List<Integer> mapping, boolean copy) {
-        this.mapping = copy ? new ArrayList<>(mapping) : mapping;
-    }
-
-    public int size() {
-        return mapping.size();
-    }
-
-    public int get(int pos) {
-        if (mapping.size() > pos)
-            return mapping.get(pos);
-        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
-    }
-
-    public void add(int pos) {
-        mapping.add(pos);
-    }
-
-    public void addAll(Collection<Integer> pos) {
-        mapping.addAll(pos);
-    }
-
-    @Override
-    public void remove(int pos) {
-        mapping.remove(pos);
-    }
-
-    @Override
-    public void removeAll(Collection<Integer> positions) {
-        positions.forEach(mapping::remove);
-    }
-
-    @Override
-    public void clear() {
-        mapping.clear();
-    }
-
-    public IntStream rowStream() {
-        return mapping.stream().mapToInt(i -> i);
-    }
-
-    @Override
-    public Iterator<Integer> iterator() {
-        return mapping.iterator();
-    }
-
-    @Override
-    public Stream<Integer> stream() {
-        return mapping.stream();
-    }
-
-    @Override
-    public List<Integer> toList() {
-        return mapping;
-    }
-}
-
-final class IntervalMapping implements Mapping {
-
-    private static final long serialVersionUID = -7421133121383028265L;
-
-    private final int start;
-    private final int end;
-    private boolean onList = false;
-    private ListMapping listMapping;
-
-    IntervalMapping(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
-
-    @Override
-    public int size() {
-        if (onList)
-            return listMapping.size();
-        return end - start;
-    }
-
-    @Override
-    public int get(int pos) {
-        if (onList)
-            return listMapping.get(pos);
-        return pos + start;
-    }
-
-    @Override
-    public void add(int row) {
-        if (!onList) {
-            onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
-        }
-        listMapping.add(row);
-    }
-
-    @Override
-    public void addAll(Collection<Integer> rows) {
-        if (!onList) {
-            onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
-        }
-        listMapping.addAll(rows);
-    }
-
-    @Override
-    public void remove(int pos) {
-        if (!onList) {
-            onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
-        }
-        listMapping.remove(pos);
-    }
-
-    @Override
-    public void removeAll(Collection<Integer> positions) {
-        if (!onList) {
-            onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
-        }
-        listMapping.removeAll(positions);
-    }
-
-    @Override
-    public void clear() {
-        if (!onList) {
-            onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
-        }
-        listMapping.clear();
-    }
-
-    @Override
-    public IntStream rowStream() {
-        if (onList)
-            return listMapping.rowStream();
-        return IntStream.range(start, end);
-    }
-
-    @Override
-    public Iterator<Integer> iterator() {
-        return onList ? listMapping.iterator() : new Iterator<Integer>() {
-            int s = start;
-            @Override
-            public boolean hasNext() {
-                return s < end;
-            }
-
-            @Override
-            public Integer next() {
-                int next = s;
-                s++;
-                return next;
-            }
-        };
-    }
-
-    @Override
-    public Stream<Integer> stream() {
-        return onList ? listMapping.stream() : IntStream.range(start, end).boxed();
-    }
-
-    @Override
-    public List<Integer> toList() {
-        List<Integer> list = new ArrayList<>();
-        Iterator<Integer> it = iterator();
-        while(it.hasNext()) {
-            list.add(it.next());
-        }
-        return list;
-    }
-}
