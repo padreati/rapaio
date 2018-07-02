@@ -60,19 +60,19 @@ public class SolidFrameTest {
         try {
             df.varIndex("q");
             assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
+        } catch (NullPointerException ignored) {
         }
 
         try {
             df.rvar(10);
             assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         try {
             df.rvar(-1);
             assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         assertEquals("x", df.varNames()[0]);

@@ -25,19 +25,33 @@
 
 package rapaio.ml.regression.tree;
 
-import rapaio.data.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import rapaio.core.stat.WeightedMean;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
+import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.util.DoublePair;
 import rapaio.util.Pair;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static rapaio.sys.WS.formatFlex;
 
 /**
- * Implements a regression tree.
+ * Implements a regression decision tree.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
@@ -45,61 +59,67 @@ public class RTree extends AbstractRegression implements BTRegression {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
-    int minCount = 1;
-    int maxDepth = -1;
+    public static RTree newDecisionStump() {
+        return new RTree()
+                .withMaxDepth(2)
+                .withNominalMethod(RTreeNominalTest.BINARY)
+                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
+                .withFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
+    }
 
-    RTreeNominalMethod nominalMethod = RTreeNominalMethod.BINARY;
-    RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
-    RTreeTestFunction function = RTreeTestFunction.WEIGHTED_VAR_GAIN;
-    RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
-    RTreePredictor predictor = RTreePredictor.STANDARD;
-    VarSelector varSelector = VarSelector.all();
+    public static RTree newC45() {
+        return new RTree()
+                .withMaxDepth(-1)
+                .withNominalMethod(RTreeNominalTest.FULL)
+                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
+                .withFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
+                .withMinCount(2);
+    }
+
+    public static RTree newCART() {
+        return new RTree()
+                .withMaxDepth(-1)
+                .withNominalMethod(RTreeNominalTest.BINARY)
+                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
+                .withFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
+                .withMinCount(1);
+    }
+
+    private int minCount = 1;
+    private int maxDepth = -1;
+
+    private RTreeNominalTest nominalMethod = RTreeNominalTest.BINARY;
+    private RTreeNumericTest numericMethod = RTreeNumericTest.BINARY;
+    private RTreePurityFunction function = RTreePurityFunction.WEIGHTED_VAR_GAIN;
+    private RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
+    private RTreePredictor predictor = RTreePredictor.STANDARD;
+    private VarSelector varSelector = VarSelector.all();
 
     // tree root node
+
     private RTreeNode root;
-    private int rows;
 
     private RTree() {
     }
 
-    public static RTree buildDecisionStump() {
-        return new RTree()
-                .withMaxDepth(2)
-                .withNominalMethod(RTreeNominalMethod.BINARY)
-                .withNumericMethod(RTreeNumericMethod.BINARY)
-                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY);
-    }
-
-    public static RTree buildC45() {
-        return new RTree()
-                .withMaxDepth(-1)
-                .withNominalMethod(RTreeNominalMethod.FULL)
-                .withNumericMethod(RTreeNumericMethod.BINARY)
-                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withMinCount(2)
-                ;
-    }
-
-    public static RTree buildCART() {
-        return new RTree()
-                .withMaxDepth(-1)
-                .withNominalMethod(RTreeNominalMethod.BINARY)
-                .withNumericMethod(RTreeNumericMethod.BINARY)
-                .withSplitter(RTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
-                .withFunction(RTreeTestFunction.WEIGHTED_VAR_GAIN)
-                .withMinCount(1);
-    }
-
     @Override
-    public BTRegression newInstance() {
-        return new RTree()
+    public RTree newInstance() {
+        return (RTree) new RTree()
                 .withMinCount(minCount)
-                .withNumericMethod(numericMethod)
-                .withNominalMethod(nominalMethod)
                 .withMaxDepth(maxDepth)
-                .withSplitter(splitter)
+                .withNominalMethod(nominalMethod)
+                .withNumericMethod(numericMethod)
                 .withFunction(function)
-                .withVarSelector(varSelector);
+                .withSplitter(splitter)
+                .withPredictor(predictor)
+                .withVarSelector(varSelector)
+                .withRuns(runs)
+                .withPoolSize(poolSize)
+                .withRunningHook(runningHook)
+                .withSampler(sampler);
     }
 
     @Override
@@ -136,7 +156,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
     @Override
     public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
-        root.boostUpdate(x, y, fx, lossFunction);
+        root.boostUpdate(x, y, fx, lossFunction, splitter);
     }
 
     public RTree withVarSelector(VarSelector varSelector) {
@@ -154,17 +174,17 @@ public class RTree extends AbstractRegression implements BTRegression {
         return this;
     }
 
-    public RTree withNumericMethod(RTreeNumericMethod numericMethod) {
+    public RTree withNumericMethod(RTreeNumericTest numericMethod) {
         this.numericMethod = numericMethod;
         return this;
     }
 
-    public RTree withNominalMethod(RTreeNominalMethod nominalMethod) {
+    public RTree withNominalMethod(RTreeNominalTest nominalMethod) {
         this.nominalMethod = nominalMethod;
         return this;
     }
 
-    public RTree withFunction(RTreeTestFunction function) {
+    public RTree withFunction(RTreePurityFunction function) {
         this.function = function;
         return this;
     }
@@ -174,12 +194,49 @@ public class RTree extends AbstractRegression implements BTRegression {
         return this;
     }
 
-    public RTreeNode getRoot() {
+    public RTree withPredictor(RTreePredictor predictor) {
+        this.predictor = predictor;
+        return this;
+    }
+
+    public int minCount() {
+        return minCount;
+    }
+
+    public int maxDepth() {
+        return maxDepth;
+    }
+
+    public RTreeNominalTest nominalMethod() {
+        return nominalMethod;
+    }
+
+    public RTreeNumericTest numericMethod() {
+        return numericMethod;
+    }
+
+    public RTreeSplitter splitter() {
+        return splitter;
+    }
+
+    public RTreePredictor predictor() {
+        return predictor;
+    }
+
+    public RTreePurityFunction testFunction() {
+        return function;
+    }
+
+    public VarSelector varSelector() {
+        return varSelector;
+    }
+
+    public RTreeNode root() {
         return root;
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -188,20 +245,97 @@ public class RTree extends AbstractRegression implements BTRegression {
             throw new IllegalArgumentException("tree classifier can't predict more than one target variable");
         }
 
-        rows = df.rowCount();
+        int id = 1;
 
-        root = new RTreeNode(this, null, "root", (row, frame) -> true);
+        Int2ObjectOpenHashMap<Frame> frameMap = new Int2ObjectOpenHashMap<>();
+        Int2ObjectOpenHashMap<Var> weightsMap = new Int2ObjectOpenHashMap<>();
+
         this.varSelector.withVarNames(inputNames());
-        root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
+        root = new RTreeNode(id++, null, "root", (row, frame) -> true, 1);
+
+        // prepare data for root
+        frameMap.put(root.getId(), df);
+        weightsMap.put(root.getId(), weights);
+
+        // make queue and initialize it
+
+        Queue<RTreeNode> queue = new ConcurrentLinkedQueue<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            RTreeNode last = queue.poll();
+            int lastId = last.getId();
+            Frame lastDf = frameMap.get(lastId);
+            Var lastWeights = weightsMap.get(lastId);
+            learnNode(last, lastDf, lastWeights);
+
+            if(last.isLeaf()) {
+                continue;
+            }
+            // now that we have a best candidate,do the effective split
+
+            List<RowPredicate> predicates = last.getBestCandidate().getGroupPredicates();
+            Pair<List<Frame>, List<Var>> frames = splitter.performSplit(lastDf, lastWeights, predicates);
+
+            for (int i = 0; i < predicates.size(); i++) {
+                RowPredicate predicate = predicates.get(i);
+                RTreeNode child = new RTreeNode(id++, last, predicate.toString(), predicate, last.getDepth() + 1);
+                last.getChildren().add(child);
+                frameMap.put(child.getId(), frames._1.get(i));
+                weightsMap.put(child.getId(), frames._2.get(i));
+
+                queue.add(child);
+            }
+        }
         return true;
     }
 
+    private void learnNode(RTreeNode node, Frame df, Var weights) {
+
+        node.setValue(WeightedMean.from(df, weights, firstTargetName()).value());
+        node.setWeight(weights.stream().mapToDouble().sum());
+        if (node.getWeight() == 0) {
+            node.setValue(node.getParent() != null ? node.getParent().getValue() : Double.NaN);
+        }
+        if (df.rowCount() <= minCount() || node.getDepth() >= (maxDepth == -1 ? Integer.MAX_VALUE : maxDepth)) {
+            return;
+        }
+
+        Stream<String> stream = Arrays.stream(varSelector.nextVarNames());
+        if(runs>1) {
+            stream = stream.parallel();
+        }
+
+        List<RTreeCandidate> candidates = stream.map(testCol -> {
+            if (testCol.equals(firstTargetName())) return null;
+
+            if (df.type(testCol).isNumeric()) {
+                return numericMethod.computeCandidate(this, df, weights, testCol, firstTargetName(), testFunction()).orElse(null);
+            } else {
+                return nominalMethod.computeCandidate(this, df, weights, testCol, firstTargetName(), testFunction()).orElse(null);
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+
+        RTreeCandidate bestCandidate = null;
+        for (RTreeCandidate candidate : candidates) {
+            if (bestCandidate == null || candidate.getScore() >= bestCandidate.getScore()) {
+                bestCandidate = candidate;
+            }
+        }
+
+        if (bestCandidate == null || bestCandidate.getGroupNames().isEmpty()) {
+            return;
+        }
+        node.setBestCandidate(bestCandidate);
+        node.setLeaf(false);
+    }
+
     @Override
-    protected RPrediction coreFit(Frame df, boolean withResiduals) {
+    protected RPrediction corePredict(Frame df, boolean withResiduals) {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
-            Pair<Double, Double> result = predictor.predict(i, df, root);
+            DoublePair result = predictor.predict(i, df, root);
             pred.fit(firstTargetName()).setValue(i, result._1);
         }
         pred.buildComplete();
@@ -212,8 +346,6 @@ public class RTree extends AbstractRegression implements BTRegression {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
-
-        sb.append(String.format("n=%d\n", rows));
 
         sb.append("\n");
         sb.append("description:\n");

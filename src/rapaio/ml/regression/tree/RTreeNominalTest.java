@@ -25,17 +25,12 @@
 
 package rapaio.ml.regression.tree;
 
-import rapaio.core.CoreTools;
-import rapaio.core.stat.OnlineStat;
 import rapaio.core.stat.WeightedOnlineStat;
-import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
-import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +40,7 @@ import java.util.Optional;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface RTreeNominalMethod extends Serializable {
+public interface RTreeNominalTest extends Serializable {
 
     /**
      * @return name of the nominal method
@@ -64,15 +59,12 @@ public interface RTreeNominalMethod extends Serializable {
      * @param testFunction  test function used to compute the score
      * @return the best candidate
      */
-    Optional<RTreeCandidate> computeCandidate(RTree tree,
-                                              Frame df, Var w,
-                                              String testVarName, String targetVarName,
-                                              RTreeTestFunction testFunction);
+    Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreePurityFunction testFunction);
 
     /**
      * Ignore nominal variables
      */
-    RTreeNominalMethod IGNORE = new RTreeNominalMethod() {
+    RTreeNominalTest IGNORE = new RTreeNominalTest() {
 
         private static final long serialVersionUID = 7275580448899976553L;
 
@@ -82,9 +74,7 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(
-                RTree tree, Frame df, Var w,
-                String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreePurityFunction testFunction) {
             return Optional.empty();
         }
     };
@@ -93,7 +83,7 @@ public interface RTreeNominalMethod extends Serializable {
      * Builds one node for each label of the test variable, if at least
      * two of them have enough instances, empty list otherwise.
      */
-    RTreeNominalMethod FULL = new RTreeNominalMethod() {
+    RTreeNominalTest FULL = new RTreeNominalTest() {
 
         private static final long serialVersionUID = 2733570883914611103L;
 
@@ -103,10 +93,13 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, RTreePurityFunction testFunction) {
+
+            int testNameIndex = df.varIndex(testName);
+            int targetNameIndex = df.varIndex(targetName);
 
             // we ignore the missing data points, thus we need only non missing levels
-            List<String> testLevels = df.levels(testVarName);
+            List<String> testLevels = df.levels(testName);
             int len = testLevels.size() - 1;
             WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
@@ -118,16 +111,16 @@ public interface RTreeNominalMethod extends Serializable {
             // compute weighted statistics
 
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testVarName))
+                if (df.isMissing(i, testNameIndex))
                     continue;
-                int index = df.index(i, testVarName);
-                onlineStats[index - 1].update(df.value(i, targetVarName), w.value(i));
+                int index = df.index(i, testNameIndex);
+                onlineStats[index - 1].update(df.value(i, targetNameIndex), w.value(i));
             }
 
             // check to see if we have enough instances in at least 2 child nodes
             int validCount = 0;
             for (int i = 0; i < len; i++) {
-                if (onlineStats[i].count() >= tree.minCount) {
+                if (onlineStats[i].count() >= tree.minCount()) {
                     validCount++;
                 }
             }
@@ -149,11 +142,11 @@ public interface RTreeNominalMethod extends Serializable {
 
             // compute the candidate score
 
-            double value = tree.function.computeTestValue(p);
-            RTreeCandidate candidate = new RTreeCandidate(value, testVarName);
+            double value = tree.testFunction().computeTestValue(p);
+            RTreeCandidate candidate = new RTreeCandidate(value, testName);
             for (int i = 0; i < len; i++) {
                 String label = testLevels.get(i + 1);
-                candidate.addGroup(RowPredicate.nomEqual(testVarName, label));
+                candidate.addGroup(RowPredicate.nomEqual(testName, label));
             }
             return Optional.of(candidate);
         }
@@ -164,7 +157,7 @@ public interface RTreeNominalMethod extends Serializable {
      * variable against all other labels, in the case when
      * for selected labels there are instances
      */
-    RTreeNominalMethod BINARY = new RTreeNominalMethod() {
+    RTreeNominalTest BINARY = new RTreeNominalTest() {
 
         private static final long serialVersionUID = -4703727362952157041L;
 
@@ -174,10 +167,13 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, RTreePurityFunction testFunction) {
+
+            int testNameIndex = df.varIndex(testName);
+            int targetNameIndex = df.varIndex(targetName);
 
             // we ignore the missing data points, thus we need only non missing levels
-            List<String> testLevels = df.levels(testVarName);
+            List<String> testLevels = df.levels(testName);
             int len = testLevels.size() - 1;
             WeightedOnlineStat[] onlineStats = new WeightedOnlineStat[len];
 
@@ -188,10 +184,10 @@ public interface RTreeNominalMethod extends Serializable {
 
             // compute weighted statistics
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testVarName))
+                if (df.isMissing(i, testNameIndex))
                     continue;
-                int index = df.index(i, testVarName);
-                onlineStats[index - 1].update(df.value(i, targetVarName), w.value(i));
+                int index = df.index(i, testNameIndex);
+                onlineStats[index - 1].update(df.value(i, targetNameIndex), w.value(i));
             }
 
             WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);
@@ -205,7 +201,7 @@ public interface RTreeNominalMethod extends Serializable {
                 WeightedOnlineStat wosTest = onlineStats[i];
 
                 // check if we have enough instances
-                if (wosTest.count() < tree.minCount || wos.count() - wosTest.count() < tree.minCount) {
+                if (wosTest.count() < tree.minCount() || wos.count() - wosTest.count() < tree.minCount()) {
                     continue;
                 }
 
@@ -229,12 +225,13 @@ public interface RTreeNominalMethod extends Serializable {
                 p.splitVar[1] = wosRemain.variance();
                 p.splitWeight[1] = wosRemain.weightSum();
 
-                double value = tree.function.computeTestValue(p);
+                double value = tree.testFunction().computeTestValue(p);
+
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
-                    best = new RTreeCandidate(value, testVarName);
-                    best.addGroup(RowPredicate.nomEqual(testVarName, testLevels.get(i+1)));
-                    best.addGroup(RowPredicate.nomNotEqual(testVarName, testLevels.get(i+1)));
+                    best = new RTreeCandidate(value, testName);
+                    best.addGroup(RowPredicate.nomEqual(testName, testLevels.get(i + 1)));
+                    best.addGroup(RowPredicate.nomNotEqual(testName, testLevels.get(i + 1)));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);

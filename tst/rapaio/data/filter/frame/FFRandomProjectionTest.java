@@ -55,7 +55,7 @@ public class FFRandomProjectionTest {
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
-        Assert.assertEquals(0.40856545876413647, corr, 1e-20);
+        Assert.assertEquals(0.4085654587641364, corr, 1e-20);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class FFRandomProjectionTest {
 
 
         double corr = CoreTools.corrPearson(df).singleValue();
-        Assert.assertEquals(-0.5035565970961097, corr, 1e-20);
+        Assert.assertEquals(-0.5035565970961098, corr, 1e-20);
     }
 
     @Test

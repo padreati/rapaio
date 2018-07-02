@@ -55,6 +55,15 @@ public interface RTreeSplitter extends Serializable {
      */
     String name();
 
+    /**
+     * Perform the splitting but returns only the mappings for each branch
+     *
+     * @param df source data frame
+     * @param weights source weights
+     * @param groupPredicates predicates used for splitting
+     *
+     * @return a list of mappings, one for each rule
+     */
     List<Mapping> performMapping(Frame df, Var weights, List<RowPredicate> groupPredicates);
 
     /**
@@ -69,8 +78,7 @@ public interface RTreeSplitter extends Serializable {
      * @return a pair of lists, one with mapped instances for each rule and
      * one with corresponding weights
      */
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights,
-                                              List<RowPredicate> groupPredicates);
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> groupPredicates);
 
     /**
      * Do the regular split of instances and simply ignores the ones which do not
@@ -86,13 +94,13 @@ public interface RTreeSplitter extends Serializable {
 
         @Override
         public List<Mapping> performMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
             return s.toMappings();
         }
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
             return Pair.from(s.toFrames(), s.toWeights());
         }
     };
@@ -112,7 +120,7 @@ public interface RTreeSplitter extends Serializable {
 
         @Override
         public List<Mapping> performMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
             int majorityGroup = 0;
             int majoritySize = 0;
 
@@ -129,7 +137,7 @@ public interface RTreeSplitter extends Serializable {
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
 
             List<Mapping> mappings = s.toMappings();
             List<Var> ws = s.toWeights();
@@ -169,7 +177,7 @@ public interface RTreeSplitter extends Serializable {
         @Override
         public List<Mapping> performMapping(
                 Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
 
             List<Mapping> mappings = s.toMappings();
             for (Mapping mapping : mappings) {
@@ -181,7 +189,7 @@ public interface RTreeSplitter extends Serializable {
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(
                 Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
 
             List<Mapping> mappings = s.toMappings();
             List<Var> ws = s.toWeights();
@@ -224,7 +232,7 @@ public interface RTreeSplitter extends Serializable {
         @Override
         public List<Mapping> performMapping(
                 Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
 
             List<Mapping> mappings = s.toMappings();
             for (int row : s.missingRows) {
@@ -236,7 +244,7 @@ public interface RTreeSplitter extends Serializable {
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            RegularSplit s = new RegularSplit(df, weights, groupPredicates);
+            NonMissingSplit s = new NonMissingSplit(df, weights, groupPredicates);
 
             List<Mapping> mappings = s.toMappings();
             List<Var> ws = s.toWeights();
@@ -255,7 +263,7 @@ public interface RTreeSplitter extends Serializable {
 /*
 Regular splitting performs a split for each candidate rule and keep the missing rows into a separate list.
  */
-final class RegularSplit {
+final class NonMissingSplit {
 
     final public List<IntList> rows = new ArrayList<>();
     final public IntList missingRows = new IntArrayList();
@@ -263,32 +271,37 @@ final class RegularSplit {
     private final Frame df;
     private final Var weights;
 
-    public RegularSplit(Frame df, Var weights, List<RowPredicate> groupPredicates) {
+    private List<Var> splitWeights;
+
+    public NonMissingSplit(Frame df, Var weights, List<RowPredicate> predicates) {
 
         this.df = df;
         this.weights = weights;
+        this.splitWeights = new ArrayList<>();
 
         // initialize the lists with one element in each list for each candidate's rule
-        for (int i = 0; i < groupPredicates.size(); i++) {
+        for (int i = 0; i < predicates.size(); i++) {
             rows.add(new IntArrayList());
+            splitWeights.add(NumVar.empty());
         }
 
         // each instance is distributed to one rule
         for (int row = 0; row < df.rowCount(); row++) {
             boolean matched = false;
-            for (int i = 0; i < groupPredicates.size(); i++) {
-                RowPredicate predicate = groupPredicates.get(i);
+            for (int i = 0; i < predicates.size(); i++) {
+                RowPredicate predicate = predicates.get(i);
                 if (predicate.test(row, df)) {
                     rows.get(i).add(row);
-                    matched = true;
+                    splitWeights.get(i).addValue(weights.value(row));
                     // first rule has priority
+                    matched = true;
                     break;
                 }
             }
-
             // if there is no matching rule, than assign to missing
-            if (!matched)
+            if (!matched) {
                 missingRows.add(row);
+            }
         }
     }
 
@@ -309,14 +322,6 @@ final class RegularSplit {
     }
 
     public List<Var> toWeights() {
-        List<Var> vars = new ArrayList<>();
-        for (List<Integer> list : rows) {
-            NumVar w = NumVar.empty(list.size());
-            for (int i = 0; i < list.size(); i++) {
-                w.setValue(i, weights.value(list.get(i)));
-            }
-            vars.add(w);
-        }
-        return vars;
+        return splitWeights;
     }
 }

@@ -89,12 +89,12 @@ public class RandomValueRegression extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         return true;
     }
 
     @Override
-    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
@@ -109,7 +109,7 @@ public class RandomValueRegression extends AbstractRegression {
         sb.append(headerSummary());
         sb.append("\n");
 
-        if (hasLearned()) {
+        if (isFitted()) {
             sb.append("Model is trained.\n");
         } else {
             sb.append("Model is not trained.\n");

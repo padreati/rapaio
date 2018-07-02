@@ -34,13 +34,13 @@ import java.io.Serializable;
  *
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-public interface RTreeTestFunction extends Serializable {
+public interface RTreePurityFunction extends Serializable {
 
     String name();
 
     double computeTestValue(RTreeTestPayload payload);
 
-    RTreeTestFunction WEIGHTED_VAR_GAIN = new RTreeTestFunction() {
+    RTreePurityFunction WEIGHTED_VAR_GAIN = new RTreePurityFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 
@@ -61,7 +61,7 @@ public interface RTreeTestFunction extends Serializable {
         }
     };
 
-    RTreeTestFunction WEIGHTED_SS_GAIN = new RTreeTestFunction() {
+    RTreePurityFunction WEIGHTED_SS_GAIN = new RTreePurityFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 
@@ -82,7 +82,7 @@ public interface RTreeTestFunction extends Serializable {
         }
     };
 
-    RTreeTestFunction WEIGHTED_SD_GAIN = new RTreeTestFunction() {
+    RTreePurityFunction WEIGHTED_SD_GAIN = new RTreePurityFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 

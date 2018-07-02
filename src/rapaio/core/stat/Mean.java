@@ -43,28 +43,68 @@ public final class Mean implements Printable {
         return new Mean(var);
     }
 
+    public static Mean from(double[] values) {
+        return new Mean(values, 0, values.length);
+    }
+
+    public static Mean from(double[] values, int start, int end) {
+        return new Mean(values, start, end);
+    }
+
     private final String varName;
     private final double value;
-    private double missingCount = 0;
-    private double completeCount = 0;
+    private int missingCount = 0;
+    private int completeCount = 0;
 
     private Mean(Var var) {
         this.varName = var.name();
         double sum = 0.0;
+        double[] v = new double[var.rowCount()];
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;
-            } else {
-                completeCount++;
-                sum += var.value(i);
+                continue;
             }
+            sum += var.value(i);
+            v[completeCount] = var.value(i);
+            completeCount++;
         }
         if (completeCount == 0) {
             this.value = Double.NaN;
             return;
         }
         final double mean = sum / completeCount;
-        final double mean2 = var.stream().complete().mapToDouble(s -> s.value() - mean).sum();
+        double mean2 = 0.0;
+        for (int i = 0; i < completeCount; i++) {
+            mean2 += v[i] - mean;
+        }
+        this.value = mean + mean2 / completeCount;
+    }
+
+    private Mean(double[] values, int start, int end) {
+        this.varName = "?";
+        double sum = 0.0;
+        for (int i = start; i < end; i++) {
+            if (Double.isNaN(values[i])) {
+                missingCount++;
+                continue;
+            }
+            sum += values[i];
+            completeCount++;
+        }
+        if (completeCount == 0) {
+            this.value = Double.NaN;
+            return;
+        }
+
+        final double mean = sum / completeCount;
+        double mean2 = 0.0;
+        for (int i = start; i < end; i++) {
+            if(Double.isNaN(values[i])) {
+                continue;
+            }
+            mean2 += values[i] - mean;
+        }
         this.value = mean + mean2 / completeCount;
     }
 

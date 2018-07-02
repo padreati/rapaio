@@ -92,12 +92,12 @@ public class ConstantRegression extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         return true;
     }
 
     @Override
-    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (String targetName : targetNames) {
             fit.fit(targetName).stream().forEach(s -> s.setValue(constantValue()));
@@ -112,7 +112,7 @@ public class ConstantRegression extends AbstractRegression {
         sb.append(headerSummary());
         sb.append("\n");
 
-        if (hasLearned()) {
+        if (isFitted()) {
             sb.append("Fitted values:\n");
             sb.append("\n");
 

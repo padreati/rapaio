@@ -62,7 +62,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.Ignored.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.Ignored.performSplit(df, w, c.getGroupPredicates());
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
@@ -75,7 +75,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToMajority.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToMajority.performSplit(df, w, c.getGroupPredicates());
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -89,7 +89,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToAllWeighted.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToAllWeighted.performSplit(df, w, c.getGroupPredicates());
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -106,7 +106,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c.getGroupPredicates());
 
         df.printLines();
 

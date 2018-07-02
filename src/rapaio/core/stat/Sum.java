@@ -25,8 +25,8 @@
 
 package rapaio.core.stat;
 
-import rapaio.math.MTools;
 import rapaio.data.Var;
+import rapaio.math.MTools;
 import rapaio.printer.Printable;
 
 import static rapaio.sys.WS.formatFlex;

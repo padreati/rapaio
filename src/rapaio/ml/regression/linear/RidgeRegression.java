@@ -140,17 +140,17 @@ public class RidgeRegression extends AbstractLinearRegression {
     }
 
     @Override
-    protected TrainSetup prepareTraining(TrainSetup trainSetup) {
+    protected TrainSetup prepareFit(TrainSetup trainSetup) {
         if (!intercept) {
-            return super.prepareTraining(trainSetup);
+            return super.prepareFit(trainSetup);
         }
         NumVar inter = NumVar.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), trainSetup.df);
-        return super.prepareTraining(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
+        return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         if (lambda < 0) {
             throw new IllegalArgumentException("lambda - regularization strength cannot be negative");
         }
@@ -208,12 +208,12 @@ public class RidgeRegression extends AbstractLinearRegression {
     }
 
     @Override
-    protected FitSetup prepareFit(FitSetup fitSetup) {
+    protected FitSetup preparePredict(FitSetup fitSetup) {
         if (!intercept) {
-            return super.prepareFit(fitSetup);
+            return super.preparePredict(fitSetup);
         }
         NumVar inter = NumVar.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), fitSetup.df);
-        return super.prepareFit(FitSetup.valueOf(prepared, fitSetup.withResiduals));
+        return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
     }
 }

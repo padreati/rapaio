@@ -28,7 +28,6 @@ import com.carrotsearch.junitbenchmarks.AbstractBenchmark;
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -46,7 +45,6 @@ import rapaio.ml.classifier.tree.CTreeTest;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * This test is not intended as a benchmark. It's sole purpose
@@ -161,23 +159,19 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         Frame src = Datasets.loadIrisDataset();
         Classifier c = new GBTClassifier()
                 .withSampler(RowSampler.bootstrap(1))
-                .withTree(RTree.buildCART().withMaxDepth(6))
+                .withTree(RTree.newCART().withMaxDepth(6))
                 .withRuns(10);
         test(c, df_5k);
     }
 
     private void test(Classifier c, Frame df) {
-        test(c, df, null);
-    }
-
-    private void test(Classifier c, Frame df, Long seed) {
-        long next = seed == null ? RandomSource.getRandom().nextLong() : seed;
-        RandomSource.setSeed(next);
+        long seed = RandomSource.getRandom().nextLong();
+        RandomSource.setSeed(seed);
         try {
             c.fit(df, "Cover_Type");
             c.predict(df, true, true);
         } catch (Throwable th) {
-            System.out.println("seed: " + next);
+            System.out.println("seed: " + seed);
             System.out.println("Exception: " + th.getMessage());
         }
     }

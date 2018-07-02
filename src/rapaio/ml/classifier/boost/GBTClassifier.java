@@ -55,7 +55,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     private boolean debug = false;
 
     // prediction artifact
-    private BTRegression classifier = RTree.buildCART().withMaxDepth(4).withMinCount(5);
+    private BTRegression classifier = RTree.newCART().withMaxDepth(4).withMinCount(5);
     private List<List<BTRegression>> trees;
 
     public GBTClassifier() {

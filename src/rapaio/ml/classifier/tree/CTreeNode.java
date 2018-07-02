@@ -214,7 +214,7 @@ public class CTreeNode implements Serializable {
         String testName = bestCandidate.getTestName();
 
         // now that we have a best candidate, do the effective split
-        Pair<List<Frame>, List<Var>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
+        Pair<List<Frame>, List<Var>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate.getGroupPredicates());
 
         for (RowPredicate predicate : bestCandidate.getGroupPredicates()) {
             CTreeNode child = new CTreeNode(this, predicate.toString(), predicate);

@@ -25,7 +25,11 @@
 
 package rapaio.data.mapping;
 
-import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
 
 import java.util.stream.IntStream;
@@ -79,9 +83,7 @@ public final class ListMapping implements Mapping {
     }
 
     public int get(int pos) {
-        if (mapping.size() > pos)
-            return mapping.getInt(pos);
-        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
+        return mapping.getInt(pos);
     }
 
     public void add(int pos) {

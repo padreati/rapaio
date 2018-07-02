@@ -65,6 +65,10 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return new VSpots(stream.filter(predicate), source);
     }
 
+    public VSpots filterValue(Predicate<Double> predicate) {
+        return new VSpots(stream.filter(s -> predicate.test(s.value())), source);
+    }
+
     @Override
     public <R> Stream<R> map(Function<? super VSpot, ? extends R> mapper) {
         return stream.map(mapper);

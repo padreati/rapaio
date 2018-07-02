@@ -49,7 +49,7 @@ public class VFImputeWithRegression extends AbstractVF {
 
     @Override
     public void fit(Var... vars) {
-        if (model.hasLearned())
+        if (model.isFitted())
             return;
         Frame all = BoundFrame.byVars(vars).mapVars(inputRange);
         Frame complete = all.stream().filter(s -> !s.isMissing(target)).toMappedFrame();

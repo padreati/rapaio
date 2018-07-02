@@ -86,7 +86,7 @@ public class L1Regression extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
@@ -96,7 +96,7 @@ public class L1Regression extends AbstractRegression {
     }
 
     @Override
-    public RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    public RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
@@ -113,7 +113,7 @@ public class L1Regression extends AbstractRegression {
         sb.append(headerSummary());
         sb.append("\n");
 
-        if (hasLearned()) {
+        if (isFitted()) {
             sb.append("Fitted values:\n");
             sb.append("\n");
 

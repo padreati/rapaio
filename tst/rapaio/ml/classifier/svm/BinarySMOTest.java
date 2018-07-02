@@ -27,11 +27,15 @@ package rapaio.ml.classifier.svm;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.NomVar;
+import rapaio.data.NumVar;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.filter.frame.FFStandardize;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.svm.kernel.*;
 import rapaio.experiment.ml.eval.CEvaluation;
+import rapaio.ml.classifier.svm.kernel.*;
 import rapaio.sys.WS;
 
 import java.io.IOException;
@@ -40,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test for binary smo
@@ -124,7 +127,7 @@ public class BinarySMOTest {
 
         RandomSource.setSeed(1);
         double score = CEvaluation.cv(df, target, smo1, 10);
-        assertEquals(0.75, score, 1e-7);
+        assertEquals(0.7407142857142857, score, 1e-7);
     }
 
     @Test

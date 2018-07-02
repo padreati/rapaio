@@ -145,7 +145,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         for (String varName : df.varNames()) {
             if (df.rvar(varName).type().isNominal()) {
                 throw new IllegalArgumentException("perceptrons can't predict nominal features");
@@ -227,7 +227,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         for (int pos = 0; pos < df.rowCount(); pos++) {
 

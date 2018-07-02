@@ -24,12 +24,11 @@
 
 package rapaio.ml.regression.tree;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class RTreeTestFunctionTest {
+public class RTreeTestFunctionPurity {
 
     private static final double TOL = 1e-20;
 
@@ -46,7 +45,7 @@ public class RTreeTestFunctionTest {
         payload.splitVar[1] = 40;
         payload.splitWeight[1] = 0.5;
 
-        RTreeTestFunction test = RTreeTestFunction.WEIGHTED_VAR_GAIN;
+        RTreePurityFunction test = RTreePurityFunction.WEIGHTED_VAR_GAIN;
         assertEquals("WEIGHTED_VAR_GAIN", test.name());
         double score = test.computeTestValue(payload);
         assertEquals(60.0, score, TOL);
@@ -63,7 +62,7 @@ public class RTreeTestFunctionTest {
         payload.splitVar[1] = 1600;
         payload.splitWeight[1] = 0.5;
 
-        RTreeTestFunction test = RTreeTestFunction.WEIGHTED_SD_GAIN;
+        RTreePurityFunction test = RTreePurityFunction.WEIGHTED_SD_GAIN;
         assertEquals("WEIGHTED_SD_GAIN", test.name());
         double score = test.computeTestValue(payload);
         assertEquals(60.0, score, TOL);
@@ -81,7 +80,7 @@ public class RTreeTestFunctionTest {
         payload.splitVar[1] = 40;
         payload.splitWeight[1] = 0.5;
 
-        RTreeTestFunction test = RTreeTestFunction.WEIGHTED_SS_GAIN;
+        RTreePurityFunction test = RTreePurityFunction.WEIGHTED_SS_GAIN;
         assertEquals("WEIGHTED_SS_GAIN", test.name());
         double score = test.computeTestValue(payload);
         assertEquals(80.0, score, TOL);

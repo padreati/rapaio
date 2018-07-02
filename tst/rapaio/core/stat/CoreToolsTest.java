@@ -92,6 +92,21 @@ public class CoreToolsTest {
     }
 
     @Test
+    public void testSameMean() {
+        RandomSource.setSeed(1234);
+        double[] x = new double[10_000];
+        Normal normal = new Normal(0, 1);
+        for (int i = 0; i < x.length; i++) {
+            if(RandomSource.nextDouble()<0.1) {
+                x[i] = Double.NaN;
+            } else {
+                x[i] = normal.sampleNext();
+            }
+        }
+        assertEquals(Mean.from(x).value(), Mean.from(NumVar.wrap(x)).value(), TOL);
+    }
+
+    @Test
     public void testQuantiles() {
         NumVar v = NumVar.seq(0, 1, 0.001);
         Quantiles q1 = quantiles(v, NumVar.seq(0, 1, 0.001));

@@ -26,11 +26,6 @@ package rapaio.ml.regression.tree;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.core.distributions.Uniform;
-import rapaio.core.stat.OnlineStat;
-import rapaio.core.stat.Sum;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
@@ -55,14 +50,14 @@ public class RTreeNumericMethodTest {
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
         w = NumVar.fill(df.rowCount(), 1);
-        tree = RTree.buildDecisionStump();
+        tree = RTree.newDecisionStump();
     }
 
     @Test
     public void ignoreTest() {
-        RTreeNumericMethod m = RTreeNumericMethod.IGNORE;
+        RTreeNumericTest m = RTreeNumericTest.IGNORE;
         Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
-                RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("IGNORE", m.name());
         assertTrue(!c.isPresent());
@@ -70,7 +65,7 @@ public class RTreeNumericMethodTest {
 
     @Test
     public void binaryTest() {
-        RTreeNumericMethod m = RTreeNumericMethod.BINARY;
+        RTreeNumericTest m = RTreeNumericTest.BINARY;
 
         assertEquals("BINARY", m.name());
 
@@ -93,10 +88,10 @@ public class RTreeNumericMethodTest {
         }
 
         Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
-                RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(c.isPresent());
-        assertEquals("Candidate{score=23.02926213396995, testName='temp', groupNames=[temp <= 69, temp > 69]}",
+        assertEquals("Candidate{score=23.029262133969894, testName='temp', groupNames=[temp <= 69.5, temp > 69.5]}",
                 c.get().toString());
     }
 }

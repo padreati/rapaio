@@ -26,12 +26,10 @@
 package rapaio.ml.regression.tree;
 
 import rapaio.core.stat.Mean;
-import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
-import rapaio.data.stream.FSpot;
-import rapaio.util.Pair;
+import rapaio.util.DoublePair;
 
 import java.io.Serializable;
 
@@ -55,7 +53,7 @@ public interface RTreePredictor extends Serializable {
      * @return a pair of values: first is the regression predict, second is the weight
      * of the result
      */
-    Pair<Double, Double> predict(int row, Frame df, RTreeNode root);
+    DoublePair predict(int row, Frame df, RTreeNode root);
 
     /**
      * Standard tree predictor.
@@ -70,11 +68,11 @@ public interface RTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Double, Double> predict(int row, Frame df, RTreeNode node) {
+        public DoublePair predict(int row, Frame df, RTreeNode node) {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
-                return Pair.from(node.getValue(), node.getWeight());
+                return DoublePair.from(node.getValue(), node.getWeight());
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
@@ -88,11 +86,11 @@ public interface RTreePredictor extends Serializable {
             NumVar values = NumVar.empty();
             NumVar weights = NumVar.empty();
             for (RTreeNode child : node.getChildren()) {
-                Pair<Double, Double> prediction = predict(row, df, child);
+                DoublePair prediction = predict(row, df, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }
-            return Pair.from(WeightedMean.from(values, weights).value(), Mean.from(weights).value());
+            return DoublePair.from(WeightedMean.from(values, weights).value(), Mean.from(weights).value());
         }
     };
 }

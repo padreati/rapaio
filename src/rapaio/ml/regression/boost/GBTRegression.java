@@ -57,7 +57,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private GBTRegressionLoss lossFunction = new GBTRegressionLossHuber();
 
     private Regression initRegression = L2Regression.create();
-    private BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
+    private BTRegression regressor = RTree.newCART().withMaxDepth(4).withMinCount(10);
     private double shrinkage = 1.0;
 
     // prediction
@@ -134,7 +134,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
 
         trees = new ArrayList<>();
 
@@ -185,7 +185,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         RPrediction initPred = initRegression.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {

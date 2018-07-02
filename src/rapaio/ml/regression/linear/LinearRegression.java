@@ -111,7 +111,7 @@ public class LinearRegression extends AbstractLinearRegression {
     }
 
     @Override
-    protected TrainSetup prepareTraining(TrainSetup trainSetup) {
+    protected TrainSetup prepareFit(TrainSetup trainSetup) {
         if (intercept) {
             boolean exists = false;
             Frame prepared = trainSetup.df;
@@ -124,14 +124,14 @@ public class LinearRegression extends AbstractLinearRegression {
             if (!exists) {
                 NumVar var = NumVar.fill(prepared.rowCount(), 1).withName(INTERCEPT);
                 prepared = SolidFrame.byVars(var).bindVars(prepared);
-                return super.prepareTraining(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
+                return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
             }
         }
-        return super.prepareTraining(trainSetup);
+        return super.prepareFit(trainSetup);
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
@@ -143,7 +143,7 @@ public class LinearRegression extends AbstractLinearRegression {
     }
 
     @Override
-    protected FitSetup prepareFit(FitSetup fitSetup) {
+    protected FitSetup preparePredict(FitSetup fitSetup) {
         if (intercept) {
             boolean exists = false;
             Frame prepared = fitSetup.df;
@@ -156,9 +156,9 @@ public class LinearRegression extends AbstractLinearRegression {
             if (!exists) {
                 NumVar var = NumVar.fill(prepared.rowCount(), 1).withName(INTERCEPT);
                 prepared = SolidFrame.byVars(var).bindVars(prepared);
-                return super.prepareFit(FitSetup.valueOf(prepared, fitSetup.withResiduals));
+                return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
             }
         }
-        return super.prepareFit(fitSetup);
+        return super.preparePredict(fitSetup);
     }
 }

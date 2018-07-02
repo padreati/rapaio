@@ -26,6 +26,8 @@
 package rapaio.data;
 
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -132,6 +134,13 @@ public final class NumVar extends AbstractVar {
         NumVar numeric = new NumVar(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
+        return numeric;
+    }
+
+    public static NumVar wrap(DoubleArrayList values) {
+        NumVar numeric = new NumVar(0, 0, 0);
+        numeric.data = values.elements();
+        numeric.rows = values.size();
         return numeric;
     }
 

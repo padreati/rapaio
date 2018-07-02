@@ -47,15 +47,15 @@ public class RTreeNominalMethodTest {
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
         w = NumVar.fill(df.rowCount(), 1);
-        tree = RTree.buildDecisionStump();
+        tree = RTree.newDecisionStump();
     }
 
     @Test
     public void ignoreTest() {
 
-        RTreeNominalMethod m = RTreeNominalMethod.IGNORE;
+        RTreeNominalTest m = RTreeNominalTest.IGNORE;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
-                RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("IGNORE", m.name());
         assertTrue(!cs.isPresent());
@@ -64,9 +64,9 @@ public class RTreeNominalMethodTest {
     @Test
     public void fullTest() {
 
-        RTreeNominalMethod m = RTreeNominalMethod.FULL;
+        RTreeNominalTest m = RTreeNominalTest.FULL;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
-                RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("FULL", m.name());
         assertTrue(cs.isPresent());
@@ -87,9 +87,9 @@ public class RTreeNominalMethodTest {
     @Test
     public void fullTestFailed() {
 
-        RTreeNominalMethod m = RTreeNominalMethod.FULL;
+        RTreeNominalTest m = RTreeNominalTest.FULL;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
-                NOM_TEST, TARGET, RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                NOM_TEST, TARGET, RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertEquals("FULL", m.name());
         assertTrue(!cs.isPresent());
@@ -97,12 +97,12 @@ public class RTreeNominalMethodTest {
 
     @Test
     public void binaryTest() {
-        RTreeNominalMethod m = RTreeNominalMethod.BINARY;
+        RTreeNominalTest m = RTreeNominalTest.BINARY;
 
         assertEquals("BINARY", m.name());
 
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w,
-                NOM_TEST, TARGET, RTreeTestFunction.WEIGHTED_VAR_GAIN);
+                NOM_TEST, TARGET, RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(cs.isPresent());
 

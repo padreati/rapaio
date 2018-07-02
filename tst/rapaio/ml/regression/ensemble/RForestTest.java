@@ -40,10 +40,10 @@ public class RForestTest {
     @Test
     public void buildTest() throws IOException {
 
-        Regression tree = RTree.buildCART().withMaxDepth(7);
+        Regression tree = RTree.newCART().withMaxDepth(7);
 
         Regression rf = RForest.newRF()
-                .withRegression(RTree.buildCART().withMaxDepth(7).withVarSelector(VarSelector.fixed(2)))
+                .withRegression(RTree.newCART().withMaxDepth(7).withVarSelector(VarSelector.fixed(2)))
                 .withRuns(1_000);
 
 

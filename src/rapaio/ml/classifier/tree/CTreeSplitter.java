@@ -47,6 +47,21 @@ import static java.util.stream.Collectors.toList;
  */
 public interface CTreeSplitter extends Tagged, Serializable {
 
+    /**
+     * Splits the initial data set into pairs of frame and weights according with the
+     * policy for missing values implemented splitter.
+     *
+     * @param df initial data set
+     * @param weights initial weights
+     * @param predicates rules/criteria used to perform the splitting
+     *
+     * @return a pair with a list of frames and a list of weights
+     */
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);
+
+    /**
+     * Simply ignores the missing values, it will propagate only the instances which are accepted by a rule
+     */
     CTreeSplitter Ignored = new CTreeSplitter() {
         private static final long serialVersionUID = -9017265383541294518L;
 
@@ -56,8 +71,7 @@ public interface CTreeSplitter extends Tagged, Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<RowPredicate> p = candidate.getGroupPredicates();
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<IntArrayList> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
                 mappings.add(new IntArrayList());
@@ -78,6 +92,10 @@ public interface CTreeSplitter extends Tagged, Serializable {
         }
 
     };
+
+    /**
+     * Put all missing values to the node with the highest weight
+     */
     CTreeSplitter ToMajority = new CTreeSplitter() {
         private static final long serialVersionUID = -5858151664805703831L;
 
@@ -87,8 +105,7 @@ public interface CTreeSplitter extends Tagged, Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<RowPredicate> p = candidate.getGroupPredicates();
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<IntArrayList> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
                 mappings.add(new IntArrayList());
@@ -127,12 +144,15 @@ public interface CTreeSplitter extends Tagged, Serializable {
             );
         }
     };
+
+    /**
+     * Put instances with missing value on test variable to all branches, with diminished weights
+     */
     CTreeSplitter ToAllWeighted = new CTreeSplitter() {
         private static final long serialVersionUID = 5936044048099571710L;
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<RowPredicate> pred = candidate.getGroupPredicates();
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
 
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weighting = new ArrayList<>();
@@ -163,10 +183,10 @@ public interface CTreeSplitter extends Tagged, Serializable {
                 p[i] /= psum;
             }
             for (int i = 0; i < mappings.size(); i++) {
-                for(int row : missingRows) {
+                for (int row : missingRows) {
                     // we distribute something to a node only if it has
                     // already something
-                    if(p[i]>0) {
+                    if (p[i] > 0) {
                         mappings.get(i).add(row);
                         weighting.get(i).addValue(weights.value(row) * p[i]);
                     }
@@ -181,12 +201,15 @@ public interface CTreeSplitter extends Tagged, Serializable {
             return "ToAllWeighted";
         }
     };
+
+    /**
+     * Assign randomly to any child the instances with missing value on test variable
+     */
     CTreeSplitter ToRandom = new CTreeSplitter() {
         private static final long serialVersionUID = -4762758695801141929L;
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
-            List<RowPredicate> pred = candidate.getGroupPredicates();
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
             List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
             final Set<Integer> missingSpots = new HashSet<>();
@@ -213,6 +236,4 @@ public interface CTreeSplitter extends Tagged, Serializable {
             return "ToRandom";
         }
     };
-
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
 }

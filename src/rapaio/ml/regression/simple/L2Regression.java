@@ -78,7 +78,7 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             double mean = Mean.from(df.rvar(targetName(i))).value();
@@ -88,7 +88,7 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    protected RPrediction coreFit(final Frame df, final boolean withResiduals) {
+    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
@@ -105,7 +105,7 @@ public class L2Regression extends AbstractRegression {
         sb.append(headerSummary());
         sb.append("\n");
 
-        if (hasLearned()) {
+        if (isFitted()) {
             sb.append("Fitted values:\n");
             sb.append("\n");
 

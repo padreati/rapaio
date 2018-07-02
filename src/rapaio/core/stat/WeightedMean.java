@@ -26,8 +26,8 @@
 package rapaio.core.stat;
 
 import rapaio.data.Frame;
-import rapaio.printer.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printable;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -66,61 +66,62 @@ public final class WeightedMean implements Printable {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
+        double[] v = new double[var.rowCount()];
+        double[] w = new double[var.rowCount()];
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i) || weights.isMissing(i)) {
                 missingCount++;
                 continue;
             }
-            completeCount++;
             total += weights.value(i);
+            v[completeCount]= var.value(i);
+            w[completeCount] = weights.value(i);
+            completeCount++;
         }
         if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.isMissing(i) || weights.isMissing(i))
-                continue;
-            sum += weights.value(i) * var.value(i);
+        for (int i = 0; i < completeCount; i++) {
+            sum += w[i] * v[i];
         }
         double avg = sum / total;
         double residual = 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.isMissing(i) || weights.isMissing(i))
-                continue;
-            residual += weights.value(i) * (var.value(i) - avg);
+        for (int i = 0; i < completeCount; i++) {
+            residual += w[i] * (v[i] - avg);
         }
         return avg + residual / total;
     }
 
     private double compute(final Frame df, final Var weights, String varName) {
+        int varNameIndex = df.varIndex(varName);
         if (df.rowCount() != weights.rowCount()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
+        double[] v = new double[df.rowCount()];
+        double[] w = new double[weights.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
-            if (df.isMissing(i, varName) || weights.isMissing(i)) {
+            if (df.isMissing(i, varNameIndex) || weights.isMissing(i)) {
                 missingCount++;
                 continue;
             }
-            completeCount++;
             total += weights.value(i);
+            v[completeCount] = df.value(i, varNameIndex);
+            w[completeCount] = weights.value(i);
+            completeCount++;
         }
         if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;
-        for (int i = 0; i < df.rowCount(); i++) {
-            if (df.isMissing(i, varName) || weights.isMissing(i))
-                continue;
-            sum += weights.value(i) * df.value(i, varName);
+        for (int i = 0; i < completeCount; i++) {
+            sum += w[i] * v[i];
         }
         double avg = sum / total;
         double residual = 0;
-        for (int i = 0; i < df.rowCount(); i++) {
-            if (df.isMissing(i, varName) || weights.isMissing(i))
-                continue;
-            residual += weights.value(i) * (df.value(i, varName) - avg);
+        for (int i = 0; i < completeCount; i++) {
+            residual += w[i] * (v[i] - avg);
         }
         return avg + residual / total;
     }

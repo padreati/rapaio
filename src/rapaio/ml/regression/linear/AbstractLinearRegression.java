@@ -104,7 +104,7 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
     }
 
     @Override
-    protected LinearRPrediction coreFit(Frame df, boolean withResiduals) {
+    protected LinearRPrediction corePredict(Frame df, boolean withResiduals) {
         LinearRPrediction rp = new LinearRPrediction(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);

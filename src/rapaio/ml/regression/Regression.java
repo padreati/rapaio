@@ -26,6 +26,7 @@
 package rapaio.ml.regression;
 
 import rapaio.data.Frame;
+import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
@@ -131,6 +132,12 @@ public interface Regression extends Printable, Serializable {
     Regression addInputFilters(FFilter... filters);
 
     /**
+     * Removes all input filters
+     * @return self instance
+     */
+    Regression cleanInputFilters();
+
+    /**
      * Returns input variable names built at learning time
      *
      * @return input variable names
@@ -207,9 +214,19 @@ public interface Regression extends Printable, Serializable {
     }
 
     /**
-     * @return true if the learning method was called and algorithm was built the model
+     * Shortcut method which returns the variable type
+     * of the first target
+     *
+     * @return first target variable type
      */
-    boolean hasLearned();
+    default VarType firstTargetType() {
+        return targetTypes()[0];
+    }
+
+    /**
+     * @return true if the learning method was called and the model was fitted on data
+     */
+    boolean isFitted();
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
@@ -218,7 +235,9 @@ public interface Regression extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    Regression fit(Frame df, String... targetVars);
+    default Regression fit(Frame df, String... targetVars) {
+        return fit(df, NumVar.fill(df.rowCount(), 1).withName("weights"), targetVars);
+    }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetName

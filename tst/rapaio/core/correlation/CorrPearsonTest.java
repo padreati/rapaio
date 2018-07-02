@@ -73,7 +73,7 @@ public class CorrPearsonTest {
 
         CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
-        Assert.assertEquals(0.021769705986371495, cp.singleValue(), 1e-20);
+        Assert.assertEquals(0.021769705986371478, cp.singleValue(), 1e-20);
     }
 
     @Test
@@ -99,9 +99,9 @@ public class CorrPearsonTest {
 
 
         RM exp = SolidRM.copy(3, 3,
-                1, 0.8356446312071465, 0.7997143292750094,
-                0.8356446312071465, 1, 0.9938073109055177,
-                0.7997143292750094, 0.9938073109055177, 1);
+                1, 0.8356446312071465, 0.7997143292750087,
+                0.8356446312071465, 1, 0.9938073109055182,
+                0.7997143292750087, 0.9938073109055182, 1);
 
         CorrPearson cp = CoreTools.corrPearson(x, y, z);
         cp.printSummary();
@@ -134,6 +134,6 @@ public class CorrPearsonTest {
         CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
 
-        Assert.assertEquals(1, cp.singleValue(), 1e-20);
+        Assert.assertEquals(1, cp.singleValue(), 1e-30);
     }
 }

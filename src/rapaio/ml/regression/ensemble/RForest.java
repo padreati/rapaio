@@ -49,7 +49,7 @@ public class RForest extends AbstractRegression {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
-    private Regression r = RTree.buildC45();
+    private Regression r = RTree.newC45();
     private List<Regression> regressors = new ArrayList<>();
 
     public static RForest newRF() {
@@ -99,7 +99,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    protected boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreFit(Frame df, Var weights) {
         regressors.clear();
         IntStream.range(0, runs()).forEach(i -> {
                 Regression rnew = r.newInstance();
@@ -118,7 +118,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    protected RPrediction coreFit(Frame df, boolean withResiduals) {
+    protected RPrediction corePredict(Frame df, boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         List<NumVar> results = regressors
                 .parallelStream()

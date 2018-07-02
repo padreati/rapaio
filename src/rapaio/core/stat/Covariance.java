@@ -25,15 +25,9 @@
 
 package rapaio.core.stat;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
-import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -61,30 +55,28 @@ public class Covariance implements Printable {
 
     private double compute(final Var x, final Var y) {
 
-        IntArrayList rows = new IntArrayList();
         int len = Math.min(x.rowCount(), y.rowCount());
+        double[] xx = new double[len];
+        double[] yy = new double[len];
         for (int i = 0; i < len; i++) {
             if(x.isMissing(i) || y.isMissing(i)) {
+                missingCount++;
                 continue;
             }
-            rows.add(i);
+            xx[completeCount] = x.value(i);
+            yy[completeCount] = y.value(i);
+            completeCount++;
         }
-        Mapping map = Mapping.wrap(rows);
-        completeCount = map.size();
-        missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
 
-        if (map.size() < 2) {
+        if (completeCount < 2) {
             return Double.NaN;
         }
 
-        Var xx = x.mapRows(map);
-        Var yy = y.mapRows(map);
-
-        double m1 = mean(xx).value();
-        double m2 = mean(yy).value();
+        double m1 = Mean.from(xx, 0, completeCount).value();
+        double m2 = Mean.from(yy, 0, completeCount).value();
         double cov = 0;
         for (int i = 0; i < completeCount; i++) {
-            cov += (xx.value(i) - m1) * (yy.value(i) - m2);
+            cov += (xx[i] - m1) * (yy[i] - m2);
         }
         return cov / (completeCount - 1.0);
     }

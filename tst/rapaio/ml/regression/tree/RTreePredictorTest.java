@@ -28,8 +28,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.SolidFrame;
-import rapaio.data.stream.FSpot;
-import rapaio.util.Pair;
+import rapaio.util.DoublePair;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -48,31 +47,31 @@ public class RTreePredictorTest {
 
         // nodes
 
-        RTreeNode root = new RTreeNode(null,null, "root", (row, frame) -> true);
+        RTreeNode root = new RTreeNode(1,null, "root", (row, frame) -> true, 1);
         root.setLeaf(false);
 
-        RTreeNode left = new RTreeNode(null, root, "x < 10", (row, frame) -> frame.value(row, "x") < 10);
+        RTreeNode left = new RTreeNode(2, root, "x < 10", (row, frame) -> frame.value(row, "x") < 10, 2);
         left.setLeaf(false);
 
-        RTreeNode right = new RTreeNode(null, root, "x >= 10", (row, frame) -> frame.value(row, "x") >= 10);
+        RTreeNode right = new RTreeNode(3, root, "x >= 10", (row, frame) -> frame.value(row, "x") >= 10, 2);
         right.setLeaf(false);
 
-        RTreeNode left_left = new RTreeNode(null, left, "x < 5", (row, frame) -> frame.value(row, "x") < 5);
+        RTreeNode left_left = new RTreeNode(4, left, "x < 5", (row, frame) -> frame.value(row, "x") < 5, 3);
         left_left.setLeaf(true);
         left_left.setValue(0);
         left_left.setWeight(1);
 
-        RTreeNode left_right = new RTreeNode(null, left, "x >= 5", (row, frame) -> frame.value(row, "x") >= 5);
+        RTreeNode left_right = new RTreeNode(5, left, "x >= 5", (row, frame) -> frame.value(row, "x") >= 5, 3);
         left_right.setLeaf(true);
         left_right.setValue(1);
         left_right.setWeight(2);
 
-        RTreeNode right_left = new RTreeNode(null, right, "x < 15", (row, frame) -> frame.value(row, "x") < 15);
+        RTreeNode right_left = new RTreeNode(6, right, "x < 15", (row, frame) -> frame.value(row, "x") < 15, 3);
         right_left.setLeaf(true);
         right_left.setValue(2);
         right_left.setWeight(3);
 
-        RTreeNode right_right = new RTreeNode(null, right, "x >= 15", (row, frame) -> frame.value(row, "x") >= 15);
+        RTreeNode right_right = new RTreeNode(7, right, "x >= 15", (row, frame) -> frame.value(row, "x") >= 15, 3);
         right_right.setLeaf(true);
         right_right.setValue(3);
         right_right.setWeight(4);
@@ -88,30 +87,30 @@ public class RTreePredictorTest {
         right.getChildren().add(right_left);
         right.getChildren().add(right_right);
 
-        Pair<Double, Double> fit_0 = pred.predict(0, getFrame(0), root);
+        DoublePair fit_0 = pred.predict(0, getFrame(0), root);
         assertEquals(0, fit_0._1, TOL);
         assertEquals(1, fit_0._2, TOL);
 
-        Pair<Double, Double> fit_7 = pred.predict(0, getFrame(7), root);
+        DoublePair fit_7 = pred.predict(0, getFrame(7), root);
         assertEquals(1, fit_7._1, TOL);
         assertEquals(2, fit_7._2, TOL);
 
-        Pair<Double, Double> fit_11 = pred.predict(0, getFrame(11), root);
+        DoublePair fit_11 = pred.predict(0, getFrame(11), root);
         assertEquals(2, fit_11._1, TOL);
         assertEquals(3, fit_11._2, TOL);
 
-        Pair<Double, Double> fit_20 = pred.predict(0, getFrame(20), root);
+        DoublePair fit_20 = pred.predict(0, getFrame(20), root);
         assertEquals(3, fit_20._1, TOL);
         assertEquals(4, fit_20._2, TOL);
 
 
         // missing
 
-        Pair<Double, Double> fit_na = pred.predict(0, getFrame(Double.NaN), left);
+        DoublePair fit_na = pred.predict(0, getFrame(Double.NaN), left);
         assertEquals((0.0 * 1.0 + 1.0 * 2.0) / 3.0, fit_na._1, TOL);
         assertEquals((1.0 + 2.0) / 2.0, fit_na._2, TOL);
 
-        Pair<Double, Double> fit_na_root = pred.predict(0, getFrame(Double.NaN), root);
+        DoublePair fit_na_root = pred.predict(0, getFrame(Double.NaN), root);
         assertEquals((0.0 * 1.0 + 1.0 * 2.0 + 2.0 * 3.0 + 3.0 * 4.0) / (1.0 + 2.0 + 3.0 + 4.0), fit_na_root._1, TOL);
         assertEquals((1.0 + 2.0 + 3.0 + 4.0) / 4.0, fit_na_root._2, TOL);
 
