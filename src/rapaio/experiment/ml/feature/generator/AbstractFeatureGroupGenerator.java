@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.experiment.ml.feature;
+package rapaio.experiment.ml.feature.generator;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;

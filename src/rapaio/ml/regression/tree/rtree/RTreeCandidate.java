@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import rapaio.ml.common.predicate.RowPredicate;
 

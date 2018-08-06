@@ -30,7 +30,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 
-public class NumbericTypeStrategy implements TypeStrategy {
+public class NumericTypeStrategy implements TypeStrategy {
 	public void getVarSummary(Frame df, Var v,String[][] first, String[][] second, int th ){
 		double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
         double[] perc = Quantiles.from(v, p).values();

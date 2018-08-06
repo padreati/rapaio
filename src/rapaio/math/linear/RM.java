@@ -25,12 +25,6 @@
 
 package rapaio.math.linear;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.NumVar;
@@ -42,6 +36,12 @@ import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 /**
  * Dense matrix with double precision floating point values
@@ -264,6 +264,28 @@ public interface RM extends Serializable, Printable {
     ///////////////////////
     // other tools
     ///////////////////////
+
+    default RV rowValueMax() {
+        SolidRV max = SolidRV.copy(mapCol(0));
+        for (int i = 1; i < colCount(); i++) {
+            for (int j = 0; j < rowCount(); j++) {
+                if(max.get(j) < get(j, i)) {
+                    max.set(j, get(j, i));
+                }
+            }
+        }
+        return max;
+    }
+
+    default RV rowSum() {
+        SolidRV sum = SolidRV.empty(rowCount());
+        for (int i = 0; i < colCount(); i++) {
+            for (int j = 0; j < rowCount(); j++) {
+                sum.increment(j, get(j, i));
+            }
+        }
+        return sum;
+    }
 
     /**
      * Does not override equals since this is a costly

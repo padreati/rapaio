@@ -92,6 +92,15 @@ public class CoreToolsTest {
     }
 
     @Test
+    public void testWithMissingValues() {
+
+        NumVar x1 = NumVar.wrap(1.0, Double.NaN, 2.0, Double.NaN, 3.0, Double.NaN);
+        NumVar x2 = NumVar.wrap(1.0, 2.0, 3.0);
+
+        assertFalse(Double.isNaN(Mean.from(x1).value()));
+    }
+
+    @Test
     public void testSameMean() {
         RandomSource.setSeed(1234);
         double[] x = new double[10_000];

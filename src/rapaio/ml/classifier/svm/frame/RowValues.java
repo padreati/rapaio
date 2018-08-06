@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,35 +23,16 @@
  *
  */
 
-package rapaio.core;
+package rapaio.ml.classifier.svm.frame;
 
-import org.junit.Assert;
-import org.junit.Test;
-import rapaio.data.IdxVar;
-import rapaio.data.Var;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/1/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/16/18.
  */
-public class RandomSourceTest {
+public interface RowValues {
 
+    double get(int i);
 
-    @Test
-    public void reproducibleTest() {
-
-        Var seeds = IdxVar.from(100, i -> i*i);
-
-        RandomSource.setSeed(0);
-        checkRandom(seeds);
-    }
-
-    private void checkRandom(Var seeds) {
-        for (int i = 0; i < seeds.rowCount(); i++) {
-            RandomSource.setSeed(seeds.index(i));
-            int n1 = RandomSource.nextInt(1000);
-            RandomSource.setSeed(seeds.index(i));
-            int n2 = RandomSource.nextInt(1000);
-            Assert.assertEquals(n1, n2);
-        }
-    }
+    IntIterator iterator();
 }

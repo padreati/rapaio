@@ -23,22 +23,25 @@
  *
  */
 
-package rapaio.ml.regression.boost.gbt;
-
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.ml.regression.Regression;
+package rapaio.ml.regression.tree.rtree;
 
 /**
- * Boosting tree regression interface.
- *
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Class used to pass information computed by
+ * test function to the method used to evaluate split
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
  */
-@Deprecated
-public interface BTRegression extends Regression {
+public class RTreeTestPayload {
 
-    @Override
-    BTRegression newInstance();
+    public int splits;
+    public double totalVar;
+    public double totalWeight;
+    public double[] splitWeight;
+    public double[] splitVar;
 
-    void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
+    public RTreeTestPayload(int splits) {
+        this.splits = splits;
+        this.splitVar = new double[splits];
+        this.splitWeight = new double[splits];
+    }
 }

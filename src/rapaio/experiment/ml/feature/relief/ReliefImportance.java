@@ -1,0 +1,85 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
+package rapaio.experiment.ml.feature.relief;
+
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import rapaio.data.Frame;
+import rapaio.data.NomVar;
+import rapaio.data.NumVar;
+import rapaio.data.SolidFrame;
+
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
+ */
+public class ReliefImportance {
+
+    private final String[] names;
+    private final double[] weights;
+
+
+    public ReliefImportance(String[] names, double[] weights) {
+        this.names = names;
+        this.weights = weights;
+    }
+
+    public String[] getNames() {
+        return names;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public Frame orderedFrame() {
+        int[] rows = new int[names.length];
+        for (int i = 0; i < rows.length; i++) {
+            rows[i] = i;
+        }
+        IntArrays.quickSort(rows, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
+
+        NumVar weightVar = NumVar.empty().withName("weights");
+        NomVar nameVar = NomVar.empty().withName("names");
+
+        for (int i = 0; i < rows.length; i++) {
+            nameVar.addLabel(names[rows[i]]);
+            weightVar.addValue(weights[rows[i]]);
+        }
+
+        return SolidFrame.byVars(nameVar, weightVar);
+    }
+
+    public Frame unorderedFrame() {
+        NumVar weightVar = NumVar.empty().withName("weights");
+        NomVar nameVar = NomVar.empty().withName("names");
+
+        for (int i = 0; i < names.length; i++) {
+            nameVar.addLabel(names[i]);
+            weightVar.addValue(weights[i]);
+        }
+
+        return SolidFrame.byVars(nameVar, weightVar);
+    }
+}

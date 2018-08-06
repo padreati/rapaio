@@ -14,7 +14,7 @@ import rapaio.data.Mapping;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.RTreeNumericTest;
+import rapaio.ml.regression.tree.rtree.RTreeNumericTest;
 
 import java.io.IOException;
 
@@ -48,30 +48,30 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
 
 
     @Test
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
+    @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial5k() {
         Regression r = RTree.newCART()
-                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_5k);
     }
 
-    @Test
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
+//    @Test
+    @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial50k() {
         Regression r = RTree.newCART()
-                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_50k);
     }
 
-    @Test
-    @BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 2)
+//    @Test
+    @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial200k() {
         Regression r = RTree.newCART()
-                .withNumericMethod(RTreeNumericTest.BINARY)
+                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_200k);

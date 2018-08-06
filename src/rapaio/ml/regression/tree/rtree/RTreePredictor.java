@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
@@ -72,12 +72,12 @@ public interface RTreePredictor extends Serializable {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
-                return DoublePair.from(node.getValue(), node.getWeight());
+                return DoublePair.from(node.value(), node.weight());
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
-            for (RTreeNode child : node.getChildren())
-                if (child.getPredicate().test(row, df)) {
+            for (RTreeNode child : node.children())
+                if (child.predicate().test(row, df)) {
                     return predict(row, df, child);
                 }
 
@@ -85,7 +85,7 @@ public interface RTreePredictor extends Serializable {
 
             NumVar values = NumVar.empty();
             NumVar weights = NumVar.empty();
-            for (RTreeNode child : node.getChildren()) {
+            for (RTreeNode child : node.children()) {
                 DoublePair prediction = predict(row, df, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);

@@ -25,13 +25,12 @@
 
 package rapaio.experiment.ml.feature;
 
-import rapaio.core.stat.Sum;
-import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.experiment.ml.feature.generator.FeatureGroupGenerator;
+import rapaio.experiment.ml.feature.generator.NumValueSummary;
 
 import java.util.ArrayList;
 import java.util.Arrays;

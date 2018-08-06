@@ -33,6 +33,7 @@ import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.ensemble.RForest;
+import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -59,18 +60,23 @@ public class RTreeTest {
         RTree tree = RTree.newCART()
                 .withMaxDepth(10)
                 .withMinCount(4)
-                .withFunction(RTreePurityFunction.WEIGHTED_SD_GAIN);
+                .withPurityFunction(RTreePurityFunction.WEIGHTED_SD_GAIN);
         tree.fit(t, "Sales");
 
         Assert.assertEquals("\n" +
-                " > TreeClassifier {  varSelector=VarSelector[ALL],\n" +
-                "  minCount=4,\n" +
+                " > TreeClassifier {  minCount=4,\n" +
                 "  maxDepth=10,\n" +
-                "  numericMethod=BINARY,\n" +
-                "  nominalMethod=BINARY,\n" +
-                "  function=WEIGHTED_SD_GAIN,\n" +
-                "  splitter=REMAINS_TO_ALL_WEIGHTED,\n" +
+                "  maxSize=2147483647,\n" +
+                "  nominalTest=BINARY,\n" +
+                "  numericTest=BINARY,\n" +
+                "  regressionLoss=L2\n" +
+                "  purityFunction=WEIGHTED_SD_GAIN,\n" +
+                "  splitter=REMAINS_TO_RANDOM,\n" +
                 "  predictor=STANDARD\n" +
+                "  varSelector=VarSelector[ALL],\n" +
+                "  runs=1,\n" +
+                "  poolSize=4,\n" +
+                "  sampler=Identity,\n" +
                 "}\n" +
                 "\n" +
                 "description:\n" +
@@ -157,7 +163,7 @@ public class RTreeTest {
         RTree tree = RTree.newCART()
                 .withMaxDepth(10)
                 .withMinCount(2)
-                .withFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
+                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
         tree.fit(train, "Sales");
         tree.predict(test, true).printSummary();
 

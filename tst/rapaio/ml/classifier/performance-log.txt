@@ -44,3 +44,15 @@ ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 7 out of 9
  round: 4.45 [+- 0.17], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 9, GC.time: 0.08, time.total: 42.00, time.warmup: 10.85, time.bench: 31.14
 ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
  round: 0.11 [+- 0.02], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 1, GC.time: 0.05, time.total: 1.40, time.warmup: 0.61, time.bench: 0.79
+
+2018-07-12
+==========
+
+move learning into ctree rather than node
+
+ClassifiersPerformanceTest.performanceCartRuns12Serial50k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 0.77 [+- 0.05], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 2, GC.time: 0.01, time.total: 9.81, time.warmup: 4.40, time.bench: 5.41
+ClassifiersPerformanceTest.performanceCartRuns12Serial200k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 3.17 [+- 0.05], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 4, GC.time: 0.03, time.total: 28.55, time.warmup: 6.39, time.bench: 22.16
+ClassifiersPerformanceTest.performanceCartRuns12Serial5k: [measured 7 out of 9 rounds, threads: 1 (sequential)]
+ round: 0.10 [+- 0.03], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 1, GC.time: 0.05, time.total: 0.85, time.warmup: 0.16, time.bench: 0.69

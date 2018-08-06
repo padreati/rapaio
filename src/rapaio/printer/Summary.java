@@ -98,7 +98,7 @@ public class Summary {
             }
 
             if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
-                typeStrategy = new NumbericTypeStrategy();
+                typeStrategy = new NumericTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
@@ -206,7 +206,7 @@ public class Summary {
         }
 
         if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
-            typeStrategy = new NumbericTypeStrategy();
+            typeStrategy = new NumericTypeStrategy();
             typeStrategy.getPrintSummary(v, first, second);
         }
 

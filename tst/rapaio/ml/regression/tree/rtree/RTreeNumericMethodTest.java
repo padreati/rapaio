@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +32,10 @@ import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.datasets.Datasets;
+import rapaio.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.rtree.RTreeCandidate;
+import rapaio.ml.regression.tree.rtree.RTreeNumericTest;
+import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 
 import java.util.Optional;
 
@@ -55,7 +59,7 @@ public class RTreeNumericMethodTest {
 
     @Test
     public void ignoreTest() {
-        RTreeNumericTest m = RTreeNumericTest.IGNORE;
+        RTreeNumericTest m = RTreeNumericTest.ignore();
         Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
                 RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
@@ -65,7 +69,7 @@ public class RTreeNumericMethodTest {
 
     @Test
     public void binaryTest() {
-        RTreeNumericTest m = RTreeNumericTest.BINARY;
+        RTreeNumericTest m = RTreeNumericTest.binary();
 
         assertEquals("BINARY", m.name());
 

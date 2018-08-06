@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -120,7 +122,7 @@ public final class NomVar extends FactorBase {
 
     private NomVar() {
         // set the missing value
-        this.reverse = new HashMap<>();
+        this.reverse = new Object2IntOpenHashMap<>();
         this.reverse.put("?", 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");

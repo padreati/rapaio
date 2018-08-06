@@ -25,16 +25,21 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.NumVar;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossDeviance;
+import rapaio.ml.regression.loss.KDevianceRegressionLoss;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.sys.WS;
 
@@ -44,30 +49,41 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
-@Deprecated
 public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -2979235364091072967L;
-    int K;
-    double[][] f;
-    double[][] residual;
+
+    // builders
+
+    public static GBTClassifier newGBT() {
+        return new GBTClassifier();
+    }
+
+    // parameters
+
     private double shrinkage = .2;
     private boolean debug = false;
+    private RTree rTree = RTree.newCART().withMaxDepth(4).withMinCount(5).withRegressionLoss(new KDevianceRegressionLoss(-1));
 
-    // prediction artifact
-    private BTRegression classifier = RTree.newCART().withMaxDepth(4).withMinCount(5);
-    private List<List<BTRegression>> trees;
+    // learning artifacts
 
-    public GBTClassifier() {
+    int K;
+    RM f;
+    RM residual;
+    private List<List<RTree>> trees;
+
+    private GBTClassifier() {
     }
 
     @Override
     public GBTClassifier newInstance() {
-        return new GBTClassifier()
-                .withSampler(sampler())
+        return (GBTClassifier) new GBTClassifier()
                 .withShrinkage(shrinkage)
-                .withTree(classifier.newInstance())
-                .withRuns(runs());
+                .withDebug(debug)
+                .withRTree(rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(-1)))
+                .withSampler(sampler())
+                .withRuns(runs())
+                .withRunPoolSize(runPoolSize());
     }
 
     @Override
@@ -100,8 +116,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         return this;
     }
 
-    public GBTClassifier withTree(BTRegression rTree) {
-        this.classifier = rTree;
+    public GBTClassifier withRTree(RTree rTree) {
+        this.rTree = rTree;
+        this.rTree.withRegressionLoss(new KDevianceRegressionLoss(-1));
         return this;
     }
 
@@ -126,8 +143,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = new double[K][df.rowCount()];
-        residual = new double[K][df.rowCount()];
+        f = SolidRM.empty(K, df.rowCount());
+        residual = SolidRM.empty(K, df.rowCount());
         trees = new ArrayList<>();
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
@@ -135,12 +152,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         // build individual regression targets for each class
 
-        List<NumVar> yk = new ArrayList<>();
-        for (int k = 0; k < K; k++) {
-            yk.add(NumVar.fill(df.rowCount(), 0));
-        }
+        SolidRM yk = SolidRM.empty(K, df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            yk.get(df.index(i, firstTargetName()) - 1).setValue(i, 1);
+            yk.set(df.index(i, firstTargetName()) - 1, i, 1);
         }
 
         for (int m = 0; m < runs(); m++) {
@@ -152,24 +166,22 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         return true;
     }
 
-    private void buildAdditionalTree(Frame df, Var w, List<NumVar> yk) {
+    private void buildAdditionalTree(Frame df, Var w, RM yk) {
 
         // a) Set p_k(x)
 
+        RV max = f.t().rowValueMax();
         for (int i = 0; i < df.rowCount(); i++) {
-            double max = f[0][i];
-            for (int k = 1; k < K; k++) {
-                max = Math.max(max, f[k][i]);
-            }
             double sum = 0;
             for (int k = 0; k < K; k++) {
-                sum += Math.exp(f[k][i] - max);
+                sum += Math.exp(f.get(k,i) - max.get(i));
                 if (!Double.isFinite(sum)) {
                     WS.println("ERROR");
                 }
             }
             for (int k = 0; k < K; k++) {
-                residual[k][i] = yk.get(k).value(i) - Math.exp(f[k][i] - max) / Math.exp(sum);
+                residual.set(k,i, yk.get(k,i) -
+                        Math.exp(f.get(k,i) - max.get(i)) / Math.exp(sum));
             }
         }
 
@@ -180,29 +192,16 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            NumVar resk = NumVar.wrap(residual[k]).withName("##tt##");
+            NumVar resk = residual.mapRow(k).asNumericVar().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
-            BTRegression tree = classifier.newInstance();
+            RTree tree = rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(K));
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
-            tree.boostUpdate(x, resk, resk, new GBTLossDeviance(K));
-
             RPrediction rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                f[k][i] += shrinkage * rr.firstFit().value(i);
-            }
-        }
-
-        if (debug) {
-            System.out.println();
-            System.out.println("debug");
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < K; j++) {
-                    System.out.print(WS.formatShort(f[j][i]) + " ");
-                }
-                System.out.println();
+                f.increment(k,i, shrinkage * rr.firstFit().value(i));
             }
         }
     }
@@ -210,31 +209,30 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     @Override
     public CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
+
+        RM p_f = SolidRM.empty(K, df.rowCount());
+
         for (int k = 0; k < K; k++) {
-            for (BTRegression tree : trees.get(k)) {
+            for (RTree tree : trees.get(k)) {
                 RPrediction rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    double p = cr.firstDensity().value(i, k + 1);
-                    p += shrinkage * rr.firstFit().value(i);
-                    cr.firstDensity().setValue(i, k + 1, p);
+                    p_f.increment(k, i, shrinkage * rr.firstFit().value(i));
                 }
             }
         }
 
         // make probabilities
 
+        RV max = p_f.t().rowValueMax();
+
         for (int i = 0; i < df.rowCount(); i++) {
-            double max = cr.firstDensity().value(i, 1);
-            for (int k = 1; k < K; k++) {
-                max = Math.max(cr.firstDensity().value(i, k + 1), max);
-            }
             double t = 0.0;
             for (int k = 0; k < K; k++) {
-                t += Math.exp(cr.firstDensity().value(i, k + 1) - max);
+                t += Math.exp(p_f.get(k, i) - max.get(i));
             }
             if (t != 0) {
                 for (int k = 0; k < K; k++) {
-                    cr.firstDensity().setValue(i, k + 1, Math.exp(cr.firstDensity().value(i, k + 1) - max) / t);
+                    cr.firstDensity().setValue(i, k + 1, Math.exp(p_f.get(k, i) - max.get(i)) / t);
                 }
             }
         }

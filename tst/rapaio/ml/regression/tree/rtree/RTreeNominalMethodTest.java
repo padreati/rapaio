@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
+import rapaio.ml.regression.tree.RTree;
 
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ public class RTreeNominalMethodTest {
     @Test
     public void ignoreTest() {
 
-        RTreeNominalTest m = RTreeNominalTest.IGNORE;
+        RTreeNominalTest m = RTreeNominalTest.ignore();
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
                 RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
@@ -64,7 +65,7 @@ public class RTreeNominalMethodTest {
     @Test
     public void fullTest() {
 
-        RTreeNominalTest m = RTreeNominalTest.FULL;
+        RTreeNominalTest m = RTreeNominalTest.full();
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
                 RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
@@ -87,7 +88,7 @@ public class RTreeNominalMethodTest {
     @Test
     public void fullTestFailed() {
 
-        RTreeNominalTest m = RTreeNominalTest.FULL;
+        RTreeNominalTest m = RTreeNominalTest.full();
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
                 NOM_TEST, TARGET, RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
@@ -97,7 +98,7 @@ public class RTreeNominalMethodTest {
 
     @Test
     public void binaryTest() {
-        RTreeNominalTest m = RTreeNominalTest.BINARY;
+        RTreeNominalTest m = RTreeNominalTest.binary();
 
         assertEquals("BINARY", m.name());
 

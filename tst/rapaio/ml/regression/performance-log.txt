@@ -66,3 +66,16 @@ RegressionsPerformanceTest.performanceRCartDepth12Serial50k: [measured 10 out of
  round: 0.20 [+- 0.01], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 7, GC.time: 0.01, time.total: 2.46, time.warmup: 0.46, time.bench: 2.00
 RegressionsPerformanceTest.performanceRCartDepth12Serial5k: [measured 10 out of 12 rounds, threads: 1 (sequential)]
  round: 0.02 [+- 0.00], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 1, GC.time: 0.00, time.total: 0.32, time.warmup: 0.08, time.bench: 0.25
+
+2018-07-03
+==========
+
+let only mapping for rtree
+
+RegressionsPerformanceTest.performanceRCartDepth12Serial200k: [measured 15 out of 25 rounds, threads: 1 (sequential)]
+ round: 1.27 [+- 0.04], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 29, GC.time: 0.05, time.total: 36.30, time.warmup: 17.20, time.bench: 19.09
+RegressionsPerformanceTest.performanceRCartDepth12Serial50k: [measured 15 out of 25 rounds, threads: 1 (sequential)]
+ round: 0.26 [+- 0.00], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 8, GC.time: 0.01, time.total: 6.55, time.warmup: 2.63, time.bench: 3.92
+RegressionsPerformanceTest.performanceRCartDepth12Serial5k: [measured 15 out of 25 rounds, threads: 1 (sequential)]
+ round: 0.03 [+- 0.00], round.block: 0.00 [+- 0.00], round.gc: 0.00 [+- 0.00], GC.calls: 1, GC.time: 0.00, time.total: 0.79, time.warmup: 0.35, time.bench: 0.44
+

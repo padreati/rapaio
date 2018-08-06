@@ -441,7 +441,7 @@ public final class NumVar extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return value(row) != value(row);
+        return !Double.isFinite(value(row));
     }
 
     @Override

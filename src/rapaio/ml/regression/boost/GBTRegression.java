@@ -25,15 +25,22 @@
 
 package rapaio.ml.regression.boost;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
+import rapaio.data.NumVar;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
-import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
-import rapaio.ml.regression.boost.gbt.GBTRegressionLossHuber;
+import rapaio.ml.regression.boost.gbt.GBTRegressionLossL1;
+import rapaio.ml.regression.loss.L2RegressionLoss;
+import rapaio.ml.regression.loss.RegressionLoss;
 import rapaio.ml.regression.simple.L2Regression;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
@@ -53,21 +60,21 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    // parameters
-    private GBTRegressionLoss lossFunction = new GBTRegressionLossHuber();
-
+    private GBTRegressionLoss lossFunction = new GBTRegressionLossL1();
+    private RegressionLoss regressionLoss = new L2RegressionLoss();
     private Regression initRegression = L2Regression.create();
-    private BTRegression regressor = RTree.newCART().withMaxDepth(4).withMinCount(10);
+    private RTree regressor = RTree.newCART()
+            .withMaxDepth(4)
+            .withMinCount(10);
     private double shrinkage = 1.0;
 
     // prediction
     NumVar fitValues;
-    List<BTRegression> trees;
+    List<RTree> trees;
 
     @Override
     public Regression newInstance() {
         return new GBTRegression()
-                .withLossFunction(lossFunction)
                 .withInitRegressor(initRegression)
                 .withRegressor(regressor)
                 .withShrinkage(shrinkage)
@@ -84,7 +91,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("loss=").append(lossFunction.name()).append(", ");
+        sb.append("loss=").append(regressionLoss.name()).append(", ");
         sb.append("initRegression=").append(initRegression.fullName()).append(", ");
         sb.append("regression=").append(regressor.fullName()).append(", ");
         sb.append("shrinkage=").append(formatFlex(shrinkage)).append(", ");
@@ -105,12 +112,12 @@ public class GBTRegression extends AbstractRegression implements Printable {
                 .withAllowMissingTargetValues(false);
     }
 
-    public GBTRegression withLossFunction(GBTRegressionLoss lossFunction) {
-        this.lossFunction = lossFunction;
+    public GBTRegression withLossFunction(RegressionLoss lossFunction) {
+        this.regressionLoss = lossFunction;
         return this;
     }
 
-    public GBTRegression withRegressor(BTRegression regressor) {
+    public GBTRegression withRegressor(RTree regressor) {
         this.regressor = regressor;
         return this;
     }
@@ -148,7 +155,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
             NumVar gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
-            BTRegression tree = regressor.newInstance();
+            RTree tree = regressor.newInstance();
 
             // frame sampling
 
@@ -191,7 +198,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
-        for (BTRegression tree : trees) {
+        for (RTree tree : trees) {
             RPrediction treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));

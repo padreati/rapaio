@@ -33,9 +33,9 @@ import rapaio.printer.Printable;
 import rapaio.printer.Summary;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -371,6 +371,48 @@ public interface Var extends Serializable, Printable {
         return var;
     }
 
+    default Var vtrans(BiFunction<Integer, Double, Double> fun) {
+        return vtrans(fun, true);
+    }
+
+    default Var vtrans(BiFunction<Integer, Double, Double> fun, boolean copy) {
+        if(copy) {
+            Var duplicate = this.solidCopy();
+            for (int i = 0; i < rowCount(); i++) {
+                duplicate.setValue(i, fun.apply(i, duplicate.value(i)));
+            }
+            return duplicate;
+        }
+        for (int i = 0; i < rowCount(); i++) {
+            setValue(i, fun.apply(i, value(i)));
+        }
+        return this;
+    }
+
+    /**
+     * Make a copy of the current variable with values updated
+     * using the given lambda function.
+     *
+     * @param fun value update function
+     * @return a new copy of variable with transformed values
+     */
+    default Var vtrans(Function<Double, Double> fun) {
+        return vtrans(fun, true);
+    }
+
+    default Var vtrans(Function<Double, Double> fun, boolean copy) {
+        if(copy) {
+            Var duplicate = this.solidCopy();
+            for (int i = 0; i < duplicate.rowCount(); i++) {
+                duplicate.setValue(i, fun.apply(duplicate.value(i)));
+            }
+            return duplicate;
+        }
+        for (int i = 0; i < rowCount(); i++) {
+            setValue(i, fun.apply(value(i)));
+        }
+        return this;
+    }
 
     default IntComparator refComparator() {
         return refComparator(true);

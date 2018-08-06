@@ -23,31 +23,32 @@
  *
  */
 
-package rapaio.ml.regression.boost.gbt;
+package rapaio.experiment.ml.feature.relief;
 
-import rapaio.data.NumVar;
-import rapaio.data.Var;
-
-import java.io.Serializable;
+import rapaio.math.linear.RM;
 
 /**
- * Loss function used by gradient boosting algorithm.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/18.
  */
-@Deprecated
-public interface GBTRegressionLoss extends Serializable {
+public interface ReliefDifferenceFunction {
 
-    String name();
+    double difference(RM x, boolean[] numeric, int index, int row1, int row2);
 
-    double findMinimum(Var y, Var fx);
+    static ReliefDifferenceFunction standard() {
+        return new StandardReliefDifferenceFunction();
+    }
+}
 
-    /**
-     * Compute vector of gradients for
-     * @param y
-     * @param fx
-     * @return
-     */
-    NumVar gradient(Var y, Var fx);
+class StandardReliefDifferenceFunction implements ReliefDifferenceFunction {
 
+    @Override
+    public double difference(RM x, boolean[] numeric, int index, int row1, int row2) {
+        if(Double.isNaN(x.get(row1, index)) || Double.isNaN(x.get(row2, index))) {
+            return Double.NaN;
+        }
+        if (numeric[index]) {
+            return Math.abs(x.get(row1, index) - x.get(row2, index));
+        }
+        return x.get(row1, index) == x.get(row2, index) ? 0 : 1;
+    }
 }

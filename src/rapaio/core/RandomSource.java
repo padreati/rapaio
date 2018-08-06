@@ -25,37 +25,36 @@
 
 package rapaio.core;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 
 /**
- * Random number producer used by rapaio facilities.
+ * Random number producer used by rapaio facilities. Currently the implementation is a wrapper
+ * over standard Java {@link Random}.
  * <p>
- * For now the implementation uses the standard Java {@link Random}.
- * <p>
- * In order to have a reproducible analysis you can use
- * same seed in code ({@link #setSeed(long)}).
+ * In order to have a reproducible analysis you can use same seed in code ({@link #setSeed(long)}).
  *
  * @author Aurelian Tutuianu
  */
 public final class RandomSource implements Serializable {
 
     private static final long serialVersionUID = -1201316989986445607L;
+
     private static Random rand = new Random();
 
+    /**
+     * Set seed of random number generator
+     * @param seed seed
+     */
     public static void setSeed(long seed) {
         rand.setSeed(seed);
     }
 
-    public static void withUtilRandom(long seed) {
-        rand = new Random(seed);
-    }
-
+    /**
+     * Use secure random implementation with given seed
+     * @param seed seed of the secure seed
+     */
     public static void withSecureRandom(byte[] seed) {
         rand = new SecureRandom(seed);
     }

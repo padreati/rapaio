@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -78,14 +78,14 @@ public class RTreePredictorTest {
 
         // links
 
-        root.getChildren().add(left);
-        root.getChildren().add(right);
+        root.children().add(left);
+        root.children().add(right);
 
-        left.getChildren().add(left_left);
-        left.getChildren().add(left_right);
+        left.children().add(left_left);
+        left.children().add(left_right);
 
-        right.getChildren().add(right_left);
-        right.getChildren().add(right_right);
+        right.children().add(right_left);
+        right.children().add(right_right);
 
         DoublePair fit_0 = pred.predict(0, getFrame(0), root);
         assertEquals(0, fit_0._1, TOL);

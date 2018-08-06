@@ -23,25 +23,30 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.classifier.svm.frame;
+
+import rapaio.data.Frame;
 
 /**
- * Class used to pass information computed by
- * test function to the method used to evaluate split
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/16/18.
  */
-public class RTreeTestPayload {
+public class SparseRowFrame implements RowFrame {
 
-    public int splits;
-    public double totalVar;
-    public double totalWeight;
-    public double[] splitWeight;
-    public double[] splitVar;
+    private final SparseRowValues[] rows;
 
-    public RTreeTestPayload(int splits) {
-        this.splits = splits;
-        this.splitVar = new double[splits];
-        this.splitWeight = new double[splits];
+    public SparseRowFrame(Frame df, String[] inputVarNames, String targetVarName) {
+        rows = new SparseRowValues[df.rowCount()];
+        for (int row = 0; row < df.rowCount(); row++) {
+            rows[row] = new SparseRowValues(df, row, inputVarNames);
+        }
+    }
+
+    public int rowCount() {
+        return rows.length;
+    }
+
+    @Override
+    public RowValues get(int i) {
+        return rows[i];
     }
 }

@@ -88,7 +88,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         test(c, df_5k);
     }
 
-    @Test
+//    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial50k() {
         Classifier c = CTree.newCART()
@@ -98,7 +98,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         test(c, df_50k);
     }
 
-    @Test
+//    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial200k() {
         Classifier c = CTree.newCART()
@@ -157,9 +157,9 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
     public void performanceGBTCartRuns200Depth12() throws Exception {
         Frame src = Datasets.loadIrisDataset();
-        Classifier c = new GBTClassifier()
+        Classifier c = GBTClassifier.newGBT()
                 .withSampler(RowSampler.bootstrap(1))
-                .withTree(RTree.newCART().withMaxDepth(6))
+                .withRTree(RTree.newCART().withMaxDepth(6))
                 .withRuns(10);
         test(c, df_5k);
     }

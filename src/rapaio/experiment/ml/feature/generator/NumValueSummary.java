@@ -23,12 +23,11 @@
  *
  */
 
-package rapaio.experiment.ml.feature;
+package rapaio.experiment.ml.feature.generator;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.Variance;
-import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.VRange;

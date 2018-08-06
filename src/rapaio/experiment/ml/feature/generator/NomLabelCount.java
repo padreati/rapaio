@@ -23,13 +23,11 @@
  *
  */
 
-package rapaio.experiment.ml.feature;
+package rapaio.experiment.ml.feature.generator;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.IdxVar;
 import rapaio.data.NumVar;
 import rapaio.data.VRange;
 import rapaio.data.Var;

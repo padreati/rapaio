@@ -23,51 +23,35 @@
  *
  */
 
-package rapaio.ml.regression.boost.gbt;
+package rapaio.ml.regression.loss;
 
+import rapaio.core.stat.WeightedMean;
+import rapaio.data.Frame;
 import rapaio.data.NumVar;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
-public class GBTLossDeviance implements GBTRegressionLoss {
-
-    private static final long serialVersionUID = -2622054975826334290L;
-    private final double K;
-
-    public GBTLossDeviance(int K) {
-        this.K = K;
-    }
-
+public class L2RegressionLoss implements RegressionLoss {
     @Override
     public String name() {
-        return "ClassifierLossFunction";
+        return "L2";
     }
 
     @Override
-    public double findMinimum(Var y, Var fx) {
-        double up = 0.0;
-        double down = 0.0;
-
-        for (int i = 0; i < y.rowCount(); i++) {
-            up += y.value(i);
-            down += Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
-        }
-
-        if (down == 0) {
-            return 0;
-        }
-
-        if (Double.isNaN(up) || Double.isNaN(down)) {
-            return 0;
-        }
-
-        return ((K - 1) * up) / (K * down);
+    public double findWeightedMinimum(Var y, Var w) {
+        return WeightedMean.from(y, w).value();
     }
 
     @Override
-    public NumVar gradient(Var y, Var fx) {
-        return null;
+    public double findWeightedMinimum(Frame df, String varName, Var w) {
+        return WeightedMean.from(df, w, varName).value();
+    }
+
+    @Override
+    public NumVar computeGradient(Var y, Var y_hat) {
+        int len = Math.min(y.rowCount(), y_hat.rowCount());
+        return NumVar.from(len, row -> 0.5 * (y.value(row) - y_hat.value(row)));
     }
 }

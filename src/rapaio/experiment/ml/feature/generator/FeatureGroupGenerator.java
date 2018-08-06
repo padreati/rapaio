@@ -23,15 +23,13 @@
  *
  */
 
-package rapaio.experiment.ml.feature;
+package rapaio.experiment.ml.feature.generator;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/18.

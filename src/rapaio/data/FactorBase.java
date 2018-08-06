@@ -25,10 +25,15 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Base class used to implement categorical variable types: nominal and ordinal.
@@ -47,11 +52,11 @@ abstract class FactorBase extends AbstractVar {
     int rows = 0;
     ArrayList<String> dict;
     int[] data;
-    Map<String, Integer> reverse;
+    Object2IntMap<String> reverse;
 
     protected FactorBase() {
         // set the missing value
-        this.reverse = new HashMap<>();
+        this.reverse = new Object2IntOpenHashMap<>();
         this.reverse.put("?", 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
@@ -117,13 +122,13 @@ abstract class FactorBase extends AbstractVar {
             data[row] = missingIndex;
             return;
         }
-        Integer idx = reverse.get(value);
-        if (idx == null) {
+        if (!reverse.containsKey(value)) {
             dict.add(value);
             reverse.put(value, reverse.size());
-            idx = reverse.size() - 1;
+            data[row] = reverse.size() - 1;
+        } else {
+            data[row] = reverse.getInt(value);
         }
-        data[row] = idx;
     }
 
     @Override
@@ -133,7 +138,7 @@ abstract class FactorBase extends AbstractVar {
             dict.add(label);
             reverse.put(label, reverse.size());
         }
-        data[rows++] = reverse.get(label);
+        data[rows++] = reverse.getInt(label);
     }
 
     @Override
@@ -156,7 +161,7 @@ abstract class FactorBase extends AbstractVar {
         }
 
         this.dict = new ArrayList<>();
-        this.reverse = new HashMap<>();
+        this.reverse = new Object2IntOpenHashMap<>(dict.length);
         this.dict.add("?");
         this.reverse.put("?", 0);
 
@@ -248,7 +253,7 @@ abstract class FactorBase extends AbstractVar {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         rows = in.readInt();
         dict = new ArrayList<>();
-        reverse = new HashMap<>();
+        reverse = new Object2IntOpenHashMap<>();
         int len = in.readInt();
         for (int i = 0; i < len; i++) {
             dict.add(in.readUTF());

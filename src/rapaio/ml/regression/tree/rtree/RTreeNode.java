@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.ml.regression.tree.rtree;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -55,11 +55,7 @@ public class RTreeNode implements Serializable {
     private List<RTreeNode> children = new ArrayList<>();
     private RTreeCandidate bestCandidate;
 
-    public RTreeNode(final int id,
-                     final RTreeNode parent,
-                     final String groupName,
-                     final RowPredicate predicate,
-                     final int depth) {
+    public RTreeNode(int id, RTreeNode parent, String groupName, RowPredicate predicate, int depth) {
         this.id = id;
         this.parent = parent;
         this.groupName = groupName;
@@ -71,15 +67,15 @@ public class RTreeNode implements Serializable {
         return parent;
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public String getGroupName() {
+    public String groupName() {
         return groupName;
     }
 
-    public RowPredicate getPredicate() {
+    public RowPredicate predicate() {
         return predicate;
     }
 
@@ -91,7 +87,7 @@ public class RTreeNode implements Serializable {
         this.leaf = leaf;
     }
 
-    public List<RTreeNode> getChildren() {
+    public List<RTreeNode> children() {
         return children;
     }
 
@@ -99,11 +95,11 @@ public class RTreeNode implements Serializable {
         this.bestCandidate = bestCandidate;
     }
 
-    public RTreeCandidate getBestCandidate() {
+    public RTreeCandidate bestCandidate() {
         return bestCandidate;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
@@ -111,7 +107,7 @@ public class RTreeNode implements Serializable {
         this.value = value;
     }
 
-    public double getWeight() {
+    public double weight() {
         return weight;
     }
 
@@ -119,7 +115,7 @@ public class RTreeNode implements Serializable {
         this.weight = weight;
     }
 
-    public int getDepth() {
+    public int depth() {
         return depth;
     }
 
@@ -131,10 +127,10 @@ public class RTreeNode implements Serializable {
 
         List<RowPredicate> groupPredicates = new ArrayList<>();
         for (RTreeNode child : children) {
-            groupPredicates.add(child.getPredicate());
+            groupPredicates.add(child.predicate());
         }
 
-        List<Mapping> mappings = splitter.performMapping(x, NumVar.fill(x.rowCount(), 1), groupPredicates);
+        List<Mapping> mappings = splitter.performSplitMapping(x, NumVar.fill(x.rowCount(), 1), groupPredicates);
 
         for (int i = 0; i < children.size(); i++) {
             children.get(i).boostUpdate(

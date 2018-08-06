@@ -25,8 +25,16 @@
 
 package rapaio.ml.classifier.tree;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.BinaryVar;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.NumVar;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -34,14 +42,21 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.sys.WS;
-import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -292,17 +307,150 @@ public class CTree extends AbstractClassifier {
         int rows = df.rowCount();
 
         // create the root node
-        root = new CTreeNode(null, "root", RowPredicate.all());
+        AtomicInteger idGenerator = new AtomicInteger();
+        idGenerator.set(0);
+        root = new CTreeNode(idGenerator.get(), null, "root", RowPredicate.all(), 0);
 
-        // start learning the root node (this one will fire learning recursively
-        if (runPoolSize() == 0) {
-            root.learn(this, df, weights, 0);
-        } else {
-            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, 0));
+        Int2ObjectOpenHashMap<Frame> frameCache = new Int2ObjectOpenHashMap<>();
+        Int2ObjectOpenHashMap<Var> weightCache = new Int2ObjectOpenHashMap<>();
+
+        Queue<CTreeNode> queue = new ConcurrentLinkedQueue<>();
+        queue.add(root);
+        frameCache.put(root.getId(), df);
+        weightCache.put(root.getId(), weights);
+
+        while (!queue.isEmpty()) {
+            CTreeNode node = queue.poll();
+
+            Frame nodeDf = frameCache.get(node.getId());
+            Var weightsDf = weightCache.get(node.getId());
+
+            learnNode(node, nodeDf, weightsDf);
+
+            if (node.isLeaf()) {
+                continue;
+            }
+            CTreeCandidate bestCandidate = node.getBestCandidate();
+            String testName = bestCandidate.getTestName();
+
+            // now that we have a best candidate, do the effective split
+            Pair<List<Frame>, List<Var>> frames = splitter.performSplit(nodeDf, weightsDf,
+                    bestCandidate.getGroupPredicates());
+
+            for (RowPredicate predicate : bestCandidate.getGroupPredicates()) {
+                CTreeNode child = new CTreeNode(
+                        idGenerator.incrementAndGet(), node, predicate.toString(), predicate, node.getDepth() + 1);
+                node.getChildren().add(child);
+            }
+            for (int i = 0; i < node.getChildren().size(); i++) {
+                CTreeNode child = node.getChildren().get(i);
+                queue.add(child);
+                frameCache.put(child.getId(), frames._1.get(i));
+                weightCache.put(child.getId(), frames._2.get(i));
+            }
         }
-        this.root.fillId(1);
+
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
         return true;
+    }
+
+    private void learnNode(CTreeNode node, Frame df, Var weights) {
+        node.density = DVector.fromWeights(false, df.rvar(firstTargetName()), weights);
+        node.counter = DVector.fromCount(false, df.rvar(firstTargetName()));
+        node.bestIndex = node.density.findBestIndex();
+
+        if (df.rowCount() == 0) {
+            node.bestIndex = node.parent.bestIndex;
+            return;
+        }
+        if (node.counter.countValues(x -> x > 0) == 1 ||
+                (maxDepth > 0 && node.depth > maxDepth) || df.rowCount() <= minCount) {
+            return;
+        }
+
+        String[] nextVarNames = varSelector.nextAllVarNames();
+        List<CTreeCandidate> candidateList = new ArrayList<>();
+        Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
+
+        if (runPoolSize() == 0) {
+            int m = varSelector.mCount();
+            for (String testCol : nextVarNames) {
+                if (m <= 0) {
+                    continue;
+                }
+                if (testCol.equals(firstTargetName())) {
+                    continue;
+                }
+
+                CTreeTest test = null;
+                if (customTestMap.containsKey(testCol)) {
+                    test = customTestMap.get(testCol);
+                }
+                if (testMap.containsKey(df.type(testCol))) {
+                    test = testMap.get(df.type(testCol));
+                }
+                if (test == null) {
+                    throw new IllegalArgumentException("can't predict ctree with no " +
+                            "tests for given variable: " + testCol +
+                            " [" + df.type(testCol).name() + "]");
+                }
+                CTreeCandidate candidate = test.computeCandidate(
+                        this, df, weights, testCol, firstTargetName(), function);
+                if (candidate != null) {
+                    candidateList.add(candidate);
+                    m--;
+                } else {
+                    exhaustList.add(testCol);
+                }
+            }
+        } else {
+            int m = varSelector.mCount();
+            int start = 0;
+
+            while (m > 0 && start < nextVarNames.length) {
+                List<CTreeCandidate> next = IntStream.range(start, Math.min(nextVarNames.length, start + m))
+                        .parallel()
+                        .mapToObj(i -> nextVarNames[i])
+                        .filter(testCol -> !testCol.equals(firstTargetName()))
+                        .map(testCol -> {
+                            CTreeTest test = null;
+                            if (customTestMap.containsKey(testCol)) {
+                                test = customTestMap.get(testCol);
+                            }
+                            if (testMap.containsKey(df.type(testCol))) {
+                                test = testMap.get(df.type(testCol));
+                            }
+                            if (test == null) {
+                                throw new IllegalArgumentException("can't predict ctree with no " +
+                                        "tests for given variable: " + testCol +
+                                        " [" + df.type(testCol).name() + "]");
+                            }
+                            CTreeCandidate candidate = test.computeCandidate(
+                                    this, df, weights, testCol, firstTargetName(), function);
+                            if (candidate == null) {
+                                exhaustList.add(testCol);
+                            }
+                            return candidate;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                candidateList.addAll(next);
+                start += m;
+                m -= next.size();
+            }
+        }
+        Collections.sort(candidateList);
+        if (candidateList.isEmpty() || candidateList.get(0).getGroupPredicates().isEmpty()) {
+            return;
+        }
+        // leave as leaf if the gain is not bigger than minimum gain
+        if (candidateList.get(0).getScore() <= minGain) {
+            return;
+        }
+
+        node.leaf = false;
+        node.bestCandidate = candidateList.get(0);
+        varSelector.removeVarNames(exhaustList);
     }
 
     public void prune(Frame df) {
@@ -313,11 +461,71 @@ public class CTree extends AbstractClassifier {
         pruning.get().prune(this, df, all);
     }
 
+    /**
+     * Predict node indexes with one hot encoding, one var for each node
+     */
+    public Frame predictNodeIndexOHE(Frame df, String varPrefix) {
+        Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
+        buildIndexMap(root, indexMap);
+
+        List<Var> varList = new ArrayList<>();
+        for (int i = 0; i < indexMap.size(); i++) {
+            varList.add(BinaryVar.fill(df.rowCount(), false).withName(varPrefix + i));
+        }
+        for (int i = 0; i < df.rowCount(); i++) {
+            varList.get(indexMap.get(predictPointNodeIndex(root, df, i))).setBinary(i, true);
+        }
+        return SolidFrame.byVars(varList);
+    }
+
+    /**
+     * Predict node indexes with one hot encoding, one var for each node
+     */
+    public Frame predictNodeIndex(Frame df, boolean normalized, String varPrefix) {
+        Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
+        buildIndexMap(root, indexMap);
+
+        Var index = NumVar.empty(df.rowCount()).withName(varPrefix + "index");
+        double norm = normalized ? indexMap.size() : 1.0;
+        for (int i = 0; i < df.rowCount(); i++) {
+            index.setValue(i, indexMap.get(predictPointNodeIndex(root, df, i)) / norm);
+        }
+        return SolidFrame.byVars(index);
+    }
+
+    private int predictPointNodeIndex(CTreeNode node, Frame df, int row) {
+        if (node.isLeaf()) {
+            return node.getId();
+        }
+        double maxWeight = Double.NEGATIVE_INFINITY;
+        CTreeNode maxChild = null;
+        for (CTreeNode child : node.getChildren()) {
+            if (child.getPredicate().test(row, df)) {
+                return this.predictPointNodeIndex(child, df, row);
+            }
+            if (maxWeight < child.counter.sum()) {
+                maxChild = child;
+                maxWeight = child.counter.sum();
+            }
+        }
+        // if missing value
+        return predictPointNodeIndex(maxChild, df, row);
+    }
+
+    private void buildIndexMap(CTreeNode node, Int2IntOpenHashMap indexMap) {
+        if (node.isLeaf()) {
+            indexMap.put(node.getId(), indexMap.size());
+        }
+        for (CTreeNode child : node.children) {
+            buildIndexMap(child, indexMap);
+        }
+    }
+
     @Override
     protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
         CPrediction prediction = CPrediction.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
-            Pair<Integer, DVector> res = fitPoint(this, root, i, df);
+            Pair<Integer, DVector> res = predictPoint(this, root, i, df);
             int index = res._1;
             DVector dv = res._2;
             if (withClasses)
@@ -330,13 +538,13 @@ public class CTree extends AbstractClassifier {
         return prediction;
     }
 
-    protected Pair<Integer, DVector> fitPoint(CTree tree, CTreeNode node, int row, Frame df) {
+    protected Pair<Integer, DVector> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
         if (node.isLeaf())
             return Pair.from(node.getBestIndex(), node.getDensity().solidCopy().normalize());
 
         for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(row, df)) {
-                return this.fitPoint(tree, child, row, df);
+                return this.predictPoint(tree, child, row, df);
             }
         }
 
@@ -344,7 +552,7 @@ public class CTree extends AbstractClassifier {
         DVector dv = DVector.empty(false, dict);
         double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
-            DVector d = this.fitPoint(tree, child, row, df)._2;
+            DVector d = this.predictPoint(tree, child, row, df)._2;
             double wc = child.getDensity().sum();
             dv.increment(d, wc);
             w += wc;

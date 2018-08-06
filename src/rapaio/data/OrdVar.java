@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.util.*;
 
 /**
@@ -93,7 +95,7 @@ public final class OrdVar extends FactorBase {
     private OrdVar() {
         super();
         // set the missing value
-        this.reverse = new HashMap<>();
+        this.reverse = new Object2IntOpenHashMap<>();
         this.reverse.put("?", 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
