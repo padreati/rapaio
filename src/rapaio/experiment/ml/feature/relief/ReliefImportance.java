@@ -27,8 +27,8 @@ package rapaio.experiment.ml.feature.relief;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Frame;
-import rapaio.data.NomVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarNominal;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 
 /**
@@ -60,24 +60,24 @@ public class ReliefImportance {
         }
         IntArrays.quickSort(rows, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
-        NumVar weightVar = NumVar.empty().withName("weights");
-        NomVar nameVar = NomVar.empty().withName("names");
+        VarDouble weightVar = VarDouble.empty().withName("weights");
+        VarNominal nameVar = VarNominal.empty().withName("names");
 
         for (int i = 0; i < rows.length; i++) {
             nameVar.addLabel(names[rows[i]]);
-            weightVar.addValue(weights[rows[i]]);
+            weightVar.addDouble(weights[rows[i]]);
         }
 
         return SolidFrame.byVars(nameVar, weightVar);
     }
 
     public Frame unorderedFrame() {
-        NumVar weightVar = NumVar.empty().withName("weights");
-        NomVar nameVar = NomVar.empty().withName("names");
+        VarDouble weightVar = VarDouble.empty().withName("weights");
+        VarNominal nameVar = VarNominal.empty().withName("names");
 
         for (int i = 0; i < names.length; i++) {
             nameVar.addLabel(names[i]);
-            weightVar.addValue(weights[i]);
+            weightVar.addDouble(weights[i]);
         }
 
         return SolidFrame.byVars(nameVar, weightVar);

@@ -25,7 +25,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -72,8 +72,8 @@ public class IRLSOptimizer {
      * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    public NumVar optimize(double eps, int iterationLimit, Function<Var, Double> f,
-                           Function<Var, Double> fd, NumVar vars, List<Var> inputs, NumVar outputs) {
+    public VarDouble optimize(double eps, int iterationLimit, Function<Var, Double> f,
+                              Function<Var, Double> fd, VarDouble vars, List<Var> inputs, VarDouble outputs) {
 
         hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
         coef = SolidRM.empty(inputs.size(), vars.rowCount());
@@ -81,7 +81,7 @@ public class IRLSOptimizer {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
             for (int j = 1; j < vars.rowCount(); j++)
-                coef.set(i, j, x_i.value(j - 1));
+                coef.set(i, j, x_i.getDouble(j - 1));
         }
 
         derivatives = SolidRV.empty(inputs.size());
@@ -96,11 +96,11 @@ public class IRLSOptimizer {
         return vars;
     }
 
-    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, NumVar vars, List<Var> inputs, NumVar outputs) {
+    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, VarDouble vars, List<Var> inputs, VarDouble outputs) {
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             double y = f.apply(x_i);
-            double error = y - outputs.value(i);
+            double error = y - outputs.getDouble(i);
             err.set(i, error);
             derivatives.set(i, fd.apply(x_i));
         }
@@ -129,7 +129,7 @@ public class IRLSOptimizer {
         RV delta = lu.solve(grad).mapCol(0);
 
         for (int i = 0; i < vars.rowCount(); i++)
-            vars.setValue(i, vars.value(i) - delta.get(i));
+            vars.setDouble(i, vars.getDouble(i) - delta.get(i));
 
         double max = Math.abs(delta.get(0));
         for (int i = 1; i < delta.count(); i++) {

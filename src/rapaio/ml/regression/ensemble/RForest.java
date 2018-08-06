@@ -26,7 +26,7 @@
 package rapaio.ml.regression.ensemble;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
@@ -87,8 +87,8 @@ public class RForest extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }
@@ -120,16 +120,16 @@ public class RForest extends AbstractRegression {
     @Override
     protected RPrediction corePredict(Frame df, boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
-        List<NumVar> results = regressors
+        List<VarDouble> results = regressors
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstFit())
                 .collect(Collectors.toList());
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
-            for (NumVar result : results) {
-                sum += result.value(i);
+            for (VarDouble result : results) {
+                sum += result.getDouble(i);
             }
-            fit.firstFit().setValue(i, sum / regressors.size());
+            fit.firstFit().setDouble(i, sum / regressors.size());
         }
         if (withResiduals)
             fit.buildComplete();

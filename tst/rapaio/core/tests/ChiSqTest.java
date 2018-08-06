@@ -25,8 +25,8 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.NomVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarNominal;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.SolidRM;
 
@@ -38,7 +38,7 @@ public class ChiSqTest {
 
     @Test
     public void testBasicGoodnessOfFit() {
-        NomVar x1 = NomVar.empty();
+        VarNominal x1 = VarNominal.empty();
         for (int i = 0; i < 11; i++) {
             x1.addLabel("Heavy");
         }
@@ -52,28 +52,28 @@ public class ChiSqTest {
             x1.addLabel("Regul");
         }
 
-        ChiSqGoodnessOfFit test1 = ChiSqGoodnessOfFit.from(x1, NumVar.wrap(0.045, 0.795, 0.085, 0.075));
+        ChiSqGoodnessOfFit test1 = ChiSqGoodnessOfFit.from(x1, VarDouble.wrap(0.045, 0.795, 0.085, 0.075));
         test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
         assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        test1 = ChiSqGoodnessOfFit.from(NumVar.copy(11, 189, 19, 17), NumVar.wrap(0.045, 0.795, 0.085, 0.075));
+        test1 = ChiSqGoodnessOfFit.from(VarDouble.copy(11, 189, 19, 17), VarDouble.wrap(0.045, 0.795, 0.085, 0.075));
         test1.printSummary();
 
         assertEquals(3.0, test1.df(), 1e-20);
         assertEquals(0.10744287054977643, test1.getChiValue(), 1e-20);
         assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        NomVar x2 = NomVar.empty();
+        VarNominal x2 = VarNominal.empty();
         for (int i = 0; i < 54; i++) {
             x2.addLabel("Male");
         }
         for (int i = 0; i < 46; i++) {
             x2.addLabel("Female");
         }
-        ChiSqGoodnessOfFit test2 = ChiSqGoodnessOfFit.from(x2, NumVar.wrap(0.5, 0.5));
+        ChiSqGoodnessOfFit test2 = ChiSqGoodnessOfFit.from(x2, VarDouble.wrap(0.5, 0.5));
         test2.printSummary();
 
         assertEquals(1, test2.df());
@@ -127,9 +127,9 @@ public class ChiSqTest {
 
     @Test
     public void testConditionalIndependence() {
-        Var status = NomVar.empty().withName("status");
-        Var scout = NomVar.empty().withName("scout");
-        Var delinquent = NomVar.empty().withName("delinquent");
+        Var status = VarNominal.empty().withName("status");
+        Var scout = VarNominal.empty().withName("scout");
+        Var delinquent = VarNominal.empty().withName("delinquent");
 
         for (int i = 0; i < 11; i++) {
             status.addLabel("low");

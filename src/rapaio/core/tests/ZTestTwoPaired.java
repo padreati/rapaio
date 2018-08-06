@@ -26,7 +26,7 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import static rapaio.core.CoreTools.mean;
@@ -112,10 +112,10 @@ public class ZTestTwoPaired implements HTest {
             return;
         }
 
-        Var complete = NumVar.empty();
+        Var complete = VarDouble.empty();
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (!(x.isMissing(i) || y.isMissing(i)))
-                complete.addValue(x.value(i) - y.value(i));
+                complete.addDouble(x.getDouble(i) - y.getDouble(i));
         }
         sampleMean = mean(complete).value();
 

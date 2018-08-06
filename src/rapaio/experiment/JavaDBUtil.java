@@ -90,10 +90,10 @@ public class JavaDBUtil {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
                         case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.label(i, j));
+                            ps.setString(j + 1, df.getLabel(i, j));
                             break;
                         case "DOUBLE":
-                            ps.setDouble(j + 1, df.value(i, j));
+                            ps.setDouble(j + 1, df.getDouble(i, j));
                             break;
                     }
                 }
@@ -132,9 +132,9 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    NumVar v1 = NumVar.empty(lists.get(i).size());
+                    VarDouble v1 = VarDouble.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
-                        v1.setValue(j, (Double) lists.get(i).get(j));
+                        v1.setDouble(j, (Double) lists.get(i).get(j));
                     }
                     vars.add(v1);
                     break;
@@ -143,7 +143,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    NomVar v2 = NomVar.empty(lists.get(i).size(), dict);
+                    VarNominal v2 = VarNominal.empty(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

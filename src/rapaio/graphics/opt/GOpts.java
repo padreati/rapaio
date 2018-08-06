@@ -25,8 +25,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import java.awt.*;
@@ -49,8 +49,8 @@ public class GOpts implements Serializable {
         defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.lwd = new GOptionLwd(1.0f);
-        defaults.sz = new GOptionSz(NumVar.scalar(3));
-        defaults.pch = new GOptionPch(IdxVar.scalar(0));
+        defaults.sz = new GOptionSz(VarDouble.scalar(3));
+        defaults.pch = new GOptionPch(VarInt.scalar(0));
         defaults.alpha = new GOptionAlpha(1.0f);
         defaults.bins = new GOptionBins(-1);
         defaults.prob = new GOptionProb(false);
@@ -162,11 +162,11 @@ public class GOpts implements Serializable {
                 return parent.getSz(row);
             } else {
                 Var _sz = defaults.sz.apply(this);
-                return _sz.value(row % _sz.rowCount());
+                return _sz.getDouble(row % _sz.rowCount());
             }
         }
         Var _sz = sz.apply(this);
-        return _sz.value(row % _sz.rowCount());
+        return _sz.getDouble(row % _sz.rowCount());
     }
 
     public void setSz(GOptionSz sz) {
@@ -183,11 +183,11 @@ public class GOpts implements Serializable {
                 return parent.getPch(row);
             } else {
                 Var _pch = defaults.pch.apply(this);
-                return _pch.index(row % _pch.rowCount());
+                return _pch.getInt(row % _pch.rowCount());
             }
         }
         Var _pch = pch.apply(this);
-        return _pch.index(row % _pch.rowCount());
+        return _pch.getInt(row % _pch.rowCount());
     }
 
     public void setPch(GOptionPch pch) {

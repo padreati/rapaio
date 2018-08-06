@@ -49,15 +49,15 @@ import java.util.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public final class OrdVar extends FactorBase {
+public final class VarOrdinal extends FactorBase {
 
     /**
      * Builds a new empty ordinal variable.
      *
      * @return new variable instance of ordinal type
      */
-    public static OrdVar empty() {
-        return new OrdVar();
+    public static VarOrdinal empty() {
+        return new VarOrdinal();
     }
 
     /**
@@ -67,8 +67,8 @@ public final class OrdVar extends FactorBase {
      * @param dict term levels
      * @return new variable instance of ordinal type
      */
-    public static OrdVar empty(int rows, String... dict) {
-        return OrdVar.empty(rows, Arrays.asList(dict));
+    public static VarOrdinal empty(int rows, String... dict) {
+        return VarOrdinal.empty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -78,8 +78,8 @@ public final class OrdVar extends FactorBase {
      * @param dict term levels
      * @return new variable instance of ordinal type
      */
-    public static OrdVar empty(int rows, Collection<String> dict) {
-        OrdVar nominal = new OrdVar();
+    public static VarOrdinal empty(int rows, Collection<String> dict) {
+        VarOrdinal nominal = new VarOrdinal();
         for (String next : dict) {
             if (nominal.dict.contains(next)) continue;
             nominal.dict.add(next);
@@ -92,7 +92,7 @@ public final class OrdVar extends FactorBase {
 
     private static final long serialVersionUID = 5438713835700406847L;
 
-    private OrdVar() {
+    private VarOrdinal() {
         super();
         // set the missing value
         this.reverse = new Object2IntOpenHashMap<>();
@@ -104,8 +104,8 @@ public final class OrdVar extends FactorBase {
     }
 
     @Override
-    public OrdVar withName(String name) {
-        return (OrdVar) super.withName(name);
+    public VarOrdinal withName(String name) {
+        return (VarOrdinal) super.withName(name);
     }
 
     @Override
@@ -124,12 +124,12 @@ public final class OrdVar extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return OrdVar.empty(rows, levels());
+        return VarOrdinal.empty(rows, levels());
     }
 
     @Override
-    public OrdVar solidCopy() {
-        return (OrdVar) super.solidCopy();
+    public VarOrdinal solidCopy() {
+        return (VarOrdinal) super.solidCopy();
     }
 
     @Override

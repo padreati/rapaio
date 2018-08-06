@@ -25,7 +25,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
@@ -60,23 +60,23 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        Var x = NumVar.fill(options.getPoints() + 1, 0);
-        Var y = NumVar.fill(options.getPoints() + 1, 0);
+        Var x = VarDouble.fill(options.getPoints() + 1, 0);
+        Var y = VarDouble.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, f.apply(x.value(i)));
+            x.setDouble(i, range.x1() + i * xstep);
+            y.setDouble(i, f.apply(x.getDouble(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {
-            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
+            if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        parent.xScale(x.value(i - 1)),
-                        parent.yScale(y.value(i - 1)),
-                        parent.xScale(x.value(i)),
-                        parent.yScale(y.value(i))));
+                        parent.xScale(x.getDouble(i - 1)),
+                        parent.yScale(y.getDouble(i - 1)),
+                        parent.xScale(x.getDouble(i)),
+                        parent.yScale(y.getDouble(i))));
 
             }
         }

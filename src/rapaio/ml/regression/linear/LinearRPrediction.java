@@ -27,7 +27,7 @@ package rapaio.ml.regression.linear;
 
 import rapaio.core.distributions.StudentT;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.math.MTools;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -96,7 +96,7 @@ public class LinearRPrediction extends RPrediction {
             if (!withResiduals) {
                 RV coeff = beta_hat.mapCol(i);
             } else {
-                NumVar res = residuals.get(targetName);
+                VarDouble res = residuals.get(targetName);
 
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
@@ -156,7 +156,7 @@ public class LinearRPrediction extends RPrediction {
                 }
                 sb.append(tt.summary());
             } else {
-                NumVar res = residuals.get(targetName);
+                VarDouble res = residuals.get(targetName);
 
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;

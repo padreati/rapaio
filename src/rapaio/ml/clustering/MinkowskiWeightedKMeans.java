@@ -67,12 +67,12 @@ public class MinkowskiWeightedKMeans implements Printable {
     private String[] inputs;
     private Frame centroids;
     private Frame weights;
-    private IdxVar arrows;
-    private NumVar errors;
+    private VarInt arrows;
+    private VarDouble errors;
 
     // summary artifacts
 
-    private NumVar summaryAllDist;
+    private VarDouble summaryAllDist;
 
     public MinkowskiWeightedKMeans withNStart(int nstart) {
         if (nstart <= 0) {
@@ -121,7 +121,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         weights = SolidFrame.emptyFrom(df.mapVars(inputs), k);
         for (int i = 0; i < weights.rowCount(); i++) {
             for (int j = 0; j < weights.varCount(); j++) {
-                weights.setValue(i, j, 1.0 / k);
+                weights.setDouble(i, j, 1.0 / k);
             }
         }
 
@@ -154,8 +154,8 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         centroids = bestCentroids;
 
-        arrows = IdxVar.fill(df.rowCount(), -1);
-        errors = NumVar.empty().withName("errors");
+        arrows = VarInt.fill(df.rowCount(), -1);
+        errors = VarDouble.empty().withName("errors");
 
         assignToCentroids(df);
         repairEmptyClusters(df);
@@ -174,12 +174,12 @@ public class MinkowskiWeightedKMeans implements Printable {
             }
             int erc = errors.rowCount();
             if (erc > 1 && debug) {
-                WS.println("prev error: " + errors.value(erc - 2) +
-                        ", current error: " + errors.value(erc - 1) +
-                        ", error improvement: " + (errors.value(erc - 2) - errors.value(erc - 1))
+                WS.println("prev error: " + errors.getDouble(erc - 2) +
+                        ", current error: " + errors.getDouble(erc - 1) +
+                        ", error improvement: " + (errors.getDouble(erc - 2) - errors.getDouble(erc - 1))
                 );
             }
-            if (erc > 1 && errors.value(erc - 2) - errors.value(erc - 1) < eps && errors.value(erc - 1) <= errors.value(erc - 2)) {
+            if (erc > 1 && errors.getDouble(erc - 2) - errors.getDouble(erc - 1) < eps && errors.getDouble(erc - 1) <= errors.getDouble(erc - 2)) {
                 break;
             }
         }
@@ -239,22 +239,22 @@ public class MinkowskiWeightedKMeans implements Printable {
                 throw new RuntimeException("cluster could not be computed");
             }
             rowErrors[i] = err;
-            arrows.setIndex(i, cluster);
+            arrows.setInt(i, cluster);
         }
 
         double totalError = 0.0;
         for (double error : rowErrors) {
             totalError += error;
         }
-        errors.addValue(totalError);
+        errors.addDouble(totalError);
     }
 
     private void weightsUpdate(Frame df) {
         SolidRM d = SolidRM.fill(k, inputs.length, 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < inputs.length; j++) {
-                int c = arrows.index(i);
-                double value = Math.pow(Math.abs(df.value(i, inputs[j]) - centroids.value(c, inputs[j])), p);
+                int c = arrows.getInt(i);
+                double value = Math.pow(Math.abs(df.getDouble(i, inputs[j]) - centroids.getDouble(c, inputs[j])), p);
                 d.set(c, j, d.get(c, j) + value);
             }
         }
@@ -283,7 +283,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         for (int i = 0; i < weights.rowCount(); i++) {
             for (int j = 0; j < weights.varCount(); j++) {
-                weights.setValue(i, j, d.get(i, j) / rv.get(i));
+                weights.setDouble(i, j, d.get(i, j) / rv.get(i));
             }
         }
     }
@@ -294,13 +294,13 @@ public class MinkowskiWeightedKMeans implements Printable {
         for (String input : inputs) {
             // collect values for each cluster in mean, for a given input feature
             Var[] means = IntStream.range(0, k).boxed()
-                    .map(i -> NumVar.empty())
-                    .toArray(NumVar[]::new);
+                    .map(i -> VarDouble.empty())
+                    .toArray(VarDouble[]::new);
             for (int i = 0; i < df.rowCount(); i++) {
-                means[arrows.index(i)].addValue(df.value(i, input));
+                means[arrows.getInt(i)].addDouble(df.getDouble(i, input));
             }
             for (int i = 0; i < k; i++) {
-                centroids.setValue(i, input, Mean.from(means[i]).value());
+                centroids.setDouble(i, input, Mean.from(means[i]).value());
             }
         }
     }
@@ -346,7 +346,7 @@ public class MinkowskiWeightedKMeans implements Printable {
                     // we found a valid centroid, it will be assigned
 
                     for (String input : inputs) {
-                        centroids.setValue(next, input, df.value(selection, input));
+                        centroids.setDouble(next, input, df.getDouble(selection, input));
                     }
                     break;
                 }
@@ -370,8 +370,8 @@ public class MinkowskiWeightedKMeans implements Printable {
         for (String input : inputs) {
             if (df.isMissing(i, input) || centroids.isMissing(c, input))
                 continue;
-            distance += Math.pow(weights.value(c, input), p)
-                    * Math.pow(Math.abs(centroids.value(c, input) - df.value(i, input)), p);
+            distance += Math.pow(weights.getDouble(c, input), p)
+                    * Math.pow(Math.abs(centroids.getDouble(c, input) - df.getDouble(i, input)), p);
         }
         return Pair.from(Math.pow(distance, 1 / p), distance);
     }
@@ -379,7 +379,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     private boolean checkIfEqual(Frame centroids, int c, Frame df, int i) {
         int count = 0;
         for (String input : inputs) {
-            if (centroids.value(c, input) == df.value(i, input)) {
+            if (centroids.getDouble(c, input) == df.getDouble(i, input)) {
                 count++;
             }
         }
@@ -394,42 +394,42 @@ public class MinkowskiWeightedKMeans implements Printable {
         return centroids;
     }
 
-    public NumVar runningErrors() {
+    public VarDouble runningErrors() {
         return errors.solidCopy();
     }
 
     public double error() {
-        return errors.rowCount() == 0 ? Double.NaN : errors.value(errors.rowCount() - 1);
+        return errors.rowCount() == 0 ? Double.NaN : errors.getDouble(errors.rowCount() - 1);
     }
 
     private void buildSummary(Frame df) {
 
-        IdxVar summaryId = IdxVar.seq(1, centroids.rowCount()).withName("ID");
-        IdxVar summaryCount = IdxVar.fill(centroids.rowCount(), 0).withName("count");
-        NumVar summaryMean = NumVar.fill(centroids.rowCount(), 0).withName("mean");
-        NumVar summaryVar = NumVar.fill(centroids.rowCount(), 0).withName("var");
-        NumVar summaryVarP = NumVar.fill(centroids.rowCount(), 0).withName("var/total");
-        NumVar summarySd = NumVar.fill(centroids.rowCount(), 0).withName("sd");
+        VarInt summaryId = VarInt.seq(1, centroids.rowCount()).withName("ID");
+        VarInt summaryCount = VarInt.fill(centroids.rowCount(), 0).withName("count");
+        VarDouble summaryMean = VarDouble.fill(centroids.rowCount(), 0).withName("mean");
+        VarDouble summaryVar = VarDouble.fill(centroids.rowCount(), 0).withName("var");
+        VarDouble summaryVarP = VarDouble.fill(centroids.rowCount(), 0).withName("var/total");
+        VarDouble summarySd = VarDouble.fill(centroids.rowCount(), 0).withName("sd");
 
-        summaryAllDist = NumVar.empty().withName("all dist");
+        summaryAllDist = VarDouble.empty().withName("all dist");
 
-        Map<Integer, NumVar> errors = new HashMap<>();
+        Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
-            double d = distance(df, i, centroids, arrows.index(i), weights)._2;
-            if (!errors.containsKey(arrows.index(i)))
-                errors.put(arrows.index(i), NumVar.empty());
-            errors.get(arrows.index(i)).addValue(d);
-            summaryAllDist.addValue(d);
+            double d = distance(df, i, centroids, arrows.getInt(i), weights)._2;
+            if (!errors.containsKey(arrows.getInt(i)))
+                errors.put(arrows.getInt(i), VarDouble.empty());
+            errors.get(arrows.getInt(i)).addDouble(d);
+            summaryAllDist.addDouble(d);
         }
         double tvar = variance(summaryAllDist).value();
-        for (Map.Entry<Integer, NumVar> e : errors.entrySet()) {
-            summaryCount.setIndex(e.getKey(), e.getValue().rowCount());
-            summaryMean.setValue(e.getKey(), mean(e.getValue()).value());
+        for (Map.Entry<Integer, VarDouble> e : errors.entrySet()) {
+            summaryCount.setInt(e.getKey(), e.getValue().rowCount());
+            summaryMean.setDouble(e.getKey(), mean(e.getValue()).value());
             double v = variance(e.getValue()).value();
-            summaryVar.setValue(e.getKey(), v);
-            summaryVarP.setValue(e.getKey(), v / tvar);
-            summarySd.setValue(e.getKey(), Math.sqrt(v));
+            summaryVar.setDouble(e.getKey(), v);
+            summaryVarP.setDouble(e.getKey(), v / tvar);
+            summarySd.setDouble(e.getKey(), Math.sqrt(v));
         }
 
         summary = SolidFrame.byVars(summaryId, summaryCount, summaryMean, summaryVar, summaryVarP, summarySd);
@@ -469,7 +469,7 @@ public class MinkowskiWeightedKMeans implements Printable {
                     Filters.refSort(summary, summary.rvar("count").refComparator(false))));
             sb.append("\n");
             sb.append("Cluster weights:\n");
-            Frame w = SolidFrame.byVars(IdxVar.seq(k).withName("ID")).bindVars(weights);
+            Frame w = SolidFrame.byVars(VarInt.seq(k).withName("ID")).bindVars(weights);
             sb.append(Summary.headString(w));
             sb.append("\n");
         }

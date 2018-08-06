@@ -113,7 +113,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return numerical setValue
      */
-    double value(int row);
+    double getDouble(int row);
 
     /**
      * Set numeric value for the observation specified by {@param row} to {@param value}.
@@ -124,14 +124,14 @@ public interface Var extends Serializable, Printable {
      * @param row   position of the observation
      * @param value numeric value from position {@param row}
      */
-    void setValue(int row, double value);
+    void setDouble(int row, double value);
 
     /**
      * Adds a new value to the last position of the variable.
      *
      * @param value value to be added variable
      */
-    void addValue(double value);
+    void addDouble(double value);
 
     /**
      * Returns index value for the observation specified by {@param row}
@@ -139,7 +139,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return index value
      */
-    int index(int row);
+    int getInt(int row);
 
     /**
      * Set index value for the observation specified by {@param row}.
@@ -147,14 +147,14 @@ public interface Var extends Serializable, Printable {
      * @param row   position of the observation
      * @param value index value for the observation
      */
-    void setIndex(int row, int value);
+    void setInt(int row, int value);
 
     /**
      * Adds an index value to the last position of the variable
      *
      * @param value value to be added at the end of the variable
      */
-    void addIndex(int value);
+    void addInt(int value);
 
     /**
      * Returns nominal label for the observation specified by {@param row}.
@@ -162,7 +162,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return label value for the observation
      */
-    String label(int row);
+    String getLabel(int row);
 
     /**
      * Set nominal label for the observation specified by {@param row}.
@@ -247,7 +247,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return boolean binary value
      */
-    boolean binary(int row);
+    boolean getBoolean(int row);
 
     /**
      * Set a binary/boolean value
@@ -255,14 +255,14 @@ public interface Var extends Serializable, Printable {
      * @param row   position of the observation
      * @param value boolean binary value
      */
-    void setBinary(int row, boolean value);
+    void setBoolean(int row, boolean value);
 
     /**
      * Adds a binary/boolean value
      *
      * @param value boolean binary value to be added
      */
-    void addBinary(boolean value);
+    void addBoolean(boolean value);
 
     /**
      * Gets long integer (stamp) value.
@@ -270,7 +270,7 @@ public interface Var extends Serializable, Printable {
      * @param row position of the observation
      * @return long integer value
      */
-    long stamp(int row);
+    long getLong(int row);
 
     /**
      * Set long integer (stamp) value
@@ -278,14 +278,14 @@ public interface Var extends Serializable, Printable {
      * @param row   position of the observation
      * @param value long integer value to be set
      */
-    void setStamp(int row, long value);
+    void setLong(int row, long value);
 
     /**
      * Adds a long integer (stump) value
      *
      * @param value long integer value to be added
      */
-    void addStamp(long value);
+    void addLong(long value);
 
     /**
      * Returns true if the value for the observation specified by {@param row} is missing, not available.
@@ -371,45 +371,30 @@ public interface Var extends Serializable, Printable {
         return var;
     }
 
-    default Var vtrans(BiFunction<Integer, Double, Double> fun) {
-        return vtrans(fun, true);
-    }
-
-    default Var vtrans(BiFunction<Integer, Double, Double> fun, boolean copy) {
+    default Var applyDouble(BiFunction<Integer, Double, Double> fun, boolean copy) {
         if(copy) {
             Var duplicate = this.solidCopy();
             for (int i = 0; i < rowCount(); i++) {
-                duplicate.setValue(i, fun.apply(i, duplicate.value(i)));
+                duplicate.setDouble(i, fun.apply(i, duplicate.getDouble(i)));
             }
             return duplicate;
         }
         for (int i = 0; i < rowCount(); i++) {
-            setValue(i, fun.apply(i, value(i)));
+            setDouble(i, fun.apply(i, getDouble(i)));
         }
         return this;
     }
 
-    /**
-     * Make a copy of the current variable with values updated
-     * using the given lambda function.
-     *
-     * @param fun value update function
-     * @return a new copy of variable with transformed values
-     */
-    default Var vtrans(Function<Double, Double> fun) {
-        return vtrans(fun, true);
-    }
-
-    default Var vtrans(Function<Double, Double> fun, boolean copy) {
+    default Var applyDouble(Function<Double, Double> fun, boolean copy) {
         if(copy) {
             Var duplicate = this.solidCopy();
             for (int i = 0; i < duplicate.rowCount(); i++) {
-                duplicate.setValue(i, fun.apply(duplicate.value(i)));
+                duplicate.setDouble(i, fun.apply(duplicate.getDouble(i)));
             }
             return duplicate;
         }
         for (int i = 0; i < rowCount(); i++) {
-            setValue(i, fun.apply(value(i)));
+            setDouble(i, fun.apply(getDouble(i)));
         }
         return this;
     }
@@ -423,10 +408,10 @@ public interface Var extends Serializable, Printable {
             case TEXT:
             case NOMINAL:
                 return RowComparators.nominal(this, asc);
-            case STAMP:
+            case LONG:
                 return RowComparators.stamp(this, asc);
             case ORDINAL:
-            case INDEX:
+            case INT:
             case BINARY:
                 return RowComparators.index(this, asc);
             default:
@@ -449,10 +434,10 @@ public interface Var extends Serializable, Printable {
             return false;
         for (int i = 0; i < rowCount(); i++) {
             if (var.type().isNumeric()) {
-                if (Math.abs(value(i) - var.value(i)) > 1e-12)
+                if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-12)
                     return false;
             } else {
-                if (!label(i).equals(var.label(i)))
+                if (!getLabel(i).equals(var.getLabel(i)))
                     return false;
             }
         }

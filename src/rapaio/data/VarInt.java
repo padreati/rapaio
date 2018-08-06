@@ -46,15 +46,15 @@ import java.util.stream.Collector;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class IdxVar extends AbstractVar {
+public final class VarInt extends AbstractVar {
 
     /**
      * Builds an empty index var of size 0
      *
      * @return new instance of index var
      */
-    public static IdxVar empty() {
-        return new IdxVar(0, 0, 0);
+    public static VarInt empty() {
+        return new VarInt(0, 0, 0);
     }
 
     /**
@@ -63,8 +63,8 @@ public final class IdxVar extends AbstractVar {
      * @param rows index size
      * @return new instance of index var
      */
-    public static IdxVar empty(int rows) {
-        return new IdxVar(rows, rows, 0);
+    public static VarInt empty(int rows) {
+        return new VarInt(rows, rows, 0);
     }
 
     /**
@@ -73,8 +73,8 @@ public final class IdxVar extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static IdxVar scalar(int value) {
-        return new IdxVar(1, 1, value);
+    public static VarInt scalar(int value) {
+        return new VarInt(1, 1, value);
     }
 
     /**
@@ -84,8 +84,8 @@ public final class IdxVar extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static IdxVar fill(int rows, int value) {
-        return new IdxVar(rows, rows, value);
+    public static VarInt fill(int rows, int value) {
+        return new VarInt(rows, rows, value);
     }
 
     /**
@@ -94,8 +94,8 @@ public final class IdxVar extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static IdxVar copy(int... values) {
-        IdxVar index = new IdxVar(0, 0, 0);
+    public static VarInt copy(int... values) {
+        VarInt index = new VarInt(0, 0, 0);
         index.data = Arrays.copyOf(values, values.length);
         index.rows = values.length;
         return index;
@@ -107,8 +107,8 @@ public final class IdxVar extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static IdxVar wrap(int... values) {
-        IdxVar index = new IdxVar(0, 0, 0);
+    public static VarInt wrap(int... values) {
+        VarInt index = new VarInt(0, 0, 0);
         index.data = values;
         index.rows = values.length;
         return index;
@@ -120,7 +120,7 @@ public final class IdxVar extends AbstractVar {
      * @param len size of the index
      * @return new instance of index var
      */
-    public static IdxVar seq(int len) {
+    public static VarInt seq(int len) {
         return seq(0, len, 1);
     }
 
@@ -131,7 +131,7 @@ public final class IdxVar extends AbstractVar {
      * @param len   size of the index
      * @return new instance of index var
      */
-    public static IdxVar seq(int start, int len) {
+    public static VarInt seq(int start, int len) {
         return seq(start, len, 1);
     }
 
@@ -143,8 +143,8 @@ public final class IdxVar extends AbstractVar {
      * @param step  increment value
      * @return new instance of index var
      */
-    public static IdxVar seq(final int start, final int len, final int step) {
-        IdxVar index = new IdxVar(len, len, 0);
+    public static VarInt seq(final int start, final int len, final int step) {
+        VarInt index = new VarInt(len, len, 0);
         int s = start;
         for (int i = 0; i < len; i++) {
             index.data[i] = s;
@@ -155,8 +155,8 @@ public final class IdxVar extends AbstractVar {
 
     // private constructor, only public static builders available
 
-    public static IdxVar from(int len, Function<Integer, Integer> supplier) {
-        IdxVar index = new IdxVar(len, len, 0);
+    public static VarInt from(int len, Function<Integer, Integer> supplier) {
+        VarInt index = new VarInt(len, len, 0);
         for (int i = 0; i < index.data.length; i++) {
             index.data[i] = supplier.apply(i);
         }
@@ -171,7 +171,7 @@ public final class IdxVar extends AbstractVar {
 
     // static builders
 
-    private IdxVar(int rows, int capacity, int fill) {
+    private VarInt(int rows, int capacity, int fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
@@ -181,29 +181,29 @@ public final class IdxVar extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public static Collector<? super Integer, IdxVar, IdxVar> collector() {
-        return new Collector<Integer, IdxVar, IdxVar>() {
+    public static Collector<? super Integer, VarInt, VarInt> collector() {
+        return new Collector<Integer, VarInt, VarInt>() {
             @Override
-            public Supplier<IdxVar> supplier() {
-                return IdxVar::empty;
+            public Supplier<VarInt> supplier() {
+                return VarInt::empty;
             }
 
             @Override
-            public BiConsumer<IdxVar, Integer> accumulator() {
-                return IdxVar::addIndex;
+            public BiConsumer<VarInt, Integer> accumulator() {
+                return VarInt::addInt;
             }
 
             @Override
-            public BinaryOperator<IdxVar> combiner() {
+            public BinaryOperator<VarInt> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
+                    y.stream().forEach(s -> x.addDouble(s.getDouble()));
                     return x;
                 };
             }
 
             @Override
-            public Function<IdxVar, IdxVar> finisher() {
-                return IdxVar::solidCopy;
+            public Function<VarInt, VarInt> finisher() {
+                return VarInt::solidCopy;
             }
 
             @Override
@@ -214,8 +214,8 @@ public final class IdxVar extends AbstractVar {
     }
 
     @Override
-    public IdxVar withName(String name) {
-        return (IdxVar) super.withName(name);
+    public VarInt withName(String name) {
+        return (VarInt) super.withName(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {
@@ -232,7 +232,7 @@ public final class IdxVar extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.INDEX;
+        return VarType.INT;
     }
 
     @Override
@@ -244,50 +244,50 @@ public final class IdxVar extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = IdxVar.MISSING_VALUE;
+            data[rows + i] = VarInt.MISSING_VALUE;
         }
         rows += rowCount;
     }
 
     @Override
-    public int index(int row) {
+    public int getInt(int row) {
         return data[row];
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setInt(int row, int value) {
         data[row] = value;
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         ensureCapacityInternal(rows + 1);
         data[rows] = value;
         rows++;
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         if (isMissing(row))
             return Double.NaN;
-        return index(row);
+        return getInt(row);
     }
 
     @Override
-    public void setValue(int row, double value) {
-        setIndex(row, (int) Math.rint(value));
+    public void setDouble(int row, double value) {
+        setInt(row, (int) Math.rint(value));
     }
 
     @Override
-    public void addValue(double value) {
-        addIndex((int) Math.rint(value));
+    public void addDouble(double value) {
+        addInt((int) Math.rint(value));
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         if (isMissing(row))
             return "?";
-        return String.valueOf(index(row));
+        return String.valueOf(getInt(row));
     }
 
     @Override
@@ -296,7 +296,7 @@ public final class IdxVar extends AbstractVar {
             setMissing(row);
             return;
         }
-        setIndex(row, Integer.parseInt(value));
+        setInt(row, Integer.parseInt(value));
     }
 
     @Override
@@ -305,7 +305,7 @@ public final class IdxVar extends AbstractVar {
             addMissing();
             return;
         }
-        addIndex(Integer.parseInt(value));
+        addInt(Integer.parseInt(value));
     }
 
     @Override
@@ -314,7 +314,7 @@ public final class IdxVar extends AbstractVar {
         for (int i = 0; i < rowCount(); i++) {
             if (isMissing(i))
                 continue;
-            distinctValues.add(index(i));
+            distinctValues.add(getInt(i));
         }
         List<String> levels = new ArrayList<>();
         levels.add("?");
@@ -330,48 +330,48 @@ public final class IdxVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        return index(row) == 1;
+    public boolean getBoolean(int row) {
+        return getInt(row) == 1;
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
-        setIndex(row, value ? 1 : 0);
+    public void setBoolean(int row, boolean value) {
+        setInt(row, value ? 1 : 0);
     }
 
     @Override
-    public void addBinary(boolean value) {
-        addIndex(value ? 1 : 0);
+    public void addBoolean(boolean value) {
+        addInt(value ? 1 : 0);
     }
 
     @Override
-    public long stamp(int row) {
-        return index(row);
+    public long getLong(int row) {
+        return getInt(row);
     }
 
     @Override
-    public void setStamp(int row, long value) {
-        setIndex(row, Integer.valueOf(String.valueOf(value)));
+    public void setLong(int row, long value) {
+        setInt(row, Integer.valueOf(String.valueOf(value)));
     }
 
     @Override
-    public void addStamp(long value) {
-        addIndex(Integer.valueOf(String.valueOf(value)));
+    public void addLong(long value) {
+        addInt(Integer.valueOf(String.valueOf(value)));
     }
 
     @Override
     public boolean isMissing(int row) {
-        return index(row) == MISSING_VALUE;
+        return getInt(row) == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
-        setIndex(row, MISSING_VALUE);
+        setInt(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        addIndex(MISSING_VALUE);
+        addInt(MISSING_VALUE);
     }
 
     @Override
@@ -392,7 +392,7 @@ public final class IdxVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return IdxVar.empty(rows);
+        return VarInt.empty(rows);
     }
 
     @Override
@@ -401,8 +401,8 @@ public final class IdxVar extends AbstractVar {
     }
 
     @Override
-    public IdxVar solidCopy() {
-        return (IdxVar) super.solidCopy();
+    public VarInt solidCopy() {
+        return (VarInt) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

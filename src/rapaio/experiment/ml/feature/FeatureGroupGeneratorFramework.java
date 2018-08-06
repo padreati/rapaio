@@ -56,7 +56,7 @@ public class FeatureGroupGeneratorFramework {
         generators.clear();
         generators.add(FeatureGroupGenerator.nomLabelCount(VRange.onlyTypes(VarType.NOMINAL), true));
         generators.add(FeatureGroupGenerator.numVarStat(
-                VRange.onlyTypes(VarType.NUMERIC, VarType.INDEX),
+                VRange.onlyTypes(VarType.DOUBLE, VarType.INT),
                 Arrays.asList(NumValueSummary.count, NumValueSummary.sum, NumValueSummary.mean, NumValueSummary.variance)
         ));
     }

@@ -81,38 +81,38 @@ public class VSpot implements Serializable {
     /**
      * @return numeric double value of the observation
      */
-    public double value() {
-        return var.value(row);
+    public double getDouble() {
+        return var.getDouble(row);
     }
 
     /**
      * Assigns a numeric value to the observation
      * @param value given numeric value
      */
-    public void setValue(final double value) {
-        var.setValue(row, value);
+    public void setDouble(final double value) {
+        var.setDouble(row, value);
     }
 
     /**
      * @return index value of the observation
      */
-    public int index() {
-        return var.index(row);
+    public int getInt() {
+        return var.getInt(row);
     }
 
     /**
      * Assigns index value to the observation value
      * @param index given index value
      */
-    public void setIndex(final int index) {
-        var.setIndex(row, index);
+    public void setInt(final int index) {
+        var.setInt(row, index);
     }
 
     /**
      * @return label value of the observation
      */
-    public String label() {
-        return var.label(row);
+    public String getLabel() {
+        return var.getLabel(row);
     }
 
     /**
@@ -126,30 +126,30 @@ public class VSpot implements Serializable {
     /**
      * @return binary value of the observation
      */
-    public boolean binary() {
-        return var.binary(row);
+    public boolean getBoolean() {
+        return var.getBoolean(row);
     }
 
     /**
      * Assigns binary value to the current observation value
      * @param value binary value
      */
-    public void setBinary(boolean value) {
-        var.setBinary(row, value);
+    public void setBoolean(boolean value) {
+        var.setBoolean(row, value);
     }
 
     /**
      * @return stamp value of the observation
      */
-    public long stamp() {
-        return var.stamp(row);
+    public long getLong() {
+        return var.getLong(row);
     }
 
     /**
      * Assigns the given stamp value to the current observation
      * @param value stamp value
      */
-    public void setStamp(long value) {
-        var.setStamp(row, value);
+    public void getLong(long value) {
+        var.setLong(row, value);
     }
 }

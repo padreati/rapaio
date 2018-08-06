@@ -68,18 +68,18 @@ public class ROCCurve extends PlotComponent {
 
         for (int i = 1; i < roc.data().rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = parent.xScale(roc.data().value(i - 1, "fpr"));
-            double y1 = parent.yScale(roc.data().value(i - 1, "tpr"));
-            double x2 = parent.xScale(roc.data().value(i, "fpr"));
-            double y2 = parent.yScale(roc.data().value(i, "tpr"));
+            double x1 = parent.xScale(roc.data().getDouble(i - 1, "fpr"));
+            double y1 = parent.yScale(roc.data().getDouble(i - 1, "tpr"));
+            double x2 = parent.xScale(roc.data().getDouble(i, "fpr"));
+            double y2 = parent.yScale(roc.data().getDouble(i, "tpr"));
 
             if (parent.getRange().contains(
-                    roc.data().value(i - 1, "fpr"),
-                    roc.data().value(i - 1, "tpr")
+                    roc.data().getDouble(i - 1, "fpr"),
+                    roc.data().getDouble(i - 1, "tpr")
             )
                     && parent.getRange().contains(
-                    roc.data().value(i, "fpr"),
-                    roc.data().value(i, "tpr"))) {
+                    roc.data().getDouble(i, "fpr"),
+                    roc.data().getDouble(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

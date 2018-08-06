@@ -33,7 +33,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 /**
@@ -79,11 +79,11 @@ public final class CoreTools {
         return Quantiles.from(var, p);
     }
 
-    public static Quantiles quantiles(Var var, NumVar p) {
+    public static Quantiles quantiles(Var var, VarDouble p) {
         return Quantiles.from(var, p.stream().mapToDouble().toArray());
     }
 
-    public static Quantiles quantiles(Var var, Quantiles.Type type, NumVar p) {
+    public static Quantiles quantiles(Var var, Quantiles.Type type, VarDouble p) {
         return Quantiles.from(var, type, p.stream().mapToDouble().toArray());
     }
 

@@ -58,7 +58,7 @@ public abstract class AbstractKernel implements Kernel {
     protected double dotProd(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            result += df1.value(row1, varName) * df2.value(row2, varName);
+            result += df1.getDouble(row1, varName) * df2.getDouble(row2, varName);
         }
         return result;
     }
@@ -66,7 +66,7 @@ public abstract class AbstractKernel implements Kernel {
     protected double deltaDotProd(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            result += Math.pow(df1.value(row1, varName) - df2.value(row2, varName), 2);
+            result += Math.pow(df1.getDouble(row1, varName) - df2.getDouble(row2, varName), 2);
         }
         return result;
     }

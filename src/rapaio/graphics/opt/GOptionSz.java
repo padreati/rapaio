@@ -25,7 +25,7 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 /**
@@ -41,7 +41,7 @@ public class GOptionSz implements GOption<Var> {
     }
 
     public GOptionSz(double size) {
-        this.size = NumVar.scalar(size);
+        this.size = VarDouble.scalar(size);
     }
 
     @Override

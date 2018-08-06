@@ -25,7 +25,7 @@
 
 package rapaio.ml.regression.boost.gbt;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 /**
@@ -51,8 +51,8 @@ public class GBTLossDeviance implements GBTRegressionLoss {
         double down = 0.0;
 
         for (int i = 0; i < y.rowCount(); i++) {
-            up += y.value(i);
-            down += Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
+            up += y.getDouble(i);
+            down += Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
         }
 
         if (down == 0) {
@@ -67,7 +67,7 @@ public class GBTLossDeviance implements GBTRegressionLoss {
     }
 
     @Override
-    public NumVar gradient(Var y, Var fx) {
+    public VarDouble gradient(Var y, Var fx) {
         return null;
     }
 }

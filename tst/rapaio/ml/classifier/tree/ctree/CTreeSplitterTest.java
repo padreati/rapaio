@@ -27,7 +27,7 @@ package rapaio.ml.classifier.tree.ctree;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.tree.CTreeCandidate;
@@ -52,7 +52,7 @@ public class CTreeSplitterTest {
 
     @Before
     public void setUp() throws Exception {
-        NumVar values = NumVar.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
+        VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.solidCopy().withName("x"));
         w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? 1 : Math.abs(x)).toMappedVar().withName("w");
         c = new CTreeCandidate(1, "test");
@@ -66,11 +66,11 @@ public class CTreeSplitterTest {
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
-        assertEquals(4, pairs._1.get(0).stream().filter(s -> s.value("x") > 0).count());
-        assertEquals(4, pairs._2.get(0).stream().filter(s -> s.value() > 0).count());
+        assertEquals(4, pairs._1.get(0).stream().filter(s -> s.getDouble("x") > 0).count());
+        assertEquals(4, pairs._2.get(0).stream().filter(s -> s.getDouble() > 0).count());
 
-        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.value("x") < 0).count());
-        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.value() > 0).count());
+        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.getDouble("x") < 0).count());
+        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.getDouble() > 0).count());
     }
 
     @Test
@@ -80,11 +80,11 @@ public class CTreeSplitterTest {
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
-        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.isMissing() || s.value("x") > 0).count());
-        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.isMissing() || s.value() > 0).count());
+        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.isMissing() || s.getDouble("x") > 0).count());
+        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.isMissing() || s.getDouble() > 0).count());
 
-        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.value("x") < 0).count());
-        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.value() > 0).count());
+        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.getDouble("x") < 0).count());
+        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.getDouble() > 0).count());
     }
 
     @Test
@@ -94,11 +94,11 @@ public class CTreeSplitterTest {
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
-        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.isMissing() || s.value("x") > 0).count());
-        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.isMissing() || s.value() > 0).count());
+        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.isMissing() || s.getDouble("x") > 0).count());
+        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.isMissing() || s.getDouble() > 0).count());
 
-        assertEquals(6, pairs._1.get(1).stream().filter(s -> s.isMissing() || s.value("x") < 0).count());
-        assertEquals(6, pairs._2.get(1).stream().filter(s -> s.isMissing() || s.value() > 0).count());
+        assertEquals(6, pairs._1.get(1).stream().filter(s -> s.isMissing() || s.getDouble("x") < 0).count());
+        assertEquals(6, pairs._2.get(1).stream().filter(s -> s.isMissing() || s.getDouble() > 0).count());
 
         assertEquals(1 + 2 + 3 + 4 + 3 * 10 / 16., pairs._2.get(0).stream().mapToDouble().sum(), 1e-20);
         assertEquals(1 + 2 + 3 + 3 * 6 / 16., pairs._2.get(1).stream().mapToDouble().sum(), 1e-20);
@@ -113,10 +113,10 @@ public class CTreeSplitterTest {
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
-        long firstCount1 = pairs._1.get(0).stream().filter(s -> s.isMissing() || s.value("x") > 0).count();
+        long firstCount1 = pairs._1.get(0).stream().filter(s -> s.isMissing() || s.getDouble("x") > 0).count();
         assertTrue(4 <= firstCount1);
         assertTrue(7 >= firstCount1);
-        long firstCount2 = pairs._1.get(1).stream().filter(s -> s.isMissing() || s.value("x") < 0).count();
+        long firstCount2 = pairs._1.get(1).stream().filter(s -> s.isMissing() || s.getDouble("x") < 0).count();
         assertTrue(3 <= firstCount2);
         assertTrue(6 >= firstCount2);
 

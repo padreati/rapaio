@@ -27,8 +27,8 @@ package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.graphics.base.HostFigure;
@@ -59,9 +59,9 @@ public class BoxPlot extends HostFigure {
 
     public BoxPlot(Var x, Var factor, GOption... opts) {
 
-        Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
+        Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
-        vars = Arrays.stream(names).map(map::get).map(NumVar::copy).toArray(Var[]::new);
+        vars = Arrays.stream(names).map(map::get).map(VarDouble::copy).toArray(Var[]::new);
 
         this.options.bind(opts);
         initialize();
@@ -75,7 +75,7 @@ public class BoxPlot extends HostFigure {
         this.vars = vars;
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(IdxVar.wrap(0, 3)));
+        options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
 
@@ -86,7 +86,7 @@ public class BoxPlot extends HostFigure {
         this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
-        options.setPch(new GOptionPch(IdxVar.wrap(0, 3)));
+        options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
 
@@ -108,7 +108,7 @@ public class BoxPlot extends HostFigure {
         for (Var v : vars) {
             for (int i = 0; i < v.rowCount(); i++) {
                 if (v.isMissing(i)) continue;
-                range.union(Double.NaN, v.value(i));
+                range.union(Double.NaN, v.getDouble(i));
             }
         }
         return range;
@@ -178,7 +178,7 @@ public class BoxPlot extends HostFigure {
             double upperwhisker = q[2];
             double lowerqhisker = q[0];
             for (int j = 0; j < v.rowCount(); j++) {
-                double point = v.value(j);
+                double point = v.getDouble(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
                     g2d.setStroke(new BasicStroke(options.getLwd()));

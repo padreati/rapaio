@@ -27,7 +27,7 @@ package rapaio.data.filter.frame;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 
 /**
@@ -37,7 +37,7 @@ public class FFAddInterceptTest {
 
     @Test
     public void testInterceptValues() {
-        Frame before = SolidFrame.byVars(NumVar.fill(100, 1).withName("a"));
+        Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).withName("a"));
         Frame after = FFAddIntercept.filter().newInstance().fitApply(before);
 
         Assert.assertTrue(after.varCount()==2);

@@ -25,7 +25,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 import rapaio.printer.Summary;
@@ -52,7 +52,7 @@ public class SolidRV implements RV {
     /**
      * Builds a new real dense vector of size equal with row count,
      * filled with values from variable. The variable can have any type,
-     * the values are taken by using {@link Var#value(int)} calls.
+     * the values are taken by using {@link Var#getDouble(int)} calls.
      *
      * @param v given variable
      * @return new real dense vector
@@ -60,7 +60,7 @@ public class SolidRV implements RV {
     public static SolidRV from(Var v) {
         SolidRV rdv = new SolidRV(v.rowCount());
         for (int i = 0; i < rdv.count(); i++) {
-            rdv.values[i] = v.value(i);
+            rdv.values[i] = v.getDouble(i);
         }
         return rdv;
     }
@@ -200,12 +200,12 @@ public class SolidRV implements RV {
     }
 
     public String summary() {
-        return Summary.headString(true, values.length, new Var[]{NumVar.wrap(values)}, new String[]{""});
+        return Summary.headString(true, values.length, new Var[]{VarDouble.wrap(values)}, new String[]{""});
     }
 
     @Override
-    public NumVar asNumericVar() {
-        return NumVar.wrap(values);
+    public VarDouble asNumericVar() {
+        return VarDouble.wrap(values);
     }
 
     @Override

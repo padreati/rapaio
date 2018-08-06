@@ -103,38 +103,38 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
-        return source.value(mapping.get(row));
+    public double getDouble(int row) {
+        return source.getDouble(mapping.get(row));
     }
 
     @Override
-    public void setValue(int row, double value) {
-        source.setValue(mapping.get(row), value);
+    public void setDouble(int row, double value) {
+        source.setDouble(mapping.get(row), value);
     }
 
     @Override
-    public void addValue(double value) {
+    public void addDouble(double value) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override
-    public int index(int row) {
-        return source.index(mapping.get(row));
+    public int getInt(int row) {
+        return source.getInt(mapping.get(row));
     }
 
     @Override
-    public void setIndex(int row, int value) {
-        source.setIndex(mapping.get(row), value);
+    public void setInt(int row, int value) {
+        source.setInt(mapping.get(row), value);
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override
-    public String label(int row) {
-        return source.label(mapping.get(row));
+    public String getLabel(int row) {
+        return source.getLabel(mapping.get(row));
     }
 
     @Override
@@ -158,32 +158,32 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        return source.binary(mapping.get(row));
+    public boolean getBoolean(int row) {
+        return source.getBoolean(mapping.get(row));
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
-        source.setBinary(mapping.get(row), value);
+    public void setBoolean(int row, boolean value) {
+        source.setBoolean(mapping.get(row), value);
     }
 
     @Override
-    public void addBinary(boolean value) {
+    public void addBoolean(boolean value) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override
-    public long stamp(int row) {
-        return source.stamp(mapping.get(row));
+    public long getLong(int row) {
+        return source.getLong(mapping.get(row));
     }
 
     @Override
-    public void setStamp(int row, long value) {
-        source.setStamp(mapping.get(row), value);
+    public void setLong(int row, long value) {
+        source.setLong(mapping.get(row), value);
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 

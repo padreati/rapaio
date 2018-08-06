@@ -36,35 +36,35 @@ public class MappedVarTest {
 
     @Test
     public void testBuilders() {
-        Var a = NumVar.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
+        Var a = VarDouble.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
         assertEquals(2, a.rowCount());
-        assertEquals(3, a.value(0), 1e-12);
-        assertEquals(4, a.value(1), 1e-12);
+        assertEquals(3, a.getDouble(0), 1e-12);
+        assertEquals(4, a.getDouble(1), 1e-12);
 
-        Var b = a.bindRows(NumVar.wrap(10, 11));
+        Var b = a.bindRows(VarDouble.wrap(10, 11));
         assertEquals(4, b.rowCount());
-        assertEquals(3, b.value(0), 1e-12);
-        assertEquals(10, b.value(2), 1e-12);
+        assertEquals(3, b.getDouble(0), 1e-12);
+        assertEquals(10, b.getDouble(2), 1e-12);
     }
 
     @Test
     public void testDynamicMappedVar() {
-        Var x = NumVar.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
+        Var x = VarDouble.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
 
         try {
-            x.addValue(10);
+            x.addDouble(10);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
 
         try {
-            x.addIndex(10);
+            x.addInt(10);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
 
         try {
-            NomVar.copy("x", "y").mapRows(0, 1).addLabel("z");
+            VarNominal.copy("x", "y").mapRows(0, 1).addLabel("z");
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -90,24 +90,24 @@ public class MappedVarTest {
 
     @Test
     public void testMappedNominal() {
-        Var x = NomVar.copy("a").mapRows(0);
+        Var x = VarNominal.copy("a").mapRows(0);
         x.setLevels("x");
-        assertEquals("x", x.label(0));
+        assertEquals("x", x.getLabel(0));
     }
 
     @Test
     public void testMappedBinary() {
-        Var x = BinaryVar.copy(true, false, true).mapRows(0, 2);
+        Var x = VarBoolean.copy(true, false, true).mapRows(0, 2);
         assertEquals(2, x.rowCount());
-        assertEquals(true, x.binary(0));
-        assertEquals(true, x.binary(1));
+        assertEquals(true, x.getBoolean(0));
+        assertEquals(true, x.getBoolean(1));
 
-        x.setBinary(1, false);
-        assertEquals(true, x.binary(0));
-        assertEquals(false, x.binary(1));
+        x.setBoolean(1, false);
+        assertEquals(true, x.getBoolean(0));
+        assertEquals(false, x.getBoolean(1));
 
         try {
-            x.addBinary(true);
+            x.addBoolean(true);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -115,16 +115,16 @@ public class MappedVarTest {
 
     @Test
     public void testMappedStamp() {
-        Var x = StampVar.copy(100, 200).mapRows(0, 1);
+        Var x = VarLong.copy(100, 200).mapRows(0, 1);
         assertEquals(2, x.rowCount());
-        assertEquals(100, x.stamp(0));
-        assertEquals(200, x.stamp(1));
+        assertEquals(100, x.getLong(0));
+        assertEquals(200, x.getLong(1));
 
-        x.setStamp(1, 250);
-        assertEquals(250, x.stamp(1));
+        x.setLong(1, 250);
+        assertEquals(250, x.getLong(1));
 
         try {
-            x.addStamp(300);
+            x.addLong(300);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }

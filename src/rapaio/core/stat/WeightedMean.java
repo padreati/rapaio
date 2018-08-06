@@ -73,9 +73,9 @@ public final class WeightedMean implements Printable {
                 missingCount++;
                 continue;
             }
-            total += weights.value(i);
-            v[completeCount]= var.value(i);
-            w[completeCount] = weights.value(i);
+            total += weights.getDouble(i);
+            v[completeCount]= var.getDouble(i);
+            w[completeCount] = weights.getDouble(i);
             completeCount++;
         }
         if (completeCount == 0 || total == 0) {
@@ -106,9 +106,9 @@ public final class WeightedMean implements Printable {
                 missingCount++;
                 continue;
             }
-            total += weights.value(i);
-            v[completeCount] = df.value(i, varNameIndex);
-            w[completeCount] = weights.value(i);
+            total += weights.getDouble(i);
+            v[completeCount] = df.getDouble(i, varNameIndex);
+            w[completeCount] = weights.getDouble(i);
             completeCount++;
         }
         if (completeCount == 0 || total == 0) {

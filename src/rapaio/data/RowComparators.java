@@ -62,15 +62,15 @@ public final class RowComparators implements Serializable {
             if (var.isMissing(row2)) {
                 return sign;
             }
-            return sign * var.label(row1).compareTo(var.label(row2));
+            return sign * var.getLabel(row1).compareTo(var.getLabel(row2));
         };
     }
 
     public static IntComparator numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            double d1 = var.value(row1);
-            double d2 = var.value(row2);
+            double d1 = var.getDouble(row1);
+            double d2 = var.getDouble(row2);
             if (d1 < d2)
                 return -sign;           // Neither val is NaN, thisVal is smaller
             if (d1 > d2)
@@ -88,7 +88,7 @@ public final class RowComparators implements Serializable {
 
     public static IntComparator index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (row1, row2) -> sign * Integer.compare(var.index(row1), var.index(row2));
+        return (row1, row2) -> sign * Integer.compare(var.getInt(row1), var.getInt(row2));
     }
 
     public static IntComparator stamp(final Var var, final boolean asc) {
@@ -104,10 +104,10 @@ public final class RowComparators implements Serializable {
             if (var.isMissing(row2)) {
                 return sign;
             }
-            if (var.stamp(row1) == var.stamp(row2)) {
+            if (var.getLong(row1) == var.getLong(row2)) {
                 return 0;
             }
-            return sign * (var.stamp(row1) < var.stamp(row2) ? -1 : 1);
+            return sign * (var.getLong(row1) < var.getLong(row2) ? -1 : 1);
         };
     }
 }

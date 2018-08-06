@@ -29,12 +29,10 @@ import org.junit.Test;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.ml.regression.tree.rtree.RTreeCandidate;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 
 import java.util.List;
 
@@ -50,8 +48,8 @@ public class RTreeSplitterTest {
 
     @Before
     public void setUp() throws Exception {
-        w = NumVar.empty();
-        df = SolidFrame.byVars(NumVar.empty().withName("x"));
+        w = VarDouble.empty();
+        df = SolidFrame.byVars(VarDouble.empty().withName("x"));
 
         candidate = new RTreeCandidate(0, "");
         candidate.addGroup(RowPredicate.numLess("x", 10));
@@ -70,11 +68,11 @@ public class RTreeSplitterTest {
             default:
                 u = new Uniform(11, 19);
         }
-        NumVar sample = u.sample(count);
+        VarDouble sample = u.sample(count);
         for (int i = 0; i < sample.rowCount(); i++) {
             df.addRows(1);
-            df.rvar("x").setValue(df.rowCount() - 1, sample.value(i));
-            w.addValue(weight);
+            df.rvar("x").setDouble(df.rowCount() - 1, sample.getDouble(i));
+            w.addDouble(weight);
         }
     }
 

@@ -83,14 +83,14 @@ public class StandardScaler implements Scaler {
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, varName))
                     continue;
-                double value = df.value(i, varName);
+                double value = df.getDouble(i, varName);
                 if (center) {
                     value -= mean.get(varName);
                 }
                 if (scale) {
                     value /= sd.get(varName);
                 }
-                df.setValue(i, varName, value);
+                df.setDouble(i, varName, value);
             }
         }
     }
@@ -104,14 +104,14 @@ public class StandardScaler implements Scaler {
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, varName))
                     continue;
-                double value = df.value(i, varName);
+                double value = df.getDouble(i, varName);
                 if (scale) {
                     value *= sd.get(varName);
                 }
                 if (center) {
                     value += mean.get(varName);
                 }
-                df.setValue(i, varName, value);
+                df.setDouble(i, varName, value);
             }
         }
     }

@@ -52,15 +52,15 @@ import java.util.stream.Collector;
  *
  * @author Aurelian Tutuianu
  */
-public final class NomVar extends FactorBase {
+public final class VarNominal extends FactorBase {
 
     /**
      * Builds a new empty nominal variable
      *
      * @return new variable instance of nominal type
      */
-    public static NomVar empty() {
-        return new NomVar();
+    public static VarNominal empty() {
+        return new VarNominal();
     }
 
     /**
@@ -70,8 +70,8 @@ public final class NomVar extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static NomVar empty(int rows, String... dict) {
-        return NomVar.empty(rows, Arrays.asList(dict));
+    public static VarNominal empty(int rows, String... dict) {
+        return VarNominal.empty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -81,8 +81,8 @@ public final class NomVar extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static NomVar empty(int rows, List<String> dict) {
-        NomVar nominal = new NomVar();
+    public static VarNominal empty(int rows, List<String> dict) {
+        VarNominal nominal = new VarNominal();
         HashSet<String> used = new HashSet<>();
         used.add("?");
         for (String next : dict) {
@@ -96,22 +96,22 @@ public final class NomVar extends FactorBase {
         return nominal;
     }
 
-    public static NomVar copy(String... values) {
-        NomVar nominal = NomVar.empty();
+    public static VarNominal copy(String... values) {
+        VarNominal nominal = VarNominal.empty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static NomVar copy(List<String> values) {
-        NomVar nominal = NomVar.empty();
+    public static VarNominal copy(List<String> values) {
+        VarNominal nominal = VarNominal.empty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static NomVar from(int rows, Function<Integer, String> func, String... dict) {
-        NomVar nominal = NomVar.empty(rows, dict);
+    public static VarNominal from(int rows, Function<Integer, String> func, String... dict) {
+        VarNominal nominal = VarNominal.empty(rows, dict);
         for (int i = 0; i < rows; i++) {
             nominal.setLabel(i, func.apply(i));
         }
@@ -120,7 +120,7 @@ public final class NomVar extends FactorBase {
 
     private static final long serialVersionUID = 1645571732133272467L;
 
-    private NomVar() {
+    private VarNominal() {
         // set the missing value
         this.reverse = new Object2IntOpenHashMap<>();
         this.reverse.put("?", 0);
@@ -130,27 +130,27 @@ public final class NomVar extends FactorBase {
         rows = 0;
     }
 
-    public static Collector<String, NomVar, NomVar> collector() {
+    public static Collector<String, VarNominal, VarNominal> collector() {
 
-        return new Collector<String, NomVar, NomVar>() {
+        return new Collector<String, VarNominal, VarNominal>() {
             @Override
-            public Supplier<NomVar> supplier() {
-                return NomVar::empty;
+            public Supplier<VarNominal> supplier() {
+                return VarNominal::empty;
             }
 
             @Override
-            public BiConsumer<NomVar, String> accumulator() {
+            public BiConsumer<VarNominal, String> accumulator() {
                 return FactorBase::addLabel;
             }
 
             @Override
-            public BinaryOperator<NomVar> combiner() {
-                return (left, right) -> (NomVar) left.bindRows(right);
+            public BinaryOperator<VarNominal> combiner() {
+                return (left, right) -> (VarNominal) left.bindRows(right);
             }
 
             @Override
-            public Function<NomVar, NomVar> finisher() {
-                return NomVar::solidCopy;
+            public Function<VarNominal, VarNominal> finisher() {
+                return VarNominal::solidCopy;
             }
 
             @Override
@@ -161,8 +161,8 @@ public final class NomVar extends FactorBase {
     }
 
     @Override
-    public NomVar withName(String name) {
-        return (NomVar) super.withName(name);
+    public VarNominal withName(String name) {
+        return (VarNominal) super.withName(name);
     }
 
     @Override
@@ -181,12 +181,12 @@ public final class NomVar extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return NomVar.empty(rows, levels());
+        return VarNominal.empty(rows, levels());
     }
 
     @Override
-    public NomVar solidCopy() {
-        return (NomVar) super.solidCopy();
+    public VarNominal solidCopy() {
+        return (VarNominal) super.solidCopy();
     }
 
     @Override

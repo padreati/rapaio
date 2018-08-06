@@ -26,7 +26,7 @@
 package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 
 import java.io.Serializable;
 
@@ -119,8 +119,8 @@ public interface Distribution extends Serializable {
      * @param n number of elements in sample
      * @return sample values
      */
-    default NumVar sample(final int n) {
-        return NumVar.from(n, i -> sampleNext());
+    default VarDouble sample(final int n) {
+        return VarDouble.from(n, i -> sampleNext());
     }
 
     /**

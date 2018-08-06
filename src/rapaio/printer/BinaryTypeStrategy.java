@@ -41,7 +41,7 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(j)) {
                 missing++;
             } else {
-                if (v.binary(j))
+                if (v.getBoolean(j))
                     ones++;
                 else
                     zeros++;
@@ -65,7 +65,7 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(i)) {
                 missing++;
             } else {
-                if (v.binary(i))
+                if (v.getBoolean(i))
                     ones++;
                 else
                     zeros++;

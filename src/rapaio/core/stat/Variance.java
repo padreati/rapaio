@@ -76,8 +76,8 @@ public class Variance implements Printable {
             if (var.isMissing(i)) {
                 continue;
             }
-            sum2 += Math.pow(var.value(i) - mean, 2);
-            sum3 += var.value(i) - mean;
+            sum2 += Math.pow(var.getDouble(i) - mean, 2);
+            sum3 += var.getDouble(i) - mean;
         }
         value = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (completeCount - 1.0);
         biasedValue = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (1.0 * completeCount);

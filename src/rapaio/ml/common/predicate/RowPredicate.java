@@ -26,7 +26,6 @@
 package rapaio.ml.common.predicate;
 
 import rapaio.data.Frame;
-import rapaio.data.stream.FSpot;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
@@ -116,7 +115,7 @@ final class NumLessEqual implements RowPredicate {
         if(df.isMissing(row, testName)) {
             return false;
         }
-        return df.value(row, testName)<= testValue;
+        return df.getDouble(row, testName)<= testValue;
     }
 
     @Override
@@ -140,7 +139,7 @@ final class NumGreaterEqual implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        return df.value(row, testName) >= testValue;
+        return df.getDouble(row, testName) >= testValue;
     }
 
     @Override
@@ -164,7 +163,7 @@ final class NumLess implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        double value = df.value(row, testName);
+        double value = df.getDouble(row, testName);
         return value < testValue;
     }
 
@@ -189,7 +188,7 @@ final class NumGreater implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        double value = df.value(row, testName);
+        double value = df.getDouble(row, testName);
         return value > testValue;
     }
 
@@ -215,7 +214,7 @@ final class BinaryEqual implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        return df.binary(row, testName) == testValue;
+        return df.getBoolean(row, testName) == testValue;
     }
 
     @Override
@@ -240,7 +239,7 @@ final class BinaryNotEqual implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        return df.binary(row, testName) != testValue;
+        return df.getBoolean(row, testName) != testValue;
     }
 
     @Override
@@ -265,7 +264,7 @@ final class NominalEqual implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        return df.label(row, testName).equals(testValue);
+        return df.getLabel(row, testName).equals(testValue);
     }
 
     @Override
@@ -290,7 +289,7 @@ final class NominalNotEqual implements RowPredicate {
     public boolean test(int row, Frame df) {
         if(df.isMissing(row, testName))
             return false;
-        return !df.label(row, testName).equals(testValue);
+        return !df.getLabel(row, testName).equals(testValue);
     }
 
     @Override

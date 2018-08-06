@@ -26,7 +26,7 @@ package rapaio.ml.regression.linear;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.filter.frame.FFAddIntercept;
@@ -75,9 +75,9 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) num 2. TV num                     \n" +
+                        " 1. (Intercept) double 2. TV double                  \n" +
                         "> target variables: \n" +
-                        " 1. Radio num                                       \n" +
+                        " 1. Radio double                              \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -96,9 +96,9 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) num 2. TV num                     \n" +
+                        " 1. (Intercept) double 2. TV double                  \n" +
                         "> target variables: \n" +
-                        " 1. Radio num                                       \n" +
+                        " 1. Radio double                              \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -127,9 +127,9 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) num 2. TV num                     \n" +
+                        " 1. (Intercept) double 2. TV double                  \n" +
                         "> target variables: \n" +
-                        " 1. Radio num                                       \n" +
+                        " 1. Radio double                              \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -157,9 +157,9 @@ public class LinearRegressionTest {
                 "Model instance: LinearRegression()\n" +
                 "\n" +
                 "> input variables: \n" +
-                " 1. (Intercept) num 2. TV num 3. Newspaper num                  \n" +
+                " 1. (Intercept) double 2. TV double 3. Newspaper double               \n" +
                 "> target variables: \n" +
-                " 1. Sales num 2. Radio num                                    \n" +
+                " 1. Sales double 2. Radio double                           \n" +
                 "\n" +
                 "Target <<< Sales >>>\n" +
                 "\n" +
@@ -221,8 +221,8 @@ public class LinearRegressionTest {
 
         // get clean data for which both cpu and proc are not empty
 
-        NumVar cpuClean = NumVar.copy(cpuData).withName("cpu");
-        NumVar procClean = NumVar.copy(procData).withName("proc");
+        VarDouble cpuClean = VarDouble.copy(cpuData).withName("cpu");
+        VarDouble procClean = VarDouble.copy(procData).withName("proc");
 
         final int ESTIMATOR_TRAIN_SIZE = 12 * 24 * 2; // two days
         final int ESTIMATOR_TEST_SIZE = 12 * 24; // one day
@@ -235,12 +235,12 @@ public class LinearRegressionTest {
         Frame train = SolidFrame.byVars(trainCpu, trainProc);
         LinearRegression lm = LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
         lm.fit(train, "proc");
-        Var cpuTarget = NumVar.empty().withName("cpu");
-        cpuTarget.addValue(45);
-        Var procDummy = NumVar.empty().withName("proc");
-        procDummy.addValue(0.0);
+        Var cpuTarget = VarDouble.empty().withName("cpu");
+        cpuTarget.addDouble(45);
+        Var procDummy = VarDouble.empty().withName("proc");
+        procDummy.addDouble(0.0);
         LinearRPrediction lmfit = lm.predict(SolidFrame.byVars(cpuTarget, procDummy), true);
-        double procAtTargetPerHour = 12.0 * lmfit.firstFit().value(0); // 12 * 5Min = 1H
+        double procAtTargetPerHour = 12.0 * lmfit.firstFit().getDouble(0); // 12 * 5Min = 1H
 
         lmfit.printSummary();
     }

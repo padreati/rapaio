@@ -27,7 +27,7 @@ package rapaio.ml.regression;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.printer.Printable;
 
@@ -45,8 +45,8 @@ public class RPrediction implements Printable {
     protected final Regression model;
     protected final Frame df;
     protected final boolean withResiduals;
-    protected final Map<String, NumVar> fit;
-    protected final Map<String, NumVar> residuals;
+    protected final Map<String, VarDouble> fit;
+    protected final Map<String, VarDouble> residuals;
     protected final Map<String, Double> tss;
     protected final Map<String, Double> ess;
     protected final Map<String, Double> rss;
@@ -66,8 +66,8 @@ public class RPrediction implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, NumVar.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, NumVar.empty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -112,7 +112,7 @@ public class RPrediction implements Printable {
      *
      * @return map with numeric variables as predicted values
      */
-    public Map<String, NumVar> fitMap() {
+    public Map<String, VarDouble> fitMap() {
         return fit;
     }
 
@@ -130,7 +130,7 @@ public class RPrediction implements Printable {
      *
      * @return numeric variable with predicted values
      */
-    public NumVar firstFit() {
+    public VarDouble firstFit() {
         return fit.get(firstTargetName());
     }
 
@@ -140,7 +140,7 @@ public class RPrediction implements Printable {
      * @param targetVar given target variable name
      * @return numeric variable with predicted values
      */
-    public NumVar fit(String targetVar) {
+    public VarDouble fit(String targetVar) {
         return fit.get(targetVar);
     }
 
@@ -176,7 +176,7 @@ public class RPrediction implements Printable {
         return rss.get(targetVar);
     }
 
-    public Map<String, NumVar> residualsMap() {
+    public Map<String, VarDouble> residualsMap() {
         return residuals;
     }
 
@@ -184,11 +184,11 @@ public class RPrediction implements Printable {
         return SolidFrame.byVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
-    public NumVar firstResidual() {
+    public VarDouble firstResidual() {
         return residuals.get(firstTargetName());
     }
 
-    public NumVar residual(String targetVar) {
+    public VarDouble residual(String targetVar) {
         return residuals.get(targetVar);
     }
 
@@ -196,7 +196,7 @@ public class RPrediction implements Printable {
         if (withResiduals) {
             for (String target : targetNames()) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(target).setValue(i, df.value(i, target) - fit(target).value(i));
+                    residuals.get(target).setDouble(i, df.getDouble(i, target) - fit(target).getDouble(i));
                 }
 
                 double mu = CoreTools.mean(df.rvar(target)).value();
@@ -205,9 +205,9 @@ public class RPrediction implements Printable {
                 double rssValue = 0;
 
                 for (int i = 0; i < df.rowCount(); i++) {
-                    tssValue += Math.pow(df.value(i, target) - mu, 2);
-                    essValue += Math.pow(fit(target).value(i) - mu, 2);
-                    rssValue += Math.pow(df.value(i, target) - fit(target).value(i), 2);
+                    tssValue += Math.pow(df.getDouble(i, target) - mu, 2);
+                    essValue += Math.pow(fit(target).getDouble(i) - mu, 2);
+                    rssValue += Math.pow(df.getDouble(i, target) - fit(target).getDouble(i), 2);
                 }
 
                 tss.put(target, tssValue);

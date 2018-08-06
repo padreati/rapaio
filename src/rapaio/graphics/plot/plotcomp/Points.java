@@ -69,7 +69,7 @@ public class Points extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.value(i), y.value(i));
+            range.union(x.getDouble(i), y.getDouble(i));
         }
         return range;
     }
@@ -83,8 +83,8 @@ public class Points extends PlotComponent {
                 continue;
             }
 
-            double xx = x.value(i);
-            double yy = y.value(i);
+            double xx = x.getDouble(i);
+            double yy = y.getDouble(i);
 
             if (!parent.getRange().contains(xx, yy)) continue;
 

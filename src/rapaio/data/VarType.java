@@ -56,123 +56,38 @@ public enum VarType {
      * Numeric values stored on 1 bit, encodes also
      * boolean values. Possible values are 0,1 or true,false.
      */
-    BINARY {
-        @Override
-        public boolean isNumeric() {
-            return true;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public boolean isBinary() {
-            return true;
-        }
-
-        @Override
-        public String code() {
-            return "bin";
-        }
-
-        @Override
-        public Var newInstance() {
-            return BinaryVar.empty();
-        }
-
+    BINARY(true, false, true, "binary") {
         @Override
         public Var newInstance(int rows) {
-            return BinaryVar.empty(rows);
+            return VarBoolean.empty(rows);
         }
     },
     /**
      * Integer values on 32 bits
      */
-    INDEX {
-        @Override
-        public boolean isNumeric() {
-            return true;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public String code() {
-            return "idx";
-        }
-
-        @Override
-        public Var newInstance() {
-            return IdxVar.empty();
-        }
-
+    INT(true, false, false, "int") {
         @Override
         public Var newInstance(int rows) {
-            return IdxVar.empty(rows);
+            return VarInt.empty(rows);
         }
     },
     /**
      * Unordered categories: has label representation and
      * also positive integer representation.
      */
-    NOMINAL {
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return true;
-        }
-
-        @Override
-        public String code() {
-            return "nom";
-        }
-
-        @Override
-        public Var newInstance() {
-            return NomVar.empty();
-        }
-
+    NOMINAL(false, true, false, "nominal") {
         @Override
         public Var newInstance(int rows) {
-            return NomVar.empty(rows);
+            return VarNominal.empty(rows);
         }
     },
     /**
      * Numeric values stored in double precision
      */
-    NUMERIC {
-        @Override
-        public boolean isNumeric() {
-            return true;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public String code() {
-            return "num";
-        }
-
-        @Override
-        public Var newInstance() {
-            return NumVar.empty();
-        }
-
+    DOUBLE(true, false, false, "double") {
         @Override
         public Var newInstance(int rows) {
-            return NumVar.empty(rows);
+            return VarDouble.empty(rows);
         }
     },
     /**
@@ -180,116 +95,77 @@ public enum VarType {
      * also positive integer representation, comparison
      * on numeric representation is allowed
      */
-    ORDINAL {
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return true;
-        }
-
-        @Override
-        public String code() {
-            return "ord";
-        }
-
-        @Override
-        public Var newInstance() {
-            return OrdVar.empty();
-        }
-
+    ORDINAL(false, true, false, "ordinal") {
         @Override
         public Var newInstance(int rows) {
-            return OrdVar.empty(rows);
+            return VarOrdinal.empty(rows);
         }
     },
     /**
-     * Time stamp long integer values.
+     * Long integer values.
      */
-    STAMP {
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public String code() {
-            return "dat";
-        }
-
-        @Override
-        public Var newInstance() {
-            return StampVar.empty();
-        }
-
+    LONG(false, false, false, "long") {
         @Override
         public Var newInstance(int rows) {
-            return StampVar.empty(rows);
+            return VarLong.empty(rows);
         }
     },
     /**
      * Variable type used only to store text.
      */
-    TEXT {
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public Var newInstance() {
-            return TextVar.empty();
-        }
-
-        @Override
-        public String code() {
-            return "txt";
-        }
-
+    TEXT(false, false, false, "text") {
         @Override
         public Var newInstance(int rows) {
-            return TextVar.empty(rows);
-        }
-
-        @Override
-        public boolean isNumeric() {
-            return false;
+            return VarText.empty(rows);
         }
     };
+
+    private final boolean numeric;
+    private final boolean nominal;
+    private final boolean binary;
+    private final String code;
+
+    VarType(boolean numeric, boolean nominal, boolean binary, String code) {
+        this.numeric = numeric;
+        this.nominal = nominal;
+        this.binary = binary;
+        this.code = code;
+    }
 
     /**
      * @return true if the variable type allows numerical manipulations.
      */
-    public abstract boolean isNumeric();
+    public boolean isNumeric() {
+        return numeric;
+    }
 
     /**
      * @return true if the variable represents a categorical variable
      */
-    public abstract boolean isNominal();
-
-    public boolean isBinary() {
-        return false;
+    public boolean isNominal() {
+        return nominal;
     }
 
-    public abstract String code();
+    public boolean isBinary() {
+        return binary;
+    }
+
+    public String code() {
+        return code;
+    }
 
     /**
      * Builds a new empty instance of the given type
      *
      * @return new empty instance
      */
-    public abstract Var newInstance();
+    public Var newInstance() {
+        return newInstance(0);
+    }
 
     /**
      * Builds a new empty instance of given size
+     *
      * @param rows size of the new variable
      * @return new empty instance of given size
      */

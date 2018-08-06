@@ -26,7 +26,7 @@
 package rapaio.ml.eval;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -57,8 +57,8 @@ public class RMSE implements Printable {
 
     // artifacts
 
-    private NumVar rmse = NumVar.empty().withName("rmse");
-    private NumVar mse = NumVar.empty().withName("mse");
+    private VarDouble rmse = VarDouble.empty().withName("rmse");
+    private VarDouble mse = VarDouble.empty().withName("mse");
 
     private double totalRmse;
     private double totalMse;
@@ -81,10 +81,10 @@ public class RMSE implements Printable {
             double count = 0.0;
             for (int j = 0; j < actual.rowCount(); j++) {
                 count++;
-                sum += Math.pow(actual.value(j, i) - fit.value(j, i), 2);
+                sum += Math.pow(actual.getDouble(j, i) - fit.getDouble(j, i), 2);
             }
-            rmse.addValue(Math.sqrt(sum / count));
-            mse.addValue(sum / count);
+            rmse.addDouble(Math.sqrt(sum / count));
+            mse.addDouble(sum / count);
 
             totalSum += sum;
             totalCount += count;
@@ -93,11 +93,11 @@ public class RMSE implements Printable {
         totalMse = totalSum / totalCount;
     }
 
-    public NumVar rmse() {
+    public VarDouble rmse() {
         return rmse;
     }
 
-    public NumVar mse() {
+    public VarDouble mse() {
         return mse;
     }
 
@@ -125,8 +125,8 @@ public class RMSE implements Printable {
 
         for (int i = 0; i < actual.varCount(); i++) {
             tt.set(i + 1, 0, actual.varNames()[i] + " | " + fit.varNames()[i], 1);
-            tt.set(i + 1, 1, WS.formatFlex(rmse.value(i)), 1);
-            tt.set(i + 1, 2, WS.formatFlex(mse.value(i)), 1);
+            tt.set(i + 1, 1, WS.formatFlex(rmse.getDouble(i)), 1);
+            tt.set(i + 1, 2, WS.formatFlex(mse.getDouble(i)), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");

@@ -43,7 +43,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -267,7 +266,7 @@ public interface Frame extends Serializable, Printable {
      * @param varIndex variable index
      * @return numeric value
      */
-    double value(int row, int varIndex);
+    double getDouble(int row, int varIndex);
 
     /**
      * Returns double value from given row and varName
@@ -276,7 +275,7 @@ public interface Frame extends Serializable, Printable {
      * @param varName variable name
      * @return numeric value
      */
-    double value(int row, String varName);
+    double getDouble(int row, String varName);
 
     /**
      * Set double value for given row and var index
@@ -285,70 +284,70 @@ public interface Frame extends Serializable, Printable {
      * @param col   var index
      * @param value numeric value
      */
-    void setValue(int row, int col, double value);
+    void setDouble(int row, int col, double value);
 
     /**
-     * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given variable.
+     * Convenient shortcut method to call {@link Var#setDouble(int, double)} for a given variable.
      *
      * @param row     row number
      * @param varName var name
      * @param value   numeric value
      */
-    void setValue(int row, String varName, double value);
+    void setDouble(int row, String varName, double value);
 
     /**
-     * Convenient shortcut method for calling {@link Var#index(int)} for a given variable.
+     * Convenient shortcut method for calling {@link Var#getInt(int)} for a given variable.
      *
      * @param row      row number
      * @param varIndex variable index
      * @return index value
      */
-    int index(int row, int varIndex);
+    int getInt(int row, int varIndex);
 
     /**
-     * Convenient shortcut method for calling {@link Var#index(int)} for a given variable.
+     * Convenient shortcut method for calling {@link Var#getInt(int)} for a given variable.
      *
      * @param row     row number
      * @param varName var name
      * @return index value
      */
-    int index(int row, String varName);
+    int getInt(int row, String varName);
 
     /**
-     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
+     * Convenient shortcut method for calling {@link Var#setInt(int, int)} for given variable.
      *
      * @param row   row number
      * @param col   var index
      * @param value setIndex value
      */
-    void setIndex(int row, int col, int value);
+    void setInt(int row, int col, int value);
 
     /**
-     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
+     * Convenient shortcut method for calling {@link Var#setInt(int, int)} for given variable.
      *
      * @param row     row number
      * @param varName var name
      * @param value   index value
      */
-    void setIndex(int row, String varName, int value);
+    void setInt(int row, String varName, int value);
 
     /**
-     * Convenient shortcut method for calling {@link Var#label(int)} for given variable.
+     * Convenient shortcut method for calling {@link Var#getLabel(int)} for given variable.
      *
      * @param row row number
      * @param col var index
      * @return nominal label value
      */
-    String label(int row, int col);
+    String getLabel(int row, int col);
 
     /**
-     * Convenient shortcut method for calling {@link Var#label(int)} for given variable.
+     * Convenient shortcut method for calling {@link Var#getLabel(int)} for given variable.
      *
      * @param row     row number
      * @param varName var name
      * @return nominal label value
      */
-    String label(int row, String varName);
+    String getLabel(int row, String varName);
 
     /**
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given variable.
@@ -379,7 +378,7 @@ public interface Frame extends Serializable, Printable {
      * @param col variable index
      * @return binary value found
      */
-    boolean binary(int row, int col);
+    boolean getBoolean(int row, int col);
 
     /**
      * Returns binary value from given cell
@@ -388,7 +387,7 @@ public interface Frame extends Serializable, Printable {
      * @param varName var name
      * @return binary value found
      */
-    boolean binary(int row, String varName);
+    boolean getBoolean(int row, String varName);
 
     /**
      * Binary value setter for given cell
@@ -397,7 +396,7 @@ public interface Frame extends Serializable, Printable {
      * @param col   var index
      * @param value value to be set
      */
-    void setBinary(int row, int col, boolean value);
+    void setBoolean(int row, int col, boolean value);
 
     /**
      * Binary value setter for given cell
@@ -406,7 +405,7 @@ public interface Frame extends Serializable, Printable {
      * @param varName var name
      * @param value   value to be set
      */
-    void setBinary(int row, String varName, boolean value);
+    void setBoolean(int row, String varName, boolean value);
 
     /**
      * Convenient shortcut method for calling {@link Var#isMissing(int)} for given column
@@ -504,7 +503,7 @@ public interface Frame extends Serializable, Printable {
 
     static Collector<Var, List<Var>, Frame> collector() {
 
-        return new Collector<Var, List<Var>, Frame>() {
+        return new Collector<>() {
             @Override
             public Supplier<List<Var>> supplier() {
                 return LinkedList::new;

@@ -33,10 +33,7 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 public final class FrameJoin {
 
@@ -131,21 +128,21 @@ class KeyValue implements Comparable<KeyValue> {
 
             switch (keyField.keyVars[i].type()) {
                 case BINARY:
-                    comp = Boolean.compare(v1.binary(row), v2.binary(o.row));
+                    comp = Boolean.compare(v1.getBoolean(row), v2.getBoolean(o.row));
                     break;
                 case TEXT:
                 case NOMINAL:
-                    comp = v1.label(row).compareTo(v2.label(o.row));
+                    comp = v1.getLabel(row).compareTo(v2.getLabel(o.row));
                     break;
-                case INDEX:
+                case INT:
                 case ORDINAL:
-                    comp = Integer.compare(v1.index(row), v2.index(o.row));
+                    comp = Integer.compare(v1.getInt(row), v2.getInt(o.row));
                     break;
-                case STAMP:
-                    comp = Long.compare(v1.stamp(row), v2.stamp(o.row));
+                case LONG:
+                    comp = Long.compare(v1.getLong(row), v2.getLong(o.row));
                     break;
-                case NUMERIC:
-                    comp = Double.compare(v1.value(row), v2.value(o.row));
+                case DOUBLE:
+                    comp = Double.compare(v1.getDouble(row), v2.getDouble(o.row));
             }
             if (comp != 0) {
                 return comp;
@@ -167,7 +164,7 @@ class KeyValue implements Comparable<KeyValue> {
     public int hashCode() {
         int result = 0;
         for (Var keyVar : keyField.keyVars) {
-            result = 31 * result + keyVar.label(row).hashCode();
+            result = 31 * result + keyVar.getLabel(row).hashCode();
         }
         return result;
     }

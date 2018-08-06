@@ -27,7 +27,7 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DVector;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -44,7 +44,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private final DVector dv;
     private final Var p;
-    private final NumVar expected;
+    private final VarDouble expected;
     private final int df; // degrees of freedom
     private final double chiValue; // chi-square statistic's value
     private final double pValue;
@@ -85,11 +85,11 @@ public class ChiSqGoodnessOfFit implements HTest {
             case NOMINAL:
             case ORDINAL:
                 return DVector.fromCount(false, x);
-            case NUMERIC:
-            case INDEX:
+            case DOUBLE:
+            case INT:
                 DVector dv = DVector.empty(true, x.rowCount());
                 for (int i = 0; i < x.rowCount(); i++) {
-                    dv.set(i, x.value(i));
+                    dv.set(i, x.getDouble(i));
                 }
                 return dv;
             default:
@@ -100,7 +100,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private ChiSqGoodnessOfFit(DVector dv, Var p) {
 
-        NumVar expected = NumVar.from(p, pi -> pi * dv.sum());
+        VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 
         if (dv.getRowCount() - dv.start() != expected.rowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
@@ -117,7 +117,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         double sum = 0;
         for (int i = dv.start(); i < dv.getRowCount(); i++) {
             double o = dv.get(i);
-            double e = expected.value(i - dv.start());
+            double e = expected.getDouble(i - dv.start());
 
             if (Math.abs(e) < 1e-50) {
                 sum += Double.POSITIVE_INFINITY;
@@ -126,7 +126,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             if (Math.abs(e) < 1e-50 && Math.abs(o - e) < 1e50) {
                 continue;
             }
-            sum += Math.pow(o - e, 2) / expected.value(i - dv.start());
+            sum += Math.pow(o - e, 2) / expected.getDouble(i - dv.start());
         }
         chiValue = sum;
         pValue = 1.0 - new ChiSquare(df).cdf(chiValue);
@@ -185,8 +185,8 @@ public class ChiSqGoodnessOfFit implements HTest {
             tt.set(0, i + 1, dv.label(i + off), 1);
             tt.set(1, i + 1, new String(new char[dv.label(i + off).length()]).replace("\0", "-"), 1);
             tt.set(2, i + 1, WS.formatFlex(dv.get(i + off)), 1);
-            tt.set(3, i + 1, WS.formatFlex(expected.value(i)), 1);
-            tt.set(4, i + 1, WS.formatFlex(p.value(i)), 1);
+            tt.set(3, i + 1, WS.formatFlex(expected.getDouble(i)), 1);
+            tt.set(4, i + 1, WS.formatFlex(p.getDouble(i)), 1);
         }
 
         sb.append(tt.summary());

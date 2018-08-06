@@ -91,9 +91,9 @@ public class CorrSpearman implements Correlation, Printable {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            IdxVar index = IdxVar.seq(vars[i].rowCount());
+            VarInt index = VarInt.seq(vars[i].rowCount());
             sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
-            ranks[i] = NumVar.fill(vars[i].rowCount());
+            ranks[i] = VarDouble.fill(vars[i].rowCount());
         }
 
         // compute ranks
@@ -102,12 +102,12 @@ public class CorrSpearman implements Correlation, Printable {
             while (start < sorted[i].rowCount()) {
                 int end = start;
                 while (end < sorted[i].rowCount() - 1 &&
-                        vars[i].value(sorted[i].index(end)) == vars[i].value(sorted[i].index(end + 1))) {
+                        vars[i].getDouble(sorted[i].getInt(end)) == vars[i].getDouble(sorted[i].getInt(end + 1))) {
                     end++;
                 }
                 double value = 1 + (start + end) / 2.;
                 for (int j = start; j <= end; j++) {
-                    ranks[i].setValue(sorted[i].index(j), value);
+                    ranks[i].setDouble(sorted[i].getInt(j), value);
                 }
                 start = end + 1;
             }

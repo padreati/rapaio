@@ -26,7 +26,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.distributions.empirical.KFunc;
-import rapaio.data.IdxVar;
+import rapaio.data.VarInt;
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.HostFigure;
@@ -256,7 +256,7 @@ public class Plot extends HostFigure {
     }
 
     public Plot dvLines(Var values) {
-        add(new DVLines(values, IdxVar.seq(values.rowCount())));
+        add(new DVLines(values, VarInt.seq(values.rowCount())));
         return this;
     }
 

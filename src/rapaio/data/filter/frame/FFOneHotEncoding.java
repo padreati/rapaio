@@ -97,15 +97,15 @@ public class FFOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.size(); i++) {
-                    Var v = NumVar.fill(df.rowCount()).withName(varName + "." + dict.get(i));
+                    Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + dict.get(i));
                     oneHotVars.add(v);
                     index.put(dict.get(i), v);
                 }
                 // populate encoding variables
                 for (int i = 0; i < df.rowCount(); i++) {
-                    String level = df.label(i, varName);
+                    String level = df.getLabel(i, varName);
                     if (index.containsKey(level)) {
-                        index.get(level).setValue(i, 1.0);
+                        index.get(level).setDouble(i, 1.0);
                     }
                 }
                 vars.addAll(oneHotVars);

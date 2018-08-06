@@ -75,7 +75,7 @@ public class Histogram2D extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.value(i), y.value(i));
+            range.union(x.getDouble(i), y.getDouble(i));
         }
         return range;
     }
@@ -92,8 +92,8 @@ public class Histogram2D extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
 
-            int xx = Math.min(bins - 1, (int) Math.floor((x.value(i) - range.x1()) / w));
-            int yy = Math.min(bins - 1, (int) Math.floor((y.value(i) - range.y1()) / h));
+            int xx = Math.min(bins - 1, (int) Math.floor((x.getDouble(i) - range.x1()) / w));
+            int yy = Math.min(bins - 1, (int) Math.floor((y.getDouble(i) - range.y1()) / h));
             freq[xx][yy]++;
             if (maxFreq < freq[xx][yy]) {
                 maxFreq = freq[xx][yy];

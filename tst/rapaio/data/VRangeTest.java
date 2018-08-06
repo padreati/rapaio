@@ -27,8 +27,6 @@ package rapaio.data;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -42,12 +40,12 @@ public class VRangeTest {
     @Test
     public void testSmoke() {
         Frame df = SolidFrame.byVars(
-                NumVar.empty().withName("a"),
-                NumVar.empty().withName("b"),
-                NumVar.empty().withName("c"),
-                NumVar.empty().withName("d"),
-                NomVar.empty(0, "A", "B").withName("x"),
-                NomVar.empty(0, "C", "D").withName("y")
+                VarDouble.empty().withName("a"),
+                VarDouble.empty().withName("b"),
+                VarDouble.empty().withName("c"),
+                VarDouble.empty().withName("d"),
+                VarNominal.empty(0, "A", "B").withName("x"),
+                VarNominal.empty(0, "C", "D").withName("y")
         );
 
         test(VRange.of(0, 2), df,
@@ -75,7 +73,7 @@ public class VRangeTest {
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
 
-        test(VRange.onlyTypes(VarType.NUMERIC), df,
+        test(VRange.onlyTypes(VarType.DOUBLE), df,
                 new int[]{4, 5},
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
@@ -104,12 +102,12 @@ public class VRangeTest {
     @Test(expected = NumberFormatException.class)
     public void testWrongNumber() {
         Frame df = SolidFrame.byVars(
-                NumVar.empty().withName("a"),
-                NumVar.empty().withName("b"),
-                NumVar.empty().withName("c"),
-                NumVar.empty().withName("d"),
-                NomVar.empty(0, "A", "B").withName("x"),
-                NomVar.empty(0, "C", "D").withName("y")
+                VarDouble.empty().withName("a"),
+                VarDouble.empty().withName("b"),
+                VarDouble.empty().withName("c"),
+                VarDouble.empty().withName("d"),
+                VarNominal.empty(0, "A", "B").withName("x"),
+                VarNominal.empty(0, "C", "D").withName("y")
         );
 
         test(VRange.of("0~af"), df,

@@ -25,22 +25,17 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.ml.regression.linear.LinearRegression;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -70,7 +65,7 @@ public class ISLRNew {
      * @param maxIt number of maximum iterations
      * @param tol   tolerance
      */
-    public static Pair<RV, NumVar> basicISLR(RM A, RV b, double p, int maxIt, double tol) {
+    public static Pair<RV, VarDouble> basicISLR(RM A, RV b, double p, int maxIt, double tol) {
 
         if (A.colCount() < 4) {
             maxIt = 10;
@@ -79,7 +74,7 @@ public class ISLRNew {
         // initial L2 solution
 
         RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
-        NumVar err = NumVar.empty().withName("errors");
+        VarDouble err = VarDouble.empty().withName("errors");
 
         for (int it = 0; it < maxIt; it++) {
 
@@ -107,11 +102,11 @@ public class ISLRNew {
             x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
 
             double ee = x.norm(p);
-            err.addValue(ee);
+            err.addDouble(ee);
 
             // break if the improvement is then tolerance
 
-            if (it > 0 && Math.abs(err.value(err.rowCount() - 2) - ee) < tol) {
+            if (it > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - ee) < tol) {
                 break;
             }
         }
@@ -134,7 +129,7 @@ public class ISLRNew {
      * @param iterMax
      * @return
      */
-    public static Pair<RV, NumVar> islrH(RM A, RV b, double p, double K, int iterMax, double tol) {
+    public static Pair<RV, VarDouble> islrH(RM A, RV b, double p, double K, int iterMax, double tol) {
 
         if (A.colCount() < 5) {
             iterMax = 10;
@@ -153,7 +148,7 @@ public class ISLRNew {
         // initial L2 solution
         RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
 
-        NumVar err = NumVar.empty().withName("errors");
+        VarDouble err = VarDouble.empty().withName("errors");
 
         for (int k = 0; k < iterMax; k++) {
             if (p >= 2) {
@@ -199,11 +194,11 @@ public class ISLRNew {
                 x = x1;
                 nn = 2;
             }
-            err.addValue(e.norm(nn));
+            err.addDouble(e.norm(nn));
 
             // break if the improvement is then tolerance
 
-            if (k > 0 && Math.abs(err.value(err.rowCount() - 2) - err.value(err.rowCount()-1)) < tol) {
+            if (k > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - err.getDouble(err.rowCount()-1)) < tol) {
                 break;
             }
         }
@@ -216,7 +211,7 @@ public class ISLRNew {
 
         Frame df = Datasets.loadISLAdvertising().removeVars(0);
 
-        NumVar intercept = NumVar.fill(df.rowCount(), 1);
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1);
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.mapVars(VRange.of(0, 1, 2)));
         RM A = SolidRM.copy(dfa);
         RV b = SolidRM.copy(df.mapVars(VRange.of(3))).mapCol(0);
@@ -225,13 +220,13 @@ public class ISLRNew {
         double[] pp = new double[]{2.5, 5, 10, 100, 1, 1.5};
         double[] k = new double[]{1.01, 1.01, 1.01, 1.01, 0.9, 0.9};
 
-        List<Pair<RV, NumVar>> numVars = new ArrayList<>();
+        List<Pair<RV, VarDouble>> numVars = new ArrayList<>();
 
         Plot plot = plot();
         for (int i = 0; i < pp.length; i++) {
             double p = pp[i];
             double h = k[i];
-            Pair<RV, NumVar> pair = basicISLR(A, b, p, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair = basicISLR(A, b, p, 10_000, 1e-20);
             plot.lines(pair._2);
 
             WS.println("Solution 1 for p=" + WS.formatFlex(p));
@@ -240,7 +235,7 @@ public class ISLRNew {
             WS.println();
 
 
-            Pair<RV, NumVar> pair2 = islrH(A, b, p, h, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair2 = islrH(A, b, p, h, 10_000, 1e-20);
             plot.lines(pair2._2, color(1));
 
             WS.println("Solution 2 for p=" + WS.formatFlex(p));

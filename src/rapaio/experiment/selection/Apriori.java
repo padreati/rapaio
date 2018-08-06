@@ -84,7 +84,7 @@ public class Apriori implements Printable {
         for (int i = 0; i < df.rowCount(); i++) {
             for (Pair<AprioriRule, DVector> cnt : counts) {
                 if (cnt._1.matchRow(df, i)) {
-                    cnt._2.increment(df.index(i, target), 1);
+                    cnt._2.increment(df.getInt(i, target), 1);
                 }
             }
         }
@@ -118,7 +118,7 @@ public class Apriori implements Printable {
                         if (!cnts.containsKey(next.toString())) {
                             cnts.put(next.toString(), Pair.from(next, DVector.empty(false, df.levels(target))));
                         }
-                        cnts.get(next.toString())._2.increment(df.index(i, target), 1);
+                        cnts.get(next.toString())._2.increment(df.getInt(i, target), 1);
                     }
                 }
             }
@@ -204,13 +204,13 @@ public class Apriori implements Printable {
     }
 
     public Frame buildFeatures(Frame df) {
-        List<Var> vars = rules.stream().map(r -> NomVar.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
+        List<Var> vars = rules.stream().map(r -> VarNominal.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName("Apriori_" + (i + 1));
         }
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < rules.size(); j++) {
-                vars.get(j).setIndex(i, rules.get(j).matchRow(df, i) ? 1 : 2);
+                vars.get(j).setInt(i, rules.get(j).matchRow(df, i) ? 1 : 2);
             }
         }
         return SolidFrame.byVars(vars);
@@ -226,7 +226,7 @@ class AprioriRule {
 
     public boolean matchRow(Frame df, int row) {
         for (AprioriRuleClause clause : clauses) {
-            if (!df.label(row, clause.varName).equals(clause.level))
+            if (!df.getLabel(row, clause.varName).equals(clause.level))
                 return false;
         }
         return true;

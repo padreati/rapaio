@@ -26,7 +26,7 @@
 package rapaio.experiment.ml.classifier.linear;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
@@ -45,7 +45,7 @@ public class BinaryLogistic extends AbstractClassifier {
 
     private static final long serialVersionUID = 1609956190070125059L;
 
-    private NumVar coef;
+    private VarDouble coef;
 
     private int maxRuns = 1_000_000;
     private double tol = 1e-5;
@@ -75,7 +75,7 @@ public class BinaryLogistic extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
                 .withInputCount(1, 10000)
                 .withTargetTypes(VarType.NOMINAL)
                 .withTargetCount(1, 1)
@@ -106,18 +106,18 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     private double logitReg(Var input) {
-        double z = coef.value(0);
+        double z = coef.getDouble(0);
         for (int i = 1; i < coef.rowCount(); i++)
-            z += input.value(i - 1) * coef.value(i);
+            z += input.getDouble(i - 1) * coef.getDouble(i);
         return logit(z);
     }
 
     private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
-        NumVar inst = NumVar.empty();
+        VarDouble inst = VarDouble.empty();
         for (int i = 0; i < inputNames().length; i++) {
-            inst.addValue(df.value(row, inputName(i)));
+            inst.addDouble(df.getDouble(row, inputName(i)));
         }
         return logitReg(inst);
     }
@@ -135,16 +135,16 @@ public class BinaryLogistic extends AbstractClassifier {
 
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            NumVar line = NumVar.empty();
+            VarDouble line = VarDouble.empty();
             for (String inputName : inputNames())
-                line.addValue(df.value(i, inputName));
+                line.addDouble(df.getDouble(i, inputName));
             inputs.add(line);
         }
 
-        coef = NumVar.fill(inputNames().length + 1, 0);
+        coef = VarDouble.fill(inputNames().length + 1, 0);
 
-        NumVar targetValues = NumVar.empty();
-        df.rvar(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
+        VarDouble targetValues = VarDouble.empty();
+        df.rvar(firstTargetName()).stream().forEach(s -> targetValues.addDouble(s.getInt() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
@@ -157,11 +157,11 @@ public class BinaryLogistic extends AbstractClassifier {
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {
-                cr.firstClasses().setIndex(i, p < 0.5 ? 1 : 2);
+                cr.firstClasses().setInt(i, p < 0.5 ? 1 : 2);
             }
             if (withDistributions) {
-                cr.firstDensity().setValue(i, 1, 1 - p);
-                cr.firstDensity().setValue(i, 2, p);
+                cr.firstDensity().setDouble(i, 1, 1 - p);
+                cr.firstDensity().setDouble(i, 2, p);
             }
         }
         return cr;

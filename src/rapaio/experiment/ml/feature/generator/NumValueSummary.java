@@ -29,7 +29,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 
@@ -48,7 +48,7 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
 
     private final List<String> varNames = new ArrayList<>();
     private final List<Aggregate> aggregates;
-    private final HashMap<String, HashMap<Key, NumVar>> collector = new HashMap<>();
+    private final HashMap<String, HashMap<Key, VarDouble>> collector = new HashMap<>();
 
     protected NumValueSummary(VRange range, List<Aggregate> aggregates) {
         super(range);
@@ -71,9 +71,9 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
             for (int row = 0; row < var.rowCount(); row++) {
                 Key key = Key.from(row, source, keys);
                 if (!collector.get(var.name()).containsKey(key)) {
-                    collector.get(var.name()).put(key, NumVar.empty());
+                    collector.get(var.name()).put(key, VarDouble.empty());
                 }
-                collector.get(var.name()).get(key).addValue(var.value(row));
+                collector.get(var.name()).get(key).addDouble(var.getDouble(row));
             }
         }
     }
@@ -83,15 +83,15 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
         List<Var> features = new ArrayList<>();
         for (String varName : varNames) {
             for (Aggregate aggregate : aggregates) {
-                NumVar var = NumVar.empty().withName(varName + "_" + aggregate.name);
+                VarDouble var = VarDouble.empty().withName(varName + "_" + aggregate.name);
                 for (int i = 0; i < df.rowCount(); i++) {
                     Key key = Key.from(i, df, keys);
-                    NumVar from = collector.get(varName).getOrDefault(key, null);
-                    var.addValue(from == null ? Double.NaN : aggregate.fun.apply(from));
+                    VarDouble from = collector.get(varName).getOrDefault(key, null);
+                    var.addDouble(from == null ? Double.NaN : aggregate.fun.apply(from));
                 }
                 boolean same = true;
                 for (int i = 0; i < var.rowCount(); i++) {
-                    if (i > 0 && var.value(i) != var.value(i - 1)) {
+                    if (i > 0 && var.getDouble(i) != var.getDouble(i - 1)) {
                         same = false;
                         break;
                     }
@@ -107,9 +107,9 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
     public static class Aggregate {
 
         private final String name;
-        private final Function<NumVar, Double> fun;
+        private final Function<VarDouble, Double> fun;
 
-        public Aggregate(String name, Function<NumVar, Double> fun) {
+        public Aggregate(String name, Function<VarDouble, Double> fun) {
             this.name = name;
             this.fun = fun;
         }

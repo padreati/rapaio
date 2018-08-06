@@ -52,7 +52,7 @@ public class TextTableTest {
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 1);
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.rvar(j).type().isNumeric() ? 1 : 1);
             }
         }
         tt.printSummary();
@@ -80,7 +80,7 @@ public class TextTableTest {
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
 
@@ -118,7 +118,7 @@ public class TextTableTest {
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
         for (int i = 0; i < iris.rowCount(); i++) {
@@ -149,7 +149,7 @@ public class TextTableTest {
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
-                tt.set(i + 1, j + 1, iris.label(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
+                tt.set(i + 1, j + 1, iris.getLabel(i, j), iris.rvar(j).type().isNumeric() ? 1 : 0);
             }
         }
 

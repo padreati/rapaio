@@ -121,8 +121,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return numerical value of the given variable on the current spot
      */
-    public double value(int varIndex) {
-        return df.value(row, varIndex);
+    public double getDouble(int varIndex) {
+        return df.getDouble(row, varIndex);
     }
 
     /**
@@ -131,8 +131,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return numeric value of the given variable on the current spot
      */
-    public double value(String varName) {
-        return df.value(row, varName);
+    public double getDouble(String varName) {
+        return df.getDouble(row, varName);
     }
 
     /**
@@ -141,8 +141,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @param value    given numeric value
      */
-    public void setValue(int varIndex, double value) {
-        df.setValue(row, varIndex, value);
+    public void setDouble(int varIndex, double value) {
+        df.setDouble(row, varIndex, value);
     }
 
     /**
@@ -151,8 +151,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @param value   given numeric value
      */
-    public void setValue(String varName, double value) {
-        df.setValue(row, varName, value);
+    public void setDouble(String varName, double value) {
+        df.setDouble(row, varName, value);
     }
 
     /**
@@ -161,8 +161,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return index value of the given variable on the current spot
      */
-    public int index(int varIndex) {
-        return df.index(row, varIndex);
+    public int getInt(int varIndex) {
+        return df.getInt(row, varIndex);
     }
 
     /**
@@ -171,8 +171,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return index value of the given variable on the current spot
      */
-    public int index(String varName) {
-        return df.index(row, varName);
+    public int getInt(String varName) {
+        return df.getInt(row, varName);
     }
 
     /**
@@ -181,8 +181,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @param value    given index value
      */
-    public void setIndex(int varIndex, int value) {
-        df.setIndex(row, varIndex, value);
+    public void setInt(int varIndex, int value) {
+        df.setInt(row, varIndex, value);
     }
 
     /**
@@ -191,8 +191,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @param value   given index value
      */
-    public void setIndex(String varName, int value) {
-        df.setIndex(row, varName, value);
+    public void setInt(String varName, int value) {
+        df.setInt(row, varName, value);
     }
 
     /**
@@ -201,8 +201,8 @@ public final class FSpot implements Serializable {
      * @param varIndex index of the variable
      * @return label value
      */
-    public String label(int varIndex) {
-        return df.label(row, varIndex);
+    public String getLabel(int varIndex) {
+        return df.getLabel(row, varIndex);
     }
 
     /**
@@ -211,8 +211,8 @@ public final class FSpot implements Serializable {
      * @param varName variable name
      * @return label value
      */
-    public String label(String varName) {
-        return df.label(row, varName);
+    public String getLabel(String varName) {
+        return df.getLabel(row, varName);
     }
 
     /**
@@ -255,7 +255,7 @@ public final class FSpot implements Serializable {
         return df.levels(varName);
     }
 
-    public boolean binary(String name) {
-        return df.binary(row, name);
+    public boolean getBoolean(String name) {
+        return df.getBoolean(row, name);
     }
 }

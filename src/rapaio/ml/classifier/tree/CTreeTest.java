@@ -80,16 +80,16 @@ public interface CTreeTest extends Tagged, Serializable {
                 }
                 break;
             }
-            double testValue = df.value(split, testName);
+            double testValue = df.getDouble(split, testName);
 
             DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName), false);
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, testName)) {
                     misCount++;
-                    dt.update(0, df.index(i, targetName), w.value(i));
+                    dt.update(0, df.getInt(i, targetName), w.getDouble(i));
                 }
-                dt.update(df.value(i, testName) <= testValue ? 1 : 2, df.index(i, targetName), w.value(i));
+                dt.update(df.getDouble(i, testName) <= testValue ? 1 : 2, df.getInt(i, targetName), w.getDouble(i));
             }
 
             double score = function.compute(dt);
@@ -124,13 +124,13 @@ public interface CTreeTest extends Tagged, Serializable {
                 if (!missing) {
                     rows[len++] = i;
                 }
-                dt.update(row, df.index(i, targetNameIndex), weights.value(i));
+                dt.update(row, df.getInt(i, targetNameIndex), weights.getDouble(i));
             }
             int misCount = df.rowCount() - len;
 
             double[] values = new double[df.rowCount()];
             for (int i = 0; i < df.rowCount(); i++) {
-                values[i] = df.value(i, testNameIndex);
+                values[i] = df.getDouble(i, testNameIndex);
             }
             IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);
             IntArrays.quickSort(rows, comparator);
@@ -143,8 +143,8 @@ public interface CTreeTest extends Tagged, Serializable {
 
                 if (df.isMissing(row, testNameIndex)) continue;
 
-                int index = df.index(row, targetNameIndex);
-                double w = weights.value(row);
+                int index = df.getInt(row, targetNameIndex);
+                double w = weights.getDouble(row);
                 dt.update(2, index, -w);
                 dt.update(1, index, +w);
 
@@ -246,7 +246,7 @@ public interface CTreeTest extends Tagged, Serializable {
 
             int[] termCount = new int[df.levels(testName).size()];
             for (int i = 0; i < df.rowCount(); i++) {
-                termCount[df.index(i, testName)]++;
+                termCount[df.getInt(i, testName)]++;
             }
 
             double[] rowCounts = counts.rowTotals();

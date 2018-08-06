@@ -29,7 +29,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.*;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class KSTestTest {
     public void testNormal() {
         RandomSource.setSeed(1);
         Normal d = distNormal();
-        NumVar sample = d.sample(1000);
+        VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
         Assert.assertTrue(test.d() < 0.4);
@@ -67,7 +67,7 @@ public class KSTestTest {
     @Test
     public void testUniform() {
         RandomSource.setSeed(1);
-        NumVar sample = new Uniform(0, 1).sample(1_000);
+        VarDouble sample = new Uniform(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
@@ -78,7 +78,7 @@ public class KSTestTest {
     public void testStudentT() {
         RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
-        NumVar sample = d.sample(1000);
+        VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);

@@ -53,26 +53,26 @@ public class HypergeometricTest {
     @Test
     public void rPdfTest() throws IOException {
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_20_20_30"), hg1.pdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "pdf_70_70_100"), hg2.pdf(df.value(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_20_20_30"), hg1.pdf(df.getDouble(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_70_70_100"), hg2.pdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
     public void rCdfTest() throws IOException {
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_20_20_30"), hg1.cdf(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "cdf_70_70_100"), hg2.cdf(df.value(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_20_20_30"), hg1.cdf(df.getDouble(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_70_70_100"), hg2.cdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
     public void rQuantileTest() throws IOException {
         for (int i = 0; i < df.rowCount(); i++) {
-            if(df.value(i, "x")>1)
+            if(df.getDouble(i, "x")>1)
                 break;
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_20_20_30"), hg1.quantile(df.value(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.value(i, "x")), df.value(i, "q_70_70_100"), hg2.quantile(df.value(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_20_20_30"), hg1.quantile(df.getDouble(i, "x")), TOL);
+            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_70_70_100"), hg2.quantile(df.getDouble(i, "x")), TOL);
         }
     }
 }

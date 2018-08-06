@@ -65,8 +65,8 @@ public final class Mean implements Printable {
                 missingCount++;
                 continue;
             }
-            sum += var.value(i);
-            v[completeCount] = var.value(i);
+            sum += var.getDouble(i);
+            v[completeCount] = var.getDouble(i);
             completeCount++;
         }
         if (completeCount == 0) {

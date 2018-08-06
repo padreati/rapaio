@@ -73,7 +73,7 @@ public class KSTestOneSample implements HTest {
 
         for (int i = 0; i < v.rowCount(); i++) {
             //ECDF(x) - F(x)
-            double ff = cdf.cdf(v.value(i));
+            double ff = cdf.cdf(v.getDouble(i));
             double fn = (i + 1) / n;
             D = Math.max(D, Math.abs(fo - ff));
             D = Math.max(D, Math.abs(fn - ff));

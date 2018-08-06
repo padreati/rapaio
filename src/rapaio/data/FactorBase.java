@@ -82,37 +82,37 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public int index(int row) {
+    public int getInt(int row) {
         return data[row];
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setInt(int row, int value) {
         data[row] = (short) value;
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         addLabel(dict.get(value));
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         return data[row];
     }
 
     @Override
-    public void setValue(int row, double value) {
-        setIndex(row, (int) Math.rint(value));
+    public void setDouble(int row, double value) {
+        setInt(row, (int) Math.rint(value));
     }
 
     @Override
-    public void addValue(double value) {
-        addIndex((int) Math.rint(value));
+    public void addDouble(double value) {
+        addInt((int) Math.rint(value));
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return dict.get(data[row]);
     }
 
@@ -182,48 +182,48 @@ abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBoolean(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
+    public void setBoolean(int row, boolean value) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
-    public void addBinary(boolean value) {
+    public void addBoolean(boolean value) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
-    public long stamp(int row) {
+    public long getLong(int row) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
-    public void setStamp(int row, long value) {
+    public void setLong(int row, long value) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override
     public boolean isMissing(int row) {
-        return missingIndex == index(row);
+        return missingIndex == getInt(row);
     }
 
     @Override
     public void setMissing(int row) {
-        setIndex(row, missingIndex);
+        setInt(row, missingIndex);
     }
 
     @Override
     public void addMissing() {
-        addIndex(missingIndex);
+        addInt(missingIndex);
     }
 
     @Override

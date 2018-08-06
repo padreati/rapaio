@@ -71,8 +71,8 @@ public class L2Regression extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);
     }
@@ -93,7 +93,7 @@ public class L2Regression extends AbstractRegression {
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
             Var v = fit.fit(targetName(i));
-            v.stream().forEach(s -> s.setValue(mean));
+            v.stream().forEach(s -> s.setDouble(mean));
         }
         fit.buildComplete();
         return fit;

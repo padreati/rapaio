@@ -30,7 +30,7 @@ import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
@@ -44,12 +44,12 @@ public class CorrPearsonTest {
 
     @Test
     public void maxCorrTest() {
-        NumVar x = NumVar.from(1_000, Math::sqrt);
+        VarDouble x = VarDouble.from(1_000, Math::sqrt);
         CorrPearson cp = CoreTools.corrPearson(x, x);
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
 
-        x = NumVar.from(1_000, Math::sqrt).withName("x");
+        x = VarDouble.from(1_000, Math::sqrt).withName("x");
         cp = CoreTools.corrPearson(x, x);
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
@@ -58,7 +58,7 @@ public class CorrPearsonTest {
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
 
-        NumVar y = x.stream().mapToDouble().map(v -> -v).boxed().collect(NumVar.collector()).withName("y");
+        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).withName("y");
         cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
         Assert.assertEquals(-1, cp.singleValue(), 1e-20);
@@ -68,8 +68,8 @@ public class CorrPearsonTest {
     public void randomTest() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
 
         CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
@@ -80,8 +80,8 @@ public class CorrPearsonTest {
     public void testNonLinearCorr() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
         CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
@@ -93,9 +93,9 @@ public class CorrPearsonTest {
 
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
-        NumVar z = NumVar.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
         RM exp = SolidRM.copy(3, 3,
@@ -128,8 +128,8 @@ public class CorrPearsonTest {
 
     @Test
     public void testMissingValues() {
-        NumVar x = NumVar.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7);
-        NumVar y = NumVar.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7);
+        VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7);
+        VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7);
 
         CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();

@@ -42,8 +42,8 @@ public class ChiSquareKernel extends AbstractKernel {
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            double sum = df1.value(row1, varName) + df2.value(row2, varName);
-            double diff = df1.value(row1, varName) - df2.value(row2, varName);
+            double sum = df1.getDouble(row1, varName) + df2.getDouble(row2, varName);
+            double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
             result = 2 * Math.pow(diff, 2) / sum;
         }
         return 1 - result;

@@ -36,33 +36,33 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class TextVar extends AbstractVar {
+public class VarText extends AbstractVar {
 
     private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values = new ArrayList<>();
 
-    public static TextVar empty() {
-        return new TextVar(0);
+    public static VarText empty() {
+        return new VarText(0);
     }
 
-    public static TextVar empty(int rows) {
-        return new TextVar(rows);
+    public static VarText empty(int rows) {
+        return new VarText(rows);
     }
 
-    public static TextVar copy(String... values) {
-        TextVar text = new TextVar(0);
+    public static VarText copy(String... values) {
+        VarText text = new VarText(0);
         text.values = Arrays.stream(values).collect(Collectors.toList());
         return text;
     }
 
-    public static TextVar copy(List<String> values) {
-        TextVar text = new TextVar(0);
+    public static VarText copy(List<String> values) {
+        VarText text = new VarText(0);
         Collections.copy(text.values, values);
         return text;
     }
 
-    public static TextVar wrap(List<String> values) {
-        TextVar text = new TextVar(0);
+    public static VarText wrap(List<String> values) {
+        VarText text = new VarText(0);
         text.values = values;
         return text;
     }
@@ -71,7 +71,7 @@ public class TextVar extends AbstractVar {
     // Public static builders
     //
 
-    private TextVar(int rows) {
+    private VarText(int rows) {
         values = new ArrayList<>(rows);
         IntStream.range(0, rows).forEach(i -> values.add(null));
     }
@@ -80,8 +80,8 @@ public class TextVar extends AbstractVar {
     // private constructor
     //
 
-    public static TextVar from(int rows, Supplier<String> supplier) {
-        TextVar text = new TextVar(rows);
+    public static VarText from(int rows, Supplier<String> supplier) {
+        VarText text = new VarText(rows);
         for (int i = 0; i < rows; i++) {
             text.values.set(i, supplier.get());
         }
@@ -89,8 +89,8 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public TextVar withName(String name) {
-        return (TextVar) super.withName(name);
+    public VarText withName(String name) {
+        return (VarText) super.withName(name);
     }
 
     @Override
@@ -111,37 +111,37 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void setValue(int row, double value) {
+    public void setDouble(int row, double value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void addValue(double value) {
+    public void addDouble(double value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public int index(int row) {
+    public int getInt(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setInt(int row, int value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return values.get(row);
     }
 
@@ -166,32 +166,32 @@ public class TextVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBoolean(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
+    public void setBoolean(int row, boolean value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void addBinary(boolean value) {
+    public void addBoolean(boolean value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public long stamp(int row) {
+    public long getLong(int row) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void setStamp(int row, long value) {
+    public void setLong(int row, long value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 
@@ -222,11 +222,11 @@ public class TextVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return TextVar.empty(rows);
+        return VarText.empty(rows);
     }
 
     @Override
-    public TextVar solidCopy() {
-        return (TextVar) super.solidCopy();
+    public VarText solidCopy() {
+        return (VarText) super.solidCopy();
     }
 }

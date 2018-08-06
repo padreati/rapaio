@@ -30,7 +30,7 @@ import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
@@ -43,8 +43,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class CorrSpearmanTest {
 
-    private final Var iq = NumVar.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
-    private final Var tvHours = NumVar.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
+    private final Var iq = VarDouble.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
+    private final Var tvHours = VarDouble.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
     @Test
     public void testFromWikipedia() {
@@ -64,7 +64,7 @@ public class CorrSpearmanTest {
 
     @Test
     public void maxCorrTest() {
-        NumVar x = NumVar.from(1_000, Math::sqrt).withName("x");
+        VarDouble x = VarDouble.from(1_000, Math::sqrt).withName("x");
         CorrSpearman cp = CoreTools.corrSpearman(x, x);
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-12);
@@ -73,7 +73,7 @@ public class CorrSpearmanTest {
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
 
-        NumVar y = x.stream().mapToDouble().map(v -> -v).boxed().collect(NumVar.collector()).withName("y");
+        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).withName("y");
         cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
         Assert.assertEquals(-1, cp.singleValue(), 1e-12);
@@ -83,8 +83,8 @@ public class CorrSpearmanTest {
     public void randomTest() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
@@ -95,8 +95,8 @@ public class CorrSpearmanTest {
     public void testNonLinearCorr() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
@@ -108,9 +108,9 @@ public class CorrSpearmanTest {
 
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        NumVar x = NumVar.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        NumVar y = NumVar.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
-        NumVar z = NumVar.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
         RM exp = SolidRM.copy(3, 3,
@@ -143,8 +143,8 @@ public class CorrSpearmanTest {
 
     @Test
     public void testMissingValues() {
-        NumVar x = NumVar.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
-        NumVar y = NumVar.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
+        VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
+        VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
@@ -155,8 +155,8 @@ public class CorrSpearmanTest {
 
     @Test
     public void testCollisions() {
-        NumVar x = NumVar.wrap(1, 2, 3, 3, 3, 3, 4, 5, 6);
-        NumVar y = NumVar.from(x, value -> value*value);
+        VarDouble x = VarDouble.wrap(1, 2, 3, 3, 3, 3, 4, 5, 6);
+        VarDouble y = VarDouble.from(x, value -> value*value);
 
         CorrSpearman cp = CorrSpearman.from(x, y);
         cp.printSummary();

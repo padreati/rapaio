@@ -43,7 +43,7 @@ public class ChiSquareTest {
         Frame df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
-                .withDefaultTypes(VarType.NUMERIC)
+                .withDefaultTypes(VarType.DOUBLE)
                 .withNAValues("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "chisq.csv");
 
@@ -55,32 +55,32 @@ public class ChiSquareTest {
 
         for (int i = 1; i < df.rowCount(); i++) {
 
-            double x = df.value(i, "x");
+            double x = df.getDouble(i, "x");
 
-            assertEquals(df.value(i, "pdf_1"), c1.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_1"), c1.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_1"), c1.pdf(x), ERROR);
+            assertEquals(df.getDouble(i, "cdf_1"), c1.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_1"), c1.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile_1"), c1.quantile(df.getDouble(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_2"), c2.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_2"), c2.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_2"), c2.pdf(x), ERROR);
+            assertEquals(df.getDouble(i, "cdf_2"), c2.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_2"), c2.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile_2"), c2.quantile(df.getDouble(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_5"), c5.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_5"), c5.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_5"), c5.pdf(x), ERROR);
+            assertEquals(df.getDouble(i, "cdf_5"), c5.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_5"), c5.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile_5"), c5.quantile(df.getDouble(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_10"), c10.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_10"), c10.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_10"), c10.pdf(x), ERROR);
+            assertEquals(df.getDouble(i, "cdf_10"), c10.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_10"), c10.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile_10"), c10.quantile(df.getDouble(i, "x")), ERROR);
             }
-            assertEquals(df.value(i, "pdf_100"), c100.pdf(x), ERROR);
-            assertEquals(df.value(i, "cdf_100"), c100.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_100"), c100.pdf(x), ERROR);
+            assertEquals(df.getDouble(i, "cdf_100"), c100.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                assertEquals(df.value(i, "quantile_100"), c100.quantile(df.value(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile_100"), c100.quantile(df.getDouble(i, "x")), ERROR);
             }
         }
     }

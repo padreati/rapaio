@@ -93,7 +93,7 @@ public class CStacking extends AbstractClassifier {
         return new Capabilities()
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(false)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE)
                 .withTargetTypes(VarType.NOMINAL)
                 .withInputCount(1, 100_000)
                 .withTargetCount(1, 1);

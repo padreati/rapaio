@@ -28,14 +28,11 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.rtree.RTreeCandidate;
-import rapaio.ml.regression.tree.rtree.RTreeNumericTest;
-import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 
 import java.util.Optional;
 
@@ -53,7 +50,7 @@ public class RTreeNumericMethodTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
-        w = NumVar.fill(df.rowCount(), 1);
+        w = VarDouble.fill(df.rowCount(), 1);
         tree = RTree.newDecisionStump();
     }
 
@@ -79,10 +76,10 @@ public class RTreeNumericMethodTest {
 
         double variance = Variance.from(target).value();
         for(int i=1; i<test.rowCount()-2; i++) {
-            double value = test.value(i);
+            double value = test.getDouble(i);
 
-            Var left = target.stream().filter(s -> test.value(s.row()) <= value).toMappedVar();
-            Var right = target.stream().filter(s -> test.value(s.row()) > value).toMappedVar();
+            Var left = target.stream().filter(s -> test.getDouble(s.row()) <= value).toMappedVar();
+            Var right = target.stream().filter(s -> test.getDouble(s.row()) > value).toMappedVar();
 
             double varLeft = Variance.from(left).value();
             double varRight = Variance.from(right).value();

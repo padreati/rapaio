@@ -1,19 +1,16 @@
 package rapaio.ml.common.predicate;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
-import rapaio.data.BinaryVar;
+import rapaio.data.VarBoolean;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.stream.FSpot;
 import rapaio.math.MTools;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.math.MTools.log2;
-import static rapaio.math.MTools.sqrt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
@@ -27,7 +24,7 @@ public class RowPredicateTest {
     @Test
     public void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(NumVar.from(50, MTools::sqrt).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).withName("x"));
 
         // test basic numeric predicates
 
@@ -75,7 +72,7 @@ public class RowPredicateTest {
     public void testBinaryPredicates() {
 
         int[] values = SamplingTools.sampleWR(2, 100);
-        SolidFrame df = SolidFrame.byVars(BinaryVar.from(values.length, row -> values[row] == 1).withName("x"));
+        SolidFrame df = SolidFrame.byVars(VarBoolean.from(values.length, row -> values[row] == 1).withName("x"));
 
         assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.frame())).count()
                 + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.frame())).count());

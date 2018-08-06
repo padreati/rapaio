@@ -121,8 +121,8 @@ public class RidgeRegression extends AbstractLinearRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.ORDINAL)
+                .withTargetTypes(VarType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)
                 .withAllowMissingInputValues(false)
@@ -144,7 +144,7 @@ public class RidgeRegression extends AbstractLinearRegression {
         if (!intercept) {
             return super.prepareFit(trainSetup);
         }
-        NumVar inter = NumVar.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble inter = VarDouble.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), trainSetup.df);
         return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
     }
@@ -176,14 +176,14 @@ public class RidgeRegression extends AbstractLinearRegression {
         for (int i = 0; i < selNames.length; i++) {
             int varIndex = df.varIndex(selNames[i]);
             for (int j = 0; j < df.rowCount(); j++) {
-                X.set(j, i, (df.value(j, varIndex) - inputMean.get(selNames[i])) / (inputSd.get(selNames[i])));
+                X.set(j, i, (df.getDouble(j, varIndex) - inputMean.get(selNames[i])) / (inputSd.get(selNames[i])));
             }
             X.set(i + df.rowCount(), i, sqrt);
         }
         for (int i = 0; i < targetNames.length; i++) {
             int varIndex = df.varIndex(targetNames[i]);
             for (int j = 0; j < df.rowCount(); j++) {
-                Y.set(j, i, (df.value(j, varIndex) - targetMean.get(targetNames[i])));
+                Y.set(j, i, (df.getDouble(j, varIndex) - targetMean.get(targetNames[i])));
             }
         }
 
@@ -212,7 +212,7 @@ public class RidgeRegression extends AbstractLinearRegression {
         if (!intercept) {
             return super.preparePredict(fitSetup);
         }
-        NumVar inter = NumVar.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble inter = VarDouble.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), fitSetup.df);
         return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
     }

@@ -36,8 +36,8 @@ public class NominalTypeStrategy implements TypeStrategy {
 		int[] hits = new int[v.levels().size()];
         int[] indexes = new int[v.levels().size()];
         for (int j = 0; j < df.rowCount(); j++) {
-            hits[v.index(j)]++;
-            indexes[v.index(j)] = j;
+            hits[v.getInt(j)]++;
+            indexes[v.getInt(j)] = j;
         }
         int[] tophit = new int[6];
         int[] topindex = new int[6];
@@ -68,7 +68,7 @@ public class NominalTypeStrategy implements TypeStrategy {
         for (int j = 0; j < 6; j++) {
             if (tophit[j] != 0) {
                 other -= tophit[j];
-                first[th][j] = v.label(indexes[topindex[j]]);
+                first[th][j] = v.getLabel(indexes[topindex[j]]);
                 second[th][j] = String.valueOf(tophit[j]);
                 pos++;
             }
@@ -97,8 +97,8 @@ public class NominalTypeStrategy implements TypeStrategy {
 		int[] hits = new int[v.rowCount() + 1];
         int[] indexes = new int[v.rowCount() + 1];
         for (int j = 0; j < v.rowCount(); j++) {
-            hits[v.index(j)]++;
-            indexes[v.index(j)] = j;
+            hits[v.getInt(j)]++;
+            indexes[v.getInt(j)] = j;
         }
         int[] tophit = new int[6];
         int[] topindex = new int[6];
@@ -129,7 +129,7 @@ public class NominalTypeStrategy implements TypeStrategy {
         for (int j = 0; j < 6; j++) {
             if (tophit[j] != 0) {
                 other -= tophit[j];
-                first[j] = v.label(indexes[topindex[j]]);
+                first[j] = v.getLabel(indexes[topindex[j]]);
                 second[j] = String.valueOf(tophit[j]);
                 pos++;
             }

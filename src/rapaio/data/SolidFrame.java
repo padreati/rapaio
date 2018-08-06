@@ -103,7 +103,7 @@ public class SolidFrame extends AbstractFrame {
      */
     public static Frame matrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        colNames.forEach(n -> vars.add(NumVar.fill(rows, 0).withName(n)));
+        colNames.forEach(n -> vars.add(VarDouble.fill(rows, 0).withName(n)));
         return SolidFrame.byVars(rows, vars);
     }
 
@@ -111,7 +111,7 @@ public class SolidFrame extends AbstractFrame {
         Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
-                df.setValue(i, j, rm.get(i, j));
+                df.setDouble(i, j, rm.get(i, j));
             }
         }
         return df;
@@ -150,7 +150,7 @@ public class SolidFrame extends AbstractFrame {
         Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
-                df.setValue(i, j, rm.get(i, j));
+                df.setDouble(i, j, rm.get(i, j));
             }
         }
         return df;
@@ -231,53 +231,53 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public double value(int row, int varIndex) {
-        return vars[varIndex].value(row);
+    public double getDouble(int row, int varIndex) {
+        return vars[varIndex].getDouble(row);
     }
 
     @Override
-    public double value(int row, String varName) {
-        return vars[varIndex(varName)].value(row);
+    public double getDouble(int row, String varName) {
+        return vars[varIndex(varName)].getDouble(row);
     }
 
     @Override
-    public void setValue(int row, int col, double value) {
-        vars[col].setValue(row, value);
+    public void setDouble(int row, int col, double value) {
+        vars[col].setDouble(row, value);
     }
 
     @Override
-    public void setValue(int row, String varName, double value) {
-        vars[varIndex(varName)].setValue(row, value);
+    public void setDouble(int row, String varName, double value) {
+        vars[varIndex(varName)].setDouble(row, value);
     }
 
     @Override
-    public int index(int row, int varIndex) {
-        return vars[varIndex].index(row);
+    public int getInt(int row, int varIndex) {
+        return vars[varIndex].getInt(row);
     }
 
     @Override
-    public int index(int row, String varName) {
-        return vars[varIndex(varName)].index(row);
+    public int getInt(int row, String varName) {
+        return vars[varIndex(varName)].getInt(row);
     }
 
     @Override
-    public void setIndex(int row, int col, int value) {
-        vars[col].setIndex(row, value);
+    public void setInt(int row, int col, int value) {
+        vars[col].setInt(row, value);
     }
 
     @Override
-    public void setIndex(int row, String varName, int value) {
-        vars[varIndex(varName)].setIndex(row, value);
+    public void setInt(int row, String varName, int value) {
+        vars[varIndex(varName)].setInt(row, value);
     }
 
     @Override
-    public String label(int row, int col) {
-        return vars[col].label(row);
+    public String getLabel(int row, int col) {
+        return vars[col].getLabel(row);
     }
 
     @Override
-    public String label(int row, String varName) {
-        return vars[varIndex(varName)].label(row);
+    public String getLabel(int row, String varName) {
+        return vars[varIndex(varName)].getLabel(row);
     }
 
     @Override
@@ -301,23 +301,23 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean binary(int row, int col) {
-        return vars[col].binary(row);
+    public boolean getBoolean(int row, int col) {
+        return vars[col].getBoolean(row);
     }
 
     @Override
-    public boolean binary(int row, String varName) {
-        return vars[varIndex(varName)].binary(row);
+    public boolean getBoolean(int row, String varName) {
+        return vars[varIndex(varName)].getBoolean(row);
     }
 
     @Override
-    public void setBinary(int row, int col, boolean value) {
-        vars[col].setBinary(row, value);
+    public void setBoolean(int row, int col, boolean value) {
+        vars[col].setBoolean(row, value);
     }
 
     @Override
-    public void setBinary(int row, String varName, boolean value) {
-        vars[varIndex(varName)].setBinary(row, value);
+    public void setBoolean(int row, String varName, boolean value) {
+        vars[varIndex(varName)].setBoolean(row, value);
     }
 
     @Override

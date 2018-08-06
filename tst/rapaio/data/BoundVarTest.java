@@ -39,8 +39,8 @@ public class BoundVarTest {
 
     @Test
     public void testBuildWrong() {
-        NumVar a = NumVar.copy(1, 2);
-        BinaryVar b = BinaryVar.copy(true, false);
+        VarDouble a = VarDouble.copy(1, 2);
+        VarBoolean b = VarBoolean.copy(true, false);
 
         try {
             a.bindRows(b);
@@ -76,25 +76,25 @@ public class BoundVarTest {
 
     @Test
     public void testBind() {
-        NumVar a = NumVar.wrap(1, 2, 3);
-        NumVar b = NumVar.wrap(4, 5);
-        NumVar c = NumVar.wrap(6, 7, 8, 9);
-        NumVar d = NumVar.empty(1);
-        NumVar e = NumVar.wrap(Math.PI, Math.E);
+        VarDouble a = VarDouble.wrap(1, 2, 3);
+        VarDouble b = VarDouble.wrap(4, 5);
+        VarDouble c = VarDouble.wrap(6, 7, 8, 9);
+        VarDouble d = VarDouble.empty(1);
+        VarDouble e = VarDouble.wrap(Math.PI, Math.E);
 
         Var x = BoundVar.from(a, b);
         Var y = BoundVar.from(c, d);
         x = x.bindRows(y).bindRows(e);
 
         assertEquals(12, x.rowCount());
-        assertEquals(1, x.value(0), 1e-12);
-        assertEquals(4, x.value(3), 1e-12);
-        assertEquals(8, x.value(7), 1e-12);
+        assertEquals(1, x.getDouble(0), 1e-12);
+        assertEquals(4, x.getDouble(3), 1e-12);
+        assertEquals(8, x.getDouble(7), 1e-12);
         assertEquals(true, x.isMissing(9));
-        assertEquals(Math.E, x.value(11), 1e-12);
+        assertEquals(Math.E, x.getDouble(11), 1e-12);
 
         try {
-            x.value(100);
+            x.getDouble(100);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -112,14 +112,14 @@ public class BoundVarTest {
             if (x.isMissing(i)) {
                 assertEquals(x.isMissing(i), z.isMissing(i));
             } else {
-                assertEquals(x.value(i), z.value(i), 1e-12);
+                assertEquals(x.getDouble(i), z.getDouble(i), 1e-12);
             }
         }
 
         z = x.mapRows(Mapping.wrap(0, 7, 9));
         assertEquals(3, z.rowCount());
-        assertEquals(1, z.value(0), 1e-12);
-        assertEquals(8, z.value(1), 1e-12);
+        assertEquals(1, z.getDouble(0), 1e-12);
+        assertEquals(8, z.getDouble(1), 1e-12);
         assertEquals(true, z.isMissing(2));
 
         z.setMissing(1);
@@ -134,15 +134,15 @@ public class BoundVarTest {
 
     @Test
     public void testValueBound() {
-        Var a = NumVar.wrap(1, 2);
-        Var b = NumVar.wrap(3, 4);
+        Var a = VarDouble.wrap(1, 2);
+        Var b = VarDouble.wrap(3, 4);
 
         Var x = a.bindRows(b);
-        x.setValue(0, 100);
-        assertEquals(100, x.value(0), 1e-12);
+        x.setDouble(0, 100);
+        assertEquals(100, x.getDouble(0), 1e-12);
 
         try {
-            x.addValue(100);
+            x.addDouble(100);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -151,15 +151,15 @@ public class BoundVarTest {
 
     @Test
     public void testIndexBound() {
-        Var a = IdxVar.wrap(1, 2);
-        Var b = IdxVar.wrap(3, 4);
+        Var a = VarInt.wrap(1, 2);
+        Var b = VarInt.wrap(3, 4);
 
         Var x = a.bindRows(b);
-        x.setIndex(0, 100);
-        assertEquals(100, x.index(0));
+        x.setInt(0, 100);
+        assertEquals(100, x.getInt(0));
 
         try {
-            x.addIndex(100);
+            x.addInt(100);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -168,15 +168,15 @@ public class BoundVarTest {
 
     @Test
     public void testStampBound() {
-        Var a = StampVar.wrap(1, 2);
-        Var b = StampVar.wrap(3, 4);
+        Var a = VarLong.wrap(1, 2);
+        Var b = VarLong.wrap(3, 4);
 
         Var x = a.bindRows(b);
-        x.setStamp(0, 100);
-        assertEquals(100, x.stamp(0));
+        x.setLong(0, 100);
+        assertEquals(100, x.getLong(0));
 
         try {
-            x.addStamp(100);
+            x.addLong(100);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -184,15 +184,15 @@ public class BoundVarTest {
 
     @Test
     public void testBinaryBound() {
-        Var a = BinaryVar.copy(true);
-        Var b = BinaryVar.copy(false);
+        Var a = VarBoolean.copy(true);
+        Var b = VarBoolean.copy(false);
 
         Var x = a.bindRows(b);
-        x.setBinary(0, false);
-        assertEquals(false, x.binary(0));
+        x.setBoolean(0, false);
+        assertEquals(false, x.getBoolean(0));
 
         try {
-            x.addBinary(false);
+            x.addBoolean(false);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -200,12 +200,12 @@ public class BoundVarTest {
 
     @Test
     public void testNominalBound() {
-        Var a = NomVar.copy("a", "b", "a");
-        Var b = NomVar.copy("b", "a", "b");
+        Var a = VarNominal.copy("a", "b", "a");
+        Var b = VarNominal.copy("b", "a", "b");
 
         Var x = a.bindRows(b);
         x.setLabel(0, "b");
-        assertEquals("b", x.label(0));
+        assertEquals("b", x.getLabel(0));
 
         try {
             x.addLabel("b");
@@ -224,7 +224,7 @@ public class BoundVarTest {
         }
 
         try {
-            NomVar.copy("x").bindRows(NomVar.copy("b"));
+            VarNominal.copy("x").bindRows(VarNominal.copy("b"));
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -232,7 +232,7 @@ public class BoundVarTest {
 
     @Test
     public void testRemove() {
-        Var x = NumVar.copy(1, 2, 3).bindRows(NumVar.copy(4, 5, 6));
+        Var x = VarDouble.copy(1, 2, 3).bindRows(VarDouble.copy(4, 5, 6));
 
         try {
             x.remove(1);

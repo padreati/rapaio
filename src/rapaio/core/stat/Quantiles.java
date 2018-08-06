@@ -80,7 +80,7 @@ public class Quantiles implements Printable {
         for (int i = 0; i < x.length; i++) {
             if(var.isMissing(i))
                 continue;
-            x[completeCount++] = var.value(i);
+            x[completeCount++] = var.getDouble(i);
         }
         missingCount = var.rowCount() - completeCount;
 

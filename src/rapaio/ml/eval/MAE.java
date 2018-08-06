@@ -29,14 +29,8 @@ import rapaio.data.BoundFrame;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VRange;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static rapaio.sys.WS.formatFlex;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -78,7 +72,7 @@ public class MAE implements Printable {
             double count = 0;
             for (int j = 0; j < actual.rowCount(); j++) {
                 count++;
-                sum += Math.abs(actual.value(j, i) - fit.value(j, i));
+                sum += Math.abs(actual.getDouble(j, i) - fit.getDouble(j, i));
             }
             mae[i] = sum / count;
 

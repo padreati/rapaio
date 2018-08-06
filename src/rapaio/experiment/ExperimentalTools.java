@@ -26,13 +26,12 @@
 package rapaio.experiment;
 
 import rapaio.data.Frame;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,9 +81,9 @@ public final class ExperimentalTools implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = NomVar.empty(v.rowCount(), dicts.get(colName)).withName(colName);
+                    vars[i] = VarNominal.empty(v.rowCount(), dicts.get(colName)).withName(colName);
                     for (int k = 0; k < vars[i].rowCount(); k++) {
-                        vars[i].setLabel(k, v.label(k));
+                        vars[i].setLabel(k, v.getLabel(k));
                     }
                 }
             }

@@ -72,13 +72,13 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = NomVar.empty(category.rowCount(), new ArrayList<>());
+            condition = VarNominal.empty(category.rowCount(), new ArrayList<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = NumVar.fill(category.rowCount(), 1);
+            numeric = VarDouble.fill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
@@ -94,7 +94,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.bind(color(IdxVar.seq(shift, condition.levels().size())));
+        options.bind(color(VarInt.seq(shift, condition.levels().size())));
         options.bind(opts);
     }
 
@@ -129,8 +129,8 @@ public class BarChart extends HostFigure {
             len = Math.min(len, numeric.rowCount());
 
             for (int i = 0; i < len; i++) {
-                hits[category.index(i)][condition.index(i)] += numeric.value(i);
-                totals[category.index(i)] += numeric.value(i);
+                hits[category.getInt(i)][condition.getInt(i)] += numeric.getDouble(i);
+                totals[category.getInt(i)] += numeric.getDouble(i);
             }
 
             // this needs reworking since it does not work for negative values

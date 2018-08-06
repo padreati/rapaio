@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static rapaio.core.RandomSource.nextDouble;
@@ -355,7 +354,7 @@ public final class SamplingTools {
             maps.add(new IntArrayList());
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            maps.get(df.index(i, strataName)).add(i);
+            maps.get(df.getInt(i, strataName)).add(i);
         }
         IntList left = new IntArrayList();
         IntList right = new IntArrayList();

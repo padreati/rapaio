@@ -28,8 +28,8 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -49,38 +49,38 @@ public class OnlineStatTest {
 
         OnlineStat onlineStat = OnlineStat.empty();
 
-        Var index = IdxVar.seq(LEN);
-        Var varLeft = NumVar.fill(LEN);
-        Var varRight = NumVar.fill(LEN);
-        Var varSum = NumVar.fill(LEN);
+        Var index = VarInt.seq(LEN);
+        Var varLeft = VarDouble.fill(LEN);
+        Var varRight = VarDouble.fill(LEN);
+        Var varSum = VarDouble.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
-            onlineStat.update(v.value(i));
+            onlineStat.update(v.getDouble(i));
             if (i > 0) {
-                varLeft.setValue(i, onlineStat.variance());
+                varLeft.setDouble(i, onlineStat.variance());
             }
         }
         onlineStat.clean();
         for (int i = LEN - 1; i >= 0; i--) {
-            onlineStat.update(v.value(i));
+            onlineStat.update(v.getDouble(i));
             if (i < LEN - 1) {
-                varRight.setValue(i, onlineStat.variance());
+                varRight.setDouble(i, onlineStat.variance());
             }
         }
         for (int i = 0; i < LEN; i++) {
-            varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
+            varSum.setDouble(i, (varLeft.getDouble(i) + varRight.getDouble(i)) / 2);
         }
     }
 
     @Test
     public void testParallelStat() {
-        Var a = NumVar.wrap(1, 2, 3, 13, 17, 30);
-        Var b = NumVar.wrap(44, 5, 234, 12, 33, 1);
+        Var a = VarDouble.wrap(1, 2, 3, 13, 17, 30);
+        Var b = VarDouble.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
         OnlineStat soA = OnlineStat.empty();
         OnlineStat soB = OnlineStat.empty();
-        a.stream().forEach(s -> soA.update(s.value()));
-        b.stream().forEach(s -> soB.update(s.value()));
+        a.stream().forEach(s -> soA.update(s.getDouble()));
+        b.stream().forEach(s -> soB.update(s.getDouble()));
 
         OnlineStat soAll = OnlineStat.empty();
         soAll.update(soA);

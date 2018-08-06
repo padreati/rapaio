@@ -46,22 +46,22 @@ public class MappedFrameTest {
         Frame sort = new FFRefSort(RowComparators.numeric(orig.rvar(1), true)).fitApply(orig);
         sort = new FFRefSort(RowComparators.numeric(orig.rvar(2), true)).fitApply(sort);
         for (int i = 0; i < sort.rowCount(); i++) {
-            assertEquals(sort.value(i, 0), sort.rvar(0).value(i), 1e-10);
+            assertEquals(sort.getDouble(i, 0), sort.rvar(0).getDouble(i), 1e-10);
         }
     }
 
     @Test
     public void testBuilders() {
         Frame df = SolidFrame.byVars(
-                NumVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
-                IdxVar.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
+                VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
+                VarInt.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
 
         Frame mapped = MappedFrame.byRow(df, 0, 2, 4, 6, 8);
         assertEquals(5, mapped.rowCount());
         assertEquals(2, mapped.varCount());
-        assertEquals(1, mapped.value(0, "x"), 1e-12);
-        assertEquals(9, mapped.value(4, "x"), 1e-12);
+        assertEquals(1, mapped.getDouble(0, "x"), 1e-12);
+        assertEquals(9, mapped.getDouble(4, "x"), 1e-12);
 
         mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x,y");
         assertEquals(2, mapped.varCount());
@@ -76,9 +76,9 @@ public class MappedFrameTest {
     public void testMapAndBound() {
         final int N = 10;
 
-        Var x = NumVar.from(N, row -> row * 1.0).withName("x");
-        Var y = IdxVar.from(N, row -> row * 2).withName("y");
-        Var z = NumVar.from(N, row -> 1.0 / row).withName("z");
+        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
+        Var y = VarInt.from(N, row -> row * 2).withName("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
         Frame df1 = SolidFrame.byVars(x, y, z);
 
         Frame a = df1
@@ -110,7 +110,7 @@ public class MappedFrameTest {
         }
         for (int i = 0; i < df1.rowCount(); i++) {
             for (int j = 0; j < df1.varCount(); j++) {
-                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
+                assertEquals(df1.getDouble(i, j), df2.getDouble(i, j), 1e-12);
             }
         }
 
@@ -133,10 +133,10 @@ public class MappedFrameTest {
         df3.printLines();
 
         assertTrue(df3.varCount() == 1);
-        assertTrue(df3.rvar(0).type() == VarType.NUMERIC);
-        assertEquals(1.0 / 3, df3.value(0, 0), TOL);
-        assertEquals(1.0 / 7, df3.value(1, 0), TOL);
+        assertTrue(df3.rvar(0).type() == VarType.DOUBLE);
+        assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
+        assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 
-        assertTrue(NumVar.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
+        assertTrue(VarDouble.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
     }
 }

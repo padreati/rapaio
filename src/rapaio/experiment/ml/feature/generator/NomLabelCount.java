@@ -28,7 +28,7 @@ package rapaio.experiment.ml.feature.generator;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 
@@ -74,7 +74,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
                 }
             }
             for (int row = 0; row < var.rowCount(); row++) {
-                String labelKey = var.name() + "_" + var.label(row);
+                String labelKey = var.name() + "_" + var.getLabel(row);
                 Key key = Key.from(row, source, keys);
                 if (!counts.get(labelKey).containsKey(key)) {
                     counts.get(labelKey).put(key, 0);
@@ -88,14 +88,14 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
     public List<Var> generate(Frame df, List<String> keys) {
         List<Var> features = new ArrayList<>();
         for (String labelKey : labelKeys) {
-            NumVar index = NumVar.empty().withName(labelKey);
+            VarDouble index = VarDouble.empty().withName(labelKey);
             for (int row = 0; row < df.rowCount(); row++) {
                 Key key = Key.from(row, df, keys);
-                index.addValue(counts.get(labelKey).getOrDefault(key, 0));
+                index.addDouble(counts.get(labelKey).getOrDefault(key, 0));
             }
             boolean empty = true;
             for (int i = 0; i < index.rowCount(); i++) {
-                if (index.index(i) > 0) {
+                if (index.getInt(i) > 0) {
                     empty = false;
                     break;
                 }
@@ -120,11 +120,11 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
                 for (int row = 0; row < bound.rowCount(); row++) {
                     double sum = 0.0;
                     for (int i = 0; i < vars.size(); i++) {
-                        sum += vars.get(i).value(row);
+                        sum += vars.get(i).getDouble(row);
                     }
                     // normalize
                     for (int i = 0; i < vars.size(); i++) {
-                        vars.get(i).setValue(row, vars.get(i).value(row) / sum);
+                        vars.get(i).setDouble(row, vars.get(i).getDouble(row) / sum);
                     }
                 }
             }

@@ -45,9 +45,9 @@ public class ClassifierSerializationTest {
     @Test
     public void testOneRuleIris() throws IOException, URISyntaxException, ClassNotFoundException {
 
-        Var varModel = NomVar.empty();
-        Var varData = NomVar.empty();
-        Var varAcc = NumVar.empty();
+        Var varModel = VarNominal.empty();
+        Var varData = VarNominal.empty();
+        Var varAcc = VarDouble.empty();
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);
@@ -75,6 +75,6 @@ public class ClassifierSerializationTest {
 
         varData.addLabel(dataName);
         varModel.addLabel(model.name());
-        varAcc.addValue(new Confusion(df.rvar(target), modelFit.firstClasses()).accuracy());
+        varAcc.addDouble(new Confusion(df.rvar(target), modelFit.firstClasses()).accuracy());
     }
 }

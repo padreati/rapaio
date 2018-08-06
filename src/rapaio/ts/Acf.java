@@ -27,8 +27,8 @@ package rapaio.ts;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -42,35 +42,35 @@ import rapaio.sys.WS;
 public class Acf implements Printable {
 
     private final Var ts;
-    private final IdxVar lags;
-    private final NumVar correlation;
-    private final NumVar covariance;
+    private final VarInt lags;
+    private final VarDouble correlation;
+    private final VarDouble covariance;
 
     public static Acf from(Var ts, int maxLag) {
-        return new Acf(ts, IdxVar.seq(0, maxLag).withName("lags"));
+        return new Acf(ts, VarInt.seq(0, maxLag).withName("lags"));
     }
 
-    public static Acf from(Var ts, IdxVar lags) {
+    public static Acf from(Var ts, VarInt lags) {
         return new Acf(ts, lags.withName("lags"));
     }
 
-    private Acf(Var ts, IdxVar lags) {
+    private Acf(Var ts, VarInt lags) {
         if (ts.stream().complete().count() != ts.rowCount()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
         this.ts = ts.solidCopy();
         this.lags = lags.solidCopy();
-        this.correlation = NumVar.fill(lags.rowCount(), 0).withName("correlation");
-        this.covariance = NumVar.fill(lags.rowCount(), 0).withName("covariance");
+        this.correlation = VarDouble.fill(lags.rowCount(), 0).withName("correlation");
+        this.covariance = VarDouble.fill(lags.rowCount(), 0).withName("covariance");
 
         compute();
     }
 
-    public NumVar correlation() {
+    public VarDouble correlation() {
         return correlation;
     }
 
-    public NumVar covariance() {
+    public VarDouble covariance() {
         return covariance;
     }
 
@@ -78,13 +78,13 @@ public class Acf implements Printable {
         double mu = Mean.from(ts).value();
         double var = Variance.from(ts).biasedValue();
         for (int i = 0; i < lags.rowCount(); i++) {
-            int lag = lags.index(i);
+            int lag = lags.getInt(i);
             double acf = 0.0;
             for (int j = 0; j < ts.rowCount() - lag; j++) {
-                acf += (ts.value(j) - mu) * (ts.value(j + lag) - mu);
+                acf += (ts.getDouble(j) - mu) * (ts.getDouble(j + lag) - mu);
             }
-            correlation.setValue(i, acf / (var * ts.rowCount()));
-            covariance.setValue(i, acf / ts.rowCount());
+            correlation.setDouble(i, acf / (var * ts.rowCount()));
+            covariance.setDouble(i, acf / ts.rowCount());
         }
     }
 
@@ -104,9 +104,9 @@ public class Acf implements Printable {
         tt.set(0, 1, "correlation", 0);
         tt.set(0, 2, "covariance", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
-            tt.set(i+1, 0, lags.label(i), 1);
-            tt.set(i+1, 1, WS.formatFlex(correlation.value(i)), 1);
-            tt.set(i+1, 2, WS.formatFlex(covariance.value(i)), 1);
+            tt.set(i+1, 0, lags.getLabel(i), 1);
+            tt.set(i+1, 1, WS.formatFlex(correlation.getDouble(i)), 1);
+            tt.set(i+1, 2, WS.formatFlex(covariance.getDouble(i)), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");

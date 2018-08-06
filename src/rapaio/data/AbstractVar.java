@@ -56,39 +56,39 @@ abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                NomVar nom = NomVar.empty(rowCount(), levels()).withName(name());
+                VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    nom.setLabel(i, label(i));
+                    nom.setLabel(i, getLabel(i));
                 }
                 return nom;
             case ORDINAL:
-                OrdVar ord = OrdVar.empty(rowCount(), levels()).withName(name());
+                VarOrdinal ord = VarOrdinal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    ord.setLabel(i, label(i));
+                    ord.setLabel(i, getLabel(i));
                 }
                 return ord;
-            case INDEX:
-                IdxVar idx = IdxVar.empty(rowCount()).withName(name());
+            case INT:
+                VarInt idx = VarInt.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    idx.setIndex(i, index(i));
+                    idx.setInt(i, getInt(i));
                 }
                 return idx;
-            case STAMP:
-                StampVar stamp = StampVar.empty(rowCount()).withName(name());
+            case LONG:
+                VarLong stamp = VarLong.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    stamp.setStamp(i, stamp(i));
+                    stamp.setLong(i, getLong(i));
                 }
                 return stamp;
-            case NUMERIC:
-                NumVar num = NumVar.empty(rowCount()).withName(name());
+            case DOUBLE:
+                VarDouble num = VarDouble.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    num.setValue(i, value(i));
+                    num.setDouble(i, getDouble(i));
                 }
                 return num;
             case BINARY:
-                BinaryVar bin = BinaryVar.empty(rowCount()).withName(name());
+                VarBoolean bin = VarBoolean.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
-                    bin.setIndex(i, index(i));
+                    bin.setInt(i, getInt(i));
                 }
                 return bin;
             default:

@@ -28,7 +28,7 @@ package rapaio.ml.regression.boost;
 import rapaio.data.Frame;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -69,7 +69,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private double shrinkage = 1.0;
 
     // prediction
-    NumVar fitValues;
+    VarDouble fitValues;
     List<RTree> trees;
 
     @Override
@@ -106,8 +106,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }
@@ -152,7 +152,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         fitValues = initRegression.predict(df, false).firstFit().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
-            NumVar gradient = lossFunction.gradient(y, fitValues).withName("target");
+            VarDouble gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
             RTree tree = regressor.newInstance();
@@ -178,7 +178,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             RPrediction treePred = tree.predict(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
-                fitValues.setValue(j, fitValues.value(j) + shrinkage * treePred.firstFit().value(j));
+                fitValues.setDouble(j, fitValues.getDouble(j) + shrinkage * treePred.firstFit().getDouble(j));
             }
 
             // add tree in the predictors list
@@ -196,12 +196,12 @@ public class GBTRegression extends AbstractRegression implements Printable {
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         RPrediction initPred = initRegression.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
-            pred.firstFit().setValue(i, initPred.firstFit().value(i));
+            pred.firstFit().setDouble(i, initPred.firstFit().getDouble(i));
         }
         for (RTree tree : trees) {
             RPrediction treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
+                pred.firstFit().setDouble(i, pred.firstFit().getDouble(i) + shrinkage * treePred.firstFit().getDouble(i));
             }
         }
         pred.buildComplete();

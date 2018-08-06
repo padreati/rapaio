@@ -64,9 +64,9 @@ public class GeometricMean implements Printable {
                 missingCount++;
             } else {
                 completeCount++;
-                sum += Math.log(var.value(i));
+                sum += Math.log(var.getDouble(i));
             }
-            if (var.value(i) < 0)
+            if (var.getDouble(i) < 0)
                 negativeCount++;
         }
         if (negativeCount > 0 || completeCount == 0) {

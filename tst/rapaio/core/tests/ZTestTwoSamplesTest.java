@@ -25,7 +25,7 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -40,8 +40,8 @@ public class ZTestTwoSamplesTest {
 
     @Test
     public void zTestTwoSamples() {
-        Var x = NumVar.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
-        Var y = NumVar.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
+        Var x = VarDouble.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
+        Var y = VarDouble.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 
         ZTestTwoSamples z1 = ZTestTwoSamples.test(x, y, 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
@@ -74,7 +74,7 @@ public class ZTestTwoSamplesTest {
         assertEquals(1.3276174779349252, z2.ciLow(), TOL);
         assertEquals(2.1837461584287112, z2.ciHigh(), TOL);
 
-        ZTestTwoSamples z3 = ZTestTwoSamples.test(x, NumVar.empty(), 0, 0.5, 0.5);
+        ZTestTwoSamples z3 = ZTestTwoSamples.test(x, VarDouble.empty(), 0, 0.5, 0.5);
         z3.printSummary();
 
         assertEquals(Double.NaN, z3.getZScore(), TOL);

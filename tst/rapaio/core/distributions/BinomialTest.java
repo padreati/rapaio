@@ -94,10 +94,10 @@ public class BinomialTest {
         Var pdf4 = df.rvar("pdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(pdf1.value(i), b1.pdf(x.value(i)), TOL);
-            assertEquals(pdf2.value(i), b2.pdf(x.value(i)), TOL);
-            assertEquals(pdf3.value(i), b3.pdf(x.value(i)), TOL);
-            assertEquals(pdf4.value(i), b4.pdf(x.value(i)), TOL);
+            assertEquals(pdf1.getDouble(i), b1.pdf(x.getDouble(i)), TOL);
+            assertEquals(pdf2.getDouble(i), b2.pdf(x.getDouble(i)), TOL);
+            assertEquals(pdf3.getDouble(i), b3.pdf(x.getDouble(i)), TOL);
+            assertEquals(pdf4.getDouble(i), b4.pdf(x.getDouble(i)), TOL);
         }
     }
 
@@ -117,10 +117,10 @@ public class BinomialTest {
         Var cdf4 = df.rvar("cdf_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(cdf1.value(i), b1.cdf(x.value(i)), TOL);
-            assertEquals(cdf2.value(i), b2.cdf(x.value(i)), TOL);
-            assertEquals(cdf3.value(i), b3.cdf(x.value(i)), TOL);
-            assertEquals(cdf4.value(i), b4.cdf(x.value(i)), TOL);
+            assertEquals(cdf1.getDouble(i), b1.cdf(x.getDouble(i)), TOL);
+            assertEquals(cdf2.getDouble(i), b2.cdf(x.getDouble(i)), TOL);
+            assertEquals(cdf3.getDouble(i), b3.cdf(x.getDouble(i)), TOL);
+            assertEquals(cdf4.getDouble(i), b4.cdf(x.getDouble(i)), TOL);
         }
     }
 
@@ -140,10 +140,10 @@ public class BinomialTest {
         Var q4 = df.rvar("q_2000_0.9");
 
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(q1.value(i), b1.quantile(x.value(i)), TOL);
-            assertEquals(q2.value(i), b2.quantile(x.value(i)), TOL);
-            assertEquals(q3.value(i), b3.quantile(x.value(i)), TOL);
-            assertEquals(q4.value(i), b4.quantile(x.value(i)), TOL);
+            assertEquals(q1.getDouble(i), b1.quantile(x.getDouble(i)), TOL);
+            assertEquals(q2.getDouble(i), b2.quantile(x.getDouble(i)), TOL);
+            assertEquals(q3.getDouble(i), b3.quantile(x.getDouble(i)), TOL);
+            assertEquals(q4.getDouble(i), b4.quantile(x.getDouble(i)), TOL);
         }
     }
 }

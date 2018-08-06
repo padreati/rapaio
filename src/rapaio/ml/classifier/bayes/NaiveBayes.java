@@ -106,7 +106,7 @@ public class NaiveBayes extends AbstractClassifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
-                .withInputTypes(VarType.NOMINAL, VarType.NUMERIC, VarType.INDEX, VarType.BINARY)
+                .withInputTypes(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
                 .withAllowMissingTargetValues(false)
@@ -202,11 +202,11 @@ public class NaiveBayes extends AbstractClassifier {
                     dv.normalize();
 
                     if (withClasses) {
-                        pred.firstClasses().setIndex(i, dv.findBestIndex());
+                        pred.firstClasses().setInt(i, dv.findBestIndex());
                     }
                     if (withDensities) {
                         for (int j = 1; j < firstTargetLevels().size(); j++) {
-                            pred.firstDensity().setValue(i, j, dv.get(j));
+                            pred.firstDensity().setDouble(i, j, dv.get(j));
                         }
                     }
                 });

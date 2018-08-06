@@ -26,7 +26,7 @@
 package rapaio.ml.regression.loss;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 /**
@@ -63,5 +63,5 @@ public interface RegressionLoss {
      * @param y_hat vector of fitted values
      * @return vector of computed gradients
      */
-    NumVar computeGradient(Var y, Var y_hat);
+    VarDouble computeGradient(Var y, Var y_hat);
 }

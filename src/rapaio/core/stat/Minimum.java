@@ -58,8 +58,8 @@ public class Minimum implements Printable {
                 missingCount++;
             } else {
                 completeCount++;
-                if (Double.isNaN(value) || value > var.value(i)) {
-                    value = var.value(i);
+                if (Double.isNaN(value) || value > var.getDouble(i)) {
+                    value = var.getDouble(i);
                 }
             }
         }

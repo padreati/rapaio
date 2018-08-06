@@ -2,7 +2,7 @@ package rapaio.ml.clustering;
 
 import org.junit.Test;
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.data.IdxVar;
+import rapaio.data.VarInt;
 import rapaio.data.Var;
 
 /**
@@ -34,8 +34,8 @@ public class ClusterSilhouetteTest {
             }
         }
 
-        Var asgn1 = IdxVar.wrap(1, 1, 2, 2, 1, 1, 2, 1, 1, 2, 2, 1);
-        Var asgn2 = IdxVar.wrap(1, 2, 3, 3, 1, 1, 2, 1, 1, 3, 3, 2);
+        Var asgn1 = VarInt.wrap(1, 1, 2, 2, 1, 1, 2, 1, 1, 2, 2, 1);
+        Var asgn2 = VarInt.wrap(1, 2, 3, 3, 1, 1, 2, 1, 1, 3, 3, 2);
 
         ClusterSilhouette cs1 = ClusterSilhouette.from(asgn1, dm, false);
         cs1.printSummary();

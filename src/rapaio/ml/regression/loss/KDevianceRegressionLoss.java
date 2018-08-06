@@ -26,7 +26,7 @@
 package rapaio.ml.regression.loss;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 /**
@@ -52,8 +52,8 @@ public class KDevianceRegressionLoss implements RegressionLoss {
         double down = 0.0;
 
         for (int i = 0; i < y.rowCount(); i++) {
-            up += w.value(i) * y.value(i);
-            down += w.value(i) * Math.abs(y.value(i)) * (1.0 - Math.abs(y.value(i)));
+            up += w.getDouble(i) * y.getDouble(i);
+            down += w.getDouble(i) * Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
         }
 
         if (down == 0 || Double.isNaN(up) || Double.isNaN(down)) {
@@ -71,7 +71,7 @@ public class KDevianceRegressionLoss implements RegressionLoss {
         double down = 0.0;
 
         for (int i = 0; i < df.rowCount(); i++) {
-            double y = df.value(i, varNameIndex);
+            double y = df.getDouble(i, varNameIndex);
             up += y;
             down += Math.abs(y) * (1.0 - Math.abs(y));
         }
@@ -82,7 +82,7 @@ public class KDevianceRegressionLoss implements RegressionLoss {
     }
 
     @Override
-    public NumVar computeGradient(Var y, Var y_hat) {
+    public VarDouble computeGradient(Var y, Var y_hat) {
         throw new IllegalStateException("This method is not available for KDevianceLoss");
     }
 }

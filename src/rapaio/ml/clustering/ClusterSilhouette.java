@@ -85,7 +85,7 @@ public class ClusterSilhouette implements Printable {
     }
 
     private int getCluster(int row) {
-        return clusterIndex.get(assignment.label(row));
+        return clusterIndex.get(assignment.getLabel(row));
     }
 
     private void compute() {
@@ -95,7 +95,7 @@ public class ClusterSilhouette implements Printable {
             if (assignment.isMissing(i)) {
                 throw new IllegalArgumentException("Assignment variable contains missing data");
             }
-            String clusterId = assignment.label(i);
+            String clusterId = assignment.getLabel(i);
             if (clusterIndex.containsKey(clusterId))
                 continue;
             clusterIndex.put(clusterId, clusterIndex.size());

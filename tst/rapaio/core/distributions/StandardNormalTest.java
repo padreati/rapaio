@@ -45,7 +45,7 @@ public class StandardNormalTest {
         df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
-                .withDefaultTypes(VarType.NUMERIC)
+                .withDefaultTypes(VarType.DOUBLE)
                 .withNAValues("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "standard_normal.csv");
     }
@@ -54,8 +54,8 @@ public class StandardNormalTest {
     public void testStandardQuantile() {
         Normal d = new Normal(0, 1);
         for (int i = 0; i < df.rowCount(); i++) {
-            if (df.value(i, "x") > 0 && df.value(i, "x") < 1) {
-                Assert.assertEquals(df.value(i, "quantile"), d.quantile(df.value(i, "x")), ERROR);
+            if (df.getDouble(i, "x") > 0 && df.getDouble(i, "x") < 1) {
+                Assert.assertEquals(df.getDouble(i, "quantile"), d.quantile(df.getDouble(i, "x")), ERROR);
             }
         }
     }
@@ -64,7 +64,7 @@ public class StandardNormalTest {
     public void testStandardPdf() {
         Normal d = new Normal(0, 1);
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.value(i, "pdf"), d.pdf(df.value(i, "x")), ERROR);
+            Assert.assertEquals(df.getDouble(i, "pdf"), d.pdf(df.getDouble(i, "x")), ERROR);
         }
     }
 
@@ -72,7 +72,7 @@ public class StandardNormalTest {
     public void testStandardCdf() {
         Normal d = new Normal(0, 1);
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.value(i, "cdf"), d.cdf(df.value(i, "x")), ERROR);
+            Assert.assertEquals(df.getDouble(i, "cdf"), d.cdf(df.getDouble(i, "x")), ERROR);
         }
     }
 

@@ -3,7 +3,6 @@ package rapaio.math.optim;
 import org.junit.Test;
 import rapaio.data.*;
 import rapaio.math.functions.*;
-import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
@@ -12,7 +11,6 @@ import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
@@ -92,16 +90,16 @@ public class MinimizerTest {
 
         Var sol = minimizer.solutions().stream()
                 .skip(10)
-                .mapToDouble(s -> s.get(0)).boxed().collect(NumVar.collector());
+                .mapToDouble(s -> s.get(0)).boxed().collect(VarDouble.collector());
 
         sol.printLines();
         WS.setPrinter(new IdeaPrinter());
-        WS.draw(lines(IdxVar.seq(sol.rowCount()), sol));
+        WS.draw(lines(VarInt.seq(sol.rowCount()), sol));
 
-        NumVar xx = NumVar.seq(-5, 3, 0.01);
-        NumVar yy = NumVar.from(xx, f::apply);
-        NumVar zz = NumVar.from(xx, value -> d1f.apply(value).get(0));
-        NumVar tt = NumVar.from(xx, value -> d2f.apply(value).get(0, 0));
+        VarDouble xx = VarDouble.seq(-5, 3, 0.01);
+        VarDouble yy = VarDouble.from(xx, f::apply);
+        VarDouble zz = VarDouble.from(xx, value -> d1f.apply(value).get(0));
+        VarDouble tt = VarDouble.from(xx, value -> d2f.apply(value).get(0, 0));
 
 //        WS.draw(lines(xx, yy)
 //                .lines(xx, zz, color(1))
@@ -145,17 +143,17 @@ public class MinimizerTest {
 
         List<RV> sols = alg.solutions();
 
-        List<NumVar> vars = new ArrayList<>();
+        List<VarDouble> vars = new ArrayList<>();
         for (int i = 0; i < init.count(); i++) {
-            vars.add(NumVar.empty().withName("x" + i));
+            vars.add(VarDouble.empty().withName("x" + i));
         }
-        vars.add(NumVar.empty().withName("fx"));
+        vars.add(VarDouble.empty().withName("fx"));
 
         for (RV sol : sols) {
             for (int i = 0; i < init.count(); i++) {
-                vars.get(i).addValue(sol.get(i));
+                vars.get(i).addDouble(sol.get(i));
             }
-            vars.get(init.count()).addValue(f.apply(sol));
+            vars.get(init.count()).addDouble(f.apply(sol));
         }
 
         WS.setPrinter(new IdeaPrinter());

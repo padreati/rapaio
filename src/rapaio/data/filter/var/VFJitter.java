@@ -73,7 +73,7 @@ public class VFJitter extends AbstractVF {
     public Var apply(Var... vars) {
         for (int i = 0; i < vars[0].rowCount(); i++) {
             double err = d.sampleNext();
-            vars[0].setValue(i, vars[0].value(i) + err);
+            vars[0].setDouble(i, vars[0].getDouble(i) + err);
         }
         return vars[0];
     }

@@ -26,7 +26,7 @@ package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.util.DoublePair;
 
@@ -50,28 +50,28 @@ public class RTreePredictorTest {
         RTreeNode root = new RTreeNode(1,null, "root", (row, frame) -> true, 1);
         root.setLeaf(false);
 
-        RTreeNode left = new RTreeNode(2, root, "x < 10", (row, frame) -> frame.value(row, "x") < 10, 2);
+        RTreeNode left = new RTreeNode(2, root, "x < 10", (row, frame) -> frame.getDouble(row, "x") < 10, 2);
         left.setLeaf(false);
 
-        RTreeNode right = new RTreeNode(3, root, "x >= 10", (row, frame) -> frame.value(row, "x") >= 10, 2);
+        RTreeNode right = new RTreeNode(3, root, "x >= 10", (row, frame) -> frame.getDouble(row, "x") >= 10, 2);
         right.setLeaf(false);
 
-        RTreeNode left_left = new RTreeNode(4, left, "x < 5", (row, frame) -> frame.value(row, "x") < 5, 3);
+        RTreeNode left_left = new RTreeNode(4, left, "x < 5", (row, frame) -> frame.getDouble(row, "x") < 5, 3);
         left_left.setLeaf(true);
         left_left.setValue(0);
         left_left.setWeight(1);
 
-        RTreeNode left_right = new RTreeNode(5, left, "x >= 5", (row, frame) -> frame.value(row, "x") >= 5, 3);
+        RTreeNode left_right = new RTreeNode(5, left, "x >= 5", (row, frame) -> frame.getDouble(row, "x") >= 5, 3);
         left_right.setLeaf(true);
         left_right.setValue(1);
         left_right.setWeight(2);
 
-        RTreeNode right_left = new RTreeNode(6, right, "x < 15", (row, frame) -> frame.value(row, "x") < 15, 3);
+        RTreeNode right_left = new RTreeNode(6, right, "x < 15", (row, frame) -> frame.getDouble(row, "x") < 15, 3);
         right_left.setLeaf(true);
         right_left.setValue(2);
         right_left.setWeight(3);
 
-        RTreeNode right_right = new RTreeNode(7, right, "x >= 15", (row, frame) -> frame.value(row, "x") >= 15, 3);
+        RTreeNode right_right = new RTreeNode(7, right, "x >= 15", (row, frame) -> frame.getDouble(row, "x") >= 15, 3);
         right_right.setLeaf(true);
         right_right.setValue(3);
         right_right.setWeight(4);
@@ -118,6 +118,6 @@ public class RTreePredictorTest {
     }
 
     Frame getFrame(double value) {
-        return SolidFrame.byVars(NumVar.wrap(value).withName("x"));
+        return SolidFrame.byVars(VarDouble.wrap(value).withName("x"));
     }
 }

@@ -31,7 +31,6 @@ import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,7 +69,7 @@ public class KernelPdf implements NumericEstimator {
                 classLabel -> {
                     if ("?".equals(classLabel))
                         return;
-                    Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetVar))).toMappedFrame();
+                    Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetVar))).toMappedFrame();
                     Var v = cond.rvar(testVar);
                     KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.silvermanBandwidth(v) : bandwidth);
                     kde.put(classLabel, k);

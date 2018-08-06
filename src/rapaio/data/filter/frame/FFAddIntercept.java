@@ -66,7 +66,7 @@ public class FFAddIntercept extends AbstractFF {
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        NumVar intercept = NumVar.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1.0).withName(INTERCEPT);
         return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

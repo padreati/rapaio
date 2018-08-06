@@ -27,7 +27,7 @@ package rapaio.math.linear;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.math.MTools;
 import rapaio.math.linear.dense.MappedRM;
 import rapaio.math.linear.dense.MatrixMultiplication;
@@ -212,20 +212,20 @@ public interface RM extends Serializable, Printable {
     }
 
     default Mean mean() {
-        NumVar values = NumVar.empty();
+        VarDouble values = VarDouble.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                values.addValue(get(i, j));
+                values.addDouble(get(i, j));
             }
         }
         return Mean.from(values);
     }
 
     default Variance var() {
-        NumVar values = NumVar.empty();
+        VarDouble values = VarDouble.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                values.addValue(get(i, j));
+                values.addDouble(get(i, j));
             }
         }
         return Variance.from(values);

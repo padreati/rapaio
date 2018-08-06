@@ -112,7 +112,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier fit(Frame df, String... targetVars) {
-        NumVar weights = NumVar.fill(df.rowCount(), 1);
+        VarDouble weights = VarDouble.fill(df.rowCount(), 1);
         return fit(df, weights, targetVars);
     }
 

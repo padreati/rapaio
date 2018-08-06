@@ -76,8 +76,8 @@ public class ConstantRegression extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);
     }
@@ -100,7 +100,7 @@ public class ConstantRegression extends AbstractRegression {
     protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (String targetName : targetNames) {
-            fit.fit(targetName).stream().forEach(s -> s.setValue(constantValue()));
+            fit.fit(targetName).stream().forEach(s -> s.setDouble(constantValue()));
         }
         fit.buildComplete();
         return fit;

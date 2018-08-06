@@ -28,7 +28,7 @@ package rapaio.graphics.plot.plotcomp;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
@@ -78,9 +78,9 @@ public class DensityLine extends PlotComponent {
         Pin<Double> ymax = new Pin<>(Double.NaN);
 
         var.stream().filter(s -> !s.isMissing()).forEach(s -> {
-            double xMin = kde.kernel().minValue(s.value(), bandwidth);
-            double xMax = kde.kernel().maxValue(s.value(), bandwidth);
-            double yMax = ((Function<Double, Double>) kde::pdf).apply(s.value());
+            double xMin = kde.kernel().minValue(s.getDouble(), bandwidth);
+            double xMax = kde.kernel().maxValue(s.getDouble(), bandwidth);
+            double yMax = ((Function<Double, Double>) kde::pdf).apply(s.getDouble());
             xmin.set(Double.isNaN(xmin.get()) ? xMin : Math.min(xmin.get(), xMin));
             xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
             ymax.set(Double.isNaN(ymax.get()) ? yMax : Math.max(ymax.get(), yMax));
@@ -100,23 +100,23 @@ public class DensityLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         buildRange();
         Range range = parent.getRange();
-        Var x = NumVar.fill(options.getPoints() + 1, 0);
-        Var y = NumVar.fill(options.getPoints() + 1, 0);
+        Var x = VarDouble.fill(options.getPoints() + 1, 0);
+        Var y = VarDouble.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, kde.pdf(x.value(i)));
+            x.setDouble(i, range.x1() + i * xstep);
+            y.setDouble(i, kde.pdf(x.getDouble(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {
-            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
+            if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        xScale(x.value(i - 1)),
-                        yScale(y.value(i - 1)),
-                        xScale(x.value(i)),
-                        yScale(y.value(i))));
+                        xScale(x.getDouble(i - 1)),
+                        yScale(y.getDouble(i - 1)),
+                        xScale(x.getDouble(i)),
+                        yScale(y.getDouble(i))));
 
             }
         }

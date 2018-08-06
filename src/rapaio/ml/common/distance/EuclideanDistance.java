@@ -57,7 +57,7 @@ public class EuclideanDistance implements Distance {
         for (String varName : varNames) {
             if (s.isMissing(sRow, varName) || t.isMissing(tRow, varName))
                 continue;
-            total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
+            total += Math.pow(s.getDouble(sRow, varName) - t.getDouble(tRow, varName), 2);
         }
         return Pair.from(Math.sqrt(total), total);
     }

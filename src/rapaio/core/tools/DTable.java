@@ -26,7 +26,7 @@
 package rapaio.core.tools;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
@@ -34,7 +34,6 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,7 +80,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, NumVar.fill(rowVar.rowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, VarDouble.fill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**
@@ -106,7 +105,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst   true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Frame df, String rowVarName, String colVarName, boolean useFirst) {
-        return new DTable(df, rowVarName, colVarName, NumVar.fill(df.rowCount(), 1), useFirst);
+        return new DTable(df, rowVarName, colVarName, VarDouble.fill(df.rowCount(), 1), useFirst);
     }
 
     /**
@@ -164,34 +163,34 @@ public final class DTable implements Printable, Serializable {
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
         this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)))
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
         if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int rowOffset = (rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)) ? 1 : 0;
-        int colOffset = (colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INDEX)) ? 1 : 0;
+        int rowOffset = (rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
+        int colOffset = (colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
         for (int i = 0; i < rowVar.rowCount(); i++) {
-            update(rowVar.index(i) + rowOffset, colVar.index(i) + colOffset, weights != null ? weights.value(i) : 1);
+            update(rowVar.getInt(i) + rowOffset, colVar.getInt(i) + colOffset, weights != null ? weights.getDouble(i) : 1);
         }
     }
 
     private DTable(Frame df, String rowVarName, String colVarName, Var weights, boolean useFirst) {
         this(df.levels(rowVarName), df.levels(colVarName), useFirst);
 
-        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INDEX)))
+        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INDEX)))
+        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
 
-        int rowOffset = (df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INDEX)) ? 1 : 0;
-        int colOffset = (df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INDEX)) ? 1 : 0;
+        int rowOffset = (df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INT)) ? 1 : 0;
+        int colOffset = (df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INT)) ? 1 : 0;
         int rowVarIndex = df.varIndex(rowVarName);
         int colVarIndex = df.varIndex(colVarName);
         for (int i = 0; i < df.rowCount(); i++) {
-            update(df.index(i, rowVarIndex) + rowOffset, df.index(i, colVarIndex) + colOffset, weights != null ? weights.value(i) : 1);
+            update(df.getInt(i, rowVarIndex) + rowOffset, df.getInt(i, colVarIndex) + colOffset, weights != null ? weights.getDouble(i) : 1);
         }
     }
 
@@ -206,9 +205,9 @@ public final class DTable implements Printable, Serializable {
         for (int i = 0; i < rowVar.rowCount(); i++) {
             int index = 0;
             if (!rowVar.isMissing(i)) {
-                index = (rowVar.label(i).equals(rowLevel)) ? 1 : 2;
+                index = (rowVar.getLabel(i).equals(rowLevel)) ? 1 : 2;
             }
-            update(index, colVar.index(i), weights != null ? weights.value(i) : 1);
+            update(index, colVar.getInt(i), weights != null ? weights.getDouble(i) : 1);
         }
     }
 
@@ -223,9 +222,9 @@ public final class DTable implements Printable, Serializable {
         for (int i = 0; i < df.rowCount(); i++) {
             int index = 0;
             if (!df.isMissing(i, rowVarIndex)) {
-                index = (df.label(i, rowVarIndex).equals(rowLevel)) ? 1 : 2;
+                index = (df.getLabel(i, rowVarIndex).equals(rowLevel)) ? 1 : 2;
             }
-            update(index, df.index(i, colVarIndex), weights != null ? weights.value(i) : 1);
+            update(index, df.getInt(i, colVarIndex), weights != null ? weights.getDouble(i) : 1);
         }
     }
 

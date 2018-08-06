@@ -30,7 +30,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -138,13 +137,13 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {
-                            pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
+                            pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).getLabel(0));
                         }
                     }
                     if (withDensities) {
                         for (String targetVar : targetNames()) {
                             for (int j = 0; j < targetLevels(targetVar).size(); j++) {
-                                pred.densities().get(targetVar).setValue(spot.row(), targetLevels(targetVar).get(j), p.densities().get(targetVar).value(0, targetLevels(targetVar).get(j)));
+                                pred.densities().get(targetVar).setDouble(spot.row(), targetLevels(targetVar).get(j), p.densities().get(targetVar).getDouble(0, targetLevels(targetVar).get(j)));
                             }
                         }
                     }

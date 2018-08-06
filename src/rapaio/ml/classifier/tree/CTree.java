@@ -28,10 +28,10 @@ package rapaio.ml.classifier.tree;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.tools.DVector;
-import rapaio.data.BinaryVar;
+import rapaio.data.VarBoolean;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -93,8 +93,8 @@ public class CTree extends AbstractClassifier {
     public CTree() {
         testMap.put(VarType.BINARY, CTreeTest.BinaryBinary);
         testMap.put(VarType.ORDINAL, CTreeTest.NumericBinary);
-        testMap.put(VarType.INDEX, CTreeTest.NumericBinary);
-        testMap.put(VarType.NUMERIC, CTreeTest.NumericBinary);
+        testMap.put(VarType.INT, CTreeTest.NumericBinary);
+        testMap.put(VarType.DOUBLE, CTreeTest.NumericBinary);
         testMap.put(VarType.NOMINAL, CTreeTest.NominalBinary);
         withRuns(0);
     }
@@ -106,7 +106,7 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VarType.NUMERIC, CTreeTest.Ignore)
+                .withTest(VarType.DOUBLE, CTreeTest.Ignore)
                 .withFunction(CTreePurityFunction.InfoGain)
                 .withPruning(CTreePruning.NONE);
     }
@@ -118,7 +118,7 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
+                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
                 .withFunction(CTreePurityFunction.GainRatio);
     }
 
@@ -130,7 +130,7 @@ public class CTree extends AbstractClassifier {
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withFunction(CTreePurityFunction.GainRatio)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VarType.NUMERIC, CTreeTest.NumericBinary);
+                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary);
     }
 
     public static CTree newCART() {
@@ -140,8 +140,8 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
-                .withTest(VarType.INDEX, CTreeTest.NumericBinary)
+                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
+                .withTest(VarType.INT, CTreeTest.NumericBinary)
                 .withFunction(CTreePurityFunction.GiniGain);
     }
 
@@ -289,7 +289,7 @@ public class CTree extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NOMINAL, VarType.INDEX, VarType.NUMERIC, VarType.BINARY)
+                .withInputTypes(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY)
                 .withInputCount(1, 1_000_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)
@@ -470,10 +470,10 @@ public class CTree extends AbstractClassifier {
 
         List<Var> varList = new ArrayList<>();
         for (int i = 0; i < indexMap.size(); i++) {
-            varList.add(BinaryVar.fill(df.rowCount(), false).withName(varPrefix + i));
+            varList.add(VarBoolean.fill(df.rowCount(), false).withName(varPrefix + i));
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            varList.get(indexMap.get(predictPointNodeIndex(root, df, i))).setBinary(i, true);
+            varList.get(indexMap.get(predictPointNodeIndex(root, df, i))).setBoolean(i, true);
         }
         return SolidFrame.byVars(varList);
     }
@@ -485,10 +485,10 @@ public class CTree extends AbstractClassifier {
         Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
         buildIndexMap(root, indexMap);
 
-        Var index = NumVar.empty(df.rowCount()).withName(varPrefix + "index");
+        Var index = VarDouble.empty(df.rowCount()).withName(varPrefix + "index");
         double norm = normalized ? indexMap.size() : 1.0;
         for (int i = 0; i < df.rowCount(); i++) {
-            index.setValue(i, indexMap.get(predictPointNodeIndex(root, df, i)) / norm);
+            index.setDouble(i, indexMap.get(predictPointNodeIndex(root, df, i)) / norm);
         }
         return SolidFrame.byVars(index);
     }
@@ -529,10 +529,10 @@ public class CTree extends AbstractClassifier {
             int index = res._1;
             DVector dv = res._2;
             if (withClasses)
-                prediction.firstClasses().setIndex(i, index);
+                prediction.firstClasses().setInt(i, index);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().size(); j++) {
-                    prediction.firstDensity().setValue(i, j, dv.get(j));
+                    prediction.firstDensity().setDouble(i, j, dv.get(j));
                 }
         }
         return prediction;

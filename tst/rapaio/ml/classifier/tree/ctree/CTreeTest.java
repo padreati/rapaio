@@ -101,7 +101,7 @@ public class CTreeTest {
         CPrediction pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
-        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -110,7 +110,7 @@ public class CTreeTest {
         df.setMissing(0, 3);
 
         tree.predict(df, true, false);
-        match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
 

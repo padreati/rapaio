@@ -111,9 +111,9 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
             for (int j = 0; j < rp.fit(target).rowCount(); j++) {
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.value(j, inputName(k));
+                    fit += beta.get(k, i) * df.getDouble(j, inputName(k));
                 }
-                rp.fit(target).setValue(j, fit);
+                rp.fit(target).setDouble(j, fit);
             }
         }
 

@@ -70,7 +70,7 @@ public class FFJitter extends AbstractFF {
     public Frame apply(Frame df) {
         for (int i = 0; i < df.rowCount(); i++) {
             for (String varName : varNames) {
-                df.setValue(i, varName, df.value(i, varName) + d.sampleNext());
+                df.setDouble(i, varName, df.getDouble(i, varName) + d.sampleNext());
             }
         }
         return df;

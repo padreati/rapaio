@@ -25,7 +25,7 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.IdxVar;
+import rapaio.data.VarInt;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 
@@ -48,18 +48,18 @@ public class VFToIndex extends AbstractVF {
                             case TEXT:
                             case NOMINAL:
                                 try {
-                                    return Integer.parseInt(s.label());
+                                    return Integer.parseInt(s.getLabel());
                                 } catch (NumberFormatException nfe) {
                                     return Integer.MIN_VALUE;
                                 }
                             case ORDINAL:
-                            case INDEX:
+                            case INT:
                             case BINARY:
-                                return s.index();
-                            case STAMP:
-                                return Long.valueOf(s.stamp()).intValue();
+                                return s.getInt();
+                            case LONG:
+                                return Long.valueOf(s.getLong()).intValue();
                             default:
-                                return (int) Math.rint(s.value());
+                                return (int) Math.rint(s.getDouble());
                         }
                     }
                 },
@@ -111,19 +111,19 @@ public class VFToIndex extends AbstractVF {
         Var v = vars[0];
 
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(IdxVar.collector()).withName(v.name());
+            return v.stream().map(fSpot).collect(VarInt.collector()).withName(v.name());
         }
         if (fValue != null) {
             return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(IdxVar.collector()).withName(v.name());
+                    .map(fValue).collect(VarInt.collector()).withName(v.name());
         }
         if (fIndex != null) {
             return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(IdxVar.collector()).withName(v.name());
+                    .map(fIndex).collect(VarInt.collector()).withName(v.name());
         }
         if (fLabel != null) {
             return v.stream().mapToString()
-                    .map(fLabel).collect(IdxVar.collector()).withName(v.name());
+                    .map(fLabel).collect(VarInt.collector()).withName(v.name());
         }
         throw new RuntimeException("no transform function available");
     }

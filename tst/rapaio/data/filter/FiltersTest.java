@@ -29,8 +29,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NomVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarNominal;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +46,7 @@ public class FiltersTest {
     @Test
     public void testJitterStandard() {
         RandomSource.setSeed(1);
-        Var a = jitter(NumVar.fill(100_000, 1));
+        Var a = jitter(VarDouble.fill(100_000, 1));
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();
@@ -61,7 +61,7 @@ public class FiltersTest {
     @Test
     public void testJitterStandardSd() {
         RandomSource.setSeed(1);
-        Var a = jitter(NumVar.fill(100_000, 1), 2);
+        Var a = jitter(VarDouble.fill(100_000, 1), 2);
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();
@@ -76,7 +76,7 @@ public class FiltersTest {
     @Test
     public void testJitterDistributed() {
         RandomSource.setSeed(1);
-        Var a = jitter(NumVar.fill(100_000, 1), new ChiSquare(5));
+        Var a = jitter(VarDouble.fill(100_000, 1), new ChiSquare(5));
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();
@@ -91,43 +91,43 @@ public class FiltersTest {
     @Test
     public void testSortNominal() {
         RandomSource.setSeed(1);
-        Var x1 = NomVar.copy("z", "q", "a", "b", "d", "c");
+        Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
-            assertTrue(x2.label(i).compareTo(x2.label(i + 1)) <= 0);
+            assertTrue(x2.getLabel(i).compareTo(x2.getLabel(i + 1)) <= 0);
         }
         Var x3 = sort(x1, false);
         for (int i = 0; i < x3.rowCount() - 1; i++) {
-            assertTrue(x3.label(i).compareTo(x3.label(i + 1)) >= 0);
+            assertTrue(x3.getLabel(i).compareTo(x3.getLabel(i + 1)) >= 0);
         }
     }
 
     @Test
     public void testSortNumeric() {
         RandomSource.setSeed(1);
-        Var x1 = NumVar.copy(7, 5, 1, 2, 5, 4);
+        Var x1 = VarDouble.copy(7, 5, 1, 2, 5, 4);
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
-            assertTrue(Double.compare(x2.value(i), x2.value(i + 1)) <= 0);
+            assertTrue(Double.compare(x2.getDouble(i), x2.getDouble(i + 1)) <= 0);
         }
         Var x3 = sort(x1, false);
         for (int i = 0; i < x3.rowCount() - 1; i++) {
-            assertTrue(Double.compare(x3.value(i), x3.value(i + 1)) >= 0);
+            assertTrue(Double.compare(x3.getDouble(i), x3.getDouble(i + 1)) >= 0);
         }
     }
 
     @Test
     public void testSortRef() {
         RandomSource.setSeed(1);
-        Var x1 = NomVar.copy("z", "q", "a", "b", "d", "c");
-        Var x2 = NumVar.copy(7, 6, 1, 2, 5, 4);
+        Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
+        Var x2 = VarDouble.copy(7, 6, 1, 2, 5, 4);
         Var x3 = refSort(x2, x1);
         Var x4 = refSort(x1, x2);
         for (int i = 0; i < x3.rowCount() - 1; i++) {
-            assertTrue(Double.compare(x3.value(i), x3.value(i + 1)) <= 0);
+            assertTrue(Double.compare(x3.getDouble(i), x3.getDouble(i + 1)) <= 0);
         }
         for (int i = 0; i < x4.rowCount() - 1; i++) {
-            assertTrue(x4.label(i).compareTo(x4.label(i + 1)) <= 0);
+            assertTrue(x4.getLabel(i).compareTo(x4.getLabel(i + 1)) <= 0);
         }
     }
 
@@ -135,13 +135,13 @@ public class FiltersTest {
     public void testShuffle() {
         RandomSource.setSeed(1);
         double N = 1000.0;
-        Var x = NumVar.seq(0, N, 1);
-        Var first = NumVar.empty();
+        Var x = VarDouble.seq(0, N, 1);
+        Var first = VarDouble.empty();
         for (int i = 0; i < 100; i++) {
             Var y = shuffle(x);
             double t = y.stream().mapToDouble().sum();
             assertEquals(N * (N + 1) / 2, t, 1e-30);
-            first.addValue(y.value(0));
+            first.addDouble(y.getDouble(0));
         }
     }
 
@@ -149,7 +149,7 @@ public class FiltersTest {
     public void powerTransform() {
         RandomSource.setSeed(1);
 
-        Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.value(), 2)).boxed().collect(NumVar.collector());
+        Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
         Var y = transformPower(x.solidCopy(), 0.2);
 
         variance(x).printSummary();

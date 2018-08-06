@@ -4,7 +4,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.VRange;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFAddIntercept;
@@ -29,9 +29,9 @@ public class RMSETest {
 
         RandomSource.setSeed(123);
         Normal normal = Normal.from(0, 10);
-        NumVar x = normal.sample(100).withName("x");
-        NumVar y = NumVar.from(x, val -> val + 1).withName("y");
-        NumVar z = NumVar.from(x, val -> val - 2).withName("z");
+        VarDouble x = normal.sample(100).withName("x");
+        VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
+        VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");
 
         RMSE rmse1 = RMSE.from(x, y);
         RMSE rmse2 = RMSE.from(x, z);
@@ -58,7 +58,7 @@ public class RMSETest {
     @Test
     public void irisTest() throws IOException, URISyntaxException {
 
-        Frame df = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.NUMERIC));
+        Frame df = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.DOUBLE));
 
         df.printSummary();
 
@@ -72,7 +72,7 @@ public class RMSETest {
         RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.fitFrame());
 
         for (int i = 0; i < targets.length; i++) {
-            assertEquals(fit.rss(targets[i])/df.rowCount(), rmse.mse().value(i), TOL);
+            assertEquals(fit.rss(targets[i])/df.rowCount(), rmse.mse().getDouble(i), TOL);
             assertEquals(rmse.totalRmse(), Math.sqrt(rmse.totalMse()), TOL);
         }
     }

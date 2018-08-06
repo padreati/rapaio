@@ -81,11 +81,11 @@ public class WaveletKernel extends AbstractKernel {
         double result = 1;
         for (String varName : varNames) {
             if (invariant) {
-                double diff = df1.value(row1, varName) - df2.value(row2, varName);
+                double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
                 result *= wavelet.apply(diff / dilation);
             } else {
-                result *= wavelet.apply((df1.value(row1, varName) - translation) / dilation);
-                result *= wavelet.apply((df2.value(row2, varName) - translation) / dilation);
+                result *= wavelet.apply((df1.getDouble(row1, varName) - translation) / dilation);
+                result *= wavelet.apply((df2.getDouble(row2, varName) - translation) / dilation);
             }
         }
         return result;

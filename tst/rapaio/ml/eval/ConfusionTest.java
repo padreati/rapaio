@@ -25,7 +25,7 @@
 package rapaio.ml.eval;
 
 import org.junit.Test;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.data.Var;
 
 /**
@@ -35,8 +35,8 @@ public class ConfusionTest {
 
     @Test
     public void hello() {
-        Var actual = NomVar.empty(11, "cat", "dog", "mouse");
-        Var predict = NomVar.empty(11, "cat", "dog", "mouse");
+        Var actual = VarNominal.empty(11, "cat", "dog", "mouse");
+        Var predict = VarNominal.empty(11, "cat", "dog", "mouse");
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");

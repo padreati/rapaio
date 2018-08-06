@@ -105,7 +105,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NUMERIC, VarType.NOMINAL, VarType.INDEX, VarType.BINARY)
+                .withInputTypes(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY)
                 .withInputCount(1, 10_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)
@@ -143,7 +143,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i) / total);
+            w.setDouble(i, w.getDouble(i) / total);
         }
 
         for (int i = 0; i < runs(); i++) {
@@ -169,8 +169,8 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.index(j, firstTargetName())) {
-                err += w.value(j);
+            if (fit.firstClasses().getInt(j) != df.getInt(j, firstTargetName())) {
+                err += w.getDouble(j);
             }
         }
         err /= w.stream().mapToDouble().sum();
@@ -189,13 +189,13 @@ public class AdaBoostSAMME extends AbstractClassifier {
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (fit.firstClasses().index(j) != df.index(j, firstTargetName())) {
-                w.setValue(j, w.value(j) * Math.exp(alpha * shrinkage));
+            if (fit.firstClasses().getInt(j) != df.getInt(j, firstTargetName())) {
+                w.setDouble(j, w.getDouble(j) * Math.exp(alpha * shrinkage));
             }
         }
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i) / total);
+            w.setDouble(i, w.getDouble(i) / total);
         }
 
         return true;
@@ -207,8 +207,8 @@ public class AdaBoostSAMME extends AbstractClassifier {
         for (int i = 0; i < h.size(); i++) {
             CPrediction hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
-                int index = hp.firstClasses().index(j);
-                fit.firstDensity().setValue(j, index, fit.firstDensity().value(j, index) + a.get(i));
+                int index = hp.firstClasses().getInt(j);
+                fit.firstDensity().setDouble(j, index, fit.firstDensity().getDouble(j, index) + a.get(i));
             }
         }
 
@@ -219,16 +219,16 @@ public class AdaBoostSAMME extends AbstractClassifier {
             int best = 0;
             double total = 0;
             for (int j = 1; j < fit.firstDensity().varCount(); j++) {
-                total += fit.firstDensity().value(i, j);
-                if (fit.firstDensity().value(i, j) > max) {
+                total += fit.firstDensity().getDouble(i, j);
+                if (fit.firstDensity().getDouble(i, j) > max) {
                     best = j;
-                    max = fit.firstDensity().value(i, j);
+                    max = fit.firstDensity().getDouble(i, j);
                 }
             }
             for (int j = 1; j < fit.firstDensity().varCount(); j++) {
-                fit.firstDensity().setValue(i, j, fit.firstDensity().value(i, j) / total);
+                fit.firstDensity().setDouble(i, j, fit.firstDensity().getDouble(i, j) / total);
             }
-            fit.firstClasses().setIndex(i, best);
+            fit.firstClasses().setInt(i, best);
         }
         return fit;
     }

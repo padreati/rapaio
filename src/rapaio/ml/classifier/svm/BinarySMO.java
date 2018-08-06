@@ -187,7 +187,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
                 .withInputCount(1, 100_000)
                 .withAllowMissingInputValues(false)
                 .withTargetTypes(VarType.NOMINAL)
@@ -225,7 +225,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         if (!oneVsAll) {
             Mapping map = df
                     .stream()
-                    .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
+                    .filter(s -> s.getInt(firstTargetName()) == classIndex1 || s.getInt(firstTargetName()) == classIndex2)
                     .collectMapping();
             df = df.mapRows(map);
             weights = weights.mapRows(map);
@@ -270,7 +270,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         iUp = -1;
         iLow = -1;
         for (int i = 0; i < train.rowCount(); i++) {
-            if (df.index(i, firstTargetName()) == classIndex1) {
+            if (df.getInt(i, firstTargetName()) == classIndex1) {
                 target[i] = -1;
                 iLow = i;
             } else {
@@ -459,13 +459,13 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             // this is the old distance variant
 
             if (pred < 0) {
-                cr.firstClasses().setIndex(i, classIndex1);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+                cr.firstClasses().setInt(i, classIndex1);
+                cr.firstDensity().setDouble(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setDouble(i, firstTargetLevel(classIndex2), pred);
             } else {
-                cr.firstClasses().setIndex(i, classIndex2);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+                cr.firstClasses().setInt(i, classIndex2);
+                cr.firstDensity().setDouble(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setDouble(i, firstTargetLevel(classIndex2), pred);
             }
         }
         return cr;
@@ -486,7 +486,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 int n1 = inputNames().length;
                 for (int p = 0; p < n1; p++) {
                     if (p != targetIndex) {
-                        result += linear_weights[p] * df.value(row, p);
+                        result += linear_weights[p] * df.getDouble(row, p);
                     }
                 }
             } else {
@@ -497,7 +497,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                     int ind2 = sparseIndices[p2];
                     if (ind1 == ind2) {
                         if (ind1 != targetIndex) {
-                            result += df.value(row, p1) * sparseWeights[p2];
+                            result += df.getDouble(row, p1) * sparseWeights[p2];
                         }
                         p1++;
                         p2++;
@@ -604,8 +604,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         double F2 = fCache[i2];
         double s = y1 * y2;
 
-        double C1 = C * weights.value(i1);
-        double C2 = C * weights.value(i2);
+        double C1 = C * weights.getDouble(i1);
+        double C2 = C * weights.getDouble(i2);
 
         double L, H;
 
@@ -754,12 +754,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         if (kernel.isLinear()) {
             for (int p1 = 0; p1 < inputNames().length; p1++) {
                 if (p1 != targetIndex) {
-                    linear_weights[p1] += y1 * (a1 - alph1) * train.value(i1, p1);
+                    linear_weights[p1] += y1 * (a1 - alph1) * train.getDouble(i1, p1);
                 }
             }
             for (int p2 = 0; p2 < inputNames().length; p2++) {
                 if (p2 != targetIndex) {
-                    linear_weights[p2] += y2 * (a2 - alph2) * train.value(i2, p2);
+                    linear_weights[p2] += y2 * (a2 - alph2) * train.getDouble(i2, p2);
                 }
             }
         }
@@ -881,7 +881,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                         }
                         sb.append(formatFlex(val)).append(" * <[");
                         for (int j = 0; j < inputNames().length; j++) {
-                            sb.append(formatFlex(train.value(i, inputNames()[j])));
+                            sb.append(formatFlex(train.getDouble(i, inputNames()[j])));
                             if (j != inputNames().length - 1) {
                                 sb.append(",");
                             }

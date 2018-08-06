@@ -100,8 +100,8 @@ public class CBinaryRelief {
             VarType type = v.type();
 
             switch (type) {
-                case NUMERIC:
-                case INDEX:
+                case DOUBLE:
+                case INT:
                 case ORDINAL:
                     numeric[i] = true;
                     double min = Minimum.from(v).value();
@@ -110,7 +110,7 @@ public class CBinaryRelief {
                         if (v.isMissing(j)) {
                             x.set(j, i, Double.NaN);
                         } else {
-                            x.set(j, i, (v.value(j) + min) / (max - min));
+                            x.set(j, i, (v.getDouble(j) + min) / (max - min));
                         }
                     }
                     break;
@@ -121,21 +121,21 @@ public class CBinaryRelief {
                         if (v.isMissing(j)) {
                             x.set(j, i, Double.NaN);
                         } else {
-                            x.set(j, i, v.binary(j) ? 1 : 0);
+                            x.set(j, i, v.getBoolean(j) ? 1 : 0);
                         }
                     }
                     break;
                 case NOMINAL:
                     numeric[i] = false;
                     for (int j = 0; j < df.rowCount(); j++) {
-                        x.set(j, i, v.isMissing(j) ? Double.NaN : v.index(j));
+                        x.set(j, i, v.isMissing(j) ? Double.NaN : v.getInt(j));
                     }
             }
         }
 
         target = new boolean[df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
-            target[i] = df.index(i, targetName) == 1;
+            target[i] = df.getInt(i, targetName) == 1;
         }
 
         weights = new double[inputNames.size()];

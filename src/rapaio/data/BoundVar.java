@@ -150,43 +150,43 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).value(localRow(pos, row));
+        return vars.get(pos).getDouble(localRow(pos, row));
     }
 
     @Override
-    public void setValue(int row, double value) {
+    public void setDouble(int row, double value) {
         int pos = findIndex(row);
-        vars.get(pos).setValue(localRow(pos, row), value);
+        vars.get(pos).setDouble(localRow(pos, row), value);
     }
 
     @Override
-    public void addValue(double value) {
+    public void addDouble(double value) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 
     @Override
-    public int index(int row) {
+    public int getInt(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).index(localRow(pos, row));
+        return vars.get(pos).getInt(localRow(pos, row));
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setInt(int row, int value) {
         int pos = findIndex(row);
-        vars.get(pos).setIndex(localRow(pos, row), value);
+        vars.get(pos).setInt(localRow(pos, row), value);
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).label(localRow(pos, row));
+        return vars.get(pos).getLabel(localRow(pos, row));
     }
 
     @Override
@@ -211,36 +211,36 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBoolean(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).binary(localRow(pos, row));
+        return vars.get(pos).getBoolean(localRow(pos, row));
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
+    public void setBoolean(int row, boolean value) {
         int pos = findIndex(row);
-        vars.get(pos).setBinary(localRow(pos, row), value);
+        vars.get(pos).setBoolean(localRow(pos, row), value);
     }
 
     @Override
-    public void addBinary(boolean value) {
+    public void addBoolean(boolean value) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 
     @Override
-    public long stamp(int row) {
+    public long getLong(int row) {
         int pos = findIndex(row);
-        return vars.get(pos).stamp(localRow(pos, row));
+        return vars.get(pos).getLong(localRow(pos, row));
     }
 
     @Override
-    public void setStamp(int row, long value) {
+    public void setLong(int row, long value) {
         int pos = findIndex(row);
-        vars.get(pos).setStamp(localRow(pos, row), value);
+        vars.get(pos).setLong(localRow(pos, row), value);
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 

@@ -177,7 +177,7 @@ public class SolidRM implements RM {
         SolidRM m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
-                m.set(i, j, df.value(i, j));
+                m.set(i, j, df.getDouble(i, j));
             }
         }
         return m;
@@ -188,7 +188,7 @@ public class SolidRM implements RM {
         SolidRM m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
-                m.set(i, j, df.value(i, j));
+                m.set(i, j, df.getDouble(i, j));
             }
         }
         return m;

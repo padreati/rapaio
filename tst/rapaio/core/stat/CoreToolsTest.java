@@ -52,7 +52,7 @@ public class CoreToolsTest {
 
     @Before
     public void setUp() throws IOException {
-        df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
+        df = new Csv().withHeader(true).withDefaultTypes(VarType.DOUBLE).read(getClass(), "core_stat.csv");
         RandomSource.setSeed(123);
     }
 
@@ -68,11 +68,11 @@ public class CoreToolsTest {
 
     @Test
     public void testEmptyMean() {
-        NumVar num1 = NumVar.copy(Double.NaN, Double.NaN, Double.NaN);
+        VarDouble num1 = VarDouble.copy(Double.NaN, Double.NaN, Double.NaN);
         double mean = mean(num1).value();
         assertTrue(Double.isNaN(mean));
 
-        NumVar num2 = NumVar.wrap(1, 2, 3, 4);
+        VarDouble num2 = VarDouble.wrap(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
         sb.append(mean(num2).summary());
 
@@ -94,8 +94,8 @@ public class CoreToolsTest {
     @Test
     public void testWithMissingValues() {
 
-        NumVar x1 = NumVar.wrap(1.0, Double.NaN, 2.0, Double.NaN, 3.0, Double.NaN);
-        NumVar x2 = NumVar.wrap(1.0, 2.0, 3.0);
+        VarDouble x1 = VarDouble.wrap(1.0, Double.NaN, 2.0, Double.NaN, 3.0, Double.NaN);
+        VarDouble x2 = VarDouble.wrap(1.0, 2.0, 3.0);
 
         assertFalse(Double.isNaN(Mean.from(x1).value()));
     }
@@ -112,36 +112,36 @@ public class CoreToolsTest {
                 x[i] = normal.sampleNext();
             }
         }
-        assertEquals(Mean.from(x).value(), Mean.from(NumVar.wrap(x)).value(), TOL);
+        assertEquals(Mean.from(x).value(), Mean.from(VarDouble.wrap(x)).value(), TOL);
     }
 
     @Test
     public void testQuantiles() {
-        NumVar v = NumVar.seq(0, 1, 0.001);
-        Quantiles q1 = quantiles(v, NumVar.seq(0, 1, 0.001));
-        assertTrue(v.deepEquals(NumVar.wrap(q1.values())));
+        VarDouble v = VarDouble.seq(0, 1, 0.001);
+        Quantiles q1 = quantiles(v, VarDouble.seq(0, 1, 0.001));
+        assertTrue(v.deepEquals(VarDouble.wrap(q1.values())));
 
 
-        NumVar vEmpty = NumVar.empty(10);
-        NumVar vOne = vEmpty.solidCopy();
-        vOne.setValue(3, 10);
+        VarDouble vEmpty = VarDouble.empty(10);
+        VarDouble vOne = vEmpty.solidCopy();
+        vOne.setDouble(3, 10);
 
-        Quantiles q2 = quantiles(vEmpty, NumVar.seq(0, 1, 0.1));
+        Quantiles q2 = quantiles(vEmpty, VarDouble.seq(0, 1, 0.1));
         Assert.assertEquals(11, q2.values().length);
         for (int i = 0; i < q2.values().length; i++) {
             Assert.assertTrue(Double.isNaN(q2.values()[i]));
         }
 
-        Quantiles q3 = quantiles(vOne, NumVar.seq(0, 1, 0.1));
+        Quantiles q3 = quantiles(vOne, VarDouble.seq(0, 1, 0.1));
         Assert.assertEquals(11, q3.values().length);
         for (int i = 0; i < q3.values().length; i++) {
             Assert.assertEquals(10, q3.values()[i], 1e-20);
         }
 
-        Quantiles q4 = quantiles(v, Quantiles.Type.R8, NumVar.seq(0, 1, 0.1));
+        Quantiles q4 = quantiles(v, Quantiles.Type.R8, VarDouble.seq(0, 1, 0.1));
 
         Arrays.stream(q4.values()).forEach(val -> WS.println(WS.formatLong(val)));
-        NumVar v4 = NumVar.copy(0,
+        VarDouble v4 = VarDouble.copy(0,
                 0.09946666666666674,
                 0.19960000000000017,
                 0.2997333333333336,
@@ -153,7 +153,7 @@ public class CoreToolsTest {
                 0.900533333333334,
                 1.0000000000000007);
         q4.printSummary();
-        assertTrue(v4.deepEquals(NumVar.wrap(q4.values())));
+        assertTrue(v4.deepEquals(VarDouble.wrap(q4.values())));
     }
 
     @Test
@@ -161,11 +161,11 @@ public class CoreToolsTest {
         RandomSource.setSeed(1234);
         Normal normal = new Normal();
 
-        NumVar x = NumVar.from(10_000, normal::sampleNext);
+        VarDouble x = VarDouble.from(10_000, normal::sampleNext);
 
         Var y = x;
         for (int i = 0; i < 100; i++) {
-            y = y.bindRows(NumVar.from(10_000, normal::sampleNext));
+            y = y.bindRows(VarDouble.from(10_000, normal::sampleNext));
         }
 
         Var yy = y;
@@ -181,33 +181,33 @@ public class CoreToolsTest {
 
     @Test
     public void testMode() {
-        assertEquals("[a, b]", Arrays.deepToString(modes(NomVar.copy("a", "a", "b", "a", "b", "c", "b")).values()));
-        assertEquals("[a]", Arrays.deepToString(modes(NomVar.copy("a")).values()));
-        assertEquals("[a]", Arrays.deepToString(modes(NomVar.copy("a", "a", "a", "b", "c", "b")).values()));
-        assertEquals("[a, c, b]", Arrays.deepToString(modes(NomVar.copy("a", "c", "b")).values()));
-        assertEquals("[]", Arrays.deepToString(modes(NomVar.copy()).values()));
+        assertEquals("[a, b]", Arrays.deepToString(modes(VarNominal.copy("a", "a", "b", "a", "b", "c", "b")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(VarNominal.copy("a")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(VarNominal.copy("a", "a", "a", "b", "c", "b")).values()));
+        assertEquals("[a, c, b]", Arrays.deepToString(modes(VarNominal.copy("a", "c", "b")).values()));
+        assertEquals("[]", Arrays.deepToString(modes(VarNominal.copy()).values()));
     }
 
     @Test
     public void testCovariance() {
-        NumVar v1 = NumVar.seq(0, 200, 0.1);
-        NumVar v2 = NumVar.wrap(1, 201, 0.1);
+        VarDouble v1 = VarDouble.seq(0, 200, 0.1);
+        VarDouble v2 = VarDouble.wrap(1, 201, 0.1);
         assertEquals(cov(v1, v1).value(), variance(v1).value(), 1e-12);
 
-        NumVar x = NumVar.copy(1, 2, 3, 4);
+        VarDouble x = VarDouble.copy(1, 2, 3, 4);
         assertEquals(cov(x, x).value(), variance(x).value(), 1e-12);
 
-        NumVar norm = distNormal().sample(20_000);
+        VarDouble norm = distNormal().sample(20_000);
         assertEquals(cov(norm, norm).value(), variance(norm).value(), 1e-12);
 
-        Var x1 = NumVar.seq(0, 200, 1);
-        Var x2 = NumVar.seq(0, 50, 0.25);
+        Var x1 = VarDouble.seq(0, 200, 1);
+        Var x2 = VarDouble.seq(0, 50, 0.25);
         assertEquals(845.875, cov(x1, x2).value(), 1e-12);
     }
 
     @Test
     public void testCorrelation() {
-        Var x = NumVar.from(100, normal::sampleNext).withName("x");
+        Var x = VarDouble.from(100, normal::sampleNext).withName("x");
         Var y = x.solidCopy().withName("y");
 
         Covariance cov = Covariance.from(x, y);
@@ -221,7 +221,7 @@ public class CoreToolsTest {
 
     @Test
     public void testCovarianceInvalid() {
-        Var x = NumVar.from(1, normal::sampleNext).withName("x");
+        Var x = VarDouble.from(1, normal::sampleNext).withName("x");
         Var y = x.solidCopy().withName("y");
 
         Covariance cov = Covariance.from(x, y);
@@ -230,19 +230,19 @@ public class CoreToolsTest {
 
     @Test
     public void testGeometricMean() {
-        assertEquals(4, GeometricMean.from(NumVar.copy(2, 8)).value(), 1e-20);
-        assertEquals(0.5, GeometricMean.from(NumVar.copy(4, 1, 1 / 32.)).value(), 1e-16);
-        assertEquals(42.42640687119286, GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).value(), 1e-20);
-        GeometricMean.from(NumVar.copy(6, 50, 9, 1200)).printSummary();
+        assertEquals(4, GeometricMean.from(VarDouble.copy(2, 8)).value(), 1e-20);
+        assertEquals(0.5, GeometricMean.from(VarDouble.copy(4, 1, 1 / 32.)).value(), 1e-16);
+        assertEquals(42.42640687119286, GeometricMean.from(VarDouble.copy(6, 50, 9, 1200)).value(), 1e-20);
+        GeometricMean.from(VarDouble.copy(6, 50, 9, 1200)).printSummary();
 
-        assertTrue(Double.isNaN(GeometricMean.from(NumVar.copy(1, -1)).value()));
-        GeometricMean.from(NumVar.wrap(1, -1)).printSummary();
+        assertTrue(Double.isNaN(GeometricMean.from(VarDouble.copy(1, -1)).value()));
+        GeometricMean.from(VarDouble.wrap(1, -1)).printSummary();
     }
 
     @Test
     public void testToolsOnNonNumeric() {
-        Var idx1 = IdxVar.wrap(1, 2, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4, 5, 6, Integer.MIN_VALUE, 7);
-        Var idx2 = IdxVar.wrap(1, 2, 3, 4, 5, 6, 7);
+        Var idx1 = VarInt.wrap(1, 2, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4, 5, 6, Integer.MIN_VALUE, 7);
+        Var idx2 = VarInt.wrap(1, 2, 3, 4, 5, 6, 7);
 
         Assert.assertEquals(4, CoreTools.mean(idx1).value(), 1e-20);
         Assert.assertEquals(CoreTools.variance(idx2).value(), CoreTools.variance(idx1).value(), 1e-20);
@@ -251,8 +251,8 @@ public class CoreToolsTest {
         Assert.assertEquals(3, CoreTools.variance(idx1).missingCount());
 
 
-        Var bin1 = BinaryVar.copy(1, 0, 1, -1, 1, -1, 0);
-        Var bin2 = BinaryVar.copy(true, false, true, true, false);
+        Var bin1 = VarBoolean.copy(1, 0, 1, -1, 1, -1, 0);
+        Var bin2 = VarBoolean.copy(true, false, true, true, false);
         Assert.assertEquals(0.6, CoreTools.mean(bin1).value(), 1e-20);
         Assert.assertEquals(CoreTools.variance(bin2).value(), CoreTools.variance(bin1).value(), 1e-20);
     }

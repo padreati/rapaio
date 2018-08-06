@@ -63,8 +63,8 @@ public class Covariance implements Printable {
                 missingCount++;
                 continue;
             }
-            xx[completeCount] = x.value(i);
-            yy[completeCount] = y.value(i);
+            xx[completeCount] = x.getDouble(i);
+            yy[completeCount] = y.getDouble(i);
             completeCount++;
         }
 

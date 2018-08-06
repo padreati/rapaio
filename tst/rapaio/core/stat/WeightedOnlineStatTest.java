@@ -4,10 +4,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.core.stat.OnlineStat;
-import rapaio.core.stat.Sum;
-import rapaio.core.stat.WeightedOnlineStat;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 
@@ -27,26 +24,26 @@ public class WeightedOnlineStatTest {
         RandomSource.setSeed(124);
         Uniform unif = new Uniform(0, 1);
 
-        Var x = NumVar.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
+        Var x = VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
 
-        NumVar w = NumVar.from(x.rowCount(), row -> unif.sampleNext());
+        VarDouble w = VarDouble.from(x.rowCount(), row -> unif.sampleNext());
 
         // normalize w
         double wsum = Sum.from(w).value();
         for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i) / wsum);
+            w.setDouble(i, w.getDouble(i) / wsum);
         }
 
         SolidFrame.byVars(x, w).printLines();
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.rowCount(); i++) {
-            left.update(x.value(i), w.value(i));
+            left.update(x.getDouble(i), w.getDouble(i));
         }
 
         WeightedOnlineStat right = WeightedOnlineStat.empty();
         for (int i = x.rowCount() - 1; i >= 0; i--) {
-            right.update(x.value(i), w.value(i));
+            right.update(x.getDouble(i), w.getDouble(i));
         }
 
         assertEquals(left.variance(), right.variance(), TOL);
@@ -58,13 +55,13 @@ public class WeightedOnlineStatTest {
         RandomSource.setSeed(123);
 
         Normal normal = new Normal(0, 100);
-        NumVar x = NumVar.from(100, normal::sampleNext);
-        NumVar w = NumVar.fill(100, 1);
+        VarDouble x = VarDouble.from(100, normal::sampleNext);
+        VarDouble w = VarDouble.fill(100, 1);
 
-        NumVar wnorm = w.solidCopy();
+        VarDouble wnorm = w.solidCopy();
         double wsum = Sum.from(w).value();
         for (int i = 0; i < wnorm.rowCount(); i++) {
-            wnorm.setValue(i, wnorm.value(i) / wsum);
+            wnorm.setDouble(i, wnorm.getDouble(i) / wsum);
         }
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
@@ -72,9 +69,9 @@ public class WeightedOnlineStatTest {
         OnlineStat stat = OnlineStat.empty();
 
         for (int i = 0; i < x.rowCount(); i++) {
-            wstat.update(x.value(i), w.value(i));
-            wnstat.update(x.value(i), wnorm.value(i));
-            stat.update(x.value(i));
+            wstat.update(x.getDouble(i), w.getDouble(i));
+            wnstat.update(x.getDouble(i), wnorm.getDouble(i));
+            stat.update(x.getDouble(i));
         }
 
         assertEquals(wstat.mean(), stat.mean(), TOL);
@@ -97,26 +94,26 @@ public class WeightedOnlineStatTest {
         Normal normal = Normal.from(0, 1);
         Uniform uniform = new Uniform(0, 1);
 
-        NumVar x = NumVar.from(100, normal::sampleNext);
-        NumVar w = NumVar.from(100, uniform::sampleNext);
+        VarDouble x = VarDouble.from(100, normal::sampleNext);
+        VarDouble w = VarDouble.from(100, uniform::sampleNext);
 
         double wsum = Sum.from(w).value();
         for (int i = 0; i < w.rowCount(); i++) {
-            w.setValue(i, w.value(i)/wsum);
+            w.setDouble(i, w.getDouble(i)/wsum);
         }
 
         for (int i = 0; i < 20; i++) {
-            wos1.update(x.value(i), w.value(i));
+            wos1.update(x.getDouble(i), w.getDouble(i));
         }
         for (int i = 20; i < 65; i++) {
-            wos2.update(x.value(i), w.value(i));
+            wos2.update(x.getDouble(i), w.getDouble(i));
         }
         for (int i = 65; i < 100; i++) {
-            wos3.update(x.value(i), w.value(i));
+            wos3.update(x.getDouble(i), w.getDouble(i));
         }
 
         for (int i = 0; i < 100; i++) {
-            wosTotal.update(x.value(i), w.value(i));
+            wosTotal.update(x.getDouble(i), w.getDouble(i));
         }
 
         WeightedOnlineStat t1 = WeightedOnlineStat.from(wos1, wos2, wos3);

@@ -37,54 +37,54 @@ public class BinaryTest {
 
     @Test
     public void testEmpty() {
-        BinaryVar b = BinaryVar.empty();
-        b.addBinary(true);
-        b.addBinary(true);
-        b.addBinary(false);
+        VarBoolean b = VarBoolean.empty();
+        b.addBoolean(true);
+        b.addBoolean(true);
+        b.addBoolean(false);
         b.addMissing();
         b.addMissing();
-        b.addBinary(true);
+        b.addBoolean(true);
 
-        assertEquals(1, b.stream().complete().filter(s -> !s.binary()).count());
-        assertEquals(3, b.stream().complete().filter(VSpot::binary).count());
+        assertEquals(1, b.stream().complete().filter(s -> !s.getBoolean()).count());
+        assertEquals(3, b.stream().complete().filter(VSpot::getBoolean).count());
         assertEquals(2, b.stream().incomplete().count());
 
-        assertEquals(10, BinaryVar.empty(10).stream().incomplete().count());
-        assertEquals(0, BinaryVar.empty().stream().incomplete().count());
+        assertEquals(10, VarBoolean.empty(10).stream().incomplete().count());
+        assertEquals(0, VarBoolean.empty().stream().incomplete().count());
     }
 
     @Test
     public void testFill() {
-        BinaryVar b = BinaryVar.fill(10, false);
+        VarBoolean b = VarBoolean.fill(10, false);
 
         assertEquals(0, b.stream().incomplete().count());
-        assertEquals(10, b.stream().complete().filter(s -> !s.binary()).count());
-        assertEquals(0, b.stream().complete().filter(VSpot::binary).count());
+        assertEquals(10, b.stream().complete().filter(s -> !s.getBoolean()).count());
+        assertEquals(0, b.stream().complete().filter(VSpot::getBoolean).count());
 
-        b = BinaryVar.fill(10, true);
+        b = VarBoolean.fill(10, true);
 
         assertEquals(0, b.stream().incomplete().count());
-        assertEquals(0, b.stream().complete().filter(s -> !s.binary()).count());
-        assertEquals(10, b.stream().complete().filter(VSpot::binary).count());
+        assertEquals(0, b.stream().complete().filter(s -> !s.getBoolean()).count());
+        assertEquals(10, b.stream().complete().filter(VSpot::getBoolean).count());
     }
 
     @Test
     public void testNumericStats() {
-        BinaryVar b = BinaryVar.copy(1, 1, 0, 0, 1, 0, 1, 1);
+        VarBoolean b = VarBoolean.copy(1, 1, 0, 0, 1, 0, 1, 1);
         b.printSummary();
         assertEquals(0.625, Mean.from(b).value(), 10e-10);
     }
 
     @Test
     public void testMissingValues() {
-        BinaryVar bin = BinaryVar.copy(1, 0, 1, 0, -1, -1, 1, 0);
+        VarBoolean bin = VarBoolean.copy(1, 0, 1, 0, -1, -1, 1, 0);
         assertEquals(8, bin.rowCount());
         assertEquals(true, bin.isMissing(4));
         assertEquals(false, bin.isMissing(7));
 
-        bin = BinaryVar.empty();
+        bin = VarBoolean.empty();
         bin.addMissing();
-        bin.addBinary(true);
+        bin.addBoolean(true);
         bin.setMissing(1);
 
         assertEquals(2, bin.rowCount());
@@ -94,33 +94,33 @@ public class BinaryTest {
 
     @Test
     public void testBuilders() {
-        BinaryVar bin = BinaryVar.copy(true, true, false, false);
+        VarBoolean bin = VarBoolean.copy(true, true, false, false);
         assertEquals(4, bin.rowCount());
-        assertEquals(true, bin.binary(0));
-        assertEquals(false, bin.binary(3));
+        assertEquals(true, bin.getBoolean(0));
+        assertEquals(false, bin.getBoolean(3));
 
         assertEquals(4, bin.rowCount());
     }
 
     @Test
     public void testOther() {
-        BinaryVar bin = BinaryVar.empty();
-        bin.addValue(1);
-        bin.setValue(0, 0);
-        bin.addIndex(1);
-        bin.setIndex(1, 0);
+        VarBoolean bin = VarBoolean.empty();
+        bin.addDouble(1);
+        bin.setDouble(0, 0);
+        bin.addInt(1);
+        bin.setInt(1, 0);
 
-        assertEquals(0, bin.value(0), 10e-10);
-        assertEquals(0, bin.index(1));
+        assertEquals(0, bin.getDouble(0), 10e-10);
+        assertEquals(0, bin.getInt(1));
 
-        BinaryVar copy = bin.solidCopy();
-        assertEquals(false, copy.binary(0));
-        assertEquals(false, copy.binary(1));
+        VarBoolean copy = bin.solidCopy();
+        assertEquals(false, copy.getBoolean(0));
+        assertEquals(false, copy.getBoolean(1));
         assertEquals(2, copy.rowCount());
 
         copy.remove(0);
         assertEquals(1, copy.rowCount());
-        assertEquals(false, copy.binary(0));
+        assertEquals(false, copy.getBoolean(0));
 
         copy.clear();
         assertEquals(0, copy.rowCount());
@@ -134,115 +134,115 @@ public class BinaryTest {
     @Test
     public void testValueManipulation() {
 
-        BinaryVar bin = BinaryVar.empty();
-        bin.addValue(1);
-        bin.addValue(0);
-        bin.addValue(-1);
+        VarBoolean bin = VarBoolean.empty();
+        bin.addDouble(1);
+        bin.addDouble(0);
+        bin.addDouble(-1);
 
         assertEquals(3, bin.rowCount());
-        assertEquals(true, bin.binary(0));
-        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.getBoolean(0));
+        assertEquals(false, bin.getBoolean(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
-            bin.addValue(2);
+            bin.addDouble(2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
         try {
-            bin.setValue(0, 2);
+            bin.setDouble(0, 2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
-        bin.setValue(0, -1);
-        bin.setValue(1, 0);
-        bin.setValue(2, 1);
+        bin.setDouble(0, -1);
+        bin.setDouble(1, 0);
+        bin.setDouble(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.binary(1));
-        assertEquals(true, bin.binary(2));
+        assertEquals(false, bin.getBoolean(1));
+        assertEquals(true, bin.getBoolean(2));
     }
 
     @Test
     public void testIndexManipulation() {
 
-        BinaryVar bin = BinaryVar.empty();
-        bin.addIndex(1);
-        bin.addIndex(0);
-        bin.addIndex(-1);
+        VarBoolean bin = VarBoolean.empty();
+        bin.addInt(1);
+        bin.addInt(0);
+        bin.addInt(-1);
 
         assertEquals(3, bin.rowCount());
-        assertEquals(true, bin.binary(0));
-        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.getBoolean(0));
+        assertEquals(false, bin.getBoolean(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
-            bin.addIndex(2);
+            bin.addInt(2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
         try {
-            bin.setIndex(0, 2);
+            bin.setInt(0, 2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
-        bin.setIndex(0, -1);
-        bin.setIndex(1, 0);
-        bin.setIndex(2, 1);
+        bin.setInt(0, -1);
+        bin.setInt(1, 0);
+        bin.setInt(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.binary(1));
-        assertEquals(true, bin.binary(2));
+        assertEquals(false, bin.getBoolean(1));
+        assertEquals(true, bin.getBoolean(2));
     }
 
     @Test
     public void testStampManipulation() {
 
-        BinaryVar bin = BinaryVar.empty();
-        bin.addStamp(1);
-        bin.addStamp(0);
-        bin.addStamp(-1);
+        VarBoolean bin = VarBoolean.empty();
+        bin.addLong(1);
+        bin.addLong(0);
+        bin.addLong(-1);
 
         assertEquals(3, bin.rowCount());
-        assertEquals(true, bin.binary(0));
-        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.getBoolean(0));
+        assertEquals(false, bin.getBoolean(1));
         assertEquals(true, bin.isMissing(2));
 
         try {
-            bin.addStamp(2);
+            bin.addLong(2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
         try {
-            bin.setStamp(0, 2);
+            bin.setLong(0, 2);
             assertFalse("This should raise an exception", true);
         } catch (Throwable ignored) {
         }
 
-        bin.setStamp(0, -1);
-        bin.setStamp(1, 0);
-        bin.setStamp(2, 1);
+        bin.setLong(0, -1);
+        bin.setLong(1, 0);
+        bin.setLong(2, 1);
 
         assertEquals(true, bin.isMissing(0));
-        assertEquals(false, bin.binary(1));
-        assertEquals(true, bin.binary(2));
+        assertEquals(false, bin.getBoolean(1));
+        assertEquals(true, bin.getBoolean(2));
 
-        assertEquals(1L, bin.stamp(0));
+        assertEquals(1L, bin.getLong(0));
     }
 
     @Test
     public void testLabelManipulation() {
-        BinaryVar bin = BinaryVar.copy(true, false, true);
+        VarBoolean bin = VarBoolean.copy(true, false, true);
         bin.addMissing();
-        assertEquals("true", bin.label(0));
-        assertEquals("false", bin.label(1));
-        assertEquals("true", bin.label(2));
-        assertEquals("?", bin.label(3));
+        assertEquals("true", bin.getLabel(0));
+        assertEquals("false", bin.getLabel(1));
+        assertEquals("true", bin.getLabel(2));
+        assertEquals("?", bin.getLabel(3));
 
         try {
             bin.addLabel("x");

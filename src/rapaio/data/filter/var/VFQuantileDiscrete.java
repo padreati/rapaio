@@ -26,7 +26,7 @@
 package rapaio.data.filter.var;
 
 import rapaio.core.CoreTools;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.data.Var;
 import rapaio.sys.WS;
 import rapaio.util.func.SPredicate;
@@ -95,12 +95,12 @@ public class VFQuantileDiscrete extends AbstractVF {
 
         Var original = vars[0];
 
-        NomVar result = NomVar.empty(0, dict).withName(original.name());
+        VarNominal result = VarNominal.empty(0, dict).withName(original.name());
         for (int i = 0; i < original.rowCount(); i++) {
             if (original.isMissing(i))
                 result.addMissing();
             for (Map.Entry<String, SPredicate<Double>> e : predicates.entrySet()) {
-                if (e.getValue().test(original.value(i))) {
+                if (e.getValue().test(original.getDouble(i))) {
                     result.addLabel(e.getKey());
                 }
             }

@@ -115,7 +115,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(1234);
 
         Classifier c = CTree.newCART()
-                .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
+                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(c, df_5k);
@@ -128,7 +128,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(1234);
         Classifier c = CForest.newRF()
                 .withClassifier(CTree.newCART()
-                        .withTest(VarType.NUMERIC, CTreeTest.NumericRandom)
+                        .withTest(VarType.DOUBLE, CTreeTest.NumericRandom)
                         .withMaxDepth(12)
                 )
                 .withRuns(200)
@@ -145,7 +145,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         Frame src = Datasets.loadIrisDataset();
         Classifier c = CForest.newRF()
                 .withClassifier(CTree.newCART()
-                        .withTest(VarType.NUMERIC, CTreeTest.NumericBinary)
+                        .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
                         .withMaxDepth(12)
                 )
                 .withRuns(200)

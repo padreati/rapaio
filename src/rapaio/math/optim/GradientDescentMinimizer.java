@@ -25,7 +25,7 @@
 
 package rapaio.math.optim;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.optim.linesearch.BacktrackLineSearch;
@@ -34,7 +34,6 @@ import rapaio.math.linear.RV;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -57,7 +56,7 @@ public class GradientDescentMinimizer implements Minimizer {
     private RV sol;
 
     private List<RV> solutions = new ArrayList<>();
-    private NumVar errors;
+    private VarDouble errors;
     private boolean converged = false;
 
     public GradientDescentMinimizer(RV x, RFunction f, RDerivative d1f, int maxIt) {

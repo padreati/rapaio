@@ -53,7 +53,7 @@ public abstract class AbstractFeatureGroupGenerator implements FeatureGroupGener
         public static Key from(int row, Frame df, List<String> keys) {
             Key key = new Key();
             for(String keyName : keys) {
-                key.values.add(df.label(row, keyName));
+                key.values.add(df.getLabel(row, keyName));
             }
             return key;
         }

@@ -58,7 +58,7 @@ public class CountValues implements Printable {
 
         Object2IntOpenHashMap<String> hash = new Object2IntOpenHashMap<>(var.rowCount() / 2);
         for (int i = 0; i < var.rowCount(); i++) {
-            String label = var.label(i);
+            String label = var.getLabel(i);
             if (!hash.containsKey(label)) {
                 hash.put(label, 0);
             }

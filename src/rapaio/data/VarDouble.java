@@ -47,13 +47,13 @@ import java.util.stream.Collector;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class NumVar extends AbstractVar {
+public final class VarDouble extends AbstractVar {
 
     /**
      * @return new empty numeric variable of size 0
      */
-    public static NumVar empty() {
-        return new NumVar(0, 0, Double.NaN);
+    public static VarDouble empty() {
+        return new VarDouble(0, 0, Double.NaN);
     }
 
     /**
@@ -62,8 +62,8 @@ public final class NumVar extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric var
      */
-    public static NumVar empty(int rows) {
-        return new NumVar(rows, rows, Double.NaN);
+    public static VarDouble empty(int rows) {
+        return new VarDouble(rows, rows, Double.NaN);
     }
 
     /**
@@ -72,9 +72,9 @@ public final class NumVar extends AbstractVar {
      * @param values given values
      * @return new instance of numeric variable
      */
-    public static NumVar copy(Collection<? extends Number> values) {
-        final NumVar numeric = new NumVar(0, 0, Double.NaN);
-        values.forEach(n -> numeric.addValue(n.doubleValue()));
+    public static VarDouble copy(Collection<? extends Number> values) {
+        final VarDouble numeric = new VarDouble(0, 0, Double.NaN);
+        values.forEach(n -> numeric.addDouble(n.doubleValue()));
         return numeric;
     }
 
@@ -84,8 +84,8 @@ public final class NumVar extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static NumVar copy(int... values) {
-        NumVar numeric = new NumVar(0, 0, 0);
+    public static VarDouble copy(int... values) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             numeric.data[i] = values[i];
@@ -100,8 +100,8 @@ public final class NumVar extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static NumVar copy(double... values) {
-        NumVar numeric = new NumVar(values.length, values.length, 0);
+    public static VarDouble copy(double... values) {
+        VarDouble numeric = new VarDouble(values.length, values.length, 0);
         numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
     }
@@ -112,14 +112,14 @@ public final class NumVar extends AbstractVar {
      * @param source source numeric var
      * @return new instance of numeric variable
      */
-    public static NumVar copy(Var source) {
-        NumVar numeric = new NumVar(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (!(source instanceof NumVar)) {
+    public static VarDouble copy(Var source) {
+        VarDouble numeric = new VarDouble(source.rowCount(), source.rowCount(), 0).withName(source.name());
+        if (!(source instanceof VarDouble)) {
             for (int i = 0; i < source.rowCount(); i++) {
-                numeric.setValue(i, source.value(i));
+                numeric.setDouble(i, source.getDouble(i));
             }
         } else {
-            numeric.data = Arrays.copyOf(((NumVar) source).data, source.rowCount());
+            numeric.data = Arrays.copyOf(((VarDouble) source).data, source.rowCount());
         }
         return numeric;
     }
@@ -130,15 +130,15 @@ public final class NumVar extends AbstractVar {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static NumVar wrap(double... values) {
-        NumVar numeric = new NumVar(0, 0, 0);
+    public static VarDouble wrap(double... values) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
         return numeric;
     }
 
-    public static NumVar wrap(DoubleArrayList values) {
-        NumVar numeric = new NumVar(0, 0, 0);
+    public static VarDouble wrap(DoubleArrayList values) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = values.elements();
         numeric.rows = values.size();
         return numeric;
@@ -150,8 +150,8 @@ public final class NumVar extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric variable of given size and filled with 0
      */
-    public static NumVar fill(int rows) {
-        return new NumVar(rows, rows, 0);
+    public static VarDouble fill(int rows) {
+        return new VarDouble(rows, rows, 0);
     }
 
     /**
@@ -161,8 +161,8 @@ public final class NumVar extends AbstractVar {
      * @param fill fill value used to set all the values
      * @return new instance of numeric variable of given size and filled with given value
      */
-    public static NumVar fill(int rows, double fill) {
-        return new NumVar(rows, rows, fill);
+    public static VarDouble fill(int rows, double fill) {
+        return new VarDouble(rows, rows, fill);
     }
 
     /**
@@ -171,30 +171,30 @@ public final class NumVar extends AbstractVar {
      * @param value fill value
      * @return new instance of numeric variable of size 1 and filled with given fill value
      */
-    public static NumVar scalar(double value) {
-        return new NumVar(1, 1, value);
+    public static VarDouble scalar(double value) {
+        return new VarDouble(1, 1, value);
     }
 
-    public static NumVar seq(double end) {
+    public static VarDouble seq(double end) {
         return seq(0, end);
     }
 
-    public static NumVar seq(double start, double end) {
+    public static VarDouble seq(double start, double end) {
         return seq(start, end, 1.0);
     }
 
-    public static NumVar seq(double start, double end, double step) {
-        NumVar num = NumVar.empty();
+    public static VarDouble seq(double start, double end, double step) {
+        VarDouble num = VarDouble.empty();
         int i = 0;
         while (start + i * step <= end) {
-            num.addValue(start + i * step);
+            num.addDouble(start + i * step);
             i++;
         }
         return num;
     }
 
-    public static NumVar from(int rows, Supplier<Double> supplier) {
-        NumVar numeric = new NumVar(0, 0, 0);
+    public static VarDouble from(int rows, Supplier<Double> supplier) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
@@ -212,7 +212,7 @@ public final class NumVar extends AbstractVar {
 
     // private constructor
 
-    private NumVar(int rows, int capacity, double fill) {
+    private VarDouble(int rows, int capacity, double fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
@@ -232,8 +232,8 @@ public final class NumVar extends AbstractVar {
      * @param transformation transformation function
      * @return new numeric variable which contains the computed values
      */
-    public static NumVar from(int rows, Function<Integer, Double> transformation) {
-        NumVar numeric = new NumVar(0, 0, 0);
+    public static VarDouble from(int rows, Function<Integer, Double> transformation) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
@@ -250,36 +250,36 @@ public final class NumVar extends AbstractVar {
      * @param transform transformation applied to source variable
      * @return new numeric variable which contains transformed variables
      */
-    public static NumVar from(Var reference, Function<Double, Double> transform) {
-        return NumVar.from(reference.rowCount(), i -> transform.apply(reference.value(i)));
+    public static VarDouble from(Var reference, Function<Double, Double> transform) {
+        return VarDouble.from(reference.rowCount(), i -> transform.apply(reference.getDouble(i)));
     }
 
 
     // stream collectors
-    public static Collector<Double, NumVar, NumVar> collector() {
+    public static Collector<Double, VarDouble, VarDouble> collector() {
 
-        return new Collector<Double, NumVar, NumVar>() {
+        return new Collector<Double, VarDouble, VarDouble>() {
             @Override
-            public Supplier<NumVar> supplier() {
-                return NumVar::empty;
+            public Supplier<VarDouble> supplier() {
+                return VarDouble::empty;
             }
 
             @Override
-            public BiConsumer<NumVar, Double> accumulator() {
-                return NumVar::addValue;
+            public BiConsumer<VarDouble, Double> accumulator() {
+                return VarDouble::addDouble;
             }
 
             @Override
-            public BinaryOperator<NumVar> combiner() {
+            public BinaryOperator<VarDouble> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
+                    y.stream().forEach(s -> x.addDouble(s.getDouble()));
                     return x;
                 };
             }
 
             @Override
-            public Function<NumVar, NumVar> finisher() {
-                return NumVar::solidCopy;
+            public Function<VarDouble, VarDouble> finisher() {
+                return VarDouble::solidCopy;
             }
 
             @Override
@@ -290,13 +290,13 @@ public final class NumVar extends AbstractVar {
     }
 
     @Override
-    public NumVar withName(String name) {
-        return (NumVar) super.withName(name);
+    public VarDouble withName(String name) {
+        return (VarDouble) super.withName(name);
     }
 
     @Override
     public VarType type() {
-        return VarType.NUMERIC;
+        return VarType.DOUBLE;
     }
 
     private void ensureCapacity(int minCapacity) {
@@ -321,48 +321,48 @@ public final class NumVar extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacity(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = NumVar.missingValue;
+            data[rows + i] = VarDouble.missingValue;
         }
         rows += rowCount;
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         return data[row];
     }
 
     @Override
-    public void setValue(int row, double value) {
+    public void setDouble(int row, double value) {
         data[row] = value;
     }
 
     @Override
-    public void addValue(double value) {
+    public void addDouble(double value) {
         ensureCapacity(rows + 1);
         data[rows++] = value;
     }
 
     @Override
-    public int index(int row) {
-        return (int) Math.rint(value(row));
+    public int getInt(int row) {
+        return (int) Math.rint(getDouble(row));
     }
 
     @Override
-    public void setIndex(int row, int value) {
-        setValue(row, value);
+    public void setInt(int row, int value) {
+        setDouble(row, value);
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         ensureCapacity(rows + 1);
         data[rows++] = value;
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         if (isMissing(row))
             return "?";
-        return String.valueOf(value(row));
+        return String.valueOf(getDouble(row));
     }
 
     @Override
@@ -372,14 +372,14 @@ public final class NumVar extends AbstractVar {
             return;
         }
         if ("Inf".equals(value)) {
-            setValue(row, Double.POSITIVE_INFINITY);
+            setDouble(row, Double.POSITIVE_INFINITY);
             return;
         }
         if ("-Inf".equals(value)) {
-            setValue(row, Double.NEGATIVE_INFINITY);
+            setDouble(row, Double.NEGATIVE_INFINITY);
             return;
         }
-        setValue(row, Double.parseDouble(value));
+        setDouble(row, Double.parseDouble(value));
     }
 
     @Override
@@ -389,14 +389,14 @@ public final class NumVar extends AbstractVar {
             return;
         }
         if ("Inf".equals(value)) {
-            addValue(Double.POSITIVE_INFINITY);
+            addDouble(Double.POSITIVE_INFINITY);
             return;
         }
         if ("-Inf".equals(value)) {
-            addValue(Double.NEGATIVE_INFINITY);
+            addDouble(Double.NEGATIVE_INFINITY);
             return;
         }
-        addValue(Double.parseDouble(value));
+        addDouble(Double.parseDouble(value));
     }
 
     @Override
@@ -410,48 +410,48 @@ public final class NumVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        return value(row) == 1.0;
+    public boolean getBoolean(int row) {
+        return getDouble(row) == 1.0;
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
-        setValue(row, value ? 1 : 0);
+    public void setBoolean(int row, boolean value) {
+        setDouble(row, value ? 1 : 0);
     }
 
     @Override
-    public void addBinary(boolean value) {
-        addValue(value ? 1 : 0);
+    public void addBoolean(boolean value) {
+        addDouble(value ? 1 : 0);
     }
 
     @Override
-    public long stamp(int row) {
-        return (long) Math.rint(value(row));
+    public long getLong(int row) {
+        return (long) Math.rint(getDouble(row));
     }
 
     @Override
-    public void setStamp(int row, long value) {
-        setValue(row, Double.valueOf(String.valueOf(value)));
+    public void setLong(int row, long value) {
+        setDouble(row, Double.valueOf(String.valueOf(value)));
     }
 
     @Override
-    public void addStamp(long value) {
-        addValue(Double.valueOf(String.valueOf(value)));
+    public void addLong(long value) {
+        addDouble(Double.valueOf(String.valueOf(value)));
     }
 
     @Override
     public boolean isMissing(int row) {
-        return !Double.isFinite(value(row));
+        return !Double.isFinite(getDouble(row));
     }
 
     @Override
     public void setMissing(int row) {
-        setValue(row, missingValue);
+        setDouble(row, missingValue);
     }
 
     @Override
     public void addMissing() {
-        addValue(missingValue);
+        addDouble(missingValue);
     }
 
     @Override
@@ -470,7 +470,7 @@ public final class NumVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return NumVar.empty(rows);
+        return VarDouble.empty(rows);
     }
 
     @Override
@@ -479,8 +479,8 @@ public final class NumVar extends AbstractVar {
     }
 
     @Override
-    public NumVar solidCopy() {
-        return (NumVar) super.solidCopy();
+    public VarDouble solidCopy() {
+        return (VarDouble) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

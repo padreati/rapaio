@@ -61,7 +61,7 @@ public class Modes implements Printable {
                 missingCount++;
                 continue;
             }
-            freq[var.index(i)]++;
+            freq[var.getInt(i)]++;
         }
         completeCount = var.rowCount() - missingCount;
         int max = 0;

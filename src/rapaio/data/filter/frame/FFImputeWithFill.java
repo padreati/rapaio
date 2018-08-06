@@ -71,7 +71,7 @@ public class FFImputeWithFill extends AbstractFF {
                 continue;
             for (int i = 0; i < var.rowCount(); i++) {
                 if (var.isMissing(i))
-                    var.setValue(i, fill);
+                    var.setDouble(i, fill);
             }
         }
         return df;

@@ -170,53 +170,53 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public double value(int row, int col) {
-        return source.value(mapping.get(row), colIndexes[col]);
+    public double getDouble(int row, int col) {
+        return source.getDouble(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public double value(int row, String varName) {
-        return source.value(mapping.get(row), varName);
+    public double getDouble(int row, String varName) {
+        return source.getDouble(mapping.get(row), varName);
     }
 
     @Override
-    public void setValue(int row, int col, double value) {
-        source.setValue(mapping.get(row), colIndexes[col], value);
+    public void setDouble(int row, int col, double value) {
+        source.setDouble(mapping.get(row), colIndexes[col], value);
     }
 
     @Override
-    public void setValue(int row, String varName, double value) {
-        source.setValue(mapping.get(row), varName, value);
+    public void setDouble(int row, String varName, double value) {
+        source.setDouble(mapping.get(row), varName, value);
     }
 
     @Override
-    public int index(int row, int col) {
-        return source.index(mapping.get(row), colIndexes[col]);
+    public int getInt(int row, int col) {
+        return source.getInt(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public int index(int row, String varName) {
-        return source.index(mapping.get(row), varName);
+    public int getInt(int row, String varName) {
+        return source.getInt(mapping.get(row), varName);
     }
 
     @Override
-    public void setIndex(int row, int col, int value) {
-        source.setIndex(mapping.get(row), colIndexes[col], value);
+    public void setInt(int row, int col, int value) {
+        source.setInt(mapping.get(row), colIndexes[col], value);
     }
 
     @Override
-    public void setIndex(int row, String varName, int value) {
-        source.setIndex(mapping.get(row), varName, value);
+    public void setInt(int row, String varName, int value) {
+        source.setInt(mapping.get(row), varName, value);
     }
 
     @Override
-    public String label(int row, int col) {
-        return source.label(mapping.get(row), colIndexes[col]);
+    public String getLabel(int row, int col) {
+        return source.getLabel(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public String label(int row, String varName) {
-        return source.label(mapping.get(row), varName);
+    public String getLabel(int row, String varName) {
+        return source.getLabel(mapping.get(row), varName);
     }
 
     @Override
@@ -240,23 +240,23 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean binary(int row, int col) {
-        return source.binary(mapping.get(row), colIndexes[col]);
+    public boolean getBoolean(int row, int col) {
+        return source.getBoolean(mapping.get(row), colIndexes[col]);
     }
 
     @Override
-    public boolean binary(int row, String varName) {
-        return source.binary(mapping.get(row), varName);
+    public boolean getBoolean(int row, String varName) {
+        return source.getBoolean(mapping.get(row), varName);
     }
 
     @Override
-    public void setBinary(int row, int col, boolean value) {
-        source.setBinary(mapping.get(row), colIndexes[col], value);
+    public void setBoolean(int row, int col, boolean value) {
+        source.setBoolean(mapping.get(row), colIndexes[col], value);
     }
 
     @Override
-    public void setBinary(int row, String varName, boolean value) {
-        source.setBinary(mapping.get(row), varName, value);
+    public void setBoolean(int row, String varName, boolean value) {
+        source.setBoolean(mapping.get(row), varName, value);
     }
 
     @Override

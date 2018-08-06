@@ -48,8 +48,8 @@ public class SortedFrameTest {
     public void init() throws IOException, URISyntaxException {
         df = new Csv()
                 .withQuotes(false)
-                .withTypes(VarType.NUMERIC, "z")
-                .withTypes(VarType.INDEX, "y")
+                .withTypes(VarType.DOUBLE, "z")
+                .withTypes(VarType.INT, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 
@@ -59,9 +59,9 @@ public class SortedFrameTest {
         RandomSource.setSeed(1);
         Var[] vars = new Var[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vars[i] = NumVar.fill(1_000).withName("v" + i);
+            vars[i] = VarDouble.fill(1_000).withName("v" + i);
             for (int j = 0; j < 1_000; j++) {
-                vars[i].setValue(j, RandomSource.nextDouble());
+                vars[i].setDouble(j, RandomSource.nextDouble());
             }
         }
         Frame sorted = SolidFrame.byVars(1_000, vars);
@@ -74,7 +74,7 @@ public class SortedFrameTest {
 
         sorted = new FFRefSort(numeric(sorted.rvar(0), true)).fitApply(sorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
-            assertTrue(sorted.value(i - 1, 0) <= sorted.value(i, 0));
+            assertTrue(sorted.getDouble(i - 1, 0) <= sorted.getDouble(i, 0));
         }
 
     }
@@ -101,15 +101,15 @@ public class SortedFrameTest {
     public void testSortNominal() {
         Frame sort = new FFRefSort(nominal(df.rvar(0), true)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
-            String label1 = sort.label(i - 1, 0);
-            String label2 = sort.label(i, 0);
+            String label1 = sort.getLabel(i - 1, 0);
+            String label2 = sort.getLabel(i, 0);
             assertTrue(label1.compareTo(label2) <= 0);
         }
 
         sort = new FFRefSort(nominal(df.rvar(0), false)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
-            String label1 = sort.label(i - 1, 0);
-            String label2 = sort.label(i, 0);
+            String label1 = sort.getLabel(i - 1, 0);
+            String label2 = sort.getLabel(i, 0);
             assertTrue(label1.compareTo(label2) >= 0);
         }
     }
@@ -119,12 +119,12 @@ public class SortedFrameTest {
         for (int col = 1; col <= 2; col++) {
             Frame sort = new FFRefSort(numeric(df.rvar(col), true)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
-                assertTrue(sort.value(i - 1, col) <= sort.value(i, col));
+                assertTrue(sort.getDouble(i - 1, col) <= sort.getDouble(i, col));
             }
 
             sort = new FFRefSort(numeric(df.rvar(col), false)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
-                assertTrue(sort.value(i - 1, col) >= sort.value(i, col));
+                assertTrue(sort.getDouble(i - 1, col) >= sort.getDouble(i, col));
             }
         }
     }
@@ -162,7 +162,7 @@ public class SortedFrameTest {
         sorted = new FFRefSort(nominal(sorted.rvar("x"), true)).fitApply(sorted);
 
         for (int i = 0; i < sorted.rowCount() - 1; i++) {
-            assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x")) <= 0);
+            assertTrue(sorted.getLabel(i, "x").compareTo(sorted.getLabel(i + 1, "x")) <= 0);
         }
     }
 }

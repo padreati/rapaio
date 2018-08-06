@@ -27,7 +27,7 @@ package rapaio.experiment.grid;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
@@ -44,25 +44,25 @@ public class MeshGridFactory {
         double x2min = CoreTools.min(df.rvar(x2Name)).value();
         double x2max = CoreTools.max(df.rvar(x2Name)).value();
 
-        NumVar x1 = NumVar.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
-        NumVar x2 = NumVar.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
+        VarDouble x1 = VarDouble.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
+        VarDouble x2 = VarDouble.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
 
         MeshGrid1D mg = new MeshGrid1D(x1, x2);
 
-        NumVar f1 = NumVar.empty().withName(x1Name);
-        NumVar f2 = NumVar.empty().withName(x2Name);
+        VarDouble f1 = VarDouble.empty().withName(x1Name);
+        VarDouble f2 = VarDouble.empty().withName(x2Name);
 
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {
-                f1.addValue(x1.value(i));
-                f2.addValue(x2.value(j));
+                f1.addDouble(x1.getDouble(i));
+                f2.addDouble(x2.getDouble(j));
             }
         }
         CPrediction fit = c.predict(SolidFrame.byVars(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {
-                mg.setValue(i, j, fit.firstDensity().value(pos++, labelName));
+                mg.setValue(i, j, fit.firstDensity().getDouble(pos++, labelName));
             }
         }
 

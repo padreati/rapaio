@@ -272,53 +272,53 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public double value(int row, int varIndex) {
-        return vars.get(varIndex).value(row);
+    public double getDouble(int row, int varIndex) {
+        return vars.get(varIndex).getDouble(row);
     }
 
     @Override
-    public double value(int row, String varName) {
-        return vars.get(varIndex(varName)).value(row);
+    public double getDouble(int row, String varName) {
+        return vars.get(varIndex(varName)).getDouble(row);
     }
 
     @Override
-    public void setValue(int row, int col, double value) {
-        vars.get(col).setValue(row, value);
+    public void setDouble(int row, int col, double value) {
+        vars.get(col).setDouble(row, value);
     }
 
     @Override
-    public void setValue(int row, String varName, double value) {
-        vars.get(varIndex(varName)).setValue(row, value);
+    public void setDouble(int row, String varName, double value) {
+        vars.get(varIndex(varName)).setDouble(row, value);
     }
 
     @Override
-    public int index(int row, int varIndex) {
-        return vars.get(varIndex).index(row);
+    public int getInt(int row, int varIndex) {
+        return vars.get(varIndex).getInt(row);
     }
 
     @Override
-    public int index(int row, String varName) {
-        return vars.get(varIndex(varName)).index(row);
+    public int getInt(int row, String varName) {
+        return vars.get(varIndex(varName)).getInt(row);
     }
 
     @Override
-    public void setIndex(int row, int col, int value) {
-        vars.get(col).setIndex(row, value);
+    public void setInt(int row, int col, int value) {
+        vars.get(col).setInt(row, value);
     }
 
     @Override
-    public void setIndex(int row, String varName, int value) {
-        vars.get(varIndex(varName)).setIndex(row, value);
+    public void setInt(int row, String varName, int value) {
+        vars.get(varIndex(varName)).setInt(row, value);
     }
 
     @Override
-    public String label(int row, int col) {
-        return vars.get(col).label(row);
+    public String getLabel(int row, int col) {
+        return vars.get(col).getLabel(row);
     }
 
     @Override
-    public String label(int row, String varName) {
-        return vars.get(varIndex(varName)).label(row);
+    public String getLabel(int row, String varName) {
+        return vars.get(varIndex(varName)).getLabel(row);
     }
 
     @Override
@@ -342,23 +342,23 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean binary(int row, int col) {
-        return vars.get(col).binary(row);
+    public boolean getBoolean(int row, int col) {
+        return vars.get(col).getBoolean(row);
     }
 
     @Override
-    public boolean binary(int row, String varName) {
-        return vars.get(varIndex(varName)).binary(row);
+    public boolean getBoolean(int row, String varName) {
+        return vars.get(varIndex(varName)).getBoolean(row);
     }
 
     @Override
-    public void setBinary(int row, int col, boolean value) {
-        vars.get(col).setBinary(row, value);
+    public void setBoolean(int row, int col, boolean value) {
+        vars.get(col).setBoolean(row, value);
     }
 
     @Override
-    public void setBinary(int row, String varName, boolean value) {
-        vars.get(varIndex(varName)).setBinary(row, value);
+    public void setBoolean(int row, String varName, boolean value) {
+        vars.get(varIndex(varName)).setBoolean(row, value);
     }
 
     @Override

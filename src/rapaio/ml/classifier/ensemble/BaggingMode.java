@@ -27,7 +27,7 @@ package rapaio.ml.classifier.ensemble;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.ml.classifier.CPrediction;
 
 import java.io.Serializable;
@@ -42,23 +42,23 @@ public enum BaggingMode implements Serializable {
 
     VOTING {
         @Override
-        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, VarNominal classes, Frame densities) {
             treeFits.stream().map(CPrediction::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
-                    int best = d.index(i);
-                    densities.setValue(i, best, densities.value(i, best) + 1);
+                    int best = d.getInt(i);
+                    densities.setDouble(i, best, densities.getDouble(i, best) + 1);
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
                 DVector dv = DVector.empty(false, dictionary);
                 for (int j = 1; j < dictionary.size(); j++) {
-                    dv.increment(j, densities.value(i, j));
+                    dv.increment(j, densities.getDouble(i, j));
                 }
                 dv.normalize();
                 for (int j = 1; j < dictionary.size(); j++) {
-                    densities.setValue(i, j, dv.get(j));
+                    densities.setDouble(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex());
+                classes.setDouble(i, dv.findBestIndex());
             }
         }
 
@@ -74,33 +74,33 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION {
         @Override
-        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<CPrediction> treeFits, VarNominal classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
-                    densities.setValue(i, j, 0);
+                    densities.setDouble(i, j, 0);
                 }
             }
             treeFits.stream().map(CPrediction::firstDensity).forEach(d -> {
                 for (int i = 0; i < densities.rowCount(); i++) {
                     double t = 0.0;
                     for (int j = 0; j < densities.varCount(); j++) {
-                        t += d.value(i, j);
+                        t += d.getDouble(i, j);
                     }
                     for (int j = 0; j < densities.varCount(); j++) {
-                        densities.setValue(i, j, densities.value(i, j) + d.value(i, j) / t);
+                        densities.setDouble(i, j, densities.getDouble(i, j) + d.getDouble(i, j) / t);
                     }
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
                 DVector dv = DVector.empty(false, dictionary);
                 for (int j = 0; j < dictionary.size(); j++) {
-                    dv.increment(j, densities.value(i, j));
+                    dv.increment(j, densities.getDouble(i, j));
                 }
                 dv.normalize();
                 for (int j = 0; j < dictionary.size(); j++) {
-                    densities.setValue(i, j, dv.get(j));
+                    densities.setDouble(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex());
+                classes.setDouble(i, dv.findBestIndex());
             }
         }
 
@@ -115,7 +115,7 @@ public enum BaggingMode implements Serializable {
         }
     };
 
-    abstract void computeDensity(List<String> dictionary, List<CPrediction> treeFits, NomVar classes, Frame densities);
+    abstract void computeDensity(List<String> dictionary, List<CPrediction> treeFits, VarNominal classes, Frame densities);
 
     abstract boolean needsClass();
 

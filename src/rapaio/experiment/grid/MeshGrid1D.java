@@ -26,7 +26,7 @@
 package rapaio.experiment.grid;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -42,14 +42,14 @@ public class MeshGrid1D implements Serializable {
     final Var y;
     final int len;
 
-    NumVar grid;
+    VarDouble grid;
 
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
         this.y = y;
         this.len = y.rowCount();
 
-        this.grid = NumVar.empty(x.rowCount() * y.rowCount());
+        this.grid = VarDouble.empty(x.rowCount() * y.rowCount());
     }
 
     public Var getX() {
@@ -61,14 +61,14 @@ public class MeshGrid1D implements Serializable {
     }
 
     public double getValue(int i, int j) {
-        return grid.value(i * len + j);
+        return grid.getDouble(i * len + j);
     }
 
     public void setValue(int i, int j, double value) {
         if (i * len + j == 4067) {
             System.out.println();
         }
-        grid.setValue(i * len + j, value);
+        grid.setDouble(i * len + j, value);
     }
 
     public double[] quantiles(double... qs) {
@@ -78,7 +78,7 @@ public class MeshGrid1D implements Serializable {
     public void fillWithFunction(BiFunction<Double, Double, Double> f) {
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
-                grid.setValue(i * len + j, f.apply(x.value(i), y.value(j)));
+                grid.setDouble(i * len + j, f.apply(x.getDouble(i), y.getDouble(j)));
             }
         }
     }
@@ -137,8 +137,8 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double xLow(int i, int j) {
         if ((side(i, j) == 0 && side(i + 1, j) >= 1) || (side(i, j) >= 1 && side(i + 1, j) == 0)) {
-            double value = g.x.value(i) + Math.abs(g.x.value(i + 1) - g.x.value(i)) * Math.abs(low - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
-            return Math.max(g.x.value(i), Math.min(g.x.value(i + 1), value));
+            double value = g.x.getDouble(i) + Math.abs(g.x.getDouble(i + 1) - g.x.getDouble(i)) * Math.abs(low - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
+            return Math.max(g.x.getDouble(i), Math.min(g.x.getDouble(i + 1), value));
 //            if (value < g.x.value(i) || value > g.x.value(i + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
@@ -150,8 +150,8 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double xHigh(int i, int j) {
         if ((side(i, j) <= 1 && side(i + 1, j) == 2) || (side(i, j) == 2 && side(i + 1, j) <= 1)) {
-            double value = g.x.value(i) + Math.abs(g.x.value(i + 1) - g.x.value(i)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
-            return Math.max(g.x.value(i), Math.min(g.x.value(i + 1), value));
+            double value = g.x.getDouble(i) + Math.abs(g.x.getDouble(i + 1) - g.x.getDouble(i)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i + 1, j) - g.getValue(i, j));
+            return Math.max(g.x.getDouble(i), Math.min(g.x.getDouble(i + 1), value));
 //            if (value < g.x.value(i) || value > g.x.value(i + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
@@ -163,8 +163,8 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double yLow(int i, int j) {
         if ((side(i, j) == 0 && side(i, j + 1) >= 1) || (side(i, j) >= 1 && side(i, j + 1) == 0)) {
-            double value = g.y.value(j) + Math.abs(g.y.value(j + 1) - g.y.value(j)) * Math.abs(g.getValue(i, j) - low) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
-            return Math.max(g.y.value(j), Math.min(g.y.value(j + 1), value));
+            double value = g.y.getDouble(j) + Math.abs(g.y.getDouble(j + 1) - g.y.getDouble(j)) * Math.abs(g.getValue(i, j) - low) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
+            return Math.max(g.y.getDouble(j), Math.min(g.y.getDouble(j + 1), value));
 //            if (value < g.y.value(j) || value > g.y.value(j + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }
@@ -176,8 +176,8 @@ class MeshGrid1DImpl implements MeshGrid {
     @Override
     public double yHigh(int i, int j) {
         if ((side(i, j) <= 1 && side(i, j + 1) == 2) || (side(i, j) == 2 && side(i, j + 1) <= 1)) {
-            double value = g.y.value(j) + Math.abs(g.y.value(j + 1) - g.y.value(j)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
-            return Math.max(g.y.value(j), Math.min(g.y.value(j + 1), value));
+            double value = g.y.getDouble(j) + Math.abs(g.y.getDouble(j + 1) - g.y.getDouble(j)) * Math.abs(high - g.getValue(i, j)) / Math.abs(g.getValue(i, j + 1) - g.getValue(i, j));
+            return Math.max(g.y.getDouble(j), Math.min(g.y.getDouble(j + 1), value));
 //            if (value < g.y.value(j) || value > g.y.value(j + 1)) {
 //                throw new RuntimeException("This should not happen");
 //            }

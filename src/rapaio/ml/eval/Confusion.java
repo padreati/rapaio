@@ -25,13 +25,11 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -106,9 +104,9 @@ public class Confusion implements Printable {
 
     private void compute() {
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.index(i) != 0 && predict.index(i) != 0) {
+            if (actual.getInt(i) != 0 && predict.getInt(i) != 0) {
                 completeCases++;
-                cmf[actual.index(i) - 1][predict.index(i) - 1]++;
+                cmf[actual.getInt(i) - 1][predict.getInt(i) - 1]++;
             }
         }
         acc = IntStream.range(0, cmf.length).mapToDouble(i -> cmf[i][i]).sum();

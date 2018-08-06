@@ -28,7 +28,7 @@ package rapaio.ml.regression.tree.rtree;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.util.DoublePair;
 
 import java.io.Serializable;
@@ -83,12 +83,12 @@ public interface RTreePredictor extends Serializable {
 
             // so is a missing value for the current test feature
 
-            NumVar values = NumVar.empty();
-            NumVar weights = NumVar.empty();
+            VarDouble values = VarDouble.empty();
+            VarDouble weights = VarDouble.empty();
             for (RTreeNode child : node.children()) {
                 DoublePair prediction = predict(row, df, child);
-                values.addValue(prediction._1);
-                weights.addValue(prediction._2);
+                values.addDouble(prediction._1);
+                weights.addDouble(prediction._2);
             }
             return DoublePair.from(WeightedMean.from(values, weights).value(), Mean.from(weights).value());
         }

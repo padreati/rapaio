@@ -28,8 +28,8 @@ package rapaio.graphics;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.*;
@@ -114,7 +114,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var y, GOption... opts) {
-        return plot().add(new Points(IdxVar.seq(y.rowCount()).withName("pos"), y, opts));
+        return plot().add(new Points(VarInt.seq(y.rowCount()).withName("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOption... opts) {
@@ -146,7 +146,7 @@ public final class Plotter {
     }
 
     public static Plot dvLines(Var values, GOption... opts) {
-        return plot().add(new DVLines(values, IdxVar.seq(values.rowCount())));
+        return plot().add(new DVLines(values, VarInt.seq(values.rowCount())));
     }
 
     public static Plot dvLines(Var values, Var indexes, GOption... opts) {
@@ -188,22 +188,22 @@ public final class Plotter {
     }
 
     public static GOptionSz sz(Var sizeIndex, double factor, double offset) {
-        NumVar size = sizeIndex
+        VarDouble size = sizeIndex
                 .stream()
                 .mapToDouble()
                 .map(x -> x * factor + offset)
                 .boxed()
-                .collect(NumVar.collector());
+                .collect(VarDouble.collector());
         return new GOptionSz(size);
     }
 
     public static GOptionSz sz(double size) {
-        return new GOptionSz(NumVar.scalar(size));
+        return new GOptionSz(VarDouble.scalar(size));
     }
 
     public static GOptionPch pch(Var pchIndex, int... mapping) {
-        IdxVar pch = IdxVar.from(pchIndex.rowCount(), row -> {
-            int i = pchIndex.index(row);
+        VarInt pch = VarInt.from(pchIndex.rowCount(), row -> {
+            int i = pchIndex.getInt(row);
             if (i >= 0 && i < mapping.length) {
                 return mapping[i];
             }
@@ -213,7 +213,7 @@ public final class Plotter {
     }
 
     public static GOptionPch pch(int pch) {
-        return new GOptionPch(IdxVar.scalar(pch));
+        return new GOptionPch(VarInt.scalar(pch));
     }
 
     public static GOptionAlpha alpha(float alpha) {

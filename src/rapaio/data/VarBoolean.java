@@ -38,15 +38,15 @@ import java.util.function.Function;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public final class BinaryVar extends AbstractVar {
+public final class VarBoolean extends AbstractVar {
 
     /**
      * Builds an empty binary var
      *
      * @return new instance of binary var
      */
-    public static BinaryVar empty() {
-        return new BinaryVar(0, false, false);
+    public static VarBoolean empty() {
+        return new VarBoolean(0, false, false);
     }
 
     /**
@@ -55,8 +55,8 @@ public final class BinaryVar extends AbstractVar {
      * @param rows size of variable
      * @return new instance of binary var
      */
-    public static BinaryVar empty(int rows) {
-        return new BinaryVar(rows, true, false);
+    public static VarBoolean empty(int rows) {
+        return new VarBoolean(rows, true, false);
     }
 
     /**
@@ -66,8 +66,8 @@ public final class BinaryVar extends AbstractVar {
      * @param fillValue fill value
      * @return new instance of binary var
      */
-    public static BinaryVar fill(int rows, boolean fillValue) {
-        return new BinaryVar(rows, false, fillValue);
+    public static VarBoolean fill(int rows, boolean fillValue) {
+        return new VarBoolean(rows, false, fillValue);
     }
 
     /**
@@ -76,12 +76,12 @@ public final class BinaryVar extends AbstractVar {
      * @param values given array of values
      * @return new instance of binary var
      */
-    public static BinaryVar copy(int... values) {
-        final BinaryVar b = new BinaryVar(values.length, false, false);
+    public static VarBoolean copy(int... values) {
+        final VarBoolean b = new VarBoolean(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i] == 0) continue;
             if (values[i] == 1) {
-                b.setBinary(i, true);
+                b.setBoolean(i, true);
                 continue;
             }
             b.setMissing(i);
@@ -95,30 +95,30 @@ public final class BinaryVar extends AbstractVar {
      * @param values source values
      * @return new instance of binary var
      */
-    public static BinaryVar copy(boolean... values) {
-        final BinaryVar b = new BinaryVar(values.length, false, false);
+    public static VarBoolean copy(boolean... values) {
+        final VarBoolean b = new VarBoolean(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i]) {
-                b.setBinary(i, true);
+                b.setBoolean(i, true);
             }
         }
         return b;
     }
 
-    public static BinaryVar fromIndex(int rows, Function<Integer, Integer> supplier) {
+    public static VarBoolean fromIndex(int rows, Function<Integer, Integer> supplier) {
         int[] data = new int[rows];
         for (int i = 0; i < data.length; i++) {
             data[i] = supplier.apply(i);
         }
-        return BinaryVar.copy(data);
+        return VarBoolean.copy(data);
     }
 
-    public static BinaryVar from(int rows, Function<Integer, Boolean> supplier) {
+    public static VarBoolean from(int rows, Function<Integer, Boolean> supplier) {
         boolean[] data = new boolean[rows];
         for (int i = 0; i < data.length; i++) {
             data[i] = supplier.apply(i);
         }
-        return BinaryVar.copy(data);
+        return VarBoolean.copy(data);
     }
 
 
@@ -130,7 +130,7 @@ public final class BinaryVar extends AbstractVar {
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
      */
-    private BinaryVar(final int rows, final boolean fillMissing, final boolean fillValue) {
+    private VarBoolean(final int rows, final boolean fillMissing, final boolean fillValue) {
         this.rows = rows;
         this.missing = new BitSet(rows);
         this.values = new BitSet(rows);
@@ -146,8 +146,8 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public BinaryVar withName(String name) {
-        return (BinaryVar) super.withName(name);
+    public VarBoolean withName(String name) {
+        return (VarBoolean) super.withName(name);
     }
 
     void increaseCapacity(int minCapacity) {
@@ -180,19 +180,19 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public double value(int row) {
+    public double getDouble(int row) {
         if (isMissing(row)) return -1.0;
         return values.get(row) ? 1.0 : 0.0;
     }
 
     @Override
-    public void setValue(int row, double value) {
+    public void setDouble(int row, double value) {
         if (value == 1.0) {
-            setBinary(row, true);
+            setBoolean(row, true);
             return;
         }
         if (value == 0.0) {
-            setBinary(row, false);
+            setBoolean(row, false);
             return;
         }
         if (value == -1.0) {
@@ -203,13 +203,13 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public void addValue(double value) {
+    public void addDouble(double value) {
         if (Math.abs(value - 1.0) <= 10e-3) {
-            addBinary(true);
+            addBoolean(true);
             return;
         }
         if (Math.abs(value) <= 10e-3) {
-            addBinary(false);
+            addBoolean(false);
             return;
         }
         if (Math.abs(value + 1.0) <= 10e-3) {
@@ -220,20 +220,20 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public int index(int row) {
+    public int getInt(int row) {
         if (isMissing(row))
             return -1;
-        return binary(row) ? 1 : 0;
+        return getBoolean(row) ? 1 : 0;
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setInt(int row, int value) {
         if (value == 1) {
-            setBinary(row, true);
+            setBoolean(row, true);
             return;
         }
         if (value == 0) {
-            setBinary(row, false);
+            setBoolean(row, false);
             return;
         }
         if (value == -1) {
@@ -244,13 +244,13 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public void addIndex(int value) {
+    public void addInt(int value) {
         if (value == 1) {
-            addBinary(true);
+            addBoolean(true);
             return;
         }
         if (value == 0) {
-            addBinary(false);
+            addBoolean(false);
             return;
         }
         if (value == -1) {
@@ -261,8 +261,8 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public String label(int row) {
-        return isMissing(row) ? "?" : (binary(row) ? "true" : "false");
+    public String getLabel(int row) {
+        return isMissing(row) ? "?" : (getBoolean(row) ? "true" : "false");
     }
 
     @Override
@@ -272,11 +272,11 @@ public final class BinaryVar extends AbstractVar {
             return;
         }
         if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            setBinary(row, true);
+            setBoolean(row, true);
             return;
         }
         if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            setBinary(row, false);
+            setBoolean(row, false);
             return;
         }
         throw new IllegalArgumentException(
@@ -290,11 +290,11 @@ public final class BinaryVar extends AbstractVar {
             return;
         }
         if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            addBinary(true);
+            addBoolean(true);
             return;
         }
         if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            addBinary(false);
+            addBoolean(false);
             return;
         }
         throw new IllegalArgumentException(
@@ -312,37 +312,37 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
+    public boolean getBoolean(int row) {
         return values.get(row);
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
+    public void setBoolean(int row, boolean value) {
         if (isMissing(row))
             missing.set(row, false);
         values.set(row, value);
     }
 
     @Override
-    public void addBinary(boolean value) {
+    public void addBoolean(boolean value) {
         increaseCapacity(rows + 1);
-        setBinary(rows, value);
+        setBoolean(rows, value);
         rows++;
     }
 
     @Override
-    public long stamp(int row) {
-        return binary(row) ? 1L : 0L;
+    public long getLong(int row) {
+        return getBoolean(row) ? 1L : 0L;
     }
 
     @Override
-    public void setStamp(int row, long value) {
+    public void setLong(int row, long value) {
         if (value == 1) {
-            setBinary(row, true);
+            setBoolean(row, true);
             return;
         }
         if (value == 0) {
-            setBinary(row, false);
+            setBoolean(row, false);
             return;
         }
         if (value == -1) {
@@ -353,13 +353,13 @@ public final class BinaryVar extends AbstractVar {
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         if (value == 1) {
-            addBinary(true);
+            addBoolean(true);
             return;
         }
         if (value == 0) {
-            addBinary(false);
+            addBoolean(false);
             return;
         }
         if (value == -1) {
@@ -405,12 +405,12 @@ public final class BinaryVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return BinaryVar.empty(rows).withName(name());
+        return VarBoolean.empty(rows).withName(name());
     }
 
     @Override
-    public BinaryVar solidCopy() {
-        return (BinaryVar) super.solidCopy();
+    public VarBoolean solidCopy() {
+        return (VarBoolean) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

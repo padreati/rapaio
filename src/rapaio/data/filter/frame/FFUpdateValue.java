@@ -60,7 +60,7 @@ public class FFUpdateValue extends AbstractFF {
     public Frame apply(Frame df) {
         for (int i = 0; i < df.rowCount(); i++) {
             for (String name : varNames) {
-                df.setValue(i, name, f.apply(df.value(i, name)));
+                df.setDouble(i, name, f.apply(df.getDouble(i, name)));
             }
         }
         return df;

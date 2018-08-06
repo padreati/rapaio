@@ -27,16 +27,14 @@ package rapaio.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.Sum;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFCumulativeSum;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
-
-import java.util.Comparator;
 
 /**
  * This evaluation tool computes Gini and Normalized Gini Coefficients
@@ -72,7 +70,7 @@ public class Gini implements Printable {
 
     private double gini(Var actual, Var fit) {
 
-        Var index = IdxVar.seq(actual.rowCount());
+        Var index = VarInt.seq(actual.rowCount());
         IntComparator cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
@@ -87,7 +85,7 @@ public class Gini implements Printable {
     }
 
     private double wgini(Var actual, Var fit, Var weights) {
-        Var index = IdxVar.seq(actual.rowCount());
+        Var index = VarInt.seq(actual.rowCount());
         IntComparator cmp = RowComparators.from(
                 RowComparators.numeric(fit, false),
                 RowComparators.index(index, true));
@@ -95,13 +93,13 @@ public class Gini implements Printable {
         Var w = new VFRefSort(cmp).fitApply(weights).solidCopy();
 
         double wsum = Sum.from(w).value();
-        Var random = VFCumulativeSum.filter().fitApply(NumVar.from(w, value -> value / wsum).solidCopy());
-        double totalPositive = Sum.from(NumVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row))).value();
-        Var lorentz = new VFCumulativeSum().fitApply(NumVar.from(actual.rowCount(), row -> sol.value(row) * w.value(row) / totalPositive));
+        Var random = VFCumulativeSum.filter().fitApply(VarDouble.from(w, value -> value / wsum).solidCopy());
+        double totalPositive = Sum.from(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
+        Var lorentz = new VFCumulativeSum().fitApply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.rowCount() - 1; i++) {
-            g += lorentz.value(i + 1) * random.value(i) - lorentz.value(i) * random.value(i + 1);
+            g += lorentz.getDouble(i + 1) * random.getDouble(i) - lorentz.getDouble(i) * random.getDouble(i + 1);
         }
         return g;
     }

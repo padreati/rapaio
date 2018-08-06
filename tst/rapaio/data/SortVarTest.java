@@ -43,17 +43,17 @@ public class SortVarTest {
 
     @Test
     public void smokeTest() {
-        Var v = IdxVar.empty();
+        Var v = VarInt.empty();
         Var sorted = new VFRefSort(index(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = NumVar.empty();
+        v = VarDouble.empty();
         sorted = new VFRefSort(numeric(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = NomVar.empty(0);
+        v = VarNominal.empty(0);
         sorted = new VFRefSort(nominal(v, true)).fitApply(v);
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
@@ -61,53 +61,53 @@ public class SortVarTest {
 
     @Test
     public void testSortIndex() {
-        Var index = IdxVar.seq(10, 10, -1);
+        Var index = VarInt.seq(10, 10, -1);
         index.setMissing(2);
         index.setMissing(5);
-        index.setIndex(0, 1);
+        index.setInt(0, 1);
 
         assertEquals(10, index.rowCount());
         Var sort = new VFSort().fitApply(index);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.index(i - 1) <= sort.index(i));
+            assertTrue(sort.getInt(i - 1) <= sort.getInt(i));
         }
 
         sort = new VFSort(false).fitApply(index);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.index(i - 1) >= sort.index(i));
+            assertTrue(sort.getInt(i - 1) >= sort.getInt(i));
         }
 
         Var second = new VFSort().fitApply(index);
         for (int i = 1; i < second.rowCount(); i++) {
-            assertTrue(second.index(i - 1) <= second.index(i));
+            assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
     }
 
     @Test
     public void testSortNumeric() {
-        Var numeric = NumVar.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
+        Var numeric = VarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
         Var sort = new VFSort(true).fitApply(numeric);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.value(i - 1) <= sort.value(i));
+            assertTrue(sort.getDouble(i - 1) <= sort.getDouble(i));
         }
 
         sort = new VFSort(false).fitApply(numeric);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.value(i - 1) >= sort.value(i));
+            assertTrue(sort.getDouble(i - 1) >= sort.getDouble(i));
         }
 
         Var second = new VFSort(true).fitApply(numeric);
         for (int i = 1; i < second.rowCount(); i++) {
-            assertTrue(second.index(i - 1) <= second.index(i));
+            assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
     }
 
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Var nominal = NomVar.empty(10, dict);
+        Var nominal = VarNominal.empty(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);
@@ -119,17 +119,17 @@ public class SortVarTest {
 
         Var sort = new VFSort(true).fitApply(nominal);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.label(i - 1).compareTo(sort.label(i)) <= 0);
+            assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) <= 0);
         }
 
         sort = new VFSort(false).fitApply(nominal);
         for (int i = 1; i < sort.rowCount(); i++) {
-            assertTrue(sort.label(i - 1).compareTo(sort.label(i)) >= 0);
+            assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) >= 0);
         }
 
         Var second = new VFSort(true).fitApply(nominal);
         for (int i = 1; i < second.rowCount(); i++) {
-            assertTrue(second.label(i - 1).compareTo(second.label(i)) <= 0);
+            assertTrue(second.getLabel(i - 1).compareTo(second.getLabel(i)) <= 0);
         }
     }
 
@@ -138,8 +138,8 @@ public class SortVarTest {
 
         Frame df = new Csv()
                 .withQuotes(false)
-                .withTypes(VarType.NUMERIC, "z")
-                .withTypes(VarType.INDEX, "y")
+                .withTypes(VarType.DOUBLE, "z")
+                .withTypes(VarType.INT, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
         Var nominal = df.rvar(0);
@@ -155,18 +155,18 @@ public class SortVarTest {
         transform.put("d", "d");
         Var sort = new VFSort().fitApply(nominal);
         for (int i = 0; i < sort.rowCount(); i++) {
-            sort.setLabel(i, transform.get(sort.label(i)));
+            sort.setLabel(i, transform.get(sort.getLabel(i)));
         }
 
-        assertEquals("b", nominal.label(0));
-        assertEquals("a", nominal.label(1));
-        assertEquals("c", nominal.label(2));
-        assertEquals("d", nominal.label(3));
+        assertEquals("b", nominal.getLabel(0));
+        assertEquals("a", nominal.getLabel(1));
+        assertEquals("c", nominal.getLabel(2));
+        assertEquals("d", nominal.getLabel(3));
 
         for (int i = 0; i < sort.rowCount(); i++) {
-            sort.setIndex(i, 2);
-            assertEquals(nominal.levels().get(2), nominal.label(i));
-            assertEquals(2, nominal.index(i));
+            sort.setInt(i, 2);
+            assertEquals(nominal.levels().get(2), nominal.getLabel(i));
+            assertEquals(2, nominal.getInt(i));
         }
 
         assertEquals(nominal.levels().size(), sort.levels().size());
@@ -178,29 +178,29 @@ public class SortVarTest {
 
         sort = new VFSort().fitApply(numeric);
         for (int i = 0; i < sort.rowCount(); i++) {
-            sort.setValue(i, sort.value(i) + Math.E);
+            sort.setDouble(i, sort.getDouble(i) + Math.E);
         }
-        assertEquals(Math.E + 1., numeric.value(0), 1e-10);
-        assertEquals(Math.E + 2.5, numeric.value(2), 1e-10);
-        assertEquals(Math.E + 4, numeric.value(1), 1e-10);
-        assertEquals(Math.E + 4., numeric.value(3), 1e-10);
+        assertEquals(Math.E + 1., numeric.getDouble(0), 1e-10);
+        assertEquals(Math.E + 2.5, numeric.getDouble(2), 1e-10);
+        assertEquals(Math.E + 4, numeric.getDouble(1), 1e-10);
+        assertEquals(Math.E + 4., numeric.getDouble(3), 1e-10);
 
 
         // index
 
         sort = new VFSort().fitApply(index);
         for (int i = 0; i < sort.rowCount(); i++) {
-            sort.setValue(i, sort.index(i) + 10);
+            sort.setDouble(i, sort.getInt(i) + 10);
         }
-        assertEquals(11, index.index(0));
-        assertEquals(12, index.index(2));
-        assertEquals(12, index.index(3));
-        assertEquals(13, index.index(1));
+        assertEquals(11, index.getInt(0));
+        assertEquals(12, index.getInt(2));
+        assertEquals(12, index.getInt(3));
+        assertEquals(13, index.getInt(1));
     }
 
     @Test
     public void testMissing() {
-        Var v = IdxVar.seq(1, 10);
+        Var v = VarInt.seq(1, 10);
         v = new VFRefSort(index(v, true)).fitApply(v);
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

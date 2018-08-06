@@ -44,9 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
 import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.WS.print;
 
@@ -60,7 +58,7 @@ public class CEvaluation {
         print("\nCrossValidation with " + folds + " folds\n");
 
         List<IntList> strata = buildStrata(df, folds, classColName);
-        NumVar acc = NumVar.empty();
+        VarDouble acc = VarDouble.empty();
 
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
@@ -80,7 +78,7 @@ public class CEvaluation {
             CPrediction cp = cc.predict(test);
 
             Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
-            acc.addValue(conf.accuracy());
+            acc.addDouble(conf.accuracy());
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     conf.accuracy(),
                     CoreTools.mean(acc).value(),
@@ -101,7 +99,7 @@ public class CEvaluation {
             rows.add(new IntArrayList());
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rows.get(df.index(i, classColName)).add(i);
+            rows.get(df.getInt(i, classColName)).add(i);
         }
         IntList shuffle = new IntArrayList();
         for (int i = 0; i < dict.size(); i++) {
@@ -171,7 +169,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = NumVar.fill(df.rowCount(), 1.0);
+        Var weights = VarDouble.fill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -180,7 +178,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = NumVar.fill(df.rowCount(), 1.0d);
+        Var weights = VarDouble.fill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 
@@ -215,17 +213,17 @@ public class CEvaluation {
     public static PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
 
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
-        IdxVar r = IdxVar.empty().withName("runs");
-        NumVar testAcc = NumVar.empty().withName("test");
-        NumVar trainAcc = NumVar.empty().withName("predict");
+        VarInt r = VarInt.empty().withName("runs");
+        VarDouble testAcc = VarDouble.empty().withName("test");
+        VarDouble trainAcc = VarDouble.empty().withName("predict");
         c.withRunningHook((cs, run) -> {
 
             if (run % step != 0) {
                 return;
             }
-            r.addIndex(run);
-            testAcc.addValue(new Confusion(test.rvar(targetVar), c.predict(test).firstClasses()).accuracy());
-            trainAcc.addValue(new Confusion(train.rvar(targetVar), c.predict(train).firstClasses()).accuracy());
+            r.addInt(run);
+            testAcc.addDouble(new Confusion(test.rvar(targetVar), c.predict(test).firstClasses()).accuracy());
+            trainAcc.addDouble(new Confusion(train.rvar(targetVar), c.predict(train).firstClasses()).accuracy());
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(plot()
@@ -259,19 +257,19 @@ public class CEvaluation {
 
         Classifier c = alterClassifier ? cc : cc.newInstance();
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
-        IdxVar r = IdxVar.empty().withName("runs");
-        NumVar testAuc = NumVar.empty().withName("test");
-        NumVar trainAuc = NumVar.empty().withName("predict");
+        VarInt r = VarInt.empty().withName("runs");
+        VarDouble testAuc = VarDouble.empty().withName("test");
+        VarDouble trainAuc = VarDouble.empty().withName("predict");
         Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 
             if ((run % step != 0) && run != 1) {
                 return;
             }
-            r.addIndex(run);
+            r.addInt(run);
             ROC roc = ROC.from(c.predict(test).firstDensity().rvar(label), test.rvar(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
-            testAuc.addValue(roc.auc());
+            testAuc.addDouble(roc.auc());
             WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
             prevAuc.set(roc.auc());
 //            trainAuc.addValue(new ROC(c.predict(predict).firstDensity().rvar(label), predict.rvar(targetVar), label).auc());

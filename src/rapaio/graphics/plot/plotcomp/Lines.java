@@ -25,7 +25,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -45,17 +45,17 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOption... opts) {
-        this(NumVar.seq(0, y.rowCount() - 1), y, opts);
+        this(VarDouble.seq(0, y.rowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOption... opts) {
-        this.x = NumVar.empty().withName(x.name());
-        this.y = NumVar.empty().withName(y.name());
+        this.x = VarDouble.empty().withName(x.name());
+        this.y = VarDouble.empty().withName(y.name());
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
-            this.x.addValue(x.value(i));
-            this.y.addValue(y.value(i));
+            this.x.addDouble(x.getDouble(i));
+            this.y.addDouble(y.getDouble(i));
         }
         this.options.bind(opts);
     }
@@ -70,7 +70,7 @@ public class Lines extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.value(i), y.value(i));
+            range.union(x.getDouble(i), y.getDouble(i));
         }
         return range;
     }
@@ -83,10 +83,10 @@ public class Lines extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = x.value(i - 1);
-            double y1 = y.value(i - 1);
-            double x2 = x.value(i);
-            double y2 = y.value(i);
+            double x1 = x.getDouble(i - 1);
+            double y1 = y.getDouble(i - 1);
+            double x2 = x.getDouble(i);
+            double y2 = y.getDouble(i);
 
             Range r = new Clip(parent.getRange()).lineClip(x1, y1, x2, y2);
             if (r != null) {

@@ -54,7 +54,7 @@ public class VFUpdateValue extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setValue(f.apply(s.value())));
+        vars[0].stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
         return vars[0];
     }
 }

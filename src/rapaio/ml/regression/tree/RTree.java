@@ -165,8 +165,8 @@ public class RTree extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }
@@ -367,7 +367,7 @@ public class RTree extends AbstractRegression {
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);
-            pred.fit(firstTargetName()).setValue(i, result._1);
+            pred.fit(firstTargetName()).setDouble(i, result._1);
         }
         pred.buildComplete();
         return pred;

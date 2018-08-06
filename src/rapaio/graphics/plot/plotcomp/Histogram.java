@@ -106,14 +106,14 @@ public class Histogram extends PlotComponent {
                     continue;
                 }
                 if (minValue != minValue) {
-                    minValue = v.value(i);
+                    minValue = v.getDouble(i);
                 } else {
-                    minValue = Math.min(minValue, v.value(i));
+                    minValue = Math.min(minValue, v.getDouble(i));
                 }
                 if (maxValue != maxValue) {
-                    maxValue = v.value(i);
+                    maxValue = v.getDouble(i);
                 } else {
-                    maxValue = Math.max(maxValue, v.value(i));
+                    maxValue = Math.max(maxValue, v.getDouble(i));
                 }
             }
         }
@@ -129,10 +129,10 @@ public class Histogram extends PlotComponent {
                 continue;
             }
             total++;
-            if (v.value(i) < minValue || v.value(i) > maxValue) {
+            if (v.getDouble(i) < minValue || v.getDouble(i) > maxValue) {
                 continue;
             }
-            int index = (int) ((v.value(i) - minValue) / step);
+            int index = (int) ((v.getDouble(i) - minValue) / step);
             if (index == freqTable.length)
                 index--;
             if(index < 0)

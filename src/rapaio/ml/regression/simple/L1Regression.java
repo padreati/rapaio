@@ -79,8 +79,8 @@ public class L1Regression extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1_000_000)
-                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
+                .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);
     }
@@ -101,7 +101,7 @@ public class L1Regression extends AbstractRegression {
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];
-            pred.fit(target).stream().forEach(s -> s.setValue(median));
+            pred.fit(target).stream().forEach(s -> s.setDouble(median));
         }
         pred.buildComplete();
         return pred;

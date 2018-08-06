@@ -27,7 +27,7 @@ package rapaio.ml.regression.tree.rtree;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
@@ -130,7 +130,7 @@ public class RTreeNode implements Serializable {
             groupPredicates.add(child.predicate());
         }
 
-        List<Mapping> mappings = splitter.performSplitMapping(x, NumVar.fill(x.rowCount(), 1), groupPredicates);
+        List<Mapping> mappings = splitter.performSplitMapping(x, VarDouble.fill(x.rowCount(), 1), groupPredicates);
 
         for (int i = 0; i < children.size(); i++) {
             children.get(i).boostUpdate(

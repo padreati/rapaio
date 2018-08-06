@@ -26,8 +26,8 @@
 package rapaio.ts;
 
 import rapaio.core.stat.Maximum;
-import rapaio.data.IdxVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarInt;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -41,15 +41,15 @@ import rapaio.sys.WS;
 public class Pacf implements Printable {
 
     public static Pacf from(Var ts, int maxLag) {
-        return new Pacf(ts, IdxVar.seq(1, maxLag));
+        return new Pacf(ts, VarInt.seq(1, maxLag));
     }
 
     private final Var ts;
-    private final IdxVar lags;
+    private final VarInt lags;
 
-    private NumVar pacf;
+    private VarDouble pacf;
 
-    private Pacf(Var ts, IdxVar indexes) {
+    private Pacf(Var ts, VarInt indexes) {
         this.ts = ts;
         this.lags = indexes;
 
@@ -58,25 +58,25 @@ public class Pacf implements Printable {
 
     private void computeDurbinLevinson() {
         Acf acf = Acf.from(ts, (int) Maximum.from(lags).value() + 1);
-        NumVar cor = acf.correlation();
+        VarDouble cor = acf.correlation();
 
         double a, b, c;
         int nlag = cor.rowCount()-1;
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];
-        pacf = NumVar.empty(lags.rowCount()).withName("pacf");
-        w[0] = cor.value(1);
-        pacf.setValue(0, cor.value(1));
+        pacf = VarDouble.empty(lags.rowCount()).withName("pacf");
+        w[0] = cor.getDouble(1);
+        pacf.setDouble(0, cor.getDouble(1));
         for (int ll = 1; ll < nlag; ll++) {
-            a = cor.value(ll + 1);
+            a = cor.getDouble(ll + 1);
             b = 1.0;
             for (int i = 0; i < ll; i++) {
-                a -= w[i] * cor.value(ll - i);
-                b -= w[i] * cor.value(i + 1);
+                a -= w[i] * cor.getDouble(ll - i);
+                b -= w[i] * cor.getDouble(i + 1);
             }
             c = a / b;
-            pacf.setValue(ll, c);
+            pacf.setDouble(ll, c);
             ;
             if (ll + 1 == nlag) break;
             w[ll] = c;
@@ -87,11 +87,11 @@ public class Pacf implements Printable {
         }
     }
 
-    public IdxVar lags() {
+    public VarInt lags() {
         return lags;
     }
 
-    public NumVar values() {
+    public VarDouble values() {
         return pacf;
     }
 
@@ -108,8 +108,8 @@ public class Pacf implements Printable {
         tt.set(0, 0, "Lag", 0);
         tt.set(0, 1, "pacf", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
-            tt.set(i + 1, 0, lags.label(i), 1);
-            tt.set(i + 1, 1, WS.formatFlex(pacf.value(i)), 1);
+            tt.set(i + 1, 0, lags.getLabel(i), 1);
+            tt.set(i + 1, 1, WS.formatFlex(pacf.getDouble(i)), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");

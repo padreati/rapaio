@@ -28,8 +28,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.NomVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarNominal;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.filter.frame.FFStandardize;
@@ -157,8 +157,8 @@ public class BinarySMOTest {
         kernels.add(new PowerKernel(2));
         kernels.add(new RationalQuadraticKernel(1));
 
-        NomVar name = NomVar.empty().withName("kernel");
-        NumVar score = NumVar.empty().withName("score");
+        VarNominal name = VarNominal.empty().withName("kernel");
+        VarDouble score = VarDouble.empty().withName("score");
 
         for (Kernel k : kernels) {
 
@@ -170,7 +170,7 @@ public class BinarySMOTest {
             Assert.assertTrue(s > 0.7);
 
             name.addLabel(k.name());
-            score.addValue(s);
+            score.addDouble(s);
         }
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");

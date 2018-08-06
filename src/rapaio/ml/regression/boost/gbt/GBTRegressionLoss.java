@@ -25,7 +25,7 @@
 
 package rapaio.ml.regression.boost.gbt;
 
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -48,6 +48,6 @@ public interface GBTRegressionLoss extends Serializable {
      * @param fx
      * @return
      */
-    NumVar gradient(Var y, Var fx);
+    VarDouble gradient(Var y, Var fx);
 
 }

@@ -39,15 +39,15 @@ import java.util.function.Supplier;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class StampVar extends AbstractVar {
+public class VarLong extends AbstractVar {
 
     /**
      * Builds an empty stamp var of size 0
      *
      * @return new instance of stamp var
      */
-    public static StampVar empty() {
-        return new StampVar(0, 0, MISSING_VALUE);
+    public static VarLong empty() {
+        return new VarLong(0, 0, MISSING_VALUE);
     }
 
     /**
@@ -56,8 +56,8 @@ public class StampVar extends AbstractVar {
      * @param rows var size
      * @return new instance of stamp var
      */
-    public static StampVar empty(int rows) {
-        return new StampVar(rows, rows, MISSING_VALUE);
+    public static VarLong empty(int rows) {
+        return new VarLong(rows, rows, MISSING_VALUE);
     }
 
     /**
@@ -66,8 +66,8 @@ public class StampVar extends AbstractVar {
      * @param value fill value
      * @return new instance of stamp var
      */
-    public static StampVar scalar(long value) {
-        return new StampVar(1, 1, value);
+    public static VarLong scalar(long value) {
+        return new VarLong(1, 1, value);
     }
 
     /**
@@ -77,8 +77,8 @@ public class StampVar extends AbstractVar {
      * @param value fill value
      * @return new instance of stamp var
      */
-    public static StampVar fill(int rows, long value) {
-        return new StampVar(rows, rows, value);
+    public static VarLong fill(int rows, long value) {
+        return new VarLong(rows, rows, value);
     }
 
     /**
@@ -87,8 +87,8 @@ public class StampVar extends AbstractVar {
      * @param values array of value
      * @return new instance of stamp var
      */
-    public static StampVar copy(long... values) {
-        StampVar stamp = new StampVar(0, 0, 0);
+    public static VarLong copy(long... values) {
+        VarLong stamp = new VarLong(0, 0, 0);
         stamp.data = Arrays.copyOf(values, values.length);
         stamp.rows = values.length;
         return stamp;
@@ -100,8 +100,8 @@ public class StampVar extends AbstractVar {
      * @param values wrapped array of values
      * @return new instance of stamp var
      */
-    public static StampVar wrap(long... values) {
-        StampVar stamp = new StampVar(0, 0, 0);
+    public static VarLong wrap(long... values) {
+        VarLong stamp = new VarLong(0, 0, 0);
         stamp.data = values;
         stamp.rows = values.length;
         return stamp;
@@ -113,7 +113,7 @@ public class StampVar extends AbstractVar {
      * @param len size of the var
      * @return new instance of stamp var
      */
-    public static StampVar seq(int len) {
+    public static VarLong seq(int len) {
         return seq(0, len, 1);
     }
 
@@ -124,7 +124,7 @@ public class StampVar extends AbstractVar {
      * @param len   size of the var
      * @return new instance of stamp var
      */
-    public static StampVar seq(long start, int len) {
+    public static VarLong seq(long start, int len) {
         return seq(start, len, 1);
     }
 
@@ -137,8 +137,8 @@ public class StampVar extends AbstractVar {
      * @param step  step/increment value
      * @return new instance of stamp var
      */
-    public static StampVar seq(final long start, final int len, final long step) {
-        StampVar stamp = new StampVar(len, len, 0);
+    public static VarLong seq(final long start, final int len, final long step) {
+        VarLong stamp = new VarLong(len, len, 0);
         long s = start;
         for (int i = 0; i < len; i++) {
             stamp.data[i] = s;
@@ -154,7 +154,7 @@ public class StampVar extends AbstractVar {
 
     // static builders
 
-    private StampVar(int rows, int capacity, long fill) {
+    private VarLong(int rows, int capacity, long fill) {
         super();
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
@@ -167,17 +167,17 @@ public class StampVar extends AbstractVar {
 
     // private constructor, only public static builders available
 
-    public static StampVar from(int rows, Supplier<Long> supplier) {
-        StampVar var = StampVar.empty();
+    public static VarLong from(int rows, Supplier<Long> supplier) {
+        VarLong var = VarLong.empty();
         for (int i = 0; i < rows; i++) {
-            var.addStamp(supplier.get());
+            var.addLong(supplier.get());
         }
         return var;
     }
 
     @Override
-    public StampVar withName(String name) {
-        return (StampVar) super.withName(name);
+    public VarLong withName(String name) {
+        return (VarLong) super.withName(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {
@@ -194,7 +194,7 @@ public class StampVar extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.STAMP;
+        return VarType.LONG;
     }
 
     private void rangeCheck(int index) {
@@ -225,54 +225,54 @@ public class StampVar extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = StampVar.MISSING_VALUE;
+            data[rows + i] = VarLong.MISSING_VALUE;
         }
         rows += rowCount;
     }
 
     @Override
-    public int index(int row) {
-        return (int) stamp(row);
+    public int getInt(int row) {
+        return (int) getLong(row);
     }
 
     @Override
-    public void setIndex(int row, int value) {
-        setStamp(row, value);
+    public void setInt(int row, int value) {
+        setLong(row, value);
     }
 
     @Override
-    public void addIndex(int value) {
-        addStamp(value);
+    public void addInt(int value) {
+        addLong(value);
     }
 
     @Override
-    public double value(int row) {
-        return stamp(row);
+    public double getDouble(int row) {
+        return getLong(row);
     }
 
     @Override
-    public void setValue(int row, double value) {
-        setStamp(row, (long) Math.rint(value));
+    public void setDouble(int row, double value) {
+        setLong(row, (long) Math.rint(value));
     }
 
     @Override
-    public void addValue(double value) {
-        addStamp((long) Math.rint(value));
+    public void addDouble(double value) {
+        addLong((long) Math.rint(value));
     }
 
     @Override
-    public String label(int row) {
-        return String.valueOf(stamp(row));
+    public String getLabel(int row) {
+        return String.valueOf(getLong(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        setStamp(row, Long.parseLong(value));
+        setLong(row, Long.parseLong(value));
     }
 
     @Override
     public void addLabel(String value) {
-        addStamp(Long.parseLong(value));
+        addLong(Long.parseLong(value));
     }
 
     @Override
@@ -286,34 +286,34 @@ public class StampVar extends AbstractVar {
     }
 
     @Override
-    public boolean binary(int row) {
-        if (stamp(row) == 1) return true;
-        if (stamp(row) == 0) return false;
+    public boolean getBoolean(int row) {
+        if (getLong(row) == 1) return true;
+        if (getLong(row) == 0) return false;
         throw new IllegalArgumentException("Stamp value could not be represented as binary value");
     }
 
     @Override
-    public void setBinary(int row, boolean value) {
-        setStamp(row, value ? 1 : 0);
+    public void setBoolean(int row, boolean value) {
+        setLong(row, value ? 1 : 0);
     }
 
     @Override
-    public void addBinary(boolean value) {
-        addStamp(value ? 1 : 0);
+    public void addBoolean(boolean value) {
+        addLong(value ? 1 : 0);
     }
 
     @Override
-    public long stamp(int row) {
+    public long getLong(int row) {
         return data[row];
     }
 
     @Override
-    public void setStamp(int row, long value) {
+    public void setLong(int row, long value) {
         data[row] = value;
     }
 
     @Override
-    public void addStamp(long value) {
+    public void addLong(long value) {
         ensureCapacityInternal(rows + 1);
         data[rows] = value;
         rows++;
@@ -321,17 +321,17 @@ public class StampVar extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return stamp(row) == MISSING_VALUE;
+        return getLong(row) == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
-        setStamp(row, MISSING_VALUE);
+        setLong(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        addStamp(MISSING_VALUE);
+        addLong(MISSING_VALUE);
     }
 
     @Override
@@ -351,12 +351,12 @@ public class StampVar extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return StampVar.empty(rows);
+        return VarLong.empty(rows);
     }
 
     @Override
-    public StampVar solidCopy() {
-        return (StampVar) super.solidCopy();
+    public VarLong solidCopy() {
+        return (VarLong) super.solidCopy();
     }
 
     @Override

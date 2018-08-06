@@ -26,7 +26,7 @@
 package rapaio.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 
 import static rapaio.sys.WS.formatFlex;
@@ -61,9 +61,9 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute residuals
 
-        NumVar residual = NumVar.empty();
+        VarDouble residual = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
-            residual.addValue(y.value(i) - fx.value(i));
+            residual.addDouble(y.getDouble(i) - fx.getDouble(i));
         }
 
         // compute median of residuals
@@ -72,9 +72,9 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute absolute residuals
 
-        NumVar absResidual = NumVar.empty();
+        VarDouble absResidual = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
+            absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
@@ -86,21 +86,21 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
         double gamma = r_bar;
         double count = y.rowCount();
         for (int i = 0; i < y.rowCount(); i++) {
-            gamma += (residual.value(i) - r_bar <= 0 ? -1 : 1)
-                    * Math.min(rho, Math.abs(residual.value(i) - r_bar))
+            gamma += (residual.getDouble(i) - r_bar <= 0 ? -1 : 1)
+                    * Math.min(rho, Math.abs(residual.getDouble(i) - r_bar))
                     / count;
         }
         return gamma;
     }
 
     @Override
-    public NumVar gradient(Var y, Var fx) {
+    public VarDouble gradient(Var y, Var fx) {
 
         // compute absolute residuals
 
-        NumVar absResidual = NumVar.empty();
+        VarDouble absResidual = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
+            absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
@@ -109,12 +109,12 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // now compute gradient
 
-        NumVar gradient = NumVar.empty();
+        VarDouble gradient = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
-            if (absResidual.value(i) <= rho) {
-                gradient.addValue(y.value(i) - fx.value(i));
+            if (absResidual.getDouble(i) <= rho) {
+                gradient.addDouble(y.getDouble(i) - fx.getDouble(i));
             } else {
-                gradient.addValue(rho * ((y.value(i) - fx.value(i) <= 0) ? -1 : 1));
+                gradient.addDouble(rho * ((y.getDouble(i) - fx.getDouble(i) <= 0) ? -1 : 1));
             }
         }
 

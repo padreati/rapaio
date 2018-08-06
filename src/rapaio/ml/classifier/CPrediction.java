@@ -26,7 +26,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.data.SolidFrame;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
@@ -48,7 +48,7 @@ public class CPrediction implements Printable {
     private final boolean hasClasses;
     private final boolean hasDensities;
     private final Map<String, List<String>> dictionaries = new HashMap<>();
-    private final Map<String, NomVar> classes = new HashMap<>();
+    private final Map<String, VarNominal> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
     // builder
@@ -73,7 +73,7 @@ public class CPrediction implements Printable {
             targetNames.add(target);
             dictionaries.put(target, model.targetLevels(target));
             if (hasClasses) {
-                classes.put(target, NomVar.empty(df.rowCount(), model.targetLevels(target)).withName(target));
+                classes.put(target, VarNominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
             }
             if (hasDensities) {
                 densities.put(target, SolidFrame.matrix(df.rowCount(), model.targetLevels(target)));
@@ -137,7 +137,7 @@ public class CPrediction implements Printable {
      *
      * @return map with nominal variables as predicted classes
      */
-    public Map<String, NomVar> classes() {
+    public Map<String, VarNominal> classes() {
         return classes;
     }
 
@@ -146,7 +146,7 @@ public class CPrediction implements Printable {
      *
      * @return nominal variable with predicted classes
      */
-    public NomVar firstClasses() {
+    public VarNominal firstClasses() {
         return classes.get(firstTargetName());
     }
 
@@ -156,7 +156,7 @@ public class CPrediction implements Printable {
      * @param targetVar given target variable name
      * @return nominal variable with predicted classes
      */
-    public NomVar classes(String targetVar) {
+    public VarNominal classes(String targetVar) {
         return classes.get(targetVar);
     }
 

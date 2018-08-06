@@ -121,8 +121,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
-                .withTargetTypes(VarType.NUMERIC)
+                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.ORDINAL)
+                .withTargetTypes(VarType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)
                 .withAllowMissingInputValues(false)
@@ -172,7 +172,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
                 if (df.isMissing(pos, inputName(i))) {
                     throw new RuntimeException("detected NaN in input values");
                 }
-                net[0][i + 1].value = df.value(pos, inputName(i));
+                net[0][i + 1].value = df.getDouble(pos, inputName(i));
             }
 
             // feed forward
@@ -198,7 +198,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, targetName(i));
+                double expected = df.getDouble(pos, targetName(i));
                 double actual = net[last][i].value;
                 net[last][i].gamma = function.differential(actual) * (expected - actual);
             }
@@ -233,7 +233,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
 
             // set inputs
             for (int i = 0; i < inputNames().length; i++) {
-                net[0][i + 1].value = df.value(pos, inputName(i));
+                net[0][i + 1].value = df.getDouble(pos, inputName(i));
             }
 
             // feed forward
@@ -249,7 +249,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
                 }
             }
             for (int i = 0; i < targetNames().length; i++) {
-                pred.fit(targetName(i)).setValue(pos, net[net.length - 1][i].value);
+                pred.fit(targetName(i)).setDouble(pos, net[net.length - 1][i].value);
             }
         }
         pred.buildComplete();

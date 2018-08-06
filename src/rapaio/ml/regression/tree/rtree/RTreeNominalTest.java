@@ -132,8 +132,8 @@ class NominalFull implements RTreeNominalTest {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.isMissing(i, testNameIndex))
                 continue;
-            int index = df.index(i, testNameIndex);
-            onlineStats[index - 1].update(df.value(i, targetNameIndex), w.value(i));
+            int index = df.getInt(i, testNameIndex);
+            onlineStats[index - 1].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
         }
 
         // check to see if we have enough instances in all child nodes
@@ -200,8 +200,8 @@ class NominalBinary implements RTreeNominalTest {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.isMissing(i, testNameIndex))
                 continue;
-            int index = df.index(i, testNameIndex);
-            onlineStats[index - 1].update(df.value(i, targetNameIndex), w.value(i));
+            int index = df.getInt(i, testNameIndex);
+            onlineStats[index - 1].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
         }
 
         WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);

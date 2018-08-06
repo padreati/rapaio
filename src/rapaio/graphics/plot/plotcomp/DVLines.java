@@ -66,9 +66,9 @@ public class DVLines extends PlotComponent {
 
         Range range = parent.getRange();
 
-        double x1 = parent.xScale(indexes.value(0));
+        double x1 = parent.xScale(indexes.getDouble(0));
         double y1 = parent.yScale(0);
-        double x2 = parent.xScale(indexes.value(indexes.rowCount()-1));
+        double x2 = parent.xScale(indexes.getDouble(indexes.rowCount()-1));
         double y2 = parent.yScale(0);
         g2d.setColor(Color.BLACK);
         Stroke oldStroke = g2d.getStroke();
@@ -78,10 +78,10 @@ public class DVLines extends PlotComponent {
 
         for (int i = 0; i < indexes.rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            x1 = parent.xScale(indexes.value(i));
+            x1 = parent.xScale(indexes.getDouble(i));
             y1 = parent.yScale(0);
-            x2 = parent.xScale(indexes.value(i));
-            y2 = parent.yScale(values.value(i));
+            x2 = parent.xScale(indexes.getDouble(i));
+            y2 = parent.yScale(values.getDouble(i));
             oldStroke = g2d.getStroke();
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.draw(new Line2D.Double(x1, y1, x2, y2));

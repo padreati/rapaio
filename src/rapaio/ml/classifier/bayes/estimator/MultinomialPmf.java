@@ -80,7 +80,7 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
                     density[i][j] = nb.laplaceSmoother();
                 }
             }
-        df.stream().forEach(s -> density[invTreeTarget.get(df.label(s.row(), targetVar))][invTreeTest.get(df.label(s.row(), testVar))] += weights.value(s.row()));
+        df.stream().forEach(s -> density[invTreeTarget.get(df.getLabel(s.row(), targetVar))][invTreeTest.get(df.getLabel(s.row(), testVar))] += weights.getDouble(s.row()));
         for (int i = 0; i < targetDict.size(); i++) {
             double t = 0;
             for (int j = 0; j < testDict.size(); j++) {

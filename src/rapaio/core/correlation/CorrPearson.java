@@ -93,7 +93,7 @@ public class CorrPearson implements Correlation, Printable {
         double sdp = Variance.from(x.mapRows(map)).sdValue() * Variance.from(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
-            sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));
+            sum += ((x.getDouble(pos) - xMean) * (y.getDouble(pos) - yMean));
         }
         return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
     }

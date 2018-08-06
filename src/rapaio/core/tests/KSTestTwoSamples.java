@@ -62,8 +62,8 @@ public class KSTestTwoSamples implements HTest {
         double n1 = v1.rowCount();
         double n2 = v2.rowCount();
         while (i1 < n1 && i2 < n2) {
-            double d1 = v1.value(i1);
-            double d2 = v2.value(i2);
+            double d1 = v1.getDouble(i1);
+            double d2 = v2.getDouble(i2);
             if (d1 <= d2) fn1 = i1++ / n1;
             if (d2 <= d1) fn2 = i2++ / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));

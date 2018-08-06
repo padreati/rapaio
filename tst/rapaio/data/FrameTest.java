@@ -36,9 +36,9 @@ public class FrameTest {
     @Test
     public void testRemove() {
         SolidFrame df = SolidFrame.byVars(
-                NomVar.copy("a", "b").withName("x"),
-                NomVar.copy("x", "y").withName("y"),
-                NumVar.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").withName("x"),
+                VarNominal.copy("x", "y").withName("y"),
+                VarDouble.wrap(1, 2).withName("z")
         );
         Frame df1 = df.removeVars("x,z");
 
@@ -53,33 +53,33 @@ public class FrameTest {
         df1 = df.removeRows(0);
         assertEquals(1, df1.rowCount());
         assertEquals(3, df1.varCount());
-        assertEquals("b", df1.label(0, "x"));
+        assertEquals("b", df1.getLabel(0, "x"));
     }
 
     @Test
     public void testSetters() {
         SolidFrame df = SolidFrame.byVars(
-                NomVar.copy("a", "b").withName("x"),
-                NomVar.copy("x", "y").withName("y"),
-                NumVar.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").withName("x"),
+                VarNominal.copy("x", "y").withName("y"),
+                VarDouble.wrap(1, 2).withName("z")
         );
 
-        df.setValue(1, "z", 100);
-        assertEquals(100, df.value(1, "z"), 1e-12);
+        df.setDouble(1, "z", 100);
+        assertEquals(100, df.getDouble(1, "z"), 1e-12);
 
-        df.setIndex(1, "z", 10);
-        assertEquals(10, df.index(1, "z"));
+        df.setInt(1, "z", 10);
+        assertEquals(10, df.getInt(1, "z"));
 
         df.setLabel(1, "x", "xxx");
-        assertEquals("xxx", df.label(1, "x"));
+        assertEquals("xxx", df.getLabel(1, "x"));
     }
 
     @Test
     public void testMissing() {
         SolidFrame df = SolidFrame.byVars(
-                NomVar.copy("a", "b").withName("x"),
-                NomVar.copy("x", "y").withName("y"),
-                NumVar.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").withName("x"),
+                VarNominal.copy("x", "y").withName("y"),
+                VarDouble.wrap(1, 2).withName("z")
         );
 
         assertEquals(false, df.isMissing(0));

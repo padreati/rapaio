@@ -50,7 +50,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.NUMERIC, VarType.NOMINAL};
+    private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.DOUBLE, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;
@@ -415,9 +415,9 @@ public class Csv {
                         continue;
                     }
                     if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VarType.TEXT)) {
-                        writer.append(unclean(df.label(i, j)));
+                        writer.append(unclean(df.getLabel(i, j)));
                     } else {
-                        writer.append(format.format(df.value(i, j)));
+                        writer.append(format.format(df.getDouble(i, j)));
                     }
                 }
                 writer.append("\n");
@@ -448,7 +448,7 @@ public class Csv {
 
         private final VarType type;
         private Var var;
-        private TextVar text;
+        private VarText text;
 
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
@@ -457,7 +457,7 @@ public class Csv {
             this.parent = parent;
             this.type = null;
             this.var = parent.defaultTypes[0].newInstance(rows);
-            this.text = TextVar.empty();
+            this.text = VarText.empty();
         }
 
         public VarSlot(Csv parent, VarType varType, int rows) {
@@ -514,7 +514,7 @@ public class Csv {
                         try {
                             var = parent.defaultTypes[i].newInstance();
                             if (text != null && text.rowCount() > 0)
-                                text.stream().forEach(s -> var.addLabel(s.label()));
+                                text.stream().forEach(s -> var.addLabel(s.getLabel()));
                             if (i == parent.defaultTypes.length - 1)
                                 text = null;
                             break;

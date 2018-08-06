@@ -76,11 +76,11 @@ public class SolidRMTest {
             }
         }
 
-        Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.NUMERIC));
+        Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.DOUBLE));
         RM copy1 = SolidRM.copy(iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {
-                assertEquals(iris.value(j, i), copy1.get(j, i), TOL);
+                assertEquals(iris.getDouble(j, i), copy1.get(j, i), TOL);
             }
         }
 

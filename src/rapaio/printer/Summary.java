@@ -97,7 +97,7 @@ public class Summary {
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
-            if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
+            if (v.type() == VarType.INT || v.type() == VarType.DOUBLE) {
                 typeStrategy = new NumericTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
@@ -205,7 +205,7 @@ public class Summary {
              typeStrategy.getPrintSummary(v, first, second);;
         }
 
-        if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
+        if (v.type() == VarType.INT || v.type() == VarType.DOUBLE) {
             typeStrategy = new NumericTypeStrategy();
             typeStrategy.getPrintSummary(v, first, second);
         }
@@ -326,7 +326,7 @@ public class Summary {
         }
         for (int i = 0; i < lines; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.set(i + 1, j + 1, vars[j].label(i), 1);
+                tt.set(i + 1, j + 1, vars[j].getLabel(i), 1);
             }
         }
         return tt.summary();

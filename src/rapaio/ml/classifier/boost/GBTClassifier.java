@@ -26,7 +26,7 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
@@ -104,7 +104,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.ORDINAL, VarType.NUMERIC)
+                .withInputTypes(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.ORDINAL, VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
@@ -154,7 +154,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         SolidRM yk = SolidRM.empty(K, df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            yk.set(df.index(i, firstTargetName()) - 1, i, 1);
+            yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
 
         for (int m = 0; m < runs(); m++) {
@@ -192,7 +192,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            NumVar resk = residual.mapRow(k).asNumericVar().withName("##tt##");
+            VarDouble resk = residual.mapRow(k).asNumericVar().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
             RTree tree = rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(K));
@@ -201,7 +201,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
             RPrediction rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                f.increment(k,i, shrinkage * rr.firstFit().value(i));
+                f.increment(k,i, shrinkage * rr.firstFit().getDouble(i));
             }
         }
     }
@@ -216,7 +216,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             for (RTree tree : trees.get(k)) {
                 RPrediction rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.increment(k, i, shrinkage * rr.firstFit().value(i));
+                    p_f.increment(k, i, shrinkage * rr.firstFit().getDouble(i));
                 }
             }
         }
@@ -232,7 +232,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             }
             if (t != 0) {
                 for (int k = 0; k < K; k++) {
-                    cr.firstDensity().setValue(i, k + 1, Math.exp(p_f.get(k, i) - max.get(i)) / t);
+                    cr.firstDensity().setDouble(i, k + 1, Math.exp(p_f.get(k, i) - max.get(i)) / t);
                 }
             }
         }
@@ -241,12 +241,12 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             int maxIndex = 0;
             double maxValue = Double.NEGATIVE_INFINITY;
             for (int k = 0; k < K; k++) {
-                if (cr.firstDensity().value(i, k + 1) > maxValue) {
-                    maxValue = cr.firstDensity().value(i, k + 1);
+                if (cr.firstDensity().getDouble(i, k + 1) > maxValue) {
+                    maxValue = cr.firstDensity().getDouble(i, k + 1);
                     maxIndex = k + 1;
                 }
             }
-            cr.firstClasses().setIndex(i, maxIndex);
+            cr.firstClasses().setInt(i, maxIndex);
         }
         return cr;
     }

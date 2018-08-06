@@ -38,18 +38,18 @@ public class FFJitterTest {
     public void testSmoke() {
 
         Frame a = SolidFrame.byVars(
-                NumVar.fill(100, 0).withName("num1"),
-                NumVar.fill(100, 0).withName("num2"),
-                BinaryVar.fill(100, true).withName("bin"),
-                NomVar.from(100, r -> String.valueOf(r % 10)).withName("nom")
+                VarDouble.fill(100, 0).withName("num1"),
+                VarDouble.fill(100, 0).withName("num2"),
+                VarBoolean.fill(100, true).withName("bin"),
+                VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
-        Frame df1 = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).fitApply(a.solidCopy());
+        Frame df1 = new FFJitter(VRange.onlyTypes(VarType.DOUBLE)).fitApply(a.solidCopy());
 
         Assert.assertTrue(a.removeVars("0~1").deepEquals(df1.removeVars("0~1")));
         Assert.assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
 
-        FFilter filter = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).newInstance();
+        FFilter filter = new FFJitter(VRange.onlyTypes(VarType.DOUBLE)).newInstance();
         filter.train(a.removeVars("num1"));
 
         Frame df2 = filter.apply(a.solidCopy());

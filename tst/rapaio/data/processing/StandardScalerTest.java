@@ -30,7 +30,7 @@ import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.datasets.Datasets;
 
@@ -63,7 +63,7 @@ public class StandardScalerTest {
 
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < df.varCount(); j++) {
-                Assert.assertEquals(df.value(i, j), copy.value(i, j), TOL);
+                Assert.assertEquals(df.getDouble(i, j), copy.getDouble(i, j), TOL);
             }
         }
     }
@@ -90,7 +90,7 @@ public class StandardScalerTest {
 
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < df.varCount(); j++) {
-                Assert.assertEquals(df.value(i, j), copy.value(i, j), TOL);
+                Assert.assertEquals(df.getDouble(i, j), copy.getDouble(i, j), TOL);
             }
         }
     }
@@ -133,7 +133,7 @@ public class StandardScalerTest {
 
     @Test
     public void missingData() {
-        NumVar x = NumVar.from(100, row -> row%2==0 ? row : Double.NaN).withName("x");
+        VarDouble x = VarDouble.from(100, row -> row%2==0 ? row : Double.NaN).withName("x");
         Frame df = SolidFrame.byVars(x);
 
         Frame copy = df.solidCopy();

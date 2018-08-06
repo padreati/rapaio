@@ -43,7 +43,7 @@ public class SparseRowValues implements RowValues {
     public SparseRowValues(Frame df, int row, String[] inputVarNames) {
         int pos = 0;
         for (int i=0; i<inputVarNames.length; i++) {
-            double value = df.value(row, i);
+            double value = df.getDouble(row, i);
             if (Double.isNaN(value)) {
                 throw new IllegalArgumentException("Does not allow missing values.");
             }

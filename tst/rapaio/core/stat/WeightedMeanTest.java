@@ -25,7 +25,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -38,17 +38,17 @@ public class WeightedMeanTest {
     @Test
     public void testBasic() {
 
-        NumVar values = NumVar.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        NumVar weights = NumVar.fill(10, 1);
+        VarDouble weights = VarDouble.fill(10, 1);
         assertEquals(5.5, WeightedMean.from(values, weights).value(), 10e-12);
 
-        weights = NumVar.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
+        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
         assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
 
         WeightedOnlineStat wos = WeightedOnlineStat.empty();
         for (int i = 0; i < values.rowCount(); i++) {
-            wos.update(values.value(i), weights.value(i));
+            wos.update(values.getDouble(i), weights.getDouble(i));
         }
 
         System.out.println(WeightedMean.from(values, weights).value());
@@ -59,17 +59,17 @@ public class WeightedMeanTest {
     @Test
     public void testMissing() {
 
-        NumVar values = NumVar.copy(Double.NaN, Double.NaN);
-        NumVar weights = NumVar.copy(1, 1);
+        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN);
+        VarDouble weights = VarDouble.copy(1, 1);
 
         assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = NumVar.copy(1, 2);
-        weights = NumVar.copy(Double.NaN, Double.NaN);
+        values = VarDouble.copy(1, 2);
+        weights = VarDouble.copy(Double.NaN, Double.NaN);
         assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = NumVar.copy(Double.NaN, 1, 2);
-        weights = NumVar.copy(1, 2, Double.NaN);
+        values = VarDouble.copy(Double.NaN, 1, 2);
+        weights = VarDouble.copy(1, 2, Double.NaN);
         assertEquals(1.0, WeightedMean.from(values, weights).value(), 10e-12);
     }
 

@@ -2,7 +2,7 @@ package rapaio.ml.regression.linear;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -55,12 +55,12 @@ public class RidgeRegressionTest {
     @Deprecated
     public void ridgeCoefficients() throws IOException {
 
-        NumVar lambda = NumVar.seq(0, 10, 0.5);
+        VarDouble lambda = VarDouble.seq(0, 10, 0.5);
 
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
 
         for (int i = 0; i < lambda.rowCount(); i++) {
-            RidgeRegression rr = RidgeRegression.newRidgeLm(lambda.value(i));
+            RidgeRegression rr = RidgeRegression.newRidgeLm(lambda.getDouble(i));
             LinearRPrediction fit = rr.fit(df, "Sales").predict(df, true);
 
             fit.printSummary();

@@ -26,7 +26,6 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
-import rapaio.data.stream.FSpot;
 import rapaio.util.Tag;
 import rapaio.util.ValuePair;
 
@@ -160,7 +159,7 @@ class ReducedErrorPruning {
     private static ValuePair bottomUpCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
 
         if (node.isLeaf()) {
-            ValuePair err = df.index(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+            ValuePair err = df.getInt(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
             bottomUp.get(node.getId()).increment(err);
             return err;
         }
@@ -177,7 +176,7 @@ class ReducedErrorPruning {
 
     private static void topDownCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
 
-        ValuePair err = df.index(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+        ValuePair err = df.getInt(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
         topDown.get(node.getId()).increment(err);
 
         for (CTreeNode child : node.getChildren()) {

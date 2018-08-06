@@ -25,7 +25,7 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.NomVar;
+import rapaio.data.VarNominal;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFToNumeric;
 
@@ -47,7 +47,7 @@ public class FFilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
-        Var v = NomVar.empty(10, dict);
+        Var v = VarNominal.empty(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
@@ -55,7 +55,7 @@ public class FFilterNominalToDoubleTest {
         Var filtered = VFToNumeric.byDefault().fitApply(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
-            assertEquals(value, filtered.value(i), 1e-10);
+            assertEquals(value, filtered.getDouble(i), 1e-10);
         }
     }
 
@@ -70,10 +70,10 @@ public class FFilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Var filtered = NomVar.empty(1, "abc");
+        Var filtered = VarNominal.empty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = VFToNumeric.byDefault().fitApply(filtered);
-        assertEquals(numeric.value(0), numeric.value(0), 1e-10);
+        assertEquals(numeric.getDouble(0), numeric.getDouble(0), 1e-10);
         assertTrue(numeric.isMissing(0));
     }
 }

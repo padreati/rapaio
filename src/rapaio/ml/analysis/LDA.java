@@ -119,7 +119,7 @@ public class LDA implements Printable {
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
-                    .filter(s -> s.label(targetName).equals(targetLevels.get(index)))
+                    .filter(s -> s.getLabel(targetName).equals(targetLevels.get(index)))
                     .mapToInt(FSpot::row)
                     .toArray());
         }
@@ -211,7 +211,7 @@ public class LDA implements Printable {
             throw new IllegalArgumentException("LDA needs one target var");
         targetName = targetNames.get(0);
 
-        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
+        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INT, VarType.ORDINAL, VarType.DOUBLE));
         df.varStream().forEach(var -> {
             if (targetName.equals(var.name())) {
                 if (!var.type().equals(VarType.NOMINAL)) {
@@ -233,16 +233,16 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                NumVar.empty(eigenValues.count()).withName("values"),
-                NumVar.empty(eigenValues.count()).withName("percent")
+                VarDouble.empty(eigenValues.count()).withName("values"),
+                VarDouble.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {
             total += eigenValues.get(i);
         }
         for (int i = 0; i < eigenValues.count(); i++) {
-            eval.setValue(i, "values", eigenValues.get(i));
-            eval.setValue(i, "percent", eigenValues.get(i) / total);
+            eval.setDouble(i, "values", eigenValues.get(i));
+            eval.setDouble(i, "percent", eigenValues.get(i) / total);
         }
 
         sb.append("Eigen values\n");

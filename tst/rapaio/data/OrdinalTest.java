@@ -37,12 +37,12 @@ public class OrdinalTest {
 
     @Test
     public void testSmoke() {
-        Var v = OrdVar.empty(0);
+        Var v = VarOrdinal.empty(0);
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().size());
         assertEquals("?", v.levels().get(0));
 
-        v = OrdVar.empty();
+        v = VarOrdinal.empty();
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().size());
         assertEquals("?", v.levels().get(0));
@@ -50,16 +50,16 @@ public class OrdinalTest {
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
 
-        v = OrdVar.empty(1, "a");
+        v = VarOrdinal.empty(1, "a");
         assertEquals(1, v.rowCount());
-        assertEquals("?", v.label(0));
+        assertEquals("?", v.getLabel(0));
 
-        assertEquals("Ordinal[name:?, rowCount:10]", OrdVar.empty(10).toString());
+        assertEquals("Ordinal[name:?, rowCount:10]", VarOrdinal.empty(10).toString());
     }
 
     @Test
     public void testDictionary() {
-        Var v = OrdVar.empty(0, "a", "a", "v", "a");
+        Var v = VarOrdinal.empty(0, "a", "a", "v", "a");
         assertEquals(3, v.levels().size());
         assertEquals("?", v.levels().get(0));
         assertEquals("a", v.levels().get(1));
@@ -70,7 +70,7 @@ public class OrdinalTest {
         set.add("v");
         set.add("a");
 
-        v = OrdVar.empty(0, set);
+        v = VarOrdinal.empty(0, set);
         assertEquals(3, v.levels().size());
         assertEquals("?", v.levels().get(0));
         assertEquals("a", v.levels().get(1));
@@ -79,60 +79,60 @@ public class OrdinalTest {
 
     @Test
     public void testSetterGetter() {
-        Var v = OrdVar.empty(4, "a", "b", "c");
+        Var v = VarOrdinal.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
-            assertEquals(0, v.index(i));
+            assertEquals(0, v.getInt(i));
         }
 
         // w/ index
 
-        v.setIndex(0, 1);
-        v.setIndex(1, 2);
-        v.setIndex(2, 3);
-        v.setIndex(3, 0);
+        v.setInt(0, 1);
+        v.setInt(1, 2);
+        v.setInt(2, 3);
+        v.setInt(3, 0);
 
-        assertEquals("a", v.label(0));
-        assertEquals("b", v.label(1));
-        assertEquals("c", v.label(2));
-        assertEquals("?", v.label(3));
+        assertEquals("a", v.getLabel(0));
+        assertEquals("b", v.getLabel(1));
+        assertEquals("c", v.getLabel(2));
+        assertEquals("?", v.getLabel(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.index(0));
-        assertEquals(2, v.index(1));
-        assertEquals(1, v.index(2));
-        assertEquals(0, v.index(3));
+        assertEquals(3, v.getInt(0));
+        assertEquals(2, v.getInt(1));
+        assertEquals(1, v.getInt(2));
+        assertEquals(0, v.getInt(3));
 
         // w/ value
 
-        v.setValue(0, 1);
-        v.setValue(1, 2);
-        v.setValue(2, 3);
-        v.setValue(3, 0);
+        v.setDouble(0, 1);
+        v.setDouble(1, 2);
+        v.setDouble(2, 3);
+        v.setDouble(3, 0);
 
-        assertEquals("a", v.label(0));
-        assertEquals("b", v.label(1));
-        assertEquals("c", v.label(2));
-        assertEquals("?", v.label(3));
+        assertEquals("a", v.getLabel(0));
+        assertEquals("b", v.getLabel(1));
+        assertEquals("c", v.getLabel(2));
+        assertEquals("?", v.getLabel(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.value(0), 1e-10);
-        assertEquals(2, v.value(1), 1e-10);
-        assertEquals(1, v.value(2), 1e-10);
-        assertEquals(0, v.value(3), 1e-10);
+        assertEquals(3, v.getDouble(0), 1e-10);
+        assertEquals(2, v.getDouble(1), 1e-10);
+        assertEquals(1, v.getDouble(2), 1e-10);
+        assertEquals(0, v.getDouble(3), 1e-10);
     }
 
     @Test
     public void testLabel() {
-        Var v = OrdVar.empty(1, "a", "b", "c");
+        Var v = VarOrdinal.empty(1, "a", "b", "c");
 
         boolean exceptional = false;
         try {
@@ -161,7 +161,7 @@ public class OrdinalTest {
 
     @Test
     public void testMissing() {
-        Var v = OrdVar.empty(1, "a", "b");
+        Var v = VarOrdinal.empty(1, "a", "b");
         assertTrue(v.isMissing(0));
 
         v.setLabel(0, "a");
@@ -176,11 +176,11 @@ public class OrdinalTest {
 
     @Test
     public void testCopy() {
-        OrdVar a = OrdVar.empty(0, "x", "y");
+        VarOrdinal a = VarOrdinal.empty(0, "x", "y");
         a.addLabel("x");
         a.addLabel("y");
 
-        OrdVar b = a.solidCopy();
+        VarOrdinal b = a.solidCopy();
 
         a.addLabel("z");
 

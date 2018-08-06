@@ -113,7 +113,7 @@ class NumericBinary implements RTreeNumericTest {
         if (len == 0) {
             return Optional.empty();
         }
-        IntArrays.quickSort(rows, 0, len, (o1, o2) -> Double.compare(df.value(o1, testNameIndex), df.value(o2, testNameIndex)));
+        IntArrays.quickSort(rows, 0, len, (o1, o2) -> Double.compare(df.getDouble(o1, testNameIndex), df.getDouble(o2, testNameIndex)));
 
         double[] leftWeight = new double[rows.length];
         double[] leftVar = new double[rows.length];
@@ -122,17 +122,17 @@ class NumericBinary implements RTreeNumericTest {
 
         WeightedOnlineStat so = WeightedOnlineStat.empty();
 
-        so.update(df.value(rows[0], targetNameIndex), weights.value(rows[0]));
+        so.update(df.getDouble(rows[0], targetNameIndex), weights.getDouble(rows[0]));
         for (int i = 1; i < len; i++) {
-            so.update(df.value(rows[i], targetNameIndex), weights.value(rows[i]));
-            leftWeight[i] = weights.value(rows[i]) + leftWeight[i - 1];
+            so.update(df.getDouble(rows[i], targetNameIndex), weights.getDouble(rows[i]));
+            leftWeight[i] = weights.getDouble(rows[i]) + leftWeight[i - 1];
             leftVar[i] = so.variance();
         }
         so = WeightedOnlineStat.empty();
-        so.update(df.value(rows[len - 1], targetNameIndex), weights.value(rows[len - 1]));
+        so.update(df.getDouble(rows[len - 1], targetNameIndex), weights.getDouble(rows[len - 1]));
         for (int i = len - 2; i >= 0; i--) {
-            so.update(df.value(rows[i], targetNameIndex), weights.value(rows[i]));
-            rightWeight[i] = weights.value(rows[i]) + rightWeight[i + 1];
+            so.update(df.getDouble(rows[i], targetNameIndex), weights.getDouble(rows[i]));
+            rightWeight[i] = weights.getDouble(rows[i]) + rightWeight[i + 1];
             rightVar[i] = so.variance();
         }
 
@@ -145,7 +145,7 @@ class NumericBinary implements RTreeNumericTest {
         p.totalWeight = rightWeight[0];
 
         for (int i = c.minCount(); i < len - c.minCount() - 1; i++) {
-            if (df.value(rows[i], testNameIndex) == df.value(rows[i + 1], testNameIndex)) continue;
+            if (df.getDouble(rows[i], testNameIndex) == df.getDouble(rows[i + 1], testNameIndex)) continue;
 
             p.splitVar[0] = leftVar[i];
             p.splitVar[1] = rightVar[i];
@@ -162,7 +162,7 @@ class NumericBinary implements RTreeNumericTest {
             bestScore = value;
             best = new RTreeCandidate(value, testName);
 
-            double testValue = (df.value(rows[i], testName) + df.value(rows[i + 1], testName)) / 2.0;
+            double testValue = (df.getDouble(rows[i], testName) + df.getDouble(rows[i + 1], testName)) / 2.0;
             best.addGroup(RowPredicate.numLessEqual(testName, testValue));
             best.addGroup(RowPredicate.numGreater(testName, testValue));
         }

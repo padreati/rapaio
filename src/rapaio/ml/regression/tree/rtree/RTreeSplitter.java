@@ -112,7 +112,7 @@ public interface RTreeSplitter extends Serializable {
                 int group = Util.getMatchedPredicate(df, row, groupPredicates);
                 if (group != -1) {
                     mapList.get(group).add(row);
-                    w[group] += weights.value(row);
+                    w[group] += weights.getDouble(row);
                 } else {
                     missing.add(row);
                 }

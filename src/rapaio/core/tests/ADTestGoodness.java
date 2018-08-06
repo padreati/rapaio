@@ -28,7 +28,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NumVar;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.sys.WS;
@@ -88,7 +88,7 @@ public class ADTestGoodness implements HTest {
                 // variance unknown, mean is known
                 sigmaHat = 0.0;
                 for (int i = 0; i < x.rowCount(); i++) {
-                    sigmaHat += Math.pow(x.value(i) - mu, 2);
+                    sigmaHat += Math.pow(x.getDouble(i) - mu, 2);
                 }
                 sigmaHat = Math.sqrt(sigmaHat);
             } else {
@@ -97,13 +97,13 @@ public class ADTestGoodness implements HTest {
             }
         }
 
-        Var y = NumVar.from(x, value -> (value - muHat) / sigmaHat);
+        Var y = VarDouble.from(x, value -> (value - muHat) / sigmaHat);
         Normal normal = new Normal();
 
         a2 = 0.0;
         int n = y.rowCount();
         for (int i = 1; i <= n; i++) {
-            double phi = normal.cdf(y.value(i - 1));
+            double phi = normal.cdf(y.getDouble(i - 1));
             a2 += (2 * i - 1) * Math.log(phi) + (2 * (n - i) + 1) * Math.log(1 - phi);
         }
         a2 = -n - a2 / n;

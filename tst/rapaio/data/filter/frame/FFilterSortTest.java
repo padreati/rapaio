@@ -25,8 +25,8 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.NomVar;
-import rapaio.data.NumVar;
+import rapaio.data.VarNominal;
+import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 
@@ -41,16 +41,16 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVector() {
-        Var unsorted = NumVar.copy(0., 1., 2., 3., 4., 5., 6.);
+        Var unsorted = VarDouble.copy(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
-            assertTrue(sorted.value(i - 1) <= sorted.value(i));
+            assertTrue(sorted.getDouble(i - 1) <= sorted.getDouble(i));
         }
     }
 
     @Test
     public void testValueVectorWithNA() {
-        Var unsorted = NumVar.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
+        Var unsorted = VarDouble.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.isMissing(i));
@@ -59,47 +59,47 @@ public class FFilterSortTest {
 
     @Test
     public void testNominalVector() {
-        Var unsorted = NomVar.empty(3, "ana", "vasile", "ion");
+        Var unsorted = VarNominal.empty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
 
         Var sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals("ana", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals("ana", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.label(0));
-        assertEquals("ion", sorted.label(1));
-        assertEquals("ana", sorted.label(2));
+        assertEquals("vasile", sorted.getLabel(0));
+        assertEquals("ion", sorted.getLabel(1));
+        assertEquals("ana", sorted.getLabel(2));
     }
 
     @Test
     public void testNominalVectorWithNA() {
-        Var unsorted = NomVar.empty(3, "ana", "vasile", "ion");
+        Var unsorted = VarNominal.empty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
 
         Var sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("?", sorted.label(0));
-        assertEquals("ana", sorted.label(1));
-        assertEquals("vasile", sorted.label(2));
+        assertEquals("?", sorted.getLabel(0));
+        assertEquals("ana", sorted.getLabel(1));
+        assertEquals("vasile", sorted.getLabel(2));
 
         sorted = new VFSort(false).fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.label(0));
-        assertEquals("ana", sorted.label(1));
-        assertEquals("?", sorted.label(2));
+        assertEquals("vasile", sorted.getLabel(0));
+        assertEquals("ana", sorted.getLabel(1));
+        assertEquals("?", sorted.getLabel(2));
     }
 }

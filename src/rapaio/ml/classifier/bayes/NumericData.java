@@ -46,6 +46,6 @@ public class NumericData extends NaiveBayesData implements Serializable{
 
 	@Override
 	public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
-		return numMap.get(testCol).cpValue(df.value(i, testCol), firstTargetLevel);
+		return numMap.get(testCol).cpValue(df.getDouble(i, testCol), firstTargetLevel);
 	}
 }
