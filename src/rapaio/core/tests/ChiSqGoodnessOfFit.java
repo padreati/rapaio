@@ -81,7 +81,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private static DVector buildDv(Var x) {
         switch (x.type()) {
-            case BINARY:
+            case BOOLEAN:
             case NOMINAL:
             case ORDINAL:
                 return DVector.fromCount(false, x);

@@ -54,7 +54,7 @@ public class VFToIndex extends AbstractVF {
                                 }
                             case ORDINAL:
                             case INT:
-                            case BINARY:
+                            case BOOLEAN:
                                 return s.getInt();
                             case LONG:
                                 return Long.valueOf(s.getLong()).intValue();

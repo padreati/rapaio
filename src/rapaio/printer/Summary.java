@@ -92,7 +92,7 @@ public class Summary {
 
             Var v = df.rvar(i);
             
-            if (v.type() == VarType.BINARY) {
+            if (v.type() == VarType.BOOLEAN) {
                 typeStrategy = new BinaryTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
@@ -200,7 +200,7 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.type() == VarType.BINARY) {
+        if (v.type() == VarType.BOOLEAN) {
              typeStrategy = new BinaryTypeStrategy();
              typeStrategy.getPrintSummary(v, first, second);;
         }

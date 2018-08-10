@@ -50,4 +50,20 @@ public interface Printable {
     }
 
     String summary();
+
+    default void printContent() {
+        WS.code(content());
+    }
+
+    default String content() {
+        return summary();
+    }
+
+    default void printDescription() {
+        WS.code(description());
+    }
+
+    default String description() {
+        return summary();
+    }
 }

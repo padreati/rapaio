@@ -187,7 +187,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
+                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
                 .withInputCount(1, 100_000)
                 .withAllowMissingInputValues(false)
                 .withTargetTypes(VarType.NOMINAL)

@@ -46,7 +46,7 @@ import java.util.List;
  */
 public final class DTable implements Printable, Serializable {
 
-    public static final List<String> NUMERIC_DEFAULT_LABELS = List.of("?", "less-equals", "greater");
+    public static final List<String> NUMERIC_DEFAULT_LABELS = Arrays.asList("?", "less-equals", "greater");
     private static final long serialVersionUID = 4359080329548577980L;
     private final List<String> rowLevels;
     private final List<String> colLevels;
@@ -163,15 +163,15 @@ public final class DTable implements Printable, Serializable {
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
         this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)))
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
         if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int rowOffset = (rowVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
-        int colOffset = (colVar.type().equals(VarType.BINARY) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
+        int rowOffset = (rowVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
+        int colOffset = (colVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
         for (int i = 0; i < rowVar.rowCount(); i++) {
             update(rowVar.getInt(i) + rowOffset, colVar.getInt(i) + colOffset, weights != null ? weights.getDouble(i) : 1);
         }
@@ -180,13 +180,13 @@ public final class DTable implements Printable, Serializable {
     private DTable(Frame df, String rowVarName, String colVarName, Var weights, boolean useFirst) {
         this(df.levels(rowVarName), df.levels(colVarName), useFirst);
 
-        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INT)))
+        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BOOLEAN) || df.type(rowVarName).equals(VarType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INT)))
+        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BOOLEAN) || df.type(colVarName).equals(VarType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
 
-        int rowOffset = (df.type(rowVarName).equals(VarType.BINARY) || df.type(rowVarName).equals(VarType.INT)) ? 1 : 0;
-        int colOffset = (df.type(colVarName).equals(VarType.BINARY) || df.type(colVarName).equals(VarType.INT)) ? 1 : 0;
+        int rowOffset = (df.type(rowVarName).equals(VarType.BOOLEAN) || df.type(rowVarName).equals(VarType.INT)) ? 1 : 0;
+        int colOffset = (df.type(colVarName).equals(VarType.BOOLEAN) || df.type(colVarName).equals(VarType.INT)) ? 1 : 0;
         int rowVarIndex = df.varIndex(rowVarName);
         int colVarIndex = df.varIndex(colVarName);
         for (int i = 0; i < df.rowCount(); i++) {
@@ -195,7 +195,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     private DTable(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
-        this(List.of("?", rowLevel, "other"), colVar.levels(), useFirst);
+        this(Arrays.asList("?", rowLevel, "other"), colVar.levels(), useFirst);
 
         if (!rowVar.type().isNominal()) throw new IllegalArgumentException("row var must be nominal");
         if (!colVar.type().isNominal()) throw new IllegalArgumentException("col var is not nominal");
@@ -212,7 +212,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     private DTable(Frame df, String rowVarName, String colVarName, Var weights, String rowLevel, boolean useFirst) {
-        this(List.of("?", rowLevel, "other"), df.levels(colVarName), useFirst);
+        this(Arrays.asList("?", rowLevel, "other"), df.levels(colVarName), useFirst);
 
         if (!df.type(rowVarName).isNominal()) throw new IllegalArgumentException("row var must be nominal");
         if (!df.type(colVarName).isNominal()) throw new IllegalArgumentException("col var is not nominal");

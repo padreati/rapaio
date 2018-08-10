@@ -165,7 +165,7 @@ public class RTree extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
+                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
                 .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);

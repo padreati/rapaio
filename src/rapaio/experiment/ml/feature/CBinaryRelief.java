@@ -115,7 +115,7 @@ public class CBinaryRelief {
                     }
                     break;
 
-                case BINARY:
+                case BOOLEAN:
                     numeric[i] = true;
                     for (int j = 0; j < df.rowCount(); j++) {
                         if (v.isMissing(j)) {

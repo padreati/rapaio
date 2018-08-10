@@ -28,6 +28,7 @@ package rapaio.data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.function.Function;
@@ -142,7 +143,7 @@ public final class VarBoolean extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.BINARY;
+        return VarType.BOOLEAN;
     }
 
     @Override
@@ -303,7 +304,7 @@ public final class VarBoolean extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        return List.of("?", "true", "false");
+        return Arrays.asList("?", "true", "false");
     }
 
     @Override

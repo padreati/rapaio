@@ -85,7 +85,7 @@ abstract class AbstractVar implements Var {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
-            case BINARY:
+            case BOOLEAN:
                 VarBoolean bin = VarBoolean.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     bin.setInt(i, getInt(i));

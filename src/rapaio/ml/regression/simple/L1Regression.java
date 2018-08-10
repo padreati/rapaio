@@ -79,7 +79,7 @@ public class L1Regression extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1_000_000)
-                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BINARY, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
+                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
                 .withTargetTypes(VarType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);

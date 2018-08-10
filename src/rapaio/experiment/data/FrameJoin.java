@@ -127,7 +127,7 @@ class KeyValue implements Comparable<KeyValue> {
             Var v2 = o.keyField.keyVars[i];
 
             switch (keyField.keyVars[i].type()) {
-                case BINARY:
+                case BOOLEAN:
                     comp = Boolean.compare(v1.getBoolean(row), v2.getBoolean(o.row));
                     break;
                 case TEXT:

@@ -76,7 +76,7 @@ public class FrameAnalysis {
                         countValue = var.levels().size();
                         break;
                     case INT:
-                    case BINARY:
+                    case BOOLEAN:
                         countValue = (int) var.stream().mapToInt().distinct().count();
                         break;
                     case LONG:
@@ -95,7 +95,7 @@ public class FrameAnalysis {
                 double[] h2v = new double[bins];
                 double[][] h = new double[][]{h1v, h2v};
                 switch (var.type()) {
-                    case BINARY:
+                    case BOOLEAN:
                         var.stream().complete().forEach(s -> h[target.getInt(s.row()) - 1][s.getInt()]++);
                         break;
                     case INT:

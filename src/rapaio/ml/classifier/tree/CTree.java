@@ -91,7 +91,7 @@ public class CTree extends AbstractClassifier {
     // static builders
 
     public CTree() {
-        testMap.put(VarType.BINARY, CTreeTest.BinaryBinary);
+        testMap.put(VarType.BOOLEAN, CTreeTest.BinaryBinary);
         testMap.put(VarType.ORDINAL, CTreeTest.NumericBinary);
         testMap.put(VarType.INT, CTreeTest.NumericBinary);
         testMap.put(VarType.DOUBLE, CTreeTest.NumericBinary);
@@ -289,7 +289,7 @@ public class CTree extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BINARY)
+                .withInputTypes(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BOOLEAN)
                 .withInputCount(1, 1_000_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)

@@ -503,7 +503,7 @@ public interface Frame extends Serializable, Printable {
 
     static Collector<Var, List<Var>, Frame> collector() {
 
-        return new Collector<>() {
+        return new Collector<Var, List<Var>, Frame>() {
             @Override
             public Supplier<List<Var>> supplier() {
                 return LinkedList::new;

@@ -91,7 +91,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         return new Capabilities()
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(false)
-                .withInputTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE)
+                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE)
                 .withTargetTypes(VarType.NOMINAL)
                 .withInputCount(1, 100_000)
                 .withTargetCount(1, 1);

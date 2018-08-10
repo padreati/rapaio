@@ -31,7 +31,7 @@ import rapaio.datasets.Datasets;
 import rapaio.sys.WS;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -81,7 +81,7 @@ public class DTableTest {
 
     @Test
     public void testEntropy() {
-        DTable dt1 = DTable.empty(List.of("?", "a", "b"), List.of("?", "x", "y", "z"), false);
+        DTable dt1 = DTable.empty(Arrays.asList("?", "a", "b"), Arrays.asList("?", "x", "y", "z"), false);
 
         dt1.update(0, 0, 1);
         dt1.update(1, 0, 1);
@@ -101,7 +101,7 @@ public class DTableTest {
 
         dt1.printSummary();
 
-        DTable dt2 = DTable.empty(List.of("a", "b"), List.of("x", "y", "z"), true);
+        DTable dt2 = DTable.empty(Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"), true);
 
         dt2.update(0, 0, 10);
         dt2.update(0, 1, 7);
@@ -149,7 +149,7 @@ public class DTableTest {
 
     @Test
     public void testNormalization() {
-        DTable dt2 = DTable.empty(List.of("a", "b"), List.of("x", "y", "z"), true);
+        DTable dt2 = DTable.empty(Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"), true);
 
         dt2.update(0, 0, 10);
         dt2.update(0, 1, 7);

@@ -121,7 +121,7 @@ public class RidgeRegression extends AbstractLinearRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BINARY, VarType.ORDINAL)
+                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BOOLEAN, VarType.ORDINAL)
                 .withTargetTypes(VarType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)

@@ -54,7 +54,7 @@ public class VFToNumeric extends AbstractVF {
                                 }
                             case ORDINAL:
                             case INT:
-                            case BINARY:
+                            case BOOLEAN:
                                 return Integer.valueOf(s.getInt()).doubleValue();
                             case LONG:
                                 return Long.valueOf(s.getLong()).doubleValue();

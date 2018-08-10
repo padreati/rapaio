@@ -56,7 +56,7 @@ public enum VarType {
      * Numeric values stored on 1 bit, encodes also
      * boolean values. Possible values are 0,1 or true,false.
      */
-    BINARY(true, false, true, "binary") {
+    BOOLEAN(true, false, true, "binary") {
         @Override
         public Var newInstance(int rows) {
             return VarBoolean.empty(rows);
@@ -69,6 +69,12 @@ public enum VarType {
         @Override
         public Var newInstance(int rows) {
             return VarInt.empty(rows);
+        }
+    },
+    SHORT(true, false, false, "short") {
+        @Override
+        public Var newInstance(int rows) {
+            return VarShort.empty(rows);
         }
     },
     /**
@@ -88,6 +94,12 @@ public enum VarType {
         @Override
         public Var newInstance(int rows) {
             return VarDouble.empty(rows);
+        }
+    },
+    FLOAT(true, false, false, "float") {
+        @Override
+        public Var newInstance(int rows) {
+            return VarFloat.empty(rows);
         }
     },
     /**

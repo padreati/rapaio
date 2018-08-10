@@ -67,7 +67,7 @@ public class BarChart extends HostFigure {
     }
 
     public BarChart(Var category, Var condition, Var numeric, GOption... opts) {
-        List<VarType> varTypes = Arrays.asList(VarType.BINARY, VarType.NOMINAL, VarType.ORDINAL);
+        List<VarType> varTypes = Arrays.asList(VarType.BOOLEAN, VarType.NOMINAL, VarType.ORDINAL);
         if (!varTypes.contains(category.type())) {
             throw new IllegalArgumentException("categories are nominal only");
         }

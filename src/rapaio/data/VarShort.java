@@ -28,7 +28,12 @@ package rapaio.data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -36,144 +41,26 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Builds a numeric variable which stores values as 32-bit integers.
- * There are two general usage scenarios: use variable as an
- * positive integer index or save storage for numeric
- * variables from Z loosing decimal precision.
- * <p>
- * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in
- * add/set operations will lead to missing values.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/7/18.
  */
-public final class VarInt extends AbstractVar {
+@Deprecated
+public class VarShort extends AbstractVar {
 
-    /**
-     * Builds an empty index var of size 0
-     *
-     * @return new instance of index var
-     */
-    public static VarInt empty() {
-        return new VarInt(0, 0, 0);
+    public static VarShort empty(int rows) {
+        return new VarShort(rows, rows, MISSING_VALUE);
     }
 
-    /**
-     * Builds an index of given size filled with missing values
-     *
-     * @param rows index size
-     * @return new instance of index var
-     */
-    public static VarInt empty(int rows) {
-        return new VarInt(rows, rows, 0);
-    }
+    // private
 
-    /**
-     * Builds an index of size 1 filled with the given value
-     *
-     * @param value fill value
-     * @return new instance of index var
-     */
-    public static VarInt scalar(int value) {
-        return new VarInt(1, 1, value);
-    }
-
-    /**
-     * Builds an index var of given size with given fill value
-     *
-     * @param rows  index size
-     * @param value fill value
-     * @return new instance of index var
-     */
-    public static VarInt fill(int rows, int value) {
-        return new VarInt(rows, rows, value);
-    }
-
-    /**
-     * Builds an index with values copied from a given array
-     *
-     * @param values given array of values
-     * @return new instance of index var
-     */
-    public static VarInt copy(int... values) {
-        VarInt index = new VarInt(0, 0, 0);
-        index.data = Arrays.copyOf(values, values.length);
-        index.rows = values.length;
-        return index;
-    }
-
-    /**
-     * Builds an index as a wrapper over a given array of index values
-     *
-     * @param values given array of values
-     * @return new instance of index var
-     */
-    public static VarInt wrap(int... values) {
-        VarInt index = new VarInt(0, 0, 0);
-        index.data = values;
-        index.rows = values.length;
-        return index;
-    }
-
-    /**
-     * Builds an index of given size as a ascending sequence starting with 0
-     *
-     * @param len size of the index
-     * @return new instance of index var
-     */
-    public static VarInt seq(int len) {
-        return seq(0, len, 1);
-    }
-
-    /**
-     * Builds an index of given size as ascending sequence with a given start value
-     *
-     * @param start start value
-     * @param len   size of the index
-     * @return new instance of index var
-     */
-    public static VarInt seq(int start, int len) {
-        return seq(start, len, 1);
-    }
-
-    /**
-     * Builds an index of given size as ascending sequence with a given start value and a given step
-     *
-     * @param start start value
-     * @param len   size of the index
-     * @param step  increment value
-     * @return new instance of index var
-     */
-    public static VarInt seq(final int start, final int len, final int step) {
-        VarInt index = new VarInt(len, len, 0);
-        int s = start;
-        for (int i = 0; i < len; i++) {
-            index.data[i] = s;
-            s = s + step;
-        }
-        return index;
-    }
-
-    public static VarInt from(int len, Function<Integer, Integer> supplier) {
-        VarInt index = new VarInt(len, len, 0);
-        for (int i = 0; i < index.data.length; i++) {
-            index.data[i] = supplier.apply(i);
-        }
-        return index;
-    }
-
-    // private constructor, only public static builders available
-
-    private static final long serialVersionUID = -2809318697565282310L;
-
-    private static final int MISSING_VALUE = Integer.MIN_VALUE;
-    private int[] data;
+    private static final short MISSING_VALUE = Short.MIN_VALUE;
+    private short[] data;
     private int rows;
 
-    private VarInt(int rows, int capacity, int fill) {
+    private VarShort(int rows, int capacity, short fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
-        this.data = new int[capacity];
+        this.data = new short[capacity];
         this.rows = rows;
         if (fill != 0)
             Arrays.fill(data, 0, rows, fill);
@@ -212,8 +99,8 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public VarInt withName(String name) {
-        return (VarInt) super.withName(name);
+    public VarShort withName(String name) {
+        return (VarShort) super.withName(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {
@@ -230,7 +117,7 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.INT;
+        return VarType.SHORT;
     }
 
     @Override
@@ -242,7 +129,7 @@ public final class VarInt extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = VarInt.MISSING_VALUE;
+            data[rows + i] = MISSING_VALUE;
         }
         rows += rowCount;
     }
@@ -254,13 +141,13 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
-        data[row] = value;
+        data[row] = (short)value;
     }
 
     @Override
     public void addInt(int value) {
         ensureCapacityInternal(rows + 1);
-        data[rows] = value;
+        data[rows] = (short)value;
         rows++;
     }
 
@@ -294,7 +181,7 @@ public final class VarInt extends AbstractVar {
             setMissing(row);
             return;
         }
-        setInt(row, Integer.parseInt(value));
+        setInt(row, Short.parseShort(value));
     }
 
     @Override
@@ -303,7 +190,7 @@ public final class VarInt extends AbstractVar {
             addMissing();
             return;
         }
-        addInt(Integer.parseInt(value));
+        addInt(Short.parseShort(value));
     }
 
     @Override
@@ -390,32 +277,31 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return VarInt.empty(rows);
+        return VarShort.empty(rows);
     }
 
     @Override
     public String toString() {
-        return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
+        return "VarShort[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     @Override
-    public VarInt solidCopy() {
-        return (VarInt) super.solidCopy();
+    public VarShort solidCopy() {
+        return (VarShort) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            out.writeInt(data[i]);
+            out.writeShort(data[i]);
         }
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         rows = in.readInt();
-        data = new int[rows];
+        data = new short[rows];
         for (int i = 0; i < rows; i++) {
-            data[i] = in.readInt();
+            data[i] = in.readShort();
         }
     }
-
 }

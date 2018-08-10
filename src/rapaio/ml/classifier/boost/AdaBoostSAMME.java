@@ -105,7 +105,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BINARY)
+                .withInputTypes(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BOOLEAN)
                 .withInputCount(1, 10_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)

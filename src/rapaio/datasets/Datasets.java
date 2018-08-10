@@ -133,7 +133,7 @@ public class Datasets {
 
     public static Frame loadRandom() throws IOException {
         return new Csv()
-                .withTypes(VarType.BINARY, "bin")
+                .withTypes(VarType.BOOLEAN, "bin")
                 .withTypes(VarType.INT, "index")
                 .withTypes(VarType.DOUBLE, "num")
                 .withTypes(VarType.LONG, "stamp")

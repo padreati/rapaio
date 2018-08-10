@@ -128,14 +128,14 @@ public class CsvTest {
         Frame df = new Csv()
                 .withQuotes(true)
                 .withHeader(true)
-                .withDefaultTypes(VarType.BINARY, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .withDefaultTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
 
         assertEquals(7, df.rowCount());
 
         // x1 is binary
 
-        assertEquals(VarType.BINARY, df.rvar("x1").type());
+        assertEquals(VarType.BOOLEAN, df.rvar("x1").type());
         assertEquals(false, df.getBoolean(0, "x1"));
         assertEquals(true, df.getBoolean(1, "x1"));
         assertEquals(false, df.getBoolean(2, "x1"));

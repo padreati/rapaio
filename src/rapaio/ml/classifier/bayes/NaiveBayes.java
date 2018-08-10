@@ -106,7 +106,7 @@ public class NaiveBayes extends AbstractClassifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
-                .withInputTypes(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BINARY)
+                .withInputTypes(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BOOLEAN)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
                 .withAllowMissingTargetValues(false)

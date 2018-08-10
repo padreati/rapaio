@@ -211,7 +211,7 @@ public class LDA implements Printable {
             throw new IllegalArgumentException("LDA needs one target var");
         targetName = targetNames.get(0);
 
-        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INT, VarType.ORDINAL, VarType.DOUBLE));
+        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BOOLEAN, VarType.INT, VarType.ORDINAL, VarType.DOUBLE));
         df.varStream().forEach(var -> {
             if (targetName.equals(var.name())) {
                 if (!var.type().equals(VarType.NOMINAL)) {
