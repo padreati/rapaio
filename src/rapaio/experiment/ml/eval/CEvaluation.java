@@ -36,7 +36,8 @@ import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.eval.Confusion;
 import rapaio.ml.eval.ROC;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.Printer;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pin;
 
@@ -168,21 +169,21 @@ public class CEvaluation {
         }
     }
 
-    public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0);
-        bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
+        bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
-        bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
+        bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps, double p) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0d);
-        bootstrapValidation(df, weights, classColName, c, bootstraps, p);
+        bootstrapValidation(printer, df, weights, classColName, c, bootstraps, p);
     }
 
-    public static void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;
@@ -200,7 +201,7 @@ public class CEvaluation {
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
             Confusion cm = new Confusion(test.rvar(classColName), classes);
-            cm.printSummary();
+            printer.printSummary(cm);
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;

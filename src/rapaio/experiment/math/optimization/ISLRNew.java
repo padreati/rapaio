@@ -26,9 +26,9 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
+import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.RM;
@@ -36,7 +36,8 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.Printer;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
@@ -44,8 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.pow;
+import static java.lang.Math.*;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -198,7 +198,7 @@ public class ISLRNew {
 
             // break if the improvement is then tolerance
 
-            if (k > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - err.getDouble(err.rowCount()-1)) < tol) {
+            if (k > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - err.getDouble(err.rowCount() - 1)) < tol) {
                 break;
             }
         }
@@ -207,7 +207,7 @@ public class ISLRNew {
 
     public static void main(String[] args) throws IOException {
 
-        WS.setPrinter(new IdeaPrinter());
+        Printer p = new IdeaPrinter();
 
         Frame df = Datasets.loadISLAdvertising().removeVars(0);
 
@@ -224,23 +224,23 @@ public class ISLRNew {
 
         Plot plot = plot();
         for (int i = 0; i < pp.length; i++) {
-            double p = pp[i];
+            double prob = pp[i];
             double h = k[i];
-            Pair<RV, VarDouble> pair = basicISLR(A, b, p, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair = basicISLR(A, b, prob, 10_000, 1e-20);
             plot.lines(pair._2);
 
-            WS.println("Solution 1 for p=" + WS.formatFlex(p));
-            WS.println("Min :" + WS.formatFlex(A.dot(pair._1).minus(b).norm(p)));
-            pair._1.printSummary();
+            WS.println("Solution 1 for p=" + WS.formatFlex(prob));
+            WS.println("Min :" + WS.formatFlex(A.dot(pair._1).minus(b).norm(prob)));
+            p.printSummary(pair._1);
             WS.println();
 
 
-            Pair<RV, VarDouble> pair2 = islrH(A, b, p, h, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair2 = islrH(A, b, prob, h, 10_000, 1e-20);
             plot.lines(pair2._2, color(1));
 
-            WS.println("Solution 2 for p=" + WS.formatFlex(p));
-            WS.println("Min :" + WS.formatFlex(A.dot(pair2._1).minus(b).norm(p)));
-            pair2._1.printSummary();
+            WS.println("Solution 2 for p=" + WS.formatFlex(prob));
+            WS.println("Min :" + WS.formatFlex(A.dot(pair2._1).minus(b).norm(prob)));
+            p.printSummary(pair2._1);
             WS.println();
 
         }

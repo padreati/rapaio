@@ -26,15 +26,14 @@ package rapaio.ml.classifier.tree.ctree;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CPrediction;
-import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
-import rapaio.printer.Summary;
 
 import java.io.IOException;
 
@@ -58,10 +57,10 @@ public class C45ClassifierTest {
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(classifier.getRoot().getBestCandidate().getGroupPredicates().get(0).toString().contains(splitCol));
 
-        Summary.printSummary(classifier);
+        classifier.printSummary();
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
-        Summary.printSummary(cm);
+        cm.printSummary();
     }
 
     @Test
@@ -72,12 +71,12 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45();
         classifier.fit(df, className);
-        Summary.printSummary(classifier);
+        classifier.printSummary();
 
         CPrediction pred = classifier.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
-        Summary.printSummary(cm);
+        cm.printSummary();
     }
 
     @Test
@@ -87,11 +86,11 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45().withMinCount(1);
         classifier.fit(df, className);
-        Summary.printSummary(classifier);
+        classifier.printSummary();
 
         CPrediction pred = classifier.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
-        Summary.printSummary(cm);
+        cm.printSummary();
     }
 }

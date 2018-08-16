@@ -26,6 +26,8 @@
 package rapaio.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import rapaio.data.Frame;
 import rapaio.data.GroupBy;
@@ -41,41 +43,13 @@ import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
 public class GroupByAggregate implements Printable {
-
-    public static class GroupByAggregateBuilder {
-        private final GroupBy groupBy;
-        private final int normalizeLevel;
-        private List<GroupByFunction> funs = new ArrayList<>();
-        private List<String> varNames = new ArrayList<>();
-
-        public GroupByAggregateBuilder(GroupBy groupBy, int normalizeLevel) {
-            this.groupBy = groupBy;
-            this.normalizeLevel = normalizeLevel;
-        }
-
-        public GroupByAggregateBuilder funs(GroupByFunction... funs) {
-            this.funs = Arrays.asList(funs);
-            return this;
-        }
-
-        public GroupByAggregateBuilder vars(String... varNames) {
-            this.varNames = Arrays.asList(varNames);
-            return this;
-        }
-
-        public GroupByAggregate run() {
-            return new GroupByAggregate(groupBy, normalizeLevel, funs, varNames);
-        }
-    }
 
     private static final String SEP = "_";
 
@@ -86,7 +60,7 @@ public class GroupByAggregate implements Printable {
 
     private Frame aggregateDf;
 
-    public GroupByAggregate(GroupBy groupBy, int normalizeLevel, List<GroupByFunction> funs, List<String> varNames) {
+    public GroupByAggregate(GroupBy groupBy, int normalizeLevel, List<String> varNames, List<GroupByFunction> funs) {
         this.groupBy = groupBy;
         this.funs = funs;
         this.normalizeLevel = normalizeLevel;
@@ -112,18 +86,15 @@ public class GroupByAggregate implements Printable {
     }
 
     private void computeAggregate(GroupByFunction fun, String varName, Var agg) {
-        IntStream.range(0, groupBy.getGroupCount())
-                .parallel()
-                .forEach(groupId -> {
-                    double value = fun.compute(groupBy.getFrame(), varName, groupBy.getRowsForGroupId(groupId));
-                    agg.setDouble(groupId, value);
-                });
+        int count = groupBy.getGroupCount();
+        for (int i = 0; i < count; i++) {
+            agg.setDouble(i, fun.compute(groupBy.getFrame(), varName, groupBy.getRowsForGroupId(i)));
+        }
 
         if (normalizeLevel < 0) {
             return;
         }
 
-        int count = groupBy.getGroupCount();
         Int2ObjectOpenHashMap<GroupBy.IndexNode> groupIndex = groupBy.getGroupIndex();
 
         Int2ObjectOpenHashMap<GroupBy.IndexNode> reducedGroup = new Int2ObjectOpenHashMap<>();
@@ -141,7 +112,7 @@ public class GroupByAggregate implements Printable {
 
         for (int i = 0; i < groupBy.getGroupCount(); i++) {
             double value = agg.getDouble(i);
-            if(Double.isNaN(value) || Double.isInfinite(value)) {
+            if (Double.isNaN(value) || Double.isInfinite(value)) {
                 continue;
             }
             GroupBy.IndexNode node = reducedGroup.get(i);
@@ -302,9 +273,36 @@ public class GroupByAggregate implements Printable {
             }
         }
         sb.append("\n\n");
+        return sb.toString();
+    }
+
+    @Override
+    public String description() {
+        return summary();
+    }
+
+    @Override
+    public String content() {
+
+        int headRows = 100;
+        int tailRows = 100;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(summary());
+
+        IntList sortedGroupIds = groupBy.getSortedGroupIds();
+        IntList selectedGroupIds = new IntArrayList();
+        boolean full = false;
+        if (headRows + tailRows > aggregateDf.rowCount()) {
+            selectedGroupIds.addAll(sortedGroupIds);
+            full = true;
+        } else {
+            selectedGroupIds.addAll(sortedGroupIds.subList(0, headRows));
+            selectedGroupIds.addAll(sortedGroupIds.subList(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
+        }
 
         TextTable tt = TextTable.newEmpty(
-                aggregateDf.rowCount() + 1,
+                selectedGroupIds.size() + 1,
                 groupBy.getGroupVarNames().size() + aggregateDf.varCount() + 1);
         tt.withHeaderRows(1);
         tt.withHeaderCols(groupBy.getGroupVarNames().size() + 1);
@@ -318,12 +316,22 @@ public class GroupByAggregate implements Printable {
             tt.set(0, i + groupBy.getGroupVarNames().size() + 1, aggregateDf.varName(i), -1);
         }
         // row numbers
-        for (int i = 0; i < aggregateDf.rowCount(); i++) {
-            tt.set(i + 1, 0, String.format("[%d]", i), 0);
+        if (full) {
+            for (int i = 0; i < selectedGroupIds.size(); i++) {
+                tt.set(i + 1, 0, String.format("[%d]", i), 0);
+            }
+        } else {
+            for (int i = 0; i < headRows; i++) {
+                tt.set(i + 1, 0, String.format("[%d]", i), 0);
+            }
+            tt.set(headRows + 1, 0, "...", 0);
+            for (int i = 0; i < tailRows; i++) {
+                tt.set(headRows + i + 1, 0, String.format("[%d]", aggregateDf.rowCount() - tailRows + i), 0);
+            }
         }
         // populate rows
         int pos = 1;
-        for (int groupId : groupBy.getSortedGroupIds()) {
+        for (int groupId : selectedGroupIds) {
 
             GroupBy.IndexNode node = groupBy.getGroupIndex().get(groupId);
             List<String> groupValues = node.getGroupValues();

@@ -29,10 +29,14 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.groupby.*;
+import rapaio.data.unique.UniqueRows;
 import rapaio.datasets.Datasets;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.idea.IdeaPrinter;
+import rapaio.sys.WS;
+import rapaio.util.Util;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -44,7 +48,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/18.
  */
-public class GroupBy {
+public class GroupBy implements Printable {
 
     public static GroupBy from(Frame df, String... varNames) {
         return new GroupBy(df, Arrays.asList(varNames));
@@ -69,6 +73,10 @@ public class GroupBy {
         return new GroupByFunctionMax();
     }
 
+    public static GroupByFunction sum() {
+        return new GroupByFunctionSum();
+    }
+
     public static GroupByFunction skewness() {
         return new GroupByFunctionSkewness();
     }
@@ -91,7 +99,9 @@ public class GroupBy {
 
     private final Frame df;
     private final List<String> groupVarNames;
+    private final List<VarType> groupVarTypes;
     private final List<String> featureVarNames;
+    private final List<UniqueRows> groupByUniqueRows;
     private final Int2IntOpenHashMap rowIndex = new Int2IntOpenHashMap();
     private final Int2ObjectOpenHashMap<IndexNode> groupIndex = new Int2ObjectOpenHashMap<>();
     private final IntList sortedGroupIds = new IntArrayList();
@@ -101,8 +111,14 @@ public class GroupBy {
     private GroupBy(Frame df, List<String> groupVarNames) {
         this.df = df;
         this.groupVarNames = groupVarNames;
+        this.groupVarTypes = new ArrayList<>();
+        this.groupByUniqueRows = new ArrayList<>();
+        for (String varName : groupVarNames) {
+            Var var = df.rvar(varName);
+            groupVarTypes.add(var.type());
+            groupByUniqueRows.add(UniqueRows.from(var));
+        }
         this.featureVarNames = new ArrayList<>();
-
         HashSet<String> groupSet = new HashSet<>(groupVarNames);
         for (String varName : df.varNames()) {
             if (groupSet.contains(varName)) {
@@ -110,7 +126,7 @@ public class GroupBy {
             }
             featureVarNames.add(varName);
         }
-        root = new IndexNode(null, "", "", -1);
+        root = new IndexNode(null, "", "", -1, -1);
         populateRows();
         sortGroupIds();
     }
@@ -147,7 +163,8 @@ public class GroupBy {
         return sortedGroupIds;
     }
 
-    public String printContent() {
+    @Override
+    public String summary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("group by: ");
@@ -201,57 +218,61 @@ public class GroupBy {
         return sb.toString();
     }
 
-    public GroupByAggregate.GroupByAggregateBuilder aggregate() {
-        return aggregate(-1);
+    public GroupByAggregate aggregate(VRange varRange, GroupByFunction... functions) {
+        return aggregate(-1, varRange, functions);
     }
 
-    public GroupByAggregate.GroupByAggregateBuilder aggregate(int normalizeLevel) {
-        return new GroupByAggregate.GroupByAggregateBuilder(this, normalizeLevel);
+    public GroupByAggregate aggregate(int normalizeLevel, VRange varRange, GroupByFunction... functions) {
+        List<String> varNames = varRange.parseVarNames(df);
+        return new GroupByAggregate(this, normalizeLevel, varNames, Arrays.asList(functions));
     }
 
     private void populateRows() {
-        int groupId = 0;
-        for (int i = 0; i < df.rowCount(); i++) {
-            IndexNode node = root;
-            for (int j = 0; j < groupVarNames.size(); j++) {
-                String groupName = groupVarNames.get(j);
-                String groupValue = df.getLabel(i, groupName);
-                IndexNode child = node.getChildNode(groupValue);
-                if (child == null) {
-                    if (j != groupVarNames.size() - 1) {
-                        child = new IndexNode(node, groupName, groupValue, -1);
+        Util.measure(() -> {
+            int groupId = 0;
+            for (int i = 0; i < df.rowCount(); i++) {
+                IndexNode node = root;
+                for (int j = 0; j < groupVarNames.size(); j++) {
+                    String groupName = groupVarNames.get(j);
+                    String groupValue = df.getLabel(i, groupName);
+                    int groupUniqueId = groupByUniqueRows.get(j).getUniqueId(i);
+                    IndexNode child = node.getChildNode(groupUniqueId);
+                    if (child == null) {
+                        if (j != groupVarNames.size() - 1) {
+                            child = new IndexNode(node, groupName, groupValue, groupUniqueId, -1);
+                        } else {
+                            child = new IndexNode(node, groupName, groupValue, groupUniqueId, groupId);
+                            child.addRow(i);
+                            rowIndex.put(i, groupId);
+                            groupIndex.put(groupId, child);
+                            groupId++;
+                        }
+                        node.addNode(child);
+                        node = child;
                     } else {
-                        child = new IndexNode(node, groupName, groupValue, groupId);
-                        child.addRow(i);
-                        rowIndex.put(i, groupId);
-                        groupIndex.put(groupId, child);
-                        groupId++;
-                    }
-                    node.addNode(child);
-                    node = child;
-                } else {
-                    node = child;
-                    if (j == groupVarNames.size() - 1) {
-                        child.addRow(i);
-                        rowIndex.put(i, child.getGroupId());
+                        node = child;
+                        if (j == groupVarNames.size() - 1) {
+                            child.addRow(i);
+                            rowIndex.put(i, child.getGroupId());
+                        }
                     }
                 }
             }
-        }
+        });
     }
 
     private void sortGroupIds() {
-        List<List<String>> groupValues = new ArrayList<>();
+        List<IntList> groupUniqueIds = new ArrayList<>();
         for (int i = 0; i < getGroupCount(); i++) {
-            groupValues.add(groupIndex.get(i).getGroupValues());
+            groupUniqueIds.add(groupIndex.get(i).getGroupUniqueIds());
             sortedGroupIds.add(i);
         }
         sortedGroupIds.sort((i1, i2) -> {
-            List<String> groupValues1 = groupValues.get(i1);
-            List<String> groupValues2 = groupValues.get(i2);
+            IntList groupUniqueIds1 = groupUniqueIds.get(i1);
+            IntList groupUniqueIds2 = groupUniqueIds.get(i2);
 
-            for (int i = 0; i < groupValues1.size(); i++) {
-                int comp = groupValues1.get(i).compareTo(groupValues2.get(i));
+            for (int i = 0; i < groupUniqueIds1.size(); i++) {
+                int comp = Integer.compare(groupUniqueIds1.getInt(i), groupUniqueIds2.getInt(i));
                 if (comp != 0) {
                     return comp;
                 }
@@ -263,16 +284,18 @@ public class GroupBy {
     public static class IndexNode {
         private final String groupLevel;
         private final String groupValue;
+        private final int groupUniqueId;
         private final IndexNode parent;
         private final int groupId;
         private final List<IndexNode> children = new ArrayList<>();
-        private final Object2IntOpenHashMap<String> positions = new Object2IntOpenHashMap<>();
+        private final Int2IntOpenHashMap positions = new Int2IntOpenHashMap();
         private final IntList rows = new IntArrayList();
 
-        public IndexNode(IndexNode parent, String groupLevel, String groupValue, int groupId) {
+        public IndexNode(IndexNode parent, String groupLevel, String groupValue, int groupUniqueId, int groupId) {
             this.parent = parent;
             this.groupLevel = groupLevel;
             this.groupValue = groupValue;
+            this.groupUniqueId = groupUniqueId;
             this.groupId = groupId;
         }
 
@@ -301,25 +324,15 @@ public class GroupBy {
         }
 
         public void addNode(IndexNode node) {
-            positions.put(node.groupValue, children.size());
+            positions.put(node.groupUniqueId, children.size());
             children.add(node);
         }
 
-        public IndexNode getChildNode(String groupValue) {
-            for (IndexNode child : children)
-                if (child.groupValue.equals(groupValue)) return child;
+        public IndexNode getChildNode(int groupUniqueId) {
+            if(positions.containsKey(groupUniqueId)) {
+                return children.get(positions.get(groupUniqueId));
+            }
             return null;
-        }
-
-        public List<IndexNode> getChildren() {
-            return children;
-        }
-
-        public IndexNode findLeafNode(List<String> groupValues) {
-            IndexNode leaf = this;
-            for (String groupValue : groupValues)
-                leaf = leaf.children.get(leaf.positions.getInt(groupValue));
-            return leaf;
         }
 
         public void addRow(int row) {
@@ -335,35 +348,39 @@ public class GroupBy {
             }
             return groupValues;
         }
+
+        public IntList getGroupUniqueIds() {
+            IntList groupUniqueIds = new IntArrayList();
+            IndexNode node = this;
+            while (node != null) {
+                groupUniqueIds.add(0, node.groupUniqueId);
+                node = node.parent;
+            }
+            return groupUniqueIds;
+        }
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
+        WS.setPrinter(new IdeaPrinter());
+
         Frame df = Datasets.loadCarMpgDataset();
-//        df.printSummary();
+        df.printSummary();
 
         String[] gbVars = new String[]{"origin", "cylinders"};
-        String[] vars = new String[]{"horsepower", "weight"};
+        String[] vars = new String[]{"weight"};
 
         GroupBy gb = GroupBy.from(df, gbVars);
-//        WS.println(gb.printContent());
+        gb.printSummary();
 
 
-        gb.aggregate().funs(count(), min(), max(), mean(), std(), skewness(), kurtosis())
-                .vars(vars)
-                .run()
+        gb.aggregate(VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
+                .printContent();
+        gb.aggregate(VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
                 .printSummary();
-        gb.aggregate(0).funs(count(), min(), max(), mean(), std(), skewness(), kurtosis())
-                .vars(vars)
-                .run()
+        gb.aggregate(1, VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
                 .printSummary();
-        gb.aggregate(1).funs(count(), min(), max(), mean(), std(), skewness(), kurtosis())
-                .vars(vars)
-                .run()
-                .printSummary();
-        gb.aggregate(2).funs(count(), min(), max(), mean(), std(), skewness(), kurtosis())
-                .vars(vars)
-                .run()
+        gb.aggregate(2, VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
                 .printSummary();
     }
 }

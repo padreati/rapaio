@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,24 +23,12 @@
  *
  */
 
-package rapaio.experiment.math.optimization;
-
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+package rapaio.experiment.struct.ints;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/18.
  */
-public class BFGS {
+public interface IntCollection {
 
-    public static void main(String[] args) {
-
-
-        RM I = SolidRM.identity(10);
-
-        I.printSummary();
-
-        Linear.chol2inv(I).printSummary();
-    }
+    int size();
 }

@@ -26,30 +26,29 @@
 package rapaio.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionMin implements GroupByFunction {
+public class GroupByFunctionSum implements GroupByFunction {
     @Override
     public String name() {
-        return "min";
+        return "sum";
     }
 
     @Override
     public double compute(Frame src, String varName, IntList rows) {
-        double min = Double.NaN;
+        OnlineStat os = OnlineStat.empty();
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
             if (src.isMissing(row, varIndex)) {
                 continue;
             }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(min) || min > value) {
-                min = value;
-            }
+            os.update(src.getDouble(row, varIndex));
         }
-        return min;
+        return os.n() > 0 ? os.sum() : Double.NaN;
     }
 }
+

@@ -43,7 +43,7 @@ public class GroupByFunctionStd implements GroupByFunction {
         OnlineStat os = OnlineStat.empty();
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
-            if (src.isMissing(row)) {
+            if (src.isMissing(row, varIndex)) {
                 continue;
             }
             os.update(src.getDouble(row, varIndex));

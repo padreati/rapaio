@@ -33,10 +33,14 @@ import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.Confusion;
-import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -211,26 +215,7 @@ public class CStepwiseSelection extends AbstractClassifier {
             if (backwardNext != null) {
                 selection = selection.stream().filter(n -> !n.equals(testNext)).collect(toList());
             }
-
-            WS.println("best selection: ");
-            TextTable tt = TextTable.newEmpty(selection.size() + 1, 2);
-            tt.set(0, 0, "No.", 0);
-            tt.set(0, 1, "Name", -1);
-            for (int i = 0; i < selection.size(); i++) {
-                tt.set(i + 1, 0, i + ".", 1);
-                tt.set(i + 1, 1, selection.get(i), -1);
-            }
-            tt.withMerge();
-
-            tt.withHeaderRows(1);
-            tt.printSummary();
-
-            WS.println("last test: " + testNext);
-
-            new Confusion(testFrame.rvar(firstTargetName()), best.predict(testFrame).firstClasses()).printSummary();
         }
-
-
         return true;
     }
 

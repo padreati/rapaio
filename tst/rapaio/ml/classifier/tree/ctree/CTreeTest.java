@@ -76,8 +76,7 @@ public class CTreeTest {
         Frame df = Datasets.loadMushrooms();
         Summary.printNames(df);
         df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
-
-        Summary.printSummary(df);
+        df.printSummary();
     }
 
     @Test

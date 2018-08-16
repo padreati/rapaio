@@ -33,7 +33,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.Confusion;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;

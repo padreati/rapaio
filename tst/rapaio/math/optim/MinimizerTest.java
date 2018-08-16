@@ -6,7 +6,7 @@ import rapaio.math.functions.*;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;

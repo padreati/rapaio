@@ -42,7 +42,7 @@ public class GroupByFunctionMax implements GroupByFunction {
         double max = Double.NaN;
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
-            if (src.isMissing(row)) {
+            if (src.isMissing(row, varIndex)) {
                 continue;
             }
             double value = src.getDouble(row, varIndex);

@@ -34,7 +34,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.ensemble.RForest;
 import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;

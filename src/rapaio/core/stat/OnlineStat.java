@@ -60,6 +60,7 @@ public class OnlineStat {
     double m4;
     double min = 0;
     double max = 0;
+    double sum = 0;
 
     private OnlineStat() {
         clean();
@@ -96,6 +97,7 @@ public class OnlineStat {
         m2 += term1;
         min = Math.min(min, x);
         max = Math.max(max, x);
+        sum += x;
     }
 
     /**
@@ -115,6 +117,10 @@ public class OnlineStat {
 
     public double mean() {
         return m1;
+    }
+
+    public double sum() {
+        return n == 0 ? Double.NaN : sum;
     }
 
     public double variance() {

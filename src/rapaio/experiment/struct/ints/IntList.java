@@ -23,33 +23,20 @@
  *
  */
 
-package rapaio.data.groupby;
-
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+package rapaio.experiment.struct.ints;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/18.
  */
-public class GroupByFunctionMin implements GroupByFunction {
-    @Override
-    public String name() {
-        return "min";
-    }
+public interface IntList extends IntCollection {
 
-    @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        double min = Double.NaN;
-        int varIndex = src.varIndex(varName);
-        for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
-                continue;
-            }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(min) || min > value) {
-                min = value;
-            }
-        }
-        return min;
-    }
+    int get(int pos);
+
+    void add(int value);
+
+    void set(int pos, int value);
+
+    int delete(int pos);
+
+    void clear();
 }

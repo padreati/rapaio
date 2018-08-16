@@ -40,7 +40,7 @@ import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
 import rapaio.io.JavaIO;
 import rapaio.ml.eval.ROC;
-import rapaio.printer.IdeaPrinter;
+import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;

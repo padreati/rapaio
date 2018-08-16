@@ -23,12 +23,11 @@
  *
  */
 
-package rapaio.printer;
+package rapaio.printer.idea;
 
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
-import rapaio.printer.idea.ClassMarshaller;
-import rapaio.printer.idea.CommandBytes;
+import rapaio.printer.StandardPrinter;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

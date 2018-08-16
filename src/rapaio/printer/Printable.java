@@ -41,29 +41,34 @@ import rapaio.sys.WS;
  */
 public interface Printable {
 
-    /**
-     * Prints a printSummary of the object to the system printer configured
-     * with {@link WS#setPrinter(rapaio.printer.Printer)}.
-     */
+    default void printDescription() {
+        WS.getPrinter().printDescription(this);
+    }
+
+    default String description() {
+        return "Not implemented.\n";
+    }
+
     default void printSummary() {
-        WS.code(summary());
+        WS.getPrinter().printSummary(this);
     }
 
     String summary();
 
     default void printContent() {
-        WS.code(content());
+        WS.getPrinter().printContent(this);
     }
 
     default String content() {
-        return summary();
+        return "Not implemented.\n";
     }
 
-    default void printDescription() {
-        WS.code(description());
+    default void printFullContent() {
+        WS.getPrinter().printFullContent(this);
     }
 
-    default String description() {
-        return summary();
+    default String fullContent() {
+        return "Not implemented.\n";
     }
+
 }

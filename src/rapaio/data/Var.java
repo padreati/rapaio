@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.data.unique.UniqueRows;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
 
@@ -401,6 +402,10 @@ public interface Var extends Serializable, Printable {
 
     default IntComparator refComparator() {
         return refComparator(true);
+    }
+
+    default UniqueRows getUnique() {
+        return UniqueRows.from(this);
     }
 
     default IntComparator refComparator(boolean asc) {

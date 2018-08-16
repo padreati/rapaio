@@ -33,11 +33,15 @@ import rapaio.data.filter.FFilter;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 import rapaio.printer.Summary;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;

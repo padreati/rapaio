@@ -45,7 +45,7 @@ public class GroupByFunctionNUnique implements GroupByFunction {
         Set<String> set = new HashSet<>();
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
-            if (src.isMissing(row)) {
+            if (src.isMissing(row, varIndex)) {
                 continue;
             }
             set.add(src.getLabel(row, varIndex));

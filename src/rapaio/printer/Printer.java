@@ -26,6 +26,7 @@
 package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
+import rapaio.sys.WS;
 
 /**
  * Interface for the printing system.
@@ -66,4 +67,23 @@ public interface Printer {
 
     void closePrinter();
 
+    /**
+     * Prints a printSummary of the object to the system printer configured
+     * with {@link WS#setPrinter(rapaio.printer.Printer)}.
+     */
+    default void printSummary(Printable printable) {
+        code(printable.summary());
+    }
+
+    default void printDescription(Printable printable) {
+        code(printable.description());
+    }
+
+    default void printContent(Printable printable) {
+        code(printable.content());
+    }
+
+    default void printFullContent(Printable printable) {
+        WS.code(printable.fullContent());
+    }
 }

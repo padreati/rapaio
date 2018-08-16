@@ -23,33 +23,37 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.data.unique;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/16/18.
  */
-public class GroupByFunctionMin implements GroupByFunction {
-    @Override
-    public String name() {
-        return "min";
+public interface UniqueRows {
+
+    static UniqueRows from(Var var) {
+        switch (var.type()) {
+            case BOOLEAN:
+                return DefaultUniqueRows.fromBoolean(var);
+            case SHORT:
+            case INT:
+            case ORDINAL:
+                return DefaultUniqueRows.fromInt(var);
+            case FLOAT:
+            case DOUBLE:
+                return DefaultUniqueRows.fromDouble(var);
+            case NOMINAL:
+                return DefaultUniqueRows.fromNominal(var);
+            default:
+                throw new IllegalArgumentException("Not implemented");
+        }
     }
 
-    @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        double min = Double.NaN;
-        int varIndex = src.varIndex(varName);
-        for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
-                continue;
-            }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(min) || min > value) {
-                min = value;
-            }
-        }
-        return min;
-    }
+    int getUniqueCount();
+
+    int getUniqueId(int row);
+
+    IntList getRowList(int uniqueId);
 }

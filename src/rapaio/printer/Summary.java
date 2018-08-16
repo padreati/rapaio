@@ -97,7 +97,7 @@ public class Summary {
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
 
-            if (v.type() == VarType.INT || v.type() == VarType.DOUBLE) {
+            if (v.type().isNumeric()) {
                 typeStrategy = new NumericTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
@@ -250,11 +250,6 @@ public class Summary {
             buffer.append(df.varNames()[i]).append("\n");
         }
         code(buffer.toString());
-    }
-
-    @Deprecated
-    public static void printSummary(Printable result) {
-        result.printSummary();
     }
 
     @Deprecated
