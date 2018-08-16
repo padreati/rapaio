@@ -99,7 +99,6 @@ public class GroupBy implements Printable {
 
     private final Frame df;
     private final List<String> groupVarNames;
-    private final List<VarType> groupVarTypes;
     private final List<String> featureVarNames;
     private final List<UniqueRows> groupByUniqueRows;
     private final Int2IntOpenHashMap rowIndex = new Int2IntOpenHashMap();
@@ -111,11 +110,9 @@ public class GroupBy implements Printable {
     private GroupBy(Frame df, List<String> groupVarNames) {
         this.df = df;
         this.groupVarNames = groupVarNames;
-        this.groupVarTypes = new ArrayList<>();
         this.groupByUniqueRows = new ArrayList<>();
         for (String varName : groupVarNames) {
             Var var = df.rvar(varName);
-            groupVarTypes.add(var.type());
             groupByUniqueRows.add(UniqueRows.from(var));
         }
         this.featureVarNames = new ArrayList<>();
@@ -268,11 +265,10 @@ public class GroupBy implements Printable {
             sortedGroupIds.add(i);
         }
         sortedGroupIds.sort((i1, i2) -> {
-            IntList groupUniqueIds1 = groupUniqueIds.get(i1);
-            IntList groupUniqueIds2 = groupUniqueIds.get(i2);
-
-            for (int i = 0; i < groupUniqueIds1.size(); i++) {
-                int comp = Integer.compare(groupUniqueIds1.getInt(i), groupUniqueIds2.getInt(i));
+            IntList gui1 = groupUniqueIds.get(i1);
+            IntList gui2 = groupUniqueIds.get(i2);
+            for (int i = 0; i < gui1.size(); i++) {
+                int comp = Integer.compare(gui1.getInt(i), gui2.getInt(i));
                 if (comp != 0) {
                     return comp;
                 }
@@ -301,18 +297,6 @@ public class GroupBy implements Printable {
 
         public IndexNode getParent() {
             return parent;
-        }
-
-        public String getGroupLevel() {
-            return groupLevel;
-        }
-
-        public String getGroupValue() {
-            return groupValue;
-        }
-
-        public boolean isLeaf() {
-            return groupId >= 0;
         }
 
         public int getGroupId() {

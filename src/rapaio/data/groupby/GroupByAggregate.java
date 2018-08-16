@@ -90,7 +90,6 @@ public class GroupByAggregate implements Printable {
         for (int i = 0; i < count; i++) {
             agg.setDouble(i, fun.compute(groupBy.getFrame(), varName, groupBy.getRowsForGroupId(i)));
         }
-
         if (normalizeLevel < 0) {
             return;
         }
