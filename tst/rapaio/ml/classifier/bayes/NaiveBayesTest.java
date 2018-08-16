@@ -125,7 +125,7 @@ public class NaiveBayesTest {
                 "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL\n" +
+                "types inputs/targets: BOOLEAN,INT,NOMINAL,DOUBLE/NOMINAL\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +

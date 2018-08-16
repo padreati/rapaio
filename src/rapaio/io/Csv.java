@@ -43,6 +43,10 @@ import static java.util.stream.Collectors.toSet;
  */
 public class Csv {
 
+    private static VarType[] DEFAULT_OPTIMIZED_TYPES = new VarType[]{VarType.BOOLEAN, VarType.SHORT,
+            VarType.INT, VarType.LONG, VarType.FLOAT, VarType.DOUBLE, VarType.NOMINAL};
+    private static VarType[] DEFAULT_COMPUTE_TYPES = new VarType[]{VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL};
+
     private boolean trimSpaces = true;
     private boolean header = true;
     private boolean quotes = false;
@@ -50,8 +54,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VarType[] defaultTypes = new VarType[]{VarType.BOOLEAN, VarType.SHORT,
-            VarType.INT, VarType.LONG, VarType.FLOAT, VarType.DOUBLE, VarType.NOMINAL};
+    private VarType[] defaultTypes = new VarType[]{VarType.BOOLEAN, VarType.DOUBLE, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;
@@ -148,6 +151,16 @@ public class Csv {
 
     public Csv withDefaultTypes(VarType... defaultTypes) {
         this.defaultTypes = defaultTypes;
+        return this;
+    }
+
+    public Csv withDefaultComputeTypes() {
+        this.defaultTypes = DEFAULT_COMPUTE_TYPES;
+        return this;
+    }
+
+    public Csv withDefaultOptimizedTypes() {
+        this.defaultTypes = DEFAULT_OPTIMIZED_TYPES;
         return this;
     }
 

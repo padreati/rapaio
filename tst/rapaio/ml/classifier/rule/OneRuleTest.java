@@ -110,7 +110,7 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,ORDINAL,LONG/NOMINAL\n" +
+                "types inputs/targets: BOOLEAN,INT,NOMINAL,DOUBLE,ORDINAL,LONG/NOMINAL\n" +
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
@@ -144,7 +144,7 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,ORDINAL,LONG/NOMINAL\n" +
+                "types inputs/targets: BOOLEAN,INT,NOMINAL,DOUBLE,ORDINAL,LONG/NOMINAL\n" +
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
