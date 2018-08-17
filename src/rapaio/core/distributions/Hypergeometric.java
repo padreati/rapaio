@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -235,12 +236,12 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double mean() {
-        return (m * k) / (m + n);
+        return (double)(m * k) / (m + n);
     }
 
     @Override
     public double mode() {
-        return Math.floor((k + 1) * (m + 1) / (n + m + 2));
+        return Math.floor((double)(k + 1) * (m + 1) / (n + m + 2));
     }
 
     /*
@@ -255,7 +256,7 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double skewness() {
-        return Math.sqrt((n + m - 1) / (n * m * k * (n + m - k)));
+        return Math.sqrt((double)(n + m - 1) / (n * m * k * (n + m - k)));
     }
 
     /*

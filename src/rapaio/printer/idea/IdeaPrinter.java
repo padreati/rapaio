@@ -26,10 +26,8 @@
 package rapaio.printer.idea;
 
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
 import rapaio.printer.StandardPrinter;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -64,22 +62,9 @@ public class IdeaPrinter extends StandardPrinter {
 
     @Override
     public void draw(Figure figure) {
-        boolean sendFigure = true;
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
-            if (sendFigure) {
-                new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
-            } else {
-                new ClassMarshaller().marshallConfig(s.getOutputStream());
-                CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
-                if (!(cb.getGraphicalWidth() == 0 || cb.getGraphicalHeight() == 0)) {
-                    BufferedImage image = ImageUtility.buildImage(
-                            figure,
-                            cb.getGraphicalWidth(),
-                            cb.getGraphicalHeight());
-                    new ClassMarshaller().marshallImage(s.getOutputStream(), image);
-                }
-            }
-        } catch (IOException | ClassNotFoundException ex) {
+            new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

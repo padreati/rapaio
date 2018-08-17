@@ -313,7 +313,7 @@ public class GroupBy implements Printable {
         }
 
         public IndexNode getChildNode(int groupUniqueId) {
-            if(positions.containsKey(groupUniqueId)) {
+            if (positions.containsKey(groupUniqueId)) {
                 return children.get(positions.get(groupUniqueId));
             }
             return null;
@@ -355,16 +355,11 @@ public class GroupBy implements Printable {
         String[] vars = new String[]{"weight"};
 
         GroupBy gb = GroupBy.from(df, gbVars);
-        gb.printSummary();
+//        gb.printSummary();
 
-
-        gb.aggregate(VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
-                .printContent();
-        gb.aggregate(VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
-                .printSummary();
-        gb.aggregate(1, VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
-                .printSummary();
-        gb.aggregate(2, VRange.of("weight"), count(), min(), max(), mean(), sum(), std(), skewness(), kurtosis())
-                .printSummary();
+        GroupByAggregate agg = gb.aggregate(VRange.of("weight"), count());
+        agg.toFrame().printLines();
+        agg.toFrame(1).printLines();
+        agg.toFrame(2).printLines();
     }
 }

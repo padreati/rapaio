@@ -57,7 +57,7 @@ public class Variance implements Printable {
         compute(var);
     }
 
-    private final void compute(final Var var) {
+    private void compute(final Var var) {
         double mean = mean(var).value();
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {

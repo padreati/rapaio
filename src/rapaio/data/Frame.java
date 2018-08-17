@@ -163,7 +163,7 @@ public interface Frame extends Serializable, Printable {
     }
 
     default Frame mapVars(List<String> varRange) {
-        return mapVars(VRange.of(varRange.toArray(new String[varRange.size()])));
+        return mapVars(VRange.of(varRange.toArray(new String[0])));
     }
 
     /**

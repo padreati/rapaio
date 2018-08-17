@@ -67,11 +67,11 @@ public class BoundFrame extends AbstractFrame {
                 _indexes.put(df.rvar(j).name(), pos++);
             }
         }
-        return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+        return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[0]), _indexes);
     }
 
     public static BoundFrame byVars(Collection<Var> varList) {
-        return byVars(varList.stream().toArray(Var[]::new));
+        return byVars(varList.toArray(new Var[0]));
     }
 
     /**

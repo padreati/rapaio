@@ -58,12 +58,20 @@ abstract class AbstractVar implements Var {
             case NOMINAL:
                 VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        nom.setMissing(i);
+                        continue;
+                    }
                     nom.setLabel(i, getLabel(i));
                 }
                 return nom;
             case ORDINAL:
                 VarOrdinal ord = VarOrdinal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        ord.setMissing(i);
+                        continue;
+                    }
                     ord.setLabel(i, getLabel(i));
                 }
                 return ord;
@@ -76,6 +84,10 @@ abstract class AbstractVar implements Var {
             case LONG:
                 VarLong stamp = VarLong.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        stamp.setMissing(i);
+                        continue;
+                    }
                     stamp.setLong(i, getLong(i));
                 }
                 return stamp;
@@ -85,14 +97,28 @@ abstract class AbstractVar implements Var {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
+            case SHORT:
+                VarShort numShort = VarShort.empty(rowCount()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        numShort.setMissing(i);
+                        continue;
+                    }
+                    numShort.setInt(i, getInt(i));
+                }
+                return numShort;
             case BOOLEAN:
                 VarBoolean bin = VarBoolean.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        bin.setMissing(i);
+                        continue;
+                    }
                     bin.setInt(i, getInt(i));
                 }
                 return bin;
             default:
-                throw new IllegalArgumentException("not implemented");
+                throw new IllegalArgumentException("solidCopy() not implemented fo type: " + type().code());
         }
     }
 

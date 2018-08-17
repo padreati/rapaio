@@ -263,11 +263,6 @@ public class Summary {
     }
 
     @Deprecated
-    public static void lines(Frame df) {
-        lines(true, df);
-    }
-
-    @Deprecated
     public static void lines(boolean merge, Frame df) {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
@@ -299,7 +294,7 @@ public class Summary {
     }
 
     public static String headString(int lines, Var[] vars, String[] names) {
-        return headString(true, lines, vars, names);
+        return headString(false, lines, vars, names);
     }
 
     public static String headString(boolean merge, int lines, Var[] vars, String[] names) {

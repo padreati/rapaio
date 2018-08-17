@@ -25,19 +25,13 @@
 
 package rapaio.data.groupby;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import rapaio.data.Frame;
-import rapaio.data.GroupBy;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarFloat;
-import rapaio.data.VarInt;
-import rapaio.data.VarLong;
-import rapaio.data.VarShort;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import rapaio.data.*;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -45,6 +39,8 @@ import rapaio.printer.format.TextTable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
@@ -69,7 +65,6 @@ public class GroupByAggregate implements Printable {
     }
 
     private void compute() {
-
         List<Var> allVarList = new ArrayList<>();
         for (String varName : aggNames) {
             List<Var> varList = new ArrayList<>();
@@ -82,7 +77,8 @@ public class GroupByAggregate implements Printable {
             funs.parallelStream().forEach(fun -> computeAggregate(fun, varName, varMap.get(fun.name())));
             allVarList.addAll(varList);
         }
-        aggregateDf = SolidFrame.byVars(shrinkVars(allVarList));
+        allVarList = allVarList.stream().map(this::shrinkCast).collect(Collectors.toList());
+        aggregateDf = SolidFrame.byVars(allVarList);
     }
 
     private void computeAggregate(GroupByFunction fun, String varName, Var agg) {
@@ -135,14 +131,6 @@ public class GroupByAggregate implements Printable {
         }
     }
 
-    private List<Var> shrinkVars(List<Var> varList) {
-        List<Var> shrinkedList = new ArrayList<>();
-        for (Var var : varList) {
-            shrinkedList.add(shrinkCast(var));
-        }
-        return shrinkedList;
-    }
-
     private Var shrinkCast(Var var) {
         Var cast = castShort(var);
         if (cast != null) return cast;
@@ -166,14 +154,7 @@ public class GroupByAggregate implements Printable {
             }
         }
         Var varShort = VarShort.empty(var.rowCount()).withName(var.name());
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.isMissing(i)) {
-                varShort.addMissing();
-                continue;
-            }
-            int val = (int) var.getDouble(i);
-            varShort.setInt(i, val);
-        }
+        fillInt(var, varShort);
         return varShort;
     }
 
@@ -188,6 +169,11 @@ public class GroupByAggregate implements Printable {
             }
         }
         Var varInt = VarInt.empty(var.rowCount()).withName(var.name());
+        fillInt(var, varInt);
+        return varInt;
+    }
+
+    private void fillInt(Var var, Var varInt) {
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 varInt.addMissing();
@@ -196,7 +182,6 @@ public class GroupByAggregate implements Printable {
             int val = (int) var.getDouble(i);
             varInt.setInt(i, val);
         }
-        return varInt;
     }
 
     private Var castLong(Var var) {
@@ -240,6 +225,129 @@ public class GroupByAggregate implements Printable {
             varFloat.setDouble(i, var.getDouble(i));
         }
         return varFloat;
+    }
+
+    public Frame toFrame() {
+        return toFrame(0);
+    }
+
+    public Frame toFrame(int unstackLevel) {
+        Frame df = groupBy.getFrame();
+        IntList rows = new IntArrayList();
+        IntList sortedGroupIds = groupBy.getSortedGroupIds();
+        Int2ObjectOpenHashMap<GroupBy.IndexNode> groupIndex = groupBy.getGroupIndex();
+        for (int sortedGroupId : sortedGroupIds) {
+            rows.add(groupIndex.get(sortedGroupId).getRows().getInt(0));
+        }
+        Frame result = df.mapRows(Mapping.wrap(rows)).mapVars(groupBy.getGroupVarNames()).solidCopy();
+        result = result.bindVars(aggregateDf.mapRows(Mapping.wrap(sortedGroupIds))).solidCopy();
+        if (unstackLevel <= 0) {
+            return result;
+        }
+
+        List<String> groupVarNames = groupBy.getGroupVarNames();
+        if (unstackLevel > groupVarNames.size()) {
+            unstackLevel = groupVarNames.size();
+        }
+
+        // split group by columns into group and unstack
+        List<String> groupNames = groupVarNames.subList(0, groupVarNames.size() - unstackLevel);
+        List<String> unstackNames = groupVarNames.subList(groupVarNames.size() - unstackLevel, groupVarNames.size());
+
+        // make unique groups and unstacked ids
+
+        Object2IntOpenHashMap<String> groupIdMap = new Object2IntOpenHashMap<>();
+        TreeSet<String> unstackIds = new TreeSet<>();
+        IntList originalGroupRows = new IntArrayList();
+
+        Int2IntOpenHashMap rowToGroupRow = new Int2IntOpenHashMap();
+        Int2ObjectOpenHashMap<String> rowToUnstackId = new Int2ObjectOpenHashMap<>();
+
+        for (int i = 0; i < result.rowCount(); i++) {
+            StringBuilder sb = new StringBuilder();
+            for (String unstackName : unstackNames) {
+                sb.append(unstackName).append(SEP);
+                sb.append(result.getLabel(i, unstackName)).append(SEP);
+            }
+            String unstackId = sb.toString();
+            sb = new StringBuilder();
+            for (String groupName : groupNames) {
+                sb.append(groupName).append(SEP);
+                sb.append(result.getLabel(i, groupName)).append(SEP);
+            }
+            String groupId = sb.toString();
+
+            if (!groupIdMap.containsKey(groupId)) {
+                groupIdMap.put(groupId, groupIdMap.size());
+                originalGroupRows.add(i);
+            }
+            unstackIds.add(unstackId);
+            rowToGroupRow.put(i, groupIdMap.getInt(groupId));
+            rowToUnstackId.put(i, unstackId);
+        }
+
+        // build index for unstackIds
+        Object2IntOpenHashMap<String> unstackIdPos = new Object2IntOpenHashMap<>();
+        for (String unstackId : unstackIds) {
+            unstackIdPos.put(unstackId, unstackIdPos.size());
+        }
+
+        // make unstack frame
+        Frame unstackedDf = result.mapRows(Mapping.wrap(originalGroupRows));
+        if (groupNames.size() > 0) {
+            unstackedDf = unstackedDf.mapVars(groupNames);
+        }
+
+        // process each aggregate field
+        for (String aggregateVarName : aggregateDf.varNames()) {
+            // unstack each var for each prefix and append to unstacked frame
+            // first they are empty
+            List<Var> unstackedVars = new ArrayList<>();
+            for (String unstackId : unstackIds) {
+                Var newAgg = result.rvar(aggregateVarName).newInstance(unstackedDf.rowCount()).withName(unstackId + aggregateVarName);
+                // fill with missing values
+                for (int i = 0; i < newAgg.rowCount(); i++) {
+                    newAgg.setMissing(i);
+                }
+                unstackedVars.add(newAgg);
+            }
+            Frame unstacked = SolidFrame.byVars(unstackedVars);
+
+            // new we fill them with values
+            VarType aggregateType = result.rvar(aggregateVarName).type();
+            int aggregateVarIndex = result.varIndex(aggregateVarName);
+            for (int i = 0; i < result.rowCount(); i++) {
+                int varIndex = unstackIdPos.getInt(rowToUnstackId.get(i));
+                int rowIndex = rowToGroupRow.get(i);
+                if (result.isMissing(i, aggregateVarIndex)) {
+                    unstacked.setMissing(rowIndex, varIndex);
+                }
+                switch (aggregateType) {
+                    case DOUBLE:
+                    case FLOAT:
+                        unstacked.setDouble(rowIndex, varIndex, result.getDouble(i, aggregateVarIndex));
+                        break;
+                    case INT:
+                    case SHORT:
+                        unstacked.setInt(rowIndex, varIndex, result.getInt(i, aggregateVarIndex));
+                        break;
+                    case BOOLEAN:
+                        unstacked.setBoolean(rowIndex, varIndex, result.getBoolean(i, aggregateVarIndex));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("var type " + aggregateType.code() + " not unstacked.");
+                }
+            }
+
+            // bind unstacked set of vars to result
+            unstackedDf = unstackedDf.bindVars(unstacked);
+        }
+
+        if (groupNames.isEmpty()) {
+            unstackedDf = unstackedDf.removeVars(result.varNames());
+        }
+
+        return unstackedDf.solidCopy();
     }
 
 
@@ -308,11 +416,11 @@ public class GroupByAggregate implements Printable {
 
         // group header
         for (int i = 0; i < groupBy.getGroupVarNames().size(); i++) {
-            tt.set(0, i + 1, groupBy.getGroupVarNames().get(i), -1);
+            tt.set(0, i + 1, groupBy.getGroupVarNames().get(i), 0);
         }
         // feature header
         for (int i = 0; i < aggregateDf.varCount(); i++) {
-            tt.set(0, i + groupBy.getGroupVarNames().size() + 1, aggregateDf.varName(i), -1);
+            tt.set(0, i + groupBy.getGroupVarNames().size() + 1, aggregateDf.varName(i), 0);
         }
         // row numbers
         if (full) {
@@ -337,11 +445,11 @@ public class GroupByAggregate implements Printable {
 
             // write group values
             for (int i = 0; i < groupValues.size(); i++) {
-                tt.set(pos, i + 1, groupValues.get(i), -1);
+                tt.set(pos, i + 1, groupValues.get(i), 1);
             }
             for (int i = 0; i < aggregateDf.varCount(); i++) {
                 tt.set(pos, i + groupValues.size() + 1,
-                        aggregateDf.getLabel(groupId, i), -1);
+                        aggregateDf.getLabel(groupId, i), 1);
             }
             pos++;
         }
