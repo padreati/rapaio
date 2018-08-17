@@ -74,8 +74,8 @@ public class RTreeTest {
                 "  splitter=REMAINS_TO_RANDOM,\n" +
                 "  predictor=STANDARD\n" +
                 "  varSelector=VarSelector[ALL],\n" +
-                "  runs=-1,\n" +
-                "  poolSize=4,\n" +
+                "  runs=1,\n" +
+                "  poolSize=-1,\n" +
                 "  sampler=Identity,\n" +
                 "}\n" +
                 "\n" +
