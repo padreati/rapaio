@@ -49,7 +49,7 @@ public abstract class AbstractRegression implements Regression {
     protected VarType[] targetTypes;
     protected RowSampler sampler = RowSampler.identity();
     protected boolean hasLearned;
-    protected int poolSize = Runtime.getRuntime().availableProcessors();
+    protected int poolSize = -1;
     protected int runs = 1;
     protected List<FFilter> inputFilters = new ArrayList<>();
 
