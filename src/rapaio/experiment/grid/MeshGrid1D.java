@@ -26,8 +26,9 @@
 package rapaio.experiment.grid;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;
@@ -49,7 +50,7 @@ public class MeshGrid1D implements Serializable {
         this.y = y;
         this.len = y.rowCount();
 
-        this.grid = VarDouble.empty(x.rowCount() * y.rowCount());
+        this.grid = SolidVarDouble.empty(x.rowCount() * y.rowCount());
     }
 
     public Var getX() {

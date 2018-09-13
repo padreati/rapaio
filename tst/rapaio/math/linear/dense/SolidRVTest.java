@@ -30,8 +30,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RV;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class SolidRVTest {
     @Before
     public void setUp() throws Exception {
         normal = new Normal(0, 10);
-        varx = VarDouble.from(N, normal::sampleNext);
+        varx = SolidVarDouble.from(N, normal::sampleNext);
         x = SolidRV.from(varx);
     }
 
@@ -71,20 +71,20 @@ public class SolidRVTest {
             assertTrue(Double.isNaN(x.get(i)));
         }
 
-        x = SolidRV.from(VarDouble.seq(N - 1));
+        x = SolidRV.from(SolidVarDouble.seq(N - 1));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        RV y = SolidRV.from(VarDouble.seq(N - 1));
+        RV y = SolidRV.from(SolidVarDouble.seq(N - 1));
         x = SolidRV.copy(y);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidRV.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
+        x = SolidRV.from(SolidVarDouble.fill(N, 1).bindRows(SolidVarDouble.seq(N - 1)));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
@@ -106,7 +106,7 @@ public class SolidRVTest {
 
     @Test
     public void incrementTest() {
-        RV x = SolidRV.from(VarDouble.seq(0, 1, 0.01));
+        RV x = SolidRV.from(SolidVarDouble.seq(0, 1, 0.01));
         RV y = x.solidCopy();
         for (int i = 0; i < y.count(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
@@ -142,7 +142,7 @@ public class SolidRVTest {
 
     @Test
     public void vectorPlusTest() {
-        RV z = SolidRV.from(VarDouble.fill(N, 10));
+        RV z = SolidRV.from(SolidVarDouble.fill(N, 10));
         RV y = x.solidCopy().plus(z);
 
         for (int i = 0; i < y.count(); i++) {
@@ -174,7 +174,7 @@ public class SolidRVTest {
 
     @Test
     public void vectorMinusTest() {
-        RV z = SolidRV.from(VarDouble.fill(N, 10));
+        RV z = SolidRV.from(SolidVarDouble.fill(N, 10));
         RV y = x.solidCopy().minus(z);
 
         for (int i = 0; i < y.count(); i++) {

@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import rapaio.data.solid.SolidVarDouble;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -32,7 +34,7 @@ import java.io.ObjectOutputStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-abstract class AbstractVar implements Var {
+public abstract class AbstractVar implements Var {
 
     private static final long serialVersionUID = 2607349261526552662L;
     private String name = "?";
@@ -92,7 +94,7 @@ abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case DOUBLE:
-                VarDouble num = VarDouble.empty(rowCount()).withName(name());
+                VarDouble num = SolidVarDouble.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setDouble(i, getDouble(i));
                 }

@@ -30,14 +30,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 import rapaio.util.Tagged;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -158,7 +162,7 @@ public interface CTreeSplitter extends Tagged, Serializable {
             List<Var> weighting = new ArrayList<>();
             for (int i = 0; i < pred.size(); i++) {
                 mappings.add(Mapping.empty());
-                weighting.add(VarDouble.empty());
+                weighting.add(SolidVarDouble.empty());
             }
 
             final double[] p = new double[mappings.size()];

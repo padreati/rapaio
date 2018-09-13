@@ -26,8 +26,8 @@
 
 package rapaio.math.fourier;
 
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.util.Pair;
 
 /**
@@ -66,8 +66,8 @@ public class FFT {
         Pair<Var, Var> r = fft(Pair.from(x._1.mapRows(oddMap), x._2.mapRows(oddMap)));
 
         // combine
-        Var rey = VarDouble.fill(N, 0.0);
-        Var imy = VarDouble.fill(N, 0.0);
+        Var rey = SolidVarDouble.fill(N, 0.0);
+        Var imy = SolidVarDouble.fill(N, 0.0);
         for (int k = 0; k < N / 2; k++) {
             double kth = -2 * k * Math.PI / N;
             double coskth = Math.cos(kth);
@@ -87,14 +87,14 @@ public class FFT {
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
         int N = x._1.rowCount();
 
-        Var im2 = VarDouble.from(N, row -> -x._2.getDouble(row));
+        Var im2 = SolidVarDouble.from(N, row -> -x._2.getDouble(row));
 
         // compute forward FFT
         Pair<Var, Var> y = fft(Pair.from(x._1, im2));
 
         // take conjugate again and divide by N
-        Var re3 = VarDouble.from(N, row -> y._1.getDouble(row) / N);
-        Var im3 = VarDouble.from(N, row -> -y._2.getDouble(row) / N);
+        Var re3 = SolidVarDouble.from(N, row -> y._1.getDouble(row) / N);
+        Var im3 = SolidVarDouble.from(N, row -> -y._2.getDouble(row) / N);
         return Pair.from(re3, im3);
     }
 
@@ -116,7 +116,7 @@ public class FFT {
         Pair<Var, Var> b = fft(y);
 
         // point-wise multiply
-        Pair<Var, Var> c = Pair.from(VarDouble.fill(len, 0.0), VarDouble.fill(len, 0.0));
+        Pair<Var, Var> c = Pair.from(SolidVarDouble.fill(len, 0.0), SolidVarDouble.fill(len, 0.0));
         for (int i = 0; i < N; i++) {
             c._1.setDouble(i, a._1.getDouble(i) * b._1.getDouble(i) - a._2.getDouble(i) * b._2.getDouble(i));
             c._2.setDouble(i, a._1.getDouble(i) * b._2.getDouble(i) + a._1.getDouble(i) * b._2.getDouble(i));

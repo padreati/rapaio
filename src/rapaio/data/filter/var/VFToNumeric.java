@@ -25,8 +25,8 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.data.stream.VSpot;
 
 import java.util.function.Function;
@@ -111,19 +111,19 @@ public class VFToNumeric extends AbstractVF {
         Var v = vars[0];
 
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(VarDouble.collector()).withName(v.name());
+            return v.stream().map(fSpot).collect(SolidVarDouble.collector()).withName(v.name());
         }
         if (fValue != null) {
             return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(VarDouble.collector()).withName(v.name());
+                    .map(fValue).collect(SolidVarDouble.collector()).withName(v.name());
         }
         if (fIndex != null) {
             return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(VarDouble.collector()).withName(v.name());
+                    .map(fIndex).collect(SolidVarDouble.collector()).withName(v.name());
         }
         if (fLabel != null) {
             return v.stream().mapToString()
-                    .map(fLabel).collect(VarDouble.collector()).withName(v.name());
+                    .map(fLabel).collect(SolidVarDouble.collector()).withName(v.name());
         }
         throw new RuntimeException("no transform function available");
     }

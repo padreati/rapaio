@@ -25,12 +25,12 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -47,9 +47,9 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("x"),
-                VarDouble.empty().withName("y"),
-                VarDouble.empty().withName("z"));
+                SolidVarDouble.empty().withName("x"),
+                SolidVarDouble.empty().withName("y"),
+                SolidVarDouble.empty().withName("z"));
 
         assertEquals(3, df.varCount());
         assertEquals("x", df.varNames()[0]);
@@ -83,8 +83,8 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         List<Var> vars = new ArrayList<>();
-        vars.add(VarDouble.copy(1., 2., 3., 4.).withName("x"));
-        vars.add(VarDouble.copy(3., 5., 9., 12.).withName("y"));
+        vars.add(SolidVarDouble.copy(1., 2., 3., 4.).withName("x"));
+        vars.add(SolidVarDouble.copy(3., 5., 9., 12.).withName("y"));
         vars.add(VarNominal.empty(4, "ana", "are", "mere").withName("name"));
         vars.add(VarInt.seq(1, 4).withName("index"));
         Frame df = SolidFrame.byVars(vars);
@@ -124,7 +124,7 @@ public class SolidFrameTest {
 
     @Test
     public void testBuilders() {
-        Var x = VarDouble.wrap(1, 2, 3, 4).withName("x");
+        Var x = SolidVarDouble.wrap(1, 2, 3, 4).withName("x");
         Var y = VarNominal.copy("a", "c", "b", "a").withName("y");
 
         Frame df1 = SolidFrame.byVars(x, y);
@@ -163,8 +163,8 @@ public class SolidFrameTest {
         }
 
         df2 = SolidFrame.byVars(y).bindVars(
-                SolidFrame.byVars(VarDouble.wrap(1, 2).withName("x"))
-                        .bindRows(SolidFrame.byVars(VarDouble.wrap(3, 4).withName("x")))
+                SolidFrame.byVars(SolidVarDouble.wrap(1, 2).withName("x"))
+                        .bindRows(SolidFrame.byVars(SolidVarDouble.wrap(3, 4).withName("x")))
         );
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
@@ -175,8 +175,8 @@ public class SolidFrameTest {
 
         try {
             SolidFrame.byVars(
-                    VarDouble.wrap(1, 2).withName("x"),
-                    BoundVar.from(VarDouble.wrap(3, 4).withName("y"))
+                    SolidVarDouble.wrap(1, 2).withName("x"),
+                    BoundVar.from(SolidVarDouble.wrap(3, 4).withName("y"))
             );
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {

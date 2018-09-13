@@ -28,9 +28,9 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.VarInt;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,9 +50,9 @@ public class OnlineStatTest {
         OnlineStat onlineStat = OnlineStat.empty();
 
         Var index = VarInt.seq(LEN);
-        Var varLeft = VarDouble.fill(LEN);
-        Var varRight = VarDouble.fill(LEN);
-        Var varSum = VarDouble.fill(LEN);
+        Var varLeft = SolidVarDouble.fill(LEN);
+        Var varRight = SolidVarDouble.fill(LEN);
+        Var varSum = SolidVarDouble.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
             onlineStat.update(v.getDouble(i));
@@ -74,8 +74,8 @@ public class OnlineStatTest {
 
     @Test
     public void testParallelStat() {
-        Var a = VarDouble.wrap(1, 2, 3, 13, 17, 30);
-        Var b = VarDouble.wrap(44, 5, 234, 12, 33, 1);
+        Var a = SolidVarDouble.wrap(1, 2, 3, 13, 17, 30);
+        Var b = SolidVarDouble.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
         OnlineStat soA = OnlineStat.empty();
         OnlineStat soB = OnlineStat.empty();

@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import rapaio.data.unique.UniqueRows;
+
 import java.util.List;
 
 /**
@@ -210,6 +212,11 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clear() {
         mapping.clear();
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        return UniqueRows.from(this);
     }
 
     @Override

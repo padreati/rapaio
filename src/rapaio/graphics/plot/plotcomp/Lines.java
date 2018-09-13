@@ -25,8 +25,8 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
@@ -45,12 +45,12 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOption... opts) {
-        this(VarDouble.seq(0, y.rowCount() - 1), y, opts);
+        this(SolidVarDouble.seq(0, y.rowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOption... opts) {
-        this.x = VarDouble.empty().withName(x.name());
-        this.y = VarDouble.empty().withName(y.name());
+        this.x = SolidVarDouble.empty().withName(x.name());
+        this.y = SolidVarDouble.empty().withName(y.name());
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;

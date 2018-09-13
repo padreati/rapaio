@@ -25,17 +25,25 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.format.TextTable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Abstract base class for all classifiers.
@@ -112,7 +120,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier fit(Frame df, String... targetVars) {
-        VarDouble weights = VarDouble.fill(df.rowCount(), 1);
+        VarDouble weights = SolidVarDouble.fill(df.rowCount(), 1);
         return fit(df, weights, targetVars);
     }
 
@@ -212,7 +220,7 @@ public abstract class AbstractClassifier implements Classifier {
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
                 .append(targetName(i)).append(" : ")
                 .append(targetType(i))
-                .append(" [").append(targetLevels(targetName(i)).stream().collect(joining(","))).append("]")
+                .append(" [").append(String.join(",", targetLevels(targetName(i)))).append("]")
                 .append("\n"));
         sb.append("\n");
         return sb.toString();

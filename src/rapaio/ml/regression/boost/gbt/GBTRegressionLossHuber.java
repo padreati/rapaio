@@ -26,8 +26,9 @@
 package rapaio.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -61,7 +62,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute residuals
 
-        VarDouble residual = VarDouble.empty();
+        VarDouble residual = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             residual.addDouble(y.getDouble(i) - fx.getDouble(i));
         }
@@ -72,7 +73,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute absolute residuals
 
-        VarDouble absResidual = VarDouble.empty();
+        VarDouble absResidual = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
         }
@@ -98,7 +99,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute absolute residuals
 
-        VarDouble absResidual = VarDouble.empty();
+        VarDouble absResidual = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
         }
@@ -109,7 +110,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // now compute gradient
 
-        VarDouble gradient = VarDouble.empty();
+        VarDouble gradient = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             if (absResidual.getDouble(i) <= rho) {
                 gradient.addDouble(y.getDouble(i) - fx.getDouble(i));

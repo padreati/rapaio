@@ -25,6 +25,7 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class NumericTest {
 
     @Test
     public void smokeTest() {
-        Var v = VarDouble.empty();
+        Var v = SolidVarDouble.empty();
         boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.type().isNominal());
@@ -46,17 +47,17 @@ public class NumericTest {
         assertEquals(0, v.rowCount());
 
         try {
-            VarDouble.empty(-1);
+            SolidVarDouble.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Numeric[name:?, rowCount:1]", VarDouble.empty(1).toString());
+        assertEquals("Numeric[name:?, rowCount:1]", SolidVarDouble.empty(1).toString());
     }
 
     @Test
     public void testGetterSetter() {
-        Var v = VarDouble.empty(10);
+        Var v = SolidVarDouble.empty(10);
         for (int i = 0; i < 10; i++) {
             v.setDouble(i, Math.log(10 + i));
         }
@@ -105,19 +106,19 @@ public class NumericTest {
 
     @Test
     public void testOneNumeric() {
-        Var one = VarDouble.scalar(Math.PI);
+        Var one = SolidVarDouble.scalar(Math.PI);
 
         assertEquals(1, one.rowCount());
         assertEquals(Math.PI, one.getDouble(0), 1e-10);
 
-        one = VarDouble.scalar(Math.E);
+        one = SolidVarDouble.scalar(Math.E);
         assertEquals(1, one.rowCount());
         assertEquals(Math.E, one.getDouble(0), 1e-10);
     }
 
     @Test
     public void testWithName() {
-        VarDouble x = VarDouble.copy(1, 2, 3, 5).withName("X");
+        VarDouble x = SolidVarDouble.copy(1, 2, 3, 5).withName("X");
         assertEquals("X", x.name());
 
         Var y = MappedVar.byRows(x, 1, 2);
@@ -138,10 +139,10 @@ public class NumericTest {
             doubleList.add(i + 1.0);
         }
 
-        VarDouble x1 = VarDouble.copy(1, 2, 3);
-        VarDouble x2 = VarDouble.copy(1.0, 2.0, 3.0);
-        VarDouble x3 = VarDouble.copy(intList);
-        VarDouble x4 = VarDouble.copy(doubleList);
+        VarDouble x1 = SolidVarDouble.copy(1, 2, 3);
+        VarDouble x2 = SolidVarDouble.copy(1.0, 2.0, 3.0);
+        VarDouble x3 = SolidVarDouble.copy(intList);
+        VarDouble x4 = SolidVarDouble.copy(doubleList);
 
         for (int i = 0; i < 3; i++) {
             assertEquals(x1.getDouble(i), x2.getDouble(i), 10e-10);
@@ -153,28 +154,28 @@ public class NumericTest {
         y1v[0] = 10;
         y1v[1] = 20;
         y1v[2] = 30;
-        VarDouble y1 = VarDouble.wrap(y1v);
+        VarDouble y1 = SolidVarDouble.wrap(y1v);
         y1v[1] = Double.NaN;
         y1v[2] = 100;
         for (int i = 0; i < 3; i++) {
             assertEquals(y1v[i], y1.getDouble(i), 10e-10);
         }
 
-        VarDouble y2 = VarDouble.copy(x2);
+        VarDouble y2 = SolidVarDouble.copy(x2);
         for (int i = 0; i < 3; i++) {
             assertEquals(x1.getDouble(i), y2.getDouble(i), 10e-10);
         }
 
-        VarDouble y3 = VarDouble.copy(1, 2, 3, 4, 5);
+        VarDouble y3 = SolidVarDouble.copy(1, 2, 3, 4, 5);
         Var y4 = MappedVar.byRows(y3, 3, 1, 2);
-        Var y5 = VarDouble.copy(y4);
+        Var y5 = SolidVarDouble.copy(y4);
 
         for (int i = 0; i < 3; i++) {
             assertEquals(y4.getDouble(i), y5.getDouble(i), 10e-10);
         }
 
-        VarDouble z1 = VarDouble.fill(10);
-        VarDouble z2 = VarDouble.fill(10, Math.PI);
+        VarDouble z1 = SolidVarDouble.fill(10);
+        VarDouble z2 = SolidVarDouble.fill(10, Math.PI);
 
         for (int i = 0; i < 10; i++) {
             assertEquals(0, z1.getDouble(i), 10e-10);
@@ -184,12 +185,12 @@ public class NumericTest {
 
     @Test
     public void testOtherValues() {
-        VarDouble x = VarDouble.copy(1, 2, 3, 4).withName("x");
+        VarDouble x = SolidVarDouble.copy(1, 2, 3, 4).withName("x");
 
         x.addInt(10);
         assertEquals(10, x.getDouble(x.rowCount() - 1), 10e-10);
 
-        VarDouble b = VarDouble.empty();
+        VarDouble b = SolidVarDouble.empty();
         b.addBoolean(true);
         b.addBoolean(false);
 
@@ -203,7 +204,7 @@ public class NumericTest {
         assertEquals(1, b.getDouble(1), 10e-10);
         assertEquals(true, b.getBoolean(1));
 
-        VarDouble s = VarDouble.empty();
+        VarDouble s = SolidVarDouble.empty();
         s.addLong(1);
         s.addLong(-100000000000L);
         assertEquals(1L, s.getLong(0));
@@ -213,7 +214,7 @@ public class NumericTest {
         assertEquals(15, s.getLong(1));
 
 
-        VarDouble mis = VarDouble.empty();
+        VarDouble mis = SolidVarDouble.empty();
         mis.addMissing();
         mis.addDouble(1);
         mis.addMissing();
@@ -228,7 +229,7 @@ public class NumericTest {
 
     @Test
     public void testClearRemove() {
-        VarDouble x = VarDouble.copy(1, 2, 3);
+        VarDouble x = SolidVarDouble.copy(1, 2, 3);
         x.remove(1);
 
         assertEquals(1, x.getInt(0));

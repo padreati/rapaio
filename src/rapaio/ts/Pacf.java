@@ -26,9 +26,10 @@
 package rapaio.ts;
 
 import rapaio.core.stat.Maximum;
-import rapaio.data.VarInt;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -65,7 +66,7 @@ public class Pacf implements Printable {
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];
-        pacf = VarDouble.empty(lags.rowCount()).withName("pacf");
+        pacf = SolidVarDouble.empty(lags.rowCount()).withName("pacf");
         w[0] = cor.getDouble(1);
         pacf.setDouble(0, cor.getDouble(1));
         for (int ll = 1; ll < nlag; ll++) {

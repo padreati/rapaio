@@ -25,6 +25,13 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.ShortAVLTreeSet;
+import rapaio.data.unique.UniqueRows;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -141,13 +148,13 @@ public class VarShort extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
-        data[row] = (short)value;
+        data[row] = (short) value;
     }
 
     @Override
     public void addInt(int value) {
         ensureCapacityInternal(rows + 1);
-        data[rows] = (short)value;
+        data[rows] = (short) value;
         rows++;
     }
 
@@ -273,6 +280,29 @@ public class VarShort extends AbstractVar {
     @Override
     public void clear() {
         rows = 0;
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        ShortAVLTreeSet set = new ShortAVLTreeSet();
+        for (int i = 0; i < rowCount(); i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Short2IntOpenHashMap uniqueKeys = new Short2IntOpenHashMap();
+        for (short key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            int id = uniqueKeys.get(data[i]);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

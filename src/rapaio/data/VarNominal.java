@@ -25,9 +25,19 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import rapaio.data.unique.UniqueRows;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -177,6 +187,30 @@ public final class VarNominal extends FactorBase {
             data[rows + i] = 0;
         }
         rows += rowCount;
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        TreeSet<String> set = new TreeSet<>();
+        for (int i = 0; i < rows; i++) {
+            set.add(dict.get(data[i]));
+        }
+        int uniqueId = 0;
+        Object2IntOpenHashMap<String> uniqueKeys = new Object2IntOpenHashMap<>();
+        for (String key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            String key = dict.get(data[i]);
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

@@ -30,8 +30,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.data.filter.frame.FFShuffle;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.eval.Confusion;
@@ -59,7 +65,7 @@ public class CEvaluation {
         print("\nCrossValidation with " + folds + " folds\n");
 
         List<IntList> strata = buildStrata(df, folds, classColName);
-        VarDouble acc = VarDouble.empty();
+        VarDouble acc = SolidVarDouble.empty();
 
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
@@ -170,7 +176,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = VarDouble.fill(df.rowCount(), 1.0);
+        Var weights = SolidVarDouble.fill(df.rowCount(), 1.0);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -179,7 +185,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = VarDouble.fill(df.rowCount(), 1.0d);
+        Var weights = SolidVarDouble.fill(df.rowCount(), 1.0d);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, p);
     }
 
@@ -215,8 +221,8 @@ public class CEvaluation {
 
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         VarInt r = VarInt.empty().withName("runs");
-        VarDouble testAcc = VarDouble.empty().withName("test");
-        VarDouble trainAcc = VarDouble.empty().withName("predict");
+        VarDouble testAcc = SolidVarDouble.empty().withName("test");
+        VarDouble trainAcc = SolidVarDouble.empty().withName("predict");
         c.withRunningHook((cs, run) -> {
 
             if (run % step != 0) {
@@ -259,8 +265,8 @@ public class CEvaluation {
         Classifier c = alterClassifier ? cc : cc.newInstance();
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         VarInt r = VarInt.empty().withName("runs");
-        VarDouble testAuc = VarDouble.empty().withName("test");
-        VarDouble trainAuc = VarDouble.empty().withName("predict");
+        VarDouble testAuc = SolidVarDouble.empty().withName("test");
+        VarDouble trainAuc = SolidVarDouble.empty().withName("predict");
         Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 

@@ -2,6 +2,7 @@ package rapaio.graphics.base;
 
 import org.junit.Test;
 import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.Plotter;
 import rapaio.sys.WS;
 
@@ -18,8 +19,8 @@ public class XWilkinsonTest {
         XWilkinson.Labels l = x.searchBounded(1.1e-100, 3e-100, 10);
         WS.println(l.toString());
 
-        VarDouble xx = VarDouble.seq(l.getList().size());
-        VarDouble yy = VarDouble.from(l.getList().size(), row -> l.getList().get(row));
+        VarDouble xx = SolidVarDouble.seq(l.getList().size());
+        VarDouble yy = SolidVarDouble.from(l.getList().size(), row -> l.getList().get(row));
 
 //        WS.setPrinter(new IdeaPrinter());
         WS.draw(Plotter.points(yy, xx));

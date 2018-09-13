@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,6 +25,8 @@
 
 package rapaio.util;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -33,23 +36,6 @@ import java.util.stream.IntStream;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
  */
 public class Util {
-
-    public static void measure(Runnable task) {
-        long start = System.currentTimeMillis();
-        task.run();
-        long stop = System.currentTimeMillis();
-        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " +
-                ((stop - start) % 1000) + " millis");
-    }
-
-    public static <T> Pair<T, Long> measure(Supplier<T> task) {
-        long start = System.currentTimeMillis();
-        T t = task.get();
-        long stop = System.currentTimeMillis();
-        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " +
-                ((stop - start) % 1000) + " millis");
-        return Pair.from(t, stop - start);
-    }
 
     public static IntStream rangeStream(int n, boolean parallel) {
         if (parallel)

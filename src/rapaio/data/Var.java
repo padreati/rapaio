@@ -449,6 +449,8 @@ public interface Var extends Serializable, Printable {
         return true;
     }
 
+    UniqueRows uniqueRows();
+
     @Override
     default String summary() {
         return Summary.getSummary(this);

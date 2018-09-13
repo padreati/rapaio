@@ -27,8 +27,9 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DVector;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -100,7 +101,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
     private ChiSqGoodnessOfFit(DVector dv, Var p) {
 
-        VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
+        VarDouble expected = SolidVarDouble.from(p, pi -> pi * dv.sum());
 
         if (dv.getRowCount() - dv.start() != expected.rowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");

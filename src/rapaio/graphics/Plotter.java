@@ -28,12 +28,25 @@ package rapaio.graphics;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
-import rapaio.data.VarInt;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
-import rapaio.graphics.plot.plotcomp.*;
+import rapaio.graphics.plot.BarChart;
+import rapaio.graphics.plot.BoxPlot;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.QQPlot;
+import rapaio.graphics.plot.plotcomp.ABLine;
+import rapaio.graphics.plot.plotcomp.DVLines;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.graphics.plot.plotcomp.Histogram;
+import rapaio.graphics.plot.plotcomp.Histogram2D;
+import rapaio.graphics.plot.plotcomp.Lines;
+import rapaio.graphics.plot.plotcomp.Points;
+import rapaio.graphics.plot.plotcomp.ROCCurve;
 import rapaio.ml.eval.ROC;
 import rapaio.util.func.SFunction;
 
@@ -193,12 +206,12 @@ public final class Plotter {
                 .mapToDouble()
                 .map(x -> x * factor + offset)
                 .boxed()
-                .collect(VarDouble.collector());
+                .collect(SolidVarDouble.collector());
         return new GOptionSz(size);
     }
 
     public static GOptionSz sz(double size) {
-        return new GOptionSz(VarDouble.scalar(size));
+        return new GOptionSz(SolidVarDouble.scalar(size));
     }
 
     public static GOptionPch pch(Var pchIndex, int... mapping) {

@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import rapaio.data.unique.UniqueRows;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,8 +49,6 @@ public class BoundVar extends AbstractVar {
         return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
     }
 
-    // private constructor
-
     public static BoundVar from(Var... vars) {
         return new BoundVar(
                 Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
@@ -61,8 +61,6 @@ public class BoundVar extends AbstractVar {
     private final VarType varType;
     private final List<Integer> counts;
     private final List<Var> vars;
-
-    // static builders
 
     private BoundVar(List<Integer> counts, List<Var> vars) {
         if (vars.isEmpty())
@@ -80,7 +78,6 @@ public class BoundVar extends AbstractVar {
         this.vars = new ArrayList<>();
 
         int last = 0;
-
         for (int i = 0; i < counts.size(); i++) {
             if (vars.get(i) instanceof BoundVar) {
                 BoundVar boundVar = (BoundVar) vars.get(i);
@@ -95,7 +92,6 @@ public class BoundVar extends AbstractVar {
                 last += vars.get(i).rowCount();
             }
         }
-
         this.withName(vars.get(0).name());
     }
 
@@ -270,6 +266,11 @@ public class BoundVar extends AbstractVar {
     @Override
     public void clear() {
         throw new IllegalArgumentException("This operation is not available for bound variable");
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        return UniqueRows.from(this);
     }
 
     @Override

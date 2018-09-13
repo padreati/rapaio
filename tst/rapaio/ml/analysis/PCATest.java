@@ -29,9 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.RM;
@@ -102,9 +102,9 @@ public class PCATest {
 
     @Test
     public void testColinear() {
-        Var x = VarDouble.copy(1, 2, 3, 4).withName("x");
-        Var y = VarDouble.copy(2, 3, 4, 5).withName("y");
-        Var z = VarDouble.copy(4, 2, 6, 9).withName("z");
+        Var x = SolidVarDouble.copy(1, 2, 3, 4).withName("x");
+        Var y = SolidVarDouble.copy(2, 3, 4, 5).withName("y");
+        Var z = SolidVarDouble.copy(4, 2, 6, 9).withName("z");
 
         PCA pca = new PCA();
         pca.fit(SolidFrame.byVars(x, y, z));

@@ -30,11 +30,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.CoreTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.filter.Filters;
-import rapaio.data.sample.Sample;
 import rapaio.data.sample.RowSampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
@@ -46,12 +53,16 @@ import rapaio.ml.eval.Confusion;
 import rapaio.util.Pair;
 import rapaio.util.Util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Breiman random forest implementation.
@@ -197,44 +208,44 @@ public class CForest extends AbstractClassifier {
 
     public Frame getFreqVIInfo() {
         Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("score mean");
-        Var sd = VarDouble.empty().withName("score sd");
+        Var score = SolidVarDouble.empty().withName("score mean");
+        Var sd = SolidVarDouble.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            VarDouble scores = VarDouble.copy(e.getValue());
+            VarDouble scores = SolidVarDouble.copy(e.getValue());
             sd.addDouble(CoreTools.variance(scores).sdValue());
             score.addDouble(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
+        Var scaled = SolidVarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getGainVIInfo() {
         Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("score mean");
-        Var sd = VarDouble.empty().withName("score sd");
+        Var score = SolidVarDouble.empty().withName("score mean");
+        Var sd = SolidVarDouble.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            VarDouble scores = VarDouble.copy(e.getValue());
+            VarDouble scores = SolidVarDouble.copy(e.getValue());
             sd.addDouble(CoreTools.variance(scores).sdValue());
             score.addDouble(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
+        Var scaled = SolidVarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getPermVIInfo() {
         Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("score mean");
-        Var sds = VarDouble.empty().withName("score sd");
-        Var zscores = VarDouble.empty().withName("z-score");
-        Var pvalues = VarDouble.empty().withName("p-value");
+        Var score = SolidVarDouble.empty().withName("score mean");
+        Var sds = SolidVarDouble.empty().withName("score sd");
+        Var zscores = SolidVarDouble.empty().withName("z-score");
+        Var pvalues = SolidVarDouble.empty().withName("p-value");
         Distribution normal = CoreTools.distNormal();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            VarDouble scores = VarDouble.copy(e.getValue());
+            VarDouble scores = SolidVarDouble.copy(e.getValue());
             double mean = CoreTools.mean(scores).value();
             double sd = CoreTools.variance(scores).sdValue();
             double zscore = mean / (sd);

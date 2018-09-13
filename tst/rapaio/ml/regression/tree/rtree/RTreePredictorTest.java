@@ -26,8 +26,8 @@ package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.util.DoublePair;
 
 import java.io.IOException;
@@ -118,6 +118,6 @@ public class RTreePredictorTest {
     }
 
     Frame getFrame(double value) {
-        return SolidFrame.byVars(VarDouble.wrap(value).withName("x"));
+        return SolidFrame.byVars(SolidVarDouble.wrap(value).withName("x"));
     }
 }

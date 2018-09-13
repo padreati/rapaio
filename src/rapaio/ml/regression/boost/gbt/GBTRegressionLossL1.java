@@ -26,8 +26,9 @@
 package rapaio.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.sys.WS;
 
 /**
@@ -45,7 +46,7 @@ public class GBTRegressionLossL1 implements GBTRegressionLoss {
 
     @Override
     public double findMinimum(Var y, Var fx) {
-        VarDouble values = VarDouble.empty();
+        VarDouble values = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             values.addDouble(y.getDouble(i) - fx.getDouble(i));
         }
@@ -58,7 +59,7 @@ public class GBTRegressionLossL1 implements GBTRegressionLoss {
 
     @Override
     public VarDouble gradient(Var y, Var fx) {
-        VarDouble gradient = VarDouble.empty();
+        VarDouble gradient = SolidVarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             gradient.addDouble(y.getDouble(i) - fx.getDouble(i) < 0 ? -1. : 1.);
         }

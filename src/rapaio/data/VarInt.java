@@ -25,10 +25,22 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.data.unique.UniqueRows;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -180,7 +192,7 @@ public final class VarInt extends AbstractVar {
     }
 
     public static Collector<? super Integer, VarInt, VarInt> collector() {
-        return new Collector<Integer, VarInt, VarInt>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarInt> supplier() {
                 return VarInt::empty;
@@ -386,6 +398,30 @@ public final class VarInt extends AbstractVar {
     @Override
     public void clear() {
         rows = 0;
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        IntAVLTreeSet set = new IntAVLTreeSet();
+        for (int i = 0; i < rowCount(); i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
+        for (int key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            int key = data[i];
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

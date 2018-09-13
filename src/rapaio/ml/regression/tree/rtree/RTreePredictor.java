@@ -29,6 +29,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.util.DoublePair;
 
 import java.io.Serializable;
@@ -83,8 +84,8 @@ public interface RTreePredictor extends Serializable {
 
             // so is a missing value for the current test feature
 
-            VarDouble values = VarDouble.empty();
-            VarDouble weights = VarDouble.empty();
+            VarDouble values = SolidVarDouble.empty();
+            VarDouble weights = SolidVarDouble.empty();
             for (RTreeNode child : node.children()) {
                 DoublePair prediction = predict(row, df, child);
                 values.addDouble(prediction._1);

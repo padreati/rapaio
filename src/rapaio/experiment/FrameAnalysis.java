@@ -26,13 +26,22 @@
 package rapaio.experiment;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.data.stream.VSpot;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class FrameAnalysis {
 
@@ -54,8 +63,8 @@ public class FrameAnalysis {
         List<Var> h1 = new ArrayList<>();
         List<Var> h2 = new ArrayList<>();
         for (int i = 0; i < bins; i++) {
-            h1.add(VarDouble.empty().withName("h1_" + i));
-            h2.add(VarDouble.empty().withName("h2_" + i));
+            h1.add(SolidVarDouble.empty().withName("h1_" + i));
+            h2.add(SolidVarDouble.empty().withName("h2_" + i));
         }
 
         Var target = csv.withSkipCols(n -> n != targetIndex).read(file).rvar(0);

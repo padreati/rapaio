@@ -28,9 +28,9 @@ package rapaio.ml.regression.boost;
 import rapaio.data.Frame;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
-import rapaio.data.VarDouble;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
@@ -152,7 +152,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         fitValues = initRegression.predict(df, false).firstFit().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
-            VarDouble gradient = lossFunction.gradient(y, fitValues).withName("target");
+            Var gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
             RTree tree = regressor.newInstance();

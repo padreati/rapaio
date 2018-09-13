@@ -25,6 +25,7 @@
 
 package rapaio.data;
 
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class SolidFrame extends AbstractFrame {
      */
     public static Frame matrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        colNames.forEach(n -> vars.add(VarDouble.fill(rows, 0).withName(n)));
+        colNames.forEach(n -> vars.add(SolidVarDouble.fill(rows, 0).withName(n)));
         return SolidFrame.byVars(rows, vars);
     }
 

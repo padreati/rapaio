@@ -25,6 +25,11 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.data.unique.UniqueRows;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -402,6 +407,38 @@ public final class VarBoolean extends AbstractVar {
     @Override
     public void clear() {
         this.rows = 0;
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        IntList naList = new IntArrayList();
+        IntList zeroList = new IntArrayList();
+        IntList oneList = new IntArrayList();
+        for (int i = 0; i < rowCount(); i++) {
+            if (isMissing(i)) {
+                naList.add(i);
+            } else {
+                if (getInt(i) == 0) {
+                    zeroList.add(i);
+                } else {
+                    oneList.add(i);
+                }
+            }
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        int uniqueId = 0;
+        if (!naList.isEmpty()) {
+            uniqueRowLists.put(uniqueId, naList);
+            uniqueId++;
+        }
+        if (!zeroList.isEmpty()) {
+            uniqueRowLists.put(uniqueId, zeroList);
+            uniqueId++;
+        }
+        if (!oneList.isEmpty()) {
+            uniqueRowLists.put(uniqueId, oneList);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

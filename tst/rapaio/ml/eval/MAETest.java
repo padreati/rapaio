@@ -1,9 +1,9 @@
 package rapaio.ml.eval;
 
 import org.junit.Test;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,9 +18,9 @@ public class MAETest {
     public void smokeTest() {
 
         final int N = 100;
-        Var x = VarDouble.fill(N, 0).withName("x");
-        Var y = VarDouble.seq(1, N).withName("y");
-        Var z = VarDouble.from(y, value -> -value).withName("z");
+        Var x = SolidVarDouble.fill(N, 0).withName("x");
+        Var y = SolidVarDouble.seq(1, N).withName("y");
+        Var z = SolidVarDouble.from(y, value -> -value).withName("z");
 
 
         MAE mae1 = MAE.from(x, y);

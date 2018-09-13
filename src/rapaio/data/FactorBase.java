@@ -173,7 +173,7 @@ abstract class FactorBase extends AbstractVar {
                 this.reverse.put(term, this.reverse.size());
             }
             if (i < oldDict.size())
-                pos[i] = this.reverse.get(term);
+                pos[i] = this.reverse.getInt(term);
         }
 
         for (int i = 0; i < rows; i++) {

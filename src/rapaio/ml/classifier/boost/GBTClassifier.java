@@ -26,7 +26,6 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.RowSampler;
@@ -192,7 +191,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            VarDouble resk = residual.mapRow(k).asNumericVar().withName("##tt##");
+            Var resk = residual.mapRow(k).asNumericVar().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
             RTree tree = rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(K));

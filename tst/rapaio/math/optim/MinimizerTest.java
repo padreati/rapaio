@@ -1,8 +1,20 @@
 package rapaio.math.optim;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.math.functions.*;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
+import rapaio.math.functions.R1Derivative;
+import rapaio.math.functions.R1Function;
+import rapaio.math.functions.R1Hessian;
+import rapaio.math.functions.R2Derivative;
+import rapaio.math.functions.R2Function;
+import rapaio.math.functions.R2Hessian;
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
+import rapaio.math.functions.RHessian;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
@@ -12,9 +24,7 @@ import rapaio.sys.WS;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.pow;
-import static rapaio.graphics.Plotter.color;
+import static java.lang.Math.*;
 import static rapaio.graphics.Plotter.lines;
 
 /**
@@ -90,16 +100,16 @@ public class MinimizerTest {
 
         Var sol = minimizer.solutions().stream()
                 .skip(10)
-                .mapToDouble(s -> s.get(0)).boxed().collect(VarDouble.collector());
+                .mapToDouble(s -> s.get(0)).boxed().collect(SolidVarDouble.collector());
 
         sol.printLines();
         WS.setPrinter(new IdeaPrinter());
         WS.draw(lines(VarInt.seq(sol.rowCount()), sol));
 
-        VarDouble xx = VarDouble.seq(-5, 3, 0.01);
-        VarDouble yy = VarDouble.from(xx, f::apply);
-        VarDouble zz = VarDouble.from(xx, value -> d1f.apply(value).get(0));
-        VarDouble tt = VarDouble.from(xx, value -> d2f.apply(value).get(0, 0));
+        VarDouble xx = SolidVarDouble.seq(-5, 3, 0.01);
+        VarDouble yy = SolidVarDouble.from(xx, f::apply);
+        VarDouble zz = SolidVarDouble.from(xx, value -> d1f.apply(value).get(0));
+        VarDouble tt = SolidVarDouble.from(xx, value -> d2f.apply(value).get(0, 0));
 
 //        WS.draw(lines(xx, yy)
 //                .lines(xx, zz, color(1))
@@ -145,9 +155,9 @@ public class MinimizerTest {
 
         List<VarDouble> vars = new ArrayList<>();
         for (int i = 0; i < init.count(); i++) {
-            vars.add(VarDouble.empty().withName("x" + i));
+            vars.add(SolidVarDouble.empty().withName("x" + i));
         }
-        vars.add(VarDouble.empty().withName("fx"));
+        vars.add(SolidVarDouble.empty().withName("fx"));
 
         for (RV sol : sols) {
             for (int i = 0; i < init.count(); i++) {

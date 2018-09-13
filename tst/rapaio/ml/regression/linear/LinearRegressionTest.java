@@ -26,10 +26,11 @@ package rapaio.ml.regression.linear;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -221,8 +222,8 @@ public class LinearRegressionTest {
 
         // get clean data for which both cpu and proc are not empty
 
-        VarDouble cpuClean = VarDouble.copy(cpuData).withName("cpu");
-        VarDouble procClean = VarDouble.copy(procData).withName("proc");
+        VarDouble cpuClean = SolidVarDouble.copy(cpuData).withName("cpu");
+        VarDouble procClean = SolidVarDouble.copy(procData).withName("proc");
 
         final int ESTIMATOR_TRAIN_SIZE = 12 * 24 * 2; // two days
         final int ESTIMATOR_TEST_SIZE = 12 * 24; // one day
@@ -235,9 +236,9 @@ public class LinearRegressionTest {
         Frame train = SolidFrame.byVars(trainCpu, trainProc);
         LinearRegression lm = LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
         lm.fit(train, "proc");
-        Var cpuTarget = VarDouble.empty().withName("cpu");
+        Var cpuTarget = SolidVarDouble.empty().withName("cpu");
         cpuTarget.addDouble(45);
-        Var procDummy = VarDouble.empty().withName("proc");
+        Var procDummy = SolidVarDouble.empty().withName("proc");
         procDummy.addDouble(0.0);
         LinearRPrediction lmfit = lm.predict(SolidFrame.byVars(cpuTarget, procDummy), true);
         double procAtTargetPerHour = 12.0 * lmfit.firstFit().getDouble(0); // 12 * 5Min = 1H

@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.*;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -70,7 +71,7 @@ public class GroupByAggregate implements Printable {
             List<Var> varList = new ArrayList<>();
             HashMap<String, Var> varMap = new HashMap<>();
             for (GroupByFunction fun : funs) {
-                Var var = VarDouble.empty(groupBy.getGroupCount()).withName(varName + SEP + fun.name());
+                Var var = SolidVarDouble.empty(groupBy.getGroupCount()).withName(varName + SEP + fun.name());
                 varList.add(var);
                 varMap.put(fun.name(), var);
             }

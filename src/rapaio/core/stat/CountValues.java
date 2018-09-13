@@ -76,9 +76,7 @@ public class CountValues implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("count values var[").append(varName).append("]:\n");
-
         int pos = 0;
         for(int key : reverse.keySet()) {
             for(String label : reverse.get(key)) {

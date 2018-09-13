@@ -25,11 +25,9 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.util.Arrays;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -40,10 +38,10 @@ public class VRangeTest {
     @Test
     public void testSmoke() {
         Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("a"),
-                VarDouble.empty().withName("b"),
-                VarDouble.empty().withName("c"),
-                VarDouble.empty().withName("d"),
+                SolidVarDouble.empty().withName("a"),
+                SolidVarDouble.empty().withName("b"),
+                SolidVarDouble.empty().withName("c"),
+                SolidVarDouble.empty().withName("d"),
                 VarNominal.empty(0, "A", "B").withName("x"),
                 VarNominal.empty(0, "C", "D").withName("y")
         );
@@ -102,10 +100,10 @@ public class VRangeTest {
     @Test(expected = NumberFormatException.class)
     public void testWrongNumber() {
         Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("a"),
-                VarDouble.empty().withName("b"),
-                VarDouble.empty().withName("c"),
-                VarDouble.empty().withName("d"),
+                SolidVarDouble.empty().withName("a"),
+                SolidVarDouble.empty().withName("b"),
+                SolidVarDouble.empty().withName("c"),
+                SolidVarDouble.empty().withName("d"),
                 VarNominal.empty(0, "A", "B").withName("x"),
                 VarNominal.empty(0, "C", "D").withName("y")
         );

@@ -27,10 +27,11 @@ package rapaio.math.linear.dense;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
-import rapaio.util.Util;
+import rapaio.util.Time;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -85,10 +86,10 @@ public class MatrixMultiplicationTest {
         Normal norm = new Normal(1, 12);
 
         System.out.println("create matrix A");
-        RM A = Util.measure(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()))._1;
+        RM A = Time.showRun(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()));
 
         System.out.println("create matrix B");
-        RM B = Util.measure(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()))._1;
+        RM B = Time.showRun(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()));
 
         System.out.println("...");
 
@@ -100,19 +101,19 @@ public class MatrixMultiplicationTest {
             System.out.println("=========================");
 
             System.out.println("jama");
-            put(times, "jama", Util.measure(() -> MatrixMultiplication.jama(A, B))._2);
+            put(times, "jama", Time.measure(() -> MatrixMultiplication.jama(A, B)));
             System.out.println("ijkAlgorithm");
-            put(times, "ijkAlgorithm", Util.measure(() -> MatrixMultiplication.ijkAlgorithm(A, B))._2);
+            put(times, "ijkAlgorithm", Time.measure(() -> MatrixMultiplication.ijkAlgorithm(A, B)));
             System.out.println("ikjAlgorithm");
-            put(times, "ikjAlgorithm", Util.measure(() -> MatrixMultiplication.ikjAlgorithm(A, B))._2);
+            put(times, "ikjAlgorithm", Time.measure(() -> MatrixMultiplication.ikjAlgorithm(A, B)));
             System.out.println("tiledAlgorithm");
-            put(times, "tiledAlgorithm", Util.measure(() -> MatrixMultiplication.tiledAlgorithm(A, B))._2);
+            put(times, "tiledAlgorithm", Time.measure(() -> MatrixMultiplication.tiledAlgorithm(A, B)));
             System.out.println("ijkParallel");
-            put(times, "ijkParallel", Util.measure(() -> MatrixMultiplication.ijkParallel(A, B))._2);
+            put(times, "ijkParallel", Time.measure(() -> MatrixMultiplication.ijkParallel(A, B)));
             System.out.println("ikjParallel");
-            put(times, "ikjParallel", Util.measure(() -> MatrixMultiplication.ikjParallel(A, B))._2);
+            put(times, "ikjParallel", Time.measure(() -> MatrixMultiplication.ikjParallel(A, B)));
             System.out.println("strassen");
-            put(times, "strassen", Util.measure(() -> MatrixMultiplication.strassen(A, B, 1024))._2);
+            put(times, "strassen", Time.measure(() -> MatrixMultiplication.strassen(A, B, 1024)));
         }
 
         SolidFrame.byVars(new ArrayList<>(times.values())).printSummary();
@@ -120,7 +121,7 @@ public class MatrixMultiplicationTest {
 
     private void put(Map<String, VarDouble> map, String key, Long value) {
         if (!map.containsKey(key)) {
-            map.put(key, VarDouble.empty().withName(key));
+            map.put(key, SolidVarDouble.empty().withName(key));
         }
         map.get(key).addDouble(value);
     }

@@ -25,9 +25,9 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.VarInt;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -49,7 +49,7 @@ public class GOpts implements Serializable {
         defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.lwd = new GOptionLwd(1.0f);
-        defaults.sz = new GOptionSz(VarDouble.scalar(3));
+        defaults.sz = new GOptionSz(SolidVarDouble.scalar(3));
         defaults.pch = new GOptionPch(VarInt.scalar(0));
         defaults.alpha = new GOptionAlpha(1.0f);
         defaults.bins = new GOptionBins(-1);

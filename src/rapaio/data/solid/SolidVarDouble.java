@@ -23,14 +23,18 @@
  *
  */
 
-package rapaio.data;
+package rapaio.data.solid;
 
-import it.unimi.dsi.fastutil.floats.Float2IntOpenHashMap;
-import it.unimi.dsi.fastutil.floats.FloatAVLTreeSet;
+import it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap;
+import it.unimi.dsi.fastutil.doubles.DoubleAVLTreeSet;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.AbstractVar;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.data.unique.UniqueRows;
 
 import java.io.IOException;
@@ -48,14 +52,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/7/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/18.
  */
-public class VarFloat extends AbstractVar {
+public class SolidVarDouble extends AbstractVar implements VarDouble {
+
     /**
      * @return new empty numeric variable of size 0
      */
-    public static VarFloat empty() {
-        return new VarFloat(0, 0, Float.NaN);
+    public static SolidVarDouble empty() {
+        return new SolidVarDouble(0, 0, Double.NaN);
     }
 
     /**
@@ -64,8 +69,8 @@ public class VarFloat extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric var
      */
-    public static VarFloat empty(int rows) {
-        return new VarFloat(rows, rows, Float.NaN);
+    public static SolidVarDouble empty(int rows) {
+        return new SolidVarDouble(rows, rows, Double.NaN);
     }
 
     /**
@@ -74,8 +79,8 @@ public class VarFloat extends AbstractVar {
      * @param values given values
      * @return new instance of numeric variable
      */
-    public static VarFloat copy(Collection<? extends Number> values) {
-        final VarFloat numeric = new VarFloat(0, 0, Float.NaN);
+    public static SolidVarDouble copy(Collection<? extends Number> values) {
+        final SolidVarDouble numeric = new SolidVarDouble(0, 0, Double.NaN);
         values.forEach(n -> numeric.addDouble(n.doubleValue()));
         return numeric;
     }
@@ -86,9 +91,9 @@ public class VarFloat extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static VarFloat copy(int... values) {
-        VarFloat numeric = new VarFloat(0, 0, 0);
-        numeric.data = new float[values.length];
+    public static SolidVarDouble copy(int... values) {
+        SolidVarDouble numeric = new SolidVarDouble(0, 0, 0);
+        numeric.data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             numeric.data[i] = values[i];
         }
@@ -102,11 +107,9 @@ public class VarFloat extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static VarFloat copy(double... values) {
-        VarFloat numeric = new VarFloat(values.length, values.length, 0);
-        for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = (float) values[i];
-        }
+    public static SolidVarDouble copy(double... values) {
+        SolidVarDouble numeric = new SolidVarDouble(values.length, values.length, 0);
+        numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
     }
 
@@ -116,14 +119,14 @@ public class VarFloat extends AbstractVar {
      * @param source source numeric var
      * @return new instance of numeric variable
      */
-    public static VarFloat copy(Var source) {
-        VarFloat numeric = new VarFloat(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (!(source instanceof VarFloat)) {
+    public static SolidVarDouble copy(Var source) {
+        SolidVarDouble numeric = new SolidVarDouble(source.rowCount(), source.rowCount(), 0).withName(source.name());
+        if (!(source instanceof VarDouble)) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setDouble(i, source.getDouble(i));
             }
         } else {
-            numeric.data = Arrays.copyOf(((VarFloat) source).data, source.rowCount());
+            numeric.data = Arrays.copyOf(((SolidVarDouble) source).data, source.rowCount());
         }
         return numeric;
     }
@@ -134,12 +137,17 @@ public class VarFloat extends AbstractVar {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static VarFloat wrap(double... values) {
-        VarFloat numeric = new VarFloat(values.length, values.length, 0);
-        for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = (float) values[i];
-        }
+    public static SolidVarDouble wrap(double... values) {
+        SolidVarDouble numeric = new SolidVarDouble(0, 0, 0);
+        numeric.data = values;
         numeric.rows = values.length;
+        return numeric;
+    }
+
+    public static SolidVarDouble wrap(DoubleArrayList values) {
+        SolidVarDouble numeric = new SolidVarDouble(0, 0, 0);
+        numeric.data = values.elements();
+        numeric.rows = values.size();
         return numeric;
     }
 
@@ -149,8 +157,8 @@ public class VarFloat extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric variable of given size and filled with 0
      */
-    public static VarFloat fill(int rows) {
-        return new VarFloat(rows, rows, 0);
+    public static SolidVarDouble fill(int rows) {
+        return new SolidVarDouble(rows, rows, 0);
     }
 
     /**
@@ -160,8 +168,8 @@ public class VarFloat extends AbstractVar {
      * @param fill fill value used to set all the values
      * @return new instance of numeric variable of given size and filled with given value
      */
-    public static VarFloat fill(int rows, float fill) {
-        return new VarFloat(rows, rows, fill);
+    public static SolidVarDouble fill(int rows, double fill) {
+        return new SolidVarDouble(rows, rows, fill);
     }
 
     /**
@@ -170,26 +178,54 @@ public class VarFloat extends AbstractVar {
      * @param value fill value
      * @return new instance of numeric variable of size 1 and filled with given fill value
      */
-    public static VarFloat scalar(float value) {
-        return new VarFloat(1, 1, value);
+    public static SolidVarDouble scalar(double value) {
+        return new SolidVarDouble(1, 1, value);
     }
 
-    public static VarFloat seq(float end) {
+    public static VarDouble seq(double end) {
         return seq(0, end);
     }
 
-    public static VarFloat seq(float start, float end) {
+    public static SolidVarDouble seq(double start, double end) {
         return seq(start, end, 1.0);
     }
 
-    public static VarFloat seq(double start, double end, double step) {
-        VarFloat num = VarFloat.empty();
+    public static SolidVarDouble seq(double start, double end, double step) {
+        SolidVarDouble num = SolidVarDouble.empty();
         int i = 0;
         while (start + i * step <= end) {
             num.addDouble(start + i * step);
             i++;
         }
         return num;
+    }
+
+    public static SolidVarDouble from(int rows, Supplier<Double> supplier) {
+        SolidVarDouble numeric = new SolidVarDouble(0, 0, 0);
+        numeric.data = new double[rows];
+        numeric.rows = rows;
+        for (int i = 0; i < rows; i++) {
+            numeric.data[i] = supplier.get();
+        }
+        return numeric;
+    }
+
+    /**
+     * Builds a new numeric variable of a given size and values produced by a function
+     * which transforms a row number into a value by a given transformation function.
+     *
+     * @param rows           number of rows
+     * @param transformation transformation function
+     * @return new numeric variable which contains the computed values
+     */
+    public static SolidVarDouble from(int rows, Function<Integer, Double> transformation) {
+        SolidVarDouble numeric = new SolidVarDouble(0, 0, 0);
+        numeric.data = new double[rows];
+        numeric.rows = rows;
+        for (int i = 0; i < rows; i++) {
+            numeric.data[i] = transformation.apply(i);
+        }
+        return numeric;
     }
 
     /**
@@ -204,27 +240,31 @@ public class VarFloat extends AbstractVar {
         return SolidVarDouble.from(reference.rowCount(), i -> transform.apply(reference.getDouble(i)));
     }
 
-    private static final float missingValue = Float.NaN;
-    private float[] data;
+
+    private static final long serialVersionUID = -3167416341273129670L;
+    private static final double missingValue = Double.NaN;
+    private double[] data;
     private int rows;
 
 
     // private constructor
 
-    private VarFloat(int rows, int capacity, float fill) {
+    private SolidVarDouble(int rows, int capacity, double fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
-        this.data = new float[capacity];
+        this.data = new double[capacity];
         this.rows = rows;
         if (fill != 0)
             Arrays.fill(data, 0, rows, fill);
     }
 
+    // public static builders
+
     // stream collectors
     public static Collector<Double, VarDouble, VarDouble> collector() {
 
-        return new Collector<Double, VarDouble, VarDouble>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarDouble> supplier() {
                 return SolidVarDouble::empty;
@@ -256,13 +296,13 @@ public class VarFloat extends AbstractVar {
     }
 
     @Override
-    public VarFloat withName(String name) {
-        return (VarFloat) super.withName(name);
+    public SolidVarDouble withName(String name) {
+        return (SolidVarDouble) super.withName(name);
     }
 
     @Override
     public VarType type() {
-        return VarType.FLOAT;
+        return VarType.DOUBLE;
     }
 
     private void ensureCapacity(int minCapacity) {
@@ -287,7 +327,7 @@ public class VarFloat extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacity(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = missingValue;
+            data[rows + i] = SolidVarDouble.missingValue;
         }
         rows += rowCount;
     }
@@ -299,13 +339,13 @@ public class VarFloat extends AbstractVar {
 
     @Override
     public void setDouble(int row, double value) {
-        data[row] = (float) value;
+        data[row] = value;
     }
 
     @Override
     public void addDouble(double value) {
         ensureCapacity(rows + 1);
-        data[rows++] = (float) value;
+        data[rows++] = value;
     }
 
     @Override
@@ -338,14 +378,14 @@ public class VarFloat extends AbstractVar {
             return;
         }
         if ("Inf".equals(value)) {
-            setDouble(row, Float.POSITIVE_INFINITY);
+            setDouble(row, Double.POSITIVE_INFINITY);
             return;
         }
         if ("-Inf".equals(value)) {
-            setDouble(row, Float.NEGATIVE_INFINITY);
+            setDouble(row, Double.NEGATIVE_INFINITY);
             return;
         }
-        setDouble(row, Float.parseFloat(value));
+        setDouble(row, Double.parseDouble(value));
     }
 
     @Override
@@ -355,14 +395,14 @@ public class VarFloat extends AbstractVar {
             return;
         }
         if ("Inf".equals(value)) {
-            addDouble(Float.POSITIVE_INFINITY);
+            addDouble(Double.POSITIVE_INFINITY);
             return;
         }
         if ("-Inf".equals(value)) {
-            addDouble(Float.NEGATIVE_INFINITY);
+            addDouble(Double.NEGATIVE_INFINITY);
             return;
         }
-        addDouble(Float.parseFloat(value));
+        addDouble(Double.parseDouble(value));
     }
 
     @Override
@@ -436,13 +476,13 @@ public class VarFloat extends AbstractVar {
 
     @Override
     public UniqueRows uniqueRows() {
-        FloatAVLTreeSet set = new FloatAVLTreeSet();
+        DoubleAVLTreeSet set = new DoubleAVLTreeSet();
         for (int i = 0; i < rows; i++) {
             set.add(data[i]);
         }
         int uniqueId = 0;
-        Float2IntOpenHashMap uniqueKeys = new Float2IntOpenHashMap();
-        for (float key : set) {
+        Double2IntOpenHashMap uniqueKeys = new Double2IntOpenHashMap();
+        for (double key : set) {
             uniqueKeys.put(key, uniqueId);
             uniqueId++;
         }
@@ -459,7 +499,7 @@ public class VarFloat extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return VarFloat.empty(rows);
+        return SolidVarDouble.empty(rows);
     }
 
     @Override
@@ -468,22 +508,23 @@ public class VarFloat extends AbstractVar {
     }
 
     @Override
-    public VarFloat solidCopy() {
-        return (VarFloat) super.solidCopy();
+    public SolidVarDouble solidCopy() {
+        return (SolidVarDouble) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            out.writeFloat(data[i]);
+            out.writeDouble(data[i]);
         }
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         rows = in.readInt();
-        data = new float[rows];
+        data = new double[rows];
         for (int i = 0; i < rows; i++) {
-            data[i] = in.readFloat();
+            data[i] = in.readDouble();
         }
     }
+
 }

@@ -26,8 +26,8 @@ package rapaio.core.tests;
 
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,7 +43,7 @@ public class ZTestOneSampleTest {
         RandomSource.setSeed(1234);
         double mu = 75;
         double sd = 18;
-        Var x = VarDouble.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
+        Var x = SolidVarDouble.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
 
         ZTestOneSample z1 = ZTestOneSample.test(x, mu, sd);
         z1.printSummary();
@@ -99,7 +99,7 @@ public class ZTestOneSampleTest {
         assertEquals(85.86187743343541, z3.ciHigh(), TOL);
         assertEquals(0.01, z3.getSl(), TOL);
 
-        ZTestOneSample z4 = ZTestOneSample.test(VarDouble.copy(Double.NaN, Double.NaN), 0, 1);
+        ZTestOneSample z4 = ZTestOneSample.test(SolidVarDouble.copy(Double.NaN, Double.NaN), 0, 1);
         z4.printSummary();
 
         assertEquals(Double.NaN, z4.getSampleMean(), TOL);

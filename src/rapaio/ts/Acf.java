@@ -27,9 +27,10 @@ package rapaio.ts;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.VarInt;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -60,8 +61,8 @@ public class Acf implements Printable {
         }
         this.ts = ts.solidCopy();
         this.lags = lags.solidCopy();
-        this.correlation = VarDouble.fill(lags.rowCount(), 0).withName("correlation");
-        this.covariance = VarDouble.fill(lags.rowCount(), 0).withName("covariance");
+        this.correlation = SolidVarDouble.fill(lags.rowCount(), 0).withName("correlation");
+        this.covariance = SolidVarDouble.fill(lags.rowCount(), 0).withName("covariance");
 
         compute();
     }

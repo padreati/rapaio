@@ -25,6 +25,8 @@
 
 package rapaio.data;
 
+import rapaio.data.solid.SolidVarDouble;
+
 /**
  * Represents the type of variable.
  * <p>
@@ -93,7 +95,7 @@ public enum VarType {
     DOUBLE(true, false, false, "double") {
         @Override
         public Var newInstance(int rows) {
-            return VarDouble.empty(rows);
+            return SolidVarDouble.empty(rows);
         }
     },
     FLOAT(true, false, false, "float") {

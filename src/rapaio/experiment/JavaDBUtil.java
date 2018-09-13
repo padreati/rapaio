@@ -25,9 +25,20 @@
 
 package rapaio.experiment;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.solid.SolidVarDouble;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,7 +143,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    VarDouble v1 = VarDouble.empty(lists.get(i).size());
+                    VarDouble v1 = SolidVarDouble.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setDouble(j, (Double) lists.get(i).get(j));
                     }

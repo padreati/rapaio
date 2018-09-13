@@ -25,6 +25,13 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
+import rapaio.data.unique.UniqueRows;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -347,6 +354,30 @@ public class VarLong extends AbstractVar {
     @Override
     public void clear() {
         rows = 0;
+    }
+
+    @Override
+    public UniqueRows uniqueRows() {
+        LongAVLTreeSet set = new LongAVLTreeSet();
+        for (int i = 0; i < rowCount(); i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Long2IntOpenHashMap uniqueKeys = new Long2IntOpenHashMap();
+        for (long key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            long key = data[i];
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

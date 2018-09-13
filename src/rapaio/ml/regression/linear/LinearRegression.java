@@ -25,8 +25,13 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
@@ -122,7 +127,7 @@ public class LinearRegression extends AbstractLinearRegression {
                 }
             }
             if (!exists) {
-                VarDouble var = VarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
+                VarDouble var = SolidVarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
                 prepared = SolidFrame.byVars(var).bindVars(prepared);
                 return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
             }
@@ -154,7 +159,7 @@ public class LinearRegression extends AbstractLinearRegression {
                 }
             }
             if (!exists) {
-                VarDouble var = VarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
+                VarDouble var = SolidVarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
                 prepared = SolidFrame.byVars(var).bindVars(prepared);
                 return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
             }

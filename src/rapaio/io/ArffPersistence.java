@@ -25,9 +25,19 @@
 
 package rapaio.io;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.solid.SolidVarDouble;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +116,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vars.add(VarDouble.empty());
+                            vars.add(SolidVarDouble.empty());
                         } else//Not correct, but we aren't supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -130,7 +140,7 @@ public class ArffPersistence {
             List<Var> newvectors = new ArrayList<>();
             for (int i = 0; i < vars.size(); i++) {
                 if (vars.get(i) instanceof VarDouble) {
-                    newvectors.add(VarDouble.empty(data.size()));
+                    newvectors.add(SolidVarDouble.empty(data.size()));
                 }
                 if (vars.get(i) instanceof VarNominal) {
                     newvectors.add(VarNominal.empty(data.size(), nomValueMap.get(names.get(i))));

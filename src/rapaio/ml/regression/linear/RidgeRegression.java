@@ -26,8 +26,14 @@ package rapaio.ml.regression.linear;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
@@ -144,7 +150,7 @@ public class RidgeRegression extends AbstractLinearRegression {
         if (!intercept) {
             return super.prepareFit(trainSetup);
         }
-        VarDouble inter = VarDouble.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble inter = SolidVarDouble.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), trainSetup.df);
         return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
     }
@@ -212,7 +218,7 @@ public class RidgeRegression extends AbstractLinearRegression {
         if (!intercept) {
             return super.preparePredict(fitSetup);
         }
-        VarDouble inter = VarDouble.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble inter = SolidVarDouble.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
         Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), fitSetup.df);
         return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
     }

@@ -25,12 +25,12 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -39,7 +39,7 @@ public class BoundVarTest {
 
     @Test
     public void testBuildWrong() {
-        VarDouble a = VarDouble.copy(1, 2);
+        VarDouble a = SolidVarDouble.copy(1, 2);
         VarBoolean b = VarBoolean.copy(true, false);
 
         try {
@@ -76,11 +76,11 @@ public class BoundVarTest {
 
     @Test
     public void testBind() {
-        VarDouble a = VarDouble.wrap(1, 2, 3);
-        VarDouble b = VarDouble.wrap(4, 5);
-        VarDouble c = VarDouble.wrap(6, 7, 8, 9);
-        VarDouble d = VarDouble.empty(1);
-        VarDouble e = VarDouble.wrap(Math.PI, Math.E);
+        VarDouble a = SolidVarDouble.wrap(1, 2, 3);
+        VarDouble b = SolidVarDouble.wrap(4, 5);
+        VarDouble c = SolidVarDouble.wrap(6, 7, 8, 9);
+        VarDouble d = SolidVarDouble.empty(1);
+        VarDouble e = SolidVarDouble.wrap(Math.PI, Math.E);
 
         Var x = BoundVar.from(a, b);
         Var y = BoundVar.from(c, d);
@@ -134,8 +134,8 @@ public class BoundVarTest {
 
     @Test
     public void testValueBound() {
-        Var a = VarDouble.wrap(1, 2);
-        Var b = VarDouble.wrap(3, 4);
+        Var a = SolidVarDouble.wrap(1, 2);
+        Var b = SolidVarDouble.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setDouble(0, 100);
@@ -232,7 +232,7 @@ public class BoundVarTest {
 
     @Test
     public void testRemove() {
-        Var x = VarDouble.copy(1, 2, 3).bindRows(VarDouble.copy(4, 5, 6));
+        Var x = SolidVarDouble.copy(1, 2, 3).bindRows(SolidVarDouble.copy(4, 5, 6));
 
         try {
             x.remove(1);

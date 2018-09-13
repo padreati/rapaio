@@ -27,8 +27,9 @@ package rapaio.ml.regression.loss;
 
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
@@ -52,6 +53,6 @@ public class L2RegressionLoss implements RegressionLoss {
     @Override
     public VarDouble computeGradient(Var y, Var y_hat) {
         int len = Math.min(y.rowCount(), y_hat.rowCount());
-        return VarDouble.from(len, row -> 0.5 * (y.getDouble(row) - y_hat.getDouble(row)));
+        return SolidVarDouble.from(len, row -> 0.5 * (y.getDouble(row) - y_hat.getDouble(row)));
     }
 }

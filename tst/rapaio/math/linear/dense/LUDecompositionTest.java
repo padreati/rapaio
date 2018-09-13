@@ -26,10 +26,11 @@ package rapaio.math.linear.dense;
 
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
-import rapaio.util.Util;
+import rapaio.util.Time;
 
 import static org.junit.Assert.*;
 
@@ -61,16 +62,16 @@ public class LUDecompositionTest {
         assertTrue(a1.isEqual(a2, TOL));
     }
 
-//    @Test
+    //    @Test
     public void perfTest() {
         int N = 2000;
 
-        VarDouble gauss = VarDouble.empty().withName("gauss");
-        VarDouble crout = VarDouble.empty().withName("crout");
+        VarDouble gauss = SolidVarDouble.empty().withName("gauss");
+        VarDouble crout = SolidVarDouble.empty().withName("crout");
         for (int i = 0; i < 10; i++) {
             RM a = SolidRM.random(N, N);
-            gauss.addDouble(Util.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION))._2);
-            crout.addDouble(Util.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.CROUT))._2);
+            gauss.addDouble(Time.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION)));
+            crout.addDouble(Time.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.CROUT)));
         }
 
         SolidFrame.byVars(gauss, crout).printSummary();
@@ -86,17 +87,17 @@ public class LUDecompositionTest {
     @Test
     public void solveTest() {
 
-        RM a1 = SolidRM.wrap(new double[][] {
+        RM a1 = SolidRM.wrap(new double[][]{
                 {3, 2, -1},
                 {2, -2, 4},
                 {-1, 0.5, -1}
         });
-        RM b1 = SolidRM.wrap(new double[][] {
+        RM b1 = SolidRM.wrap(new double[][]{
                 {1},
                 {-2},
                 {0}
         });
-        RM x1 = SolidRM.wrap(new double[][] {
+        RM x1 = SolidRM.wrap(new double[][]{
                 {1},
                 {-2},
                 {-2}
@@ -104,15 +105,15 @@ public class LUDecompositionTest {
         assertTrue(x1.isEqual(LUDecomposition.from(a1).solve(b1), TOL));
 
 
-        RM a2 = SolidRM.wrap(new double[][] {
+        RM a2 = SolidRM.wrap(new double[][]{
                 {2, 3},
                 {4, 9},
         });
-        RM b2 = SolidRM.wrap(new double[][] {
+        RM b2 = SolidRM.wrap(new double[][]{
                 {6},
                 {15},
         });
-        RM x2 = SolidRM.wrap(new double[][] {
+        RM x2 = SolidRM.wrap(new double[][]{
                 {1.5},
                 {1},
         });
@@ -122,7 +123,7 @@ public class LUDecompositionTest {
     @Test
     public void determinantTest() {
         RandomSource.setSeed(123);
-        RM a = SolidRM.wrap(new double[][] {
+        RM a = SolidRM.wrap(new double[][]{
                 {1, 2},
                 {3, 4}
         });

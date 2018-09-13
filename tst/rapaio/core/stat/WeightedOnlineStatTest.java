@@ -4,12 +4,12 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.graphics.Plotter.lines;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
@@ -24,9 +24,9 @@ public class WeightedOnlineStatTest {
         RandomSource.setSeed(124);
         Uniform unif = new Uniform(0, 1);
 
-        Var x = VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
+        Var x = SolidVarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
 
-        VarDouble w = VarDouble.from(x.rowCount(), row -> unif.sampleNext());
+        VarDouble w = SolidVarDouble.from(x.rowCount(), row -> unif.sampleNext());
 
         // normalize w
         double wsum = Sum.from(w).value();
@@ -55,8 +55,8 @@ public class WeightedOnlineStatTest {
         RandomSource.setSeed(123);
 
         Normal normal = new Normal(0, 100);
-        VarDouble x = VarDouble.from(100, normal::sampleNext);
-        VarDouble w = VarDouble.fill(100, 1);
+        VarDouble x = SolidVarDouble.from(100, normal::sampleNext);
+        VarDouble w = SolidVarDouble.fill(100, 1);
 
         VarDouble wnorm = w.solidCopy();
         double wsum = Sum.from(w).value();
@@ -94,8 +94,8 @@ public class WeightedOnlineStatTest {
         Normal normal = Normal.from(0, 1);
         Uniform uniform = new Uniform(0, 1);
 
-        VarDouble x = VarDouble.from(100, normal::sampleNext);
-        VarDouble w = VarDouble.from(100, uniform::sampleNext);
+        VarDouble x = SolidVarDouble.from(100, normal::sampleNext);
+        VarDouble w = SolidVarDouble.from(100, uniform::sampleNext);
 
         double wsum = Sum.from(w).value();
         for (int i = 0; i < w.rowCount(); i++) {

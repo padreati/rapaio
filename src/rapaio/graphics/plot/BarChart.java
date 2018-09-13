@@ -25,7 +25,11 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.*;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
+import rapaio.data.VarType;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -33,8 +37,12 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static rapaio.graphics.Plotter.color;
 
@@ -78,7 +86,7 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = VarDouble.fill(category.rowCount(), 1);
+            numeric = SolidVarDouble.fill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");

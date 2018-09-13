@@ -26,8 +26,8 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.solid.SolidVarDouble;
 
 import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
@@ -112,7 +112,7 @@ public class ZTestTwoPaired implements HTest {
             return;
         }
 
-        Var complete = VarDouble.empty();
+        Var complete = SolidVarDouble.empty();
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (!(x.isMissing(i) || y.isMissing(i)))
                 complete.addDouble(x.getDouble(i) - y.getDouble(i));

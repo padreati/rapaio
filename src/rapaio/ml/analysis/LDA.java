@@ -25,12 +25,17 @@
 
 package rapaio.ml.analysis;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.data.stream.FSpot;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
@@ -233,8 +238,8 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                VarDouble.empty(eigenValues.count()).withName("values"),
-                VarDouble.empty(eigenValues.count()).withName("percent")
+                SolidVarDouble.empty(eigenValues.count()).withName("values"),
+                SolidVarDouble.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {

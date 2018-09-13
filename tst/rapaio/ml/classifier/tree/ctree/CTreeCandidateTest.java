@@ -2,8 +2,8 @@ package rapaio.ml.classifier.tree.ctree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.SolidFrame;
+import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.common.predicate.RowPredicate;
 
@@ -20,7 +20,7 @@ public class CTreeCandidateTest {
         c.addGroup(RowPredicate.numLessEqual("x", 1));
         c.addGroup(RowPredicate.numGreater("x", 1));
 
-        Frame df = SolidFrame.byVars(VarDouble.wrap(0).withName("x"));
+        Frame df = SolidFrame.byVars(SolidVarDouble.wrap(0).withName("x"));
 
         assertTrue(c.getGroupPredicates().get(0).test(0, df));
         assertFalse(c.getGroupPredicates().get(1).test(0, df));
