@@ -26,6 +26,7 @@
 package rapaio.data;
 
 import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.solid.SolidVarFloat;
 
 /**
  * Represents the type of variable.
@@ -101,7 +102,7 @@ public enum VarType {
     FLOAT(true, false, false, "float") {
         @Override
         public Var newInstance(int rows) {
-            return VarFloat.empty(rows);
+            return SolidVarFloat.empty(rows);
         }
     },
     /**

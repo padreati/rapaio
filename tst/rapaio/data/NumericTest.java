@@ -52,7 +52,7 @@ public class NumericTest {
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Numeric[name:?, rowCount:1]", SolidVarDouble.empty(1).toString());
+        assertEquals("SolidVarDouble[name:?, rowCount:1]", SolidVarDouble.empty(1).toString());
     }
 
     @Test
