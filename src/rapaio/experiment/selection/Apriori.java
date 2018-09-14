@@ -26,12 +26,21 @@
 package rapaio.experiment.selection;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
+import rapaio.data.VarType;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 

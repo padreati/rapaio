@@ -25,11 +25,11 @@
 
 package rapaio.core.stat;
 
-import rapaio.printer.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
 import static rapaio.core.CoreTools.mean;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Compensated version of the algorithm for calculation of

@@ -29,7 +29,6 @@ import rapaio.core.CoreTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 
@@ -45,13 +44,13 @@ public class MeshGridFactory {
         double x2min = CoreTools.min(df.rvar(x2Name)).value();
         double x2max = CoreTools.max(df.rvar(x2Name)).value();
 
-        VarDouble x1 = SolidVarDouble.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
-        VarDouble x2 = SolidVarDouble.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
+        VarDouble x1 = VarDouble.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
+        VarDouble x2 = VarDouble.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
 
         MeshGrid1D mg = new MeshGrid1D(x1, x2);
 
-        VarDouble f1 = SolidVarDouble.empty().withName(x1Name);
-        VarDouble f2 = SolidVarDouble.empty().withName(x2Name);
+        VarDouble f1 = VarDouble.empty().withName(x1Name);
+        VarDouble f2 = VarDouble.empty().withName(x2Name);
 
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

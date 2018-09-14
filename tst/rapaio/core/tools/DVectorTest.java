@@ -25,8 +25,8 @@
 package rapaio.core.tools;
 
 import org.junit.Test;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -41,12 +41,12 @@ public class DVectorTest {
                 .equalsFull(DVector.fromWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
-                        SolidVarDouble.copy(0.5, 1.5, 1, 1))));
+                        VarDouble.copy(0.5, 1.5, 1, 1))));
         assertTrue(DVector.fromCount(true, VarNominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.fromWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
-                        SolidVarDouble.copy(0.5, 1.5, 1, 1))));
+                        VarDouble.copy(0.5, 1.5, 1, 1))));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DVectorTest {
         DVector ndv1 = DVector.fromWeights(
                 true,
                 VarNominal.copy("a", "b", "c"),
-                SolidVarDouble.copy(1.0, 7.0, 5.0)
+                VarDouble.copy(1.0, 7.0, 5.0)
         );
 
         DVector ndv2 = DVector.empty(true, "?", "a", "b", "c");
@@ -70,7 +70,7 @@ public class DVectorTest {
     public void testSet() {
         DVector ndv1 = DVector.fromWeights(false,
                 VarNominal.copy("?", "a", "b", "c"),
-                SolidVarDouble.copy(0.0, 1.0, 7.0, 5.0)
+                VarDouble.copy(0.0, 1.0, 7.0, 5.0)
         );
 
         DVector ndv2 = DVector.empty(false, "?", "a", "b", "c");
@@ -86,14 +86,14 @@ public class DVectorTest {
     public void testFindBestIndex() {
         DVector dv1 = DVector.fromWeights(true,
                 VarNominal.copy("a", "b", "c"),
-                SolidVarDouble.copy(1.0, 7.0, 5.0)
+                VarDouble.copy(1.0, 7.0, 5.0)
         );
         dv1.set(0, 100);
         assertEquals(0, dv1.findBestIndex());
 
         DVector dv2 = DVector.fromWeights(true,
                 VarNominal.copy("a", "b", "c"),
-                SolidVarDouble.copy(1.0, 2.0, 2.0)
+                VarDouble.copy(1.0, 2.0, 2.0)
         );
         for (int i = 0; i < 100; i++) {
             int index = dv2.findBestIndex();
@@ -106,7 +106,7 @@ public class DVectorTest {
     public void testNormalize() {
         DVector dv = DVector.fromWeights(true,
                 VarNominal.copy("a", "b", "c"),
-                SolidVarDouble.copy(1.0, 1.0, 1.0)
+                VarDouble.copy(1.0, 1.0, 1.0)
         );
         dv.normalize();
 
@@ -126,7 +126,7 @@ public class DVectorTest {
     public void testSums() {
         DVector dv = DVector.fromWeights(false,
                 VarNominal.copy("?", "a", "b", "c"),
-                SolidVarDouble.copy(1.0, 2.0, 3.0, 4.0)
+                VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         assertEquals(9.0, dv.withFirst(false).sum(), 1e-20);
@@ -140,7 +140,7 @@ public class DVectorTest {
     public void testCountValues() {
         DVector dv = DVector.fromWeights(true,
                 VarNominal.copy("?", "a", "b", "c"),
-                SolidVarDouble.copy(1.0, 2.0, 3.0, 4.0)
+                VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         assertEquals(2, dv.withFirst(true).countValues(x -> x <= 2));
@@ -152,7 +152,7 @@ public class DVectorTest {
         DVector dv1 = DVector.fromWeights(
                 false,
                 VarNominal.copy("?", "a", "b", "c"),
-                SolidVarDouble.copy(1.0, 2.0, 3.0, 4.0)
+                VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         DVector dv2 = dv1.solidCopy();

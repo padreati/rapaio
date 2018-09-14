@@ -30,10 +30,10 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarBoolean;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
@@ -44,8 +44,8 @@ public class FFJitterTest {
     public void testSmoke() {
 
         Frame a = SolidFrame.byVars(
-                SolidVarDouble.fill(100, 0).withName("num1"),
-                SolidVarDouble.fill(100, 0).withName("num2"),
+                VarDouble.fill(100, 0).withName("num1"),
+                VarDouble.fill(100, 0).withName("num2"),
                 VarBoolean.fill(100, true).withName("bin"),
                 VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );

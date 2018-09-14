@@ -30,7 +30,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertTrue;
 
@@ -40,14 +40,14 @@ public class KDETest {
     private Normal normal = new Normal(0, 1);
     private Var sample;
 
-    private Var x = SolidVarDouble.seq(-20, 20, 0.01);
+    private Var x = VarDouble.seq(-20, 20, 0.01);
     private Var y;
 
     @Before
     public void setUp() throws Exception {
         RandomSource.setSeed(1234);
         sample = normal.sample(1_000);
-        y = SolidVarDouble.from(x, normal::pdf);
+        y = VarDouble.from(x, normal::pdf);
     }
 
     @Test
@@ -64,8 +64,8 @@ public class KDETest {
 
     public void test(KFunc fun) {
         KDE kde = new KDE(sample, fun);
-        Var z = SolidVarDouble.from(x, kde::pdf);
-        Var delta = SolidVarDouble.from(x.rowCount(), row -> y.getDouble(row)-z.getDouble(row));
+        Var z = VarDouble.from(x, kde::pdf);
+        Var delta = VarDouble.from(x.rowCount(), row -> y.getDouble(row)-z.getDouble(row));
         Mean mean = Mean.from(delta);
         mean.printSummary();
         assertTrue(Math.abs(mean.value())<1e-5);

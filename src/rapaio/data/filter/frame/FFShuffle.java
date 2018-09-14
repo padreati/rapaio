@@ -32,8 +32,6 @@ import rapaio.data.Mapping;
 import rapaio.data.VRange;
 import rapaio.data.filter.FFilter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

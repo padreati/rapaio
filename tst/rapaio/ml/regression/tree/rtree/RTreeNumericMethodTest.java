@@ -29,8 +29,8 @@ import org.junit.Test;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VFRefSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
 
@@ -49,7 +49,7 @@ public class RTreeNumericMethodTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadPlay();
-        w = SolidVarDouble.fill(df.rowCount(), 1);
+        w = VarDouble.fill(df.rowCount(), 1);
         tree = RTree.newDecisionStump();
     }
 

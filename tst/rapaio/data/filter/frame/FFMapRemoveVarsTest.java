@@ -30,10 +30,10 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
@@ -45,9 +45,9 @@ public class FFMapRemoveVarsTest {
     @Before
     public void setUp() throws Exception {
         df = SolidFrame.byVars(
-                SolidVarDouble.fill(10, 1).withName("a"),
-                SolidVarDouble.fill(10, 2).withName("b"),
-                SolidVarDouble.fill(10, 3).withName("c"),
+                VarDouble.fill(10, 1).withName("a"),
+                VarDouble.fill(10, 2).withName("b"),
+                VarDouble.fill(10, 3).withName("c"),
                 VarNominal.from(10, r -> String.valueOf(r%3)).withName("d")
         );
     }

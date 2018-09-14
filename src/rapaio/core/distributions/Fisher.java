@@ -25,10 +25,10 @@
 
 package rapaio.core.distributions;
 
+import rapaio.sys.WS;
+
 import static java.lang.Math.pow;
 import static rapaio.math.MTools.*;
-
-import rapaio.sys.WS;
 
 /**
  * F distribution, also known as Fisher-Snedecor distribution.

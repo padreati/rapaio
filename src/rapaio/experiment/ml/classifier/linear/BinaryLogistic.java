@@ -29,7 +29,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -116,7 +115,7 @@ public class BinaryLogistic extends AbstractClassifier {
     private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
-        VarDouble inst = SolidVarDouble.empty();
+        VarDouble inst = VarDouble.empty();
         for (int i = 0; i < inputNames().length; i++) {
             inst.addDouble(df.getDouble(row, inputName(i)));
         }
@@ -136,15 +135,15 @@ public class BinaryLogistic extends AbstractClassifier {
 
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            VarDouble line = SolidVarDouble.empty();
+            VarDouble line = VarDouble.empty();
             for (String inputName : inputNames())
                 line.addDouble(df.getDouble(i, inputName));
             inputs.add(line);
         }
 
-        coef = SolidVarDouble.fill(inputNames().length + 1, 0);
+        coef = VarDouble.fill(inputNames().length + 1, 0);
 
-        VarDouble targetValues = SolidVarDouble.empty();
+        VarDouble targetValues = VarDouble.empty();
         df.rvar(firstTargetName()).stream().forEach(s -> targetValues.addDouble(s.getInt() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 

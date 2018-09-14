@@ -8,7 +8,6 @@ import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFAddIntercept;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.linear.LinearRPrediction;
 import rapaio.ml.regression.linear.LinearRegression;
@@ -31,8 +30,8 @@ public class RMSETest {
         RandomSource.setSeed(123);
         Normal normal = Normal.from(0, 10);
         VarDouble x = normal.sample(100).withName("x");
-        VarDouble y = SolidVarDouble.from(x, val -> val + 1).withName("y");
-        VarDouble z = SolidVarDouble.from(x, val -> val - 2).withName("z");
+        VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
+        VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");
 
         RMSE rmse1 = RMSE.from(x, y);
         RMSE rmse2 = RMSE.from(x, z);

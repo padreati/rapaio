@@ -27,7 +27,6 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -85,7 +84,7 @@ public class StampTest {
 
     @Test
     public void testFillVector() {
-        Var stamp = SolidVarDouble.fill(10, -1);
+        Var stamp = VarDouble.fill(10, -1);
         assertEquals(10, stamp.rowCount());
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(-1, stamp.getLong(i));

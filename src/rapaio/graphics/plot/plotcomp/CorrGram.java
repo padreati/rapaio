@@ -26,10 +26,10 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.tools.DistanceMatrix;
-import rapaio.math.MTools;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.PlotComponent;
+import rapaio.math.MTools;
 import rapaio.sys.WS;
 
 import java.awt.*;

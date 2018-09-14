@@ -26,7 +26,6 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -38,12 +37,12 @@ public class WeightedMeanTest {
     @Test
     public void testBasic() {
 
-        VarDouble values = SolidVarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        VarDouble weights = SolidVarDouble.fill(10, 1);
+        VarDouble weights = VarDouble.fill(10, 1);
         assertEquals(5.5, WeightedMean.from(values, weights).value(), 10e-12);
 
-        weights = SolidVarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
+        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
         assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
 
         WeightedOnlineStat wos = WeightedOnlineStat.empty();
@@ -59,17 +58,17 @@ public class WeightedMeanTest {
     @Test
     public void testMissing() {
 
-        VarDouble values = SolidVarDouble.copy(Double.NaN, Double.NaN);
-        VarDouble weights = SolidVarDouble.copy(1, 1);
+        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN);
+        VarDouble weights = VarDouble.copy(1, 1);
 
         assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = SolidVarDouble.copy(1, 2);
-        weights = SolidVarDouble.copy(Double.NaN, Double.NaN);
+        values = VarDouble.copy(1, 2);
+        weights = VarDouble.copy(Double.NaN, Double.NaN);
         assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = SolidVarDouble.copy(Double.NaN, 1, 2);
-        weights = SolidVarDouble.copy(1, 2, Double.NaN);
+        values = VarDouble.copy(Double.NaN, 1, 2);
+        weights = VarDouble.copy(1, 2, Double.NaN);
         assertEquals(1.0, WeightedMean.from(values, weights).value(), 10e-12);
     }
 

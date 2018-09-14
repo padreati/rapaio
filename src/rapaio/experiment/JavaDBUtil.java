@@ -30,7 +30,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -143,7 +142,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    VarDouble v1 = SolidVarDouble.empty(lists.get(i).size());
+                    VarDouble v1 = VarDouble.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setDouble(j, (Double) lists.get(i).get(j));
                     }

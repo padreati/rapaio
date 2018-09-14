@@ -27,7 +27,6 @@ package rapaio.math.functions;
 
 import rapaio.math.linear.RV;
 
-import java.io.Serializable;
 import java.util.function.Function;
 
 /**

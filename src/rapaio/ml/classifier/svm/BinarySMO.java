@@ -29,15 +29,15 @@ package rapaio.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.math.MTools;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.Sample;
 import rapaio.data.sample.RowSampler;
+import rapaio.data.sample.Sample;
+import rapaio.math.MTools;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;

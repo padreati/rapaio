@@ -32,7 +32,6 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -134,7 +133,7 @@ public class StandardScalerTest {
 
     @Test
     public void missingData() {
-        VarDouble x = SolidVarDouble.from(100, row -> row%2==0 ? row : Double.NaN).withName("x");
+        VarDouble x = VarDouble.from(100, row -> row%2==0 ? row : Double.NaN).withName("x");
         Frame df = SolidFrame.byVars(x);
 
         Frame copy = df.solidCopy();

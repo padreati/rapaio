@@ -25,7 +25,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -36,12 +35,12 @@ public class MappedVarTest {
 
     @Test
     public void testBuilders() {
-        Var a = SolidVarDouble.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
+        Var a = VarDouble.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
         assertEquals(2, a.rowCount());
         assertEquals(3, a.getDouble(0), 1e-12);
         assertEquals(4, a.getDouble(1), 1e-12);
 
-        Var b = a.bindRows(SolidVarDouble.wrap(10, 11));
+        Var b = a.bindRows(VarDouble.wrap(10, 11));
         assertEquals(4, b.rowCount());
         assertEquals(3, b.getDouble(0), 1e-12);
         assertEquals(10, b.getDouble(2), 1e-12);
@@ -49,7 +48,7 @@ public class MappedVarTest {
 
     @Test
     public void testDynamicMappedVar() {
-        Var x = SolidVarDouble.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
+        Var x = VarDouble.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
 
         try {
             x.addDouble(10);

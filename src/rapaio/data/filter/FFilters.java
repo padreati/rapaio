@@ -29,8 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Frame;
 import rapaio.data.filter.frame.FFRefSort;
 
-import java.util.Comparator;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
  */

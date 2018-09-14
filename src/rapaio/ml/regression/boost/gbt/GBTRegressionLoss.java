@@ -25,8 +25,8 @@
 
 package rapaio.ml.regression.boost.gbt;
 
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import java.io.Serializable;
 

@@ -32,9 +32,18 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.*;
-import java.util.stream.*;
+import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 /**
  * Stream of frame spots.

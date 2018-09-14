@@ -33,8 +33,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 /**
  * Utility class for calling basic statistical tools on variables.

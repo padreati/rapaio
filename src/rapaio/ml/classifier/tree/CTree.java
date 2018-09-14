@@ -33,9 +33,9 @@ import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarBoolean;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.common.Capabilities;
@@ -485,7 +485,7 @@ public class CTree extends AbstractClassifier {
         Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
         buildIndexMap(root, indexMap);
 
-        Var index = SolidVarDouble.empty(df.rowCount()).withName(varPrefix + "index");
+        Var index = VarDouble.empty(df.rowCount()).withName(varPrefix + "index");
         double norm = normalized ? indexMap.size() : 1.0;
         for (int i = 0; i < df.rowCount(); i++) {
             index.setDouble(i, indexMap.get(predictPointNodeIndex(root, df, i)) / norm);

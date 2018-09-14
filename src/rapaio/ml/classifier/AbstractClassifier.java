@@ -32,7 +32,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.format.TextTable;
 
 import java.util.ArrayList;
@@ -120,7 +119,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier fit(Frame df, String... targetVars) {
-        VarDouble weights = SolidVarDouble.fill(df.rowCount(), 1);
+        VarDouble weights = VarDouble.fill(df.rowCount(), 1);
         return fit(df, weights, targetVars);
     }
 

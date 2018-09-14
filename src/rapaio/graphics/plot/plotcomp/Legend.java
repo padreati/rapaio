@@ -28,7 +28,6 @@ package rapaio.graphics.plot.plotcomp;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;

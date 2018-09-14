@@ -30,7 +30,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
@@ -61,7 +60,7 @@ public class ReliefImportance {
         }
         IntArrays.quickSort(rows, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
-        VarDouble weightVar = SolidVarDouble.empty().withName("weights");
+        VarDouble weightVar = VarDouble.empty().withName("weights");
         VarNominal nameVar = VarNominal.empty().withName("names");
 
         for (int i = 0; i < rows.length; i++) {
@@ -73,7 +72,7 @@ public class ReliefImportance {
     }
 
     public Frame unorderedFrame() {
-        VarDouble weightVar = SolidVarDouble.empty().withName("weights");
+        VarDouble weightVar = VarDouble.empty().withName("weights");
         VarNominal nameVar = VarNominal.empty().withName("names");
 
         for (int i = 0; i < names.length; i++) {

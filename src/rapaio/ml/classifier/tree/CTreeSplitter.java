@@ -31,7 +31,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 import rapaio.util.Tagged;
@@ -162,7 +162,7 @@ public interface CTreeSplitter extends Tagged, Serializable {
             List<Var> weighting = new ArrayList<>();
             for (int i = 0; i < pred.size(); i++) {
                 mappings.add(Mapping.empty());
-                weighting.add(SolidVarDouble.empty());
+                weighting.add(VarDouble.empty());
             }
 
             final double[] p = new double[mappings.size()];

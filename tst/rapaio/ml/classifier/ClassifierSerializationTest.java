@@ -28,8 +28,8 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
 import rapaio.ml.classifier.bayes.NaiveBayes;
@@ -51,7 +51,7 @@ public class ClassifierSerializationTest {
 
         Var varModel = VarNominal.empty();
         Var varData = VarNominal.empty();
-        Var varAcc = SolidVarDouble.empty();
+        Var varAcc = VarDouble.empty();
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);

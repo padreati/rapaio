@@ -25,12 +25,12 @@
 
 package rapaio.ml.classifier.bayes;
 
+import rapaio.data.Frame;
+import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
-
-import rapaio.data.Frame;
-import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
 
 public class NumericData extends NaiveBayesData implements Serializable{
 	public NumericEstimator numEstimator;

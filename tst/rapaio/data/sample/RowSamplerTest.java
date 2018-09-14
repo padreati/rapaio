@@ -33,7 +33,6 @@ import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 
 import java.util.stream.DoubleStream;
@@ -51,7 +50,7 @@ public class RowSamplerTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadIrisDataset();
-        w = SolidVarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).withName("w");
+        w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).withName("w");
         Assert.assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
     }
 
@@ -67,7 +66,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        VarDouble count = SolidVarDouble.empty().withName("bcount");
+        VarDouble count = VarDouble.empty().withName("bcount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
             count.addDouble(1.0 * s.mapping.rowStream().distinct().count() / df.rowCount());
@@ -82,7 +81,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        VarDouble count = SolidVarDouble.fill(df.rowCount(), 0.0).withName("sscount");
+        VarDouble count = VarDouble.fill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
             s.mapping.rowStream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
@@ -96,7 +95,7 @@ public class RowSamplerTest {
             freq.set(i, count.getDouble(i));
         }
         double[] p = DoubleStream.generate(() -> 1 / 150.).limit(150).toArray();
-        ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, SolidVarDouble.wrap(p));
+        ChiSqGoodnessOfFit chiTest = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(p));
         chiTest.printSummary();
 
         // chi square goodness of predict

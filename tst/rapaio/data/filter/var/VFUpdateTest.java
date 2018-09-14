@@ -27,9 +27,9 @@ package rapaio.data.filter.var;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VFilter;
-import rapaio.data.solid.SolidVarDouble;
 
 public class VFUpdateTest {
 
@@ -45,7 +45,7 @@ public class VFUpdateTest {
                 spot.setDouble(-spot.getDouble() * spot.getDouble());
         });
 
-        Var x = SolidVarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
@@ -87,7 +87,7 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = SolidVarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
+        Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
@@ -107,7 +107,7 @@ public class VFUpdateTest {
             return (x > 0) ? (x * x) : (-x * x);
         });
 
-        Var x = SolidVarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
+        Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
         Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);

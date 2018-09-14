@@ -32,11 +32,6 @@ import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */

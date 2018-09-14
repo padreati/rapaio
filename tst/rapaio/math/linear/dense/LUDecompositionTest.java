@@ -28,7 +28,6 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
 import rapaio.util.Time;
 
@@ -66,8 +65,8 @@ public class LUDecompositionTest {
     public void perfTest() {
         int N = 2000;
 
-        VarDouble gauss = SolidVarDouble.empty().withName("gauss");
-        VarDouble crout = SolidVarDouble.empty().withName("crout");
+        VarDouble gauss = VarDouble.empty().withName("gauss");
+        VarDouble crout = VarDouble.empty().withName("crout");
         for (int i = 0; i < 10; i++) {
             RM a = SolidRM.random(N, N);
             gauss.addDouble(Time.measure(() -> LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION)));

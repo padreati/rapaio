@@ -29,7 +29,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -58,8 +57,8 @@ public class RMSE implements Printable {
 
     // artifacts
 
-    private VarDouble rmse = SolidVarDouble.empty().withName("rmse");
-    private VarDouble mse = SolidVarDouble.empty().withName("mse");
+    private VarDouble rmse = VarDouble.empty().withName("rmse");
+    private VarDouble mse = VarDouble.empty().withName("mse");
 
     private double totalRmse;
     private double totalMse;

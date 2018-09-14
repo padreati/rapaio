@@ -28,7 +28,6 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,8 +41,8 @@ public class GiniTest {
     @Test
     public void testSmoke() {
 
-        VarDouble x = SolidVarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        VarDouble y = SolidVarDouble.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
+        VarDouble x = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        VarDouble y = VarDouble.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
 
         double eval = Gini.from(x, y).normalizedGini();
         System.out.println(eval);
@@ -57,17 +56,17 @@ public class GiniTest {
      */
     @Test
     public void kaggleTests() {
-        test(SolidVarDouble.wrap(5.1, 3.2, 1.7, 6.2, 8.1), SolidVarDouble.wrap(3.1, 5.2, 2.7, 5.1, 1.1), -0.043621399177, -0.335443037975);
-        test(SolidVarDouble.wrap(1, 2, 3), SolidVarDouble.wrap(10, 20, 30), 0.111111, 1);
-        test(SolidVarDouble.wrap(1, 2, 3), SolidVarDouble.wrap(30, 20, 10), -0.111111, -1);
-        test(SolidVarDouble.wrap(1, 2, 3), SolidVarDouble.wrap(0, 0, 0), -0.111111, -1);
-        test(SolidVarDouble.wrap(3, 2, 1), SolidVarDouble.wrap(0, 0, 0), 0.111111, 1);
-        test(SolidVarDouble.wrap(1, 2, 4, 3), SolidVarDouble.wrap(0, 0, 0, 0), -0.1, -0.8);
-        test(SolidVarDouble.wrap(2, 1, 4, 3), SolidVarDouble.wrap(0, 0, 2, 1), 0.125, 1);
-        test(SolidVarDouble.wrap(0, 20, 40, 0, 10), SolidVarDouble.wrap(40, 40, 10, 5, 5), 0, 0);
-        test(SolidVarDouble.wrap(40, 0, 20, 0, 10), SolidVarDouble.wrap(1000000, 40, 40, 5, 5), 0.171428, 0.6);
-        test(SolidVarDouble.wrap(40, 20, 10, 0, 0), SolidVarDouble.wrap(40, 20, 10, 0, 0), 0.285714, 1);
-        test(SolidVarDouble.wrap(1, 1, 0, 1), SolidVarDouble.wrap(0.86, 0.26, 0.52, 0.32), -0.041666, -0.333333);
+        test(VarDouble.wrap(5.1, 3.2, 1.7, 6.2, 8.1), VarDouble.wrap(3.1, 5.2, 2.7, 5.1, 1.1), -0.043621399177, -0.335443037975);
+        test(VarDouble.wrap(1, 2, 3), VarDouble.wrap(10, 20, 30), 0.111111, 1);
+        test(VarDouble.wrap(1, 2, 3), VarDouble.wrap(30, 20, 10), -0.111111, -1);
+        test(VarDouble.wrap(1, 2, 3), VarDouble.wrap(0, 0, 0), -0.111111, -1);
+        test(VarDouble.wrap(3, 2, 1), VarDouble.wrap(0, 0, 0), 0.111111, 1);
+        test(VarDouble.wrap(1, 2, 4, 3), VarDouble.wrap(0, 0, 0, 0), -0.1, -0.8);
+        test(VarDouble.wrap(2, 1, 4, 3), VarDouble.wrap(0, 0, 2, 1), 0.125, 1);
+        test(VarDouble.wrap(0, 20, 40, 0, 10), VarDouble.wrap(40, 40, 10, 5, 5), 0, 0);
+        test(VarDouble.wrap(40, 0, 20, 0, 10), VarDouble.wrap(1000000, 40, 40, 5, 5), 0.171428, 0.6);
+        test(VarDouble.wrap(40, 20, 10, 0, 0), VarDouble.wrap(40, 20, 10, 0, 0), 0.285714, 1);
+        test(VarDouble.wrap(1, 1, 0, 1), VarDouble.wrap(0.86, 0.26, 0.52, 0.32), -0.041666, -0.333333);
     }
 
     private void test(VarDouble x, VarDouble y, double g1, double g2) {
@@ -82,9 +81,9 @@ public class GiniTest {
     @Test
     public void weightedGiniTest() {
         Gini gini = Gini.from(
-                SolidVarDouble.wrap(0, 0, 1, 0, 1),
-                SolidVarDouble.wrap(0.1, 0.4, 0.3, 1.2, 0.0),
-                SolidVarDouble.wrap(1, 2, 5, 4, 3)
+                VarDouble.wrap(0, 0, 1, 0, 1),
+                VarDouble.wrap(0.1, 0.4, 0.3, 1.2, 0.0),
+                VarDouble.wrap(1, 2, 5, 4, 3)
         );
         assertEquals(-0.821428571428572, gini.normalizedGini(), TOL);
 

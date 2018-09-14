@@ -29,7 +29,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.RM;
@@ -75,7 +74,7 @@ public class ISLRNew {
         // initial L2 solution
 
         RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
-        SolidVarDouble err = SolidVarDouble.empty().withName("errors");
+        VarDouble err = VarDouble.empty().withName("errors");
 
         for (int it = 0; it < maxIt; it++) {
 
@@ -149,7 +148,7 @@ public class ISLRNew {
         // initial L2 solution
         RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
 
-        VarDouble err = SolidVarDouble.empty().withName("errors");
+        VarDouble err = VarDouble.empty().withName("errors");
 
         for (int k = 0; k < iterMax; k++) {
             if (p >= 2) {
@@ -212,7 +211,7 @@ public class ISLRNew {
 
         Frame df = Datasets.loadISLAdvertising().removeVars(0);
 
-        VarDouble intercept = SolidVarDouble.fill(df.rowCount(), 1);
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1);
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.mapVars(VRange.of(0, 1, 2)));
         RM A = SolidRM.copy(dfa);
         RV b = SolidRM.copy(df.mapVars(VRange.of(3))).mapCol(0);

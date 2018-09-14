@@ -28,7 +28,6 @@ package rapaio.math.functions;
 import rapaio.math.linear.RV;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Function in one dimension.

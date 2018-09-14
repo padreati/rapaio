@@ -26,8 +26,8 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.distributions.empirical.KFunc;
-import rapaio.data.VarInt;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;

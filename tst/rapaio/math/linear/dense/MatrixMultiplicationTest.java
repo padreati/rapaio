@@ -29,7 +29,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.RM;
 import rapaio.util.Time;
 
@@ -121,7 +120,7 @@ public class MatrixMultiplicationTest {
 
     private void put(Map<String, VarDouble> map, String key, Long value) {
         if (!map.containsKey(key)) {
-            map.put(key, SolidVarDouble.empty().withName(key));
+            map.put(key, VarDouble.empty().withName(key));
         }
         map.get(key).addDouble(value);
     }

@@ -27,8 +27,8 @@ package rapaio.graphics.plot;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VFSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.plotcomp.Points;
 
@@ -43,7 +43,7 @@ public class QQPlot extends Plot {
 
         this.options.bind(opts);
         Var x = new VFSort().fitApply(points);
-        Var y = SolidVarDouble.empty(x.rowCount());
+        Var y = VarDouble.empty(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setDouble(i, distribution.quantile(p));

@@ -27,8 +27,8 @@ package rapaio.core.tools;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -80,7 +80,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, SolidVarDouble.fill(rowVar.rowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, VarDouble.fill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**
@@ -105,7 +105,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst   true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Frame df, String rowVarName, String colVarName, boolean useFirst) {
-        return new DTable(df, rowVarName, colVarName, SolidVarDouble.fill(df.rowCount(), 1), useFirst);
+        return new DTable(df, rowVarName, colVarName, VarDouble.fill(df.rowCount(), 1), useFirst);
     }
 
     /**

@@ -25,11 +25,15 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
-import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;

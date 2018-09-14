@@ -25,8 +25,8 @@
 
 package rapaio.data.filter;
 
-import rapaio.printer.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 

@@ -26,7 +26,6 @@ package rapaio.data;
 
 import org.junit.Test;
 import rapaio.core.stat.Mean;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +37,7 @@ public class AbstractVarTest {
     @Test
     public void solidNumericCopyTest() {
 
-        Var main = SolidVarDouble.copy(1, 3, 5, 8, 9);
+        Var main = VarDouble.copy(1, 3, 5, 8, 9);
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
 
         assertEquals(main.rowCount(), copy.rowCount());
@@ -112,9 +111,9 @@ public class AbstractVarTest {
 
     @Test
     public void testBoundVar() {
-        VarDouble a = SolidVarDouble.wrap(1, 2, 3);
-        VarDouble b = SolidVarDouble.wrap(4, 5, 6);
-        VarDouble c = SolidVarDouble.wrap(7, 8, 9, 10);
+        VarDouble a = VarDouble.wrap(1, 2, 3);
+        VarDouble b = VarDouble.wrap(4, 5, 6);
+        VarDouble c = VarDouble.wrap(7, 8, 9, 10);
 
         Var d = a.bindRows(b);
         d = d.bindRows(c);

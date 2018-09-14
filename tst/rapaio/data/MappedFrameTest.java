@@ -26,7 +26,6 @@ package rapaio.data;
 
 import org.junit.Test;
 import rapaio.data.filter.frame.FFRefSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class MappedFrameTest {
     @Test
     public void testBuilders() {
         Frame df = SolidFrame.byVars(
-                SolidVarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
+                VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
                 VarInt.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
 
@@ -77,9 +76,9 @@ public class MappedFrameTest {
     public void testMapAndBound() {
         final int N = 10;
 
-        Var x = SolidVarDouble.from(N, row -> row * 1.0).withName("x");
+        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
         Var y = VarInt.from(N, row -> row * 2).withName("y");
-        Var z = SolidVarDouble.from(N, row -> 1.0 / row).withName("z");
+        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
         Frame df1 = SolidFrame.byVars(x, y, z);
 
         Frame a = df1
@@ -138,6 +137,6 @@ public class MappedFrameTest {
         assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
         assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 
-        assertTrue(SolidVarDouble.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
+        assertTrue(VarDouble.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
     }
 }

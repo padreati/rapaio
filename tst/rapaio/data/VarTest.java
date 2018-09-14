@@ -26,7 +26,6 @@ package rapaio.data;
 
 import org.junit.Test;
 import rapaio.data.filter.var.VFSort;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +62,8 @@ public class VarTest {
     @Test
     public void testNumericCollector() {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
-        Var x = SolidVarDouble.wrap(src);
-        Var y = Arrays.stream(src).boxed().parallel().collect(SolidVarDouble.collector());
+        Var x = VarDouble.wrap(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(VarDouble.collector());
         y = new VFSort().fitApply(y);
 
         assertTrue(x.deepEquals(y));
@@ -82,7 +81,7 @@ public class VarTest {
 
     @Test
     public void solidCopyNameTest() {
-        VarDouble num = SolidVarDouble.seq(1, 10, 0.5).withName("num");
+        VarDouble num = VarDouble.seq(1, 10, 0.5).withName("num");
         assertEquals(num.name(), num.solidCopy().name());
         assertEquals(num.name(), num.mapRows(2,5).solidCopy().name());
 

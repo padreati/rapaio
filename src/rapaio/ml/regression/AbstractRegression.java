@@ -25,12 +25,18 @@
 
 package rapaio.ml.regression;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.printer.format.TextTable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 

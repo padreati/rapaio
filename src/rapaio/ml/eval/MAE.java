@@ -26,9 +26,9 @@
 package rapaio.ml.eval;
 
 import rapaio.data.BoundFrame;
-import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 

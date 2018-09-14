@@ -31,7 +31,6 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +88,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
     public List<Var> generate(Frame df, List<String> keys) {
         List<Var> features = new ArrayList<>();
         for (String labelKey : labelKeys) {
-            VarDouble index = SolidVarDouble.empty().withName(labelKey);
+            VarDouble index = VarDouble.empty().withName(labelKey);
             for (int row = 0; row < df.rowCount(); row++) {
                 Key key = Key.from(row, df, keys);
                 index.addDouble(counts.get(labelKey).getOrDefault(key, 0));

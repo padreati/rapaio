@@ -26,8 +26,8 @@
 package rapaio.ml.regression.ensemble;
 
 import rapaio.data.Frame;
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;

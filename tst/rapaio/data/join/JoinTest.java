@@ -5,10 +5,10 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.frame.FFRefSort;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +25,7 @@ public class JoinTest {
         df1 = SolidFrame.byVars(
                 VarNominal.copy("a", "b", "c", "a", "b").withName("id"),
                 VarInt.copy(20, 20, 40, 30, 40).withName("age"),
-                SolidVarDouble.wrap(1, 2, 3, 0, 0).withName("children")
+                VarDouble.wrap(1, 2, 3, 0, 0).withName("children")
         );
 
         df2 = SolidFrame.byVars(

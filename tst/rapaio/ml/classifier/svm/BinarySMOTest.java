@@ -33,7 +33,6 @@ import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.frame.FFStandardize;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.ml.classifier.svm.kernel.*;
@@ -159,7 +158,7 @@ public class BinarySMOTest {
         kernels.add(new RationalQuadraticKernel(1));
 
         VarNominal name = VarNominal.empty().withName("kernel");
-        VarDouble score = SolidVarDouble.empty().withName("score");
+        VarDouble score = VarDouble.empty().withName("score");
 
         for (Kernel k : kernels) {
 

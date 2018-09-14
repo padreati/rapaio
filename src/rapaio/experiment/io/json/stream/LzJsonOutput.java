@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,7 +25,13 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.*;
+import rapaio.experiment.io.json.tree.JsonArray;
+import rapaio.experiment.io.json.tree.JsonBool;
+import rapaio.experiment.io.json.tree.JsonNull;
+import rapaio.experiment.io.json.tree.JsonNumber;
+import rapaio.experiment.io.json.tree.JsonObject;
+import rapaio.experiment.io.json.tree.JsonString;
+import rapaio.experiment.io.json.tree.JsonValue;
 import rapaio.util.Pair;
 
 import java.io.Closeable;

@@ -25,8 +25,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.VarInt;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.

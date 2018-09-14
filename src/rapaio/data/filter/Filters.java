@@ -31,10 +31,16 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.frame.FFRefSort;
 import rapaio.data.filter.frame.FFShuffle;
-import rapaio.data.filter.var.*;
+import rapaio.data.filter.var.VFJitter;
+import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VFShuffle;
+import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VFTransformBoxCox;
+import rapaio.data.filter.var.VFTransformPower;
+import rapaio.data.filter.var.VFUpdate;
+import rapaio.data.filter.var.VFUpdateValue;
 import rapaio.data.stream.VSpot;
 
-import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

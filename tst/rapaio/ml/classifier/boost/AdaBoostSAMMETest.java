@@ -28,7 +28,6 @@ import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
@@ -56,9 +55,9 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
-        VarDouble runs = SolidVarDouble.empty().withName("runs");
-        VarDouble errTr = SolidVarDouble.empty().withName("tr");
-        VarDouble errTe = SolidVarDouble.empty().withName("te");
+        VarDouble runs = VarDouble.empty().withName("runs");
+        VarDouble errTr = VarDouble.empty().withName("tr");
+        VarDouble errTe = VarDouble.empty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addDouble(run);

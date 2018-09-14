@@ -29,8 +29,6 @@ import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
 import rapaio.math.linear.RV;
 
-import java.util.function.Function;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */

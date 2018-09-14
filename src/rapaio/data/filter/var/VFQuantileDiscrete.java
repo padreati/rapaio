@@ -26,8 +26,8 @@
 package rapaio.data.filter.var;
 
 import rapaio.core.CoreTools;
-import rapaio.data.VarNominal;
 import rapaio.data.Var;
+import rapaio.data.VarNominal;
 import rapaio.sys.WS;
 import rapaio.util.func.SPredicate;
 

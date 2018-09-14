@@ -6,7 +6,7 @@ import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarBoolean;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
 import rapaio.math.MTools;
 
@@ -24,7 +24,7 @@ public class RowPredicateTest {
     @Test
     public void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(SolidVarDouble.from(50, MTools::sqrt).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).withName("x"));
 
         // test basic numeric predicates
 

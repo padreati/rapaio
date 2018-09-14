@@ -25,11 +25,11 @@
 
 package rapaio.math.linear.dense;
 
-import java.util.Arrays;
-import java.util.stream.DoubleStream;
-
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+
+import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.

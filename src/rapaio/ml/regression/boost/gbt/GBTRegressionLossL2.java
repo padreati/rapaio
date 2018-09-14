@@ -28,7 +28,6 @@ package rapaio.ml.regression.boost.gbt;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
@@ -50,7 +49,7 @@ public class GBTRegressionLossL2 implements GBTRegressionLoss {
 
     @Override
     public VarDouble gradient(Var y, Var fx) {
-        VarDouble delta = SolidVarDouble.empty();
+        VarDouble delta = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             delta.addDouble(y.getDouble(i) - fx.getDouble(i));
         }

@@ -26,10 +26,8 @@
 package rapaio.math.functions;
 
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.

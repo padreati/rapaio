@@ -27,7 +27,6 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.io.Serializable;
 
@@ -121,7 +120,7 @@ public interface Distribution extends Serializable {
      * @return sample values
      */
     default VarDouble sample(final int n) {
-        return SolidVarDouble.from(n, i -> sampleNext());
+        return VarDouble.from(n, i -> sampleNext());
     }
 
     /**

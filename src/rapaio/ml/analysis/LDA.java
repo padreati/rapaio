@@ -29,8 +29,8 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
@@ -238,8 +238,8 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                SolidVarDouble.empty(eigenValues.count()).withName("values"),
-                SolidVarDouble.empty(eigenValues.count()).withName("percent")
+                VarDouble.empty(eigenValues.count()).withName("values"),
+                VarDouble.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {

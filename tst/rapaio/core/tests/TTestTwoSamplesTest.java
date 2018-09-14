@@ -29,7 +29,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.core.CoreTools.*;
@@ -41,9 +41,9 @@ public class TTestTwoSamplesTest {
     @Test
     public void precomputedTest() {
         Normal n = Normal.from(0, 10);
-        Var x = SolidVarDouble.from(100, n::sampleNext).withName("x");
-        Var y = SolidVarDouble.from(100, n::sampleNext).withName("y");
-        Var z = SolidVarDouble.from(40, n::sampleNext).withName("z");
+        Var x = VarDouble.from(100, n::sampleNext).withName("x");
+        Var y = VarDouble.from(100, n::sampleNext).withName("y");
+        Var z = VarDouble.from(40, n::sampleNext).withName("z");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         TTestTwoSamples t2 = TTestTwoSamples.test(Mean.from(x).value(), x.rowCount(), Mean.from(y).value(), y.rowCount(), 0, Variance.from(x).sdValue(), Variance.from(y).sdValue());
@@ -57,8 +57,8 @@ public class TTestTwoSamplesTest {
     @Test
     public void testTTest() {
 
-        Var x = SolidVarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = SolidVarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
@@ -94,15 +94,15 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t3 = TTestTwoSamples.test(x, y, 2, 0.1, HTest.Alternative.GREATER_THAN);
         assertEquals(HTest.Alternative.GREATER_THAN, t3.getAlt());
 
-        HTest t4 = TTestTwoSamples.test(SolidVarDouble.empty(), x, 0);
+        HTest t4 = TTestTwoSamples.test(VarDouble.empty(), x, 0);
         assertEquals(Double.NaN, t4.pValue(), TOL);
     }
 
     @Test
     public void testWelchTTest() {
 
-        Var x = SolidVarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = SolidVarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
+        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();

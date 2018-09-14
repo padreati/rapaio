@@ -26,12 +26,16 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
-import rapaio.data.VarNominal;
 import rapaio.data.SolidFrame;
+import rapaio.data.VarNominal;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Classification predict result.

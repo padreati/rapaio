@@ -26,9 +26,9 @@
 package rapaio.experiment;
 
 import rapaio.data.Frame;
-import rapaio.data.VarNominal;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarNominal;
 
 import java.io.Serializable;
 import java.util.ArrayList;

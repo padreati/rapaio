@@ -32,7 +32,6 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,7 +71,7 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
             for (int row = 0; row < var.rowCount(); row++) {
                 Key key = Key.from(row, source, keys);
                 if (!collector.get(var.name()).containsKey(key)) {
-                    collector.get(var.name()).put(key, SolidVarDouble.empty());
+                    collector.get(var.name()).put(key, VarDouble.empty());
                 }
                 collector.get(var.name()).get(key).addDouble(var.getDouble(row));
             }
@@ -84,7 +83,7 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
         List<Var> features = new ArrayList<>();
         for (String varName : varNames) {
             for (Aggregate aggregate : aggregates) {
-                VarDouble var = SolidVarDouble.empty().withName(varName + "_" + aggregate.name);
+                VarDouble var = VarDouble.empty().withName(varName + "_" + aggregate.name);
                 for (int i = 0; i < df.rowCount(); i++) {
                     Key key = Key.from(i, df, keys);
                     VarDouble from = collector.get(varName).getOrDefault(key, null);

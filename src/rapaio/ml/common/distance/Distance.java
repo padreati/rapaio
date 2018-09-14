@@ -27,7 +27,6 @@ package rapaio.ml.common.distance;
 
 import rapaio.data.Frame;
 import rapaio.util.Pair;
-import rapaio.util.Tag;
 
 import java.io.Serializable;
 

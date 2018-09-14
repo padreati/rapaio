@@ -30,7 +30,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
@@ -92,8 +91,8 @@ public class FFTTest {
          * 4.01805098805014E-17i
          ***************************************************************************/
 
-        VarDouble xre = SolidVarDouble.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
-        VarDouble xim = SolidVarDouble.copy(0, 0, 0, 0);
+        VarDouble xre = VarDouble.copy(-0.03480425839330703, 0.07910192950176387, 0.7233322451735928, 0.1659819820667019);
+        VarDouble xim = VarDouble.copy(0, 0, 0, 0);
 
         int len = 10;
 
@@ -124,8 +123,8 @@ public class FFTTest {
 
         for (int i = 0; i < 10; i++) {
 
-            VarDouble x1 = SolidVarDouble.from(N, normal::sampleNext);
-            VarDouble x2 = SolidVarDouble.from(N, normal::sampleNext);
+            VarDouble x1 = VarDouble.from(N, normal::sampleNext);
+            VarDouble x2 = VarDouble.from(N, normal::sampleNext);
 
             Pair<Var, Var> y = FFT.ifft(FFT.fft(Pair.from(x1, x2)));
 

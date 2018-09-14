@@ -25,12 +25,12 @@
 
 package rapaio.ml.classifier.bayes;
 
+import rapaio.data.Frame;
+import rapaio.ml.classifier.bayes.estimator.BinaryEstimator;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
-
-import rapaio.data.Frame;
-import rapaio.ml.classifier.bayes.estimator.BinaryEstimator;
 
 public class BinaryData extends NaiveBayesData implements Serializable{
 	public BinaryEstimator binEstimator;

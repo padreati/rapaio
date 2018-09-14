@@ -25,8 +25,8 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.VarDouble;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.LUDecomposition;

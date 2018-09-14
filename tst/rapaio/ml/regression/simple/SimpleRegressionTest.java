@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
+import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VFToNumeric;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RPrediction;
 
@@ -85,12 +85,12 @@ public class SimpleRegressionTest {
         RPrediction fit2 = r2.predict(df, true);
         fit2.printSummary();
 
-        Assert.assertTrue(SolidVarDouble.fill(df.rowCount(), 66).withName("Father")
+        Assert.assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstFit()));
         Assert.assertTrue(df.rvar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
-        Assert.assertTrue(SolidVarDouble.fill(df.rowCount(), 1).withName("Father")
+        Assert.assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
                 .deepEquals(fit2.firstFit()));
         Assert.assertTrue(df.rvar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
@@ -108,7 +108,7 @@ public class SimpleRegressionTest {
         fit1.printSummary();
 
         double median = CoreTools.quantiles(df.rvar(father), 0.5).values()[0];
-        Assert.assertTrue(SolidVarDouble.fill(df.rowCount(), median).withName(father)
+        Assert.assertTrue(VarDouble.fill(df.rowCount(), median).withName(father)
                 .deepEquals(fit1.firstFit()));
     }
 

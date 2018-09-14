@@ -27,9 +27,12 @@ package rapaio.data.filter.frame;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.RowComparators;
+import rapaio.data.VRange;
 
-import java.util.*;
 import java.util.stream.IntStream;
 
 /**

@@ -25,7 +25,11 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.RowComparators;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
 

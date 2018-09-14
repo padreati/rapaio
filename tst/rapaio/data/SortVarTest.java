@@ -27,7 +27,6 @@ package rapaio.data;
 import org.junit.Test;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.data.filter.var.VFSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class SortVarTest {
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = SolidVarDouble.empty();
+        v = VarDouble.empty();
         sorted = new VFRefSort(numeric(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
@@ -86,7 +85,7 @@ public class SortVarTest {
 
     @Test
     public void testSortNumeric() {
-        Var numeric = SolidVarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
+        Var numeric = VarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
         Var sort = new VFSort(true).fitApply(numeric);

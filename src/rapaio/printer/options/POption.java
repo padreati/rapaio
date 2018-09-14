@@ -25,8 +25,6 @@
 
 package rapaio.printer.options;
 
-import rapaio.printer.options.POpts;
-
 /**
  * Printing option
  * <p>

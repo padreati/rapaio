@@ -27,7 +27,6 @@ package rapaio.experiment.core.stat;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 public class MovingAverage {
 
@@ -42,7 +41,7 @@ public class MovingAverage {
         int left = Math.floorDiv(window - 1, 2);
         int right = window - 1 - left;
 
-        ma = SolidVarDouble.empty(source.rowCount()).withName("ma-" + source.name());
+        ma = VarDouble.empty(source.rowCount()).withName("ma-" + source.name());
 
         for (int i = left; i < source.rowCount() - right; i++) {
             double sum = 0;

@@ -26,9 +26,9 @@ package rapaio.data.filter.frame;
 
 import org.junit.Test;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.var.VFSort;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.*;
 
@@ -40,7 +40,7 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVector() {
-        Var unsorted = SolidVarDouble.copy(0., 1., 2., 3., 4., 5., 6.);
+        Var unsorted = VarDouble.copy(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.getDouble(i - 1) <= sorted.getDouble(i));
@@ -49,7 +49,7 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVectorWithNA() {
-        Var unsorted = SolidVarDouble.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
+        Var unsorted = VarDouble.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.isMissing(i));

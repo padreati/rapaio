@@ -32,7 +32,6 @@ import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.common.predicate.RowPredicate;
 
 import java.util.List;
@@ -49,8 +48,8 @@ public class RTreeSplitterTest {
 
     @Before
     public void setUp() throws Exception {
-        w = SolidVarDouble.empty();
-        df = SolidFrame.byVars(SolidVarDouble.empty().withName("x"));
+        w = VarDouble.empty();
+        df = SolidFrame.byVars(VarDouble.empty().withName("x"));
 
         candidate = new RTreeCandidate(0, "");
         candidate.addGroup(RowPredicate.numLess("x", 10));

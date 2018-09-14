@@ -25,9 +25,7 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.data.stream.FSpot;
 import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;

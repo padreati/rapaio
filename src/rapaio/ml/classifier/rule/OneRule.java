@@ -26,7 +26,11 @@
 package rapaio.ml.classifier.rule;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.RowComparators;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.VarType;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;

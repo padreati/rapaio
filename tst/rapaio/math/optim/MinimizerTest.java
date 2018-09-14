@@ -5,7 +5,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.functions.R1Derivative;
 import rapaio.math.functions.R1Function;
 import rapaio.math.functions.R1Hessian;
@@ -100,16 +99,16 @@ public class MinimizerTest {
 
         Var sol = minimizer.solutions().stream()
                 .skip(10)
-                .mapToDouble(s -> s.get(0)).boxed().collect(SolidVarDouble.collector());
+                .mapToDouble(s -> s.get(0)).boxed().collect(VarDouble.collector());
 
         sol.printLines();
         WS.setPrinter(new IdeaPrinter());
         WS.draw(lines(VarInt.seq(sol.rowCount()), sol));
 
-        VarDouble xx = SolidVarDouble.seq(-5, 3, 0.01);
-        VarDouble yy = SolidVarDouble.from(xx, f::apply);
-        VarDouble zz = SolidVarDouble.from(xx, value -> d1f.apply(value).get(0));
-        VarDouble tt = SolidVarDouble.from(xx, value -> d2f.apply(value).get(0, 0));
+        VarDouble xx = VarDouble.seq(-5, 3, 0.01);
+        VarDouble yy = VarDouble.from(xx, f::apply);
+        VarDouble zz = VarDouble.from(xx, value -> d1f.apply(value).get(0));
+        VarDouble tt = VarDouble.from(xx, value -> d2f.apply(value).get(0, 0));
 
 //        WS.draw(lines(xx, yy)
 //                .lines(xx, zz, color(1))
@@ -155,9 +154,9 @@ public class MinimizerTest {
 
         List<VarDouble> vars = new ArrayList<>();
         for (int i = 0; i < init.count(); i++) {
-            vars.add(SolidVarDouble.empty().withName("x" + i));
+            vars.add(VarDouble.empty().withName("x" + i));
         }
-        vars.add(SolidVarDouble.empty().withName("fx"));
+        vars.add(VarDouble.empty().withName("fx"));
 
         for (RV sol : sols) {
             for (int i = 0; i < init.count(); i++) {

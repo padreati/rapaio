@@ -28,16 +28,14 @@ package rapaio.math.optim;
 import rapaio.data.VarDouble;
 import rapaio.math.functions.RDerivative;
 import rapaio.math.functions.RFunction;
+import rapaio.math.linear.RV;
 import rapaio.math.optim.linesearch.BacktrackLineSearch;
 import rapaio.math.optim.linesearch.LineSearch;
-import rapaio.math.linear.RV;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static rapaio.graphics.Plotter.lines;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

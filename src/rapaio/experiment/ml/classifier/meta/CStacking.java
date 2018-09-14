@@ -25,7 +25,11 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;

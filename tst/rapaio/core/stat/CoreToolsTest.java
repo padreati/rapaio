@@ -37,7 +37,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.VarType;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
 import rapaio.util.Time;
@@ -75,11 +74,11 @@ public class CoreToolsTest {
 
     @Test
     public void testEmptyMean() {
-        VarDouble num1 = SolidVarDouble.copy(Double.NaN, Double.NaN, Double.NaN);
+        VarDouble num1 = VarDouble.copy(Double.NaN, Double.NaN, Double.NaN);
         double mean = mean(num1).value();
         assertTrue(Double.isNaN(mean));
 
-        VarDouble num2 = SolidVarDouble.wrap(1, 2, 3, 4);
+        VarDouble num2 = VarDouble.wrap(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
         sb.append(mean(num2).summary());
 
@@ -101,8 +100,8 @@ public class CoreToolsTest {
     @Test
     public void testWithMissingValues() {
 
-        VarDouble x1 = SolidVarDouble.wrap(1.0, Double.NaN, 2.0, Double.NaN, 3.0, Double.NaN);
-        VarDouble x2 = SolidVarDouble.wrap(1.0, 2.0, 3.0);
+        VarDouble x1 = VarDouble.wrap(1.0, Double.NaN, 2.0, Double.NaN, 3.0, Double.NaN);
+        VarDouble x2 = VarDouble.wrap(1.0, 2.0, 3.0);
 
         assertFalse(Double.isNaN(Mean.from(x1).value()));
     }
@@ -119,36 +118,36 @@ public class CoreToolsTest {
                 x[i] = normal.sampleNext();
             }
         }
-        assertEquals(Mean.from(x).value(), Mean.from(SolidVarDouble.wrap(x)).value(), TOL);
+        assertEquals(Mean.from(x).value(), Mean.from(VarDouble.wrap(x)).value(), TOL);
     }
 
     @Test
     public void testQuantiles() {
-        VarDouble v = SolidVarDouble.seq(0, 1, 0.001);
-        Quantiles q1 = quantiles(v, SolidVarDouble.seq(0, 1, 0.001));
-        assertTrue(v.deepEquals(SolidVarDouble.wrap(q1.values())));
+        VarDouble v = VarDouble.seq(0, 1, 0.001);
+        Quantiles q1 = quantiles(v, VarDouble.seq(0, 1, 0.001));
+        assertTrue(v.deepEquals(VarDouble.wrap(q1.values())));
 
 
-        VarDouble vEmpty = SolidVarDouble.empty(10);
+        VarDouble vEmpty = VarDouble.empty(10);
         VarDouble vOne = vEmpty.solidCopy();
         vOne.setDouble(3, 10);
 
-        Quantiles q2 = quantiles(vEmpty, SolidVarDouble.seq(0, 1, 0.1));
+        Quantiles q2 = quantiles(vEmpty, VarDouble.seq(0, 1, 0.1));
         Assert.assertEquals(11, q2.values().length);
         for (int i = 0; i < q2.values().length; i++) {
             Assert.assertTrue(Double.isNaN(q2.values()[i]));
         }
 
-        Quantiles q3 = quantiles(vOne, SolidVarDouble.seq(0, 1, 0.1));
+        Quantiles q3 = quantiles(vOne, VarDouble.seq(0, 1, 0.1));
         Assert.assertEquals(11, q3.values().length);
         for (int i = 0; i < q3.values().length; i++) {
             Assert.assertEquals(10, q3.values()[i], 1e-20);
         }
 
-        Quantiles q4 = quantiles(v, Quantiles.Type.R8, SolidVarDouble.seq(0, 1, 0.1));
+        Quantiles q4 = quantiles(v, Quantiles.Type.R8, VarDouble.seq(0, 1, 0.1));
 
         Arrays.stream(q4.values()).forEach(val -> WS.println(WS.formatLong(val)));
-        VarDouble v4 = SolidVarDouble.copy(0,
+        VarDouble v4 = VarDouble.copy(0,
                 0.09946666666666674,
                 0.19960000000000017,
                 0.2997333333333336,
@@ -160,7 +159,7 @@ public class CoreToolsTest {
                 0.900533333333334,
                 1.0000000000000007);
         q4.printSummary();
-        assertTrue(v4.deepEquals(SolidVarDouble.wrap(q4.values())));
+        assertTrue(v4.deepEquals(VarDouble.wrap(q4.values())));
     }
 
     @Test
@@ -168,11 +167,11 @@ public class CoreToolsTest {
         RandomSource.setSeed(1234);
         Normal normal = new Normal();
 
-        VarDouble x = SolidVarDouble.from(10_000, normal::sampleNext);
+        VarDouble x = VarDouble.from(10_000, normal::sampleNext);
 
         Var y = x;
         for (int i = 0; i < 100; i++) {
-            y = y.bindRows(SolidVarDouble.from(10_000, normal::sampleNext));
+            y = y.bindRows(VarDouble.from(10_000, normal::sampleNext));
         }
 
         Var yy = y;
@@ -197,24 +196,24 @@ public class CoreToolsTest {
 
     @Test
     public void testCovariance() {
-        VarDouble v1 = SolidVarDouble.seq(0, 200, 0.1);
-        VarDouble v2 = SolidVarDouble.wrap(1, 201, 0.1);
+        VarDouble v1 = VarDouble.seq(0, 200, 0.1);
+        VarDouble v2 = VarDouble.wrap(1, 201, 0.1);
         assertEquals(cov(v1, v1).value(), variance(v1).value(), 1e-12);
 
-        VarDouble x = SolidVarDouble.copy(1, 2, 3, 4);
+        VarDouble x = VarDouble.copy(1, 2, 3, 4);
         assertEquals(cov(x, x).value(), variance(x).value(), 1e-12);
 
         VarDouble norm = distNormal().sample(20_000);
         assertEquals(cov(norm, norm).value(), variance(norm).value(), 1e-12);
 
-        Var x1 = SolidVarDouble.seq(0, 200, 1);
-        Var x2 = SolidVarDouble.seq(0, 50, 0.25);
+        Var x1 = VarDouble.seq(0, 200, 1);
+        Var x2 = VarDouble.seq(0, 50, 0.25);
         assertEquals(845.875, cov(x1, x2).value(), 1e-12);
     }
 
     @Test
     public void testCorrelation() {
-        Var x = SolidVarDouble.from(100, normal::sampleNext).withName("x");
+        Var x = VarDouble.from(100, normal::sampleNext).withName("x");
         Var y = x.solidCopy().withName("y");
 
         Covariance cov = Covariance.from(x, y);
@@ -228,7 +227,7 @@ public class CoreToolsTest {
 
     @Test
     public void testCovarianceInvalid() {
-        Var x = SolidVarDouble.from(1, normal::sampleNext).withName("x");
+        Var x = VarDouble.from(1, normal::sampleNext).withName("x");
         Var y = x.solidCopy().withName("y");
 
         Covariance cov = Covariance.from(x, y);
@@ -237,13 +236,13 @@ public class CoreToolsTest {
 
     @Test
     public void testGeometricMean() {
-        assertEquals(4, GeometricMean.from(SolidVarDouble.copy(2, 8)).value(), 1e-20);
-        assertEquals(0.5, GeometricMean.from(SolidVarDouble.copy(4, 1, 1 / 32.)).value(), 1e-16);
-        assertEquals(42.42640687119286, GeometricMean.from(SolidVarDouble.copy(6, 50, 9, 1200)).value(), 1e-20);
-        GeometricMean.from(SolidVarDouble.copy(6, 50, 9, 1200)).printSummary();
+        assertEquals(4, GeometricMean.from(VarDouble.copy(2, 8)).value(), 1e-20);
+        assertEquals(0.5, GeometricMean.from(VarDouble.copy(4, 1, 1 / 32.)).value(), 1e-16);
+        assertEquals(42.42640687119286, GeometricMean.from(VarDouble.copy(6, 50, 9, 1200)).value(), 1e-20);
+        GeometricMean.from(VarDouble.copy(6, 50, 9, 1200)).printSummary();
 
-        assertTrue(Double.isNaN(GeometricMean.from(SolidVarDouble.copy(1, -1)).value()));
-        GeometricMean.from(SolidVarDouble.wrap(1, -1)).printSummary();
+        assertTrue(Double.isNaN(GeometricMean.from(VarDouble.copy(1, -1)).value()));
+        GeometricMean.from(VarDouble.wrap(1, -1)).printSummary();
     }
 
     @Test

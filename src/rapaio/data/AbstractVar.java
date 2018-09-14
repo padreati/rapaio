@@ -25,8 +25,6 @@
 
 package rapaio.data;
 
-import rapaio.data.solid.SolidVarDouble;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -94,7 +92,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case DOUBLE:
-                VarDouble num = SolidVarDouble.empty(rowCount()).withName(name());
+                VarDouble num = VarDouble.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setDouble(i, getDouble(i));
                 }

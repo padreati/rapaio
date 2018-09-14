@@ -25,14 +25,11 @@
 
 package rapaio.data.filter.var;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

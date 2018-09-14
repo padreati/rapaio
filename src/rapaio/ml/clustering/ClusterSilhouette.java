@@ -29,7 +29,11 @@ import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Computes cluster silhouette information based

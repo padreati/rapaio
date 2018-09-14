@@ -29,8 +29,8 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CPrediction;
 
@@ -58,7 +58,7 @@ public class OneRuleTest {
         classVar.setLabel(4, "False");
         classVar.setLabel(5, "False");
 
-        heightVar = SolidVarDouble.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
+        heightVar = VarDouble.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
     }
 
     @Test

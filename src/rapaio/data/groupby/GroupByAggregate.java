@@ -31,17 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import rapaio.data.Frame;
-import rapaio.data.GroupBy;
-import rapaio.data.Mapping;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.data.VarLong;
-import rapaio.data.VarShort;
-import rapaio.data.VarType;
-import rapaio.data.solid.SolidVarDouble;
-import rapaio.data.solid.SolidVarFloat;
+import rapaio.data.*;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -80,7 +70,7 @@ public class GroupByAggregate implements Printable {
             List<Var> varList = new ArrayList<>();
             HashMap<String, Var> varMap = new HashMap<>();
             for (GroupByFunction fun : funs) {
-                Var var = SolidVarDouble.empty(groupBy.getGroupCount()).withName(varName + SEP + fun.name());
+                Var var = VarDouble.empty(groupBy.getGroupCount()).withName(varName + SEP + fun.name());
                 varList.add(var);
                 varMap.put(fun.name(), var);
             }
@@ -226,7 +216,7 @@ public class GroupByAggregate implements Printable {
                 return null;
             }
         }
-        Var varFloat = SolidVarFloat.empty(var.rowCount()).withName(var.name());
+        Var varFloat = VarFloat.empty(var.rowCount()).withName(var.name());
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 varFloat.addMissing();

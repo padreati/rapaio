@@ -132,7 +132,7 @@ public class UniqueRows {
         }
         Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
         for (int i = 0; i < var.rowCount(); i++) {
-            Double key = var.getDouble(i);
+            double key = var.getDouble(i);
             int id = uniqueKeys.get(key);
             if (!uniqueRowLists.containsKey(id)) {
                 uniqueRowLists.put(id, new IntArrayList());

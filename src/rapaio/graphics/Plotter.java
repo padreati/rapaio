@@ -31,7 +31,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.BarChart;
 import rapaio.graphics.plot.BoxPlot;
@@ -206,12 +205,12 @@ public final class Plotter {
                 .mapToDouble()
                 .map(x -> x * factor + offset)
                 .boxed()
-                .collect(SolidVarDouble.collector());
+                .collect(VarDouble.collector());
         return new GOptionSz(size);
     }
 
     public static GOptionSz sz(double size) {
-        return new GOptionSz(SolidVarDouble.scalar(size));
+        return new GOptionSz(VarDouble.scalar(size));
     }
 
     public static GOptionPch pch(Var pchIndex, int... mapping) {

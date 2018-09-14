@@ -26,7 +26,9 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
-import rapaio.data.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.sys.WS;
 
 import java.util.List;

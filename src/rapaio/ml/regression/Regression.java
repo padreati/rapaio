@@ -27,10 +27,10 @@ package rapaio.ml.regression;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -236,7 +236,7 @@ public interface Regression extends Printable, Serializable {
      * @param targetVars target variables
      */
     default Regression fit(Frame df, String... targetVars) {
-        return fit(df, SolidVarDouble.fill(df.rowCount(), 1).withName("weights"), targetVars);
+        return fit(df, VarDouble.fill(df.rowCount(), 1).withName("weights"), targetVars);
     }
 
     /**

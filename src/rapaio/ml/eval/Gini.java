@@ -29,10 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.Sum;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.var.VFCumulativeSum;
 import rapaio.data.filter.var.VFRefSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
@@ -93,9 +93,9 @@ public class Gini implements Printable {
         Var w = new VFRefSort(cmp).fitApply(weights).solidCopy();
 
         double wsum = Sum.from(w).value();
-        Var random = VFCumulativeSum.filter().fitApply(SolidVarDouble.from(w, value -> value / wsum).solidCopy());
-        double totalPositive = Sum.from(SolidVarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
-        Var lorentz = new VFCumulativeSum().fitApply(SolidVarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
+        Var random = VFCumulativeSum.filter().fitApply(VarDouble.from(w, value -> value / wsum).solidCopy());
+        double totalPositive = Sum.from(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
+        Var lorentz = new VFCumulativeSum().fitApply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.rowCount() - 1; i++) {

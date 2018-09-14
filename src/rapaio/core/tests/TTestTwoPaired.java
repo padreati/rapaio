@@ -27,7 +27,7 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.StudentT;
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 
 import static rapaio.core.CoreTools.*;
 import static rapaio.sys.WS.formatFlex;
@@ -88,7 +88,7 @@ public class TTestTwoPaired implements HTest {
         this.sl = sl;
         this.alt = alt;
 
-        complete = SolidVarDouble.empty();
+        complete = VarDouble.empty();
 
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))

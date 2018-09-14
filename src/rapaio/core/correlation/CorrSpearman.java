@@ -30,9 +30,9 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.var.VFRefSort;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -98,7 +98,7 @@ public class CorrSpearman implements Correlation, Printable {
         for (int i = 0; i < sorted.length; i++) {
             VarInt index = VarInt.seq(vars[i].rowCount());
             sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
-            ranks[i] = SolidVarDouble.fill(vars[i].rowCount());
+            ranks[i] = VarDouble.fill(vars[i].rowCount());
         }
 
         // compute ranks

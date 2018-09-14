@@ -29,7 +29,6 @@ import rapaio.core.CoreTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -70,8 +69,8 @@ public class RPrediction implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, SolidVarDouble.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, SolidVarDouble.empty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);

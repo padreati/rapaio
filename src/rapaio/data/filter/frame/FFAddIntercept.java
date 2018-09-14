@@ -30,7 +30,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.solid.SolidVarDouble;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +70,7 @@ public class FFAddIntercept extends AbstractFF {
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        VarDouble intercept = SolidVarDouble.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1.0).withName(INTERCEPT);
         return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

@@ -34,7 +34,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.Filters;
-import rapaio.data.solid.SolidVarDouble;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.distance.KMeansInitMethod;
@@ -165,7 +164,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         centroids = bestCentroids;
 
         arrows = VarInt.fill(df.rowCount(), -1);
-        errors = SolidVarDouble.empty().withName("errors");
+        errors = VarDouble.empty().withName("errors");
 
         assignToCentroids(df);
         repairEmptyClusters(df);
@@ -304,7 +303,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         for (String input : inputs) {
             // collect values for each cluster in mean, for a given input feature
             Var[] means = IntStream.range(0, k).boxed()
-                    .map(i -> SolidVarDouble.empty())
+                    .map(i -> VarDouble.empty())
                     .toArray(VarDouble[]::new);
             for (int i = 0; i < df.rowCount(); i++) {
                 means[arrows.getInt(i)].addDouble(df.getDouble(i, input));
@@ -416,19 +415,19 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         VarInt summaryId = VarInt.seq(1, centroids.rowCount()).withName("ID");
         VarInt summaryCount = VarInt.fill(centroids.rowCount(), 0).withName("count");
-        VarDouble summaryMean = SolidVarDouble.fill(centroids.rowCount(), 0).withName("mean");
-        VarDouble summaryVar = SolidVarDouble.fill(centroids.rowCount(), 0).withName("var");
-        VarDouble summaryVarP = SolidVarDouble.fill(centroids.rowCount(), 0).withName("var/total");
-        VarDouble summarySd = SolidVarDouble.fill(centroids.rowCount(), 0).withName("sd");
+        VarDouble summaryMean = VarDouble.fill(centroids.rowCount(), 0).withName("mean");
+        VarDouble summaryVar = VarDouble.fill(centroids.rowCount(), 0).withName("var");
+        VarDouble summaryVarP = VarDouble.fill(centroids.rowCount(), 0).withName("var/total");
+        VarDouble summarySd = VarDouble.fill(centroids.rowCount(), 0).withName("sd");
 
-        summaryAllDist = SolidVarDouble.empty().withName("all dist");
+        summaryAllDist = VarDouble.empty().withName("all dist");
 
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
             double d = distance(df, i, centroids, arrows.getInt(i), weights)._2;
             if (!errors.containsKey(arrows.getInt(i)))
-                errors.put(arrows.getInt(i), SolidVarDouble.empty());
+                errors.put(arrows.getInt(i), VarDouble.empty());
             errors.get(arrows.getInt(i)).addDouble(d);
             summaryAllDist.addDouble(d);
         }

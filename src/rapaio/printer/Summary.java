@@ -32,8 +32,7 @@ import rapaio.data.VarType;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
-import static rapaio.sys.WS.code;
-import static rapaio.sys.WS.getPrinter;
+import static rapaio.sys.WS.*;
 
 /**
  * TODO: this class should not exist anymore, the code should be placed at each proper class

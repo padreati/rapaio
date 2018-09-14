@@ -29,7 +29,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,7 @@ public class FFOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.size(); i++) {
-                    Var v = SolidVarDouble.fill(df.rowCount()).withName(varName + "." + dict.get(i));
+                    Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + dict.get(i));
                     oneHotVars.add(v);
                     index.put(dict.get(i), v);
                 }

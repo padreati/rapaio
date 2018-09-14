@@ -28,9 +28,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Var;
 import rapaio.data.VarBoolean;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.solid.SolidVarDouble;
 
 /**
  * Tests for variable type transformations
@@ -41,7 +41,7 @@ public class VFToTest {
 
     @Test
     public void testToNumeric() {
-        Var num1 = SolidVarDouble.wrap(1.0, 2.0, 1.2, Double.NaN, 3.0, Double.NaN, 3.2);
+        Var num1 = VarDouble.wrap(1.0, 2.0, 1.2, Double.NaN, 3.0, Double.NaN, 3.2);
         Var nom1 = VarNominal.copy("1", "2", "1.2", "?", "3", "?", "3.2");
         Var nom2 = VarNominal.copy("1", "2", "1.2", "mimi", "3", "lulu", "3.2");
         Var idx1 = VarInt.copy(1, 2, 3, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4);
@@ -49,34 +49,34 @@ public class VFToTest {
 
         // by default transformer
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
                 .deepEquals(num1.fitApply(VFToNumeric.byDefault())));
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
                 .deepEquals(nom1.fitApply(VFToNumeric.byDefault())));
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
                 .deepEquals(nom2.fitApply(VFToNumeric.byDefault())));
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
                 .deepEquals(idx1.fitApply(VFToNumeric.byDefault())));
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 0, 1, Double.NaN, 1, Double.NaN, 0)
+        Assert.assertTrue(VarDouble.wrap(1, 0, 1, Double.NaN, 1, Double.NaN, 0)
                 .deepEquals(bin1.fitApply(VFToNumeric.byDefault())));
 
         // by spot transformer
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 1, 1, 0, 1, 0, 1)
+        Assert.assertTrue(VarDouble.wrap(1, 1, 1, 0, 1, 0, 1)
                 .deepEquals(num1.fitApply(VFToNumeric.bySpot(s -> s.isMissing() ? 0.0 : 1.0))));
 
         // by value transformer
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
                 .deepEquals(num1.fitApply(VFToNumeric.byValue(x -> x))));
 
         // by index transformer
 
-        Assert.assertTrue(SolidVarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
+        Assert.assertTrue(VarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
                 .deepEquals(idx1.fitApply(VFToNumeric.byIndex(x -> x == Integer.MIN_VALUE ? Double.NaN : Double.valueOf(x)))));
 
         // by label transformer
@@ -87,7 +87,7 @@ public class VFToTest {
 
     @Test
     public void testToIndex() {
-        Var num1 = SolidVarDouble.wrap(1.0, 2.0, 1.2, Double.NaN, 3.0, Double.NaN, 3.2);
+        Var num1 = VarDouble.wrap(1.0, 2.0, 1.2, Double.NaN, 3.0, Double.NaN, 3.2);
         Var nom1 = VarNominal.copy("1", "2", "1.2", "?", "3", "?", "4");
         Var nom2 = VarNominal.copy("1", "2", "1.2", "mimi", "3", "lulu", "3.2");
         Var idx1 = VarInt.copy(1, 2, 3, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4);

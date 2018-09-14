@@ -26,7 +26,7 @@
 package rapaio.graphics.opt;
 
 import rapaio.data.Var;
-import rapaio.data.solid.SolidVarDouble;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
@@ -41,7 +41,7 @@ public class GOptionSz implements GOption<Var> {
     }
 
     public GOptionSz(double size) {
-        this.size = SolidVarDouble.scalar(size);
+        this.size = VarDouble.scalar(size);
     }
 
     @Override

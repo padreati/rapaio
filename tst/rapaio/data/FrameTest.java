@@ -25,7 +25,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.solid.SolidVarDouble;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,7 +38,7 @@ public class FrameTest {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
-                SolidVarDouble.wrap(1, 2).withName("z")
+                VarDouble.wrap(1, 2).withName("z")
         );
         Frame df1 = df.removeVars("x,z");
 
@@ -62,7 +61,7 @@ public class FrameTest {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
-                SolidVarDouble.wrap(1, 2).withName("z")
+                VarDouble.wrap(1, 2).withName("z")
         );
 
         df.setDouble(1, "z", 100);
@@ -80,7 +79,7 @@ public class FrameTest {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
-                SolidVarDouble.wrap(1, 2).withName("z")
+                VarDouble.wrap(1, 2).withName("z")
         );
 
         assertEquals(false, df.isMissing(0));
