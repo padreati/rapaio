@@ -101,10 +101,10 @@ public class VarFloat extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static VarFloat copy(double... values) {
+    public static VarFloat copy(float... values) {
         VarFloat numeric = new VarFloat(values.length, values.length, 0);
         for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = (float) values[i];
+            numeric.data[i] = values[i];
         }
         return numeric;
     }
@@ -133,10 +133,10 @@ public class VarFloat extends AbstractVar {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static VarFloat wrap(double... values) {
+    public static VarFloat wrap(float... values) {
         VarFloat numeric = new VarFloat(values.length, values.length, 0);
         for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = (float) values[i];
+            numeric.data[i] = values[i];
         }
         numeric.rows = values.length;
         return numeric;
@@ -354,12 +354,12 @@ public class VarFloat extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        throw new RuntimeException("Operation not available for float variables.");
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        throw new RuntimeException("Operation not available for float variables.");
     }
 
     @Override
@@ -451,7 +451,7 @@ public class VarFloat extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
+        return "VarFloat[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     @Override
