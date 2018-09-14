@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarText;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.util.func.SPredicate;
 
 import java.io.*;
@@ -53,18 +53,18 @@ import static java.util.stream.Collectors.toSet;
  */
 public class Csv {
 
-    private static VarType[] DEFAULT_OPTIMIZED_TYPES = new VarType[]{VarType.BOOLEAN, VarType.SHORT,
-            VarType.INT, VarType.LONG, VarType.FLOAT, VarType.DOUBLE, VarType.NOMINAL};
-    private static VarType[] DEFAULT_COMPUTE_TYPES = new VarType[]{VarType.INT, VarType.LONG, VarType.DOUBLE, VarType.NOMINAL};
+    private static VType[] DEFAULT_OPTIMIZED_TYPES = new VType[]{VType.BOOLEAN, VType.SHORT,
+            VType.INT, VType.LONG, VType.FLOAT, VType.DOUBLE, VType.NOMINAL};
+    private static VType[] DEFAULT_COMPUTE_TYPES = new VType[]{VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL};
 
     private boolean trimSpaces = true;
     private boolean header = true;
     private boolean quotes = false;
     private char separatorChar = ',';
     private char escapeChar = '\"';
-    private HashMap<String, VarType> typeFieldHints = new HashMap<>();
+    private HashMap<String, VType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VarType[] defaultTypes = new VarType[]{VarType.BOOLEAN, VarType.DOUBLE, VarType.NOMINAL};
+    private VType[] defaultTypes = new VType[]{VType.BOOLEAN, VType.DOUBLE, VType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;
@@ -154,12 +154,12 @@ public class Csv {
         return this;
     }
 
-    public Csv withTypes(VarType varType, String... fields) {
-        Arrays.stream(fields).forEach(field -> typeFieldHints.put(field, varType));
+    public Csv withTypes(VType vType, String... fields) {
+        Arrays.stream(fields).forEach(field -> typeFieldHints.put(field, vType));
         return this;
     }
 
-    public Csv withDefaultTypes(VarType... defaultTypes) {
+    public Csv withDefaultTypes(VType... defaultTypes) {
         this.defaultTypes = defaultTypes;
         return this;
     }
@@ -438,7 +438,7 @@ public class Csv {
                         writer.append("?");
                         continue;
                     }
-                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VarType.TEXT)) {
+                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VType.TEXT)) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(format.format(df.getDouble(i, j)));
@@ -470,7 +470,7 @@ public class Csv {
 
         private final Csv parent;
 
-        private final VarType type;
+        private final VType type;
         private Var var;
         private VarText text;
 
@@ -484,10 +484,10 @@ public class Csv {
             this.text = VarText.empty();
         }
 
-        public VarSlot(Csv parent, VarType varType, int rows) {
+        public VarSlot(Csv parent, VType vType, int rows) {
             this.parent = parent;
-            this.type = varType;
-            this.var = varType.newInstance(rows);
+            this.type = vType;
+            this.var = vType.newInstance(rows);
             this.text = null;
         }
 

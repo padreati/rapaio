@@ -248,8 +248,8 @@ public class VarFloat extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.FLOAT;
+    public VType type() {
+        return VType.FLOAT;
     }
 
     private void ensureCapacity(int minCapacity) {

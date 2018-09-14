@@ -36,7 +36,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.filter.Filters;
 import rapaio.data.sample.RowSampler;
@@ -186,10 +186,10 @@ public class CForest extends AbstractClassifier {
         Capabilities cc = c.capabilities();
         return new Capabilities()
                 .withInputCount(cc.minInputCount(), cc.maxInputCount())
-                .withInputTypes(cc.inputTypes().stream().toArray(VarType[]::new))
+                .withInputTypes(cc.inputTypes().stream().toArray(VType[]::new))
                 .withAllowMissingInputValues(cc.allowMissingInputValues())
                 .withTargetCount(1, 1)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingTargetValues(false);
     }
 

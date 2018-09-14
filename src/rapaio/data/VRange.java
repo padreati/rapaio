@@ -79,8 +79,8 @@ public interface VRange {
         return new VRangeByPred(filter);
     }
 
-    static VRange onlyTypes(VarType... types) {
-        Set<VarType> keep = Arrays.stream(types).collect(Collectors.toSet());
+    static VRange onlyTypes(VType... types) {
+        Set<VType> keep = Arrays.stream(types).collect(Collectors.toSet());
         return new VRangeByPred(var -> keep.contains(var.type()));
     }
 

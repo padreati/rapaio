@@ -235,7 +235,7 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public VarType type(String varName) {
+    public VType type(String varName) {
         return vars.get(indexes.get(varName)).type();
     }
 

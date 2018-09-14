@@ -28,7 +28,7 @@ package rapaio.ml.common;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -46,11 +46,11 @@ public class Capabilities implements Printable {
 
     private Integer minInputCount;
     private Integer maxInputCount;
-    private List<VarType> inputTypes;
+    private List<VType> inputTypes;
     private Boolean allowMissingInputValues;
     private Integer minTargetCount;
     private Integer maxTargetCount;
-    private List<VarType> targetTypes;
+    private List<VType> targetTypes;
     private Boolean allowMissingTargetValues;
 
     public Capabilities withInputCount(int minInputCount, int maxInputCount) {
@@ -59,7 +59,7 @@ public class Capabilities implements Printable {
         return this;
     }
 
-    public Capabilities withInputTypes(VarType... types) {
+    public Capabilities withInputTypes(VType... types) {
         this.inputTypes = Arrays.stream(types).collect(toList());
         Collections.sort(this.inputTypes);
         return this;
@@ -71,7 +71,7 @@ public class Capabilities implements Printable {
         return this;
     }
 
-    public Capabilities withTargetTypes(VarType... types) {
+    public Capabilities withTargetTypes(VType... types) {
         this.targetTypes = Arrays.stream(types).collect(toList());
         Collections.sort(this.inputTypes);
         return this;
@@ -220,7 +220,7 @@ public class Capabilities implements Printable {
         return maxInputCount;
     }
 
-    public List<VarType> inputTypes() {
+    public List<VType> inputTypes() {
         return inputTypes;
     }
 
@@ -236,7 +236,7 @@ public class Capabilities implements Printable {
         return maxTargetCount;
     }
 
-    public List<VarType> targetTypes() {
+    public List<VType> targetTypes() {
         return targetTypes;
     }
 

@@ -135,7 +135,7 @@ public final class VarDouble extends AbstractVar {
             }
         } else {
             double[] srcArray = ((VarDouble) source).data;
-            System.arraycopy(srcArray, 0, numeric.data, 0, srcArray.length);
+            System.arraycopy(srcArray, 0, numeric.data, 0, source.rowCount());
         }
         return numeric;
     }
@@ -354,8 +354,8 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.DOUBLE;
+    public VType type() {
+        return VType.DOUBLE;
     }
 
     private void ensureCapacity(int minCapacity) {
@@ -375,9 +375,9 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public void addRows(int rowCount) {
-        ensureCapacity(this.rows + rowCount);
+        ensureCapacity(rows + rowCount);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = VarDouble.missingValue;
+            data[rows + i] = missingValue;
         }
         rows += rowCount;
     }
@@ -484,12 +484,12 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        throw new RuntimeException("Operation not available for double vectors.");
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        throw new RuntimeException("Operation not available for double vectors.");
     }
 
     @Override

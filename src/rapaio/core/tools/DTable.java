@@ -28,7 +28,7 @@ package rapaio.core.tools;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -163,15 +163,15 @@ public final class DTable implements Printable, Serializable {
     private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
         this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)))
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VType.BOOLEAN) || rowVar.type().equals(VType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VType.BOOLEAN) || rowVar.type().equals(VType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
         if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int rowOffset = (rowVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
-        int colOffset = (colVar.type().equals(VarType.BOOLEAN) || rowVar.type().equals(VarType.INT)) ? 1 : 0;
+        int rowOffset = (rowVar.type().equals(VType.BOOLEAN) || rowVar.type().equals(VType.INT)) ? 1 : 0;
+        int colOffset = (colVar.type().equals(VType.BOOLEAN) || rowVar.type().equals(VType.INT)) ? 1 : 0;
         for (int i = 0; i < rowVar.rowCount(); i++) {
             update(rowVar.getInt(i) + rowOffset, colVar.getInt(i) + colOffset, weights != null ? weights.getDouble(i) : 1);
         }
@@ -180,13 +180,13 @@ public final class DTable implements Printable, Serializable {
     private DTable(Frame df, String rowVarName, String colVarName, Var weights, boolean useFirst) {
         this(df.levels(rowVarName), df.levels(colVarName), useFirst);
 
-        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VarType.BOOLEAN) || df.type(rowVarName).equals(VarType.INT)))
+        if (!(df.type(rowVarName).isNominal() || df.type(rowVarName).equals(VType.BOOLEAN) || df.type(rowVarName).equals(VType.INT)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VarType.BOOLEAN) || df.type(colVarName).equals(VarType.INT)))
+        if (!(df.type(colVarName).isNominal() || df.type(colVarName).equals(VType.BOOLEAN) || df.type(colVarName).equals(VType.INT)))
             throw new IllegalArgumentException("col var is not nominal");
 
-        int rowOffset = (df.type(rowVarName).equals(VarType.BOOLEAN) || df.type(rowVarName).equals(VarType.INT)) ? 1 : 0;
-        int colOffset = (df.type(colVarName).equals(VarType.BOOLEAN) || df.type(colVarName).equals(VarType.INT)) ? 1 : 0;
+        int rowOffset = (df.type(rowVarName).equals(VType.BOOLEAN) || df.type(rowVarName).equals(VType.INT)) ? 1 : 0;
+        int colOffset = (df.type(colVarName).equals(VType.BOOLEAN) || df.type(colVarName).equals(VType.INT)) ? 1 : 0;
         int rowVarIndex = df.varIndex(rowVarName);
         int colVarIndex = df.varIndex(colVarName);
         for (int i = 0; i < df.rowCount(); i++) {

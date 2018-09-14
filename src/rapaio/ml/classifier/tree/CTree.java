@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarBoolean;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -77,7 +77,7 @@ public class CTree extends AbstractClassifier {
 
     private VarSelector varSelector = VarSelector.all();
     private Map<String, CTreeTest> customTestMap = new HashMap<>();
-    private Map<VarType, CTreeTest> testMap = new HashMap<>();
+    private Map<VType, CTreeTest> testMap = new HashMap<>();
     private CTreePurityFunction function = CTreePurityFunction.InfoGain;
     private CTreeSplitter splitter = CTreeSplitter.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
@@ -91,11 +91,11 @@ public class CTree extends AbstractClassifier {
     // static builders
 
     public CTree() {
-        testMap.put(VarType.BOOLEAN, CTreeTest.BinaryBinary);
-        testMap.put(VarType.ORDINAL, CTreeTest.NumericBinary);
-        testMap.put(VarType.INT, CTreeTest.NumericBinary);
-        testMap.put(VarType.DOUBLE, CTreeTest.NumericBinary);
-        testMap.put(VarType.NOMINAL, CTreeTest.NominalBinary);
+        testMap.put(VType.BOOLEAN, CTreeTest.BinaryBinary);
+        testMap.put(VType.ORDINAL, CTreeTest.NumericBinary);
+        testMap.put(VType.INT, CTreeTest.NumericBinary);
+        testMap.put(VType.DOUBLE, CTreeTest.NumericBinary);
+        testMap.put(VType.NOMINAL, CTreeTest.NominalBinary);
         withRuns(0);
     }
 
@@ -105,8 +105,8 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.Ignored)
-                .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VarType.DOUBLE, CTreeTest.Ignore)
+                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
+                .withTest(VType.DOUBLE, CTreeTest.Ignore)
                 .withFunction(CTreePurityFunction.InfoGain)
                 .withPruning(CTreePruning.NONE);
     }
@@ -117,8 +117,8 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
-                .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
+                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
+                .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
                 .withFunction(CTreePurityFunction.GainRatio);
     }
 
@@ -129,8 +129,8 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
                 .withFunction(CTreePurityFunction.GainRatio)
-                .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary);
+                .withTest(VType.NOMINAL, CTreeTest.NominalBinary)
+                .withTest(VType.DOUBLE, CTreeTest.NumericBinary);
     }
 
     public static CTree newCART() {
@@ -139,9 +139,9 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.all())
                 .withSplitter(CTreeSplitter.ToAllWeighted)
-                .withTest(VarType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VarType.DOUBLE, CTreeTest.NumericBinary)
-                .withTest(VarType.INT, CTreeTest.NumericBinary)
+                .withTest(VType.NOMINAL, CTreeTest.NominalBinary)
+                .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
+                .withTest(VType.INT, CTreeTest.NumericBinary)
                 .withFunction(CTreePurityFunction.GiniGain);
     }
 
@@ -210,8 +210,8 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTree withTest(VarType varType, CTreeTest test) {
-        this.testMap.put(varType, test);
+    public CTree withTest(VType vType, CTreeTest test) {
+        this.testMap.put(vType, test);
         return this;
     }
 
@@ -220,7 +220,7 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public Map<VarType, CTreeTest> testMap() {
+    public Map<VType, CTreeTest> testMap() {
         return testMap;
     }
 
@@ -289,10 +289,10 @@ public class CTree extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NOMINAL, VarType.INT, VarType.DOUBLE, VarType.BOOLEAN)
+                .withInputTypes(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BOOLEAN)
                 .withInputCount(1, 1_000_000)
                 .withAllowMissingInputValues(true)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingTargetValues(false);
     }

@@ -50,7 +50,7 @@ package rapaio.data;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public enum VarType {
+public enum VType {
 
     /**
      * Numeric values stored on 1 bit, encodes also
@@ -137,7 +137,7 @@ public enum VarType {
     private final boolean binary;
     private final String code;
 
-    VarType(boolean numeric, boolean nominal, boolean binary, String code) {
+    VType(boolean numeric, boolean nominal, boolean binary, String code) {
         this.numeric = numeric;
         this.nominal = nominal;
         this.binary = binary;

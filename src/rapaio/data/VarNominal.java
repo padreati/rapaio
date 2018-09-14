@@ -176,8 +176,8 @@ public final class VarNominal extends FactorBase {
     }
 
     @Override
-    public VarType type() {
-        return VarType.NOMINAL;
+    public VType type() {
+        return VType.NOMINAL;
     }
 
     @Override

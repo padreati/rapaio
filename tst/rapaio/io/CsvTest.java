@@ -128,14 +128,14 @@ public class CsvTest {
         Frame df = new Csv()
                 .withQuotes(true)
                 .withHeader(true)
-                .withDefaultTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .withDefaultTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
 
         assertEquals(7, df.rowCount());
 
         // x1 is binary
 
-        assertEquals(VarType.BOOLEAN, df.rvar("x1").type());
+        assertEquals(VType.BOOLEAN, df.rvar("x1").type());
         assertEquals(false, df.getBoolean(0, "x1"));
         assertEquals(true, df.getBoolean(1, "x1"));
         assertEquals(false, df.getBoolean(2, "x1"));
@@ -146,7 +146,7 @@ public class CsvTest {
 
         // x2 is index
 
-        assertEquals(VarType.INT, df.rvar("x2").type());
+        assertEquals(VType.INT, df.rvar("x2").type());
         assertEquals(0, df.getInt(0, "x2"));
         assertEquals(1, df.getInt(1, "x2"));
         assertEquals(0, df.getInt(2, "x2"));
@@ -157,7 +157,7 @@ public class CsvTest {
 
         // x3 is numeric
 
-        assertEquals(VarType.DOUBLE, df.rvar("x3").type());
+        assertEquals(VType.DOUBLE, df.rvar("x3").type());
         assertEquals(0.0, df.getDouble(0, "x3"), 10e-12);
         assertEquals(1.0, df.getDouble(1, "x3"), 10e-12);
         assertEquals(0.0, df.getDouble(2, "x3"), 10e-12);
@@ -168,7 +168,7 @@ public class CsvTest {
 
         // x4 nominal
 
-        assertEquals(VarType.NOMINAL, df.rvar("x4").type());
+        assertEquals(VType.NOMINAL, df.rvar("x4").type());
         assertEquals("0", df.getLabel(0, "x4"));
         assertEquals("1", df.getLabel(1, "x4"));
         assertEquals("false", df.getLabel(2, "x4"));
@@ -233,12 +233,12 @@ public class CsvTest {
     @Test
     public void testTypes() throws IOException {
         Frame t1 = new Csv()
-                .withTypes(VarType.DOUBLE, "sepal-length")
-                .withTypes(VarType.NOMINAL, "petal-width", "sepal-length")
+                .withTypes(VType.DOUBLE, "sepal-length")
+                .withTypes(VType.NOMINAL, "petal-width", "sepal-length")
                 .read(Datasets.class, "iris-r.csv");
         t1.printSummary();
 
-        VarType[] types = new VarType[]{VarType.NOMINAL, VarType.DOUBLE, VarType.DOUBLE, VarType.NOMINAL, VarType.NOMINAL};
+        VType[] types = new VType[]{VType.NOMINAL, VType.DOUBLE, VType.DOUBLE, VType.NOMINAL, VType.NOMINAL};
         Assert.assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
         Frame t2 = new Csv().withTemplate(t1).read(Datasets.class, "iris-r.csv");
@@ -255,10 +255,10 @@ public class CsvTest {
         Frame na2 = new Csv().withNAValues("", "xxxx").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(150, na2.stream().complete().count());
 
-        Frame na3 = new Csv().withNAValues("virginica").withTypes(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na3 = new Csv().withNAValues("virginica").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(100, na3.stream().complete().count());
 
-        Frame na4 = new Csv().withNAValues("virginica", "5").withTypes(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na4 = new Csv().withNAValues("virginica", "5").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(89, na4.stream().complete().count());
     }
 }

@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.printer.format.TextTable;
@@ -54,9 +54,9 @@ public abstract class AbstractClassifier implements Classifier {
     private static final long serialVersionUID = -6866948033065091047L;
     private List<FFilter> inputFilters = new ArrayList<>();
     private String[] inputNames;
-    private VarType[] inputTypes;
+    private VType[] inputTypes;
     private String[] targetNames;
-    private VarType[] targetTypes;
+    private VType[] targetTypes;
     private Map<String, List<String>> dict;
     private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
@@ -94,7 +94,7 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public VarType[] inputTypes() {
+    public VType[] inputTypes() {
         return inputTypes;
     }
 
@@ -104,7 +104,7 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public VarType[] targetTypes() {
+    public VType[] targetTypes() {
         return targetTypes;
     }
 
@@ -148,14 +148,14 @@ public abstract class AbstractClassifier implements Classifier {
         Frame result = df;
         List<String> targets = VRange.of(targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
-        this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
         this.dict = new HashMap<>();
         this.dict.put(firstTargetName(), result.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);
         return result;

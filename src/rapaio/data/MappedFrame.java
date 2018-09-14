@@ -135,7 +135,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public VarType type(String varName) {
+    public VType type(String varName) {
         return source.type(varName);
     }
 

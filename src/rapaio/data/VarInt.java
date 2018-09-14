@@ -241,8 +241,8 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.INT;
+    public VType type() {
+        return VType.INT;
     }
 
     @Override

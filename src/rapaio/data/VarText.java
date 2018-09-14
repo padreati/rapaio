@@ -88,8 +88,8 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.TEXT;
+    public VType type() {
+        return VType.TEXT;
     }
 
     @Override

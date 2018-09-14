@@ -29,7 +29,7 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RPrediction;
@@ -73,8 +73,8 @@ public class RandomValueRegression extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.DOUBLE, VarType.ORDINAL, VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.LONG, VarType.TEXT)
-                .withTargetTypes(VarType.DOUBLE)
+                .withInputTypes(VType.DOUBLE, VType.ORDINAL, VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.LONG, VType.TEXT)
+                .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);
     }

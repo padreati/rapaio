@@ -192,7 +192,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public VarType type(String varName) {
+    public VType type(String varName) {
         return rvar(varName).type();
     }
 

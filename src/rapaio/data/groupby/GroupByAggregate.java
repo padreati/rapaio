@@ -314,7 +314,7 @@ public class GroupByAggregate implements Printable {
             Frame unstacked = SolidFrame.byVars(unstackedVars);
 
             // new we fill them with values
-            VarType aggregateType = result.rvar(aggregateVarName).type();
+            VType aggregateType = result.rvar(aggregateVarName).type();
             int aggregateVarIndex = result.varIndex(aggregateVarName);
             for (int i = 0; i < result.rowCount(); i++) {
                 int varIndex = unstackIdPos.getInt(rowToUnstackId.get(i));

@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tree.CTree;
@@ -47,7 +47,7 @@ public class ID3ClassifierTest {
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
         df.printSummary();
-        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+        df = new FFRetainTypes(VType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree id3 = CTree.newID3();
@@ -65,13 +65,13 @@ public class ID3ClassifierTest {
 
     @Test
     public void testBasicID3InfoGain() throws IOException {
-        Frame df = new FFRetainTypes(VarType.NOMINAL).fitApply(Datasets.loadPlay());
+        Frame df = new FFRetainTypes(VType.NOMINAL).fitApply(Datasets.loadPlay());
         final String className = "class";
 
         df.printSummary();
 
         CTree id3 = new CTree()
-                .withTest(VarType.NOMINAL, CTreeTest.NominalFull)
+                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
                 .withFunction(CTreePurityFunction.InfoGain);
         id3.fit(df, className);
         id3.predict(df);

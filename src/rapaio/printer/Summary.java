@@ -28,7 +28,7 @@ package rapaio.printer;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -91,7 +91,7 @@ public class Summary {
 
             Var v = df.rvar(i);
             
-            if (v.type() == VarType.BOOLEAN) {
+            if (v.type() == VType.BOOLEAN) {
                 typeStrategy = new BinaryTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
             }
@@ -199,12 +199,12 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.type() == VarType.BOOLEAN) {
+        if (v.type() == VType.BOOLEAN) {
              typeStrategy = new BinaryTypeStrategy();
              typeStrategy.getPrintSummary(v, first, second);;
         }
 
-        if (v.type() == VarType.INT || v.type() == VarType.DOUBLE) {
+        if (v.type() == VType.INT || v.type() == VType.DOUBLE) {
             typeStrategy = new NumericTypeStrategy();
             typeStrategy.getPrintSummary(v, first, second);
         }

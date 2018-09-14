@@ -27,7 +27,7 @@ package rapaio.ml.classifier.boost;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.math.linear.RM;
@@ -103,10 +103,10 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.ORDINAL, VarType.DOUBLE)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.ORDINAL, VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withTargetCount(1, 1)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingTargetValues(false);
     }
 

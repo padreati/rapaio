@@ -28,7 +28,7 @@ package rapaio.ml.classifier.bayes;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -110,9 +110,9 @@ public class NaiveBayes extends AbstractClassifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
-                .withInputTypes(VarType.NOMINAL, VarType.DOUBLE, VarType.INT, VarType.BOOLEAN)
+                .withInputTypes(VType.NOMINAL, VType.DOUBLE, VType.INT, VType.BOOLEAN)
                 .withTargetCount(1, 1)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(true);
     }

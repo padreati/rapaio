@@ -6,7 +6,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.linear.LinearRPrediction;
@@ -58,7 +58,7 @@ public class RMSETest {
     @Test
     public void irisTest() throws IOException, URISyntaxException {
 
-        Frame df = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.DOUBLE));
+        Frame df = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
 
         df.printSummary();
 

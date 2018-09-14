@@ -30,7 +30,7 @@ import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
@@ -165,8 +165,8 @@ public class RTree extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
-                .withTargetTypes(VarType.DOUBLE)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.ORDINAL, VType.NOMINAL)
+                .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }

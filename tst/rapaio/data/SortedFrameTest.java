@@ -48,8 +48,8 @@ public class SortedFrameTest {
     public void init() throws IOException, URISyntaxException {
         df = new Csv()
                 .withQuotes(false)
-                .withTypes(VarType.DOUBLE, "z")
-                .withTypes(VarType.INT, "y")
+                .withTypes(VType.DOUBLE, "z")
+                .withTypes(VType.INT, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 

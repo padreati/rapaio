@@ -124,7 +124,7 @@ public interface Frame extends Serializable, Printable {
      * @param name variable name
      * @return variable type
      */
-    VarType type(String name);
+    VType type(String name);
 
     /**
      * Adds the given variables to the variables of the current frame to build a new frame.

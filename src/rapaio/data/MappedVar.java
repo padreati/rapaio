@@ -82,7 +82,7 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
+    public VType type() {
         return source.type();
     }
 

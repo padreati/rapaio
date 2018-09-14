@@ -28,7 +28,7 @@ package rapaio.ml.regression;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.printer.format.TextTable;
@@ -50,9 +50,9 @@ public abstract class AbstractRegression implements Regression {
     private static final long serialVersionUID = 5544999078321108408L;
 
     protected String[] inputNames;
-    protected VarType[] inputTypes;
+    protected VType[] inputTypes;
     protected String[] targetNames;
-    protected VarType[] targetTypes;
+    protected VType[] targetTypes;
     protected RowSampler sampler = RowSampler.identity();
     protected boolean hasLearned;
     protected int poolSize = -1;
@@ -134,12 +134,12 @@ public abstract class AbstractRegression implements Regression {
         Frame result = df;
         List<String> targets = VRange.of(trainSetup.targetVars).parseVarNames(result);
         this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(result::type).toArray(VarType[]::new);
+        this.targetTypes = targets.stream().map(result::type).toArray(VType[]::new);
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(result::type).toArray(VarType[]::new);
+        this.inputTypes = inputs.stream().map(result::type).toArray(VType[]::new);
 
         capabilities().checkAtLearnPhase(result, trainSetup.w, trainSetup.targetVars);
         return TrainSetup.valueOf(df, trainSetup.w);
@@ -180,12 +180,12 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public VarType[] inputTypes() {
+    public VType[] inputTypes() {
         return inputTypes;
     }
 
     @Override
-    public VarType[] targetTypes() {
+    public VType[] targetTypes() {
         return targetTypes;
     }
 

@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -64,7 +64,7 @@ public class Apriori implements Printable {
     public void train(Frame df, String target, BiPredicate<Integer, DVector> filter) {
 
         List<Var> inputVars = df.varStream()
-                .filter(var -> var.type().equals(VarType.NOMINAL))
+                .filter(var -> var.type().equals(VType.NOMINAL))
                 .filter(var -> !var.name().equals(target))
                 .collect(Collectors.toList());
         this.inputDf = SolidFrame.byVars(inputVars);

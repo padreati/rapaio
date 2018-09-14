@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -84,8 +84,8 @@ public class OneRule extends AbstractClassifier {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.DOUBLE, VarType.ORDINAL, VarType.LONG)
-                .withTargetTypes(VarType.NOMINAL)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.ORDINAL, VType.LONG)
+                .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }

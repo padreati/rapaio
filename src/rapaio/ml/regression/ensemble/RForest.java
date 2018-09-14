@@ -28,7 +28,7 @@ package rapaio.ml.regression.ensemble;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.Sample;
 import rapaio.ml.common.Capabilities;
@@ -87,8 +87,8 @@ public class RForest extends AbstractRegression {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.ORDINAL, VarType.NOMINAL)
-                .withTargetTypes(VarType.DOUBLE)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.ORDINAL, VType.NOMINAL)
+                .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
     }

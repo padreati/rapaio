@@ -200,8 +200,8 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.LONG;
+    public VType type() {
+        return VType.LONG;
     }
 
     private void rangeCheck(int index) {

@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
@@ -97,8 +97,8 @@ public class CStacking extends AbstractClassifier {
         return new Capabilities()
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(false)
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE)
-                .withTargetTypes(VarType.NOMINAL)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE)
+                .withTargetTypes(VType.NOMINAL)
                 .withInputCount(1, 100_000)
                 .withTargetCount(1, 1);
     }

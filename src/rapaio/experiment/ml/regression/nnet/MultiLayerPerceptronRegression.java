@@ -28,7 +28,7 @@ package rapaio.experiment.ml.regression.nnet;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RPrediction;
@@ -121,8 +121,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BOOLEAN, VarType.ORDINAL)
-                .withTargetTypes(VarType.DOUBLE)
+                .withInputTypes(VType.DOUBLE, VType.INT, VType.BOOLEAN, VType.ORDINAL)
+                .withTargetTypes(VType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)
                 .withAllowMissingInputValues(false)

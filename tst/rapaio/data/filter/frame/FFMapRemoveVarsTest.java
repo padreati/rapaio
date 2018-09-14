@@ -32,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 
 /**
@@ -55,8 +55,8 @@ public class FFMapRemoveVarsTest {
     @Test
     public void testMapVars() {
         assertMapEquals(VRange.all());
-        assertMapEquals(VRange.onlyTypes(VarType.DOUBLE));
-        assertMapEquals(VRange.onlyTypes(VarType.NOMINAL));
+        assertMapEquals(VRange.onlyTypes(VType.DOUBLE));
+        assertMapEquals(VRange.onlyTypes(VType.NOMINAL));
     }
 
     private boolean assertMapEquals(VRange vRange) {
@@ -66,8 +66,8 @@ public class FFMapRemoveVarsTest {
     @Test
     public void testRemoveVars() {
         assertRemoveVars(VRange.all());
-        assertRemoveVars(VRange.onlyTypes(VarType.DOUBLE));
-        assertRemoveVars(VRange.onlyTypes(VarType.NOMINAL));
+        assertRemoveVars(VRange.onlyTypes(VType.DOUBLE));
+        assertRemoveVars(VRange.onlyTypes(VType.NOMINAL));
     }
 
     private boolean assertRemoveVars(VRange vRange) {
@@ -77,20 +77,20 @@ public class FFMapRemoveVarsTest {
     @Test
     public void testBoth() {
 
-        Frame df1 = df.mapVars(VRange.onlyTypes(VarType.DOUBLE)).removeVars(VRange.of(1));
-        Frame df2 = new FFRemoveVars(VRange.of(1)).fitApply(new FFMapVars(VRange.onlyTypes(VarType.DOUBLE)).fitApply(df));
+        Frame df1 = df.mapVars(VRange.onlyTypes(VType.DOUBLE)).removeVars(VRange.of(1));
+        Frame df2 = new FFRemoveVars(VRange.of(1)).fitApply(new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).fitApply(df));
 
         Assert.assertTrue(df1.deepEquals(df2));
     }
 
     @Test
     public void testInstance() {
-        FFilter map = new FFMapVars(VRange.onlyTypes(VarType.DOUBLE)).newInstance();
+        FFilter map = new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         map.train(df.mapVars("0,1"));
 
         Assert.assertEquals(2, map.apply(df).varCount());
 
-        FFilter remove = new FFRemoveVars(VRange.onlyTypes(VarType.DOUBLE)).newInstance();
+        FFilter remove = new FFRemoveVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         remove.train(df.mapVars("0,1"));
 
         Assert.assertEquals(2, remove.apply(df).varCount());

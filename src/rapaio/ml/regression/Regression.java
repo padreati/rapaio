@@ -28,7 +28,7 @@ package rapaio.ml.regression;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
@@ -157,7 +157,7 @@ public interface Regression extends Printable, Serializable {
     /**
      * @return array with types of the variables used for training
      */
-    VarType[] inputTypes();
+    VType[] inputTypes();
 
     /**
      * Shortcut method which returns the type of the input variable at the given position
@@ -165,7 +165,7 @@ public interface Regression extends Printable, Serializable {
      * @param pos given position
      * @return variable type
      */
-    default VarType inputType(int pos) {
+    default VType inputType(int pos) {
         return inputTypes()[pos];
     }
 
@@ -200,7 +200,7 @@ public interface Regression extends Printable, Serializable {
      *
      * @return array of target types
      */
-    VarType[] targetTypes();
+    VType[] targetTypes();
 
     /**
      * Shortcut method which returns target variable type
@@ -209,7 +209,7 @@ public interface Regression extends Printable, Serializable {
      * @param pos given position
      * @return target variable type
      */
-    default VarType targetType(int pos) {
+    default VType targetType(int pos) {
         return targetTypes()[pos];
     }
 
@@ -219,7 +219,7 @@ public interface Regression extends Printable, Serializable {
      *
      * @return first target variable type
      */
-    default VarType firstTargetType() {
+    default VType firstTargetType() {
         return targetTypes()[0];
     }
 

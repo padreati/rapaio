@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CPrediction;
@@ -45,7 +45,7 @@ public class C45ClassifierTest {
     @Test
     public void testNominalInfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
-        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+        df = new FFRetainTypes(VType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree classifier = CTree.newC45();

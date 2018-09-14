@@ -123,8 +123,8 @@ public class VarShort extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.SHORT;
+    public VType type() {
+        return VType.SHORT;
     }
 
     @Override

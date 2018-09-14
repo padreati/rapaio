@@ -27,7 +27,7 @@ package rapaio.core.distributions;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class ChiSquareTest {
         Frame df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
-                .withDefaultTypes(VarType.DOUBLE)
+                .withDefaultTypes(VType.DOUBLE)
                 .withNAValues("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "chisq.csv");
 

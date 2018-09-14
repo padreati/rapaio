@@ -29,7 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -75,8 +75,8 @@ public class BarChart extends HostFigure {
     }
 
     public BarChart(Var category, Var condition, Var numeric, GOption... opts) {
-        List<VarType> varTypes = Arrays.asList(VarType.BOOLEAN, VarType.NOMINAL, VarType.ORDINAL);
-        if (!varTypes.contains(category.type())) {
+        List<VType> vTypes = Arrays.asList(VType.BOOLEAN, VType.NOMINAL, VType.ORDINAL);
+        if (!vTypes.contains(category.type())) {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {

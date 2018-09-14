@@ -33,7 +33,7 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
@@ -97,7 +97,7 @@ public class CBinaryRelief {
         for (int i = 0; i < inputNames.size(); i++) {
             String varName = inputNames.get(i);
             Var v = df.rvar(varName);
-            VarType type = v.type();
+            VType type = v.type();
 
             switch (type) {
                 case DOUBLE:

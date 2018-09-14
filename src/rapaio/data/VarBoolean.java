@@ -147,8 +147,8 @@ public final class VarBoolean extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return VarType.BOOLEAN;
+    public VType type() {
+        return VType.BOOLEAN;
     }
 
     @Override

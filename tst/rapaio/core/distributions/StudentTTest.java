@@ -27,7 +27,7 @@ package rapaio.core.distributions;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class StudentTTest {
     @Test
     public void densityTest() throws IOException {
         Frame df = new Csv()
-                .withDefaultTypes(VarType.DOUBLE)
+                .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-density.csv");
         df.printSummary();
@@ -68,7 +68,7 @@ public class StudentTTest {
     @Test
     public void distributionTest() throws IOException {
         Frame df = new Csv()
-                .withDefaultTypes(VarType.DOUBLE)
+                .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-distribution.csv");
         df.printSummary();
@@ -91,7 +91,7 @@ public class StudentTTest {
     @Test
     public void quantileTest() throws IOException {
         Frame df = new Csv()
-                .withDefaultTypes(VarType.DOUBLE)
+                .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-quantile.csv");
         df.printSummary();
@@ -116,7 +116,7 @@ public class StudentTTest {
         Frame df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
-                .withDefaultTypes(VarType.DOUBLE)
+                .withDefaultTypes(VType.DOUBLE)
                 .withNAValues("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "student.csv");
         StudentT t1 = new StudentT(1);

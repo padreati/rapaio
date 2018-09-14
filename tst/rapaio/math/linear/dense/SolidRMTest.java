@@ -28,7 +28,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
@@ -76,7 +76,7 @@ public class SolidRMTest {
             }
         }
 
-        Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VarType.DOUBLE));
+        Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
         RM copy1 = SolidRM.copy(iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {

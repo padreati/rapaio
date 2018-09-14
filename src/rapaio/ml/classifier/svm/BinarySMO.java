@@ -33,7 +33,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
@@ -187,10 +187,10 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.NOMINAL, VarType.DOUBLE)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE)
                 .withInputCount(1, 100_000)
                 .withAllowMissingInputValues(false)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withTargetCount(1, oneVsAll ? 10_000 : 1)
                 .withAllowMissingTargetValues(false);
     }

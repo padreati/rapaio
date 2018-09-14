@@ -28,7 +28,7 @@ package rapaio.ml.analysis;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
@@ -154,7 +154,7 @@ public class PCA implements Printable {
     }
 
     private void validate(Frame df) {
-        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BOOLEAN, VarType.INT, VarType.ORDINAL, VarType.DOUBLE));
+        Set<VType> allowedTypes = new HashSet<>(Arrays.asList(VType.BOOLEAN, VType.INT, VType.ORDINAL, VType.DOUBLE));
         df.varStream().forEach(var -> {
             if (!allowedTypes.contains(var.type())) {
                 throw new IllegalArgumentException("Var type not allowed. Var name: " + var.name() + ", type: " + var.type().name());

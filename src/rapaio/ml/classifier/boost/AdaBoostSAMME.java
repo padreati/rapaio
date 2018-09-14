@@ -27,7 +27,7 @@ package rapaio.ml.classifier.boost;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
@@ -105,10 +105,10 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.DOUBLE, VarType.NOMINAL, VarType.INT, VarType.BOOLEAN)
+                .withInputTypes(VType.DOUBLE, VType.NOMINAL, VType.INT, VType.BOOLEAN)
                 .withInputCount(1, 10_000)
                 .withAllowMissingInputValues(true)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingTargetValues(false);
     }

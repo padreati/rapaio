@@ -117,8 +117,8 @@ public final class VarOrdinal extends FactorBase {
     }
 
     @Override
-    public VarType type() {
-        return VarType.ORDINAL;
+    public VType type() {
+        return VType.ORDINAL;
     }
 
     @Override

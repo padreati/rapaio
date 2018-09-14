@@ -36,7 +36,7 @@ import rapaio.data.VarBoolean;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.io.Csv;
 import rapaio.sys.WS;
 import rapaio.util.Time;
@@ -58,7 +58,7 @@ public class CoreToolsTest {
 
     @Before
     public void setUp() throws IOException {
-        df = new Csv().withHeader(true).withDefaultTypes(VarType.DOUBLE).read(getClass(), "core_stat.csv");
+        df = new Csv().withHeader(true).withDefaultTypes(VType.DOUBLE).read(getClass(), "core_stat.csv");
         RandomSource.setSeed(123);
     }
 

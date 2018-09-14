@@ -30,7 +30,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
@@ -216,10 +216,10 @@ public class LDA implements Printable {
             throw new IllegalArgumentException("LDA needs one target var");
         targetName = targetNames.get(0);
 
-        Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BOOLEAN, VarType.INT, VarType.ORDINAL, VarType.DOUBLE));
+        Set<VType> allowedTypes = new HashSet<>(Arrays.asList(VType.BOOLEAN, VType.INT, VType.ORDINAL, VType.DOUBLE));
         df.varStream().forEach(var -> {
             if (targetName.equals(var.name())) {
-                if (!var.type().equals(VarType.NOMINAL)) {
+                if (!var.type().equals(VType.NOMINAL)) {
                     throw new IllegalArgumentException("target var must be nominal");
                 }
                 List<String> varLevels = var.levels();

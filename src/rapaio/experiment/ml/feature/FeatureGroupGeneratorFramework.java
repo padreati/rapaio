@@ -28,7 +28,7 @@ package rapaio.experiment.ml.feature;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.experiment.ml.feature.generator.FeatureGroupGenerator;
 import rapaio.experiment.ml.feature.generator.NumValueSummary;
 
@@ -54,9 +54,9 @@ public class FeatureGroupGeneratorFramework {
     public void useDefaultGenerators() {
 
         generators.clear();
-        generators.add(FeatureGroupGenerator.nomLabelCount(VRange.onlyTypes(VarType.NOMINAL), true));
+        generators.add(FeatureGroupGenerator.nomLabelCount(VRange.onlyTypes(VType.NOMINAL), true));
         generators.add(FeatureGroupGenerator.numVarStat(
-                VRange.onlyTypes(VarType.DOUBLE, VarType.INT),
+                VRange.onlyTypes(VType.DOUBLE, VType.INT),
                 Arrays.asList(NumValueSummary.count, NumValueSummary.sum, NumValueSummary.mean, NumValueSummary.variance)
         ));
     }

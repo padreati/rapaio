@@ -70,7 +70,7 @@ public class VRangeTest {
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});
 
-        test(VRange.onlyTypes(VarType.DOUBLE), df,
+        test(VRange.onlyTypes(VType.DOUBLE), df,
                 new int[]{4, 5},
                 new String[]{"x", "y"},
                 new String[]{"a", "b", "c", "d"});

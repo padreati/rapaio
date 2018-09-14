@@ -28,7 +28,7 @@ package rapaio.experiment.ml.classifier.linear;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -75,9 +75,9 @@ public class BinaryLogistic extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.BOOLEAN, VarType.INT, VarType.DOUBLE, VarType.NOMINAL)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.NOMINAL)
                 .withInputCount(1, 10000)
-                .withTargetTypes(VarType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingInputValues(false)
                 .withAllowMissingTargetValues(true);

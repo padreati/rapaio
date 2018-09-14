@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.QRDecomposition;
@@ -76,8 +76,8 @@ public class LinearRegression extends AbstractLinearRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.DOUBLE, VarType.INT, VarType.BOOLEAN, VarType.ORDINAL)
-                .withTargetTypes(VarType.DOUBLE)
+                .withInputTypes(VType.DOUBLE, VType.INT, VType.BOOLEAN, VType.ORDINAL)
+                .withTargetTypes(VType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)
                 .withAllowMissingInputValues(false)

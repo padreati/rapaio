@@ -133,7 +133,7 @@ public class MappedFrameTest {
         df3.printLines();
 
         assertTrue(df3.varCount() == 1);
-        assertTrue(df3.rvar(0).type() == VarType.DOUBLE);
+        assertTrue(df3.rvar(0).type() == VType.DOUBLE);
         assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
         assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 

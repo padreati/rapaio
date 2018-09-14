@@ -32,7 +32,7 @@ import rapaio.data.VRange;
 import rapaio.data.VarBoolean;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 
 /**
@@ -50,12 +50,12 @@ public class FFJitterTest {
                 VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
-        Frame df1 = new FFJitter(VRange.onlyTypes(VarType.DOUBLE)).fitApply(a.solidCopy());
+        Frame df1 = new FFJitter(VRange.onlyTypes(VType.DOUBLE)).fitApply(a.solidCopy());
 
         Assert.assertTrue(a.removeVars("0~1").deepEquals(df1.removeVars("0~1")));
         Assert.assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
 
-        FFilter filter = new FFJitter(VRange.onlyTypes(VarType.DOUBLE)).newInstance();
+        FFilter filter = new FFJitter(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         filter.train(a.removeVars("num1"));
 
         Frame df2 = filter.apply(a.solidCopy());

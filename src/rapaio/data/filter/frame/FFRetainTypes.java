@@ -27,7 +27,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.VarType;
+import rapaio.data.VType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +42,9 @@ public class FFRetainTypes extends AbstractFF {
 
     private static final long serialVersionUID = -5152761273156719785L;
 
-    private final VarType[] types;
+    private final VType[] types;
 
-    public FFRetainTypes(VarType... types) {
+    public FFRetainTypes(VType... types) {
         super(VRange.all());
         if (types == null || types.length == 0)
             throw new IllegalArgumentException("Must provide at least a type to retain");
@@ -65,7 +65,7 @@ public class FFRetainTypes extends AbstractFF {
     public Frame apply(Frame df) {
         List<String> names = new ArrayList<>();
         for (String name : df.varNames()) {
-            for (VarType type : types) {
+            for (VType type : types) {
                 if (df.rvar(name).type().equals(type)) {
                     names.add(name);
                     break;

@@ -58,7 +58,7 @@ public class BoundVar extends AbstractVar {
 
     private static final long serialVersionUID = 5449912906816640189L;
     private final int rowCount;
-    private final VarType varType;
+    private final VType vType;
     private final List<Integer> counts;
     private final List<Var> vars;
 
@@ -73,7 +73,7 @@ public class BoundVar extends AbstractVar {
             throw new IllegalArgumentException("It is not allowed to bind variables of different types");
 
         this.rowCount = counts.stream().mapToInt(i -> i).sum();
-        this.varType = vars.get(0).type();
+        this.vType = vars.get(0).type();
         this.counts = new ArrayList<>();
         this.vars = new ArrayList<>();
 
@@ -107,8 +107,8 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
-        return varType;
+    public VType type() {
+        return vType;
     }
 
     @Override
