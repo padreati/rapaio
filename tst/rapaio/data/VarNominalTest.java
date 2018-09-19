@@ -24,16 +24,24 @@
 
 package rapaio.data;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NominalTest {
+public class VarNominalTest {
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testSmoke() {
@@ -216,6 +224,28 @@ public class NominalTest {
     }
 
     @Test
+    public void testBuilders() {
+        String[] src1 = new String[]{"a", "b", "c", "?", "a", "b", "c", "?"};
+        List<String> src2 = Arrays.stream(src1).collect(Collectors.toList());
+
+        VarNominal copy1 = VarNominal.copy(src1);
+        VarNominal copy2 = VarNominal.copy(src2);
+        VarNominal copy3 = VarNominal.from(src1.length, row -> src1[row], "a", "b", "c");
+        VarNominal copy4 = src2.stream().collect(VarNominal.collector());
+        VarNominal copy5 = src2.stream().parallel().collect(VarNominal.collector());
+
+        assertTrue(copy1.deepEquals(copy2));
+        assertTrue(copy1.deepEquals(copy3));
+        assertTrue(copy1.deepEquals(copy4));
+
+        VarNominal copy6 = VarNominal.copy("a", "b");
+        copy6.addRows(2);
+        assertEquals(4, copy6.rowCount());
+        assertTrue(copy6.isMissing(2));
+        assertTrue(copy6.isMissing(3));
+    }
+
+    @Test
     public void testFactorBaseBinaryStamp() {
 
         try {
@@ -294,11 +324,9 @@ public class NominalTest {
         assertEquals("x", x.getLabel(2));
         assertEquals("z", x.getLabel(3));
 
-        try {
-            VarNominal y = VarNominal.empty(0, "a", "b");
-            y.setLevels("x");
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("new levels does not contains all old labels");
+        VarNominal y = VarNominal.empty(0, "a", "b");
+        y.setLevels("x");
     }
 }

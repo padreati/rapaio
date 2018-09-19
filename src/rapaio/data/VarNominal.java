@@ -25,8 +25,12 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -40,6 +44,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
+ * Categorical variable type. The nominal variable type is represented as a string label and/or as an integer 
+ * index value, assigned to each string label.
+ *
  * Nominal var contains values for categorical observations where order of labels is not important.
  * <p>
  * The domain of the definition is called levels and is given at construction time or can be changed latter.
@@ -54,10 +61,10 @@ import java.util.stream.Collector;
  * <p>
  * Even if index values is an integer number the order of the indexes for
  * nominal variables is irrelevant.
- *
- * @author Aurelian Tutuianu
+ * 
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public final class VarNominal extends FactorBase {
+public final class VarNominal extends AbstractVar {
 
     /**
      * Builds a new empty nominal variable
@@ -123,10 +130,16 @@ public final class VarNominal extends FactorBase {
         return nominal;
     }
 
-    private static final long serialVersionUID = 1645571732133272467L;
+    private static final long serialVersionUID = -7541719735879481349L;
+    private static final String missingValue = "?";
+    private static final int missingIndex = 0;
+
+    private int rows;
+    private ArrayList<String> dict;
+    private int[] data;
+    private Object2IntMap<String> reverse;
 
     private VarNominal() {
-        // set the missing value
         this.reverse = new Object2IntOpenHashMap<>();
         this.reverse.put("?", 0);
         this.dict = new ArrayList<>();
@@ -134,10 +147,10 @@ public final class VarNominal extends FactorBase {
         data = new int[0];
         rows = 0;
     }
-
+    
     public static Collector<String, VarNominal, VarNominal> collector() {
 
-        return new Collector<String, VarNominal, VarNominal>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarNominal> supplier() {
                 return VarNominal::empty;
@@ -145,21 +158,21 @@ public final class VarNominal extends FactorBase {
 
             @Override
             public BiConsumer<VarNominal, String> accumulator() {
-                return FactorBase::addLabel;
+                return VarNominal::addLabel;
             }
 
             @Override
             public BinaryOperator<VarNominal> combiner() {
-                return (left, right) -> (VarNominal) left.bindRows(right);
+                return (left, right) -> (VarNominal) left.bindRows(right).solidCopy();
             }
 
             @Override
             public Function<VarNominal, VarNominal> finisher() {
-                return VarNominal::solidCopy;
+                return var -> var;
             }
 
             @Override
-            public Set<Collector.Characteristics> characteristics() {
+            public Set<Characteristics> characteristics() {
                 return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
             }
         };
@@ -185,6 +198,179 @@ public final class VarNominal extends FactorBase {
     }
 
     @Override
+    public void remove(int index) {
+        int numMoved = rows - index - 1;
+        if (numMoved > 0) {
+            System.arraycopy(data, index + 1, data, index, numMoved);
+            rows--;
+        }
+    }
+
+    public void clear() {
+        rows = 0;
+    }
+
+    private void grow(int minCapacity) {
+        if (minCapacity - data.length <= 0) return;
+
+        int oldCapacity = data.length;
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        if (newCapacity - minCapacity < 0)
+            newCapacity = minCapacity;
+        data = Arrays.copyOf(data, newCapacity);
+    }
+
+    @Override
+    public int rowCount() {
+        return rows;
+    }
+
+    @Override
+    public int getInt(int row) {
+        return data[row];
+    }
+
+    @Override
+    public void setInt(int row, int value) {
+        data[row] = (short) value;
+    }
+
+    @Override
+    public void addInt(int value) {
+        addLabel(dict.get(value));
+    }
+
+    @Override
+    public double getDouble(int row) {
+        return data[row];
+    }
+
+    @Override
+    public void setDouble(int row, double value) {
+        setInt(row, (int) Math.rint(value));
+    }
+
+    @Override
+    public void addDouble(double value) {
+        addInt((int) Math.rint(value));
+    }
+
+    @Override
+    public String getLabel(int row) {
+        return dict.get(data[row]);
+    }
+
+    @Override
+    public void setLabel(int row, String value) {
+        if (value.equals(missingValue)) {
+            data[row] = missingIndex;
+            return;
+        }
+        if (!reverse.containsKey(value)) {
+            dict.add(value);
+            reverse.put(value, reverse.size());
+            data[row] = reverse.size() - 1;
+        } else {
+            data[row] = reverse.getInt(value);
+        }
+    }
+
+    @Override
+    public void addLabel(String label) {
+        grow(rows + 1);
+        if (!reverse.containsKey(label)) {
+            dict.add(label);
+            reverse.put(label, reverse.size());
+        }
+        data[rows++] = reverse.getInt(label);
+    }
+
+    @Override
+    public List<String> levels() {
+        return dict;
+    }
+
+    @Override
+    public void setLevels(String... dict) {
+        List<String> oldDict = this.dict;
+        if (dict.length > 0 && !dict[0].equals("?")) {
+            String[] newDict = new String[dict.length + 1];
+            newDict[0] = "?";
+            System.arraycopy(dict, 0, newDict, 1, dict.length);
+            dict = newDict;
+        }
+
+        if (this.dict.size() > dict.length) {
+            throw new IllegalArgumentException("new levels does not contains all old labels");
+        }
+
+        this.dict = new ArrayList<>();
+        this.reverse = new Object2IntOpenHashMap<>(dict.length);
+        this.dict.add("?");
+        this.reverse.put("?", 0);
+
+        int[] pos = new int[oldDict.size()];
+        for (int i = 0; i < dict.length; i++) {
+            String term = dict[i];
+            if (!reverse.containsKey(term)) {
+                this.dict.add(term);
+                this.reverse.put(term, this.reverse.size());
+            }
+            if (i < oldDict.size())
+                pos[i] = this.reverse.getInt(term);
+        }
+
+        for (int i = 0; i < rows; i++) {
+            data[i] = pos[data[i]];
+        }
+    }
+
+    @Override
+    public boolean getBoolean(int row) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void setBoolean(int row, boolean value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void addBoolean(boolean value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public long getLong(int row) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void setLong(int row, long value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void addLong(long value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public boolean isMissing(int row) {
+        return missingIndex == getInt(row);
+    }
+
+    @Override
+    public void setMissing(int row) {
+        setInt(row, missingIndex);
+    }
+
+    @Override
+    public void addMissing() {
+        addInt(missingIndex);
+    }
+
+    @Override
     public Var newInstance(int rows) {
         return VarNominal.empty(rows, levels());
     }
@@ -197,5 +383,31 @@ public final class VarNominal extends FactorBase {
     @Override
     public String toString() {
         return "Nominal[name:" + name() + ", rowCount:" + rowCount() + "]";
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(rowCount());
+        out.writeInt(dict.size());
+        for (String factor : dict) {
+            out.writeUTF(factor);
+        }
+        for (int i = 0; i < rowCount(); i++) {
+            out.writeInt(data[i]);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        rows = in.readInt();
+        dict = new ArrayList<>();
+        reverse = new Object2IntOpenHashMap<>();
+        int len = in.readInt();
+        for (int i = 0; i < len; i++) {
+            dict.add(in.readUTF());
+            reverse.put(dict.get(i), i);
+        }
+        data = new int[rows];
+        for (int i = 0; i < rows; i++) {
+            data[i] = in.readInt();
+        }
     }
 }
