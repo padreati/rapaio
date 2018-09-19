@@ -1,4 +1,4 @@
-package rapaio.data.join;
+package rapaio.experiment.data.join;
 
 import org.junit.Before;
 import org.junit.Test;

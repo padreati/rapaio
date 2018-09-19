@@ -23,21 +23,34 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public interface GroupByFunction {
+public class GroupByFunctionNUnique implements GroupByFunction {
+    @Override
+    public String name() {
+        return "nunique";
+    }
 
-    /**
-     * Name of the aggregate function
-     * @return name of the aggregate function
-     */
-    String name();
-
-    double compute(Frame src, String varName, IntList rows);
+    @Override
+    public double compute(Frame src, String varName, IntList rows) {
+        Set<String> set = new HashSet<>();
+        int varIndex = src.varIndex(varName);
+        for (int row : rows) {
+            if (src.isMissing(row, varIndex)) {
+                continue;
+            }
+            set.add(src.getLabel(row, varIndex));
+        }
+        return set.size();
+    }
 }
+

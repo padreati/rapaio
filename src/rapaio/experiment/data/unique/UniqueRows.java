@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.data.unique;
+package rapaio.experiment.data.unique;
 
 import it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap;
 import it.unimi.dsi.fastutil.doubles.DoubleAVLTreeSet;

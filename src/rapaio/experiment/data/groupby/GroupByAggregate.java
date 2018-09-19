@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

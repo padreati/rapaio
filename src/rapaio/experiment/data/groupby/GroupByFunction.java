@@ -23,30 +23,21 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.
  */
-public class GroupByFunctionCount implements GroupByFunction {
+public interface GroupByFunction {
 
-    @Override
-    public String name() {
-        return "count";
-    }
+    /**
+     * Name of the aggregate function
+     * @return name of the aggregate function
+     */
+    String name();
 
-    @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        int count = 0;
-        int varIndex = src.varIndex(varName);
-        for (int row : rows) {
-            if (!src.isMissing(row, varIndex)) {
-                count++;
-            }
-        }
-        return count;
-    }
+    double compute(Frame src, String varName, IntList rows);
 }

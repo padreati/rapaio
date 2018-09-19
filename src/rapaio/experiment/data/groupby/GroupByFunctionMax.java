@@ -23,34 +23,34 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionNUnique implements GroupByFunction {
+public class GroupByFunctionMax implements GroupByFunction {
     @Override
     public String name() {
-        return "nunique";
+        return "max";
     }
 
     @Override
     public double compute(Frame src, String varName, IntList rows) {
-        Set<String> set = new HashSet<>();
+        double max = Double.NaN;
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
             if (src.isMissing(row, varIndex)) {
                 continue;
             }
-            set.add(src.getLabel(row, varIndex));
+            double value = src.getDouble(row, varIndex);
+            if (Double.isNaN(max) || max < value) {
+                max = value;
+            }
         }
-        return set.size();
+        return max;
     }
 }
 

@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.stat.OnlineStat;
@@ -32,10 +32,10 @@ import rapaio.data.Frame;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionSkewness implements GroupByFunction {
+public class GroupByFunctionKurtosis implements GroupByFunction {
     @Override
     public String name() {
-        return "skewness";
+        return "kurtosis";
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GroupByFunctionSkewness implements GroupByFunction {
             }
             os.update(src.getDouble(row, varIndex));
         }
-        return os.skewness();
+        return os.kurtosis();
     }
 }
 

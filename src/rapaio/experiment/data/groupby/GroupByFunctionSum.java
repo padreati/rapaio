@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.stat.OnlineStat;
@@ -32,10 +32,10 @@ import rapaio.data.Frame;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionStd implements GroupByFunction {
+public class GroupByFunctionSum implements GroupByFunction {
     @Override
     public String name() {
-        return "std";
+        return "sum";
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GroupByFunctionStd implements GroupByFunction {
             }
             os.update(src.getDouble(row, varIndex));
         }
-        return os.sd();
+        return os.n() > 0 ? os.sum() : Double.NaN;
     }
 }
 

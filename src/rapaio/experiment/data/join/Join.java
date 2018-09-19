@@ -23,7 +23,7 @@
  *
  */
 
-package rapaio.data.join;
+package rapaio.experiment.data.join;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

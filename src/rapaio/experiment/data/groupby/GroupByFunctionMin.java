@@ -23,32 +23,33 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionKurtosis implements GroupByFunction {
+public class GroupByFunctionMin implements GroupByFunction {
     @Override
     public String name() {
-        return "kurtosis";
+        return "min";
     }
 
     @Override
     public double compute(Frame src, String varName, IntList rows) {
-        OnlineStat os = OnlineStat.empty();
+        double min = Double.NaN;
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
             if (src.isMissing(row, varIndex)) {
                 continue;
             }
-            os.update(src.getDouble(row, varIndex));
+            double value = src.getDouble(row, varIndex);
+            if (Double.isNaN(min) || min > value) {
+                min = value;
+            }
         }
-        return os.kurtosis();
+        return min;
     }
 }
-

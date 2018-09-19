@@ -23,33 +23,32 @@
  *
  */
 
-package rapaio.data.groupby;
+package rapaio.experiment.data.groupby;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionMin implements GroupByFunction {
+public class GroupByFunctionSkewness implements GroupByFunction {
     @Override
     public String name() {
-        return "min";
+        return "skewness";
     }
 
     @Override
     public double compute(Frame src, String varName, IntList rows) {
-        double min = Double.NaN;
+        OnlineStat os = OnlineStat.empty();
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
             if (src.isMissing(row, varIndex)) {
                 continue;
             }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(min) || min > value) {
-                min = value;
-            }
+            os.update(src.getDouble(row, varIndex));
         }
-        return min;
+        return os.skewness();
     }
 }
+
