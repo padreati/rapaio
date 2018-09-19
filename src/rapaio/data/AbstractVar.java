@@ -97,22 +97,6 @@ public abstract class AbstractVar implements Var {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
-            case FLOAT:
-                VarFloat numFloat = VarFloat.empty(rowCount()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    numFloat.setDouble(i, getDouble(i));
-                }
-                return numFloat;
-            case SHORT:
-                VarShort numShort = VarShort.empty(rowCount()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    if (isMissing(i)) {
-                        numShort.setMissing(i);
-                        continue;
-                    }
-                    numShort.setInt(i, getInt(i));
-                }
-                return numShort;
             case BOOLEAN:
                 VarBoolean bin = VarBoolean.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

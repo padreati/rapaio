@@ -53,9 +53,8 @@ import static java.util.stream.Collectors.toSet;
  */
 public class Csv {
 
-    private static VType[] DEFAULT_OPTIMIZED_TYPES = new VType[]{VType.BOOLEAN, VType.SHORT,
-            VType.INT, VType.LONG, VType.FLOAT, VType.DOUBLE, VType.NOMINAL};
-    private static VType[] DEFAULT_COMPUTE_TYPES = new VType[]{VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL};
+    private static VType[] DEFAULT_TYPES = new VType[]{
+            VType.BOOLEAN, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
 
     private boolean trimSpaces = true;
     private boolean header = true;
@@ -164,13 +163,8 @@ public class Csv {
         return this;
     }
 
-    public Csv withDefaultComputeTypes() {
-        this.defaultTypes = DEFAULT_COMPUTE_TYPES;
-        return this;
-    }
-
-    public Csv withDefaultOptimizedTypes() {
-        this.defaultTypes = DEFAULT_OPTIMIZED_TYPES;
+    public Csv withDefaultTypes() {
+        this.defaultTypes = DEFAULT_TYPES;
         return this;
     }
 

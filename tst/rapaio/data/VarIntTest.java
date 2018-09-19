@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class IndexTest {
+public class VarIntTest {
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -43,23 +43,49 @@ public class IndexTest {
         Var index = VarInt.empty(1);
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
-
         assertEquals(1, index.rowCount());
+        assertEquals("VarInt[name:?, rowCount:1]", VarInt.empty(1).toString());
+    }
 
-        try {
-            VarInt.empty(-1);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void invalidRowNumber() {
+        expected.expect(IllegalArgumentException.class);
+        expected.expectMessage("Illegal row count: -1");
+        VarInt.empty(-1);
+    }
 
-        assertEquals("Index[name:?, rowCount:1]", VarInt.empty(1).toString());
+    @Test
+    public void unparsableSetLabel() {
+        expected.expect(NumberFormatException.class);
+        expected.expectMessage("For input string: \"Test\"");
+        VarInt.empty(1).setLabel(0, "Test");
+    }
+
+    @Test
+    public void unparsableAddLabel() {
+        expected.expect(NumberFormatException.class);
+        expected.expectMessage("For input string: \"Test\"");
+        VarInt.empty(1).addLabel("Test");
+    }
+
+    @Test
+    public void testNotImplementedLevels() {
+        expected.expect(IllegalStateException.class);
+        expected.expectMessage("Operation not available for integer variables.");
+        VarInt.seq(10).levels();
+    }
+
+    @Test
+    public void testNotImplementedSetLevels() {
+        expected.expect(IllegalStateException.class);
+        expected.expectMessage("Operation not available for integer variables.");
+        VarInt.seq(10).setLevels(new String[] {"a", "b"});
     }
 
     @Test
     public void testEmptyIndex() {
         Var index = VarInt.empty();
         assertEquals(0, index.rowCount());
-
         index = VarInt.empty(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(0, index.getInt(i));
@@ -109,14 +135,6 @@ public class IndexTest {
         assertEquals(8., index.getDouble(1), 1e-10);
         assertEquals(3, index.getInt(2));
         assertEquals(3., index.getDouble(2), 1e-10);
-
-        boolean exceptional = false;
-        try {
-            index.setLabel(0, "Test");
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertEquals(true, exceptional);
     }
 
     @Test
@@ -143,6 +161,14 @@ public class IndexTest {
         one = VarInt.scalar(3);
         assertEquals(1, one.rowCount());
         assertEquals(3, one.getInt(0));
+
+        one.addRows(2);
+        one.setInt(2, 10);
+        assertEquals(3, one.rowCount());
+        assertEquals(10, one.getInt(2));
+
+        one.setLabel(0, "?");
+        assertTrue(one.isMissing(0));
     }
 
     @Test
@@ -169,7 +195,6 @@ public class IndexTest {
         }
 
         wrap[2] = 10;
-
         assertEquals(10, x2.getInt(2));
     }
 
@@ -193,13 +218,6 @@ public class IndexTest {
         x.setLabel(0, "10");
         assertEquals(3, x.rowCount());
         assertEquals("10", x.getLabel(0));
-    }
-
-    @Test
-    public void testSetDictionary() {
-        VarInt x = VarInt.copy(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
-        x.setLevels(new String[]{"x"});
     }
 
     @Test

@@ -235,11 +235,6 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public List<String> completeLevels(String varName) {
-        return source.completeLevels(varName);
-    }
-
-    @Override
     public boolean getBoolean(int row, int col) {
         return source.getBoolean(mapping.get(row), colIndexes[col]);
     }

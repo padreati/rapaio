@@ -44,17 +44,17 @@ public class SortVarTest {
     @Test
     public void smokeTest() {
         Var v = VarInt.empty();
-        Var sorted = new VFRefSort(index(v, true)).fitApply(v);
+        Var sorted = new VFRefSort(integerComparator(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = VarDouble.empty();
-        sorted = new VFRefSort(numeric(v, true)).fitApply(v);
+        sorted = new VFRefSort(doubleComparator(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = VarNominal.empty(0);
-        sorted = new VFRefSort(nominal(v, true)).fitApply(v);
+        sorted = new VFRefSort(labelComparator(v, true)).fitApply(v);
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
     }
@@ -201,7 +201,7 @@ public class SortVarTest {
     @Test
     public void testMissing() {
         Var v = VarInt.seq(1, 10);
-        v = new VFRefSort(index(v, true)).fitApply(v);
+        v = new VFRefSort(integerComparator(v, true)).fitApply(v);
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
         }

@@ -25,74 +25,131 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
-import rapaio.data.unique.UniqueRows;
+import rapaio.data.accessor.VarLongDataAccessor;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Variable which stores long 64-bit integer values.
  * Basically the algorithms uses double for computations, so any
- * usage of stamps would fail to work. However, for some certain
+ * usage of long values would fail to work. However, for some certain
  * necessary and specific usage scenarios this type of variable
- * is useful. One plausible scenario is the representation on
- * time stamps.
+ * is useful.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarLong extends AbstractVar {
 
     /**
-     * Builds an empty stamp var of size 0
+     * Builds an empty long value variable of size 0
      *
-     * @return new instance of stamp var
+     * @return new instance of long variable
      */
     public static VarLong empty() {
         return new VarLong(0, 0, MISSING_VALUE);
     }
 
     /**
-     * Builds a stamp var of given size with missing values
+     * Builds a long value variable of given size with missing values
      *
-     * @param rows var size
-     * @return new instance of stamp var
+     * @param rows variable size
+     * @return new instance of long value variable
      */
     public static VarLong empty(int rows) {
         return new VarLong(rows, rows, MISSING_VALUE);
     }
 
     /**
-     * Builds a stamp var of size 1 with given fill value
+     * Builds a long value variable of size 1 with given fill value
      *
      * @param value fill value
-     * @return new instance of stamp var
+     * @return new instance of long value variable
      */
     public static VarLong scalar(long value) {
         return new VarLong(1, 1, value);
     }
 
     /**
-     * Builds a stamp var of given size with given fill value
+     * Builds a long value variable of given size with filled with 0
      *
-     * @param rows  var size
+     * @param rows variable size
+     * @return new instance of long value variable
+     */
+    public static VarLong fill(int rows) {
+        return new VarLong(rows, rows, 0);
+    }
+
+    /**
+     * Builds a long value variable of given size with given fill value
+     *
+     * @param rows  variable size
      * @param value fill value
-     * @return new instance of stamp var
+     * @return new instance of long value variable
      */
     public static VarLong fill(int rows, long value) {
         return new VarLong(rows, rows, value);
     }
 
     /**
-     * Builds a stamp var with values copied from given array
+     * Builds a long value variable with values copied from given array
      *
      * @param values array of value
-     * @return new instance of stamp var
+     * @return new instance of long value variable
+     */
+    public static VarLong copy(int... values) {
+        VarLong stamp = new VarLong(values.length, values.length, 0);
+        for (int i = 0; i < values.length; i++) {
+            stamp.data[i] = values[i];
+        }
+        return stamp;
+    }
+
+    /**
+     * Builds a long value variable with values copied from given list
+     *
+     * @param values array of value
+     * @return new instance of long value variable
+     */
+    public static VarLong copy(List<Integer> values) {
+        VarLong stamp = new VarLong(values.size(), values.size(), 0);
+        for (int i = 0; i < values.size(); i++) {
+            stamp.data[i] = values.get(i);
+        }
+        return stamp;
+    }
+
+    /**
+     * Builds a long value variable with values copied from given variable
+     *
+     * @param var source variable
+     * @return new instance of long value variable
+     */
+    public static VarLong copy(Var var) {
+        if (var instanceof VarLong) {
+            VarLong stamp = VarLong.fill(var.rowCount());
+            System.arraycopy(((VarLong) var).data, 0, stamp.data, 0, var.rowCount());
+            return stamp;
+        }
+        VarLong stamp = new VarLong(var.rowCount(), var.rowCount(), 0);
+        for (int i = 0; i < var.rowCount(); i++) {
+            stamp.data[i] = var.getLong(i);
+        }
+        return stamp;
+    }
+
+    /**
+     * Builds a long value variable with values copied from given array
+     *
+     * @param values array of value
+     * @return new instance of long value variable
      */
     public static VarLong copy(long... values) {
         VarLong stamp = new VarLong(0, 0, 0);
@@ -102,7 +159,7 @@ public class VarLong extends AbstractVar {
     }
 
     /**
-     * Builds a stamp var as a wrapper over the arrat of long values
+     * Builds a long value variable as a wrapper over the array of long values
      *
      * @param values wrapped array of values
      * @return new instance of stamp var
@@ -115,24 +172,72 @@ public class VarLong extends AbstractVar {
     }
 
     /**
-     * Builds a stamp var with values as a sequence in increasing order starting with 0 and of given length
+     * Builds a long value variable with values as a sequence in increasing order starting with 0 and of given length
      *
      * @param len size of the var
-     * @return new instance of stamp var
+     * @return new instance of long value variable
      */
     public static VarLong seq(int len) {
         return seq(0, len, 1);
     }
 
     /**
-     * Builds a stamp var with values as an increasing sequence starting with a given start point and of given length
+     * Builds a long value variable with values as an increasing sequence starting with a given start
+     * point and of given length
      *
      * @param start start value
-     * @param len   size of the var
-     * @return new instance of stamp var
+     * @param len   size of the variable
+     * @return new instance of long value variable
      */
     public static VarLong seq(long start, int len) {
         return seq(start, len, 1);
+    }
+
+    /**
+     * Builds a long value variable with values provided by a supplier
+     *
+     * @param rows number of rows
+     * @param supplier long value supplier
+     * @return long value variable
+     */
+    public static VarLong from(int rows, Supplier<Long> supplier) {
+        VarLong var = VarLong.empty();
+        for (int i = 0; i < rows; i++) {
+            var.addLong(supplier.get());
+        }
+        return var;
+    }
+
+    /**
+     * Builds a long value variable with given values provided by a function
+     * of row number
+     *
+     * @param rows number of rows
+     * @param supplier supplier function which produces a long value from row number
+     * @return long value variable
+     */
+    public static VarLong from(int rows, Function<Integer, Long> supplier) {
+        VarLong var = VarLong.empty();
+        for (int i = 0; i < rows; i++) {
+            var.addLong(supplier.apply(i));
+        }
+        return var;
+    }
+
+    /**
+     * Builds a long value variable with given values provided by a function of transformation applied
+     * to the values from the source variable
+     *
+     * @param source source variable
+     * @param transform transform function applied to values of the source variable
+     * @return long value variable
+     */
+    public static VarLong from(Var source, Function<Long, Long> transform) {
+        VarLong var = VarLong.empty();
+        for (int i = 0; i < source.rowCount(); i++) {
+            var.addLong(transform.apply(source.getLong(i)));
+        }
+        return var;
     }
 
     /**
@@ -159,27 +264,48 @@ public class VarLong extends AbstractVar {
     private long[] data;
     private int rows;
 
-    // static builders
-
     private VarLong(int rows, int capacity, long fill) {
-        super();
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
         this.data = new long[capacity];
         this.rows = rows;
-        if (fill != 0)
+        if (fill != 0) {
             Arrays.fill(data, 0, rows, fill);
+        }
     }
 
-    // private constructor, only public static builders available
+    public static Collector<Long, VarLong, VarLong> collector() {
 
-    public static VarLong from(int rows, Supplier<Long> supplier) {
-        VarLong var = VarLong.empty();
-        for (int i = 0; i < rows; i++) {
-            var.addLong(supplier.get());
-        }
-        return var;
+        return new Collector<>() {
+            @Override
+            public Supplier<VarLong> supplier() {
+                return VarLong::empty;
+            }
+
+            @Override
+            public BiConsumer<VarLong, Long> accumulator() {
+                return VarLong::addLong;
+            }
+
+            @Override
+            public BinaryOperator<VarLong> combiner() {
+                return (x, y) -> {
+                    y.stream().forEach(s -> x.addLong(s.getLong()));
+                    return x;
+                };
+            }
+
+            @Override
+            public Function<VarLong, VarLong> finisher() {
+                return var -> var;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
     }
 
     @Override
@@ -204,15 +330,6 @@ public class VarLong extends AbstractVar {
         return VType.LONG;
     }
 
-    private void rangeCheck(int index) {
-        if (index > rows || index < 0)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-
-    private String outOfBoundsMsg(int index) {
-        return "Stamp: " + index + ", Size: " + rows;
-    }
-
     @Override
     public int rowCount() {
         return rows;
@@ -232,7 +349,7 @@ public class VarLong extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = VarLong.MISSING_VALUE;
+            data[rows + i] = MISSING_VALUE;
         }
         rows += rowCount;
     }
@@ -274,29 +391,35 @@ public class VarLong extends AbstractVar {
 
     @Override
     public void setLabel(int row, String value) {
+        if ("?".equals(value)) {
+            setMissing(row);
+            return;
+        }
         setLong(row, Long.parseLong(value));
     }
 
     @Override
     public void addLabel(String value) {
+        if ("?".equals(value)) {
+            addMissing();
+            return;
+        }
         addLong(Long.parseLong(value));
     }
 
     @Override
     public List<String> levels() {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        throw new IllegalArgumentException("Operation not available for long variable");
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        throw new IllegalArgumentException("Operation not available for long variable");
     }
 
     @Override
     public boolean getBoolean(int row) {
-        if (getLong(row) == 1) return true;
-        if (getLong(row) == 0) return false;
-        throw new IllegalArgumentException("Stamp value could not be represented as binary value");
+        return getLong(row) == 1;
     }
 
     @Override
@@ -343,7 +466,6 @@ public class VarLong extends AbstractVar {
 
     @Override
     public void remove(int row) {
-        rangeCheck(row);
         int numMoved = rows - row - 1;
         if (numMoved > 0) {
             System.arraycopy(data, row + 1, data, row, numMoved);
@@ -356,28 +478,34 @@ public class VarLong extends AbstractVar {
         rows = 0;
     }
 
-    @Override
-    public UniqueRows uniqueRows() {
-        LongAVLTreeSet set = new LongAVLTreeSet();
-        for (int i = 0; i < rowCount(); i++) {
-            set.add(data[i]);
-        }
-        int uniqueId = 0;
-        Long2IntOpenHashMap uniqueKeys = new Long2IntOpenHashMap();
-        for (long key : set) {
-            uniqueKeys.put(key, uniqueId);
-            uniqueId++;
-        }
-        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        for (int i = 0; i < rows; i++) {
-            long key = data[i];
-            int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
+    public VarLongDataAccessor getDataAccessor() {
+        return new VarLongDataAccessor() {
+
+            @Override
+            public long getMissingValue() {
+                return MISSING_VALUE;
             }
-            uniqueRowLists.get(id).add(i);
-        }
-        return new UniqueRows(uniqueRowLists);
+
+            @Override
+            public int getRowCount() {
+                return rows;
+            }
+
+            @Override
+            public void setRowCount(int rowCount) {
+                rows = rowCount;
+            }
+
+            @Override
+            public long[] getData() {
+                return data;
+            }
+
+            @Override
+            public void setData(long[] values) {
+                data = values;
+            }
+        };
     }
 
     @Override
@@ -392,6 +520,6 @@ public class VarLong extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Stamp[" + rowCount() + "]";
+        return "VarLong[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

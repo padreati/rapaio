@@ -296,11 +296,6 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public List<String> completeLevels(String varName) {
-        return vars[varIndex(varName)].completeLevels();
-    }
-
-    @Override
     public boolean getBoolean(int row, int col) {
         return vars[col].getBoolean(row);
     }

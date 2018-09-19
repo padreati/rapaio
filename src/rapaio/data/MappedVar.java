@@ -25,8 +25,6 @@
 
 package rapaio.data;
 
-import rapaio.data.unique.UniqueRows;
-
 import java.util.List;
 
 /**
@@ -96,7 +94,7 @@ public class MappedVar extends AbstractVar {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
-    public Var source() {
+    public Var getSource() {
         return source;
     }
 
@@ -212,11 +210,6 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clear() {
         mapping.clear();
-    }
-
-    @Override
-    public UniqueRows uniqueRows() {
-        return UniqueRows.from(this);
     }
 
     @Override

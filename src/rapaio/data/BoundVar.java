@@ -25,8 +25,6 @@
 
 package rapaio.data;
 
-import rapaio.data.unique.UniqueRows;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -266,11 +264,6 @@ public class BoundVar extends AbstractVar {
     @Override
     public void clear() {
         throw new IllegalArgumentException("This operation is not available for bound variable");
-    }
-
-    @Override
-    public UniqueRows uniqueRows() {
-        return UniqueRows.from(this);
     }
 
     @Override

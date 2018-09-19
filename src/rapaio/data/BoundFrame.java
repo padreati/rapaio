@@ -344,11 +344,6 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public List<String> completeLevels(String varName) {
-        return vars.get(varIndex(varName)).completeLevels();
-    }
-
-    @Override
     public boolean getBoolean(int row, int col) {
         return vars.get(col).getBoolean(row);
     }

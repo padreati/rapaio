@@ -25,8 +25,6 @@
 
 package rapaio.data;
 
-import rapaio.data.unique.UniqueRows;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -212,11 +210,6 @@ public class VarText extends AbstractVar {
     @Override
     public void clear() {
         values.clear();
-    }
-
-    @Override
-    public UniqueRows uniqueRows() {
-        throw new RuntimeException("Not yet implemented.");
     }
 
     @Override

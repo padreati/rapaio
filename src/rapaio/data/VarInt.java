@@ -25,22 +25,15 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.unique.UniqueRows;
+import rapaio.data.accessor.VarIntDataAccessor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -48,22 +41,20 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Builds a numeric variable which stores values as 32-bit integers.
- * There are two general usage scenarios: use variable as an
- * positive integer index or save storage for numeric
- * variables from Z loosing decimal precision.
+ * Builds a numeric variable which stores values as 32-bit integers. There are two general usage scenarios: 
+ * use variable as an positive integer index or save storage for numeric variables from Z loosing decimal 
+ * precision.
  * <p>
- * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in
- * add/set operations will lead to missing values.
+ * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in add/set operations will lead to missing values.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public final class VarInt extends AbstractVar {
 
     /**
-     * Builds an empty index var of size 0
+     * Builds an empty integer variable of size 0
      *
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt empty() {
         return new VarInt(0, 0, 0);
@@ -73,7 +64,7 @@ public final class VarInt extends AbstractVar {
      * Builds an index of given size filled with missing values
      *
      * @param rows index size
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt empty(int rows) {
         return new VarInt(rows, rows, 0);
@@ -83,28 +74,28 @@ public final class VarInt extends AbstractVar {
      * Builds an index of size 1 filled with the given value
      *
      * @param value fill value
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt scalar(int value) {
         return new VarInt(1, 1, value);
     }
 
     /**
-     * Builds an index var of given size with given fill value
+     * Builds an integer variable of given size with given fill value
      *
-     * @param rows  index size
+     * @param rows  integer variable size
      * @param value fill value
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt fill(int rows, int value) {
         return new VarInt(rows, rows, value);
     }
 
     /**
-     * Builds an index with values copied from a given array
+     * Builds an integer variable with values copied from a given array
      *
      * @param values given array of values
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt copy(int... values) {
         VarInt index = new VarInt(0, 0, 0);
@@ -114,10 +105,10 @@ public final class VarInt extends AbstractVar {
     }
 
     /**
-     * Builds an index as a wrapper over a given array of index values
+     * Builds an integer variable as a wrapper over a given array of integer variable values
      *
      * @param values given array of values
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt wrap(int... values) {
         VarInt index = new VarInt(0, 0, 0);
@@ -127,33 +118,33 @@ public final class VarInt extends AbstractVar {
     }
 
     /**
-     * Builds an index of given size as a ascending sequence starting with 0
+     * Builds an integer variable of given size as a ascending sequence starting with 0
      *
-     * @param len size of the index
-     * @return new instance of index var
+     * @param len size of the integer variable
+     * @return new instance of integer variable
      */
     public static VarInt seq(int len) {
         return seq(0, len, 1);
     }
 
     /**
-     * Builds an index of given size as ascending sequence with a given start value
+     * Builds an integer variable of given size as ascending sequence with a given start value
      *
      * @param start start value
-     * @param len   size of the index
-     * @return new instance of index var
+     * @param len   size of the integer variable
+     * @return new instance of integer variable
      */
     public static VarInt seq(int start, int len) {
         return seq(start, len, 1);
     }
 
     /**
-     * Builds an index of given size as ascending sequence with a given start value and a given step
+     * Builds an integer variable of given size as ascending sequence with a given start value and a given step
      *
      * @param start start value
      * @param len   size of the index
      * @param step  increment value
-     * @return new instance of index var
+     * @return new instance of integer variable
      */
     public static VarInt seq(final int start, final int len, final int step) {
         VarInt index = new VarInt(len, len, 0);
@@ -165,18 +156,22 @@ public final class VarInt extends AbstractVar {
         return index;
     }
 
-    public static VarInt from(int len, Function<Integer, Integer> supplier) {
-        VarInt index = new VarInt(len, len, 0);
+    /**
+     * Builds an integer variable of given size with values provided by a supplier with row as parameter
+     *
+     * @param rows number of rows
+     * @param supplier integer value supplier
+     * @return new integer variable
+     */
+    public static VarInt from(int rows, Function<Integer, Integer> supplier) {
+        VarInt index = new VarInt(rows, rows, 0);
         for (int i = 0; i < index.data.length; i++) {
             index.data[i] = supplier.apply(i);
         }
         return index;
     }
 
-    // private constructor, only public static builders available
-
     private static final long serialVersionUID = -2809318697565282310L;
-
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
     private int[] data;
     private int rows;
@@ -229,14 +224,12 @@ public final class VarInt extends AbstractVar {
     }
 
     private void ensureCapacityInternal(int minCapacity) {
-        // overflow-conscious code
         if (minCapacity < data.length)
             return;
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
-        // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
     }
 
@@ -320,23 +313,12 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        TreeSet<Integer> distinctValues = new TreeSet<>();
-        for (int i = 0; i < rowCount(); i++) {
-            if (isMissing(i))
-                continue;
-            distinctValues.add(getInt(i));
-        }
-        List<String> levels = new ArrayList<>();
-        levels.add("?");
-        for (Integer value : distinctValues) {
-            levels.add(String.valueOf(value));
-        }
-        return levels;
+        throw new IllegalStateException("Operation not available for integer variables.");
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw new IllegalArgumentException("Operation not available for index vectors.");
+        throw new IllegalStateException("Operation not available for integer variables.");
     }
 
     @Override
@@ -401,42 +383,48 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public UniqueRows uniqueRows() {
-        IntAVLTreeSet set = new IntAVLTreeSet();
-        for (int i = 0; i < rowCount(); i++) {
-            set.add(data[i]);
-        }
-        int uniqueId = 0;
-        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
-        for (int key : set) {
-            uniqueKeys.put(key, uniqueId);
-            uniqueId++;
-        }
-        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        for (int i = 0; i < rows; i++) {
-            int key = data[i];
-            int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
-            }
-            uniqueRowLists.get(id).add(i);
-        }
-        return new UniqueRows(uniqueRowLists);
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return VarInt.empty(rows);
     }
 
     @Override
     public String toString() {
-        return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
+        return "VarInt[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     @Override
     public VarInt solidCopy() {
         return (VarInt) super.solidCopy();
+    }
+
+    public VarIntDataAccessor getDataAccessor() {
+        return new VarIntDataAccessor() {
+
+            @Override
+            public int getMissingValue() {
+                return MISSING_VALUE;
+            }
+
+            @Override
+            public int getRowCount() {
+                return rows;
+            }
+
+            @Override
+            public void setRowCount(int rowCount) {
+                rows = rowCount;
+            }
+
+            @Override
+            public int[] getData() {
+                return data;
+            }
+
+            @Override
+            public void setData(int[] values) {
+                data = values;
+            }
+        };
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

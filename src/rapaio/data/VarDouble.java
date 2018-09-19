@@ -26,13 +26,8 @@
 package rapaio.data;
 
 
-import it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap;
-import it.unimi.dsi.fastutil.doubles.DoubleAVLTreeSet;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.unique.UniqueRows;
+import rapaio.data.accessor.VarDoubleDataAccessor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -305,10 +300,6 @@ public final class VarDouble extends AbstractVar {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
-        if (capacity < rows) {
-            throw new IllegalArgumentException(
-                    "Capacity provided (" + capacity + ") is less than the row count (" + rows + ").");
-        }
         this.data = new double[capacity];
         this.rows = rows;
         if (fill != 0)
@@ -523,29 +514,6 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public UniqueRows uniqueRows() {
-        DoubleAVLTreeSet set = new DoubleAVLTreeSet();
-        for (int i = 0; i < rows; i++) {
-            set.add(data[i]);
-        }
-        int uniqueId = 0;
-        Double2IntOpenHashMap uniqueKeys = new Double2IntOpenHashMap();
-        for (double key : set) {
-            uniqueKeys.put(key, uniqueId);
-            uniqueId++;
-        }
-        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        for (int i = 0; i < rows; i++) {
-            int id = uniqueKeys.get(data[i]);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
-            }
-            uniqueRowLists.get(id).add(i);
-        }
-        return new UniqueRows(uniqueRowLists);
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return VarDouble.empty(rows);
     }
@@ -561,6 +529,35 @@ public final class VarDouble extends AbstractVar {
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;
+    }
+
+    public VarDoubleDataAccessor getDataAccessor() {
+        return new VarDoubleDataAccessor() {
+            @Override
+            public double getMissingValue() {
+                return missingValue;
+            }
+
+            @Override
+            public double[] getData() {
+                return data;
+            }
+
+            @Override
+            public void setData(double[] values) {
+                data = values;
+            }
+
+            @Override
+            public int getRowCount() {
+                return rows;
+            }
+
+            @Override
+            public void setRowCount(int rowCount) {
+                rows = rowCount;
+            }
+        };
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

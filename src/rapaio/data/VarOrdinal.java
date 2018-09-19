@@ -25,13 +25,7 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import rapaio.data.unique.UniqueRows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,30 +122,6 @@ public final class VarOrdinal extends FactorBase {
             data[rows + i] = 0;
         }
         rows += rowCount;
-    }
-
-    @Override
-    public UniqueRows uniqueRows() {
-        IntAVLTreeSet set = new IntAVLTreeSet();
-        for (int i = 0; i < rowCount(); i++) {
-            set.add(data[i]);
-        }
-        int uniqueId = 0;
-        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
-        for (int key : set) {
-            uniqueKeys.put(key, uniqueId);
-            uniqueId++;
-        }
-        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        for (int i = 0; i < rows; i++) {
-            int key = data[i];
-            int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
-            }
-            uniqueRowLists.get(id).add(i);
-        }
-        return new UniqueRows(uniqueRowLists);
     }
 
     @Override

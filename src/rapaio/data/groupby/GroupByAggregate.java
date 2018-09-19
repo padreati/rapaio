@@ -132,30 +132,11 @@ public class GroupByAggregate implements Printable {
     }
 
     private Var shrinkCast(Var var) {
-        Var cast = castShort(var);
-        if (cast != null) return cast;
-        cast = castInt(var);
+        Var cast = castInt(var);
         if (cast != null) return cast;
         cast = castLong(var);
         if (cast != null) return cast;
-        cast = castFloat(var);
-        if (cast != null) return cast;
         return var;
-    }
-
-    private Var castShort(Var var) {
-        for (int i = 0; i < var.rowCount(); i++) {
-            double value = var.getDouble(i);
-            if (Double.isNaN(value)) continue;
-            if (Double.isInfinite(value)) return null;
-            double intVal = MTools.rint(value);
-            if (!(intVal == value && intVal > Short.MIN_VALUE && intVal <= Short.MAX_VALUE)) {
-                return null;
-            }
-        }
-        Var varShort = VarShort.empty(var.rowCount()).withName(var.name());
-        fillInt(var, varShort);
-        return varShort;
     }
 
     private Var castInt(Var var) {
@@ -204,27 +185,6 @@ public class GroupByAggregate implements Printable {
             varLong.setLong(i, val);
         }
         return varLong;
-    }
-
-    private Var castFloat(Var var) {
-        for (int i = 0; i < var.rowCount(); i++) {
-            double value = var.getDouble(i);
-            if (Double.isNaN(value)) continue;
-            if (Double.isInfinite(value)) return null;
-            float floatVal = (float) value;
-            if (floatVal != value) {
-                return null;
-            }
-        }
-        Var varFloat = VarFloat.empty(var.rowCount()).withName(var.name());
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.isMissing(i)) {
-                varFloat.addMissing();
-                continue;
-            }
-            varFloat.setDouble(i, var.getDouble(i));
-        }
-        return varFloat;
     }
 
     public Frame toFrame() {
@@ -324,11 +284,9 @@ public class GroupByAggregate implements Printable {
                 }
                 switch (aggregateType) {
                     case DOUBLE:
-                    case FLOAT:
                         unstacked.setDouble(rowIndex, varIndex, result.getDouble(i, aggregateVarIndex));
                         break;
                     case INT:
-                    case SHORT:
                         unstacked.setInt(rowIndex, varIndex, result.getInt(i, aggregateVarIndex));
                         break;
                     case BOOLEAN:

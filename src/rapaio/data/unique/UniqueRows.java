@@ -32,11 +32,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongAVLTreeSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.core.RandomSource;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.accessor.VarDoubleDataAccessor;
 import rapaio.data.filter.frame.FFRefSort;
 
 import java.util.TreeSet;
@@ -47,14 +52,23 @@ import java.util.TreeSet;
 public class UniqueRows {
 
     public static UniqueRows from(Var var) {
+
+        if(var instanceof VarDouble) {
+            return fromVarDouble((VarDouble) var);
+        }
+        if(var instanceof VarInt) {
+            return fromVarInt((VarInt)var);
+        }
+        if(var instanceof VarLong) {
+            return fromVarLong((VarLong)var);
+        }
+
         switch (var.type()) {
             case BOOLEAN:
                 return fromBoolean(var);
-            case SHORT:
             case INT:
             case ORDINAL:
                 return fromInt(var);
-            case FLOAT:
             case DOUBLE:
                 return fromDouble(var);
             case NOMINAL:
@@ -62,6 +76,83 @@ public class UniqueRows {
             default:
                 throw new IllegalArgumentException("Not implemented");
         }
+    }
+
+    public static UniqueRows fromVarLong(VarLong var) {
+        LongAVLTreeSet set = new LongAVLTreeSet();
+        long[] data = var.getDataAccessor().getData();
+        int rows = var.getDataAccessor().getRowCount();
+        for (int i = 0; i < rows; i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Long2IntOpenHashMap uniqueKeys = new Long2IntOpenHashMap();
+        for (long key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            long key = data[i];
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
+    }
+
+    public static UniqueRows fromVarInt(VarInt var) {
+        IntAVLTreeSet set = new IntAVLTreeSet();
+        int[] data = var.getDataAccessor().getData();
+        int rows = var.getDataAccessor().getRowCount();
+        for (int i = 0; i < rows; i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
+        for (int key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rows; i++) {
+            int key = data[i];
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
+    }
+
+    public static UniqueRows fromVarDouble(VarDouble var) {
+        VarDoubleDataAccessor accessor = var.getDataAccessor();
+        double[] data = accessor.getData();
+        int rowCount = accessor.getRowCount();
+
+        DoubleAVLTreeSet set = new DoubleAVLTreeSet();
+        for (int i = 0; i < rowCount; i++) {
+            set.add(data[i]);
+        }
+        int uniqueId = 0;
+        Double2IntOpenHashMap uniqueKeys = new Double2IntOpenHashMap();
+        for (double key : set) {
+            uniqueKeys.put(key, uniqueId);
+            uniqueId++;
+        }
+        Int2ObjectOpenHashMap<IntList> uniqueRowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < rowCount; i++) {
+            double key = data[i];
+            int id = uniqueKeys.get(key);
+            if (!uniqueRowLists.containsKey(id)) {
+                uniqueRowLists.put(id, new IntArrayList());
+            }
+            uniqueRowLists.get(id).add(i);
+        }
+        return new UniqueRows(uniqueRowLists);
     }
 
     public static UniqueRows fromBoolean(Var var) {

@@ -216,9 +216,7 @@ public interface CTreeTest extends Tagged, Serializable {
             DTable dt = DTable.fromWeights(df, testName, targetName, weights, false);
             double value = function.compute(dt);
             CTreeCandidate candidate = new CTreeCandidate(value, testName);
-            for (String label : df.completeLevels(testName)) {
-                candidate.addGroup(RowPredicate.nomEqual(testName, label));
-            }
+            df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
             return candidate;
         }
 

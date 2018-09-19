@@ -71,12 +71,6 @@ public enum VType {
             return VarInt.empty(rows);
         }
     },
-    SHORT(true, false, false, "short") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarShort.empty(rows);
-        }
-    },
     /**
      * Unordered categories: has label representation and
      * also positive integer representation.
@@ -94,12 +88,6 @@ public enum VType {
         @Override
         public Var newInstance(int rows) {
             return VarDouble.empty(rows);
-        }
-    },
-    FLOAT(true, false, false, "float") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarFloat.empty(rows);
         }
     },
     /**

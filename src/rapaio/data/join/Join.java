@@ -287,11 +287,9 @@ public class Join {
             case BOOLEAN:
                 dst.addBoolean(src.getBoolean(row, varIndex));
                 return;
-            case SHORT:
             case INT:
                 dst.addInt(src.getInt(row, varIndex));
                 return;
-            case FLOAT:
             case DOUBLE:
                 dst.addDouble(src.getDouble(row, varIndex));
                 return;

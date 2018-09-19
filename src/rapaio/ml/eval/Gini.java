@@ -72,8 +72,8 @@ public class Gini implements Printable {
 
         Var index = VarInt.seq(actual.rowCount());
         IntComparator cmp = RowComparators.from(
-                RowComparators.numeric(fit, false),
-                RowComparators.index(index, true));
+                RowComparators.doubleComparator(fit, false),
+                RowComparators.integerComparator(index, true));
         Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();
 
         int n = sol.rowCount();
@@ -87,8 +87,8 @@ public class Gini implements Printable {
     private double wgini(Var actual, Var fit, Var weights) {
         Var index = VarInt.seq(actual.rowCount());
         IntComparator cmp = RowComparators.from(
-                RowComparators.numeric(fit, false),
-                RowComparators.index(index, true));
+                RowComparators.doubleComparator(fit, false),
+                RowComparators.integerComparator(index, true));
         Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();
         Var w = new VFRefSort(cmp).fitApply(weights).solidCopy();
 

@@ -373,8 +373,6 @@ public interface Frame extends Serializable, Printable {
 
     List<String> levels(String varName);
 
-    List<String> completeLevels(String varName);
-
     /**
      * Returns binary value from the given cell
      *

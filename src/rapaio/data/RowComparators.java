@@ -49,7 +49,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static IntComparator nominal(final Var var, final boolean asc) {
+    public static IntComparator labelComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
@@ -66,7 +66,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static IntComparator numeric(final Var var, final boolean asc) {
+    public static IntComparator doubleComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
             double d1 = var.getDouble(row1);
@@ -86,12 +86,12 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static IntComparator index(final Var var, final boolean asc) {
+    public static IntComparator integerComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> sign * Integer.compare(var.getInt(row1), var.getInt(row2));
     }
 
-    public static IntComparator stamp(final Var var, final boolean asc) {
+    public static IntComparator longComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {

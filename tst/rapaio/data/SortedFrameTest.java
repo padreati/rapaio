@@ -69,10 +69,10 @@ public class SortedFrameTest {
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            sorted = new FFRefSort(numeric(sorted.rvar(col), asc)).fitApply(sorted);
+            sorted = new FFRefSort(doubleComparator(sorted.rvar(col), asc)).fitApply(sorted);
         }
 
-        sorted = new FFRefSort(numeric(sorted.rvar(0), true)).fitApply(sorted);
+        sorted = new FFRefSort(doubleComparator(sorted.rvar(0), true)).fitApply(sorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.getDouble(i - 1, 0) <= sorted.getDouble(i, 0));
         }
@@ -84,7 +84,7 @@ public class SortedFrameTest {
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
 
-        Frame sort = new FFRefSort(nominal(df.rvar(0), true)).fitApply(df);
+        Frame sort = new FFRefSort(labelComparator(df.rvar(0), true)).fitApply(df);
         assertEquals(3, sort.varCount());
         assertEquals(4, sort.rowCount());
 
@@ -99,14 +99,14 @@ public class SortedFrameTest {
 
     @Test
     public void testSortNominal() {
-        Frame sort = new FFRefSort(nominal(df.rvar(0), true)).fitApply(df);
+        Frame sort = new FFRefSort(labelComparator(df.rvar(0), true)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.getLabel(i - 1, 0);
             String label2 = sort.getLabel(i, 0);
             assertTrue(label1.compareTo(label2) <= 0);
         }
 
-        sort = new FFRefSort(nominal(df.rvar(0), false)).fitApply(df);
+        sort = new FFRefSort(labelComparator(df.rvar(0), false)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.getLabel(i - 1, 0);
             String label2 = sort.getLabel(i, 0);
@@ -117,12 +117,12 @@ public class SortedFrameTest {
     @Test
     public void testSortNumeric() {
         for (int col = 1; col <= 2; col++) {
-            Frame sort = new FFRefSort(numeric(df.rvar(col), true)).fitApply(df);
+            Frame sort = new FFRefSort(doubleComparator(df.rvar(col), true)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.getDouble(i - 1, col) <= sort.getDouble(i, col));
             }
 
-            sort = new FFRefSort(numeric(df.rvar(col), false)).fitApply(df);
+            sort = new FFRefSort(doubleComparator(df.rvar(col), false)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.getDouble(i - 1, col) >= sort.getDouble(i, col));
             }
@@ -131,7 +131,7 @@ public class SortedFrameTest {
 
     @Test
     public void testCols() {
-        Frame sorted = new FFRefSort(nominal(df.rvar(0), true)).fitApply(df);
+        Frame sorted = new FFRefSort(labelComparator(df.rvar(0), true)).fitApply(df);
 
         assertEquals(df.varCount(), sorted.varCount());
         for (int i = 0; i < df.varCount(); i++) {
@@ -154,12 +154,12 @@ public class SortedFrameTest {
             int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
             IntComparator comp = sorted.rvar(col).type().isNominal() ?
-                    nominal(sorted.rvar(0), asc) :
-                    numeric(sorted.rvar(0), asc);
+                    labelComparator(sorted.rvar(0), asc) :
+                    doubleComparator(sorted.rvar(0), asc);
             sorted = new FFRefSort(comp).fitApply(sorted);
         }
 
-        sorted = new FFRefSort(nominal(sorted.rvar("x"), true)).fitApply(sorted);
+        sorted = new FFRefSort(labelComparator(sorted.rvar("x"), true)).fitApply(sorted);
 
         for (int i = 0; i < sorted.rowCount() - 1; i++) {
             assertTrue(sorted.getLabel(i, "x").compareTo(sorted.getLabel(i + 1, "x")) <= 0);

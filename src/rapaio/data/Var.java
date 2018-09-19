@@ -29,7 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
-import rapaio.data.unique.UniqueRows;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
 
@@ -37,9 +36,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -103,55 +100,58 @@ public interface Var extends Serializable, Printable {
         return mapRows(Mapping.wrap(rows));
     }
 
+    /**
+     * Adds empty rows to the current variable. All new values will be added at the end of the
+     * variable and will be filled with missing values.
+     *
+     * @param rowCount number of rows to be added
+     */
     void addRows(int rowCount);
 
     /**
-     * Returns numeric value for the observation specified by row.
+     * Returns numeric double value for the observation specified by row.
      * <p>
      * Returns valid values for numerical var types, otherwise the method
      * returns unspecified value.
      *
      * @param row position of the observation
-     * @return numerical setValue
+     * @return numerical double value
      */
     double getDouble(int row);
 
     /**
-     * Set numeric value for the observation specified by {@param row} to {@param value}.
-     * <p>
-     * Returns valid values for numerical var types, otherwise the method
-     * returns unspecified values.
+     * Set double value for the observation specified by {@param row} to the given {@param value}.
      *
      * @param row   position of the observation
-     * @param value numeric value from position {@param row}
+     * @param value numeric double value from position {@param row}
      */
     void setDouble(int row, double value);
 
     /**
-     * Adds a new value to the last position of the variable.
+     * Adds a new double value to the last position of the variable.
      *
      * @param value value to be added variable
      */
     void addDouble(double value);
 
     /**
-     * Returns index value for the observation specified by {@param row}
+     * Returns integer value for the observation specified by {@param row}
      *
      * @param row position of the observation
-     * @return index value
+     * @return integer value
      */
     int getInt(int row);
 
     /**
-     * Set index value for the observation specified by {@param row}.
+     * Set integer value for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value index value for the observation
+     * @param value integer value for the observation
      */
     void setInt(int row, int value);
 
     /**
-     * Adds an index value to the last position of the variable
+     * Adds an integer value to the last position of the variable
      *
      * @param value value to be added at the end of the variable
      */
@@ -174,7 +174,7 @@ public interface Var extends Serializable, Printable {
     void setLabel(int row, String value);
 
     /**
-     * Adds an index value to the last position of the variable, updates levels
+     * Adds a nominal label value to the last position of the variable, updates levels
      * if is necessary.
      *
      * @param value text label to be added at the end of the variable
@@ -186,29 +186,13 @@ public interface Var extends Serializable, Printable {
      * <p>
      * Term levels contains all the nominal labels used by
      * observations and might contain also additional nominal labels.
-     * Term levels defines the domain of the definition for the nominal var.
-     * <p>
-     * The term levels contains nominal labels sorted in lexicografical order,
-     * so binary search techniques may be used on this var.
+     * Term levels defines the domain of the definition for the nominal variable.
      * <p>
      * For other var types like numerical ones this method returns nothing.
      *
      * @return term levels defined by the nominal var.
      */
     List<String> levels();
-
-    default List<String> completeLevels() {
-        List<String> levels = levels();
-        return levels.subList(1, levels.size());
-    }
-
-    default Stream<String> streamLevels() {
-        return levels().stream();
-    }
-
-    default Stream<String> streamCompleteLevels() {
-        return levels().stream().skip(1);
-    }
 
     /**
      * Replace the used levels with a new one. A mapping between the
@@ -266,25 +250,25 @@ public interface Var extends Serializable, Printable {
     void addBoolean(boolean value);
 
     /**
-     * Gets long integer (stamp) value.
+     * Gets long value.
      *
      * @param row position of the observation
-     * @return long integer value
+     * @return long value
      */
     long getLong(int row);
 
     /**
-     * Set long integer (stamp) value
+     * Set long value
      *
      * @param row   position of the observation
-     * @param value long integer value to be set
+     * @param value long value to be set
      */
     void setLong(int row, long value);
 
     /**
-     * Adds a long integer (stump) value
+     * Adds a long value
      *
-     * @param value long integer value to be added
+     * @param value long value to be added
      */
     void addLong(long value);
 
@@ -334,15 +318,6 @@ public interface Var extends Serializable, Printable {
     Var solidCopy();
 
     /**
-     * Builds a new empty instance of the given type
-     *
-     * @return new empty instance
-     */
-    default Var newInstance() {
-        return newInstance(0);
-    }
-
-    /**
      * Builds a new empty instance of given size
      *
      * @param rows size of the new variable
@@ -358,12 +333,13 @@ public interface Var extends Serializable, Printable {
     }
 
     /**
-     * @return a stream of variables spots
+     * Fit and apply the given variable filters. The filters received as parameters are applied in
+     * the order they appear in the array. Depending on the filter variable instance, it creates or not
+     * a new copy of the variable.
+     *
+     * @param inputFilters array of input filters
+     * @return transformed variable after the given variable filter are applied successively
      */
-    default List<VSpot> spotList() {
-        return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
-    }
-
     default Var fitApply(VFilter... inputFilters) {
         Var var = this;
         for (VFilter filter : inputFilters) {
@@ -373,7 +349,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default Var applyDouble(BiFunction<Integer, Double, Double> fun, boolean copy) {
-        if(copy) {
+        if (copy) {
             Var duplicate = this.solidCopy();
             for (int i = 0; i < rowCount(); i++) {
                 duplicate.setDouble(i, fun.apply(i, duplicate.getDouble(i)));
@@ -387,7 +363,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default Var applyDouble(Function<Double, Double> fun, boolean copy) {
-        if(copy) {
+        if (copy) {
             Var duplicate = this.solidCopy();
             for (int i = 0; i < duplicate.rowCount(); i++) {
                 duplicate.setDouble(i, fun.apply(duplicate.getDouble(i)));
@@ -404,23 +380,18 @@ public interface Var extends Serializable, Printable {
         return refComparator(true);
     }
 
-    default UniqueRows getUnique() {
-        return UniqueRows.from(this);
-    }
-
     default IntComparator refComparator(boolean asc) {
         switch (this.type()) {
-            case TEXT:
-            case NOMINAL:
-                return RowComparators.nominal(this, asc);
+            case DOUBLE:
+                return RowComparators.doubleComparator(this, asc);
             case LONG:
-                return RowComparators.stamp(this, asc);
+                return RowComparators.longComparator(this, asc);
             case ORDINAL:
             case INT:
             case BOOLEAN:
-                return RowComparators.index(this, asc);
+                return RowComparators.integerComparator(this, asc);
             default:
-                return RowComparators.numeric(this, asc);
+                return RowComparators.labelComparator(this, asc);
         }
     }
 
@@ -448,8 +419,6 @@ public interface Var extends Serializable, Printable {
         }
         return true;
     }
-
-    UniqueRows uniqueRows();
 
     @Override
     default String summary() {

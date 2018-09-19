@@ -97,7 +97,7 @@ public class CorrSpearman implements Correlation, Printable {
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
             VarInt index = VarInt.seq(vars[i].rowCount());
-            sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
+            sorted[i] = new VFRefSort(RowComparators.doubleComparator(vars[i], true)).fitApply(index);
             ranks[i] = VarDouble.fill(vars[i].rowCount());
         }
 
