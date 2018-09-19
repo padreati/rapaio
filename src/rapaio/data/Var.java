@@ -386,7 +386,6 @@ public interface Var extends Serializable, Printable {
                 return RowComparators.doubleComparator(this, asc);
             case LONG:
                 return RowComparators.longComparator(this, asc);
-            case ORDINAL:
             case INT:
             case BOOLEAN:
                 return RowComparators.integerComparator(this, asc);

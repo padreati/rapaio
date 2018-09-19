@@ -65,16 +65,6 @@ public abstract class AbstractVar implements Var {
                     nom.setLabel(i, getLabel(i));
                 }
                 return nom;
-            case ORDINAL:
-                VarOrdinal ord = VarOrdinal.empty(rowCount(), levels()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    if (isMissing(i)) {
-                        ord.setMissing(i);
-                        continue;
-                    }
-                    ord.setLabel(i, getLabel(i));
-                }
-                return ord;
             case INT:
                 VarInt idx = VarInt.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

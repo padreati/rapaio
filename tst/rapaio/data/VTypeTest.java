@@ -17,7 +17,6 @@ public class VTypeTest {
         VarInt varInt = VarInt.empty();
         VarBoolean varBoolean = VarBoolean.empty();
         VarNominal varNominal = VarNominal.empty();
-        VarOrdinal varOrdinal = VarOrdinal.empty();
         VarText varText = VarText.empty();
 
         assertTrue(varDouble.deepEquals(varDouble.type().newInstance()));
@@ -25,7 +24,6 @@ public class VTypeTest {
         assertTrue(varInt.deepEquals(varInt.type().newInstance()));
         assertTrue(varBoolean.deepEquals(varBoolean.type().newInstance()));
         assertTrue(varNominal.deepEquals(varNominal.type().newInstance()));
-        assertTrue(varOrdinal.deepEquals(varOrdinal.type().newInstance()));
         assertTrue(varText.deepEquals(varText.type().newInstance()));
     }
 }

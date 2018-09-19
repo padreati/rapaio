@@ -63,20 +63,6 @@ public class AbstractVarTest {
     }
 
     @Test
-    public void solidOrdinalCopyTest() {
-        Var main = VarOrdinal.empty();
-        main.addLabel("x");
-        main.addLabel("y");
-        main.addLabel("x");
-        main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
-        assertEquals(main.rowCount(), copy.rowCount());
-        for (int i = 0; i < main.rowCount(); i++) {
-            assertEquals(main.getLabel(i), copy.getLabel(i));
-        }
-    }
-
-    @Test
     public void solidIndexCopyTest() {
         Var main = VarInt.wrap(1, 2, 3, 4, 5);
         main.addMissing();

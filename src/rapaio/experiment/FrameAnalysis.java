@@ -81,7 +81,6 @@ public class FrameAnalysis {
                 int countValue;
                 switch (var.type()) {
                     case NOMINAL:
-                    case ORDINAL:
                         countValue = var.levels().size();
                         break;
                     case INT:
@@ -109,7 +108,6 @@ public class FrameAnalysis {
                         break;
                     case INT:
                     case DOUBLE:
-                    case ORDINAL:
                         double min = var.stream().complete().mapToDouble().min().getAsDouble();
                         double max = var.stream().complete().mapToDouble().max().getAsDouble();
                         double step = (max - min) / bins;

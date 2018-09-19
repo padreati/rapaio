@@ -52,7 +52,6 @@ public class VFToIndex extends AbstractVF {
                                 } catch (NumberFormatException nfe) {
                                     return Integer.MIN_VALUE;
                                 }
-                            case ORDINAL:
                             case INT:
                             case BOOLEAN:
                                 return s.getInt();

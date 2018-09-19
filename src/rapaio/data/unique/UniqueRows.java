@@ -67,7 +67,6 @@ public class UniqueRows {
             case BOOLEAN:
                 return fromBoolean(var);
             case INT:
-            case ORDINAL:
                 return fromInt(var);
             case DOUBLE:
                 return fromDouble(var);

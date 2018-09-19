@@ -84,7 +84,7 @@ public class OneRule extends AbstractClassifier {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.ORDINAL, VType.LONG)
+                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG)
                 .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
@@ -99,7 +99,6 @@ public class OneRule extends AbstractClassifier {
                 case BOOLEAN:
                 case INT:
                 case DOUBLE:
-                case ORDINAL:
                 case LONG:
                     ruleSet = buildNumeric(testCol, df, weights);
                     break;
@@ -143,7 +142,6 @@ public class OneRule extends AbstractClassifier {
             case BOOLEAN:
             case INT:
             case DOUBLE:
-            case ORDINAL:
             case LONG:
                 boolean missing = df.rvar(testVar).isMissing(row);
                 double value = df.getDouble(row, testVar);

@@ -92,7 +92,6 @@ public class CTree extends AbstractClassifier {
 
     public CTree() {
         testMap.put(VType.BOOLEAN, CTreeTest.BinaryBinary);
-        testMap.put(VType.ORDINAL, CTreeTest.NumericBinary);
         testMap.put(VType.INT, CTreeTest.NumericBinary);
         testMap.put(VType.DOUBLE, CTreeTest.NumericBinary);
         testMap.put(VType.NOMINAL, CTreeTest.NominalBinary);

@@ -52,7 +52,6 @@ public class VFToNumeric extends AbstractVF {
                                 } catch (NumberFormatException nfe) {
                                     return Double.NaN;
                                 }
-                            case ORDINAL:
                             case INT:
                             case BOOLEAN:
                                 return Integer.valueOf(s.getInt()).doubleValue();

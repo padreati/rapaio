@@ -102,7 +102,6 @@ public class CBinaryRelief {
             switch (type) {
                 case DOUBLE:
                 case INT:
-                case ORDINAL:
                     numeric[i] = true;
                     double min = Minimum.from(v).value();
                     double max = Maximum.from(v).value();

@@ -93,15 +93,6 @@ public class VarTest {
         assertEquals(bin.name(), bin.solidCopy().name());
         assertEquals(bin.name(), bin.mapRows(2,5).solidCopy().name());
 
-        VarOrdinal ord = VarOrdinal.empty(0, "a", "b", "c").withName("ord");
-        ord.addLabel("a");
-        ord.addLabel("b");
-        ord.addLabel("a");
-        ord.addLabel("c");
-        ord.addLabel("a");
-        assertEquals(ord.name(), ord.solidCopy().name());
-        assertEquals(ord.name(), ord.mapRows(2,4).solidCopy().name());
-
         VarNominal nom = VarNominal.copy("a", "b", "a", "c", "a").withName("nom");
         assertEquals(nom.name(), nom.solidCopy().name());
         assertEquals(nom.name(), nom.mapRows(2,4).solidCopy().name());

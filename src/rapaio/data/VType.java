@@ -91,17 +91,6 @@ public enum VType {
         }
     },
     /**
-     * Ordered categories: has label representation and
-     * also positive integer representation, comparison
-     * on numeric representation is allowed
-     */
-    ORDINAL(false, true, false, "ordinal") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarOrdinal.empty(rows);
-        }
-    },
-    /**
      * Long integer values.
      */
     LONG(false, false, false, "long") {
