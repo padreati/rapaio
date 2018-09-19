@@ -27,19 +27,14 @@ package rapaio.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarText extends AbstractVar {
-
-    private static final long serialVersionUID = -7130782019269889796L;
-    private List<String> values = new ArrayList<>();
 
     public static VarText empty() {
         return new VarText(0);
@@ -57,7 +52,7 @@ public class VarText extends AbstractVar {
 
     public static VarText copy(List<String> values) {
         VarText text = new VarText(0);
-        Collections.copy(text.values, values);
+        text.values = new ArrayList<>(values);
         return text;
     }
 
@@ -75,9 +70,14 @@ public class VarText extends AbstractVar {
         return text;
     }
 
+    private static final long serialVersionUID = -7130782019269889796L;
+    private List<String> values;
+
     private VarText(int rows) {
         values = new ArrayList<>(rows);
-        IntStream.range(0, rows).forEach(i -> values.add(null));
+        for (int i = 0; i < rows; i++) {
+            values.add(null);
+        }
     }
 
     @Override
@@ -97,39 +97,53 @@ public class VarText extends AbstractVar {
 
     @Override
     public void addRows(int rowCount) {
-        for (int i = 0; i < rowCount(); i++) {
-            addLabel("");
+        for (int i = 0; i < rowCount; i++) {
+            values.add(null);
         }
     }
 
     @Override
+    public void remove(int row) {
+        values.remove(row);
+    }
+
+    @Override
+    public void clear() {
+        values.clear();
+    }
+
+    private IllegalStateException notImplemented() {
+        return new IllegalStateException("This operation is not available for text variables");
+    }
+
+    @Override
     public double getDouble(int row) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void setDouble(int row, double value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void addDouble(double value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public int getInt(int row) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void setInt(int row, int value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void addInt(int value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
@@ -149,42 +163,42 @@ public class VarText extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        return new ArrayList<>();
+        throw notImplemented();
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public boolean getBoolean(int row) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void setBoolean(int row, boolean value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void addBoolean(boolean value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public long getLong(int row) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void setLong(int row, long value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
     public void addLong(long value) {
-        throw new RuntimeException("This operation is not available for text variables");
+        throw notImplemented();
     }
 
     @Override
@@ -203,22 +217,19 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public void remove(int row) {
-        values.remove(row);
-    }
-
-    @Override
-    public void clear() {
-        values.clear();
-    }
-
-    @Override
-    public Var newInstance(int rows) {
+    public VarText newInstance(int rows) {
         return VarText.empty(rows);
     }
 
     @Override
     public VarText solidCopy() {
-        return (VarText) super.solidCopy();
+        VarText copy = new VarText(0).withName(name());
+        copy.values = new ArrayList<>(values);
+        return copy;
+    }
+
+    @Override
+    public String toString() {
+        return "VarText[rowCount:" + values.size() + "]";
     }
 }

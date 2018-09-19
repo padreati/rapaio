@@ -34,6 +34,7 @@ import rapaio.printer.Summary;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -412,7 +413,7 @@ public interface Var extends Serializable, Printable {
                 if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-12)
                     return false;
             } else {
-                if (!getLabel(i).equals(var.getLabel(i)))
+                if (!Objects.equals(getLabel(i), var.getLabel(i)))
                     return false;
             }
         }
