@@ -24,9 +24,14 @@
 
 package rapaio.data;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import rapaio.math.linear.dense.SolidRM;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -36,6 +41,25 @@ import static org.junit.Assert.*;
  */
 public class SolidFrameTest {
 
+    private static final double TOL = 1e-12;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
+    private Var x;
+    private Var y;
+    private Frame df1;
+
+    @Before
+    public void setUp() {
+        x = VarDouble.wrap(1, 2, 3, 4).withName("x");
+        y = VarNominal.copy("a", "c", "b", "a").withName("y");
+        df1 = SolidFrame.byVars(
+                VarDouble.seq(1, 10).withName("x"),
+                VarDouble.seq(21, 30).withName("y"),
+                VarDouble.seq(101, 111).withName("z"));
+    }
+
     @Test
     public void testEmptySolidFrame() {
         Frame df = SolidFrame.byVars();
@@ -44,39 +68,40 @@ public class SolidFrameTest {
     }
 
     @Test
+    public void testInvalidVarName() {
+        expectedException.expect(NullPointerException.class);
+        df1.varIndex("q");
+    }
+
+    @Test
+    public void testInvalidVarIndex() {
+        expectedException.expect(ArrayIndexOutOfBoundsException.class);
+        expectedException.expectMessage("10");
+        df1.rvar(10);
+    }
+
+    @Test
+    public void testInvalidVarIndexNegative() {
+        expectedException.expect(ArrayIndexOutOfBoundsException.class);
+        expectedException.expectMessage("-10");
+        df1.rvar(-10);
+    }
+
+    @Test
     public void testColIndexes() {
-        Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("x"),
-                VarDouble.empty().withName("y"),
-                VarDouble.empty().withName("z"));
+        assertEquals(3, df1.varCount());
+        assertEquals("x", df1.varNames()[0]);
+        assertEquals("z", df1.varNames()[2]);
+        assertEquals(0, df1.varIndex("x"));
+        assertEquals(2, df1.varIndex("z"));
 
-        assertEquals(3, df.varCount());
-        assertEquals("x", df.varNames()[0]);
-        assertEquals("z", df.varNames()[2]);
-        assertEquals(0, df.varIndex("x"));
-        assertEquals(2, df.varIndex("z"));
+        assertEquals("x", df1.varNames()[0]);
+        assertEquals("y", df1.varNames()[1]);
+        assertEquals("z", df1.varNames()[2]);
 
-        try {
-            df.varIndex("q");
-            assertTrue("should raise an exception", false);
-        } catch (NullPointerException ignored) {
-        }
-
-        try {
-            df.rvar(10);
-            assertTrue("should raise an exception", false);
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-        }
-
-        try {
-            df.rvar(-1);
-            assertTrue("should raise an exception", false);
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-        }
-
-        assertEquals("x", df.varNames()[0]);
-        assertEquals("y", df.varNames()[1]);
-        assertEquals("z", df.varNames()[2]);
+        assertEquals("x", df1.varName(0));
+        assertEquals("y", df1.varName(1));
+        assertEquals("z", df1.varName(2));
     }
 
     @Test
@@ -122,20 +147,26 @@ public class SolidFrameTest {
     }
 
     @Test
+    public void testInvalidBuildFromMappedVars() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Not allowed mapped vectors in solid frame");
+        SolidFrame.byVars(x, y.mapRows(Mapping.range(0, 4)));
+    }
+
+    @Test
+    public void testInvalidBuildFromBoundVars() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Not allowed bounded vectors in solid frame");
+        SolidFrame.byVars(x, y.mapRows(0, 1).bindRows(y.mapRows(2, 3)));
+    }
+
+    @Test
     public void testBuilders() {
-        Var x = VarDouble.wrap(1, 2, 3, 4).withName("x");
-        Var y = VarNominal.copy("a", "c", "b", "a").withName("y");
 
         Frame df1 = SolidFrame.byVars(x, y);
 
         assertEquals(2, df1.varCount());
         assertEquals(4, df1.rowCount());
-
-        try {
-            SolidFrame.byVars(x, y.mapRows(Mapping.range(0, 4)));
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
 
         Frame df2 = SolidFrame.byVars(x).bindVars(y);
         assertEquals(2, df2.varCount());
@@ -168,22 +199,32 @@ public class SolidFrameTest {
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
         for (int i = 0; i < df1.rowCount(); i++) {
-            assertEquals(df1.getDouble(i, "x"), df2.getDouble(i, "x"), 1e-12);
+            assertEquals(df1.getDouble(i, "x"), df2.getDouble(i, "x"), TOL);
             assertEquals(df1.getLabel(i, "y"), df2.getLabel(i, "y"));
         }
 
-        try {
-            SolidFrame.byVars(
-                    VarDouble.wrap(1, 2).withName("x"),
-                    BoundVar.from(VarDouble.wrap(3, 4).withName("y"))
-            );
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
+        assertEquals(2, SolidFrame.byVars(2, x, y).rowCount());
+        Frame empty1 = SolidFrame.emptyFrom(df1, 0);
+        assertEquals(0, empty1.rowCount());
+        assertEquals("x", empty1.rvar(0).name());
     }
 
     @Test
     public void testMatrixBuilders() {
+        SolidRM rm = SolidRM.wrap(new double[][]{
+                {1, 2, 3},
+                {2, 3, 4},
+                {3, 4, 5}
+        });
+        Frame fm = SolidFrame.matrix(rm, "a", "b", "c");
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(rm.get(i, j), fm.getDouble(i, j), TOL);
+            }
+        }
+        assertTrue(fm.deepEquals(SolidFrame.matrix(rm, Arrays.asList("a", "b", "c"))));
+
         Frame df = SolidFrame.matrix(10, "a", "b", "c");
         assertEquals(10, df.rowCount());
         assertEquals(3, df.varCount());
@@ -193,5 +234,11 @@ public class SolidFrameTest {
                 assertEquals(0, df.getDouble(j, i), 1e-12);
             }
         }
+    }
+
+    @Test
+    public void testType() {
+        assertEquals(VType.DOUBLE, SolidFrame.byVars(x, y).type("x"));
+        assertEquals(VType.NOMINAL, SolidFrame.byVars(x, y).type("y"));
     }
 }

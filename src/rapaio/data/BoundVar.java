@@ -138,9 +138,23 @@ public class BoundVar extends AbstractVar {
         }
     }
 
+    private IllegalArgumentException unavailableException() {
+        return new IllegalArgumentException("This operation is not available for bound variable");
+    }
+
     @Override
     public void addRows(int rowCount) {
-        bindRows(newInstance(rowCount));
+        throw unavailableException();
+    }
+
+    @Override
+    public void removeRow(int row) {
+        throw unavailableException();
+    }
+
+    @Override
+    public void clearRows() {
+        throw unavailableException();
     }
 
     @Override
@@ -157,7 +171,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addDouble(double value) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -174,7 +188,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -191,7 +205,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -201,7 +215,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void setLevels(String[] dict) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -218,7 +232,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addBoolean(boolean value) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -235,7 +249,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addLong(long value) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw unavailableException();
     }
 
     @Override
@@ -257,19 +271,7 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public void removeRow(int row) {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
-    }
-
-    @Override
-    public void clearRows() {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
-    }
-
-    @Override
     public Var newInstance(int rows) {
-        if (vars.isEmpty())
-            throw new IllegalArgumentException("this operation is not available for a bounded var with no rows");
         return vars.get(0).newInstance(rows);
     }
 }

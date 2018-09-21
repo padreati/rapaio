@@ -24,7 +24,10 @@
 
 package rapaio.data;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,41 +39,65 @@ import static org.junit.Assert.*;
  */
 public class BoundVarTest {
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
+    private VarDouble a;
+    private VarDouble b;
+    private VarDouble c;
+
+    @Before
+    public void setUp() {
+        a = VarDouble.seq(0, 10);
+        b = VarDouble.empty(1);
+        c = VarDouble.seq(20, 40);
+    }
+
     @Test
-    public void testBuildWrong() {
-        VarDouble a = VarDouble.copy(1, 2);
-        VarBoolean b = VarBoolean.copy(true, false);
+    public void testInvalidBindTypes() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("It is not allowed to bind variables of different types");
+        VarDouble.scalar(1).bindRows(VarInt.seq(10));
+    }
 
-        try {
-            a.bindRows(b);
-            assertTrue("This should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidBindEmptyCollections() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("List of vars is empty");
+        BoundVar.from(new ArrayList<>(), new ArrayList<>());
+    }
 
-        try {
-            BoundVar.from(new ArrayList<>(), new ArrayList<>());
-            assertTrue("This should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidEmptyCountCollection() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("List of counts is empty");
+        List<Var> vars = new ArrayList<>();
+        vars.add(VarDouble.seq(10));
+        BoundVar.from(new ArrayList<>(), vars);
+    }
 
-        try {
-            List<Var> vars = new ArrayList<>();
-            vars.add(a);
-            BoundVar.from(new ArrayList<>(), vars);
-            assertTrue("This should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidNonMatchingCollections() {
+        List<Var> vars = new ArrayList<>();
+        vars.add(VarDouble.seq(10));
+        List<Integer> counts = new ArrayList<>();
+        counts.add(10);
+        counts.add(1);
 
-        try {
-            List<Var> vars = new ArrayList<>();
-            vars.add(a);
-            List<Integer> counts = new ArrayList<>();
-            counts.add(10);
-            counts.add(1);
-            BoundVar.from(counts, vars);
-            assertTrue("This should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("List of counts is not equal with list of variables");
+        BoundVar.from(counts, vars);
+    }
+
+    @Test
+    public void testOutsideBounds() {
+        VarDouble a = VarDouble.wrap(1, 2, 3);
+        VarDouble b = VarDouble.wrap(4, 5);
+        Var x = BoundVar.from(a, b);
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Row index is not valid: 100");
+        x.getDouble(100);
     }
 
     @Test
@@ -89,14 +116,8 @@ public class BoundVarTest {
         assertEquals(1, x.getDouble(0), 1e-12);
         assertEquals(4, x.getDouble(3), 1e-12);
         assertEquals(8, x.getDouble(7), 1e-12);
-        assertEquals(true, x.isMissing(9));
+        assertTrue(x.isMissing(9));
         assertEquals(Math.E, x.getDouble(11), 1e-12);
-
-        try {
-            x.getDouble(100);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignored) {
-        }
 
         List<Var> vars = new ArrayList<>();
         vars.add(a);
@@ -119,49 +140,111 @@ public class BoundVarTest {
         assertEquals(3, z.rowCount());
         assertEquals(1, z.getDouble(0), 1e-12);
         assertEquals(8, z.getDouble(1), 1e-12);
-        assertEquals(true, z.isMissing(2));
+        assertTrue(z.isMissing(2));
 
         z.setMissing(1);
-        assertEquals(true, z.isMissing(1));
+        assertTrue(z.isMissing(1));
 
-        try {
-            x.addMissing();
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        x.addMissing();
     }
 
     @Test
-    public void testValueBound() {
+    public void testInvalidAddDouble() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addDouble(1.0);
+    }
+
+    @Test
+    public void testInvalidAddInt() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addInt(1);
+    }
+
+    @Test
+    public void testInvalidAddLong() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addLong(1);
+    }
+
+    @Test
+    public void testInvalidAddLabel() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addLabel("1");
+    }
+
+    @Test
+    public void testInvalidAddBoolean() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addBoolean(true);
+    }
+
+    @Test
+    public void testInvalidAddMissing() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addMissing();
+    }
+
+    @Test
+    public void testInvalidAddRows() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).addRows(1);
+    }
+
+    @Test
+    public void testInvalidRemoveRow() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).removeRow(1);
+    }
+
+    @Test
+    public void testInvalidAddClear() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).clearRows();
+    }
+
+    @Test
+    public void testInvalidSetLevelk() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("This operation is not available for bound variable");
+        BoundVar.from(a, b, c).setLevels(new String[]{});
+    }
+
+    @Test
+    public void testNewInstance() {
+        Var var = BoundVar.from(VarDouble.seq(10)).newInstance(10);
+        assertTrue(var.deepEquals(VarDouble.empty(10)));
+    }
+
+    @Test
+    public void testDoubleBound() {
         Var a = VarDouble.wrap(1, 2);
         Var b = VarDouble.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setDouble(0, 100);
         assertEquals(100, x.getDouble(0), 1e-12);
-
-        try {
-            x.addDouble(100);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
     }
 
 
     @Test
-    public void testIndexBound() {
+    public void testIntBound() {
         Var a = VarInt.wrap(1, 2);
         Var b = VarInt.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setInt(0, 100);
         assertEquals(100, x.getInt(0));
-
-        try {
-            x.addInt(100);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
     }
 
 
@@ -173,12 +256,6 @@ public class BoundVarTest {
         Var x = a.bindRows(b);
         x.setLong(0, 100);
         assertEquals(100, x.getLong(0));
-
-        try {
-            x.addLong(100);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
     }
 
     @Test
@@ -188,13 +265,7 @@ public class BoundVarTest {
 
         Var x = a.bindRows(b);
         x.setBoolean(0, false);
-        assertEquals(false, x.getBoolean(0));
-
-        try {
-            x.addBoolean(false);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
+        assertFalse(x.getBoolean(0));
     }
 
     @Test
@@ -206,42 +277,8 @@ public class BoundVarTest {
         x.setLabel(0, "b");
         assertEquals("b", x.getLabel(0));
 
-        try {
-            x.addLabel("b");
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
-
         assertEquals("a", x.levels().get(1));
         assertEquals("b", x.levels().get(2));
         assertEquals(3, x.levels().size());
-
-        try {
-            x.setLevels("c", "d");
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
-
-        try {
-            VarNominal.copy("x").bindRows(VarNominal.copy("b"));
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
-    }
-
-    @Test
-    public void testRemove() {
-        Var x = VarDouble.copy(1, 2, 3).bindRows(VarDouble.copy(4, 5, 6));
-
-        try {
-            x.removeRow(1);
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
-        try {
-            x.clearRows();
-            assertTrue("should raise an exception", false);
-        } catch (Throwable ignore) {
-        }
     }
 }
