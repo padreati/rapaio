@@ -35,8 +35,6 @@ import rapaio.printer.Summary;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 /**
@@ -87,7 +85,7 @@ public interface Var extends Serializable, Printable {
      * @param mapping a list of rows from a frame
      * @return new frame with selected rows
      */
-    default Var mapRows(Mapping mapping) {
+    default MappedVar mapRows(Mapping mapping) {
         return MappedVar.byRows(this, mapping);
     }
 
@@ -97,7 +95,7 @@ public interface Var extends Serializable, Printable {
      * @param rows a list of rows
      * @return new frame with selected rows
      */
-    default Var mapRows(int... rows) {
+    default MappedVar mapRows(int... rows) {
         return mapRows(Mapping.wrap(rows));
     }
 
@@ -338,43 +336,31 @@ public interface Var extends Serializable, Printable {
      * the order they appear in the array. Depending on the filter variable instance, it creates or not
      * a new copy of the variable.
      *
-     * @param inputFilters array of input filters
+     * @param filters array of filters
      * @return transformed variable after the given variable filter are applied successively
      */
-    default Var fitApply(VFilter... inputFilters) {
+    default Var fitApply(VFilter... filters) {
         Var var = this;
-        for (VFilter filter : inputFilters) {
+        for (VFilter filter : filters) {
             var = filter.fitApply(var);
         }
         return var;
     }
 
-    default Var applyDouble(BiFunction<Integer, Double, Double> fun, boolean copy) {
-        if (copy) {
-            Var duplicate = this.solidCopy();
-            for (int i = 0; i < rowCount(); i++) {
-                duplicate.setDouble(i, fun.apply(i, duplicate.getDouble(i)));
-            }
-            return duplicate;
+    /**
+     * Apply the already fitted variable filters. The filters received as parameters are applied in
+     * the order they appear in the array. Depending on the filter variable instance, it creates or not
+     * a new copy of the variable.
+     *
+     * @param filters array of filters
+     * @return transformed variable after the given variable filter are applied successively
+     */
+    default Var apply(VFilter... filters) {
+        Var var = this;
+        for (VFilter filter : filters) {
+            var = filter.fitApply(var);
         }
-        for (int i = 0; i < rowCount(); i++) {
-            setDouble(i, fun.apply(i, getDouble(i)));
-        }
-        return this;
-    }
-
-    default Var applyDouble(Function<Double, Double> fun, boolean copy) {
-        if (copy) {
-            Var duplicate = this.solidCopy();
-            for (int i = 0; i < duplicate.rowCount(); i++) {
-                duplicate.setDouble(i, fun.apply(duplicate.getDouble(i)));
-            }
-            return duplicate;
-        }
-        for (int i = 0; i < rowCount(); i++) {
-            setDouble(i, fun.apply(getDouble(i)));
-        }
-        return this;
+        return var;
     }
 
     default IntComparator refComparator() {

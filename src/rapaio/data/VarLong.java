@@ -341,7 +341,7 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public Var mapRows(Mapping mapping) {
+    public MappedVar mapRows(Mapping mapping) {
         return MappedVar.byRows(this, mapping);
     }
 

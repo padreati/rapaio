@@ -67,7 +67,7 @@ public final class VarInt extends AbstractVar {
      * @return new instance of integer variable
      */
     public static VarInt empty(int rows) {
-        return new VarInt(rows, rows, 0);
+        return new VarInt(rows, rows, MISSING_VALUE);
     }
 
     /**

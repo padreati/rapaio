@@ -25,7 +25,11 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.core.RandomSource;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VFStandardize;
+import rapaio.data.filter.var.VFUpdateValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,23 +87,78 @@ public class VarTest {
     public void solidCopyNameTest() {
         VarDouble num = VarDouble.seq(1, 10, 0.5).withName("num");
         assertEquals(num.name(), num.solidCopy().name());
-        assertEquals(num.name(), num.mapRows(2,5).solidCopy().name());
+        assertEquals(num.name(), num.mapRows(2, 5).solidCopy().name());
 
         VarInt idx = VarInt.seq(1, 10).withName("idx");
         assertEquals(idx.name(), idx.solidCopy().name());
-        assertEquals(idx.name(), idx.mapRows(2,5).solidCopy().name());
+        assertEquals(idx.name(), idx.mapRows(2, 5).solidCopy().name());
 
         VarBoolean bin = VarBoolean.copy(true, false, true, false, true).withName("bin");
         assertEquals(bin.name(), bin.solidCopy().name());
-        assertEquals(bin.name(), bin.mapRows(2,5).solidCopy().name());
+        assertEquals(bin.name(), bin.mapRows(2, 5).solidCopy().name());
 
         VarNominal nom = VarNominal.copy("a", "b", "a", "c", "a").withName("nom");
         assertEquals(nom.name(), nom.solidCopy().name());
-        assertEquals(nom.name(), nom.mapRows(2,4).solidCopy().name());
+        assertEquals(nom.name(), nom.mapRows(2, 4).solidCopy().name());
 
         VarLong stp = VarLong.seq(1, 10).withName("stamp");
         assertEquals(stp.name(), stp.solidCopy().name());
-        assertEquals(stp.name(), stp.mapRows(2,5).solidCopy().name());
+        assertEquals(stp.name(), stp.mapRows(2, 5).solidCopy().name());
+    }
 
+    @Test
+    public void testFilters() {
+
+        double[] x = IntStream.range(0, 100).mapToDouble(v -> v).toArray();
+        double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
+
+        VarDouble vx = VarDouble.wrap(x);
+        Var vlog1px = vx.solidCopy().fitApply(VFUpdateValue.with(Math::log1p));
+
+        assertTrue(vx.deepEquals(VarDouble.wrap(x)));
+        assertTrue(vlog1px.deepEquals(VarDouble.wrap(log1px)));
+
+        VFStandardize filter = new VFStandardize();
+        filter.fit(vx);
+        Var fit1 = vx.solidCopy().apply(filter);
+        Var fit2 = vx.solidCopy().fitApply(VFStandardize.filter());
+
+        assertTrue(fit1.deepEquals(fit2));
+    }
+
+    @Test
+    public void testRefComparator() {
+        Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
+        varDouble = varDouble.fitApply(VFRefSort.filter(varDouble.refComparator()));
+        for (int i = 1; i < varDouble.rowCount(); i++) {
+            assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
+        }
+
+        Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
+        varLong = varLong.fitApply(VFRefSort.filter(varLong.refComparator()));
+        for (int i = 1; i < varLong.rowCount(); i++) {
+            assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
+        }
+
+        Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
+        varInt = varInt.fitApply(VFRefSort.filter(varInt.refComparator()));
+        for (int i = 1; i < varInt.rowCount(); i++) {
+            assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
+        }
+
+        Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
+        varNominal = varNominal.fitApply(VFRefSort.filter(varNominal.refComparator()));
+        for (int i = 1; i < varNominal.rowCount(); i++) {
+            assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);
+        }
+    }
+
+    @Test
+    public void testDeepEquals() {
+        assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarDouble.scalar(1).withName("y")));
+        assertFalse(VarDouble.seq(2).withName("x").deepEquals(VarDouble.scalar(1).withName("x")));
+        assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarInt.scalar(1).withName("x")));
+        assertFalse(VarDouble.scalar(1).deepEquals(VarDouble.scalar(2)));
+        assertFalse(VarNominal.copy("a").deepEquals(VarNominal.copy("b")));
     }
 }

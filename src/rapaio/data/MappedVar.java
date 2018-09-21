@@ -91,7 +91,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addRows(int rowCount) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     public Var getSource() {
@@ -114,7 +114,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addDouble(double value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -129,7 +129,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -169,7 +169,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addBoolean(boolean value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -184,7 +184,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addLong(long value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -199,7 +199,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addMissing() {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        throw nowAllowedException();
     }
 
     @Override
@@ -217,8 +217,12 @@ public class MappedVar extends AbstractVar {
         return source.newInstance(rows);
     }
 
+    private IllegalStateException nowAllowedException() {
+        return new IllegalStateException("Operation not available on mapped vectors");
+    }
+
     @Override
     public String toString() {
-        return "MappedVar:" + source.type() + "[name:" + name() + ", rowCount:" + mapping.size() + ']';
+        return "MappedVar[type=" + source.type().code() + ", name:" + name() + ", rowCount:" + mapping.size() + ']';
     }
 }

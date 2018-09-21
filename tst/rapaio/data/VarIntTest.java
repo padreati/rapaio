@@ -155,7 +155,7 @@ public class VarIntTest {
         assertEquals(0, empty1.rowCount());
         empty1 = VarInt.empty(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, empty1.getInt(i));
+            assertEquals(Integer.MIN_VALUE, empty1.getInt(i));
         }
 
         Var fill1 = VarInt.fill(10, -1);

@@ -34,6 +34,18 @@ import rapaio.data.Var;
  */
 public class VFStandardize extends AbstractVF {
 
+    public static VFStandardize filter() {
+        return new VFStandardize();
+    }
+
+    public static VFStandardize filter(double mean) {
+        return new VFStandardize(mean);
+    }
+
+    public static VFStandardize filter(double mean, double sd) {
+        return new VFStandardize(mean, sd);
+    }
+
     private static final long serialVersionUID = -2817341319523250499L;
 
     private double mean;
@@ -70,7 +82,7 @@ public class VFStandardize extends AbstractVF {
         if (!vars[0].type().isNumeric()) {
             return vars[0];
         }
-        if(Math.abs(sd)<1e-20)
+        if (Math.abs(sd) < 1e-20)
             return vars[0];
         return vars[0].stream().transValue(x -> (x - mean) / sd).toMappedVar();
     }
