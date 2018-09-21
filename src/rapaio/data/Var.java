@@ -110,6 +110,20 @@ public interface Var extends Serializable, Printable {
     void addRows(int rowCount);
 
     /**
+     * Removes the observation value at a given position.
+     * The new size of the variable is the old size decremented by 1
+     *
+     * @param row position of the observation to be removed
+     */
+    void removeRow(int row);
+
+    /**
+     * Removes all the observation values specified by the variable.
+     * The new size of the variable is 0.
+     */
+    void clearRows();
+
+    /**
      * Returns numeric double value for the observation specified by row.
      * <p>
      * Returns valid values for numerical var types, otherwise the method
@@ -298,20 +312,6 @@ public interface Var extends Serializable, Printable {
     void addMissing();
 
     /**
-     * Removes the observation value at a given position.
-     * The new size of the variable is the old size decremented by 1
-     *
-     * @param row position of the observation to be removed
-     */
-    void remove(int row);
-
-    /**
-     * Removes all the observation values specified by the variable.
-     * The new size of the variable is 0.
-     */
-    void clear();
-
-    /**
      * Creates a solid copy of the variable, even if the variable is mapped or not.
      *
      * @return a solid copy of the current variable
@@ -402,7 +402,7 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
-        if (!name().equals(var.name()))
+        if (!Objects.equals(name(), var.name()))
             return false;
         if (rowCount() != var.rowCount())
             return false;
@@ -410,7 +410,7 @@ public interface Var extends Serializable, Printable {
             return false;
         for (int i = 0; i < rowCount(); i++) {
             if (var.type().isNumeric()) {
-                if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-12)
+                if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-14)
                     return false;
             } else {
                 if (!Objects.equals(getLabel(i), var.getLabel(i)))

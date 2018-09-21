@@ -228,14 +228,14 @@ public class VarLongTest {
     public void testClearRemove() {
         VarLong x = VarLong.copy(1, 2, 3);
         VarLong x2 = VarLong.copy(x);
-        x.remove(1);
+        x.removeRow(1);
 
         assertEquals(1, x.getInt(0));
         assertEquals(3, x.getInt(1));
 
         VarLong y = x.solidCopy();
 
-        x.clear();
+        x.clearRows();
 
         assertEquals(0, x.rowCount());
 

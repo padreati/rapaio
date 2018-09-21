@@ -103,12 +103,12 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public void remove(int row) {
+    public void removeRow(int row) {
         values.remove(row);
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         values.clear();
     }
 

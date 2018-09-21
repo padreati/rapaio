@@ -234,12 +234,12 @@ public class BoundVarTest {
         Var x = VarDouble.copy(1, 2, 3).bindRows(VarDouble.copy(4, 5, 6));
 
         try {
-            x.remove(1);
+            x.removeRow(1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
         try {
-            x.clear();
+            x.clearRows();
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }

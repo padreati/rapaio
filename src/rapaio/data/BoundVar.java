@@ -257,12 +257,12 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public void remove(int row) {
+    public void removeRow(int row) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 

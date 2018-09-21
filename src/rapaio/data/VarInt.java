@@ -41,8 +41,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Builds a numeric variable which stores values as 32-bit integers. There are two general usage scenarios: 
- * use variable as an positive integer index or save storage for numeric variables from Z loosing decimal 
+ * Builds a numeric variable which stores values as 32-bit integers. There are two general usage scenarios:
+ * use variable as an positive integer index or save storage for numeric variables from Z loosing decimal
  * precision.
  * <p>
  * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in add/set operations will lead to missing values.
@@ -159,7 +159,7 @@ public final class VarInt extends AbstractVar {
     /**
      * Builds an integer variable of given size with values provided by a supplier with row as parameter
      *
-     * @param rows number of rows
+     * @param rows     number of rows
      * @param supplier integer value supplier
      * @return new integer variable
      */
@@ -278,12 +278,16 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public void setDouble(int row, double value) {
-        setInt(row, (int) Math.rint(value));
+        data[row] = Double.isNaN(value) ? MISSING_VALUE : (int) Math.rint(value);
     }
 
     @Override
     public void addDouble(double value) {
-        addInt((int) Math.rint(value));
+        if (Double.isNaN(value)) {
+            addMissing();
+        } else {
+            addInt((int) Math.rint(value));
+        }
     }
 
     @Override
@@ -353,12 +357,12 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return getInt(row) == MISSING_VALUE;
+        return data[row] == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
-        setInt(row, MISSING_VALUE);
+        data[row] = MISSING_VALUE;
     }
 
     @Override
@@ -367,7 +371,7 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public void remove(int index) {
+    public void removeRow(int index) {
         if (index > rows || index < 0)
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
         int numMoved = rows - index - 1;
@@ -378,12 +382,12 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         rows = 0;
     }
 
     @Override
-    public Var newInstance(int rows) {
+    public VarInt newInstance(int rows) {
         return VarInt.empty(rows);
     }
 

@@ -203,12 +203,12 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public void remove(int row) {
+    public void removeRow(int row) {
         mapping.remove(row);
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         mapping.clear();
     }
 

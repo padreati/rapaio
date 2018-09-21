@@ -197,7 +197,7 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public void remove(int index) {
+    public void removeRow(int index) {
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
@@ -205,7 +205,7 @@ public final class VarNominal extends AbstractVar {
         }
     }
 
-    public void clear() {
+    public void clearRows() {
         rows = 0;
     }
 
@@ -324,34 +324,38 @@ public final class VarNominal extends AbstractVar {
         }
     }
 
+    private IllegalStateException notImplementedException() {
+        return new IllegalStateException("This operation is not available for nominal variables");
+    }
+
     @Override
     public boolean getBoolean(int row) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
     public void setBoolean(int row, boolean value) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
     public void addBoolean(boolean value) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
     public long getLong(int row) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
     public void setLong(int row, long value) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
     public void addLong(long value) {
-        throw new IllegalArgumentException("This call is not allowed");
+        throw notImplementedException();
     }
 
     @Override
@@ -381,7 +385,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Nominal[name:" + name() + ", rowCount:" + rowCount() + "]";
+        return "VarNominal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

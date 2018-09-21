@@ -75,13 +75,13 @@ public class MappedVarTest {
         }
 
         try {
-            x.remove(1);
+            x.removeRow(1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
 
         try {
-            x.clear();
+            x.clearRows();
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }

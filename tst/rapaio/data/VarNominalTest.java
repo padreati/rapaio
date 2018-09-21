@@ -62,7 +62,7 @@ public class VarNominalTest {
         assertEquals(1, v.rowCount());
         assertEquals("?", v.getLabel(0));
 
-        assertEquals("Nominal[name:?, rowCount:10]", VarNominal.empty(10).toString());
+        assertEquals("VarNominal[name:?, rowCount:10]", VarNominal.empty(10).toString());
     }
 
     @Test
@@ -214,12 +214,12 @@ public class VarNominalTest {
         var = VarNominal.empty();
         var.addLabel("x");
         var.addLabel("y");
-        var.remove(0);
+        var.removeRow(0);
 
         assertEquals(1, var.rowCount());
         assertEquals("y", var.getLabel(0));
 
-        var.clear();
+        var.clearRows();
         assertEquals(0, var.rowCount());
     }
 
@@ -243,46 +243,50 @@ public class VarNominalTest {
         assertEquals(4, copy6.rowCount());
         assertTrue(copy6.isMissing(2));
         assertTrue(copy6.isMissing(3));
+
+        assertTrue(VarNominal.empty(10, "a", "b").deepEquals(copy6.newInstance(10)));
     }
 
     @Test
-    public void testFactorBaseBinaryStamp() {
+    public void testInvalidGetBoolean() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").getBoolean(0);
+    }
 
-        try {
-            VarNominal.empty(1, "x").getBoolean(0);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidAddBoolean() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").addBoolean(true);
+    }
 
-        try {
-            VarNominal.empty().addBoolean(true);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidSetBoolean() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").setBoolean(0, true);
+    }
 
-        try {
-            VarNominal.empty(1, "x").setBoolean(0, true);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidGetLong() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").getLong(0);
+    }
 
-        try {
-            VarNominal.empty(1, "x").getLong(0);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidAddLong() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").addLong(1);
+    }
 
-        try {
-            VarNominal.empty().addLong(1);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
-
-        try {
-            VarNominal.empty(1, "x").setLong(0, 1);
-            assertTrue(false);
-        } catch (Throwable ignored) {
-        }
+    @Test
+    public void testInvalidSetLong() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for nominal variables");
+        VarNominal.empty(1, "x").setLong(0, 1);
     }
 
     @Test

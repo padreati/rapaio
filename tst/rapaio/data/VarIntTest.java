@@ -27,6 +27,10 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import rapaio.core.stat.Sum;
+import rapaio.data.accessor.VarIntDataAccessor;
+
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +38,8 @@ import static org.junit.Assert.*;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarIntTest {
+
+    private static final double TOL = 1e-20;
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -79,35 +85,7 @@ public class VarIntTest {
     public void testNotImplementedSetLevels() {
         expected.expect(IllegalStateException.class);
         expected.expectMessage("Operation not available for integer variables.");
-        VarInt.seq(10).setLevels(new String[] {"a", "b"});
-    }
-
-    @Test
-    public void testEmptyIndex() {
-        Var index = VarInt.empty();
-        assertEquals(0, index.rowCount());
-        index = VarInt.empty(10);
-        for (int i = 0; i < 10; i++) {
-            assertEquals(0, index.getInt(i));
-        }
-    }
-
-    @Test
-    public void testFillVector() {
-        Var index = VarInt.fill(10, -1);
-        assertEquals(10, index.rowCount());
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(-1, index.getInt(i));
-        }
-    }
-
-    @Test
-    public void testSequenceVector() {
-        Var index = VarInt.seq(1, 10);
-        assertEquals(10, index.rowCount());
-        for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(i + 1, index.getInt(i));
-        }
+        VarInt.seq(10).setLevels(new String[]{"a", "b"});
     }
 
     @Test
@@ -173,9 +151,28 @@ public class VarIntTest {
 
     @Test
     public void testBuilders() {
-        VarInt x1 = VarInt.copy(1, 2, 3, 4);
-        int[] wrap = new int[]{1, 2, 3, 4};
-        VarInt x2 = VarInt.wrap(wrap);
+        Var empty1 = VarInt.empty();
+        assertEquals(0, empty1.rowCount());
+        empty1 = VarInt.empty(10);
+        for (int i = 0; i < 10; i++) {
+            assertEquals(0, empty1.getInt(i));
+        }
+
+        Var fill1 = VarInt.fill(10, -1);
+        assertEquals(10, fill1.rowCount());
+        for (int i = 0; i < fill1.rowCount(); i++) {
+            assertEquals(-1, fill1.getInt(i));
+        }
+
+        Var seq1 = VarInt.seq(1, 10);
+        assertEquals(10, seq1.rowCount());
+        for (int i = 0; i < seq1.rowCount(); i++) {
+            assertEquals(i + 1, seq1.getInt(i));
+        }
+
+        int[] src = new int[]{1, 2, 3, 4};
+        VarInt x1 = VarInt.copy(src);
+        VarInt x2 = VarInt.wrap(src);
         VarInt x3 = VarInt.seq(4);
         VarInt x4 = VarInt.seq(1, 4);
         VarInt x5 = VarInt.seq(1, 4, 2);
@@ -194,30 +191,68 @@ public class VarIntTest {
             assertEquals(i + 1, x6.getInt(i));
         }
 
-        wrap[2] = 10;
+        src[2] = 10;
         assertEquals(10, x2.getInt(2));
+
+        VarInt from1 = VarInt.from(x2.rowCount(), x2::getInt);
+        assertTrue(from1.deepEquals(x2));
+
+        VarInt collect1 = IntStream.range(0, 100).boxed().collect(VarInt.collector());
+        for (int i = 0; i < 100; i++) {
+            assertEquals(i, collect1.getInt(i));
+        }
+        VarInt collect2 = IntStream.range(0, 100).boxed().parallel().collect(VarInt.collector());
+        int sum = (int)Sum.from(collect2).value();
+        assertEquals(99*100/2, sum);
+
+        VarInt empty3 = collect2.newInstance(10);
+        VarInt empty4 = VarInt.empty(10);
+        assertTrue(empty3.deepEquals(empty4));
     }
 
     @Test
-    public void testLabel() {
-        VarInt x = VarInt.copy(1, 2, 3);
-        assertEquals("1", x.getLabel(0));
-    }
+    public void testLabels() {
+        int[] array = new int[]{1, 2, 3, Integer.MIN_VALUE, 5, 6, Integer.MIN_VALUE};
 
-    @Test
-    public void testAddLabel() {
-        VarInt x = VarInt.copy(1, 2, 3);
-        x.addLabel("10");
-        assertEquals(4, x.rowCount());
-        assertEquals("10", x.getLabel(3));
-    }
+        VarInt int1 = VarInt.empty();
+        for(int val : array) {
+            int1.addInt(val);
+        }
+        for (int i = 0; i < int1.rowCount(); i++) {
+            if (array[i] == Integer.MIN_VALUE) {
+                assertEquals("?", int1.getLabel(i));
+            } else {
+                assertEquals(String.valueOf(i + 1), int1.getLabel(i));
+            }
+        }
 
-    @Test
-    public void testSetLabel() {
-        VarInt x = VarInt.copy(1, 2, 3);
-        x.setLabel(0, "10");
-        assertEquals(3, x.rowCount());
-        assertEquals("10", x.getLabel(0));
+        VarInt int2 = VarInt.copy(1, 2, 3);
+        int2.addLabel("10");
+
+        assertEquals(4, int2.rowCount());
+        assertEquals("1", int2.getLabel(0));
+        assertEquals("2", int2.getLabel(1));
+        assertEquals("3", int2.getLabel(2));
+        assertEquals("10", int2.getLabel(3));
+
+        VarInt x3 = VarInt.copy(1, 2, 3);
+        x3.setLabel(0, "10");
+        x3.removeRow(1);
+
+        assertEquals(2, x3.rowCount());
+        assertEquals("10", x3.getLabel(0));
+        assertEquals("3", x3.getLabel(1));
+
+        String[] stringValues = new String[] {"?", "-4", "4", "?"};
+        VarInt x4 = VarInt.empty();
+        for(String str : stringValues) {
+            x4.addLabel(str);
+        }
+
+        assertEquals(stringValues.length, x4.rowCount());
+        for (int i = 0; i < stringValues.length; i++) {
+            assertEquals(stringValues[i], x4.getLabel(i));
+        }
     }
 
     @Test
@@ -232,9 +267,41 @@ public class VarIntTest {
         assertEquals(0, x.getInt(1));
         assertEquals(1, x.getInt(2));
 
-        assertEquals(true, x.getBoolean(0));
-        assertEquals(false, x.getBoolean(1));
-        assertEquals(true, x.getBoolean(2));
+        assertTrue(x.getBoolean(0));
+        assertFalse(x.getBoolean(1));
+        assertTrue(x.getBoolean(2));
+    }
+
+    @Test
+    public void testDouble() {
+
+        double[] values = new double[] {0, 1, Double.NaN, 3, 4, Double.NaN, 6, 7, -8, -100};
+        VarInt int1 = VarInt.empty();
+        for(double val : values) {
+            int1.addDouble(val);
+        }
+
+        assertEquals(values.length, int1.rowCount());
+        for (int i = 0; i < values.length; i++) {
+            if(Double.isNaN(values[i])) {
+                assertTrue(int1.isMissing(i));
+            } else {
+                assertEquals(values[i], int1.getDouble(i), TOL);
+            }
+        }
+
+        for (int i = 0; i < int1.rowCount(); i++) {
+            int1.setDouble(i, values[i]);
+        }
+        assertEquals(values.length, int1.rowCount());
+        for (int i = 0; i < values.length; i++) {
+            if(Double.isNaN(values[i])) {
+                assertTrue(int1.isMissing(i));
+                assertEquals(Double.NaN, int1.getDouble(i), TOL);
+            } else {
+                assertEquals(values[i], int1.getDouble(i), TOL);
+            }
+        }
     }
 
     @Test
@@ -252,18 +319,18 @@ public class VarIntTest {
     public void testRemoveClear() {
 
         VarInt x = VarInt.copy(1, 3, 6, 7, 9);
-        x.remove(0);
+        x.removeRow(0);
 
         assertEquals(4, x.rowCount());
         assertEquals(3, x.getInt(0));
         assertEquals(9, x.getInt(3));
 
-        x.clear();
+        x.clearRows();
         assertEquals(0, x.rowCount());
 
 
         expected.expect(IndexOutOfBoundsException.class);
-        x.remove(-1);
+        x.removeRow(-1);
     }
 
     @Test
@@ -281,4 +348,19 @@ public class VarIntTest {
         assertEquals(8, x4.getInt(3));
     }
 
+    @Test
+    public void testDataAccessor() {
+        VarInt int1 = VarInt.seq(0, 100, 2);
+        VarIntDataAccessor acc = int1.getDataAccessor();
+        assertEquals(Integer.MIN_VALUE, acc.getMissingValue());
+        assertEquals(int1.rowCount(), acc.getRowCount());
+        for (int i = 0; i < int1.rowCount(); i++) {
+            assertEquals(int1.getInt(i), acc.getData()[i]);
+        }
+        int[] values = new int[] {0, 1, Integer.MIN_VALUE, 3, 4};
+        acc.setData(values);
+        acc.setRowCount(values.length);
+
+        assertTrue(VarInt.wrap(values).deepEquals(int1));
+    }
 }

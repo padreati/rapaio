@@ -115,11 +115,18 @@ public final class VarBoolean extends AbstractVar {
     }
 
     public static VarBoolean from(int rows, Function<Integer, Boolean> supplier) {
-        boolean[] data = new boolean[rows];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = supplier.apply(i);
+        VarBoolean result = new VarBoolean(rows, false, false);
+        for (int i = 0; i < rows; i++) {
+            Boolean value = supplier.apply(i);
+            if (value == null) {
+                result.missing.set(i, true);
+                continue;
+            }
+            if (value) {
+                result.values.set(i, true);
+            }
         }
-        return VarBoolean.copy(data);
+        return result;
     }
 
 
@@ -178,6 +185,20 @@ public final class VarBoolean extends AbstractVar {
             missing.set(i + rows);
         }
         rows += rowCount;
+    }
+
+    @Override
+    public void removeRow(int row) {
+        for (int i = row + 1; i < rows; i++) {
+            values.set(i - 1, values.get(i));
+            missing.set(i - 1, missing.get(i));
+        }
+        rows--;
+    }
+
+    @Override
+    public void clearRows() {
+        this.rows = 0;
     }
 
     @Override
@@ -385,23 +406,6 @@ public final class VarBoolean extends AbstractVar {
         increaseCapacity(rows + 1);
         missing.set(rows);
         rows++;
-    }
-
-    @Override
-    public void remove(int row) {
-        if (row < 0 || row >= rows) {
-            throw new IllegalArgumentException();
-        }
-        for (int i = row + 1; i < rows; i++) {
-            values.set(i - 1, values.get(i));
-            missing.set(i - 1, missing.get(i));
-        }
-        rows--;
-    }
-
-    @Override
-    public void clear() {
-        this.rows = 0;
     }
 
     @Override

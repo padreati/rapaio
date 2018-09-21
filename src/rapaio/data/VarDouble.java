@@ -374,7 +374,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public void remove(int index) {
+    public void removeRow(int index) {
         int numMoved = rows - index - 1;
         if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
@@ -383,7 +383,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         rows = 0;
     }
 

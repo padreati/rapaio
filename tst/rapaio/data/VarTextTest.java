@@ -77,14 +77,14 @@ public class VarTextTest {
             assertNull(text.getLabel(3 + i));
         }
 
-        text.remove(2);
-        text.remove(2);
+        text.removeRow(2);
+        text.removeRow(2);
         assertEquals("Ana", text.getLabel(0));
         assertEquals("are", text.getLabel(1));
         assertNull(text.getLabel(2));
         assertNull(text.getLabel(3));
 
-        text.clear();
+        text.clearRows();
         assertEquals(0, text.rowCount());
     }
 

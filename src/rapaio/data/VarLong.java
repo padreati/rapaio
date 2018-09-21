@@ -465,7 +465,7 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public void remove(int row) {
+    public void removeRow(int row) {
         int numMoved = rows - row - 1;
         if (numMoved > 0) {
             System.arraycopy(data, row + 1, data, row, numMoved);
@@ -474,7 +474,7 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public void clear() {
+    public void clearRows() {
         rows = 0;
     }
 
