@@ -11,6 +11,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.data.VRange;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
@@ -32,7 +33,7 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
 
     public RegressionsPerformanceTest() throws IOException {
         RandomSource.setSeed(1234);
-        Frame src = Datasets.loadISLAdvertising().removeVars("ID").solidCopy();
+        Frame src = Datasets.loadISLAdvertising().removeVars(VRange.of("ID")).solidCopy();
         Mapping mapping_5 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 5_000));
         df_5k = src.mapRows(mapping_5).solidCopy();
         Mapping mapping_50 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 50_000));

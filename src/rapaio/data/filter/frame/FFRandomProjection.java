@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -93,7 +94,7 @@ public class FFRandomProjection extends AbstractFF {
         RM X = SolidRM.copy(df.mapVars(varNames));
         RM p = X.dot(rp);
 
-        Frame non = df.removeVars(varNames);
+        Frame non = df.removeVars(VRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
         return non.bindVars(trans);
     }

@@ -30,6 +30,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
@@ -60,12 +61,12 @@ public class PCATest {
 
     @Test
     public void pcaTest() {
-        RM x = SolidRM.copy(df.removeVars("y"));
+        RM x = SolidRM.copy(df.removeVars(VRange.of("y")));
 
         PCA pca = new PCA();
-        pca.fit(df.removeVars("y"));
+        pca.fit(df.removeVars(VRange.of("y")));
 
-        Frame fit = pca.predict(df.removeVars("y"), 2);
+        Frame fit = pca.predict(df.removeVars(VRange.of("y")), 2);
         pca.printSummary();
     }
 
@@ -73,7 +74,7 @@ public class PCATest {
     public void irisPca() throws IOException, URISyntaxException {
         RandomSource.setSeed(123);
         Frame iris = Datasets.loadIrisDataset();
-        Frame x = iris.removeVars("class");
+        Frame x = iris.removeVars(VRange.of("class"));
 
         PCA pca = new PCA();
         pca.fit(x);

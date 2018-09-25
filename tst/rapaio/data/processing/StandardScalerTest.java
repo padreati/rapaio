@@ -31,6 +31,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
@@ -46,7 +47,7 @@ public class StandardScalerTest {
     @Test
     public void allInTest() throws IOException {
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         Frame copy = df.solidCopy();
 
@@ -71,11 +72,11 @@ public class StandardScalerTest {
     @Test
     public void selectiveTest() throws IOException {
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         Frame copy = df.solidCopy();
 
-        StandardScaler standardScaler = StandardScaler.from(copy.removeVars("Sales"), true, true);
+        StandardScaler standardScaler = StandardScaler.from(copy.removeVars(VRange.of("Sales")), true, true);
         standardScaler.transform(copy);
 
         Frame secondCopy = copy.solidCopy();
@@ -97,7 +98,7 @@ public class StandardScalerTest {
 
     @Test
     public void centeringTest() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         Frame copy = df.solidCopy();
 
@@ -115,7 +116,7 @@ public class StandardScalerTest {
 
     @Test
     public void scalingTest() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         Frame copy = df.solidCopy();
 

@@ -117,16 +117,12 @@ public class MappedFrame extends AbstractFrame {
         if (!colReverse.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
         }
-        return colReverse.get(name);
+        return colReverse.getInt(name);
     }
 
     @Override
     public Var rvar(int varIndex) {
-        Var var = this.source.rvar(names[varIndex]);
-        if (var == null) {
-            throw new IllegalArgumentException("Variable with index " + varIndex + " does not exists in parent frame");
-        }
-        return MappedVar.byRows(var, this.mapping).withName(names[varIndex]);
+        return MappedVar.byRows(this.source.rvar(names[varIndex]), this.mapping);
     }
 
     @Override
@@ -157,6 +153,12 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public Frame addRows(int rowCount) {
         return BoundFrame.byRows(this, SolidFrame.emptyFrom(this, rowCount));
+    }
+
+    @Override
+    public Frame clearRows() {
+        this.mapping.clear();
+        return this;
     }
 
     @Override
@@ -207,6 +209,26 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public void setInt(int row, String varName, int value) {
         source.setInt(mapping.get(row), varName, value);
+    }
+
+    @Override
+    public long getLong(int row, int col) {
+        return source.getLong(mapping.get(row), colIndexes[col]);
+    }
+
+    @Override
+    public long getLong(int row, String varName) {
+        return source.getLong(mapping.get(row), varName);
+    }
+
+    @Override
+    public void setLong(int row, int col, long value) {
+        source.setLong(mapping.get(row), colIndexes[col], value);
+    }
+
+    @Override
+    public void setLong(int row, String varName, long value) {
+        source.setLong(mapping.get(row), varName, value);
     }
 
     @Override

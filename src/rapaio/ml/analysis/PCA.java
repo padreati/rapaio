@@ -27,8 +27,9 @@ package rapaio.ml.analysis;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.Var;
+import rapaio.data.VRange;
 import rapaio.data.VType;
+import rapaio.data.Var;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
@@ -147,7 +148,7 @@ public class PCA implements Printable {
             names[i] = "pca_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        Frame rest = df.removeVars(inputNames);
+        Frame rest = df.removeVars(VRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :
                 SolidFrame.matrix(result, names).bindVars(rest);

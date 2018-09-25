@@ -39,14 +39,8 @@ import rapaio.sys.WS;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -156,14 +150,19 @@ public interface Frame extends Serializable, Printable {
      * Builds a new frame which has only the variables specified in the variable range string
      *
      * @param varRange variable range as string
-     * @return new frame with only the given variables
+     * @return new mapped frame with only the given variables
      */
     default Frame mapVars(String... varRange) {
         return mapVars(VRange.of(varRange));
     }
 
-    default Frame mapVars(List<String> varRange) {
-        return mapVars(VRange.of(varRange.toArray(new String[0])));
+    /**
+     * Builds a new frame which has only the variables specified in the variable range list
+     * @param varNameList list of variable names
+     * @return new mapped frame with only the given variables
+     */
+    default Frame mapVars(List<String> varNameList) {
+        return mapVars(VRange.of(varNameList));
     }
 
     /**
@@ -216,6 +215,35 @@ public interface Frame extends Serializable, Printable {
     Frame addRows(int rowCount);
 
     /**
+     * Builds a new frame only with rows not specified in mapping.
+     */
+    default Frame removeRows(int... rows) {
+        return removeRows(Mapping.wrap(rows));
+    }
+
+    /**
+     * Builds a new frame only with rows not specified in mapping.
+     */
+    default Frame removeRows(Mapping mapping) {
+        IntSet remove = new IntOpenHashSet(mapping.toList());
+        IntList map = new IntArrayList(Math.min(0, rowCount() - remove.size()));
+        for (int i = 0; i < rowCount(); i++) {
+            if (!remove.contains(i)) {
+                map.add(i);
+            }
+        }
+        return mapRows(Mapping.wrap(map));
+    }
+
+    /**
+     * Clear all rows. Obtain a data frame which has all variable definitions
+     * with same metadata but without any observation.
+     *
+     * @return frame with no rows
+     */
+    Frame clearRows();
+
+    /**
      * Builds a new frame having rows of the current frame, followed by the rows of the bounded frame.
      * The new frame must has the same variable definitions as the current frame.
      *
@@ -241,27 +269,6 @@ public interface Frame extends Serializable, Printable {
      * @return new frame with selected rows
      */
     Frame mapRows(Mapping mapping);
-
-    /**
-     * Builds a new frame only with rows not specified in mapping.
-     */
-    default Frame removeRows(int... rows) {
-        return removeRows(Mapping.wrap(rows));
-    }
-
-    /**
-     * Builds a new frame only with rows not specified in mapping.
-     */
-    default Frame removeRows(Mapping mapping) {
-        IntSet remove = new IntOpenHashSet(mapping.toList());
-        IntList map = new IntArrayList(Math.min(0, rowCount() - remove.size()));
-        for (int i = 0; i < rowCount(); i++) {
-            if (!remove.contains(i)) {
-                map.add(i);
-            }
-        }
-        return mapRows(Mapping.wrap(map));
-    }
 
     /**
      * Returns double value corresponding to given row and var index
@@ -322,7 +329,7 @@ public interface Frame extends Serializable, Printable {
      *
      * @param row   row number
      * @param col   var index
-     * @param value setIndex value
+     * @param value int value
      */
     void setInt(int row, int col, int value);
 
@@ -334,6 +341,42 @@ public interface Frame extends Serializable, Printable {
      * @param value   index value
      */
     void setInt(int row, String varName, int value);
+
+    /**
+     * Convenient shortcut method for calling {@link Var#getLong(int)} for a given variable.
+     *
+     * @param row      row number
+     * @param varIndex variable index
+     * @return long value
+     */
+    long getLong(int row, int varIndex);
+
+    /**
+     * Convenient shortcut method for calling {@link Var#getLong(int)} for a given variable.
+     *
+     * @param row     row number
+     * @param varName var name
+     * @return long value
+     */
+    long getLong(int row, String varName);
+
+    /**
+     * Convenient shortcut method for calling {@link Var#setLong(int, long)} for given variable.
+     *
+     * @param row   row number
+     * @param col   var index
+     * @param value long value
+     */
+    void setLong(int row, int col, long value);
+
+    /**
+     * Convenient shortcut method for calling {@link Var#setLong(int, long)} for given variable.
+     *
+     * @param row     row number
+     * @param varName var name
+     * @param value   long value
+     */
+    void setLong(int row, String varName, long value);
 
     /**
      * Convenient shortcut method for calling {@link Var#getLabel(int)} for given variable.
@@ -503,39 +546,6 @@ public interface Frame extends Serializable, Printable {
         return df;
     }
 
-    static Collector<Var, List<Var>, Frame> collector() {
-
-        return new Collector<Var, List<Var>, Frame>() {
-            @Override
-            public Supplier<List<Var>> supplier() {
-                return LinkedList::new;
-            }
-
-            @Override
-            public BiConsumer<List<Var>, Var> accumulator() {
-                return List::add;
-            }
-
-            @Override
-            public BinaryOperator<List<Var>> combiner() {
-                return (list1, list2) -> {
-                    list1.addAll(list2);
-                    return list1;
-                };
-            }
-
-            @Override
-            public Function<List<Var>, Frame> finisher() {
-                return BoundFrame::byVars;
-            }
-
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
-    }
-
     @Override
     default String summary() {
         return Summary.getSummary(this);
@@ -565,8 +575,6 @@ public interface Frame extends Serializable, Printable {
             return false;
         String[] names = varNames();
         String[] dfNames = df.varNames();
-        if (names.length != dfNames.length)
-            return false;
         for (int i = 0; i < names.length; i++) {
             if (!(names[i].equals(dfNames[i]))) {
                 return false;

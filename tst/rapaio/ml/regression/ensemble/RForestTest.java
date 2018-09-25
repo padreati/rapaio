@@ -27,6 +27,7 @@ package rapaio.ml.regression.ensemble;
 import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.Regression;
@@ -47,7 +48,7 @@ public class RForestTest {
                 .withRuns(1_000);
 
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
         df.printSummary();
 
         List<Frame> dfs = SamplingTools.randomSampleSlices(df, 0.7);

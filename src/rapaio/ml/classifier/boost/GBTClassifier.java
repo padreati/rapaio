@@ -26,8 +26,9 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.data.Frame;
-import rapaio.data.Var;
+import rapaio.data.VRange;
 import rapaio.data.VType;
+import rapaio.data.Var;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.math.linear.RM;
@@ -186,7 +187,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         // b)
 
-        Frame x = df.removeVars(targetNames());
+        Frame x = df.removeVars(VRange.of(targetNames()));
         Sample sample = sampler().nextSample(x, w);
 
         for (int k = 0; k < K; k++) {

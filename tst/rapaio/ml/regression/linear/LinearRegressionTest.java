@@ -27,6 +27,7 @@ package rapaio.ml.regression.linear;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.frame.FFAddIntercept;
@@ -52,7 +53,7 @@ public class LinearRegressionTest {
     public void testOneTarget() throws IOException {
 
         Frame df = Datasets.loadISLAdvertising()
-                .removeVars("ID", "Sales", "Newspaper");
+                .removeVars(VRange.of("ID", "Sales", "Newspaper"));
 
         LinearRegression lm = new LinearRegression();
         lm.addInputFilters(FFAddIntercept.filter());
@@ -143,7 +144,7 @@ public class LinearRegressionTest {
 
     @Test
     public void testMultipleTargets() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         LinearRegression lm = new LinearRegression();
         lm.addInputFilters(FFAddIntercept.filter());

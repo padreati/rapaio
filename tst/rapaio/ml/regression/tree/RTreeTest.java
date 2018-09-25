@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.filter.frame.FFRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
@@ -51,7 +52,7 @@ public class RTreeTest {
 
     @Test
     public void testSimple() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID", "Radio", "Newspaper");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID", "Radio", "Newspaper"));
         df.printSummary();
 
         String v = "TV";
@@ -151,7 +152,7 @@ public class RTreeTest {
 
     @Test
     public void testISLR() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         List<Frame> frames = SamplingTools.randomSampleSlices(df, 0.7);
 

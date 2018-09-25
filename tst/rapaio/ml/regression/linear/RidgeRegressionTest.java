@@ -2,6 +2,7 @@ package rapaio.ml.regression.linear;
 
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
@@ -25,7 +26,7 @@ public class RidgeRegressionTest {
         RidgeRegression rlm = RidgeRegression.newRidgeLm(0).withCentering(false).withScaling(false);
         LinearRegression lm = LinearRegression.newLm();
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
         df.printSummary();
 
         LinearRPrediction lmFit = lm.fit(df, "Sales").predict(df, true);
@@ -42,7 +43,7 @@ public class RidgeRegressionTest {
     public void scalingTest() throws IOException {
 
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
         df.printSummary();
 
         RidgeRegression.newRidgeLm(0).withIntercept(false).withCentering(true).withScaling(true)
@@ -57,7 +58,7 @@ public class RidgeRegressionTest {
 
         VarDouble lambda = VarDouble.seq(0, 10, 0.5);
 
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         for (int i = 0; i < lambda.rowCount(); i++) {
             RidgeRegression rr = RidgeRegression.newRidgeLm(lambda.getDouble(i));

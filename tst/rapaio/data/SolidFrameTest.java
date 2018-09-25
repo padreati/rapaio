@@ -241,4 +241,25 @@ public class SolidFrameTest {
         assertEquals(VType.DOUBLE, SolidFrame.byVars(x, y).type("x"));
         assertEquals(VType.NOMINAL, SolidFrame.byVars(x, y).type("y"));
     }
+
+    @Test
+    public void testAddClearRows() {
+        SolidRM rm = SolidRM.wrap(new double[][]{
+                {1, 2, 3},
+                {2, 3, 4},
+                {3, 4, 5}
+        });
+        Frame fm = SolidFrame.matrix(rm, "a", "b", "c");
+        fm.addRows(3);
+
+        assertEquals(6, fm.rowCount());
+        for (int i = 0; i < 3; i++) {
+            assertEquals(i+1, fm.getDouble(i, "a"), TOL);
+            assertTrue(fm.isMissing(i+3, "a"));
+        }
+
+        fm.clearRows();
+        assertEquals(0, fm.rowCount());
+        assertEquals(3, fm.varCount());
+    }
 }

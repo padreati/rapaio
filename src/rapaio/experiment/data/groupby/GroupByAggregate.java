@@ -302,7 +302,7 @@ public class GroupByAggregate implements Printable {
         }
 
         if (groupNames.isEmpty()) {
-            unstackedDf = unstackedDf.removeVars(result.varNames());
+            unstackedDf = unstackedDf.removeVars(VRange.of(result.varNames()));
         }
 
         return unstackedDf.solidCopy();

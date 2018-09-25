@@ -27,7 +27,6 @@ package rapaio.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,34 +50,54 @@ public class BoundFrame extends AbstractFrame {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
-        Integer _rowCount = null;
-        List<Var> _vars = new ArrayList<>();
-        List<String> _names = new ArrayList<>();
-        Map<String, Integer> _indexes = new HashMap<>();
-        Set<String> _namesSet = new HashSet<>();
+        Integer rowCount = null;
+        List<Var> vars = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        Map<String, Integer> indexes = new HashMap<>();
+        Set<String> namesSet = new HashSet<>();
 
         int pos = 0;
         for (Frame df : dfs) {
-            if (_rowCount == null) {
-                _rowCount = df.varCount() > 0 ? df.rowCount() : null;
+            if (rowCount == null) {
+                rowCount = df.varCount() > 0 ? df.rowCount() : null;
             } else {
-                _rowCount = Math.min(_rowCount, df.rowCount());
+                rowCount = Math.min(rowCount, df.rowCount());
             }
             for (int j = 0; j < df.varCount(); j++) {
-                if (_namesSet.contains(df.rvar(j).name())) {
-                    throw new IllegalArgumentException("bound frame does not allow variables with the same name");
+                if (namesSet.contains(df.rvar(j).name())) {
+                    throw new IllegalArgumentException("bound frame does not allow variables with the same name: " + df.rvar(j).name());
                 }
-                _vars.add(df.rvar(j));
-                _names.add(df.rvar(j).name());
-                _namesSet.add(df.rvar(j).name());
-                _indexes.put(df.rvar(j).name(), pos++);
+                vars.add(df.rvar(j));
+                names.add(df.rvar(j).name());
+                namesSet.add(df.rvar(j).name());
+                indexes.put(df.rvar(j).name(), pos++);
             }
         }
-        return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[0]), _indexes);
+        return new BoundFrame(rowCount == null ? 0 : rowCount, vars, names.toArray(new String[0]), indexes);
     }
 
-    public static BoundFrame byVars(Collection<Var> varList) {
-        return byVars(varList.toArray(new Var[0]));
+    public static BoundFrame byVars(List<Var> varList) {
+        if (varList.isEmpty()) {
+            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
+        }
+        List<Var> vars = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        Map<String, Integer> indexes = new HashMap<>();
+        Set<String> namesSet = new HashSet<>();
+
+        int pos = 0;
+        int rowCount = varList.get(0).rowCount();
+        for (Var var : varList) {
+            rowCount = Math.min(rowCount, var.rowCount());
+            if (namesSet.contains(var.name())) {
+                throw new IllegalArgumentException("bound frame does not allow variables with the same name: " + var.name());
+            }
+            vars.add(var);
+            names.add(var.name());
+            namesSet.add(var.name());
+            indexes.put(var.name(), pos++);
+        }
+        return new BoundFrame(rowCount, vars, names.toArray(new String[0]), indexes);
     }
 
     /**
@@ -90,72 +109,48 @@ public class BoundFrame extends AbstractFrame {
      * @return new frame bound frame by binding variables
      */
     public static BoundFrame byVars(Var... varList) {
-        if (varList.length == 0) {
-            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
-        }
-        int _rowCount = 0;
-        List<Var> _vars = new ArrayList<>();
-        List<String> _names = new ArrayList<>();
-        Map<String, Integer> _indexes = new HashMap<>();
-        Set<String> _namesSet = new HashSet<>();
-
-        int pos = 0;
-        for (int i = 0; i < varList.length; i++) {
-            if (i == 0) {
-                _rowCount = varList[i].rowCount();
-            } else {
-                _rowCount = Math.min(_rowCount, varList[i].rowCount());
-            }
-            if (_namesSet.contains(varList[i].name())) {
-                throw new IllegalArgumentException("bound frame does not allow variables with the same name");
-            }
-            _vars.add(varList[i]);
-            _names.add(varList[i].name());
-            _namesSet.add(varList[i].name());
-            _indexes.put(varList[i].name(), pos++);
-        }
-        return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+        return byVars(Arrays.asList(varList));
     }
 
     public static BoundFrame byRows(Frame... dfs) {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
-        String[] _names = dfs[0].varNames();
+        String[] names = dfs[0].varNames();
 
         // check that in each frame to exist all the variables and to have the same type
         // otherwise throw an exception
 
         for (int i = 1; i < dfs.length; i++) {
             String[] compNames = dfs[i].varNames();
-            nameLengthComp(_names, compNames);
-            nameValueComp(_names, compNames);
-            columnExistsCheck(i, _names, dfs);
+            nameLengthComp(names, compNames);
+            nameValueComp(names, compNames);
+            columnExistsCheck(i, names, dfs);
         }
 
-        List<Var> _vars = new ArrayList<>();
-        Map<String, Integer> _indexes = new HashMap<>();
+        List<Var> vars = new ArrayList<>();
+        Map<String, Integer> indexes = new HashMap<>();
 
         // for each var name build a bounded var from all the rows from all the frames
 
-        for (int i = 0; i < _names.length; i++) {
+        for (int i = 0; i < names.length; i++) {
 
             List<Integer> counts = new ArrayList<>();
             List<Var> boundVars = new ArrayList<>();
 
             for (Frame df : dfs) {
                 counts.add(df.rowCount()); // avoid to take rowCount from variable, but from frame
-                boundVars.add(df.rvar(_names[i]));
+                boundVars.add(df.rvar(names[i]));
             }
 
-            Var boundedVar = BoundVar.from(counts, boundVars).withName(_names[i]);
-            _vars.add(boundedVar);
-            _indexes.put(_names[i], i);
+            Var boundedVar = BoundVar.from(counts, boundVars).withName(names[i]);
+            vars.add(boundedVar);
+            indexes.put(names[i], i);
         }
 
-        int _rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
+        int rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
 
-        return new BoundFrame(_rowCount, _vars, _names, _indexes);
+        return new BoundFrame(rowCount, vars, names, indexes);
     }
 
     private static void columnExistsCheck(int i, String[] _names, Frame... dfs) {
@@ -269,6 +264,11 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
+    public Frame clearRows() {
+        throw new IllegalStateException("This operation is not available for bound framed.");
+    }
+
+    @Override
     public Frame bindRows(Frame df) {
         return BoundFrame.byRows(this, df);
     }
@@ -316,6 +316,26 @@ public class BoundFrame extends AbstractFrame {
     @Override
     public void setInt(int row, String varName, int value) {
         vars.get(varIndex(varName)).setInt(row, value);
+    }
+
+    @Override
+    public long getLong(int row, int varIndex) {
+        return vars.get(varIndex).getLong(row);
+    }
+
+    @Override
+    public long getLong(int row, String varName) {
+        return vars.get(varIndex(varName)).getLong(row);
+    }
+
+    @Override
+    public void setLong(int row, int col, long value) {
+        vars.get(col).setLong(row, value);
+    }
+
+    @Override
+    public void setLong(int row, String varName, long value) {
+        vars.get(varIndex(varName)).setLong(row, value);
     }
 
     @Override

@@ -59,7 +59,7 @@ public class FFPCA extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        Frame rest = df.removeVars(varNames);
+        Frame rest = df.removeVars(VRange.of(varNames));
         int k = kFun.apply(pca.eigenValues(), pca.eigenVectors());
         Frame trans =  pca.predict(df.mapVars(varNames), k);
         return rest.bindVars(trans);

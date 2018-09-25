@@ -33,10 +33,11 @@ import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.filter.Filters;
 import rapaio.data.sample.RowSampler;
@@ -353,7 +354,7 @@ public class CForest extends AbstractClassifier {
             Var shuffled = Filters.shuffle(oobFrame.rvar(varName));
 
             // build oob frame with shuffled variable
-            Frame oobReduced = oobFrame.removeVars(varName).bindVars(shuffled);
+            Frame oobReduced = oobFrame.removeVars(VRange.of(varName)).bindVars(shuffled);
 
             // compute accuracy on oob shuffled frame
 

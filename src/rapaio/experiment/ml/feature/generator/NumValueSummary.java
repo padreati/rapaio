@@ -62,7 +62,7 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
         Set<String> selection = new HashSet<>(Arrays.asList(applyVars.varNames()));
         for(String key : keys) {
             if(selection.contains(key)) {
-                applyVars = applyVars.removeVars(key);
+                applyVars = applyVars.removeVars(VRange.of(key));
             }
         }
         for (Var var : applyVars.varList()) {

@@ -24,7 +24,9 @@
 
 package rapaio.data;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
@@ -32,6 +34,9 @@ import static org.junit.Assert.*;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class BoundFrameTest {
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     // frame with first rows
     private Frame df1 = SolidFrame.byVars(
@@ -61,7 +66,23 @@ public class BoundFrameTest {
     );
 
     @Test
-    public void testBuildersByVar() {
+    public void testInvalidVarsWithSameName() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("bound frame does not allow variables with the same name");
+        BoundFrame.byVars(VarDouble.wrap(1.).withName("x"), VarDouble.wrap(1.).withName("x"));
+    }
+
+    @Test
+    public void testInvalidFramesWithVarsWithSameName() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("bound frame does not allow variables with the same name: x");
+        BoundFrame.byVars(
+                SolidFrame.byVars(VarDouble.wrap(1.).withName("x")),
+                SolidFrame.byVars(VarDouble.wrap(2.).withName("x")));
+    }
+
+    @Test
+    public void testBuildersByVars() {
         Frame df = BoundFrame.byVars(
                 VarDouble.wrap(1, 2).withName("x"),
                 VarDouble.wrap(1 / 1., 1 / 2.).withName("y"));
@@ -70,14 +91,6 @@ public class BoundFrameTest {
         assertEquals(2, df.rowCount());
         assertEquals(1, df.getDouble(0, 0), 1e-12);
         assertEquals(1 / 2., df.getDouble(1, 1), 1e-12);
-
-        try {
-            BoundFrame.byVars(
-                    VarDouble.wrap(1.).withName("x"),
-                    VarDouble.wrap(2.).withName("x"));
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
 
         df = BoundFrame.byVars(new Var[]{});
 
@@ -94,19 +107,32 @@ public class BoundFrameTest {
         assertEquals(1, df.getDouble(0, 0), 1e-12);
         assertEquals(1 / 2., df.getDouble(1, 1), 1e-12);
 
-        try {
-            BoundFrame.byVars(
-                    SolidFrame.byVars(VarDouble.wrap(1.).withName("x")),
-                    SolidFrame.byVars(VarDouble.wrap(2.).withName("x")));
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
-
         df = BoundFrame.byVars(new Frame[]{});
 
         assertEquals(0, df.varCount());
         assertEquals(0, df.rowCount());
 
+    }
+
+    @Test
+    public void testInvalidBindByRowsWithDifferentRowCount() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("can't bind by rows frames with different variable count");
+        BoundFrame.byRows(df1, df2, df3);
+    }
+
+    @Test
+    public void testInvalidBindRowsWithDifferentNames() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("can't bind by rows frames with different variable names or with different order of the variables");
+        BoundFrame.byRows(df1, df2, df4);
+    }
+
+    @Test
+    public void testBindRowsVarsWithDifferentTypes() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("can't bind by rows variable of different types");
+        BoundFrame.byRows(df1, df2, df5);
     }
 
     @Test
@@ -122,13 +148,6 @@ public class BoundFrameTest {
             assertEquals(1 / (i + 1.), df.getDouble(i, 1), 1e-12);
         }
 
-        // test bind of rows plus an empty frame (different var count)
-        try {
-            df = BoundFrame.byRows(df1, df2, df3);
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
-
         // test build from an empty frame
         df = BoundFrame.byRows(df3);
         assertEquals(0, df.rowCount());
@@ -138,20 +157,6 @@ public class BoundFrameTest {
         df = BoundFrame.byRows();
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
-
-        // test to build from frames with different names
-        try {
-            df = BoundFrame.byRows(df1, df2, df4);
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
-
-        // test to build from frames with different types
-        try {
-            df = BoundFrame.byRows(df1, df2, df5);
-            assertTrue("should raise an exception", false);
-        } catch (IllegalArgumentException ignored) {
-        }
     }
 
     @Test

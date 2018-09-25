@@ -24,12 +24,16 @@
 
 package rapaio.data;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.data.filter.frame.FFRefSort;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -39,6 +43,9 @@ import static org.junit.Assert.*;
 public class MappedFrameTest {
 
     private static final double TOL = 1e-20;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void colsSortedTest() throws IOException, URISyntaxException {
@@ -70,6 +77,10 @@ public class MappedFrameTest {
         mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x");
         assertEquals(1, mapped.varCount());
         assertEquals(10, mapped.rowCount());
+
+        Mapping mapping = null;
+        Frame empty = df.mapRows(mapping);
+        assertEquals(0, empty.rowCount());
     }
 
     @Test
@@ -132,11 +143,131 @@ public class MappedFrameTest {
                 .mapVars("z");
         df3.printLines();
 
-        assertTrue(df3.varCount() == 1);
-        assertTrue(df3.rvar(0).type() == VType.DOUBLE);
+        assertEquals(1, df3.varCount());
+        assertSame(df3.rvar(0).type(), VType.DOUBLE);
         assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
         assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 
         assertTrue(VarDouble.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
+    }
+
+    @Test
+    public void testVarNamesAndTypes() {
+        final int N = 10;
+        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
+        Var y = VarInt.from(N, row -> row * 2).withName("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
+        Frame df1 = SolidFrame.byVars(x, y, z).mapRows(0, 1, 2);
+
+        String[] varNames = df1.varNames();
+        for (int i = 0; i < 3; i++) {
+            assertEquals(varNames[i], df1.varName(i));
+        }
+
+        assertSame(VType.DOUBLE, df1.type("x"));
+        assertSame(VType.INT, df1.type("y"));
+        assertSame(VType.DOUBLE, df1.type("z"));
+    }
+
+    @Test
+    public void testInvalidVarIndex() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("var name: y does not exist");
+        SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y");
+    }
+
+    @Test
+    public void testAddClearRows() {
+        final int N = 10;
+        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
+        Var y = VarInt.from(N, row -> row * 2).withName("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
+        Frame df1 = SolidFrame.byVars(x, y, z).mapRows(0, 1, 2);
+
+        Frame df2 = df1.addRows(100);
+        assertEquals(103, df2.rowCount());
+        for (int i = 3; i < 103; i++) {
+            assertTrue(df2.isMissing(i, "x"));
+        }
+
+        Frame df3 = df1.clearRows();
+        assertEquals(0, df3.rowCount());
+        assertEquals("x", df3.varName(0));
+    }
+
+    @Test
+    public void testGettersSetters() {
+        List<Var> varList = Arrays.asList(
+                VarDouble.wrap(0, Double.NaN, 2, Double.NaN).withName("a"),
+                VarInt.wrap(0, Integer.MIN_VALUE, 2, Integer.MIN_VALUE).withName("b"),
+                VarNominal.copy("a", "?", "b", "?").withName("c"),
+                VarLong.copy(0, Long.MIN_VALUE, 2, Long.MIN_VALUE).withName("d"),
+                VarBoolean.copy(true, false, true, false).withName("e")
+        );
+        varList.get(4).setMissing(1);
+
+        MappedFrame map = (MappedFrame) SolidFrame.byVars(varList).mapRows(0, 1, 2).mapVars("a,b,c,d,e");
+
+        assertEquals(5, map.varCount());
+
+        assertEquals(0, map.getDouble(0, "a"), TOL);
+        assertTrue(map.isMissing(1, "a"));
+        assertEquals(2, map.getDouble(2, "a"), TOL);
+
+        assertEquals(0, map.getInt(0, "b"));
+        assertTrue(map.isMissing(1, "b"));
+        assertEquals(2, map.getInt(2, "b"));
+
+        assertEquals("a", map.getLabel(0, "c"));
+        assertTrue(map.isMissing(1, "c"));
+        assertEquals("b", map.getLabel(2, "c"));
+
+        assertEquals(0, map.getLong(0, "d"));
+        assertTrue(map.isMissing(1, "d"));
+        assertEquals(2, map.getLong(2, "d"));
+
+        assertTrue(map.getBoolean(0, "e"));
+        assertTrue(map.isMissing(1, "e"));
+        assertTrue(map.getBoolean(2, "e"));
+
+        map.setDouble(0, 0, 10);
+        map.setDouble(1, "a", 20);
+        map.setInt(0, 1, 10);
+        map.setInt(1, "b", 20);
+        map.setLabel(0, 2, "10");
+        map.setLabel(1, "c", "20");
+        map.setLong(0, 3, 10);
+        map.setLong(1, "d", 20);
+        map.setBoolean(0, 4, true);
+        map.setBoolean(1, "e", false);
+
+        map.printLines();
+
+        assertEquals(10, map.getDouble(0, 0), TOL);
+        assertEquals(20, map.getDouble(1, "a"), TOL);
+        assertEquals(10, map.getInt(0, 1));
+        assertEquals(20, map.getInt(1, "b"));
+        assertEquals("10", map.getLabel(0, 2));
+        assertEquals("20", map.getLabel(1, "c"));
+        assertEquals(10, map.getLong(0, 3));
+        assertEquals(20, map.getLong(1, "d"));
+        assertTrue(map.getBoolean(0, 4));
+        assertFalse(map.getBoolean(1, "e"));
+
+        List<String> levels = map.levels("c");
+        assertEquals(5, levels.size());
+        assertEquals("?", levels.get(0));
+        assertEquals("a", levels.get(1));
+        assertEquals("b", levels.get(2));
+        assertEquals("10", levels.get(3));
+        assertEquals("20", levels.get(4));
+
+        map.setMissing(0, 0);
+        map.setMissing(1, "a");
+
+        assertTrue(map.isMissing(0));
+        assertFalse(map.isMissing(2));
+        assertTrue(map.isMissing(0, 0));
+        assertTrue(map.isMissing(0, "a"));
     }
 }

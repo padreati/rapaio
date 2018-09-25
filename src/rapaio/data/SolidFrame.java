@@ -108,6 +108,10 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public static Frame matrix(RM rm, String... varNames) {
+        return matrix(rm, Arrays.asList(varNames));
+    }
+
+    public static Frame matrix(RM rm, List<String> varNames) {
         Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
@@ -145,16 +149,6 @@ public class SolidFrame extends AbstractFrame {
     }
 
     // private constructor
-
-    public static Frame matrix(RM rm, List<String> varNames) {
-        Frame df = matrix(rm.rowCount(), varNames);
-        for (int i = 0; i < rm.rowCount(); i++) {
-            for (int j = 0; j < rm.colCount(); j++) {
-                df.setDouble(i, j, rm.get(i, j));
-            }
-        }
-        return df;
-    }
 
     @Override
     public int rowCount() {
@@ -221,6 +215,13 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
+    public Frame clearRows() {
+        varStream().forEach(Var::clearRows);
+        this.rows = 0;
+        return this;
+    }
+
+    @Override
     public Frame bindRows(Frame df) {
         return BoundFrame.byRows(this, df);
     }
@@ -268,6 +269,26 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public void setInt(int row, String varName, int value) {
         vars[varIndex(varName)].setInt(row, value);
+    }
+
+    @Override
+    public long getLong(int row, int varIndex) {
+        return vars[varIndex].getLong(row);
+    }
+
+    @Override
+    public long getLong(int row, String varName) {
+        return vars[varIndex(varName)].getLong(row);
+    }
+
+    @Override
+    public void setLong(int row, int col, long value) {
+        vars[col].setLong(row, value);
+    }
+
+    @Override
+    public void setLong(int row, String varName, long value) {
+        vars[varIndex(varName)].setLong(row, value);
     }
 
     @Override

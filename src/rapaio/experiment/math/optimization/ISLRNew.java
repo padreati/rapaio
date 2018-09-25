@@ -209,7 +209,7 @@ public class ISLRNew {
 
         Printer p = new IdeaPrinter();
 
-        Frame df = Datasets.loadISLAdvertising().removeVars(0);
+        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of(0));
 
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1);
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.mapVars(VRange.of(0, 1, 2)));

@@ -26,12 +26,19 @@ package rapaio.data;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class FrameTest {
+
+    private static final double TOL = 1e-20;
 
     @Test
     public void testRemove() {
@@ -40,7 +47,7 @@ public class FrameTest {
                 VarNominal.copy("x", "y").withName("y"),
                 VarDouble.wrap(1, 2).withName("z")
         );
-        Frame df1 = df.removeVars("x,z");
+        Frame df1 = df.removeVars(VRange.of("x,z"));
 
         assertEquals(1, df1.varCount());
         assertEquals("y", df1.varNames()[0]);
@@ -54,6 +61,9 @@ public class FrameTest {
         assertEquals(1, df1.rowCount());
         assertEquals(3, df1.varCount());
         assertEquals("b", df1.getLabel(0, "x"));
+
+        Frame copy = df.removeVars(VRange.of(new ArrayList<>()));
+        assertTrue(copy.deepEquals(df));
     }
 
     @Test
@@ -82,19 +92,92 @@ public class FrameTest {
                 VarDouble.wrap(1, 2).withName("z")
         );
 
-        assertEquals(false, df.isMissing(0));
-        assertEquals(false, df.isMissing(1));
+        assertFalse(df.isMissing(0));
+        assertFalse(df.isMissing(1));
 
         df.setMissing(0, "x");
-        assertEquals(true, df.isMissing(0, "x"));
-        assertEquals(true, df.isMissing(0, 0));
-        assertEquals(true, df.isMissing(0));
-        assertEquals(false, df.isMissing(1));
+        assertTrue(df.isMissing(0, "x"));
+        assertTrue(df.isMissing(0, 0));
+        assertTrue(df.isMissing(0));
+        assertFalse(df.isMissing(1));
 
         df.setMissing(0, 1);
-        assertEquals(true, df.isMissing(0, "y"));
-        assertEquals(true, df.isMissing(0, 0));
-        assertEquals(true, df.isMissing(0));
-        assertEquals(false, df.isMissing(1));
+        assertTrue(df.isMissing(0, "y"));
+        assertTrue(df.isMissing(0, 0));
+        assertTrue(df.isMissing(0));
+        assertFalse(df.isMissing(1));
     }
+
+    @Test
+    public void testMapers() {
+
+        SolidFrame df = SolidFrame.byVars(
+                VarDouble.seq(100).withName("x"),
+                VarDouble.seq(100).withName("y"),
+                VarDouble.seq(100).withName("z")
+        );
+
+        Frame map1 = df.mapVars("x", "y");
+        Frame map2 = df.mapVars(Collections.singletonList("x,y"));
+
+        assertTrue(map1.deepEquals(map2));
+        assertEquals(2, map1.varCount());
+        assertEquals("x", map1.varName(0));
+        assertEquals("y", map2.varName(1));
+
+        Frame map3 = df.removeVars("z");
+        Frame map4 = df.removeVars(2);
+        Frame map5 = df.removeVars(VRange.of(2));
+
+        assertTrue(map1.deepEquals(map3));
+        assertTrue(map1.deepEquals(map4));
+        assertTrue(map1.deepEquals(map5));
+    }
+
+    @Test
+    public void testVarStream() {
+
+        List<Var> varList = Arrays.asList(
+                VarDouble.seq(100).withName("x"),
+                VarDouble.seq(100).withName("y"),
+                VarDouble.seq(100).withName("z")
+        );
+        SolidFrame df = SolidFrame.byVars(varList);
+
+        Var[] array = df.varStream().toArray(Var[]::new);
+        List<Var> list = df.varList();
+
+        for (int i = 0; i < 3; i++) {
+            assertTrue(varList.get(i).deepEquals(array[i]));
+            assertTrue(varList.get(i).deepEquals(list.get(i)));
+        }
+    }
+
+    @Test
+    public void testSpotStream() {
+        List<Var> varList = Arrays.asList(
+                VarDouble.seq(100).withName("x"),
+                VarDouble.seq(100).withName("y"),
+                VarDouble.seq(100).withName("z")
+        );
+        SolidFrame df = SolidFrame.byVars(varList);
+
+        df.stream().forEach(s -> assertEquals(s.row(), s.getDouble("x"), TOL));
+        df.spotList().forEach(s -> assertEquals(s.row(), s.getDouble("y"), TOL));
+    }
+
+    @Test
+    public void testDeepEquals() {
+
+        assertFalse(SolidFrame.byVars(VarDouble.seq(100)).deepEquals(SolidFrame.byVars(VarDouble.seq(10))));
+        assertFalse(SolidFrame.byVars(VarDouble.seq(10).withName("x")).deepEquals(SolidFrame.byVars(
+                VarDouble.seq(10).withName("x"),
+                VarDouble.seq(10).withName("y")
+        )));
+        assertFalse(SolidFrame.byVars(VarDouble.seq(10)).deepEquals(SolidFrame.byVars(
+                VarDouble.seq(10).withName("x")
+        )));
+
+    }
+
 }

@@ -96,7 +96,7 @@ public class LDA implements Printable {
     	validate(df, targetVars);
 
         logger.fine("start lda predict");
-        RM xx = SolidRM.copy(df.removeVars(targetName));
+        RM xx = SolidRM.copy(df.removeVars(VRange.of(targetName)));
 
         // compute mean and sd
 
@@ -203,10 +203,10 @@ public class LDA implements Printable {
             names[i] = "lda_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        Frame rest = df.removeVars(inputNames);
+        Frame rest = df.removeVars(VRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :
-                SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
+                SolidFrame.matrix(result, names).bindVars(df.removeVars(VRange.of(inputNames)));
     }
 
     private void validate(Frame df, String... targetVars) {

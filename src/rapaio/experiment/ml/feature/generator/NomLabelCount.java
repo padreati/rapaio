@@ -60,7 +60,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
         Set<String> varNames = new HashSet<>(Arrays.asList(applyVars.varNames()));
         for (String key : keys) {
             if (varNames.contains(key)) {
-                applyVars = applyVars.removeVars(key);
+                applyVars = applyVars.removeVars(VRange.of(key));
             }
         }
         for (Var var : applyVars.varList()) {
