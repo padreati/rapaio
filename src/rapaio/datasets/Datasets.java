@@ -25,13 +25,23 @@
 
 package rapaio.datasets;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarBoolean;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -131,14 +141,27 @@ public class Datasets {
                 .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));
     }
 
-    public static Frame loadRandom() throws IOException {
-        return new Csv()
-                .withTypes(VType.BOOLEAN, "bin")
-                .withTypes(VType.INT, "index")
-                .withTypes(VType.DOUBLE, "num")
-                .withTypes(VType.LONG, "stamp")
-                .withTypes(VType.NOMINAL, "nom")
-                .read(Datasets.class.getResourceAsStream("random.csv"));
+    public static Frame loadRandom() {
+
+        int n = 100;
+        List<Var> vars = new ArrayList<>();
+        vars.add(VarBoolean.fromIndex(n,
+                row -> row % 7 == 2 ? Integer.MIN_VALUE : RandomSource.nextInt(3) - 1)
+                .withName("boolean"));
+        vars.add(VarDouble.from(n,
+                row -> row % 10 == -1 ? Double.NaN : RandomSource.nextDouble())
+                .withName("double"));
+        vars.add(VarInt.from(n,
+                row -> row % 13 == 0 ? Integer.MIN_VALUE : RandomSource.nextInt(100) - 50)
+                .withName("int"));
+        vars.add(VarLong.from(n,
+                row -> row % 17 == 0 ? Long.MIN_VALUE : 3l * RandomSource.nextInt(Integer.MAX_VALUE))
+                .withName("long"));
+        String[] labels = new String[]{"a", "b", "c", "d", "e"};
+        vars.add(VarNominal.from(n,
+                row -> row % 17 == 5 ? "?" : labels[RandomSource.nextInt(labels.length)])
+                .withName("nominal"));
+        return SolidFrame.byVars(vars);
     }
 
     public static Frame loadSonar() throws IOException {

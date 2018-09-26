@@ -24,9 +24,15 @@
 
 package rapaio.data;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import rapaio.core.RandomSource;
+import rapaio.datasets.Datasets;
+
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +40,8 @@ import static org.junit.Assert.*;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class BoundFrameTest {
+
+    private static final double TOL = 1e-20;
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -65,6 +73,11 @@ public class BoundFrameTest {
             VarDouble.wrap(1 / 7.).withName("1/x")
     );
 
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(1234);
+    }
+
     @Test
     public void testInvalidVarsWithSameName() {
         expectedException.expect(IllegalArgumentException.class);
@@ -83,73 +96,121 @@ public class BoundFrameTest {
 
     @Test
     public void testBuildersByVars() {
-        Frame df = BoundFrame.byVars(
-                VarDouble.wrap(1, 2).withName("x"),
-                VarDouble.wrap(1 / 1., 1 / 2.).withName("y"));
 
-        assertEquals(2, df.varCount());
-        assertEquals(2, df.rowCount());
-        assertEquals(1, df.getDouble(0, 0), 1e-12);
-        assertEquals(1 / 2., df.getDouble(1, 1), 1e-12);
+        Var[] vars = new Var[]{
+                VarDouble.wrap(1, 2, 3, Double.NaN).withName("a"),
+                VarInt.wrap(1, 2, 3, Integer.MIN_VALUE).withName("b"),
+                VarLong.wrap(1, 2, 3, Long.MIN_VALUE).withName("c"),
+                VarBoolean.copy(1, 0, 1, -1).withName("d"),
+                VarNominal.copy("x1", "x2", "x3", "?").withName("e")
+        };
 
-        df = BoundFrame.byVars(new Var[]{});
+        SolidFrame df = SolidFrame.byVars(vars);
 
-        assertEquals(0, df.varCount());
-        assertEquals(0, df.rowCount());
+        SolidFrame df1 = SolidFrame.byVars(vars[0], vars[1], vars[2]);
+        SolidFrame df2 = SolidFrame.byVars(vars[3], vars[4]);
 
-        df = BoundFrame.byVars(
-                SolidFrame.byVars(VarDouble.wrap(1, 2).withName("x")),
-                SolidFrame.byVars(VarDouble.wrap(1 / 1., 1 / 2.).withName("y"))
-        );
+        Frame bound1 = BoundFrame.byVars(vars);
+        Frame bound2 = BoundFrame.byVars(df1, df2);
 
-        assertEquals(2, df.varCount());
-        assertEquals(2, df.rowCount());
-        assertEquals(1, df.getDouble(0, 0), 1e-12);
-        assertEquals(1 / 2., df.getDouble(1, 1), 1e-12);
+        assertTrue(df.deepEquals(bound1));
+        assertTrue(df.deepEquals(bound2));
 
-        df = BoundFrame.byVars(new Frame[]{});
+        Frame empty = BoundFrame.byVars(new Frame[]{});
 
-        assertEquals(0, df.varCount());
-        assertEquals(0, df.rowCount());
-
+        assertEquals(0, empty.varCount());
+        assertEquals(0, empty.rowCount());
     }
 
     @Test
     public void testInvalidBindByRowsWithDifferentRowCount() {
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("can't bind by rows frames with different variable count");
+        expectedException.expectMessage("Can't bind by rows frames with different variable counts.");
         BoundFrame.byRows(df1, df2, df3);
     }
 
     @Test
     public void testInvalidBindRowsWithDifferentNames() {
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("can't bind by rows frames with different variable names or with different order of the variables");
+        expectedException.expectMessage("Can't bind by rows frames with different variable names " +
+                "or with different order of the variables.");
         BoundFrame.byRows(df1, df2, df4);
     }
 
     @Test
     public void testBindRowsVarsWithDifferentTypes() {
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("can't bind by rows variable of different types");
+        expectedException.expectMessage("Can't bind by rows variable of different types.");
         BoundFrame.byRows(df1, df2, df5);
     }
 
     @Test
     public void testBuildersByRows() {
 
+        Frame source = Datasets.loadRandom();
 
-        // test simple bind of rows
-        BoundFrame df = BoundFrame.byRows(df1, df2);
-        assertEquals(2, df.varCount());
-        assertEquals(6, df.rowCount());
-        for (int i = 0; i < 6; i++) {
-            assertEquals(i + 1, df.getDouble(i, 0), 1e-12);
-            assertEquals(1 / (i + 1.), df.getDouble(i, 1), 1e-12);
+        Frame df1 = source.mapRows(Mapping.range(0, 20)).solidCopy();
+        Frame df2 = source.mapRows(Mapping.range(20, 100)).solidCopy();
+
+        Frame bound = BoundFrame.byRows(df1, df2);
+        assertTrue(bound.deepEquals(source));
+
+        VType[] types = new VType[]{VType.BOOLEAN, VType.DOUBLE, VType.INT, VType.LONG, VType.NOMINAL};
+        String[] names = new String[]{"boolean", "double", "int", "long", "nominal"};
+        BiConsumer[] verifyIndex = new BiConsumer[]{
+                (i, j) -> assertEquals(source.getBoolean((int) i, (int) j), bound.getBoolean((int) i, (int) j)),
+                (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, (int) j), TOL),
+                (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
+                (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, (int) j)),
+                (i, j) -> assertEquals(source.getLabel((int) i, (int) j), bound.getLabel((int) i, (int) j)),
+        };
+        BiConsumer[] verifyName = new BiConsumer[]{
+                (i, j) -> assertEquals(source.getBoolean((int) i, (int) j), bound.getBoolean((int) i, names[(int) j])),
+                (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, names[(int) j]), TOL),
+                (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
+                (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, names[(int) j])),
+                (i, j) -> assertEquals(source.getLabel((int) i, (int) j), bound.getLabel((int) i, names[(int) j])),
+        };
+
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 5; j++) {
+                verifyIndex[j].accept(i, j);
+                verifyName[j].accept(i, j);
+                assertEquals(source.isMissing(i, j), bound.isMissing(i, j));
+            }
         }
 
+        for (int i = 0; i < 10; i++) {
+            bound.setBoolean(i, 0, true);
+            bound.setBoolean(i+10, "boolean", false);
+            bound.setMissing(i+20, 0);
+            bound.setMissing(i+30, "boolean");
+
+            bound.setDouble(i, 1, 1);
+            bound.setDouble(i+10, "double", 2);
+
+            bound.setInt(i, 2, 1);
+            bound.setInt(i+10, "int", 2);
+
+            bound.setLong(i, 3, 1L);
+            bound.setLong(i+10, "long", 2L);
+
+            bound.setLabel(i, 4, "xx");
+            bound.setLabel(i+10, "nominal", "yy");
+        }
+
+        assertTrue(bound.deepEquals(BoundFrame.byRows(df1, df2)));
+        for (int i = 0; i < 5; i++) {
+            assertEquals(i, bound.varIndex(names[i]));
+            assertEquals(names[i], bound.varName(i));
+            assertSame(types[i], bound.type(names[i]));
+        }
+
+        String[] levels = new String[]{"?", "c", "d", "b", "a", "e", "xx", "yy"};
+        assertArrayEquals(levels, bound.levels("nominal").toArray(new String[0]));
+
         // test build from an empty frame
-        df = BoundFrame.byRows(df3);
+        Frame df = BoundFrame.byRows(df3);
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
 
@@ -205,6 +266,10 @@ public class BoundFrameTest {
 
         assertEquals(1.0, dfMap.getDouble(0, "x"), 1e-12);
         assertEquals(-4.0, dfMap.getDouble(3, "y"), 1e-12);
+
+        Frame empty = BoundFrame.byVars(new ArrayList<>());
+        assertEquals(0, empty.varCount());
+        assertEquals(0, empty.rowCount());
     }
 
     @Test
@@ -231,6 +296,30 @@ public class BoundFrameTest {
         assertEquals(2, df.varCount());
         assertEquals(3, df.rowCount());
         assertEquals(1.0, df.getDouble(0, "x"), 1e-12);
-        assertEquals(1/3., df.getDouble(1, "1/x"), 1e-12);
+        assertEquals(1 / 3., df.getDouble(1, "1/x"), 1e-12);
+    }
+
+    @Test
+    public void testInvalidVarName() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Variable with name: uu does not exists.");
+        Frame df = Datasets.loadRandom();
+        BoundFrame.byVars(df).rvar("uu");
+    }
+
+    @Test
+    public void testInvalidClearRows() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for bound frames.");
+        Frame df = Datasets.loadRandom();
+        BoundFrame.byVars(df).addRows(10);
+    }
+
+    @Test
+    public void testInvalidAddRows() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("This operation is not available for bound frames.");
+        Frame df = Datasets.loadRandom();
+        BoundFrame.byVars(df).clearRows();
     }
 }

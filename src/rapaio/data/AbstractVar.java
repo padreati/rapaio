@@ -42,8 +42,6 @@ public abstract class AbstractVar implements Var {
     }
 
     public Var withName(String name) {
-        if (name == null)
-            throw new IllegalArgumentException("variable name cannot be null");
         this.name = name;
         return this;
     }
@@ -55,16 +53,6 @@ public abstract class AbstractVar implements Var {
         // all solid implementations have their own version of copy method
 
         switch (type()) {
-            case NOMINAL:
-                VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    if (isMissing(i)) {
-                        nom.setMissing(i);
-                        continue;
-                    }
-                    nom.setLabel(i, getLabel(i));
-                }
-                return nom;
             case INT:
                 VarInt idx = VarInt.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
@@ -98,7 +86,15 @@ public abstract class AbstractVar implements Var {
                 }
                 return bin;
             default:
-                throw new IllegalArgumentException("solidCopy() not implemented fo type: " + type().code());
+                VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    if (isMissing(i)) {
+                        nom.setMissing(i);
+                        continue;
+                    }
+                    nom.setLabel(i, getLabel(i));
+                }
+                return nom;
         }
     }
 

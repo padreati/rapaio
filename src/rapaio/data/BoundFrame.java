@@ -25,12 +25,13 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,26 +44,22 @@ public class BoundFrame extends AbstractFrame {
      * All variable names must be unique among all the given frames.
      * The row count is the minimum of the row counts from all the given frames.
      *
-     * @param dfs given data frames
+     * @param dfs collection of given data frames
      * @return new frame bound frame by binding variables
      */
     public static BoundFrame byVars(Frame... dfs) {
-        if (dfs.length == 0) {
-            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
-        }
-        Integer rowCount = null;
+        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
         List<Var> vars = new ArrayList<>();
+        if (dfs.length == 0) {
+            return new BoundFrame(0, vars, new String[]{}, indexes);
+        }
         List<String> names = new ArrayList<>();
-        Map<String, Integer> indexes = new HashMap<>();
         Set<String> namesSet = new HashSet<>();
 
         int pos = 0;
+        int rowCount = dfs[0].rowCount();
         for (Frame df : dfs) {
-            if (rowCount == null) {
-                rowCount = df.varCount() > 0 ? df.rowCount() : null;
-            } else {
-                rowCount = Math.min(rowCount, df.rowCount());
-            }
+            rowCount = Math.min(rowCount, df.rowCount());
             for (int j = 0; j < df.varCount(); j++) {
                 if (namesSet.contains(df.rvar(j).name())) {
                     throw new IllegalArgumentException("bound frame does not allow variables with the same name: " + df.rvar(j).name());
@@ -73,25 +70,33 @@ public class BoundFrame extends AbstractFrame {
                 indexes.put(df.rvar(j).name(), pos++);
             }
         }
-        return new BoundFrame(rowCount == null ? 0 : rowCount, vars, names.toArray(new String[0]), indexes);
+        return new BoundFrame(rowCount, vars, names.toArray(new String[0]), indexes);
     }
 
+    /**
+     * Builds a new bound frame by binding multiple variables.
+     * All variable names must be unique among.
+     * The row count is the minimum of the row counts from all the given variables.
+     *
+     * @param varList collection of given variables
+     * @return new frame bound frame by binding variables
+     */
     public static BoundFrame byVars(List<Var> varList) {
-        if (varList.isEmpty()) {
-            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
-        }
+        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
         List<Var> vars = new ArrayList<>();
+        if (varList.isEmpty()) {
+            return new BoundFrame(0, vars, new String[]{}, indexes);
+        }
         List<String> names = new ArrayList<>();
-        Map<String, Integer> indexes = new HashMap<>();
         Set<String> namesSet = new HashSet<>();
 
         int pos = 0;
         int rowCount = varList.get(0).rowCount();
         for (Var var : varList) {
-            rowCount = Math.min(rowCount, var.rowCount());
             if (namesSet.contains(var.name())) {
                 throw new IllegalArgumentException("bound frame does not allow variables with the same name: " + var.name());
             }
+            rowCount = Math.min(rowCount, var.rowCount());
             vars.add(var);
             names.add(var.name());
             namesSet.add(var.name());
@@ -106,16 +111,29 @@ public class BoundFrame extends AbstractFrame {
      * The row count is the minimum of the row counts from all the given variables.
      *
      * @param varList given data variables
-     * @return new frame bound frame by binding variables
+     * @return new bound frame obtained by by binding variables
      */
     public static BoundFrame byVars(Var... varList) {
         return byVars(Arrays.asList(varList));
     }
 
+    /**
+     * Builds a new bound frame by binding rows of the given data frames.
+     * All data frames must have the same number of variables
+     * with same names and types in the same order.
+     * The rows count is the sum of all rows from all frames.
+     * The order of the rows is given by the specified order of data frames.
+     *
+     * @param dfs given data frames to be bound
+     * @return new bound frame obtained by concatenating rows
+     */
     public static BoundFrame byRows(Frame... dfs) {
+        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
+        List<Var> vars = new ArrayList<>();
         if (dfs.length == 0) {
-            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
+            return new BoundFrame(0, vars, new String[]{}, indexes);
         }
+
         String[] names = dfs[0].varNames();
 
         // check that in each frame to exist all the variables and to have the same type
@@ -123,13 +141,9 @@ public class BoundFrame extends AbstractFrame {
 
         for (int i = 1; i < dfs.length; i++) {
             String[] compNames = dfs[i].varNames();
-            nameLengthComp(names, compNames);
-            nameValueComp(names, compNames);
-            columnExistsCheck(i, names, dfs);
+            validateCompatibility(dfs[0], dfs[i]);
         }
 
-        List<Var> vars = new ArrayList<>();
-        Map<String, Integer> indexes = new HashMap<>();
 
         // for each var name build a bounded var from all the rows from all the frames
 
@@ -153,28 +167,22 @@ public class BoundFrame extends AbstractFrame {
         return new BoundFrame(rowCount, vars, names, indexes);
     }
 
-    private static void columnExistsCheck(int i, String[] _names, Frame... dfs) {
-        for (String _name : _names) {
-            // throw an exception if the column does not exists
-            if (!dfs[i].rvar(_name).type().equals(dfs[0].rvar(_name).type())) {
+    private static void validateCompatibility(Frame df1, Frame df2) {
+        String[] varNames1 = df1.varNames();
+        String[] varNames2 = df2.varNames();
+
+        if(varNames1.length != varNames2.length) {
+            throw new IllegalArgumentException("Can't bind by rows frames with different variable counts.");
+        }
+        for (int i = 0; i < varNames1.length; i++) {
+            if (!varNames1[i].equals(varNames2[i])) {
+                throw new IllegalArgumentException("Can't bind by rows frames with different variable " +
+                        "names or with different order of the variables.");
+            }
+            if (!df1.rvar(i).type().equals(df2.rvar(i).type())) {
                 // column exists but does not have the same type
-                throw new IllegalArgumentException("can't bind by rows variable of different types");
+                throw new IllegalArgumentException("Can't bind by rows variable of different types.");
             }
-        }
-    }
-
-    private static void nameValueComp(String[] _names, String[] compNames) {
-        for (int i = 0; i < _names.length; i++) {
-            if (!_names[i].equals(compNames[i])) {
-                throw new IllegalArgumentException("can't bind by rows frames with different variable " +
-                        "names or with different order of the variables");
-            }
-        }
-    }
-
-    private static void nameLengthComp(String[] _names, String[] compNames) {
-        if (compNames.length != _names.length) {
-            throw new IllegalArgumentException("can't bind by rows frames with different variable count");
         }
     }
 
@@ -182,9 +190,9 @@ public class BoundFrame extends AbstractFrame {
     private final int rowCount;
     private final List<Var> vars;
     private final String[] names;
-    private final Map<String, Integer> indexes;
+    private final Object2IntMap<String> indexes;
 
-    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
+    private BoundFrame(int rowCount, List<Var> vars, String[] names, Object2IntMap<String> indexes) {
         this.rowCount = rowCount;
         this.vars = vars;
         this.names = names;
@@ -208,7 +216,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public String varName(int i) {
-        return names[0];
+        return names[i];
     }
 
     @Override
@@ -247,25 +255,25 @@ public class BoundFrame extends AbstractFrame {
     @Override
     public Frame mapVars(VRange range) {
         List<String> parseVarNames = range.parseVarNames(this);
-        String[] _names = new String[parseVarNames.size()];
-        List<Var> _vars = new ArrayList<>();
-        Map<String, Integer> _indexes = new HashMap<>();
+        String[] selectedNamed = new String[parseVarNames.size()];
+        List<Var> selectedVars = new ArrayList<>();
+        Object2IntMap<String> selectedIndexes = new Object2IntOpenHashMap<>();
         for (int i = 0; i < parseVarNames.size(); i++) {
-            _names[i] = parseVarNames.get(i);
-            _vars.add(rvar(parseVarNames.get(i)));
-            _indexes.put(parseVarNames.get(i), i);
+            selectedNamed[i] = parseVarNames.get(i);
+            selectedVars.add(rvar(parseVarNames.get(i)));
+            selectedIndexes.put(parseVarNames.get(i), i);
         }
-        return new BoundFrame(rowCount, _vars, _names, _indexes);
+        return new BoundFrame(rowCount, selectedVars, selectedNamed, selectedIndexes);
     }
 
     @Override
     public Frame addRows(int rowCount) {
-        return BoundFrame.byRows(this, SolidFrame.emptyFrom(this, rowCount));
+        throw new IllegalStateException("This operation is not available for bound frames.");
     }
 
     @Override
     public Frame clearRows() {
-        throw new IllegalStateException("This operation is not available for bound framed.");
+        throw new IllegalStateException("This operation is not available for bound frames.");
     }
 
     @Override
