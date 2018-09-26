@@ -455,7 +455,7 @@ public class CForest extends AbstractClassifier {
         weak.fit(trainFrame, trainWeights, firstTargetName());
         IntList oobIndexes = new IntArrayList();
         if (oobComp) {
-            Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
+            Set<Integer> out = sample.mapping.stream().boxed().collect(toSet());
             oobIndexes = IntArrayList.wrap(IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).toArray());
         }
         return Pair.from(weak, oobIndexes);

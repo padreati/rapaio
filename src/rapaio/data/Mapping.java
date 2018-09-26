@@ -43,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * A mapping is a collection of row numbers used to build a mapped frame as a
@@ -80,6 +79,17 @@ public interface Mapping extends Serializable {
     }
 
     /**
+     * Builds a mapping having the mapped values given as an array of indexed values,
+     * a copy of the values is used.
+     *
+     * @param mapping array of mapped values
+     * @return new mapping which is build on a copy of the array of values
+     */
+    static Mapping wrap(int... mapping) {
+        return new ListMapping(mapping);
+    }
+
+    /**
      * Builds a mapping having the mapped values given as a list of indexed values,
      * a copy of the list of values is used.
      *
@@ -101,17 +111,6 @@ public interface Mapping extends Serializable {
         return new ListMapping(mapping, fun);
     }
 
-    /**
-     * Builds a mapping having the mapped values given as an array of indexed values,
-     * a copy of the values is used.
-     *
-     * @param mapping array of mapped values
-     * @return new mapping which is build on a copy of the array of values
-     */
-    static Mapping wrap(int... mapping) {
-        return new ListMapping(mapping);
-    }
-
     static Mapping range(int end) {
         return range(0, end);
     }
@@ -119,8 +118,6 @@ public interface Mapping extends Serializable {
     static Mapping range(int start, int end) {
         return new IntervalMapping(start, end);
     }
-
-    Mapping reMapCopy(Int2IntFunction fun);
 
     /**
      * @return the size of mapping
@@ -170,24 +167,10 @@ public interface Mapping extends Serializable {
 
     IntListIterator iterator();
 
-    /**
-     * Builds a stream of indexes values
-     *
-     * @return a stream of indexed values
-     */
-    IntStream rowStream();
-
-    /**
-     * Builds an array of values with rows indexes
-     */
-    default int[] toArray() {
-        return rowStream().toArray();
-    }
-
     IntList toList();
 
     static Collector<Integer, IntList, Mapping> collector() {
-        return new Collector<Integer, IntList, Mapping>() {
+        return new Collector<>() {
             @Override
             public Supplier<IntList> supplier() {
                 return IntArrayList::new;
@@ -218,6 +201,6 @@ public interface Mapping extends Serializable {
         };
     }
 
-    Stream<Integer> stream();
+    IntStream stream();
 }
 

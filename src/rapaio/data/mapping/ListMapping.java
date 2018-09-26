@@ -27,13 +27,13 @@ package rapaio.data.mapping;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
 
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
@@ -69,15 +69,6 @@ public final class ListMapping implements Mapping {
         }
     }
 
-    @Override
-    public Mapping reMapCopy(Int2IntFunction fun) {
-        IntArrayList list = new IntArrayList(size());
-        for (int i = 0; i < size(); i++) {
-            list.add(fun.applyAsInt(mapping.getInt(i)));
-        }
-        return Mapping.wrap(list);
-    }
-
     public int size() {
         return mapping.size();
     }
@@ -101,18 +92,26 @@ public final class ListMapping implements Mapping {
 
     @Override
     public void removeAll(IntCollection positions) {
-        for (int pos : positions) {
-            mapping.removeInt(pos);
+
+        int[] toRemove = positions.toIntArray();
+        IntArrays.quickSort(toRemove);
+
+        int pos = 0;
+        int last = 0;
+        for (int i = 0; i < mapping.size(); i++) {
+            if(i==toRemove[pos]) {
+                pos++;
+                continue;
+            }
+            mapping.set(last, mapping.getInt(i));
+            last++;
         }
+        mapping.size(last);
     }
 
     @Override
     public void clear() {
         mapping.clear();
-    }
-
-    public IntStream rowStream() {
-        return mapping.stream().mapToInt(i -> i);
     }
 
     @Override
@@ -121,8 +120,8 @@ public final class ListMapping implements Mapping {
     }
 
     @Override
-    public Stream<Integer> stream() {
-        return mapping.stream();
+    public IntStream stream() {
+        return mapping.stream().mapToInt(i->i);
     }
 
     @Override

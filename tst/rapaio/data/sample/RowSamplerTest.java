@@ -69,7 +69,7 @@ public class RowSamplerTest {
         VarDouble count = VarDouble.empty().withName("bcount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
-            count.addDouble(1.0 * s.mapping.rowStream().distinct().count() / df.rowCount());
+            count.addDouble(1.0 * s.mapping.stream().distinct().count() / df.rowCount());
         }
 
         // close to 1 - 1 / exp(1)
@@ -84,7 +84,7 @@ public class RowSamplerTest {
         VarDouble count = VarDouble.fill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
-            s.mapping.rowStream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
+            s.mapping.stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
         }
 
         // uniform counts close to 500

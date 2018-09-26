@@ -26,14 +26,12 @@
 package rapaio.data.mapping;
 
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
 
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/27/18.
@@ -50,17 +48,6 @@ public final class IntervalMapping implements Mapping {
     public IntervalMapping(int start, int end) {
         this.start = start;
         this.end = end;
-    }
-
-    @Override
-    public Mapping reMapCopy(Int2IntFunction fun) {
-        if (onList) {
-            return listMapping.reMapCopy(fun);
-        } else {
-            onList = true;
-            listMapping = new ListMapping(start, end);
-            return listMapping.reMapCopy(fun);
-        }
     }
 
     @Override
@@ -123,13 +110,6 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public IntStream rowStream() {
-        if (onList)
-            return listMapping.rowStream();
-        return IntStream.range(start, end);
-    }
-
-    @Override
     public IntListIterator iterator() {
         return onList ? listMapping.iterator() : new IntListIterator() {
 
@@ -147,7 +127,7 @@ public final class IntervalMapping implements Mapping {
 
             @Override
             public int nextIndex() {
-                return s - start + 1;
+                return s - start;
             }
 
             @Override
@@ -158,20 +138,20 @@ public final class IntervalMapping implements Mapping {
             @Override
             public int previousInt() {
                 s--;
-                return s + 1;
+                return s;
             }
 
             @Override
             public int nextInt() {
                 s++;
-                return s - 1;
+                return s-1;
             }
         };
     }
 
     @Override
-    public Stream<Integer> stream() {
-        return onList ? listMapping.stream() : IntStream.range(start, end).boxed();
+    public IntStream stream() {
+        return onList ? listMapping.stream() : IntStream.range(start, end);
     }
 
     @Override

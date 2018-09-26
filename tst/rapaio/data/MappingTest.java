@@ -25,77 +25,53 @@
 package rapaio.data;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class MappingTest {
 
+    private static final double TOL = 1e-20;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void testMappingBuilders() {
-        Mapping m = Mapping.empty();
-        assertEquals(0, m.size());
+        Mapping empty1 = Mapping.empty();
+        assertEquals(0, empty1.size());
 
-        m = Mapping.wrap(1, 3, 5, 7);
-        assertEquals(4, m.size());
-        assertEquals(1, m.get(0));
-        assertEquals(7, m.get(3));
+        IntList wrap1 = IntArrayList.wrap(new int[]{1, 3, 5, 7});
 
-        m = Mapping.wrap(IntArrayList.wrap(new int[]{1, 3, 5, 7}));
-        assertEquals(4, m.size());
-        assertEquals(1, m.get(0));
-        assertEquals(7, m.get(3));
+        testMap(Mapping.wrap(1, 3, 5, 7), 1, 3, 5, 7);
+        testMap(Mapping.wrap(wrap1), 1, 3, 5, 7);
+        testMap(Mapping.copy(wrap1), 1, 3, 5, 7);
+        testMap(Mapping.copy(wrap1, x -> x + 1), 2, 4, 6, 8);
+
+        testMap(Mapping.range(5), 0, 1, 2, 3, 4);
+        testMap(Mapping.range(2, 5), 2, 3, 4);
     }
 
     @Test
-    public void testIntervalMappingNotReadOnly() {
-        Mapping m = Mapping.range(0, 100);
-        try {
-            m.add(100);
-        } catch (IllegalArgumentException ignored) {
-            assertTrue("should not raise an exception", false);
-        }
+    public void testCollector() {
+        Mapping map1 = IntStream.range(5, 10).boxed().collect(Mapping.collector());
+        testMap(map1, 5, 6, 7, 8, 9);
 
-        try {
-            m.addAll(IntArrayList.wrap(new int[]{1, 0}));
-        } catch (IllegalArgumentException ignored) {
-            assertTrue("should not raise an exception", false);
-        }
+        Mapping map2 = IntStream.range(0, 1000).parallel().boxed().collect(Mapping.collector());
+        double cnt = map2.stream().mapToDouble(x -> x).sum();
+        assertEquals(499500, cnt, TOL);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testListMappingManageOutOfBounds() {
-        Mapping m = Mapping.wrap(IntStream.range(0, 100).toArray());
-
-        m.add(1000);
-        assertEquals(1000, m.get(m.size() - 1));
-
-        m = Mapping.wrap(0, 1, 3, 4);
-
-        m.get(10000);
-    }
-
-    @Test
-    public void testListMappingManage() {
-        Mapping m = Mapping.wrap(IntStream.range(0, 100).toArray());
-
-        m.add(1000);
-        assertEquals(1000, m.get(m.size() - 1));
-
-        m = Mapping.wrap(0, 1, 3, 4);
-
-        assertEquals(4, m.get(3));
-        assertEquals(1, m.get(1));
-
-        m.addAll(IntArrayList.wrap(new int[]{100, 101}));
-
-        assertEquals(100, m.get(4));
-        assertEquals(101, m.get(5));
-        assertEquals(3, m.get(2));
+    private void testMap(Mapping mapping, int... values) {
+        assertArrayEquals(mapping.stream().toArray(), values);
     }
 }
