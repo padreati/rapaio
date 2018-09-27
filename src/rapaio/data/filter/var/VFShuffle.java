@@ -29,25 +29,25 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFShuffle extends AbstractVF {
+public class VFShuffle implements VFilter {
 
     private static final long serialVersionUID = -5571537968976749556L;
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        int[] mapping = IntStream.range(0, vars[0].rowCount()).toArray();
+    public Var apply(Var var) {
+        int[] mapping = IntStream.range(0, var.rowCount()).toArray();
         IntArrays.shuffle(mapping, RandomSource.getRandom());
-        return vars[0].mapRows(Mapping.wrap(mapping));
+        return var.mapRows(Mapping.wrap(mapping));
     }
 }

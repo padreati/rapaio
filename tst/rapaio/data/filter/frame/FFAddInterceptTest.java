@@ -38,12 +38,12 @@ public class FFAddInterceptTest {
     @Test
     public void testInterceptValues() {
         Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).withName("a"));
-        Frame after = FFAddIntercept.filter().newInstance().fitApply(before);
+        Frame after = FFAddIntercept.filter().newInstance().fapply(before);
 
         Assert.assertTrue(after.varCount()==2);
         Assert.assertEquals(FFAddIntercept.INTERCEPT, after.varNames()[0]);
 
-        Frame again = FFAddIntercept.filter().fitApply(after);
+        Frame again = FFAddIntercept.filter().fapply(after);
         Assert.assertTrue(after.equals(again));
     }
 }

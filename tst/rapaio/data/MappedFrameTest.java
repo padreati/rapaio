@@ -50,8 +50,8 @@ public class MappedFrameTest {
     @Test
     public void colsSortedTest() throws IOException, URISyntaxException {
         Frame orig = Datasets.loadIrisDataset();
-        Frame sort = new FFRefSort(RowComparators.doubleComparator(orig.rvar(1), true)).fitApply(orig);
-        sort = new FFRefSort(RowComparators.doubleComparator(orig.rvar(2), true)).fitApply(sort);
+        Frame sort = new FFRefSort(RowComparators.doubleComparator(orig.rvar(1), true)).fapply(orig);
+        sort = new FFRefSort(RowComparators.doubleComparator(orig.rvar(2), true)).fapply(sort);
         for (int i = 0; i < sort.rowCount(); i++) {
             assertEquals(sort.getDouble(i, 0), sort.rvar(0).getDouble(i), 1e-10);
         }

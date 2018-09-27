@@ -56,7 +56,7 @@ public class RTreeTest {
         df.printSummary();
 
         String v = "TV";
-        Frame t = new FFRefSort(df.rvar(v).refComparator()).fitApply(df);
+        Frame t = new FFRefSort(df.rvar(v).refComparator()).fapply(df);
 
         RTree tree = RTree.newCART()
                 .withMaxDepth(10)

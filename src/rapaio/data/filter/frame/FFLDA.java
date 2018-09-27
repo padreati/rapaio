@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -50,7 +51,7 @@ public class FFLDA extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
         lda = new LDA();
         lda.fit(df, varNames);

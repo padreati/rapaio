@@ -63,9 +63,9 @@ public class JoinTest {
     public void rightJoinTest() {
 
         Frame a1 = Join.leftJoin(df1, df2);
-        a1 = a1.fitApply(new FFRefSort(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
+        a1 = a1.fapply(new FFRefSort(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
         Frame b1 = Join.rightJoin(df2, df1);
-        b1 = b1.fitApply(new FFRefSort(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
+        b1 = b1.fapply(new FFRefSort(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
         a1.printLines();
         b1.printLines();
         assertTrue(a1.deepEquals(b1));

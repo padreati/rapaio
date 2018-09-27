@@ -26,11 +26,12 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
-public class VFCumulativeSum extends AbstractVF {
+public class VFCumulativeSum implements VFilter {
 
     public static VFCumulativeSum filter() {
         return new VFCumulativeSum();
@@ -39,15 +40,14 @@ public class VFCumulativeSum extends AbstractVF {
     private static final long serialVersionUID = -4903712768679690937L;
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        for (int i = 1; i < vars[0].rowCount(); i++) {
-            vars[0].setDouble(i, vars[0].getDouble(i - 1) + vars[0].getDouble(i));
+    public Var apply(Var var) {
+        for (int i = 1; i < var.rowCount(); i++) {
+            var.setDouble(i, var.getDouble(i - 1) + var.getDouble(i));
         }
-        return vars[0];
+        return var;
     }
 }

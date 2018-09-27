@@ -33,7 +33,7 @@ import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.Filters;
+import rapaio.data.filter.FF;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.distance.KMeansInitMethod;
@@ -475,7 +475,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
             sb.append("Per cluster: \n");
             sb.append(Summary.headString(false,
-                    Filters.refSort(summary, summary.rvar("count").refComparator(false))));
+                    summary.fapply(FF.refSort(summary.rvar("count").refComparator(false)))));
             sb.append("\n");
             sb.append("Cluster weights:\n");
             Frame w = SolidFrame.byVars(VarInt.seq(k).withName("ID")).bindVars(weights);

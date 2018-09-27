@@ -26,35 +26,34 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdateIndex extends AbstractVF {
+public class VFApplyInt implements VFilter {
 
     private static final long serialVersionUID = -9017598696178273627L;
 
-    public static VFUpdateIndex with(Function<Integer, Integer> f) {
-        return new VFUpdateIndex(f);
+    public static VFApplyInt with(Function<Integer, Integer> f) {
+        return new VFApplyInt(f);
     }
 
     private final Function<Integer, Integer> f;
 
-    private VFUpdateIndex(Function<Integer, Integer> f) {
+    private VFApplyInt(Function<Integer, Integer> f) {
         this.f = f;
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setInt(f.apply(s.getInt())));
-        return vars[0];
+    public Var apply(Var var) {
+        var.stream().forEach(s -> s.setInt(f.apply(s.getInt())));
+        return var;
     }
 }

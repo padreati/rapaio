@@ -39,7 +39,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.FFilter;
-import rapaio.data.filter.Filters;
+import rapaio.data.filter.FF;
+import rapaio.data.filter.VF;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -218,7 +219,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(FF.refSort(score.refComparator(false))).solidCopy();
     }
 
     public Frame getGainVIInfo() {
@@ -233,7 +234,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return Filters.refSort(SolidFrame.byVars(name, score, sd, scaled), score.refComparator(false)).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(FF.refSort(score.refComparator(false))).solidCopy();
     }
 
     public Frame getPermVIInfo() {
@@ -255,7 +256,7 @@ public class CForest extends AbstractClassifier {
             zscores.addDouble(Math.abs(zscore));
             pvalues.addDouble(pvalue);
         }
-        return Filters.refSort(SolidFrame.byVars(name, score, sds, zscores, pvalues), zscores.refComparator(false)).solidCopy();
+        return SolidFrame.byVars(name, score, sds, zscores, pvalues).fapply(FF.refSort(zscores.refComparator(false))).solidCopy();
     }
 
     @Override
@@ -351,7 +352,7 @@ public class CForest extends AbstractClassifier {
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = Filters.shuffle(oobFrame.rvar(varName));
+            Var shuffled = oobFrame.rvar(varName).fapply(VF.shuffle());
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(VRange.of(varName)).bindVars(shuffled);

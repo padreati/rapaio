@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,11 +26,12 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFTransformBoxCox extends AbstractVF {
+public class VFTransformBoxCox implements VFilter {
 
     private static final long serialVersionUID = 1914770412929840529L;
     private final double lambda;
@@ -53,19 +55,19 @@ public class VFTransformBoxCox extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-
-        return vars[0].stream().transValue(value -> {
-            if (lambda == 0)
-                return Math.log(value + shift);
-            else
-                return (Math.pow(value + shift, lambda) - 1) / lambda;
-        }).toMappedVar();
+    public Var apply(Var var) {
+        if (lambda == 0)
+            for (int i = 0; i < var.rowCount(); i++) {
+                var.setDouble(i, Math.log(var.getDouble(i) + shift));
+            }
+        else
+            for (int i = 0; i < var.rowCount(); i++) {
+                var.setDouble(i, (Math.pow(var.getDouble(i) + shift, lambda) - 1) / lambda);
+            }
+        return var;
     }
 }

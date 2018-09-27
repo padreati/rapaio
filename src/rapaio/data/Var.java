@@ -27,7 +27,6 @@ package rapaio.data;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
-import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
@@ -35,7 +34,6 @@ import rapaio.printer.Summary;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -328,7 +326,7 @@ public interface Var extends Serializable, Printable {
      * @return a stream of variables spots
      */
     default VSpots stream() {
-        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
+        return new VSpots(this);
     }
 
     /**
@@ -336,13 +334,13 @@ public interface Var extends Serializable, Printable {
      * the order they appear in the array. Depending on the filter variable instance, it creates or not
      * a new copy of the variable.
      *
-     * @param filters array of filters
+     * @param filters filters to be applied
      * @return transformed variable after the given variable filter are applied successively
      */
-    default Var fitApply(VFilter... filters) {
+    default Var fapply(VFilter... filters) {
         Var var = this;
         for (VFilter filter : filters) {
-            var = filter.fitApply(var);
+            var = filter.fapply(var);
         }
         return var;
     }
@@ -358,7 +356,7 @@ public interface Var extends Serializable, Printable {
     default Var apply(VFilter... filters) {
         Var var = this;
         for (VFilter filter : filters) {
-            var = filter.fitApply(var);
+            var = filter.fapply(var);
         }
         return var;
     }

@@ -137,7 +137,7 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VFRefSort(RowComparators.doubleComparator(score, false)).fitApply(VarInt.seq(score.rowCount()));
+        Var rows = new VFRefSort(RowComparators.doubleComparator(score, false)).fapply(VarInt.seq(score.rowCount()));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < rows.rowCount(); i++) {

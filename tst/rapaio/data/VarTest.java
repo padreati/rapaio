@@ -29,7 +29,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.data.filter.var.VFSort;
 import rapaio.data.filter.var.VFStandardize;
-import rapaio.data.filter.var.VFUpdateValue;
+import rapaio.data.filter.var.VFApplyDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class VarTest {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
         Var x = VarDouble.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarDouble.collector());
-        y = new VFSort().fitApply(y);
+        y = new VFSort().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }
@@ -78,7 +78,7 @@ public class VarTest {
         int[] src = IntStream.range(0, 100_000).toArray();
         Var x = VarInt.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarInt.collector());
-        y = new VFSort().fitApply(y);
+        y = new VFSort().fapply(y);
 
         assertTrue(x.deepEquals(y));
     }
@@ -113,7 +113,7 @@ public class VarTest {
         double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
 
         VarDouble vx = VarDouble.wrap(x);
-        Var vlog1px = vx.solidCopy().fitApply(VFUpdateValue.with(Math::log1p));
+        Var vlog1px = vx.solidCopy().fapply(VFApplyDouble.with(Math::log1p));
 
         assertTrue(vx.deepEquals(VarDouble.wrap(x)));
         assertTrue(vlog1px.deepEquals(VarDouble.wrap(log1px)));
@@ -121,7 +121,7 @@ public class VarTest {
         VFStandardize filter = new VFStandardize();
         filter.fit(vx);
         Var fit1 = vx.solidCopy().apply(filter);
-        Var fit2 = vx.solidCopy().fitApply(VFStandardize.filter());
+        Var fit2 = vx.solidCopy().fapply(VFStandardize.filter());
 
         assertTrue(fit1.deepEquals(fit2));
     }
@@ -129,25 +129,25 @@ public class VarTest {
     @Test
     public void testRefComparator() {
         Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
-        varDouble = varDouble.fitApply(VFRefSort.filter(varDouble.refComparator()));
+        varDouble = varDouble.fapply(VFRefSort.filter(varDouble.refComparator()));
         for (int i = 1; i < varDouble.rowCount(); i++) {
             assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
         }
 
         Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
-        varLong = varLong.fitApply(VFRefSort.filter(varLong.refComparator()));
+        varLong = varLong.fapply(VFRefSort.filter(varLong.refComparator()));
         for (int i = 1; i < varLong.rowCount(); i++) {
             assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
         }
 
         Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
-        varInt = varInt.fitApply(VFRefSort.filter(varInt.refComparator()));
+        varInt = varInt.fapply(VFRefSort.filter(varInt.refComparator()));
         for (int i = 1; i < varInt.rowCount(); i++) {
             assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
         }
 
         Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
-        varNominal = varNominal.fitApply(VFRefSort.filter(varNominal.refComparator()));
+        varNominal = varNominal.fapply(VFRefSort.filter(varNominal.refComparator()));
         for (int i = 1; i < varNominal.rowCount(); i++) {
             assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);
         }

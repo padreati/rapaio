@@ -28,8 +28,9 @@ package rapaio.experiment.ml.classifier.meta;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.data.Var;
 import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.filter.VF;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -117,7 +118,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
+                .map(v -> v.solidCopy().fapply(VF.applyDouble(x -> x * x)).withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
 
@@ -149,7 +150,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
+                .map(v -> v.solidCopy().fapply(VF.applyDouble(x -> x * x)).withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
         return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

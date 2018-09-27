@@ -28,13 +28,14 @@ package rapaio.data.stream;
 import rapaio.data.Var;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A variable spot is a reference to an observation from a variable and is used in the context of streams.
- *
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class VSpot implements Serializable {
+public class VSpot implements Comparable<VSpot>, Serializable {
 
     private static final long serialVersionUID = -6730609711071770571L;
     private final int row;
@@ -42,6 +43,7 @@ public class VSpot implements Serializable {
 
     /**
      * Builds a spot for a given variable at a given row
+     *
      * @param row row of the spotted observation
      * @param var given variable
      */
@@ -87,6 +89,7 @@ public class VSpot implements Serializable {
 
     /**
      * Assigns a numeric value to the observation
+     *
      * @param value given numeric value
      */
     public void setDouble(final double value) {
@@ -102,6 +105,7 @@ public class VSpot implements Serializable {
 
     /**
      * Assigns index value to the observation value
+     *
      * @param index given index value
      */
     public void setInt(final int index) {
@@ -117,6 +121,7 @@ public class VSpot implements Serializable {
 
     /**
      * Assigns label value to the current observation value
+     *
      * @param label given label value
      */
     public void setLabel(String label) {
@@ -132,6 +137,7 @@ public class VSpot implements Serializable {
 
     /**
      * Assigns binary value to the current observation value
+     *
      * @param value binary value
      */
     public void setBoolean(boolean value) {
@@ -147,9 +153,40 @@ public class VSpot implements Serializable {
 
     /**
      * Assigns the given stamp value to the current observation
+     *
      * @param value stamp value
      */
     public void getLong(long value) {
         var.setLong(row, value);
+    }
+
+    @Override
+    public int compareTo(VSpot o) {
+        switch (var.type()) {
+            case DOUBLE:
+                return Double.compare(getDouble(), o.getDouble());
+            case INT:
+                return Integer.compare(getInt(), o.getInt());
+            case LONG:
+                return Long.compare(getLong(), o.getLong());
+            case BOOLEAN:
+                return Boolean.compare(getBoolean(), o.getBoolean());
+            default:
+                return getLabel().compareTo(o.getLabel());
+        }
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VSpot vSpot = (VSpot) o;
+        return row == vSpot.row && Objects.equals(var, vSpot.var);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, var);
     }
 }

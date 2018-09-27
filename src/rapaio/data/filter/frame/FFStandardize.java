@@ -68,7 +68,7 @@ public class FFStandardize extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
         filters.clear();
         for (String varName : varNames) {

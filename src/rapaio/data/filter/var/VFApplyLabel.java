@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,30 +23,37 @@
  *
  */
 
-package rapaio.data.stream;
+package rapaio.data.filter.var;
 
-import org.junit.Test;
-import rapaio.core.stat.Sum;
 import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.data.filter.VFilter;
 
-import static org.junit.Assert.assertEquals;
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class RVSpotTest {
+public class VFApplyLabel implements VFilter {
 
-    @Test
-    public void testNumericStream() {
-        Var x = VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        Var y = x.solidCopy().stream().transValue(Math::sqrt).toMappedVar();
+    private static final long serialVersionUID = -8804231452563671594L;
 
-        double v = 0;
-        for (int i = 0; i < 10; i++) {
-            v += Math.sqrt(x.getDouble(i));
-        }
-        assertEquals(v, Sum.from(y).value(), 1e-12);
+    public static VFApplyLabel with(Function<String, String> f) {
+        return new VFApplyLabel(f);
+    }
+
+    private final Function<String, String> f;
+
+    private VFApplyLabel(Function<String, String> f) {
+        this.f = f;
+    }
+
+    @Override
+    public void fit(Var var) {
+    }
+
+    @Override
+    public Var apply(Var var) {
+        var.stream().forEach(s -> s.setLabel(f.apply(s.getLabel())));
+        return var;
     }
 }

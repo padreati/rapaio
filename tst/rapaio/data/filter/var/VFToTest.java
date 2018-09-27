@@ -50,39 +50,39 @@ public class VFToTest {
         // by default transformer
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
-                .deepEquals(num1.fitApply(VFToNumeric.byDefault())));
+                .deepEquals(num1.fapply(VFToNumeric.byDefault())));
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
-                .deepEquals(nom1.fitApply(VFToNumeric.byDefault())));
+                .deepEquals(nom1.fapply(VFToNumeric.byDefault())));
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
-                .deepEquals(nom2.fitApply(VFToNumeric.byDefault())));
+                .deepEquals(nom2.fapply(VFToNumeric.byDefault())));
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
-                .deepEquals(idx1.fitApply(VFToNumeric.byDefault())));
+                .deepEquals(idx1.fapply(VFToNumeric.byDefault())));
 
         Assert.assertTrue(VarDouble.wrap(1, 0, 1, Double.NaN, 1, Double.NaN, 0)
-                .deepEquals(bin1.fitApply(VFToNumeric.byDefault())));
+                .deepEquals(bin1.fapply(VFToNumeric.byDefault())));
 
         // by spot transformer
 
         Assert.assertTrue(VarDouble.wrap(1, 1, 1, 0, 1, 0, 1)
-                .deepEquals(num1.fitApply(VFToNumeric.bySpot(s -> s.isMissing() ? 0.0 : 1.0))));
+                .deepEquals(num1.fapply(VFToNumeric.bySpot(s -> s.isMissing() ? 0.0 : 1.0))));
 
         // by value transformer
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 1.2, Double.NaN, 3, Double.NaN, 3.2)
-                .deepEquals(num1.fitApply(VFToNumeric.byValue(x -> x))));
+                .deepEquals(num1.fapply(VFToNumeric.byValue(x -> x))));
 
         // by index transformer
 
         Assert.assertTrue(VarDouble.wrap(1, 2, 3, Double.NaN, 3, Double.NaN, 4)
-                .deepEquals(idx1.fitApply(VFToNumeric.byIndex(x -> x == Integer.MIN_VALUE ? Double.NaN : Double.valueOf(x)))));
+                .deepEquals(idx1.fapply(VFToNumeric.byIndex(x -> x == Integer.MIN_VALUE ? Double.NaN : Double.valueOf(x)))));
 
         // by label transformer
 
         Assert.assertTrue(num1
-                .deepEquals(nom1.fitApply(VFToNumeric.byLabel(txt -> txt.equals("?") ? Double.NaN : Double.parseDouble(txt)))));
+                .deepEquals(nom1.fapply(VFToNumeric.byLabel(txt -> txt.equals("?") ? Double.NaN : Double.parseDouble(txt)))));
     }
 
     @Test
@@ -96,39 +96,39 @@ public class VFToTest {
         // by default transformer
 
         Assert.assertTrue(VarInt.wrap(1, 2, 1, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 3)
-                .deepEquals(num1.fitApply(VFToIndex.byDefault())));
+                .deepEquals(num1.fapply(VFToIndex.byDefault())));
 
         Assert.assertTrue(VarInt.wrap(1, 2, Integer.MIN_VALUE, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4)
-                .deepEquals(nom1.fitApply(VFToIndex.byDefault())));
+                .deepEquals(nom1.fapply(VFToIndex.byDefault())));
 
         Assert.assertTrue(VarInt.wrap(1, 2, Integer.MIN_VALUE, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, Integer.MIN_VALUE)
-                .deepEquals(nom2.fitApply(VFToIndex.byDefault())));
+                .deepEquals(nom2.fapply(VFToIndex.byDefault())));
 
         Assert.assertTrue(VarInt.wrap(1, 2, 3, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4)
-                .deepEquals(idx1.fitApply(VFToIndex.byDefault())));
+                .deepEquals(idx1.fapply(VFToIndex.byDefault())));
 
         Assert.assertTrue(VarInt.wrap(1, 0, 1, Integer.MIN_VALUE, 1, Integer.MIN_VALUE, 0)
-                .deepEquals(bin1.fitApply(VFToIndex.byDefault())));
+                .deepEquals(bin1.fapply(VFToIndex.byDefault())));
 
         // by spot transformer
 
         Assert.assertTrue(VarInt.wrap(1, 1, 1, 0, 1, 0, 1)
-                .deepEquals(num1.fitApply(VFToIndex.bySpot(s -> s.isMissing() ? 0 : 1))));
+                .deepEquals(num1.fapply(VFToIndex.bySpot(s -> s.isMissing() ? 0 : 1))));
 
         // by value transformer
 
         Assert.assertTrue(VarInt.wrap(1, 2, 1, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 3)
-                .deepEquals(num1.fitApply(VFToIndex.byValue(x -> Double.isNaN(x) ? Integer.MIN_VALUE : Double.valueOf(x).intValue()))));
+                .deepEquals(num1.fapply(VFToIndex.byValue(x -> Double.isNaN(x) ? Integer.MIN_VALUE : Double.valueOf(x).intValue()))));
 
         // by index transformer
 
         Assert.assertTrue(VarInt.wrap(1, 2, 3, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4)
-                .deepEquals(idx1.fitApply(VFToIndex.byIndex(x -> x))));
+                .deepEquals(idx1.fapply(VFToIndex.byIndex(x -> x))));
 
         // by label transformer
 
         Assert.assertTrue(VarInt.wrap(1, 2, Integer.MIN_VALUE, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4)
-                .deepEquals(nom1.fitApply(VFToIndex.byLabel(txt -> {
+                .deepEquals(nom1.fapply(VFToIndex.byLabel(txt -> {
                     if (txt.equals("?"))
                         return Integer.MIN_VALUE;
                     try {

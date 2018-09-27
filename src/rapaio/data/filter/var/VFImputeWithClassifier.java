@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,12 +29,13 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 import rapaio.ml.classifier.Classifier;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFImputeWithClassifier extends AbstractVF {
+public class VFImputeWithClassifier implements VFilter {
 
     private static final long serialVersionUID = -2841651242636043825L;
 
@@ -48,16 +50,16 @@ public class VFImputeWithClassifier extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
+    public void fit(Var var) {
         if (model.hasLearned())
             return;
-        Frame all = BoundFrame.byVars(vars).mapVars(inputRange);
+        Frame all = BoundFrame.byVars(var).mapVars(inputRange);
         Frame complete = all.stream().filter(s -> !s.isMissing(target)).toMappedFrame();
         model = model.newInstance().fit(complete, target);
     }
 
     @Override
-    public Var apply(Var... vars) {
-        return model.predict(BoundFrame.byVars(vars).mapVars(inputRange)).firstClasses().withName(target);
+    public Var apply(Var var) {
+        return model.predict(BoundFrame.byVars(var).mapVars(inputRange)).firstClasses().withName(target);
     }
 }

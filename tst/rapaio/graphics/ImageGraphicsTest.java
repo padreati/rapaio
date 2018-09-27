@@ -49,7 +49,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.data.filter.Filters.*;
+import static rapaio.data.filter.VF.*;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -197,7 +197,7 @@ public class ImageGraphicsTest {
     @Test
     public void testLines() throws IOException, URISyntaxException {
 
-        Var x = updateValue(Math::log1p, df.rvar(0)).withName("x").stream().complete().toMappedVar();
+        Var x = df.rvar(0).fapply(applyDouble(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
         double min = CoreTools.min(x).value();
         double max = CoreTools.max(x).value();
@@ -217,8 +217,8 @@ public class ImageGraphicsTest {
     @Test
     public void testPoints() throws IOException, URISyntaxException {
 
-        Var x = updateValue(Math::log1p, df.rvar(0)).withName("x");
-        Var y = updateValue(Math::log1p, df.rvar(1)).withName("y");
+        Var x = df.rvar(0).fapply(applyDouble(Math::log1p)).withName("x");
+        Var y = df.rvar(1).fapply(applyDouble(Math::log1p)).withName("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))

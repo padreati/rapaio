@@ -28,6 +28,7 @@ package rapaio.data.filter.var;
 import rapaio.core.CoreTools;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
+import rapaio.data.filter.VFilter;
 import rapaio.sys.WS;
 import rapaio.util.func.SPredicate;
 
@@ -41,7 +42,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFQuantileDiscrete extends AbstractVF {
+public class VFQuantileDiscrete implements VFilter {
 
     private static final long serialVersionUID = -6702714518094848749L;
 
@@ -58,17 +59,14 @@ public class VFQuantileDiscrete extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        super.checkSingleVar(vars);
-
+    public void fit(Var var) {
         double len = 1.0 / k;
         double[] q = new double[k - 1];
         for (int i = 0; i < q.length; i++) {
             q[i] = len * (i + 1);
         }
-        Var original = vars[0];
 
-        qv = CoreTools.quantiles(original, q).values();
+        qv = CoreTools.quantiles(var, q).values();
 
         // first interval
 
@@ -90,17 +88,13 @@ public class VFQuantileDiscrete extends AbstractVF {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        super.checkSingleVar(vars);
-
-        Var original = vars[0];
-
-        VarNominal result = VarNominal.empty(0, dict).withName(original.name());
-        for (int i = 0; i < original.rowCount(); i++) {
-            if (original.isMissing(i))
+    public Var apply(Var var) {
+        VarNominal result = VarNominal.empty(0, dict).withName(var.name());
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.isMissing(i))
                 result.addMissing();
             for (Map.Entry<String, SPredicate<Double>> e : predicates.entrySet()) {
-                if (e.getValue().test(original.getDouble(i))) {
+                if (e.getValue().test(var.getDouble(i))) {
                     result.addLabel(e.getKey());
                 }
             }

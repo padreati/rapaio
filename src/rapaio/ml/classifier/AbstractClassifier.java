@@ -143,7 +143,7 @@ public abstract class AbstractClassifier implements Classifier {
     protected Frame prepareFit(Frame dfOld, final Var weights, final String... targetVars) {
         Frame df = dfOld;
         for (FFilter filter : inputFilters) {
-            df = filter.fitApply(df);
+            df = filter.fapply(df);
         }
         Frame result = df;
         List<String> targets = VRange.of(targetVars).parseVarNames(result);

@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -54,7 +55,7 @@ public interface FFilter extends Serializable {
      *
      * @param df given data frame
      */
-    void train(Frame df);
+    void fit(Frame df);
 
     /**
      * Apply trained transformation to the given data frame.
@@ -74,8 +75,8 @@ public interface FFilter extends Serializable {
      * @param df given data frame
      * @return transformed data frame
      */
-    default Frame fitApply(Frame df) {
-        train(df);
+    default Frame fapply(Frame df) {
+        fit(df);
         return apply(df);
     }
 

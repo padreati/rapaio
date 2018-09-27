@@ -31,12 +31,12 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VFilter;
 
-public class VFUpdateTest {
+public class VFApplyTest {
 
     @Test
     public void testUpdate() {
 
-        VFilter vf = VFUpdate.with(spot -> {
+        VFilter vf = VFApply.with(spot -> {
             if (spot.isMissing())
                 spot.setDouble(0);
             if (spot.getDouble() > 0)
@@ -47,7 +47,7 @@ public class VFUpdateTest {
 
         Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
-        Var y = x.solidCopy().fitApply(vf);
+        Var y = x.solidCopy().fapply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
         Assert.assertEquals(0, y.getDouble(1), 1e-20);
         Assert.assertEquals(1, y.getDouble(2), 1e-20);
@@ -56,7 +56,7 @@ public class VFUpdateTest {
         Assert.assertEquals(3.1 * 3.1, y.getDouble(5), 1e-20);
 
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.fitApply(VFUpdate.with(s -> {
+        Var l2 = l1.fapply(VFApply.with(s -> {
             if (s.isMissing()) {
                 s.setLabel("missing");
                 return;
@@ -81,7 +81,7 @@ public class VFUpdateTest {
     @Test
     public void testUpdateValue() {
 
-        VFilter vf = VFUpdateValue.with(x -> {
+        VFilter vf = VFApplyDouble.with(x -> {
             if (Double.isNaN(x))
                 return 0.0;
             return (x > 0) ? (x * x) : (-x * x);
@@ -89,7 +89,7 @@ public class VFUpdateTest {
 
         Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
-        Var y = x.solidCopy().fitApply(vf);
+        Var y = x.solidCopy().fapply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
         Assert.assertEquals(0, y.getDouble(1), 1e-20);
         Assert.assertEquals(1, y.getDouble(2), 1e-20);
@@ -101,7 +101,7 @@ public class VFUpdateTest {
     @Test
     public void testUpdateIndex() {
 
-        VFilter vf = VFUpdateIndex.with(x -> {
+        VFilter vf = VFApplyInt.with(x -> {
             if (x == Integer.MIN_VALUE)
                 return 0;
             return (x > 0) ? (x * x) : (-x * x);
@@ -109,7 +109,7 @@ public class VFUpdateTest {
 
         Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
-        Var y = x.solidCopy().fitApply(vf);
+        Var y = x.solidCopy().fapply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
         Assert.assertEquals(0, y.getDouble(1), 1e-20);
         Assert.assertEquals(1, y.getDouble(2), 1e-20);
@@ -122,7 +122,7 @@ public class VFUpdateTest {
     public void testUpdateLabel() {
 
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.fitApply(VFUpdateLabel.with(l -> {
+        Var l2 = l1.fapply(VFApplyLabel.with(l -> {
             if (l.equals("?")) {
                 return "missing";
             }

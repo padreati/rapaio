@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,39 +23,17 @@
  *
  */
 
-package rapaio.data.filter.var;
+package rapaio.data.filter;
 
-import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
-
-import java.util.function.Consumer;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import rapaio.data.filter.frame.FFRefSort;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
  */
-public class VFUpdate extends AbstractVF {
+public class FF {
 
-    private static final long serialVersionUID = 3929781693784001199L;
-
-    public static VFUpdate with(Consumer<VSpot> c) {
-        return new VFUpdate(c);
-    }
-
-    private final Consumer<VSpot> f;
-
-    private VFUpdate(Consumer<VSpot> f) {
-        this.f = f;
-    }
-
-    @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
-    }
-
-    @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(f::accept);
-        return vars[0];
+    public static FFRefSort refSort(IntComparator comp) {
+        return new FFRefSort(comp);
     }
 }

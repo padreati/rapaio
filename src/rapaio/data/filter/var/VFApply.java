@@ -26,35 +26,35 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
+import rapaio.data.stream.VSpot;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdateValue extends AbstractVF {
+public class VFApply implements VFilter {
 
     private static final long serialVersionUID = 3929781693784001199L;
 
-    public static VFUpdateValue with(Function<Double, Double> f) {
-        return new VFUpdateValue(f);
+    public static VFApply with(Consumer<VSpot> c) {
+        return new VFApply(c);
     }
 
-    private final Function<Double, Double> f;
+    private final Consumer<VSpot> f;
 
-    private VFUpdateValue(Function<Double, Double> f) {
+    private VFApply(Consumer<VSpot> f) {
         this.f = f;
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
-        return vars[0];
+    public Var apply(Var var) {
+        var.stream().forEach(f);
+        return var;
     }
 }

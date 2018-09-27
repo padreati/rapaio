@@ -45,7 +45,7 @@ public class FFRemoveVars extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
     }
 

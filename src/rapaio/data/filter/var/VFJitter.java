@@ -28,13 +28,14 @@ package rapaio.data.filter.var;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Applies a random noise from a given distribution to a numeric vector.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFJitter extends AbstractVF {
+public class VFJitter implements VFilter {
 
     private static final long serialVersionUID = -8411939170432884225L;
     private final Distribution d;
@@ -65,16 +66,15 @@ public class VFJitter extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        for (int i = 0; i < vars[0].rowCount(); i++) {
+    public Var apply(Var var) {
+        for (int i = 0; i < var.rowCount(); i++) {
             double err = d.sampleNext();
-            vars[0].setDouble(i, vars[0].getDouble(i) + err);
+            var.setDouble(i, var.getDouble(i) + err);
         }
-        return vars[0];
+        return var;
     }
 }

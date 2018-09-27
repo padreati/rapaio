@@ -39,7 +39,7 @@ public class Sandbox {
 
 
         VarDouble x = VarDouble.seq(0, 1000).withName("x");
-        Var y = x.solidCopy().fitApply(new VFTransformBoxCox(0.1)).withName("y");
+        Var y = x.solidCopy().fapply(new VFTransformBoxCox(0.1)).withName("y");
 
         BoundFrame.byVars(x, y).printLines(100);
     }

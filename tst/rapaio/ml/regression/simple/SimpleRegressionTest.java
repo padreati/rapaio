@@ -87,12 +87,12 @@ public class SimpleRegressionTest {
 
         Assert.assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstFit()));
-        Assert.assertTrue(df.rvar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
+        Assert.assertTrue(df.rvar(father).solidCopy().fapply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
         Assert.assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
                 .deepEquals(fit2.firstFit()));
-        Assert.assertTrue(df.rvar(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
+        Assert.assertTrue(df.rvar(father).solidCopy().fapply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
     }
 

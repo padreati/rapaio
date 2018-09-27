@@ -69,9 +69,9 @@ public class RTreeNumericMethodTest {
 
         assertEquals("BINARY", m.name());
 
-        Var target = df.rvar(TARGET).fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
-        Var test = df.rvar(NUM_TEST).fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
-        Var weights = w.fitApply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var target = df.rvar(TARGET).fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var test = df.rvar(NUM_TEST).fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var weights = w.fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
 
         double variance = Variance.from(target).value();
         for(int i=1; i<test.rowCount()-2; i++) {

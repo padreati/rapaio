@@ -302,6 +302,6 @@ public class UniqueRows {
         for (int i = 0; i < var.rowCount(); i++) {
             uniques.addInt(uniqueRows.getUniqueId(i));
         }
-        SolidFrame.byVars(var, uniques).fitApply(new FFRefSort(var.refComparator())).printLines();
+        SolidFrame.byVars(var, uniques).fapply(new FFRefSort(var.refComparator())).printLines();
     }
 }

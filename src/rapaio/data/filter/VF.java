@@ -27,106 +27,95 @@ package rapaio.data.filter;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.distributions.Distribution;
-import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.frame.FFRefSort;
-import rapaio.data.filter.frame.FFShuffle;
 import rapaio.data.filter.var.VFJitter;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.data.filter.var.VFShuffle;
 import rapaio.data.filter.var.VFSort;
 import rapaio.data.filter.var.VFTransformBoxCox;
 import rapaio.data.filter.var.VFTransformPower;
-import rapaio.data.filter.var.VFUpdate;
-import rapaio.data.filter.var.VFUpdateValue;
+import rapaio.data.filter.var.VFApply;
+import rapaio.data.filter.var.VFApplyDouble;
 import rapaio.data.stream.VSpot;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class Filters {
+public class VF {
 
     /**
      * Adds random noise normally distributed (mean=0, sd=0.1) to
      * a numerical variable.
      */
-    public static Var jitter(Var x) {
-        return new VFJitter().fitApply(x);
+    public static VFJitter jitter() {
+        return new VFJitter();
     }
 
     /**
      * Adds random noise normally distributed with mean=0 and specified sd to
      * a numerical variable.
      */
-    public static Var jitter(Var x, double sd) {
-        return new VFJitter(sd).fitApply(x);
+    public static VFJitter jitter(double sd) {
+        return new VFJitter(sd);
     }
 
     /**
      * Adds random noise distributed according with given distribution to
      * a numerical variable.
      */
-    public static Var jitter(Var x, Distribution d) {
-        return new VFJitter(d).fitApply(x);
+    public static VFJitter jitter(Distribution d) {
+        return new VFJitter(d);
     }
 
     /**
      * Sorts a variable using a default ascending sorting on labels
      * or numeric values.
      */
-    public static Var sort(Var x) {
-        return new VFSort().fitApply(x);
+    public static VFSort sort() {
+        return new VFSort();
     }
 
     /**
      * Sorts a variable using a default sorting on labels
      * or numeric values.
      */
-    public static Var sort(Var x, boolean asc) {
-        return new VFSort(asc).fitApply(x);
+    public static VFSort sort(boolean asc) {
+        return new VFSort(asc);
     }
 
-    public static Var refSort(Var x, IntComparator... comp) {
-        return new VFRefSort(comp).fitApply(x);
+    public static VFRefSort refSort(IntComparator... comp) {
+        return new VFRefSort(comp);
     }
 
-    public static Var refSort(Var x, Var ref) {
-        return new VFRefSort(ref.refComparator()).fitApply(x);
+    public static VFRefSort refSort(Var ref) {
+        return new VFRefSort(ref.refComparator());
     }
 
-    public static Var refSort(Var x, Var ref, boolean asc) {
-        return new VFRefSort(ref.refComparator(asc)).fitApply(x);
+    public static VFRefSort refSort(Var ref, boolean asc) {
+        return new VFRefSort(ref.refComparator(asc));
     }
 
-    public static Frame refSort(Frame df, IntComparator... comp) {
-        return new FFRefSort(comp).fitApply(df);
+    public static VFShuffle shuffle() {
+        return new VFShuffle();
     }
 
-    public static Var shuffle(Var x) {
-        return new VFShuffle().fitApply(x);
+    public static VFTransformPower transformPower(double lambda) {
+        return new VFTransformPower(lambda);
     }
 
-    public static Frame shuffle(Frame x) {
-        return new FFShuffle().fitApply(x);
+    public static VFTransformBoxCox transformBoxCox(double lambda) {
+        return new VFTransformBoxCox(lambda);
     }
 
-    public static Var transformPower(Var x, double lambda) {
-        return new VFTransformPower(lambda).fitApply(x);
+    public static VFTransformBoxCox transformBoxCox(double lambda, double shift) {
+        return new VFTransformBoxCox(lambda, shift);
     }
 
-    public static Var transformBoxCox(Var x, double lambda) {
-        return new VFTransformBoxCox(lambda).fitApply(x);
+    public static VFApplyDouble applyDouble(Function<Double, Double> f) {
+        return VFApplyDouble.with(f);
     }
 
-    public static Var transformBoxCox(Var x, double lambda, double shift) {
-        return new VFTransformBoxCox(lambda, shift).fitApply(x);
-    }
-
-    public static Var updateValue(Function<Double, Double> f, Var x) {
-        return VFUpdateValue.with(f).fitApply(x);
-    }
-
-    public static Var update(Consumer<VSpot> c, Var v) {
-        return VFUpdate.with(c).fitApply(v);
+    public static VFApply apply(Consumer<VSpot> c) {
+        return VFApply.with(c);
     }
 }

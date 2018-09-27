@@ -62,7 +62,7 @@ public class FFBoxCoxT extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
         checkRangeVars(0, df.varCount(), df);
     }
@@ -71,7 +71,7 @@ public class FFBoxCoxT extends AbstractFF {
     public Frame apply(Frame df) {
         String[] names = parse(df);
         for (String name : names) {
-            bct.fitApply(df.rvar(name));
+            bct.fapply(df.rvar(name));
         }
         return df;
     }

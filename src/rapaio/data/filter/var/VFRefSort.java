@@ -31,11 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-public class VFRefSort extends AbstractVF {
+public class VFRefSort implements VFilter {
 
     public static VFRefSort filter(IntComparator... rowComparators) {
         return new VFRefSort(rowComparators);
@@ -53,17 +54,16 @@ public class VFRefSort extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        int[] rows = new int[vars[0].rowCount()];
-        for (int i = 0; i < vars[0].rowCount(); i++) {
+    public Var apply(Var var) {
+        int[] rows = new int[var.rowCount()];
+        for (int i = 0; i < var.rowCount(); i++) {
             rows[i] = i;
         }
         IntArrays.quickSort(rows, aggregateComparator);
-        return vars[0].mapRows(Mapping.wrap(IntArrayList.wrap(rows)));
+        return var.mapRows(Mapping.wrap(IntArrayList.wrap(rows)));
     }
 }

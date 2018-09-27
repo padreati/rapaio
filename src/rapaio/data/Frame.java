@@ -158,6 +158,7 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Builds a new frame which has only the variables specified in the variable range list
+     *
      * @param varNameList list of variable names
      * @return new mapped frame with only the given variables
      */
@@ -512,7 +513,7 @@ public interface Frame extends Serializable, Printable {
      * @return a stream of FSpot
      */
     default FSpots stream() {
-        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
+        return new FSpots(this);
     }
 
     /**
@@ -538,10 +539,18 @@ public interface Frame extends Serializable, Printable {
         return varStream().collect(toList());
     }
 
-    default Frame fitApply(FFilter... inputFilters) {
+    default Frame fapply(FFilter... inputFilters) {
         Frame df = this;
         for (FFilter filter : inputFilters) {
-            df = filter.fitApply(df);
+            df = filter.fapply(df);
+        }
+        return df;
+    }
+
+    default Frame apply(FFilter... inputFilters) {
+        Frame df = this;
+        for (FFilter filter : inputFilters) {
+            df = filter.apply(df);
         }
         return df;
     }

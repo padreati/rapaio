@@ -27,12 +27,13 @@ package rapaio.data.filter.var;
 
 import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Filter to create monotonic power transformations
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFTransformPower extends AbstractVF {
+public class VFTransformPower implements VFilter {
 
     private static final long serialVersionUID = -4496756339460112649L;
     private final double lambda;
@@ -43,23 +44,28 @@ public class VFTransformPower extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
-        GeometricMean mygm = GeometricMean.from(vars[0]);
+    public void fit(Var var) {
+        GeometricMean mygm = GeometricMean.from(var);
         if (mygm.isDefined()) {
             gm = mygm.value();
         } else {
-            throw new IllegalArgumentException("The transformed variable " + vars[0].name() + "contains negative values, geometric mean cannot be computed");
+            throw new IllegalArgumentException("The transformed variable " + var.name() + "contains negative values, geometric mean cannot be computed");
         }
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        return vars[0].stream().transValue(x ->
-                        (lambda == 0) ?
-                        gm * Math.log(x) :
-                        (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))
-        ).toMappedVar();
+    public Var apply(Var var) {
+        if (lambda == 0) {
+            for (int i = 0; i < var.rowCount(); i++) {
+                double x = var.getDouble(i);
+                var.setDouble(i, gm * Math.log(x));
+            }
+        } else {
+            for (int i = 0; i < var.rowCount(); i++) {
+                double x = var.getDouble(i);
+                var.setDouble(i, (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1)));
+            }
+        }
+        return var;
     }
 }

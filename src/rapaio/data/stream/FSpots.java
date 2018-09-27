@@ -44,6 +44,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Stream of frame spots.
@@ -53,17 +54,19 @@ import java.util.stream.Stream;
 public class FSpots implements Stream<FSpot>, Serializable {
 
     private static final long serialVersionUID = -1062266227832968382L;
-    private final Stream<FSpot> stream;
-    private final Frame source;
 
-    public FSpots(Stream<FSpot> stream, Frame source) {
-        this.stream = stream;
+    private final Frame source;
+    private Stream<FSpot> stream;
+
+    public FSpots(Frame source) {
+        this.stream = StreamSupport.stream(new FSpotSpliterator(source, 0, source.rowCount(), 0), false);
         this.source = source;
     }
 
     @Override
     public FSpots filter(Predicate<? super FSpot> predicate) {
-        return new FSpots(stream.filter(predicate), source);
+        stream = stream.filter(predicate);
+        return this;
     }
 
     @Override
@@ -108,32 +111,38 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     @Override
     public FSpots distinct() {
-        return new FSpots(stream.distinct(), source);
+        stream = stream.distinct();
+        return this;
     }
 
     @Override
     public FSpots sorted() {
-        return new FSpots(stream.sorted(), source);
+        stream = stream.sorted();
+        return this;
     }
 
     @Override
     public FSpots sorted(Comparator<? super FSpot> comparator) {
-        return new FSpots(stream.sorted(comparator), source);
+        stream = stream.sorted(comparator);
+        return this;
     }
 
     @Override
     public FSpots peek(Consumer<? super FSpot> action) {
-        return new FSpots(stream.peek(action), source);
+        stream = stream.peek(action);
+        return this;
     }
 
     @Override
     public FSpots limit(long maxSize) {
-        return new FSpots(stream.limit(maxSize), source);
+        stream = stream.limit(maxSize);
+        return this;
     }
 
     @Override
     public FSpots skip(long n) {
-        return new FSpots(stream.skip(n), source);
+        stream = stream.skip(n);
+        return this;
     }
 
     @Override
@@ -238,22 +247,26 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     @Override
     public FSpots sequential() {
-        return new FSpots(stream.sequential(), source);
+        stream = stream.sequential();
+        return this;
     }
 
     @Override
     public FSpots parallel() {
-        return new FSpots(stream.parallel(), source);
+        stream = stream.parallel();
+        return this;
     }
 
     @Override
     public FSpots unordered() {
-        return new FSpots(stream.unordered(), source);
+        stream = stream.unordered();
+        return this;
     }
 
     @Override
     public FSpots onClose(Runnable closeHandler) {
-        return new FSpots(stream.onClose(closeHandler), source);
+        stream = stream.onClose(closeHandler);
+        return this;
     }
 
     @Override
@@ -267,6 +280,14 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public FSpots complete() {
         return filter(s -> !s.isMissing());
+    }
+
+    /**
+     * Filters the stream leaving in the stream only the spots which contains missing values on any of the variables
+     * @return list of incomplete (missing) frame spots
+     */
+    public FSpots incomplete() {
+        return filter(FSpot::isMissing);
     }
 
     /**

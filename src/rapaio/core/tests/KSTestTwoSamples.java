@@ -51,8 +51,8 @@ public class KSTestTwoSamples implements HTest {
     }
 
     private KSTestTwoSamples(Var sample1, Var sample2) {
-        this.v1 = new VFSort().fitApply(sample1);
-        this.v2 = new VFSort().fitApply(sample2);
+        this.v1 = new VFSort().fapply(sample1);
+        this.v2 = new VFSort().fapply(sample2);
 
         D = 0;
         double fn1 = 0.0;

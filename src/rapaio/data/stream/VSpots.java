@@ -29,7 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.experiment.util.stream.StreamUtil;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -42,6 +41,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Stream of variable spots which enrich the standard java streams with some specific
@@ -51,26 +51,28 @@ import java.util.stream.Stream;
  */
 public class VSpots implements Stream<VSpot>, Serializable {
 
-    private final Stream<VSpot> stream;
+    private static final long serialVersionUID = 6173562979588338610L;
+
+    private Stream<VSpot> stream;
     private final Var source;
 
     /**
      * Builds a stream of variable spots based on a standard java stream of spots
-     *
-     * @param stream nested stream
      */
-    public VSpots(Stream<VSpot> stream, Var source) {
-        this.stream = stream;
+    public VSpots(Var source) {
+        this.stream = StreamSupport.stream(new VSpotSpliterator(source, 0, source.rowCount(), 0), false);
         this.source = source;
     }
 
     @Override
     public VSpots filter(Predicate<? super VSpot> predicate) {
-        return new VSpots(stream.filter(predicate), source);
+        stream = stream.filter(predicate);
+        return this;
     }
 
     public VSpots filterValue(Predicate<Double> predicate) {
-        return new VSpots(stream.filter(s -> predicate.test(s.getDouble())), source);
+        stream = stream.filter(s -> predicate.test(s.getDouble()));
+        return this;
     }
 
     @Override
@@ -142,32 +144,38 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     @Override
     public VSpots distinct() {
-        return new VSpots(stream.distinct(), source);
+        stream = stream.distinct();
+        return this;
     }
 
     @Override
     public VSpots sorted() {
-        return new VSpots(stream.sorted(), source);
+        stream = stream.sorted();
+        return this;
     }
 
     @Override
     public VSpots sorted(Comparator<? super VSpot> comparator) {
-        return new VSpots(stream.sorted(comparator), source);
+        stream = stream.sorted(comparator);
+        return this;
     }
 
     @Override
     public VSpots peek(Consumer<? super VSpot> action) {
-        return new VSpots(stream.peek(action), source);
+        stream = stream.peek(action);
+        return this;
     }
 
     @Override
     public VSpots limit(long maxSize) {
-        return new VSpots(stream.limit(maxSize), source);
+        stream = stream.limit(maxSize);
+        return this;
     }
 
     @Override
     public VSpots skip(long n) {
-        return new VSpots(stream.skip(n), source);
+        stream = stream.skip(n);
+        return this;
     }
 
     @Override
@@ -272,22 +280,26 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     @Override
     public VSpots sequential() {
-        return new VSpots(stream.sequential(), source);
+        stream = stream.sequential();
+        return this;
     }
 
     @Override
     public VSpots parallel() {
-        return new VSpots(stream.parallel(), source);
+        stream = stream.parallel();
+        return this;
     }
 
     @Override
     public VSpots unordered() {
-        return new VSpots(stream.unordered(), source);
+        stream = stream.unordered();
+        return this;
     }
 
     @Override
     public VSpots onClose(Runnable closeHandler) {
-        return new VSpots(stream.onClose(closeHandler), source);
+        stream = stream.onClose(closeHandler);
+        return this;
     }
 
     @Override
@@ -301,7 +313,8 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return stream with complete spots
      */
     public VSpots complete() {
-        return new VSpots(stream.filter(s -> !s.isMissing()), source);
+        stream = stream.filter(s -> !s.isMissing());
+        return this;
     }
 
     /**
@@ -310,69 +323,8 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return stream with spots with missing values
      */
     public VSpots incomplete() {
-        return new VSpots(stream.filter(VSpot::isMissing), source);
-    }
-
-    /**
-     * Builds a stream of spot streams, each stream having the size given by {@param groupSize}
-     *
-     * @param groupSize the size of the groups which forms each stream
-     * @return a stream of streams
-     */
-    public Stream<VSpots> group(int groupSize) {
-        return StreamUtil.partition(stream, groupSize).map(list -> new VSpots(list.stream(), source));
-    }
-
-    /**
-     * Makes a string which contains a concatenation of mapped values
-     *
-     * @param mapper mapper used to transform a spot into a specific value
-     * @return a string made from the concatenation of mapped values
-     */
-    public <R> String mkString(Function<VSpot, R> mapper) {
-        StringBuilder sb = new StringBuilder();
-        Iterator<R> it = stream.map(mapper).iterator();
-        while (it.hasNext()) {
-            if (sb.length() != 0) sb.append(",");
-            sb.append(it.next().toString());
-        }
-        return "[" + sb.toString() + "]";
-    }
-
-    /**
-     * Applies a given transformation to all the numerical values of the underlying variable
-     *
-     * @param trans given transformation
-     */
-    public VSpots transValue(Function<Double, Double> trans) {
-        return new VSpots(stream.map(spot -> {
-            spot.setDouble(trans.apply(spot.getDouble()));
-            return spot;
-        }), source);
-    }
-
-    /**
-     * Applies a given transformation to all index values of the underlying variable
-     *
-     * @param trans given transformation
-     */
-    public VSpots transIndex(Function<Integer, Integer> trans) {
-        return new VSpots(stream.map(spot -> {
-            spot.setInt(trans.apply(spot.getInt()));
-            return spot;
-        }), source);
-    }
-
-    /**
-     * Applies a given transformation to all label values of the underlying variable
-     *
-     * @param trans given transformation
-     */
-    public VSpots transLabel(Function<String, String> trans) {
-        return new VSpots(stream.map(spot -> {
-            spot.setLabel(trans.apply(spot.getLabel()));
-            return spot;
-        }), source);
+        stream = stream.filter(VSpot::isMissing);
+        return this;
     }
 
     /**
@@ -386,3 +338,4 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return MappedVar.byRows(source, Mapping.wrap(IntArrayList.wrap(rows)));
     }
 }
+

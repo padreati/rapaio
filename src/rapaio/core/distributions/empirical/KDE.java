@@ -61,7 +61,7 @@ public class KDE implements Serializable {
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = new VFSort().fitApply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
+        this.values = new VFSort().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }

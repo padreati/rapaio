@@ -60,7 +60,7 @@ public class FFMapRemoveVarsTest {
     }
 
     private boolean assertMapEquals(VRange vRange) {
-        return df.mapVars(vRange).deepEquals(new FFMapVars(vRange).fitApply(df));
+        return df.mapVars(vRange).deepEquals(new FFMapVars(vRange).fapply(df));
     }
 
     @Test
@@ -71,14 +71,14 @@ public class FFMapRemoveVarsTest {
     }
 
     private boolean assertRemoveVars(VRange vRange) {
-        return df.removeVars(vRange).deepEquals(new FFRemoveVars(vRange).fitApply(df));
+        return df.removeVars(vRange).deepEquals(new FFRemoveVars(vRange).fapply(df));
     }
 
     @Test
     public void testBoth() {
 
         Frame df1 = df.mapVars(VRange.onlyTypes(VType.DOUBLE)).removeVars(VRange.of(1));
-        Frame df2 = new FFRemoveVars(VRange.of(1)).fitApply(new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).fitApply(df));
+        Frame df2 = new FFRemoveVars(VRange.of(1)).fapply(new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).fapply(df));
 
         Assert.assertTrue(df1.deepEquals(df2));
     }
@@ -86,12 +86,12 @@ public class FFMapRemoveVarsTest {
     @Test
     public void testInstance() {
         FFilter map = new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
-        map.train(df.mapVars("0,1"));
+        map.fit(df.mapVars("0,1"));
 
         Assert.assertEquals(2, map.apply(df).varCount());
 
         FFilter remove = new FFRemoveVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
-        remove.train(df.mapVars("0,1"));
+        remove.fit(df.mapVars("0,1"));
 
         Assert.assertEquals(2, remove.apply(df).varCount());
     }

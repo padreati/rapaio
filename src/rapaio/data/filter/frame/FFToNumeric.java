@@ -55,7 +55,7 @@ public class FFToNumeric extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
     }
 
@@ -69,7 +69,7 @@ public class FFToNumeric extends AbstractFF {
             if (!nameSet.contains(df.rvar(i).name())) {
                 vars[i] = df.rvar(i);
             } else {
-                vars[i] = VFToNumeric.byDefault().fitApply(df.rvar(i));
+                vars[i] = VFToNumeric.byDefault().fapply(df.rvar(i));
             }
         }
         return SolidFrame.byVars(df.rowCount(), vars);

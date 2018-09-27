@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,11 +26,12 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFSort extends AbstractVF {
+public class VFSort implements VFilter {
 
     private static final long serialVersionUID = -6260151471065618233L;
     private boolean asc;
@@ -43,13 +45,11 @@ public class VFSort extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        return new VFRefSort(vars[0].refComparator(asc)).fitApply(vars);
+    public Var apply(Var var) {
+        return new VFRefSort(var.refComparator(asc)).fapply(var);
     }
 }

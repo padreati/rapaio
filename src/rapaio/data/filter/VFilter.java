@@ -41,15 +41,15 @@ import java.io.Serializable;
  * <p>
  * A good example is centering the data. Centering data implies
  * that one computes a mean value first from the data, and this
- * step can be executed using {@link #fit(Var...)} method.
+ * step can be executed using {@link #fit(Var)} method.
  * <p>
  * After fitting parameter values from data, those parameters
  * can be used to apply filter to the same data or to
  * other possible data. This step is executed by calling
- * {@link #apply(Var...)} method.
+ * {@link #apply(Var)} method.
  * <p>
  * However, ofter a filter is used only to alter the data into a single
- * step. For this purpose one can use {@link VFilter#fitApply(Var...)} method
+ * step. For this purpose one can use {@link VFilter#fapply(Var)} method
  * which executes both steps (predict and apply) with a single method call.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
@@ -59,34 +59,34 @@ public interface VFilter extends Serializable, Printable {
     /**
      * Method for fitting eventual parameter values from given data
      *
-     * @param vars given data from which values to be fitted
+     * @param var given data from which values to be fitted
      */
-    void fit(Var... vars);
+    void fit(Var var);
 
     /**
      * Transforms the given variable by applying the algorithm
      * of the filer using current filter parameters.
      *
-     * @param vars input variables
+     * @param var input variable
      * @return filtered/transformed variable
      */
-    Var apply(Var... vars);
+    Var apply(Var var);
 
     /**
      * Method which allows one to make a single
      * call to predict filter parameters and apply those filter
      * on the same data in a single call.
      *
-     * @param vars input variable
+     * @param var input variable
      * @return filtered/transformed variable
      */
-    default Var fitApply(Var... vars) {
-        fit(vars);
-        return apply(vars);
+    default Var fapply(Var var) {
+        fit(var);
+        return apply(var);
     }
 
     @Override
     default String summary() {
-        return "filter summary not implemented";
+        throw new IllegalStateException("Not implemented.");
     }
 }

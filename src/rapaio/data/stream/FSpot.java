@@ -29,6 +29,7 @@ import rapaio.data.Frame;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Frame spot is a reference to an observation from a frame and usually is used in context of streams
@@ -257,5 +258,19 @@ public final class FSpot implements Serializable {
 
     public boolean getBoolean(String name) {
         return df.getBoolean(row, name);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FSpot fSpot = (FSpot) o;
+        return row == fSpot.row && Objects.equals(df, fSpot.df);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(df, row);
     }
 }

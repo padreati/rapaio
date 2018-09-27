@@ -47,7 +47,7 @@ public class FFMapVars extends AbstractFF {
     }
 
     @Override
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
     }
 

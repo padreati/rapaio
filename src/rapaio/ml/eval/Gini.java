@@ -74,12 +74,12 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();
+        Var sol = new VFRefSort(cmp).fapply(actual).solidCopy();
 
         int n = sol.rowCount();
 
         double totalLosses = Sum.from(sol).value();
-        double giniSum = Sum.from(VFCumulativeSum.filter().fitApply(sol)).value() / totalLosses;
+        double giniSum = Sum.from(VFCumulativeSum.filter().fapply(sol)).value() / totalLosses;
         giniSum -= (actual.rowCount() + 1) / 2.;
         return giniSum / actual.rowCount();
     }
@@ -89,13 +89,13 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VFRefSort(cmp).fitApply(actual).solidCopy();
-        Var w = new VFRefSort(cmp).fitApply(weights).solidCopy();
+        Var sol = new VFRefSort(cmp).fapply(actual).solidCopy();
+        Var w = new VFRefSort(cmp).fapply(weights).solidCopy();
 
         double wsum = Sum.from(w).value();
-        Var random = VFCumulativeSum.filter().fitApply(VarDouble.from(w, value -> value / wsum).solidCopy());
+        Var random = VFCumulativeSum.filter().fapply(VarDouble.from(w, value -> value / wsum).solidCopy());
         double totalPositive = Sum.from(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
-        Var lorentz = new VFCumulativeSum().fitApply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
+        Var lorentz = new VFCumulativeSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.rowCount() - 1; i++) {

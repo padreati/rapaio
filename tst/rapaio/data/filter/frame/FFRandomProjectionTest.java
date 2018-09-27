@@ -45,7 +45,7 @@ public class FFRandomProjectionTest {
 
         RandomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
-        Frame df = Datasets.loadIrisDataset().fitApply(rp);
+        Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
         Assert.assertEquals(3, df.varCount());
@@ -63,7 +63,7 @@ public class FFRandomProjectionTest {
 
         RandomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
-        Frame df = Datasets.loadIrisDataset().fitApply(rp);
+        Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
         Assert.assertEquals(3, df.varCount());
@@ -81,7 +81,7 @@ public class FFRandomProjectionTest {
 
         RandomSource.setSeed(1);
         FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
-        Frame df = Datasets.loadIrisDataset().fitApply(rp);
+        Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
         Assert.assertEquals(3, df.varCount());

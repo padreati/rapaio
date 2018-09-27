@@ -7,6 +7,7 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ public abstract class AbstractFF implements FFilter {
     }
 
     protected String[] parse(Frame df) {
-        varNames = vRange.parseVarNames(df).stream().toArray(String[]::new);
+        varNames = vRange.parseVarNames(df).toArray(new String[0]);
         return varNames;
     }
 
@@ -94,8 +95,7 @@ public abstract class AbstractFF implements FFilter {
         }
     }
 
-    public void train(Frame df) {
+    public void fit(Frame df) {
         parse(df);
     }
-
 }

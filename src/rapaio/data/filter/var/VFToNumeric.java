@@ -27,6 +27,7 @@ package rapaio.data.filter.var;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 
 import java.util.function.Function;
@@ -34,7 +35,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFToNumeric extends AbstractVF {
+public class VFToNumeric implements VFilter {
 
     private static final long serialVersionUID = -6471901421507667237L;
 
@@ -100,29 +101,25 @@ public class VFToNumeric extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public void fit(Var var) {
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        Var v = vars[0];
-
+    public Var apply(Var var) {
         if (fSpot != null) {
-            return v.stream().map(fSpot).collect(VarDouble.collector()).withName(v.name());
+            return var.stream().map(fSpot).collect(VarDouble.collector()).withName(var.name());
         }
         if (fValue != null) {
-            return v.stream().mapToDouble().boxed()
-                    .map(fValue).collect(VarDouble.collector()).withName(v.name());
+            return var.stream().mapToDouble().boxed()
+                    .map(fValue).collect(VarDouble.collector()).withName(var.name());
         }
         if (fIndex != null) {
-            return v.stream().mapToInt().boxed()
-                    .map(fIndex).collect(VarDouble.collector()).withName(v.name());
+            return var.stream().mapToInt().boxed()
+                    .map(fIndex).collect(VarDouble.collector()).withName(var.name());
         }
         if (fLabel != null) {
-            return v.stream().mapToString()
-                    .map(fLabel).collect(VarDouble.collector()).withName(v.name());
+            return var.stream().mapToString()
+                    .map(fLabel).collect(VarDouble.collector()).withName(var.name());
         }
         throw new RuntimeException("no transform function available");
     }

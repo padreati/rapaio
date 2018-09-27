@@ -28,11 +28,12 @@ package rapaio.data.filter.var;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class VFStandardize extends AbstractVF {
+public class VFStandardize implements VFilter {
 
     public static VFStandardize filter() {
         return new VFStandardize();
@@ -65,25 +66,26 @@ public class VFStandardize extends AbstractVF {
     }
 
     @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
-
+    public void fit(Var var) {
         if (Double.isNaN(mean)) {
-            mean = Mean.from(vars[0]).value();
+            mean = Mean.from(var).value();
         }
         if (Double.isNaN(sd)) {
-            sd = Variance.from(vars[0]).sdValue();
+            sd = Variance.from(var).sdValue();
         }
     }
 
     @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
-        if (!vars[0].type().isNumeric()) {
-            return vars[0];
+    public Var apply(Var var) {
+        if (!var.type().isNumeric()) {
+            return var;
         }
         if (Math.abs(sd) < 1e-20)
-            return vars[0];
-        return vars[0].stream().transValue(x -> (x - mean) / sd).toMappedVar();
+            return var;
+        for (int i = 0; i < var.rowCount(); i++) {
+            double x = var.getDouble(i);
+            var.setDouble(i, (x-mean)/sd);
+        }
+        return var;
     }
 }

@@ -68,7 +68,7 @@ public class ADTestGoodness implements HTest {
 
     private ADTestGoodness(Var x, double mu, double sigma) {
         Var xx = x.stream().complete().toMappedVar().solidCopy();
-        this.x = xx.fitApply(new VFRefSort(xx.refComparator())).solidCopy();
+        this.x = xx.fapply(new VFRefSort(xx.refComparator())).solidCopy();
 
         this.mu = mu;
         this.sigma = sigma;
