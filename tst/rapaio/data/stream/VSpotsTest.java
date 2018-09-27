@@ -30,8 +30,11 @@ import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarBoolean;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
 import rapaio.util.Pair;
 
 import java.util.Comparator;
@@ -145,5 +148,75 @@ public class VSpotsTest {
         Frame index = SolidFrame.byVars(VarInt.from(10, row -> row%2==0 ? Integer.MIN_VALUE: row));
         assertEquals(5, index.stream().complete().count());
         assertEquals(5, index.stream().incomplete().count());
+    }
+
+    @Test
+    public void testSorted() {
+
+        Var s1 = VarDouble.from(100, RandomSource::nextDouble).stream().sorted().toMappedVar();
+        for (int i = 1; i < s1.rowCount(); i++) {
+            assertTrue(s1.getDouble(i-1) <= s1.getDouble(i));
+        }
+
+        Var s2 = VarInt.from(100, row -> RandomSource.nextInt(100)).stream().sorted().toMappedVar();
+        for (int i = 1; i < s1.rowCount(); i++) {
+            assertTrue(s1.getInt(i-1) <= s1.getInt(i));
+        }
+
+        Var s3 = VarLong.from(100, row -> (long)(RandomSource.nextInt(100)))
+                .stream().sorted().toMappedVar();
+        for (int i = 1; i < s1.rowCount(); i++) {
+            assertTrue(s1.getLong(i-1) <= s1.getLong(i));
+        }
+
+        Var s4 = VarBoolean.from(100, row -> RandomSource.nextDouble() > 0.5)
+                .stream().sorted().toMappedVar();
+        for (int i = 1; i < s1.rowCount(); i++) {
+            assertTrue(s1.getInt(i-1) <= s1.getInt(i));
+        }
+
+        String[] words = new String[] {"ana", "are", "mere", "galbene"};
+        Var s5 = VarNominal.from(100, row -> words[RandomSource.nextInt(words.length)])
+                .stream().sorted().toMappedVar();
+
+        for (int i = 1; i < s5.rowCount(); i++) {
+            assertTrue(s5.getLabel(i-1).compareTo(s5.getLabel(i))<=0);
+        }
+    }
+
+    @Test
+    public void testVSpot() {
+        Var wrap = VarDouble.wrap(1, 2);
+        VSpot spot = new VSpot(1, wrap);
+
+        assertFalse(spot.isMissing());
+
+        assertEquals(2.0, spot.getDouble(), TOL);
+        spot.setDouble(3);
+        assertEquals(3, spot.getDouble(), TOL);
+
+        spot.setInt(0);
+        assertEquals(0, spot.getInt());
+
+        spot.setLabel("0");
+        assertEquals("0.0", spot.getLabel());
+
+        spot.setInt(0);
+        assertEquals(0, spot.getInt());
+
+        spot.setLong(17);
+        assertEquals(17, spot.getLong());
+
+        spot.setLabel("12");
+        assertEquals("12.0", spot.getLabel());
+
+        spot.setBoolean(true);
+        assertTrue(spot.getBoolean());
+
+        spot.setMissing();
+        assertTrue(spot.isMissing());
+
+        VSpot copy = new VSpot(1, wrap);
+        assertEquals(copy, spot);
     }
 }

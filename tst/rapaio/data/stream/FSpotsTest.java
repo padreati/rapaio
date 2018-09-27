@@ -8,6 +8,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class FSpotsTest {
     public void testFilter() {
         VarDouble x = VarDouble.from(100, () -> RandomSource.nextDouble() - 0.5);
         x.stream().filter(s -> s.getDouble() >= 0).forEach(s -> assertTrue(s.getDouble() >= 0));
-        x.stream().filterValue(v -> v >= 0).forEach(s -> assertTrue(s.getDouble() >= 0.0));
+        x.stream().unordered().filterValue(v -> v >= 0).forEach(s -> assertTrue(s.getDouble() >= 0.0));
     }
 
     @Test
@@ -125,5 +126,52 @@ public class FSpotsTest {
         Var index = VarInt.from(10, row -> row % 2 == 0 ? Integer.MIN_VALUE : row);
         assertEquals(5, index.stream().complete().count());
         assertEquals(5, index.stream().incomplete().count());
+    }
+
+    @Test
+    public void testGettersSetters() {
+        Frame df = SolidFrame.byVars(
+                VarDouble.wrap(1, 2).withName("x"),
+                VarNominal.copy("a", "b").withName("y"));
+
+        FSpot spot = new FSpot(df, 1);
+
+        assertFalse(spot.isMissing());
+        assertFalse(spot.isMissing(0));
+
+        assertEquals(2.0, spot.getDouble(0), TOL);
+        spot.setDouble(0, 3);
+        assertEquals(3, spot.getDouble(0), TOL);
+        spot.setDouble("x", 4);
+        assertEquals(4, spot.getDouble(0), TOL);
+
+        spot.setInt(0, 0);
+        assertEquals(0, spot.getInt(0));
+        spot.setInt("x", 1);
+        assertEquals(1, spot.getInt("x"));
+
+        spot.setLabel(0, "0");
+        assertEquals("0.0", spot.getLabel(0));
+        spot.setLabel("x", "1");
+        assertEquals("1.0", spot.getLabel("x"));
+
+        spot.setInt(0, 0);
+        assertEquals(0, spot.getInt(0));
+        spot.setInt("x", 1);
+        assertEquals(1, spot.getInt("x"));
+
+        String[] levels1 = spot.levels(1).toArray(new String[0]);
+        String[] levels2 = spot.levels("y").toArray(new String[0]);
+        String[] levels3 = new String[]{"?", "a", "b"};
+
+        assertArrayEquals(levels1, levels2);
+        assertArrayEquals(levels2, levels3);
+
+        spot.setMissing(1);
+        assertTrue(spot.isMissing(1));
+        spot.setLabel(1, "a");
+        assertEquals("a", spot.getLabel(1));
+        spot.setMissing("y");
+        assertTrue(spot.isMissing("y"));
     }
 }

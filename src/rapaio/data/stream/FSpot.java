@@ -256,11 +256,6 @@ public final class FSpot implements Serializable {
         return df.levels(varName);
     }
 
-    public boolean getBoolean(String name) {
-        return df.getBoolean(row, name);
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

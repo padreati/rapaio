@@ -156,7 +156,7 @@ public class VSpot implements Comparable<VSpot>, Serializable {
      *
      * @param value stamp value
      */
-    public void getLong(long value) {
+    public void setLong(long value) {
         var.setLong(row, value);
     }
 
