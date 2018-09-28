@@ -8,6 +8,8 @@
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
  *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -37,43 +39,41 @@ import rapaio.data.filter.VFilter;
  */
 public class VFJitter implements VFilter {
 
+    /**
+     * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
+     */
+    public static VFJitter standard() {
+        return new VFJitter(new Normal(0, 1));
+    }
+
+    /**
+     * Builds a jitter filter with Gaussian distribution with given mu and sd.
+     *
+     * @param mu mean of Gaussian distribution
+     * @param sd standard deviation of Gaussian distribution
+     */
+    public static VFJitter gaussian(double mu, double sd) {
+        return new VFJitter(new Normal(mu, sd));
+    }
+
+    /**
+     * Builds a jitter with noise randomly sampled from the given distribution.
+     */
+    public static VFJitter with(Distribution d) {
+        return new VFJitter(d);
+    }
+
     private static final long serialVersionUID = -8411939170432884225L;
     private final Distribution d;
 
-    /**
-     * Builds a jitter filter with GaussianPdf distribution with mean=0 and sd=0.1
-     */
-    public VFJitter() {
-        this(new Normal(0, 0.1));
-    }
-
-    /**
-     * Builds a jitter filter with a GaussianPdf distribution with mean=0 and given standard deviation
-     *
-     * @param sd standard deviation of zero mean GaussianPdf noise
-     */
-    public VFJitter(double sd) {
-        this(new Normal(0, sd));
-    }
-
-    /**
-     * Builds a jitter filter with noise generated from given distribution
-     *
-     * @param d noise distribution
-     */
-    public VFJitter(Distribution d) {
+    private VFJitter(Distribution d) {
         this.d = d;
-    }
-
-    @Override
-    public void fit(Var var) {
     }
 
     @Override
     public Var apply(Var var) {
         for (int i = 0; i < var.rowCount(); i++) {
-            double err = d.sampleNext();
-            var.setDouble(i, var.getDouble(i) + err);
+            var.setDouble(i, var.getDouble(i) + d.sampleNext());
         }
         return var;
     }

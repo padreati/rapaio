@@ -34,7 +34,7 @@ import rapaio.data.filter.VFilter;
 public class VFApplyTest {
 
     @Test
-    public void testUpdate() {
+    public void testApply() {
 
         VFilter vf = VFApply.with(spot -> {
             if (spot.isMissing())
@@ -78,68 +78,4 @@ public class VFApplyTest {
         Assert.assertEquals("erem", l2.getLabel(4));
     }
 
-    @Test
-    public void testUpdateValue() {
-
-        VFilter vf = VFApplyDouble.with(x -> {
-            if (Double.isNaN(x))
-                return 0.0;
-            return (x > 0) ? (x * x) : (-x * x);
-        });
-
-        Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
-
-        Var y = x.solidCopy().fapply(vf);
-        Assert.assertEquals(0, y.getDouble(0), 1e-20);
-        Assert.assertEquals(0, y.getDouble(1), 1e-20);
-        Assert.assertEquals(1, y.getDouble(2), 1e-20);
-        Assert.assertEquals(0, y.getDouble(3), 1e-20);
-        Assert.assertEquals(-144, y.getDouble(4), 1e-20);
-        Assert.assertEquals(3.1 * 3.1, y.getDouble(5), 1e-20);
-    }
-
-    @Test
-    public void testUpdateIndex() {
-
-        VFilter vf = VFApplyInt.with(x -> {
-            if (x == Integer.MIN_VALUE)
-                return 0;
-            return (x > 0) ? (x * x) : (-x * x);
-        });
-
-        Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
-
-        Var y = x.solidCopy().fapply(vf);
-        Assert.assertEquals(0, y.getDouble(0), 1e-20);
-        Assert.assertEquals(0, y.getDouble(1), 1e-20);
-        Assert.assertEquals(1, y.getDouble(2), 1e-20);
-        Assert.assertEquals(0, y.getDouble(3), 1e-20);
-        Assert.assertEquals(-144, y.getDouble(4), 1e-20);
-        Assert.assertEquals(9, y.getDouble(5), 1e-20);
-    }
-
-    @Test
-    public void testUpdateLabel() {
-
-        Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.fapply(VFApplyLabel.with(l -> {
-            if (l.equals("?")) {
-                return "missing";
-            }
-
-            char[] msg = l.toCharArray();
-            for (int i = 0; i < msg.length / 2; i++) {
-                char tmp = msg[i];
-                msg[i] = msg[msg.length - i - 1];
-                msg[msg.length - i - 1] = tmp;
-            }
-            return String.copyValueOf(msg);
-        }));
-
-        Assert.assertEquals("ana", l2.getLabel(0));
-        Assert.assertEquals("missing", l2.getLabel(1));
-        Assert.assertEquals("era", l2.getLabel(2));
-        Assert.assertEquals("missing", l2.getLabel(3));
-        Assert.assertEquals("erem", l2.getLabel(4));
-    }
 }

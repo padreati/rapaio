@@ -32,6 +32,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.data.filter.var.VFJitter;
 
 import static org.junit.Assert.*;
 import static rapaio.core.CoreTools.*;
@@ -44,7 +45,7 @@ public class VFTest {
     @Test
     public void testJitterStandard() {
         RandomSource.setSeed(1);
-        Var a = VarDouble.fill(100_000, 1).fapply(VF.jitter());
+        Var a = VarDouble.fill(100_000, 1).fapply(VFJitter.standard());
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();
@@ -59,7 +60,7 @@ public class VFTest {
     @Test
     public void testJitterStandardSd() {
         RandomSource.setSeed(1);
-        Var a = VarDouble.fill(100_000, 1).fapply(VF.jitter(2));
+        Var a = VarDouble.fill(100_000, 1).fapply(VFJitter.gaussian(0, 2));
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();
@@ -74,7 +75,7 @@ public class VFTest {
     @Test
     public void testJitterDistributed() {
         RandomSource.setSeed(1);
-        Var a = VarDouble.fill(100_000, 1).fapply(VF.jitter(new ChiSquare(5)));
+        Var a = VarDouble.fill(100_000, 1).fapply(VFJitter.with(new ChiSquare(5)));
         Mean mean = mean(a);
         Variance var = variance(a);
         mean.printSummary();

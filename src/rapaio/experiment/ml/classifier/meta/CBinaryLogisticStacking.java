@@ -8,6 +8,8 @@
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
  *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.filter.VF;
+import rapaio.data.filter.var.VFApplyDouble;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -118,7 +120,9 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().fapply(VF.applyDouble(x -> x * x)).withName(v.name() + "^2").solidCopy())
+                .map(v -> v.solidCopy()
+                        .fapply(VFApplyDouble.with(x -> x * x))
+                        .withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
 
@@ -150,7 +154,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().fapply(VF.applyDouble(x -> x * x)).withName(v.name() + "^2").solidCopy())
+                .map(v -> v.solidCopy().fapply(VFApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
         return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

@@ -8,6 +8,8 @@
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
  *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -539,17 +541,17 @@ public interface Frame extends Serializable, Printable {
         return varStream().collect(toList());
     }
 
-    default Frame fapply(FFilter... inputFilters) {
+    default Frame fapply(FFilter... filters) {
         Frame df = this;
-        for (FFilter filter : inputFilters) {
+        for (FFilter filter : filters) {
             df = filter.fapply(df);
         }
         return df;
     }
 
-    default Frame apply(FFilter... inputFilters) {
+    default Frame apply(FFilter... filters) {
         Frame df = this;
-        for (FFilter filter : inputFilters) {
+        for (FFilter filter : filters) {
             df = filter.apply(df);
         }
         return df;

@@ -8,6 +8,8 @@
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
  *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -61,7 +63,8 @@ public interface VFilter extends Serializable, Printable {
      *
      * @param var given data from which values to be fitted
      */
-    void fit(Var var);
+    default void fit(Var var) {
+    }
 
     /**
      * Transforms the given variable by applying the algorithm

@@ -8,6 +8,8 @@
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
  *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -31,24 +33,24 @@ import rapaio.data.filter.VFilter;
 import java.util.function.Function;
 
 /**
+ * Apply a given transformation function over each integer value of the variable.
+ * The integer values are updated after transformed. Thus, a variable can be modified
+ * after this call, to not update the original variable a copy of
+ * the variable must be created before.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VFApplyInt implements VFilter {
-
-    private static final long serialVersionUID = -9017598696178273627L;
 
     public static VFApplyInt with(Function<Integer, Integer> f) {
         return new VFApplyInt(f);
     }
 
+    private static final long serialVersionUID = -9017598696178273627L;
     private final Function<Integer, Integer> f;
 
     private VFApplyInt(Function<Integer, Integer> f) {
         this.f = f;
-    }
-
-    @Override
-    public void fit(Var var) {
     }
 
     @Override

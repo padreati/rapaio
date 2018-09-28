@@ -26,10 +26,10 @@ package rapaio.data;
 
 import org.junit.Test;
 import rapaio.core.RandomSource;
+import rapaio.data.filter.var.VFApplyDouble;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.data.filter.var.VFSort;
 import rapaio.data.filter.var.VFStandardize;
-import rapaio.data.filter.var.VFApplyDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
