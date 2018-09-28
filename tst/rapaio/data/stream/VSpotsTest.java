@@ -24,6 +24,7 @@
 
 package rapaio.data.stream;
 
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
@@ -49,7 +50,12 @@ import static org.junit.Assert.*;
  */
 public class VSpotsTest {
 
-    private static final double TOL = 1e-12;
+    private static final double TOL = 1e-10;
+
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
 
     @Test
     public void testBuilders() {
