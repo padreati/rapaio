@@ -30,7 +30,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VRefSort;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
 
@@ -69,9 +69,9 @@ public class RTreeNumericMethodTest {
 
         assertEquals("BINARY", m.name());
 
-        Var target = df.rvar(TARGET).fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
-        Var test = df.rvar(NUM_TEST).fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
-        Var weights = w.fapply(new VFRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var target = df.rvar(TARGET).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var test = df.rvar(NUM_TEST).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
+        Var weights = w.fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
 
         double variance = Variance.from(target).value();
         for(int i=1; i<test.rowCount()-2; i++) {

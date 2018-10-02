@@ -31,12 +31,12 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VFilter;
 
-public class VFApplyTest {
+public class VApplyTest {
 
     @Test
     public void testApply() {
 
-        VFilter vf = VFApply.with(spot -> {
+        VFilter vf = VApply.with(spot -> {
             if (spot.isMissing())
                 spot.setDouble(0);
             if (spot.getDouble() > 0)
@@ -56,7 +56,7 @@ public class VFApplyTest {
         Assert.assertEquals(3.1 * 3.1, y.getDouble(5), 1e-20);
 
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.fapply(VFApply.with(s -> {
+        Var l2 = l1.fapply(VApply.with(s -> {
             if (s.isMissing()) {
                 s.setLabel("missing");
                 return;

@@ -29,7 +29,7 @@ package rapaio.core.tests;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VSort;
 import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
@@ -66,7 +66,7 @@ public class KSTestOneSample implements HTest {
     }
 
     private KSTestOneSample(Var sample, Distribution cdf) {
-        this.v = new VFSort().fapply(sample);
+        this.v = VSort.asc().fapply(sample);
         this.cdf = cdf;
 
         D = 0;

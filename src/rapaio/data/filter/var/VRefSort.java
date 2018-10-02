@@ -38,25 +38,21 @@ import rapaio.data.filter.VFilter;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-public class VFRefSort implements VFilter {
+public class VRefSort implements VFilter {
 
-    public static VFRefSort filter(IntComparator... rowComparators) {
-        return new VFRefSort(rowComparators);
+    public static VRefSort filter(IntComparator... rowComparators) {
+        return new VRefSort(rowComparators);
     }
 
     private static final long serialVersionUID = -1075060445963356550L;
     private final IntComparator aggregateComparator;
 
-    public VFRefSort(IntComparator... rowComparators) {
+    public VRefSort(IntComparator... rowComparators) {
         if (rowComparators == null || rowComparators.length == 0) {
-            throw new IllegalArgumentException("Filter requires at least a row comparator");
+            aggregateComparator = null;
+        } else {
+            aggregateComparator = (rowComparators.length == 1) ? rowComparators[0] : RowComparators.from(rowComparators);
         }
-        aggregateComparator = (rowComparators.length == 1)
-                ? rowComparators[0] : RowComparators.from(rowComparators);
-    }
-
-    @Override
-    public void fit(Var var) {
     }
 
     @Override
@@ -65,7 +61,7 @@ public class VFRefSort implements VFilter {
         for (int i = 0; i < var.rowCount(); i++) {
             rows[i] = i;
         }
-        IntArrays.quickSort(rows, aggregateComparator);
+        IntArrays.quickSort(rows, aggregateComparator == null ? var.refComparator() : aggregateComparator);
         return var.mapRows(Mapping.wrap(IntArrayList.wrap(rows)));
     }
 }

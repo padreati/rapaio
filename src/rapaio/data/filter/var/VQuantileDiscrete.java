@@ -44,31 +44,43 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFQuantileDiscrete implements VFilter {
+public class VQuantileDiscrete implements VFilter {
+
+    public static VQuantileDiscrete split(int k) {
+        if (k <= 1) {
+            throw new IllegalArgumentException("Number of parts k: " + k + " of the split " +
+                    "must be greater than 1.");
+        }
+        double[] qp = new double[k - 1];
+        double step = 1.0 / k;
+        for (int i = 0; i < qp.length; i++) {
+            qp[i] = step * (i + 1);
+        }
+        return new VQuantileDiscrete(qp);
+    }
+
+    public static VQuantileDiscrete with(double... qp) {
+        if (qp.length < 1) {
+            throw new IllegalArgumentException("Number of quantiles must be positive.");
+        }
+        return new VQuantileDiscrete(qp);
+    }
+
 
     private static final long serialVersionUID = -6702714518094848749L;
 
-    private final int k;
-    List<String> dict = new ArrayList<>();
-    Map<String, SPredicate<Double>> predicates = new HashMap<>();
-    double[] qv;
+    private List<String> dict = new ArrayList<>();
+    private Map<String, SPredicate<Double>> predicates = new HashMap<>();
+    private final double[] qp;
+    private double[] qv;
 
-    public VFQuantileDiscrete(int k) {
-        this.k = k;
-        if (k <= 1) {
-            throw new IllegalArgumentException(String.format("k=%d should be greater than 1", k));
-        }
+    private VQuantileDiscrete(double... qp) {
+        this.qp = qp;
     }
 
     @Override
     public void fit(Var var) {
-        double len = 1.0 / k;
-        double[] q = new double[k - 1];
-        for (int i = 0; i < q.length; i++) {
-            q[i] = len * (i + 1);
-        }
-
-        qv = CoreTools.quantiles(var, q).values();
+        qv = CoreTools.quantiles(var, qp).values();
 
         // first interval
 
@@ -93,8 +105,10 @@ public class VFQuantileDiscrete implements VFilter {
     public Var apply(Var var) {
         VarNominal result = VarNominal.empty(0, dict).withName(var.name());
         for (int i = 0; i < var.rowCount(); i++) {
-            if (var.isMissing(i))
+            if (var.isMissing(i)) {
                 result.addMissing();
+                continue;
+            }
             for (Map.Entry<String, SPredicate<Double>> e : predicates.entrySet()) {
                 if (e.getValue().test(var.getDouble(i))) {
                     result.addLabel(e.getKey());

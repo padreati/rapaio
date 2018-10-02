@@ -32,7 +32,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VRefSort;
 import rapaio.sys.WS;
 
 import static java.lang.Math.*;
@@ -70,7 +70,7 @@ public class ADTestGoodness implements HTest {
 
     private ADTestGoodness(Var x, double mu, double sigma) {
         Var xx = x.stream().complete().toMappedVar().solidCopy();
-        this.x = xx.fapply(new VFRefSort(xx.refComparator())).solidCopy();
+        this.x = xx.fapply(new VRefSort(xx.refComparator())).solidCopy();
 
         this.mu = mu;
         this.sigma = sigma;

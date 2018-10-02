@@ -33,29 +33,29 @@ import rapaio.data.filter.VFilter;
 import java.util.function.Function;
 
 /**
- * Apply a given transformation function over each double value of the variable.
- * The double values are updated after transformed. Thus, a variable can be modified
+ * Apply a given transformation function over each label value of the variable.
+ * The label values are updated after transformed. Thus, a variable can be modified
  * after this call, to not update the original variable a copy of
  * the variable must be created before.
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public final class VFApplyDouble implements VFilter {
+public class VApplyLabel implements VFilter {
 
-    public static VFApplyDouble with(Function<Double, Double> f) {
-        return new VFApplyDouble(f);
+    public static VApplyLabel with(Function<String, String> f) {
+        return new VApplyLabel(f);
     }
 
-    private static final long serialVersionUID = 3929781693784001199L;
-    private final Function<Double, Double> f;
+    private static final long serialVersionUID = -8804231452563671594L;
+    private final Function<String, String> f;
 
-    private VFApplyDouble(Function<Double, Double> f) {
+    private VApplyLabel(Function<String, String> f) {
         this.f = f;
     }
 
     @Override
     public Var apply(Var var) {
-        var.stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
+        var.stream().forEach(s -> s.setLabel(f.apply(s.getLabel())));
         return var;
     }
 }

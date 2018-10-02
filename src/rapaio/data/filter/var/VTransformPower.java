@@ -27,49 +27,51 @@
 
 package rapaio.data.filter.var;
 
+import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
 /**
+ * Filter to create monotonic power transformations
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFTransformBoxCox implements VFilter {
+public class VTransformPower implements VFilter {
 
-    private static final long serialVersionUID = 1914770412929840529L;
+    public static VTransformPower with(double lambda) {
+        return new VTransformPower(lambda);
+    }
+
+    private static final long serialVersionUID = -4496756339460112649L;
     private final double lambda;
-    private final double shift;
+    private double gm = 0.0;
 
-    public VFTransformBoxCox(double lambda) {
-        this(lambda, 0.0);
-    }
-
-    public VFTransformBoxCox(double lambda, double shift) {
+    private VTransformPower(double lambda) {
         this.lambda = lambda;
-        this.shift = shift;
-    }
-
-    public double lambda() {
-        return lambda;
-    }
-
-    public double shift() {
-        return shift;
     }
 
     @Override
     public void fit(Var var) {
+        GeometricMean mygm = GeometricMean.from(var);
+        if (mygm.isDefined()) {
+            gm = mygm.value();
+        } else {
+            throw new IllegalArgumentException("The source variable " + var.name() + " contains negative values, geometric mean cannot be computed");
+        }
     }
 
     @Override
     public Var apply(Var var) {
-        if (lambda == 0)
+        if (lambda == 0) {
             for (int i = 0; i < var.rowCount(); i++) {
-                var.setDouble(i, Math.log(var.getDouble(i) + shift));
+                double x = var.getDouble(i);
+                var.setDouble(i, gm * Math.log(x));
             }
-        else
+        } else {
             for (int i = 0; i < var.rowCount(); i++) {
-                var.setDouble(i, (Math.pow(var.getDouble(i) + shift, lambda) - 1) / lambda);
+                double x = var.getDouble(i);
+                var.setDouble(i, (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1)));
             }
+        }
         return var;
     }
 }

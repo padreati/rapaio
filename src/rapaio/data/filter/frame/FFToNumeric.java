@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFToNumeric;
+import rapaio.data.filter.var.VToDouble;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -71,7 +71,7 @@ public class FFToNumeric extends AbstractFF {
             if (!nameSet.contains(df.rvar(i).name())) {
                 vars[i] = df.rvar(i);
             } else {
-                vars[i] = VFToNumeric.byDefault().fapply(df.rvar(i));
+                vars[i] = VToDouble.byDefault().fapply(df.rvar(i));
             }
         }
         return SolidFrame.byVars(df.rowCount(), vars);

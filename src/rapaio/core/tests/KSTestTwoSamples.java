@@ -28,7 +28,7 @@
 package rapaio.core.tests;
 
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VSort;
 import rapaio.sys.WS;
 
 /**
@@ -53,8 +53,8 @@ public class KSTestTwoSamples implements HTest {
     }
 
     private KSTestTwoSamples(Var sample1, Var sample2) {
-        this.v1 = new VFSort().fapply(sample1);
-        this.v2 = new VFSort().fapply(sample2);
+        this.v1 = VSort.asc().fapply(sample1);
+        this.v2 = VSort.asc().fapply(sample2);
 
         D = 0;
         double fn1 = 0.0;

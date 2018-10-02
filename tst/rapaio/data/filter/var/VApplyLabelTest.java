@@ -8,12 +8,12 @@ import rapaio.data.VarNominal;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
  */
-public class VFApplyLabelTest {
+public class VApplyLabelTest {
 
     @Test
     public void testApplyLabel() {
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.fapply(VFApplyLabel.with(l -> {
+        Var l2 = l1.fapply(VApplyLabel.with(l -> {
             if (l.equals("?")) {
                 return "missing";
             }

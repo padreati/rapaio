@@ -31,7 +31,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFQuantileDiscrete;
+import rapaio.data.filter.var.VQuantileDiscrete;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class FFQuantileDiscrete extends AbstractFF {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
-    Map<String, VFQuantileDiscrete> filters = new HashMap<>();
+    Map<String, VQuantileDiscrete> filters = new HashMap<>();
     int k;
 
     public FFQuantileDiscrete(int k, VRange vRange) {
@@ -62,7 +62,7 @@ public class FFQuantileDiscrete extends AbstractFF {
 
         filters.clear();
         for (String varName : varNames) {
-            VFQuantileDiscrete filter = new VFQuantileDiscrete(k);
+            VQuantileDiscrete filter = VQuantileDiscrete.split(k);
             filter.fit(df.rvar(varName));
             filters.put(varName, filter);
         }

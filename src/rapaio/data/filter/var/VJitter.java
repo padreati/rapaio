@@ -27,35 +27,54 @@
 
 package rapaio.data.filter.var;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
-import java.util.function.Function;
-
 /**
- * Apply a given transformation function over each label value of the variable.
- * The label values are updated after transformed. Thus, a variable can be modified
- * after this call, to not update the original variable a copy of
- * the variable must be created before.
- *
+ * Applies a random noise from a given distribution to a numeric vector.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFApplyLabel implements VFilter {
+public class VJitter implements VFilter {
 
-    public static VFApplyLabel with(Function<String, String> f) {
-        return new VFApplyLabel(f);
+    /**
+     * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
+     */
+    public static VJitter standard() {
+        return new VJitter(new Normal(0, 1));
     }
 
-    private static final long serialVersionUID = -8804231452563671594L;
-    private final Function<String, String> f;
+    /**
+     * Builds a jitter filter with Gaussian distribution with given mu and sd.
+     *
+     * @param mu mean of Gaussian distribution
+     * @param sd standard deviation of Gaussian distribution
+     */
+    public static VJitter gaussian(double mu, double sd) {
+        return new VJitter(new Normal(mu, sd));
+    }
 
-    private VFApplyLabel(Function<String, String> f) {
-        this.f = f;
+    /**
+     * Builds a jitter with noise randomly sampled from the given distribution.
+     */
+    public static VJitter with(Distribution d) {
+        return new VJitter(d);
+    }
+
+    private static final long serialVersionUID = -8411939170432884225L;
+    private final Distribution d;
+
+    private VJitter(Distribution d) {
+        this.d = d;
     }
 
     @Override
     public Var apply(Var var) {
-        var.stream().forEach(s -> s.setLabel(f.apply(s.getLabel())));
+        for (int i = 0; i < var.rowCount(); i++) {
+            var.setDouble(i, var.getDouble(i) + d.sampleNext());
+        }
         return var;
     }
 }

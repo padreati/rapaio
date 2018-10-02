@@ -29,27 +29,35 @@ package rapaio.data.filter.var;
 
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
+import rapaio.data.stream.VSpot;
+
+import java.util.function.Consumer;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
+ * Apply a given consumer function over each spot of the variable.
+ * The consumer can use all the methods from spot, which includes
+ * updating the underlying values. Thus, a variable can be modified
+ * after this call, to not update the original variable a copy of
+ * the variable must be created before.
+ *
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFCumulativeSum implements VFilter {
+public class VApply implements VFilter {
 
-    public static VFCumulativeSum filter() {
-        return new VFCumulativeSum();
+    public static VApply with(Consumer<VSpot> consumer) {
+        return new VApply(consumer);
     }
 
-    private static final long serialVersionUID = -4903712768679690937L;
+    private static final long serialVersionUID = 3929781693784001199L;
+    private final Consumer<VSpot> consumer;
 
-    @Override
-    public void fit(Var var) {
+    private VApply(Consumer<VSpot> consumer) {
+        this.consumer = consumer;
     }
 
     @Override
     public Var apply(Var var) {
-        for (int i = 1; i < var.rowCount(); i++) {
-            var.setDouble(i, var.getDouble(i - 1) + var.getDouble(i));
-        }
+        var.stream().forEach(consumer);
         return var;
     }
 }

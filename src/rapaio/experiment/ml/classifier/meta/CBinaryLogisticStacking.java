@@ -32,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFApplyDouble;
+import rapaio.data.filter.var.VApplyDouble;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -121,7 +121,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
         List<Var> quadratic = vars.stream()
                 .map(v -> v.solidCopy()
-                        .fapply(VFApplyDouble.with(x -> x * x))
+                        .fapply(VApplyDouble.with(x -> x * x))
                         .withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
@@ -154,7 +154,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().fapply(VFApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
+                .map(v -> v.solidCopy().fapply(VApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
         return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

@@ -40,9 +40,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FFilter;
 import rapaio.data.filter.FF;
-import rapaio.data.filter.VF;
+import rapaio.data.filter.FFilter;
+import rapaio.data.filter.var.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -354,7 +354,7 @@ public class CForest extends AbstractClassifier {
         for (String varName : inputNames()) {
 
             // shuffle values from variable
-            Var shuffled = oobFrame.rvar(varName).fapply(VF.shuffle());
+            Var shuffled = oobFrame.rvar(varName).fapply(VShuffle.filter());
 
             // build oob frame with shuffled variable
             Frame oobReduced = oobFrame.removeVars(VRange.of(varName)).bindVars(shuffled);

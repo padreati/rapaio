@@ -28,7 +28,7 @@ import org.junit.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VSort;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +41,7 @@ public class FFilterSortTest {
     @Test
     public void testValueVector() {
         Var unsorted = VarDouble.copy(0., 1., 2., 3., 4., 5., 6.);
-        Var sorted = new VFSort().fapply(unsorted);
+        Var sorted = VSort.asc().fapply(unsorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.getDouble(i - 1) <= sorted.getDouble(i));
         }
@@ -50,7 +50,7 @@ public class FFilterSortTest {
     @Test
     public void testValueVectorWithNA() {
         Var unsorted = VarDouble.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
-        Var sorted = new VFSort().fapply(unsorted);
+        Var sorted = VSort.asc().fapply(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.isMissing(i));
         }
@@ -63,19 +63,19 @@ public class FFilterSortTest {
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
 
-        Var sorted = new VFSort().fapply(unsorted);
+        Var sorted = VSort.asc().fapply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("ana", sorted.getLabel(0));
         assertEquals("ion", sorted.getLabel(1));
         assertEquals("vasile", sorted.getLabel(2));
 
-        sorted = new VFSort().fapply(unsorted);
+        sorted = VSort.asc().fapply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("ana", sorted.getLabel(0));
         assertEquals("ion", sorted.getLabel(1));
         assertEquals("vasile", sorted.getLabel(2));
 
-        sorted = new VFSort(false).fapply(unsorted);
+        sorted = new VSort(false).fapply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("vasile", sorted.getLabel(0));
         assertEquals("ion", sorted.getLabel(1));
@@ -89,13 +89,13 @@ public class FFilterSortTest {
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
 
-        Var sorted = new VFSort().fapply(unsorted);
+        Var sorted = VSort.asc().fapply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("?", sorted.getLabel(0));
         assertEquals("ana", sorted.getLabel(1));
         assertEquals("vasile", sorted.getLabel(2));
 
-        sorted = new VFSort(false).fapply(unsorted);
+        sorted = new VSort(false).fapply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("vasile", sorted.getLabel(0));
         assertEquals("ana", sorted.getLabel(1));

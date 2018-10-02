@@ -27,53 +27,58 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
 /**
- * Applies a random noise from a given distribution to a numeric vector.
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class VFJitter implements VFilter {
+public class VStandardize implements VFilter {
 
-    /**
-     * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
-     */
-    public static VFJitter standard() {
-        return new VFJitter(new Normal(0, 1));
+    public static VStandardize filter() {
+        return new VStandardize(Double.NaN, Double.NaN);
     }
 
-    /**
-     * Builds a jitter filter with Gaussian distribution with given mu and sd.
-     *
-     * @param mu mean of Gaussian distribution
-     * @param sd standard deviation of Gaussian distribution
-     */
-    public static VFJitter gaussian(double mu, double sd) {
-        return new VFJitter(new Normal(mu, sd));
+    public static VStandardize filter(double mean) {
+        return new VStandardize(mean, Double.NaN);
     }
 
-    /**
-     * Builds a jitter with noise randomly sampled from the given distribution.
-     */
-    public static VFJitter with(Distribution d) {
-        return new VFJitter(d);
+    public static VStandardize filter(double mean, double sd) {
+        return new VStandardize(mean, sd);
     }
 
-    private static final long serialVersionUID = -8411939170432884225L;
-    private final Distribution d;
+    private static final long serialVersionUID = -2817341319523250499L;
 
-    private VFJitter(Distribution d) {
-        this.d = d;
+    private double mean;
+    private double sd;
+
+    public VStandardize(double mean, double sd) {
+        this.mean = mean;
+        this.sd = sd;
+    }
+
+    @Override
+    public void fit(Var var) {
+        if (Double.isNaN(mean)) {
+            mean = Mean.from(var).value();
+        }
+        if (Double.isNaN(sd)) {
+            sd = Variance.from(var).sdValue();
+        }
     }
 
     @Override
     public Var apply(Var var) {
+        if (!var.type().isNumeric()) {
+            return var;
+        }
+        if (Math.abs(sd) < 1e-20)
+            return var;
         for (int i = 0; i < var.rowCount(); i++) {
-            var.setDouble(i, var.getDouble(i) + d.sampleNext());
+            double x = var.getDouble(i);
+            var.setDouble(i, (x-mean)/sd);
         }
         return var;
     }

@@ -29,7 +29,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.var.VFTransformBoxCox;
+import rapaio.data.filter.var.VTransformBoxCox;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
@@ -38,7 +38,7 @@ public class FFBoxCoxT extends AbstractFF {
 
     private static final long serialVersionUID = 1804199711139024129L;
 
-    private final VFTransformBoxCox bct;
+    private final VTransformBoxCox bct;
 
     public FFBoxCoxT(double lambda, String... varNames) {
         this(lambda, 0, VRange.of(varNames));
@@ -50,12 +50,12 @@ public class FFBoxCoxT extends AbstractFF {
 
     public FFBoxCoxT(double lambda, double shift, String... varNames) {
         super(VRange.of(varNames));
-        this.bct = new VFTransformBoxCox(lambda, shift);
+        this.bct = VTransformBoxCox.with(lambda, shift);
     }
 
     public FFBoxCoxT(double lambda, double shift, VRange vRange) {
         super(vRange);
-        this.bct = new VFTransformBoxCox(lambda, shift);
+        this.bct = VTransformBoxCox.with(lambda, shift);
     }
 
     @Override

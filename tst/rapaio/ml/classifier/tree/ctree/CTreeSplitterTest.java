@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VFApplyDouble;
+import rapaio.data.filter.var.VApplyDouble;
 import rapaio.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.classifier.tree.CTreeSplitter;
 import rapaio.ml.common.predicate.RowPredicate;
@@ -55,7 +55,7 @@ public class CTreeSplitterTest {
     public void setUp() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.solidCopy().withName("x"));
-        w = values.fapply(VFApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
+        w = values.fapply(VApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
         c = new CTreeCandidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));
         c.addGroup(RowPredicate.numLess("x", 0));

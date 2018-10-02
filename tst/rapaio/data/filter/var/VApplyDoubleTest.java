@@ -10,13 +10,13 @@ import static org.junit.Assert.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
  */
-public class VFApplyDoubleTest {
+public class VApplyDoubleTest {
 
     private static final double TOL = 1e-20;
 
     @Test
     public void testApplyDouble() {
-        VFilter vf = VFApplyDouble.with(x -> {
+        VFilter vf = VApplyDouble.with(x -> {
             if (Double.isNaN(x))
                 return 0.0;
             return (x > 0) ? (x * x) : (-x * x);

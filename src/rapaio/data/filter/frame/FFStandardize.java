@@ -29,7 +29,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.var.VFStandardize;
+import rapaio.data.filter.var.VStandardize;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class FFStandardize extends AbstractFF {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
-    Map<String, VFStandardize> filters = new HashMap<>();
+    Map<String, VStandardize> filters = new HashMap<>();
 
     public FFStandardize(String...varNames) {
         super(VRange.of(varNames));
@@ -74,7 +74,7 @@ public class FFStandardize extends AbstractFF {
         parse(df);
         filters.clear();
         for (String varName : varNames) {
-            VFStandardize filter = new VFStandardize();
+            VStandardize filter = VStandardize.filter();
             filter.fit(df.rvar(varName));
             filters.put(varName, filter);
         }

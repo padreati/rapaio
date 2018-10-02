@@ -9,11 +9,11 @@ import rapaio.data.filter.VFilter;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
  */
-public class VFApplyIntTest {
+public class VApplyIntTest {
 
     @Test
     public void testApplyInt() {
-        VFilter vf = VFApplyInt.with(x -> {
+        VFilter vf = VApplyInt.with(x -> {
             if (x == Integer.MIN_VALUE) return 0;
             return (x > 0) ? (x * x) : (-x * x);
         });

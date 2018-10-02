@@ -30,7 +30,7 @@ package rapaio.experiment;
 import rapaio.data.BoundFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VFTransformBoxCox;
+import rapaio.data.filter.var.VTransformBoxCox;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
@@ -41,7 +41,7 @@ public class Sandbox {
 
 
         VarDouble x = VarDouble.seq(0, 1000).withName("x");
-        Var y = x.solidCopy().fapply(new VFTransformBoxCox(0.1)).withName("y");
+        Var y = x.solidCopy().fapply(VTransformBoxCox.with(0.1)).withName("y");
 
         BoundFrame.byVars(x, y).printLines(100);
     }

@@ -27,41 +27,35 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
-import rapaio.ml.classifier.Classifier;
+
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
+ * Apply a given transformation function over each integer value of the variable.
+ * The integer values are updated after transformed. Thus, a variable can be modified
+ * after this call, to not update the original variable a copy of
+ * the variable must be created before.
+ *
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFImputeWithClassifier implements VFilter {
+public class VApplyInt implements VFilter {
 
-    private static final long serialVersionUID = -2841651242636043825L;
-
-    public Classifier model;
-    public VRange inputRange;
-    public String target;
-
-    public VFImputeWithClassifier(Classifier model, VRange inputRange, String target) {
-        this.model = model;
-        this.inputRange = inputRange;
-        this.target = target;
+    public static VApplyInt with(Function<Integer, Integer> f) {
+        return new VApplyInt(f);
     }
 
-    @Override
-    public void fit(Var var) {
-        if (model.hasLearned())
-            return;
-        Frame all = BoundFrame.byVars(var).mapVars(inputRange);
-        Frame complete = all.stream().filter(s -> !s.isMissing(target)).toMappedFrame();
-        model = model.newInstance().fit(complete, target);
+    private static final long serialVersionUID = -9017598696178273627L;
+    private final Function<Integer, Integer> f;
+
+    private VApplyInt(Function<Integer, Integer> f) {
+        this.f = f;
     }
 
     @Override
     public Var apply(Var var) {
-        return model.predict(BoundFrame.byVars(var).mapVars(inputRange)).firstClasses().withName(target);
+        var.stream().forEach(s -> s.setInt(f.apply(s.getInt())));
+        return var;
     }
 }

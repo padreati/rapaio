@@ -30,32 +30,28 @@ package rapaio.data.filter.var;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
-import java.util.function.Function;
-
 /**
- * Apply a given transformation function over each integer value of the variable.
- * The integer values are updated after transformed. Thus, a variable can be modified
- * after this call, to not update the original variable a copy of
- * the variable must be created before.
- *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFApplyInt implements VFilter {
+public class VSort implements VFilter {
 
-    public static VFApplyInt with(Function<Integer, Integer> f) {
-        return new VFApplyInt(f);
+    public static VSort asc() {
+        return asc(true);
     }
 
-    private static final long serialVersionUID = -9017598696178273627L;
-    private final Function<Integer, Integer> f;
+    public static VSort asc(boolean ascending) {
+        return new VSort(ascending);
+    }
 
-    private VFApplyInt(Function<Integer, Integer> f) {
-        this.f = f;
+    private static final long serialVersionUID = -6260151471065618233L;
+    private boolean asc;
+    
+    public VSort(boolean asc) {
+        this.asc = asc;
     }
 
     @Override
     public Var apply(Var var) {
-        var.stream().forEach(s -> s.setInt(f.apply(s.getInt())));
-        return var;
+        return new VRefSort(var.refComparator(asc)).fapply(var);
     }
 }

@@ -33,8 +33,8 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.var.VFCumulativeSum;
-import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VCumSum;
+import rapaio.data.filter.var.VRefSort;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
@@ -76,12 +76,12 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VFRefSort(cmp).fapply(actual).solidCopy();
+        Var sol = new VRefSort(cmp).fapply(actual).solidCopy();
 
         int n = sol.rowCount();
 
         double totalLosses = Sum.from(sol).value();
-        double giniSum = Sum.from(VFCumulativeSum.filter().fapply(sol)).value() / totalLosses;
+        double giniSum = Sum.from(VCumSum.filter().fapply(sol)).value() / totalLosses;
         giniSum -= (actual.rowCount() + 1) / 2.;
         return giniSum / actual.rowCount();
     }
@@ -91,13 +91,13 @@ public class Gini implements Printable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VFRefSort(cmp).fapply(actual).solidCopy();
-        Var w = new VFRefSort(cmp).fapply(weights).solidCopy();
+        Var sol = new VRefSort(cmp).fapply(actual).solidCopy();
+        Var w = new VRefSort(cmp).fapply(weights).solidCopy();
 
         double wsum = Sum.from(w).value();
-        Var random = VFCumulativeSum.filter().fapply(VarDouble.from(w, value -> value / wsum).solidCopy());
+        Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).solidCopy());
         double totalPositive = Sum.from(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
-        Var lorentz = new VFCumulativeSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
+        Var lorentz = new VCumSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
         for (int i = 0; i < actual.rowCount() - 1; i++) {

@@ -33,7 +33,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.VType;
-import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.rule.onerule.NominalRule;
@@ -187,7 +187,7 @@ public class OneRule extends AbstractClassifier {
 
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = new VFRefSort(RowComparators.doubleComparator(df.rvar(testCol), true),
+        Var sort = new VRefSort(RowComparators.doubleComparator(df.rvar(testCol), true),
                 RowComparators.labelComparator(df.rvar(firstTargetName()), true)).fapply(VarInt.seq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {

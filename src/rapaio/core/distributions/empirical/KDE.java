@@ -29,7 +29,7 @@ package rapaio.core.distributions.empirical;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.var.VSort;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class KDE implements Serializable {
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = new VFSort().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
+        this.values = VSort.asc().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }

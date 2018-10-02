@@ -27,29 +27,35 @@
 
 package rapaio.data.filter.var;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import rapaio.core.RandomSource;
-import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
-import java.util.stream.IntStream;
+import java.util.function.Function;
 
 /**
+ * Apply a given transformation function over each double value of the variable.
+ * The double values are updated after transformed. Thus, a variable can be modified
+ * after this call, to not update the original variable a copy of
+ * the variable must be created before.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFShuffle implements VFilter {
+public final class VApplyDouble implements VFilter {
 
-    private static final long serialVersionUID = -5571537968976749556L;
+    public static VApplyDouble with(Function<Double, Double> f) {
+        return new VApplyDouble(f);
+    }
 
-    @Override
-    public void fit(Var var) {
+    private static final long serialVersionUID = 3929781693784001199L;
+    private final Function<Double, Double> f;
+
+    private VApplyDouble(Function<Double, Double> f) {
+        this.f = f;
     }
 
     @Override
     public Var apply(Var var) {
-        int[] mapping = IntStream.range(0, var.rowCount()).toArray();
-        IntArrays.shuffle(mapping, RandomSource.getRandom());
-        return var.mapRows(Mapping.wrap(mapping));
+        var.stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
+        return var;
     }
 }

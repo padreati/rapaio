@@ -27,31 +27,36 @@
 
 package rapaio.data.filter.var;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import rapaio.core.RandomSource;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
 
 /**
+ * Filter which shuffles observations from a given variable. The new variable is
+ * a mapped variable over the original one.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFSort implements VFilter {
+public class VShuffle implements VFilter {
 
-    private static final long serialVersionUID = -6260151471065618233L;
-    private boolean asc;
-
-    public VFSort() {
-        this.asc = true;
+    public static VShuffle filter() {
+        return new VShuffle();
     }
 
-    public VFSort(boolean asc) {
-        this.asc = asc;
-    }
+    private static final long serialVersionUID = -5571537968976749556L;
 
-    @Override
-    public void fit(Var var) {
+    private VShuffle() {
     }
 
     @Override
     public Var apply(Var var) {
-        return new VFRefSort(var.refComparator(asc)).fapply(var);
+        int[] mapping = new int[var.rowCount()];
+        for (int i = 0; i < mapping.length; i++) {
+            mapping[i] = i;
+        }
+        IntArrays.shuffle(mapping, RandomSource.getRandom());
+        return var.mapRows(Mapping.wrap(mapping));
     }
 }
