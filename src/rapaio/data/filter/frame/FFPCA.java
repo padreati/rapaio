@@ -53,8 +53,7 @@ public class FFPCA extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    public void coreFit(Frame df) {
         pca = new PCA();
         pca.fit(df.mapVars(varNames));
     }

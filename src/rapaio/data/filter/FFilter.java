@@ -28,7 +28,6 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 
 import java.io.Serializable;
 
@@ -36,11 +35,6 @@ import java.io.Serializable;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public interface FFilter extends Serializable {
-
-    /**
-     * @return the var range which describes the domain of this filter
-     */
-    VRange vRange();
 
     /**
      * @return an array with variable names which describes the domain of this filter

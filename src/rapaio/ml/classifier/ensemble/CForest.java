@@ -40,8 +40,8 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FF;
 import rapaio.data.filter.FFilter;
+import rapaio.data.filter.frame.FFRefSort;
 import rapaio.data.filter.var.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
@@ -221,7 +221,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FF.refSort(score.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(new FFRefSort(score.refComparator(false))).solidCopy();
     }
 
     public Frame getGainVIInfo() {
@@ -236,7 +236,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FF.refSort(score.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(new FFRefSort(score.refComparator(false))).solidCopy();
     }
 
     public Frame getPermVIInfo() {
@@ -258,7 +258,7 @@ public class CForest extends AbstractClassifier {
             zscores.addDouble(Math.abs(zscore));
             pvalues.addDouble(pvalue);
         }
-        return SolidFrame.byVars(name, score, sds, zscores, pvalues).fapply(FF.refSort(zscores.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sds, zscores, pvalues).fapply(new FFRefSort(zscores.refComparator(false))).solidCopy();
     }
 
     @Override

@@ -35,6 +35,8 @@ import rapaio.data.VarNominal;
 import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
  */
@@ -80,7 +82,7 @@ public class FFMapRemoveVarsTest {
         Frame df1 = df.mapVars(VRange.onlyTypes(VType.DOUBLE)).removeVars(VRange.of(1));
         Frame df2 = new FFRemoveVars(VRange.of(1)).fapply(new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).fapply(df));
 
-        Assert.assertTrue(df1.deepEquals(df2));
+        assertTrue(df1.deepEquals(df2));
     }
 
     @Test
@@ -88,7 +90,7 @@ public class FFMapRemoveVarsTest {
         FFilter map = new FFMapVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         map.fit(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, map.apply(df).varCount());
+        Assert.assertEquals(2, df.apply(map).varCount());
 
         FFilter remove = new FFRemoveVars(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         remove.fit(df.mapVars("0,1"));

@@ -59,8 +59,7 @@ public class FFRetainTypes extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    protected void coreFit(Frame df) {
     }
 
     @Override

@@ -76,9 +76,7 @@ public class FFRandomProjection extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-
+    public void coreFit(Frame df) {
         // build k random projections
 
         rp = SolidRM.empty(varNames.length, k);

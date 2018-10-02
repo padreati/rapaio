@@ -74,9 +74,7 @@ public class FFOneHotEncoding extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-
+    public void coreFit(Frame df) {
         levels = new HashMap<>();
         for (String varName : varNames) {
             // for each nominal variable
@@ -89,7 +87,6 @@ public class FFOneHotEncoding extends AbstractFF {
     }
 
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.varCount(), df);
 
         // build a set for fast search
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());

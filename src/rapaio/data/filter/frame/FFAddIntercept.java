@@ -64,7 +64,7 @@ public class FFAddIntercept extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
+    public void coreFit(Frame df) {
     }
 
     public Frame apply(Frame df) {

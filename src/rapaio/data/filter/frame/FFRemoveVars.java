@@ -47,13 +47,11 @@ public class FFRemoveVars extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    protected void coreFit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount(), df);
         return df.removeVars(VRange.of(varNames));
     }
 }

@@ -57,14 +57,11 @@ public class FFToNumeric extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    protected void coreFit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.varCount(), df);
-
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {

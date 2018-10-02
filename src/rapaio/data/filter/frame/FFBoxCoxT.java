@@ -64,15 +64,12 @@ public class FFBoxCoxT extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-        checkRangeVars(0, df.varCount(), df);
+    protected void coreFit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-        String[] names = parse(df);
-        for (String name : names) {
+        for (String name : varNames) {
             bct.fapply(df.rvar(name));
         }
         return df;

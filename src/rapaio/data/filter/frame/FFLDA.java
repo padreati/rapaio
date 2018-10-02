@@ -53,8 +53,7 @@ public class FFLDA extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    public void coreFit(Frame df) {
         lda = new LDA();
         lda.fit(df, varNames);
     }

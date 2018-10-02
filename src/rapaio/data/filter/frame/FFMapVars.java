@@ -49,13 +49,11 @@ public class FFMapVars extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    protected void coreFit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount(), df);
         return df.mapVars(varNames);
     }
 }

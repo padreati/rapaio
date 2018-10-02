@@ -53,8 +53,7 @@ public class FFShuffle extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
+    public void coreFit(Frame df) {
     }
 
     @Override

@@ -57,7 +57,7 @@ public class FFRefSort extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
+    public void coreFit(Frame df) {
     }
 
     @Override

@@ -57,9 +57,7 @@ public class FFQuantileDiscrete extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-
+    public void coreFit(Frame df) {
         filters.clear();
         for (String varName : varNames) {
             VQuantileDiscrete filter = VQuantileDiscrete.split(k);

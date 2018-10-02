@@ -53,9 +53,7 @@ public class FFUpdateValue extends AbstractFF {
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-        checkRangeVars(1, df.varCount(), df);
+    protected void coreFit(Frame df) {
     }
 
     @Override

@@ -35,44 +35,43 @@ import rapaio.data.VRange;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
-public class FFJitter extends AbstractFF {
+public class FJitter extends AbstractFF {
+
+    public static FJitter with(VRange vRange) {
+        return new FJitter(new Normal(0, 0.1), vRange);
+    }
+
+    public static FJitter with(double sd, VRange vRange) {
+        return new FJitter(new Normal(0, sd), vRange);
+    }
+
+    public static FJitter with(Distribution d, VRange vRange) {
+        return new FJitter(d, vRange);
+    }
 
     private static final long serialVersionUID = 33367007274996702L;
-
     private final Distribution d;
 
-    public FFJitter(VRange vRange) {
-        this(0.1, vRange);
-    }
-
-    public FFJitter(double sd, VRange vRange) {
-        this(new Normal(0, sd), vRange);
-    }
-
-    public FFJitter(Distribution d, VRange vRange) {
+    private FJitter(Distribution d, VRange vRange) {
         super(vRange);
-        if (d == null) {
-            throw new IllegalArgumentException("distribution parameter cannot be empty");
-        }
         this.d = d;
     }
 
     @Override
-    public FFJitter newInstance() {
-        return new FFJitter(d, vRange);
+    public FJitter newInstance() {
+        return new FJitter(d, vRange);
     }
 
     @Override
-    public void fit(Frame df) {
-        parse(df);
-        checkRangeVars(1, df.varCount(), df);
+    protected void coreFit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (String varName : varNames) {
-                df.setDouble(i, varName, df.getDouble(i, varName) + d.sampleNext());
+        for (String varName : varNames) {
+            int varIndex = df.varIndex(varName);
+            for (int i = 0; i < df.rowCount(); i++) {
+                df.setDouble(i, varIndex, df.getDouble(i, varIndex) + d.sampleNext());
             }
         }
         return df;
