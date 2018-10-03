@@ -46,13 +46,12 @@ import java.util.stream.Collectors;
  */
 public class FIntercept extends AbstractFF {
 
-    private static final long serialVersionUID = -7268280264499694765L;
-
-    public static String INTERCEPT = "(Intercept)";
-
     public static FIntercept filter() {
         return new FIntercept();
     }
+
+    private static final long serialVersionUID = -7268280264499694765L;
+    public static String INTERCEPT = "(Intercept)";
 
     private FIntercept() {
         super(VRange.all());

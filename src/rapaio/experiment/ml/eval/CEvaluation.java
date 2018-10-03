@@ -38,7 +38,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.frame.FFShuffle;
+import rapaio.data.filter.frame.FShuffle;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.eval.Confusion;
@@ -131,7 +131,7 @@ public class CEvaluation {
 
     public static void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
         print("CrossValidation with " + folds + " folds\n");
-        df = new FFShuffle().fapply(df);
+        df = df.fapply(FShuffle.filter());
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {

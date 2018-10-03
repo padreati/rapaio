@@ -39,17 +39,21 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFShuffle extends AbstractFF {
+public class FShuffle extends AbstractFF {
+
+    public static FShuffle filter() {
+        return new FShuffle();
+    }
 
     private static final long serialVersionUID = 3868876807602578584L;
 
-    public FFShuffle() {
+    private FShuffle() {
         super(VRange.all());
     }
 
     @Override
     public FFilter newInstance() {
-        return new FFShuffle();
+        return new FShuffle();
     }
 
     @Override

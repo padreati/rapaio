@@ -29,33 +29,30 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.VType;
+import rapaio.data.filter.FFilter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Function;
 
 /**
- * Transform a given frame by removing all the variables
- * which does not have the given types.
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FFRetainTypes extends AbstractFF {
+public class FApplyDouble extends AbstractFF {
 
-    private static final long serialVersionUID = -5152761273156719785L;
+    public static FApplyDouble on(Function<Double, Double> fun, VRange vRange) {
+        return new FApplyDouble(fun, vRange);
+    }
 
-    private final VType[] types;
+    private static final long serialVersionUID = 3982915877968295381L;
+    private final Function<Double, Double> f;
 
-    public FFRetainTypes(VType... types) {
-        super(VRange.all());
-        if (types == null || types.length == 0)
-            throw new IllegalArgumentException("Must provide at least a type to retain");
-        this.types = types;
+    private FApplyDouble(Function<Double, Double> f, VRange vRange) {
+        super(vRange);
+        this.f = f;
     }
 
     @Override
-    public FFRetainTypes newInstance() {
-        return new FFRetainTypes(types);
+    public FFilter newInstance() {
+        return new FApplyDouble(f, vRange);
     }
 
     @Override
@@ -64,15 +61,12 @@ public class FFRetainTypes extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        List<String> names = new ArrayList<>();
-        for (String name : df.varNames()) {
-            for (VType type : types) {
-                if (df.rvar(name).type().equals(type)) {
-                    names.add(name);
-                    break;
-                }
+        for (String name : varNames) {
+            int varIndex = df.varIndex(name);
+            for (int i = 0; i < df.rowCount(); i++) {
+                df.setDouble(i, varIndex, f.apply(df.getDouble(i, varIndex)));
             }
         }
-        return df.mapVars(names);
+        return df;
     }
 }

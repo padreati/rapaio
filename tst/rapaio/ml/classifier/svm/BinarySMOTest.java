@@ -32,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FFStandardize;
+import rapaio.data.filter.frame.FStandardize;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.ml.classifier.svm.kernel.*;
@@ -116,12 +116,12 @@ public class BinarySMOTest {
     public void testLinear() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadSonar();
-        df.solidCopy().fapply(new FFStandardize(VRange.all())).printSummary();
+        df.solidCopy().fapply(FStandardize.on(VRange.all())).printSummary();
 
         String target = "Class";
 
         BinarySMO smo1 = new BinarySMO()
-                .withInputFilters(new FFStandardize(VRange.all()))
+                .withInputFilters(FStandardize.on(VRange.all()))
                 .withKernel(new PolyKernel(1))
                 .withC(0.1);
 
@@ -165,7 +165,7 @@ public class BinarySMOTest {
             RandomSource.setSeed(1);
 
             BinarySMO smo = new BinarySMO();
-            smo.withInputFilters(new FFStandardize(VRange.all()));
+            smo.withInputFilters(FStandardize.on(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
             Assert.assertTrue(s > 0.7);
 

@@ -56,12 +56,12 @@ public class FToDoubleTest {
         }
         Frame df = SolidFrame.byVars(v);
 
-        Frame f1 = df.fapply(FToDouble.with(VRange.all()));
+        Frame f1 = df.fapply(FToDouble.on(VRange.all()));
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, f1.getDouble(i, 0), 1e-10);
         }
-        Frame f2 = df.fapply(FToDouble.with(VRange.byName(name -> false)).newInstance());
+        Frame f2 = df.fapply(FToDouble.on(VRange.byName(name -> false)).newInstance());
         assertTrue(f2.deepEquals(df));
     }
 

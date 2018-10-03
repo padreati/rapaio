@@ -54,12 +54,12 @@ public class FJitterTest {
                 VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
-        Frame df1 = a.solidCopy().fapply(FJitter.with(VRange.onlyTypes(VType.DOUBLE)));
+        Frame df1 = a.solidCopy().fapply(FJitter.on(VRange.onlyTypes(VType.DOUBLE)));
 
         assertTrue(a.removeVars(VRange.of("0~1")).deepEquals(df1.removeVars(VRange.of("0~1"))));
         Assert.assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
 
-        FFilter filter = FJitter.with(VRange.onlyTypes(VType.DOUBLE)).newInstance();
+        FFilter filter = FJitter.on(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         filter.fit(a.removeVars(VRange.of("num1")));
 
         Frame df2 = filter.apply(a.solidCopy());
@@ -73,16 +73,16 @@ public class FJitterTest {
         Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).withName("x"));
 
         RandomSource.setSeed(111);
-        Frame df1 = df.solidCopy().fapply(FJitter.with(VRange.all()));
+        Frame df1 = df.solidCopy().fapply(FJitter.on(VRange.all()));
         RandomSource.setSeed(111);
-        Frame df2 = df.solidCopy().fapply(FJitter.with(0.1, VRange.all()));
+        Frame df2 = df.solidCopy().fapply(FJitter.on(0.1, VRange.all()));
         RandomSource.setSeed(111);
-        Frame df3 = df.solidCopy().fapply(FJitter.with(new Normal(0.0, 0.1), VRange.all()));
+        Frame df3 = df.solidCopy().fapply(FJitter.on(new Normal(0.0, 0.1), VRange.all()));
 
         assertTrue(df1.deepEquals(df2));
         assertTrue(df2.deepEquals(df3));
 
-        FFilter ff = FJitter.with(0.1, VRange.all());
+        FFilter ff = FJitter.on(0.1, VRange.all());
         ff.fit(df);
         assertArrayEquals(new String[]{"x"}, ff.varNames());
     }

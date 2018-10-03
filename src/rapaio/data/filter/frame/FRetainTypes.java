@@ -29,27 +29,38 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.FFilter;
+import rapaio.data.VType;
 
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
+ * Transform a given frame by removing all the variables
+ * which does not have the given types.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFUpdateValue extends AbstractFF {
+public class FRetainTypes extends AbstractFF {
 
-    private static final long serialVersionUID = 3982915877968295381L;
+    public static FRetainTypes on(VType... types) {
+        return new FRetainTypes(new HashSet<>(Arrays.asList(types)));
+    }
 
-    private final Function<Double, Double> f;
+    private static final long serialVersionUID = -5152761273156719785L;
 
-    public FFUpdateValue(Function<Double, Double> f, VRange vRange) {
-        super(vRange);
-        this.f = f;
+    private final Set<VType> types;
+
+    private FRetainTypes(Set<VType> types) {
+        super(VRange.all());
+        this.types = types;
     }
 
     @Override
-    public FFilter newInstance() {
-        return new FFUpdateValue(f, vRange);
+    public FRetainTypes newInstance() {
+        return new FRetainTypes(types);
     }
 
     @Override
@@ -58,11 +69,12 @@ public class FFUpdateValue extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (String name : varNames) {
-                df.setDouble(i, name, f.apply(df.getDouble(i, name)));
+        List<String> names = new ArrayList<>();
+        for (String name : df.varNames()) {
+            if (types.contains(df.type(name))) {
+                names.add(name);
             }
         }
-        return df;
+        return df.mapVars(names);
     }
 }

@@ -50,23 +50,22 @@ import java.util.Map;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFStandardize extends AbstractFF {
+public class FStandardize extends AbstractFF {
 
-    private static final long serialVersionUID = -2447577449010618416L;
-
-    Map<String, VStandardize> filters = new HashMap<>();
-
-    public FFStandardize(String...varNames) {
-        super(VRange.of(varNames));
+    public static FStandardize on(VRange vRange) {
+        return new FStandardize(vRange);
     }
 
-    public FFStandardize(VRange vRange) {
+    private static final long serialVersionUID = -2447577449010618416L;
+    private Map<String, VStandardize> filters = new HashMap<>();
+
+    private FStandardize(VRange vRange) {
         super(vRange);
     }
 
     @Override
-    public FFStandardize newInstance() {
-        return new FFStandardize(vRange);
+    public FStandardize newInstance() {
+        return new FStandardize(vRange);
     }
 
     @Override

@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  */
 public class FToDouble extends AbstractFF {
 
-    public static FToDouble with(VRange vRange) {
+    public static FToDouble on(VRange vRange) {
         return new FToDouble(vRange);
     }
 
