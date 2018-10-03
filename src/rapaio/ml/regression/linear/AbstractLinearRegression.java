@@ -28,7 +28,7 @@
 package rapaio.ml.regression.linear;
 
 import rapaio.data.Frame;
-import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.data.filter.frame.FIntercept;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.ml.regression.AbstractRegression;
@@ -41,7 +41,7 @@ import rapaio.sys.WS;
 public abstract class AbstractLinearRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 5740157710314998364L;
-    protected static String INTERCEPT = FFAddIntercept.INTERCEPT;
+    protected static String INTERCEPT = FIntercept.INTERCEPT;
 
     protected boolean intercept = true;
     protected boolean centering = false;

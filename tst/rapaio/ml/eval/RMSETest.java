@@ -7,7 +7,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VType;
-import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.data.filter.frame.FIntercept;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.linear.LinearRPrediction;
 import rapaio.ml.regression.linear.LinearRegression;
@@ -65,7 +65,7 @@ public class RMSETest {
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
         LinearRegression lm = LinearRegression.newLm()
-                .withInputFilters(FFAddIntercept.filter());
+                .withInputFilters(FIntercept.filter());
         lm.fit(df, targets);
 
         LinearRPrediction fit = lm.predict(df, true);

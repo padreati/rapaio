@@ -44,23 +44,23 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFAddIntercept extends AbstractFF {
+public class FIntercept extends AbstractFF {
 
     private static final long serialVersionUID = -7268280264499694765L;
 
     public static String INTERCEPT = "(Intercept)";
 
-    public static FFAddIntercept filter() {
-        return new FFAddIntercept();
+    public static FIntercept filter() {
+        return new FIntercept();
     }
 
-    private FFAddIntercept() {
+    private FIntercept() {
         super(VRange.all());
     }
 
     @Override
-    public FFAddIntercept newInstance() {
-        return new FFAddIntercept();
+    public FIntercept newInstance() {
+        return new FIntercept();
     }
 
     @Override

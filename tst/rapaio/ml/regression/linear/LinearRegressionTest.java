@@ -30,7 +30,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.data.filter.frame.FIntercept;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class LinearRegressionTest {
                 .removeVars(VRange.of("ID", "Sales", "Newspaper"));
 
         LinearRegression lm = new LinearRegression();
-        lm.addInputFilters(FFAddIntercept.filter());
+        lm.addInputFilters(FIntercept.filter());
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
@@ -147,7 +147,7 @@ public class LinearRegressionTest {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         LinearRegression lm = new LinearRegression();
-        lm.addInputFilters(FFAddIntercept.filter());
+        lm.addInputFilters(FIntercept.filter());
 
         lm.fit(df, "Sales", "Radio");
 
@@ -234,7 +234,7 @@ public class LinearRegressionTest {
         Var trainCpu = cpuClean.withName("cpu");
         Var trainProc = procClean.withName("proc");
         Frame train = SolidFrame.byVars(trainCpu, trainProc);
-        LinearRegression lm = LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
+        LinearRegression lm = LinearRegression.newLm().withInputFilters(FIntercept.filter());
         lm.fit(train, "proc");
         Var cpuTarget = VarDouble.empty().withName("cpu");
         cpuTarget.addDouble(45);

@@ -31,19 +31,25 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
+ * Filter to map vars from a data frame.
+ * <p>
+ * Created by padreati on 1/15/16.
  */
-public class FFRemoveVars extends AbstractFF {
+public class FMapVars extends AbstractFF {
 
-    private static final long serialVersionUID = -932131127278719356L;
+    public static FMapVars map(VRange vRange) {
+        return new FMapVars(vRange);
+    }
 
-    public FFRemoveVars(VRange vRange) {
+    private static final long serialVersionUID = 5540246008233767364L;
+
+    private FMapVars(VRange vRange) {
         super(vRange);
     }
 
     @Override
-    public FFRemoveVars newInstance() {
-        return new FFRemoveVars(vRange);
+    public FMapVars newInstance() {
+        return new FMapVars(vRange);
     }
 
     @Override
@@ -52,6 +58,6 @@ public class FFRemoveVars extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        return df.removeVars(VRange.of(varNames));
+        return df.mapVars(varNames);
     }
 }

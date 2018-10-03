@@ -7,9 +7,6 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,33 +24,27 @@
 
 package rapaio.data.filter.frame;
 
+import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * Filter to map vars from a data frame.
- * <p>
- * Created by padreati on 1/15/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
  */
-public class FFMapVars extends AbstractFF {
+public class FInterceptTest {
 
-    private static final long serialVersionUID = 5540246008233767364L;
+    @Test
+    public void testInterceptValues() {
+        Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).withName("a"));
+        Frame after = FIntercept.filter().newInstance().fapply(before);
 
-    public FFMapVars(VRange vRange) {
-        super(vRange);
-    }
+        assertEquals(2, after.varCount());
+        assertEquals(FIntercept.INTERCEPT, after.varNames()[0]);
 
-    @Override
-    public FFMapVars newInstance() {
-        return new FFMapVars(vRange);
-    }
-
-    @Override
-    protected void coreFit(Frame df) {
-    }
-
-    @Override
-    public Frame apply(Frame df) {
-        return df.mapVars(varNames);
+        Frame again = FIntercept.filter().fapply(after);
+        assertEquals(after, again);
     }
 }

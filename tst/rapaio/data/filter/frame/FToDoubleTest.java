@@ -25,20 +25,22 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.VarNominal;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.VarNominal;
 import rapaio.data.filter.var.VToDouble;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class FFilterNominalToDoubleTest {
+public class FToDoubleTest {
 
     @Test
     public void testNormalCase() {
@@ -52,11 +54,15 @@ public class FFilterNominalToDoubleTest {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Var filtered = VToDouble.byDefault().fapply(v);
+        Frame df = SolidFrame.byVars(v);
+
+        Frame f1 = df.fapply(FToDouble.with(VRange.all()));
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
-            assertEquals(value, filtered.getDouble(i), 1e-10);
+            assertEquals(value, f1.getDouble(i, 0), 1e-10);
         }
+        Frame f2 = df.fapply(FToDouble.with(VRange.byName(name -> false)).newInstance());
+        assertTrue(f2.deepEquals(df));
     }
 
     @Test

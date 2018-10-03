@@ -38,13 +38,13 @@ import java.net.URISyntaxException;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
  */
-public class FFRandomProjectionTest {
+public class FRandomProjectionTest {
 
     @Test
     public void gausianSDTest() throws IOException, URISyntaxException {
 
         RandomSource.setSeed(1);
-        FFRandomProjection rp = FFRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
@@ -62,7 +62,7 @@ public class FFRandomProjectionTest {
     public void achioptasTest() throws IOException, URISyntaxException {
 
         RandomSource.setSeed(1);
-        FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
@@ -80,7 +80,7 @@ public class FFRandomProjectionTest {
     public void achioptas5Test() throws IOException, URISyntaxException {
 
         RandomSource.setSeed(1);
-        FFRandomProjection rp = FFRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
+        FRandomProjection rp = FRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 

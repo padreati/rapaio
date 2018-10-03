@@ -541,6 +541,15 @@ public interface Frame extends Serializable, Printable {
         return varStream().collect(toList());
     }
 
+    /**
+     * Fit and apply frame filters to the data frame.
+     * The array of filters are applied successively, the first filter
+     * transform the frame, second filter transform the transformed frame and so on,
+     * until in the end the last transformed filter in the chain is returned.
+     *
+     * @param filters list of frame filters
+     * @return transformed frame
+     */
     default Frame fapply(FFilter... filters) {
         Frame df = this;
         for (FFilter filter : filters) {
@@ -549,6 +558,15 @@ public interface Frame extends Serializable, Printable {
         return df;
     }
 
+    /**
+     * Apply already fitted frame filters to the data frame.
+     * The array of filters are applied successively, the first filter
+     * transform the frame, second filter transform the transformed frame and so on,
+     * until in the end the last transformed filter in the chain is returned.
+     *
+     * @param filters list of frame filters
+     * @return transformed frame
+     */
     default Frame apply(FFilter... filters) {
         Frame df = this;
         for (FFilter filter : filters) {

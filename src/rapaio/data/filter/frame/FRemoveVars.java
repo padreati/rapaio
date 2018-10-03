@@ -7,6 +7,9 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,26 +27,35 @@
 
 package rapaio.data.filter.frame;
 
-import org.junit.Assert;
-import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
+import rapaio.data.VRange;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFAddInterceptTest {
+public class FRemoveVars extends AbstractFF {
 
-    @Test
-    public void testInterceptValues() {
-        Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).withName("a"));
-        Frame after = FFAddIntercept.filter().newInstance().fapply(before);
+    public static FRemoveVars remove(VRange vRange) {
+        return new FRemoveVars(vRange);
+    }
 
-        Assert.assertTrue(after.varCount()==2);
-        Assert.assertEquals(FFAddIntercept.INTERCEPT, after.varNames()[0]);
+    private static final long serialVersionUID = -932131127278719356L;
 
-        Frame again = FFAddIntercept.filter().fapply(after);
-        Assert.assertTrue(after.equals(again));
+    private FRemoveVars(VRange vRange) {
+        super(vRange);
+    }
+
+    @Override
+    public FRemoveVars newInstance() {
+        return new FRemoveVars(vRange);
+    }
+
+    @Override
+    protected void coreFit(Frame df) {
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        return df.removeVars(VRange.of(varNames));
     }
 }

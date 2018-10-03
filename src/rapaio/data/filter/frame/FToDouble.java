@@ -38,22 +38,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Convert to numeric values all the selected variables which are nominal.
+ * Convert to numeric double values all the selected variables which are nominal.
  * All the other columns remain the same.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFToNumeric extends AbstractFF {
+public class FToDouble extends AbstractFF {
+
+    public static FToDouble with(VRange vRange) {
+        return new FToDouble(vRange);
+    }
 
     private static final long serialVersionUID = -6745637493367588453L;
 
-    public FFToNumeric(VRange vRange) {
+    private FToDouble(VRange vRange) {
         super(vRange);
     }
 
     @Override
-    public FFToNumeric newInstance() {
-        return new FFToNumeric(vRange);
+    public FToDouble newInstance() {
+        return new FToDouble(vRange);
     }
 
     @Override

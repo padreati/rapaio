@@ -44,7 +44,19 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
  */
-public class FFRandomProjection extends AbstractFF {
+public class FRandomProjection extends AbstractFF {
+
+    public static FRandomProjection newGaussianSd(int k, VRange vRange) {
+        return new FRandomProjection(k, gaussian(k), vRange);
+    }
+
+    public static FRandomProjection newAchlioptas(int k, VRange vRange) {
+        return new FRandomProjection(k, achlioptas(3), vRange);
+    }
+
+    public static FRandomProjection newAchlioptas(int k, double s, VRange vRange) {
+        return new FRandomProjection(k, achlioptas(s), vRange);
+    }
 
     private static final long serialVersionUID = -2790372378136065870L;
 
@@ -52,27 +64,15 @@ public class FFRandomProjection extends AbstractFF {
     private final Method method;
     private RM rp;
 
-    public static FFRandomProjection newGaussianSd(int k, VRange vRange) {
-        return new FFRandomProjection(k, gaussian(k), vRange);
-    }
-
-    public static FFRandomProjection newAchlioptas(int k, VRange vRange) {
-        return new FFRandomProjection(k, achlioptas(3), vRange);
-    }
-
-    public static FFRandomProjection newAchlioptas(int k, double s, VRange vRange) {
-        return new FFRandomProjection(k, achlioptas(s), vRange);
-    }
-
-    private FFRandomProjection(int k, Method method, VRange vRange) {
+    private FRandomProjection(int k, Method method, VRange vRange) {
         super(vRange);
         this.k = k;
         this.method = method;
     }
 
     @Override
-    public FFRandomProjection newInstance() {
-        return new FFRandomProjection(k, method, vRange);
+    public FRandomProjection newInstance() {
+        return new FRandomProjection(k, method, vRange);
     }
 
     @Override
