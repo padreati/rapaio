@@ -27,42 +27,46 @@
 
 package rapaio.data.filter.frame;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.RowComparators;
 import rapaio.data.VRange;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.ml.analysis.PCA;
 
-import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
-public class FFPCA extends AbstractFF {
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
+ */
+public class FRefSort extends AbstractFF {
 
-    private static final long serialVersionUID = 2797285371357486124L;
+    public static FRefSort by(IntComparator...comparators) {
+        return new FRefSort(comparators);
+    }
 
-    BiFunction<RV, RM, Integer> kFun;
-    private PCA pca;
+    private static final long serialVersionUID = 3579078253849199109L;
+    private final IntComparator aggregateComparator;
 
-    public FFPCA(BiFunction<RV, RM, Integer> kFun, VRange vRange) {
-        super(vRange);
-        this.kFun = kFun;
+    private FRefSort(IntComparator... comparators) {
+        super(VRange.of("all"));
+        this.aggregateComparator = RowComparators.from(comparators);
     }
 
     @Override
-    public FFPCA newInstance() {
-        return new FFPCA(kFun, vRange);
+    public FRefSort newInstance() {
+        return new FRefSort(aggregateComparator);
     }
 
     @Override
     public void coreFit(Frame df) {
-        pca = new PCA();
-        pca.fit(df.mapVars(varNames));
     }
 
     @Override
     public Frame apply(Frame df) {
-        Frame rest = df.removeVars(VRange.of(varNames));
-        int k = kFun.apply(pca.eigenValues(), pca.eigenVectors());
-        Frame trans =  pca.predict(df.mapVars(varNames), k);
-        return rest.bindVars(trans);
+        int[] rowArray = IntStream.range(0, df.rowCount()).toArray();
+        IntArrays.quickSort(rowArray, aggregateComparator);
+        return MappedFrame.byRow(df, Mapping.wrap(rowArray));
     }
 }

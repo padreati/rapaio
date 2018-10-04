@@ -25,10 +25,11 @@
  *
  */
 
-package rapaio.data.filter.frame;
+package rapaio.experiment.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.frame.AbstractFF;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.ml.analysis.LDA;

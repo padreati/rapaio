@@ -29,32 +29,32 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.Var;
-
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import rapaio.data.filter.var.VTransformBoxCox;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FFImputeWithFill extends AbstractFF {
+public class FTransformBoxCox extends AbstractFF {
 
-    private static final long serialVersionUID = 281130325474491898L;
-    private final double fill;
-
-    public FFImputeWithFill(double fill, String... varNames) {
-        this(fill, VRange.of(varNames));
+    public static FTransformBoxCox on(double lambda, double shift, String... varNames) {
+        return new FTransformBoxCox(lambda, shift, VRange.of(varNames));
     }
 
-    public FFImputeWithFill(double fill, VRange vRange) {
+    public static FTransformBoxCox on(double lambda, double shift, VRange vRange) {
+        return new FTransformBoxCox(lambda, shift, vRange);
+    }
+
+    private static final long serialVersionUID = 1804199711139024129L;
+    private final VTransformBoxCox bct;
+
+    private FTransformBoxCox(double lambda, double shift, VRange vRange) {
         super(vRange);
-        this.fill = fill;
+        this.bct = VTransformBoxCox.with(lambda, shift);
     }
 
     @Override
-    public FFImputeWithFill newInstance() {
-        return new FFImputeWithFill(fill, vRange);
+    public FTransformBoxCox newInstance() {
+        return new FTransformBoxCox(bct.lambda(), bct.shift(), vRange);
     }
 
     @Override
@@ -63,17 +63,8 @@ public class FFImputeWithFill extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        Set<String> names = Arrays.stream(varNames).collect(Collectors.toSet());
-
-        for (Var var : df.varList()) {
-            if (!var.type().isNumeric())
-                continue;
-            if (!names.contains(var.name()))
-                continue;
-            for (int i = 0; i < var.rowCount(); i++) {
-                if (var.isMissing(i))
-                    var.setDouble(i, fill);
-            }
+        for (String name : varNames) {
+            bct.fapply(df.rvar(name));
         }
         return df;
     }

@@ -39,28 +39,47 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFQuantileDiscrete extends AbstractFF {
+public class FQuantileDiscrete extends AbstractFF {
+
+    public static FQuantileDiscrete split(VRange vRange, int k) {
+        if (k <= 1) {
+            throw new IllegalArgumentException("Frame quantile discrete filter allows only splits greater than 1.");
+        }
+        double[] p = new double[k - 1];
+        double step = 1.0 / k;
+        for (int i = 0; i < p.length; i++) {
+            p[i] = step * (i + 1);
+        }
+        return new FQuantileDiscrete(p, vRange);
+    }
+
+    public static FQuantileDiscrete on(VRange vRange, double... p) {
+        if (p.length < 1) {
+            throw new IllegalArgumentException("Frame quantile discrete filter requires at least one probability.");
+        }
+        return new FQuantileDiscrete(p, vRange);
+    }
 
     private static final long serialVersionUID = -2447577449010618416L;
 
-    Map<String, VQuantileDiscrete> filters = new HashMap<>();
-    int k;
+    private final Map<String, VQuantileDiscrete> filters = new HashMap<>();
+    private final double[] p;
 
-    public FFQuantileDiscrete(int k, VRange vRange) {
+    private FQuantileDiscrete(double[] p, VRange vRange) {
         super(vRange);
-        this.k = k;
+        this.p = p;
     }
 
     @Override
-    public FFQuantileDiscrete newInstance() {
-        return new FFQuantileDiscrete(k, vRange);
+    public FQuantileDiscrete newInstance() {
+        return new FQuantileDiscrete(p, vRange);
     }
 
     @Override
     public void coreFit(Frame df) {
         filters.clear();
         for (String varName : varNames) {
-            VQuantileDiscrete filter = VQuantileDiscrete.split(k);
+            VQuantileDiscrete filter = VQuantileDiscrete.with(p);
             filter.fit(df.rvar(varName));
             filters.put(varName, filter);
         }
@@ -68,7 +87,6 @@ public class FFQuantileDiscrete extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-
         Var[] vars = new Var[df.varCount()];
         int pos = 0;
         for (String varName : df.varNames()) {

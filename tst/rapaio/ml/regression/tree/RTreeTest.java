@@ -29,7 +29,7 @@ import org.junit.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.frame.FFRefSort;
+import rapaio.data.filter.frame.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RPrediction;
@@ -56,7 +56,7 @@ public class RTreeTest {
         df.printSummary();
 
         String v = "TV";
-        Frame t = new FFRefSort(df.rvar(v).refComparator()).fapply(df);
+        Frame t = FRefSort.by(df.rvar(v).refComparator()).fapply(df);
 
         RTree tree = RTree.newCART()
                 .withMaxDepth(10)

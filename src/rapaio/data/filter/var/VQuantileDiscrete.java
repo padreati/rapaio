@@ -80,6 +80,9 @@ public class VQuantileDiscrete implements VFilter {
 
     @Override
     public void fit(Var var) {
+        if(!var.type().isNumeric()) {
+            return;
+        }
         qv = CoreTools.quantiles(var, qp).values();
 
         // first interval
@@ -103,6 +106,9 @@ public class VQuantileDiscrete implements VFilter {
 
     @Override
     public Var apply(Var var) {
+        if(!var.type().isNumeric()) {
+            return var;
+        }
         VarNominal result = VarNominal.empty(0, dict).withName(var.name());
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {

@@ -68,7 +68,7 @@ public class FToDoubleTest {
     @Test
     public void testNullVector() {
         try {
-            new FFRefSort(null).fapply(null);
+            FRefSort.by(null).fapply(null);
         } catch (Exception ex) {
             assertTrue(true);
         }

@@ -29,38 +29,36 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.var.VTransformBoxCox;
+import rapaio.data.Var;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
-public class FFBoxCoxT extends AbstractFF {
+public class FFillNaDouble extends AbstractFF {
 
-    private static final long serialVersionUID = 1804199711139024129L;
-
-    private final VTransformBoxCox bct;
-
-    public FFBoxCoxT(double lambda, String... varNames) {
-        this(lambda, 0, VRange.of(varNames));
+    public static FFillNaDouble on(double fill, VRange vRange) {
+        return new FFillNaDouble(fill, vRange);
     }
 
-    public FFBoxCoxT(double lambda, VRange vRange) {
-        this(lambda, 0, vRange);
+    public static FFillNaDouble on(double fill, String...varNames) {
+        return new FFillNaDouble(fill, VRange.of(varNames));
     }
 
-    public FFBoxCoxT(double lambda, double shift, String... varNames) {
-        super(VRange.of(varNames));
-        this.bct = VTransformBoxCox.with(lambda, shift);
-    }
+    private static final long serialVersionUID = 281130325474491898L;
+    private final double fill;
 
-    public FFBoxCoxT(double lambda, double shift, VRange vRange) {
+    private FFillNaDouble(double fill, VRange vRange) {
         super(vRange);
-        this.bct = VTransformBoxCox.with(lambda, shift);
+        this.fill = fill;
     }
 
     @Override
-    public FFBoxCoxT newInstance() {
-        return new FFBoxCoxT(bct.lambda(), bct.shift(), vRange);
+    public FFillNaDouble newInstance() {
+        return new FFillNaDouble(fill, vRange);
     }
 
     @Override
@@ -69,8 +67,17 @@ public class FFBoxCoxT extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        for (String name : varNames) {
-            bct.fapply(df.rvar(name));
+        Set<String> names = Arrays.stream(varNames).collect(Collectors.toSet());
+        for (Var var : df.varList()) {
+            if (!var.type().isNumeric())
+                continue;
+            if (!names.contains(var.name()))
+                continue;
+            for (int i = 0; i < var.rowCount(); i++) {
+                if (var.isMissing(i)) {
+                    var.setDouble(i, fill);
+                }
+            }
         }
         return df;
     }

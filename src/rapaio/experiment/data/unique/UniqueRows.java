@@ -44,7 +44,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.accessor.VarDoubleDataAccessor;
-import rapaio.data.filter.frame.FFRefSort;
+import rapaio.data.filter.frame.FRefSort;
 
 import java.util.TreeSet;
 
@@ -304,6 +304,6 @@ public class UniqueRows {
         for (int i = 0; i < var.rowCount(); i++) {
             uniques.addInt(uniqueRows.getUniqueId(i));
         }
-        SolidFrame.byVars(var, uniques).fapply(new FFRefSort(var.refComparator())).printLines();
+        SolidFrame.byVars(var, uniques).fapply(FRefSort.by(var.refComparator())).printLines();
     }
 }
