@@ -54,23 +54,38 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFOneHotEncoding extends AbstractFF {
+public class FOneHotEncoding extends AbstractFF {
 
-    private static final long serialVersionUID = 4893532203594639069L;
-
-    private Map<String, List<String>> levels;
-
-    public FFOneHotEncoding(String... varNames) {
-        super(VRange.of(varNames));
+    public static FOneHotEncoding on(String ... varNames) {
+        return new FOneHotEncoding(VRange.of(varNames), false, true);
     }
 
-    public FFOneHotEncoding(VRange vRange) {
+    public static FOneHotEncoding on(boolean lessOne, boolean useNa, String ... varNames) {
+        return new FOneHotEncoding(VRange.of(varNames), lessOne, useNa);
+    }
+
+    public static FOneHotEncoding on(VRange vRange) {
+        return new FOneHotEncoding(vRange, false, true);
+    }
+
+    public static FOneHotEncoding on(boolean lessOne, boolean useNa, VRange vRange) {
+        return new FOneHotEncoding(vRange, lessOne, useNa);
+    }
+
+    private static final long serialVersionUID = 4893532203594639069L;
+    private Map<String, List<String>> levels;
+    private final boolean lessOne;
+    private final boolean useNa;
+
+    private FOneHotEncoding(VRange vRange, boolean lessOne, boolean useNa) {
         super(vRange);
+        this.lessOne = lessOne;
+        this.useNa = useNa;
     }
 
     @Override
-    public FFOneHotEncoding newInstance() {
-        return new FFOneHotEncoding(vRange);
+    public FOneHotEncoding newInstance() {
+        return new FOneHotEncoding(vRange, lessOne, useNa);
     }
 
     @Override
@@ -79,14 +94,15 @@ public class FFOneHotEncoding extends AbstractFF {
         for (String varName : varNames) {
             // for each nominal variable
             if (df.rvar(varName).type().isNominal()) {
-                // process one hot encoding
-                List<String> dict = df.rvar(varName).levels();
-                levels.put(varName, dict);
+                levels.put(varName, df.rvar(varName).levels());
             }
         }
     }
 
     public Frame apply(Frame df) {
+        if(varNames==null || varNames.length==0) {
+            return df;
+        }
 
         // build a set for fast search
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
@@ -101,10 +117,17 @@ public class FFOneHotEncoding extends AbstractFF {
 
                 // get the learned dictionary
                 List<String> dict = levels.get(varName);
+                if(!useNa) {
+                    dict = dict.subList(1, dict.size());
+                }
+                if(lessOne) {
+                    dict = dict.subList(1, dict.size());
+                }
+
                 List<Var> oneHotVars = new ArrayList<>();
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
-                for (int i = 1; i < dict.size(); i++) {
+                for (int i = 0; i < dict.size(); i++) {
                     Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + dict.get(i));
                     oneHotVars.add(v);
                     index.put(dict.get(i), v);
