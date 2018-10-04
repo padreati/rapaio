@@ -43,7 +43,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Minimum implements Printable {
 
-    public static Minimum from(Var var) {
+    public static Minimum of(Var var) {
         return new Minimum(var);
     }
 

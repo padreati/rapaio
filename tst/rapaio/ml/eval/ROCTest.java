@@ -26,7 +26,7 @@ package rapaio.ml.eval;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.CoreTools;
+import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.data.Var;
@@ -72,7 +72,7 @@ public class ROCTest {
         Assert.assertEquals(0.8871, roc.auc(), 1e-20);
 
 
-        double midValue = CoreTools.mean(score).value();
+        double midValue = Mean.of(score).value();
         int midRow = roc.findRowForThreshold(midValue);
 
         Assert.assertEquals(0.3, roc.data().getDouble(midRow, ROC.fpr), 1e-20);

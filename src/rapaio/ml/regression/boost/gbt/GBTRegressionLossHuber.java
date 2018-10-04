@@ -70,7 +70,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute median of residuals
 
-        double r_bar = Quantiles.from(residual, new double[]{0.5}).values()[0];
+        double r_bar = Quantiles.of(residual, new double[]{0.5}).values()[0];
 
         // compute absolute residuals
 
@@ -81,7 +81,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
+        double rho = Quantiles.of(absResidual, new double[]{alpha}).values()[0];
 
         // compute one-iteration approximation
 
@@ -107,7 +107,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
+        double rho = Quantiles.of(absResidual, new double[]{alpha}).values()[0];
 
         // now compute gradient
 

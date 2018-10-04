@@ -77,8 +77,8 @@ public class Acf implements Printable {
     }
 
     private void compute() {
-        double mu = Mean.from(ts).value();
-        double var = Variance.from(ts).biasedValue();
+        double mu = Mean.of(ts).value();
+        double var = Variance.of(ts).biasedValue();
         for (int i = 0; i < lags.rowCount(); i++) {
             int lag = lags.getInt(i);
             double acf = 0.0;

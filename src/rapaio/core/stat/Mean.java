@@ -41,15 +41,15 @@ import static rapaio.sys.WS.formatFlex;
  */
 public final class Mean implements Printable {
 
-    public static Mean from(Var var) {
+    public static Mean of(Var var) {
         return new Mean(var);
     }
 
-    public static Mean from(double[] values) {
+    public static Mean of(double[] values) {
         return new Mean(values, 0, values.length);
     }
 
-    public static Mean from(double[] values, int start, int end) {
+    public static Mean of(double[] values, int start, int end) {
         return new Mean(values, start, end);
     }
 

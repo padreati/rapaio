@@ -28,10 +28,10 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -119,13 +119,13 @@ public class ZTestTwoPaired implements HTest {
             if (!(x.isMissing(i) || y.isMissing(i)))
                 complete.addDouble(x.getDouble(i) - y.getDouble(i));
         }
-        sampleMean = mean(complete).value();
+        sampleMean = Mean.of(complete).value();
 
         double sv = sd / Math.sqrt(complete.rowCount());
 
         zScore = (sampleMean - mu) / sv;
 
-        Normal normal = new Normal(0, 1);
+        Normal normal = Normal.std();
         switch (alt) {
             case GREATER_THAN:
                 pValue = 1 - normal.cdf(zScore);
@@ -137,8 +137,8 @@ public class ZTestTwoPaired implements HTest {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = new Normal(sampleMean, sv).quantile(sl / 2);
-        ciHigh = new Normal(sampleMean, sv).quantile(1 - sl / 2);
+        ciLow = Normal.from(sampleMean, sv).quantile(sl / 2);
+        ciHigh = Normal.from(sampleMean, sv).quantile(1 - sl / 2);
     }
 
     public double getMu() {

@@ -114,7 +114,7 @@ public class Binomial implements Distribution {
         if (p + 1.01 * DBL_EPSILON >= 1.) return n;
 
         /* y := approx.value (Cornish-Fisher expansion) :  */
-        z = new Normal(0, 1).quantile(p);
+        z = Normal.std().quantile(p);
         //y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
         y = rint(mu + sigma * (z + gamma * (z * z - 1) / 6));
 

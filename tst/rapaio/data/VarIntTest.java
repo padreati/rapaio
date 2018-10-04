@@ -202,7 +202,7 @@ public class VarIntTest {
             assertEquals(i, collect1.getInt(i));
         }
         VarInt collect2 = IntStream.range(0, 100).boxed().parallel().collect(VarInt.collector());
-        int sum = (int)Sum.from(collect2).value();
+        int sum = (int)Sum.of(collect2).value();
         assertEquals(99*100/2, sum);
 
         VarInt empty3 = collect2.newInstance(10);

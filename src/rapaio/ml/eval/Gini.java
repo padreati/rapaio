@@ -80,8 +80,8 @@ public class Gini implements Printable {
 
         int n = sol.rowCount();
 
-        double totalLosses = Sum.from(sol).value();
-        double giniSum = Sum.from(VCumSum.filter().fapply(sol)).value() / totalLosses;
+        double totalLosses = Sum.of(sol).value();
+        double giniSum = Sum.of(VCumSum.filter().fapply(sol)).value() / totalLosses;
         giniSum -= (actual.rowCount() + 1) / 2.;
         return giniSum / actual.rowCount();
     }
@@ -94,9 +94,9 @@ public class Gini implements Printable {
         Var sol = new VRefSort(cmp).fapply(actual).solidCopy();
         Var w = new VRefSort(cmp).fapply(weights).solidCopy();
 
-        double wsum = Sum.from(w).value();
+        double wsum = Sum.of(w).value();
         Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).solidCopy());
-        double totalPositive = Sum.from(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
+        double totalPositive = Sum.of(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
         Var lorentz = new VCumSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;

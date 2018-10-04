@@ -35,8 +35,8 @@ import rapaio.data.Var;
 public class NumericTypeStrategy implements TypeStrategy {
 	public void getVarSummary(Frame df, Var v,String[][] first, String[][] second, int th ){
 		double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-        double[] perc = Quantiles.from(v, p).values();
-        double mean = Mean.from(v).value();
+        double[] perc = Quantiles.of(v, p).values();
+        double mean = Mean.of(v).value();
 
         int nas = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -68,8 +68,8 @@ public class NumericTypeStrategy implements TypeStrategy {
 	@Override
 	public void getPrintSummary(Var v, String[] first, String[] second) {
 		double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-        double[] perc = Quantiles.from(v, p).values();
-        double mean = Mean.from(v).value();
+        double[] perc = Quantiles.of(v, p).values();
+        double mean = Mean.of(v).value();
 
         int nas = 0;
         for (int j = 0; j < v.rowCount(); j++) {

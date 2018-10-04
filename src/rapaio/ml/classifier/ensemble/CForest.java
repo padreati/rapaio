@@ -29,8 +29,11 @@ package rapaio.ml.classifier.ensemble;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.CoreTools;
 import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -216,10 +219,10 @@ public class CForest extends AbstractClassifier {
         for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
             name.addLabel(e.getKey());
             VarDouble scores = VarDouble.copy(e.getValue());
-            sd.addDouble(CoreTools.variance(scores).sdValue());
-            score.addDouble(CoreTools.mean(scores).value());
+            sd.addDouble(Variance.of(scores).sdValue());
+            score.addDouble(Mean.of(scores).value());
         }
-        double maxScore = CoreTools.max(score).value();
+        double maxScore = Maximum.of(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
         return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).solidCopy();
     }
@@ -231,10 +234,10 @@ public class CForest extends AbstractClassifier {
         for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
             name.addLabel(e.getKey());
             VarDouble scores = VarDouble.copy(e.getValue());
-            sd.addDouble(CoreTools.variance(scores).sdValue());
-            score.addDouble(CoreTools.mean(scores).value());
+            sd.addDouble(Variance.of(scores).sdValue());
+            score.addDouble(Mean.of(scores).value());
         }
-        double maxScore = CoreTools.max(score).value();
+        double maxScore = Maximum.of(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
         return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).solidCopy();
     }
@@ -245,12 +248,12 @@ public class CForest extends AbstractClassifier {
         Var sds = VarDouble.empty().withName("score sd");
         Var zscores = VarDouble.empty().withName("z-score");
         Var pvalues = VarDouble.empty().withName("p-value");
-        Distribution normal = CoreTools.distNormal();
+        Distribution normal = Normal.std();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
             VarDouble scores = VarDouble.copy(e.getValue());
-            double mean = CoreTools.mean(scores).value();
-            double sd = CoreTools.variance(scores).sdValue();
+            double mean = Mean.of(scores).value();
+            double sd = Variance.of(scores).sdValue();
             double zscore = mean / (sd);
             double pvalue = normal.cdf(2 * normal.cdf(-Math.abs(zscore)));
             score.addDouble(Math.abs(mean));

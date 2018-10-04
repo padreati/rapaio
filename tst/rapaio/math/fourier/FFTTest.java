@@ -119,7 +119,7 @@ public class FFTTest {
         final int N = 1024;
         RandomSource.setSeed(1234);
 
-        Normal normal = new Normal(0, 100);
+        Normal normal = Normal.from(0, 100);
 
         for (int i = 0; i < 10; i++) {
 

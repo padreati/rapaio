@@ -29,9 +29,10 @@ package rapaio.experiment.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -89,14 +90,14 @@ public class CEvaluation {
             acc.addDouble(conf.accuracy());
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     conf.accuracy(),
-                    CoreTools.mean(acc).value(),
-                    CoreTools.variance(acc).sdValue()));
+                    Mean.of(acc).value(),
+                    Variance.of(acc).sdValue()));
         }
 
-        double correct = CoreTools.mean(acc).value();
+        double correct = Mean.of(acc).value();
         print("==============\n");
         print(String.format("Mean accuracy:%.6f\n", correct));
-        print(String.format("SE: %.6f     (Standard error)\n", CoreTools.variance(acc).sdValue()));
+        print(String.format("SE: %.6f     (Standard error)\n", Variance.of(acc).sdValue()));
         return correct;
     }
 

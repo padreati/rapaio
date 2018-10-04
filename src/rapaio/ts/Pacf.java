@@ -59,7 +59,7 @@ public class Pacf implements Printable {
     }
 
     private void computeDurbinLevinson() {
-        Acf acf = Acf.from(ts, (int) Maximum.from(lags).value() + 1);
+        Acf acf = Acf.from(ts, (int) Maximum.of(lags).value() + 1);
         VarDouble cor = acf.correlation();
 
         double a, b, c;

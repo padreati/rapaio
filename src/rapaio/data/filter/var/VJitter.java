@@ -43,7 +43,7 @@ public class VJitter implements VFilter {
      * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
      */
     public static VJitter standard() {
-        return new VJitter(new Normal(0, 1));
+        return new VJitter(Normal.std());
     }
 
     /**
@@ -53,7 +53,7 @@ public class VJitter implements VFilter {
      * @param sd standard deviation of Gaussian distribution
      */
     public static VJitter gaussian(double mu, double sd) {
-        return new VJitter(new Normal(mu, sd));
+        return new VJitter(Normal.from(mu, sd));
     }
 
     /**

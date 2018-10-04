@@ -30,7 +30,6 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -44,7 +43,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Variance implements Printable {
 
-    public static Variance from(Var var) {
+    public static Variance of(Var var) {
         return new Variance(var);
     }
 
@@ -60,7 +59,7 @@ public class Variance implements Printable {
     }
 
     private void compute(final Var var) {
-        double mean = mean(var).value();
+        double mean = Mean.of(var).value();
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 missingCount++;

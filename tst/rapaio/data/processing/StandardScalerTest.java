@@ -106,8 +106,8 @@ public class StandardScalerTest {
         standardScaler.transform(copy);
 
         for(String varName : df.varNames()) {
-            double mean = Mean.from(copy.rvar(varName)).value();
-            double sd = Variance.from(copy.rvar(varName)).sdValue();
+            double mean = Mean.of(copy.rvar(varName)).value();
+            double sd = Variance.of(copy.rvar(varName)).sdValue();
 
             Assert.assertEquals(0.0, mean, TOL);
             Assert.assertNotEquals(1.0, sd, TOL);
@@ -124,8 +124,8 @@ public class StandardScalerTest {
         standardScaler.transform(copy);
 
         for(String varName : df.varNames()) {
-            double mean = Mean.from(copy.rvar(varName)).value();
-            double sd = Variance.from(copy.rvar(varName)).sdValue();
+            double mean = Mean.of(copy.rvar(varName)).value();
+            double sd = Variance.of(copy.rvar(varName)).sdValue();
 
             Assert.assertNotEquals(0.0, mean, TOL);
             Assert.assertEquals(1.0, sd, TOL);
@@ -142,8 +142,8 @@ public class StandardScalerTest {
         StandardScaler standardScaler = StandardScaler.from(df, true, true);
         standardScaler.transform(df);
 
-        Assert.assertEquals(0.0, Mean.from(df.rvar("x")).value(), TOL);
-        Assert.assertEquals(1.0, Variance.from(df.rvar("x")).sdValue(), TOL);
+        Assert.assertEquals(0.0, Mean.of(df.rvar("x")).value(), TOL);
+        Assert.assertEquals(1.0, Variance.of(df.rvar("x")).sdValue(), TOL);
 
         standardScaler.reverse(df);
 

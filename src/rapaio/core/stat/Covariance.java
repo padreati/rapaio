@@ -39,7 +39,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Covariance implements Printable {
 
-    public static Covariance from(Var var1, Var var2) {
+    public static Covariance of(Var var1, Var var2) {
         return new Covariance(var1, var2);
     }
 
@@ -74,8 +74,8 @@ public class Covariance implements Printable {
             return Double.NaN;
         }
 
-        double m1 = Mean.from(xx, 0, completeCount).value();
-        double m2 = Mean.from(yy, 0, completeCount).value();
+        double m1 = Mean.of(xx, 0, completeCount).value();
+        double m2 = Mean.of(yy, 0, completeCount).value();
         double cov = 0;
         for (int i = 0; i < completeCount; i++) {
             cov += (xx[i] - m1) * (yy[i] - m2);

@@ -32,7 +32,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.core.CoreTools.*;
 
 public class TTestTwoSamplesTest {
 
@@ -46,9 +45,9 @@ public class TTestTwoSamplesTest {
         Var z = VarDouble.from(40, n::sampleNext).withName("z");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
-        TTestTwoSamples t2 = TTestTwoSamples.test(Mean.from(x).value(), x.rowCount(), Mean.from(y).value(), y.rowCount(), 0, Variance.from(x).sdValue(), Variance.from(y).sdValue());
+        TTestTwoSamples t2 = TTestTwoSamples.test(Mean.of(x).value(), x.rowCount(), Mean.of(y).value(), y.rowCount(), 0, Variance.of(x).sdValue(), Variance.of(y).sdValue());
         TTestTwoSamples t3 = TTestTwoSamples.welchTest(x, z, 0);
-        TTestTwoSamples t4 = TTestTwoSamples.welchTest(Mean.from(x).value(), x.rowCount(), Mean.from(z).value(), z.rowCount(), 0, Variance.from(x).sdValue(), Variance.from(z).sdValue());
+        TTestTwoSamples t4 = TTestTwoSamples.welchTest(Mean.of(x).value(), x.rowCount(), Mean.of(z).value(), z.rowCount(), 0, Variance.of(x).sdValue(), Variance.of(z).sdValue());
 
         assertEquals(t1.pValue(), t2.pValue(), TOL);
         assertEquals(t3.pValue(), t4.pValue(), TOL);
@@ -64,12 +63,12 @@ public class TTestTwoSamplesTest {
         t1.printSummary();
 
         assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
-        assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
-        assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
+        assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);
+        assertEquals(Variance.of(x).sdValue(), t1.getXSampleSd(), TOL);
 
         assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
-        assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
-        assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
+        assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
+        assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 
         assertEquals(true, t1.hasEqualVars());
         assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
@@ -108,12 +107,12 @@ public class TTestTwoSamplesTest {
         t1.printSummary();
 
         assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
-        assertEquals(mean(x).value(), t1.getXSampleMean(), TOL);
-        assertEquals(variance(x).sdValue(), t1.getXSampleSd(), TOL);
+        assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);
+        assertEquals(Variance.of(x).sdValue(), t1.getXSampleSd(), TOL);
 
         assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
-        assertEquals(mean(y).value(), t1.getYSampleMean(), TOL);
-        assertEquals(variance(y).sdValue(), t1.getYSampleSd(), TOL);
+        assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
+        assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 
         assertEquals(false, t1.hasEqualVars());
         assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);

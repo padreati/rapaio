@@ -9,7 +9,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.CoreTools.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -20,8 +19,8 @@ public class VJitterTest {
     public void testJitterStandard() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.standard());
-        Mean mean = mean(a);
-        Variance var = variance(a);
+        Mean mean = Mean.of(a);
+        Variance var = Variance.of(a);
         mean.printSummary();
         var.printSummary();
 
@@ -35,8 +34,8 @@ public class VJitterTest {
     public void testJitterStandardSd() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.gaussian(0, 2));
-        Mean mean = mean(a);
-        Variance var = variance(a);
+        Mean mean = Mean.of(a);
+        Variance var = Variance.of(a);
         mean.printSummary();
         var.printSummary();
 
@@ -50,8 +49,8 @@ public class VJitterTest {
     public void testJitterDistributed() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.with(new ChiSquare(5)));
-        Mean mean = mean(a);
-        Variance var = variance(a);
+        Mean mean = Mean.of(a);
+        Variance var = Variance.of(a);
         mean.printSummary();
         var.printSummary();
 

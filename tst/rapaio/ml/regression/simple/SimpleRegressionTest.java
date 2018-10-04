@@ -27,7 +27,7 @@ package rapaio.ml.regression.simple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.CoreTools;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VToDouble;
@@ -107,7 +107,7 @@ public class SimpleRegressionTest {
         RPrediction fit1 = r1.predict(df);
         fit1.printSummary();
 
-        double median = CoreTools.quantiles(df.rvar(father), 0.5).values()[0];
+        double median = Quantiles.of(df.rvar(father), 0.5).values()[0];
         Assert.assertTrue(VarDouble.fill(df.rowCount(), median).withName(father)
                 .deepEquals(fit1.firstFit()));
     }

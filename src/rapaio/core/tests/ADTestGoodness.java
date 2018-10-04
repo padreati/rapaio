@@ -80,7 +80,7 @@ public class ADTestGoodness implements HTest {
 
     private void compute() {
 
-        muHat = Double.isNaN(mu) ? Mean.from(x).value() : mu;
+        muHat = Double.isNaN(mu) ? Mean.of(x).value() : mu;
 
         if (!Double.isNaN(sigma)) {
             // variance is known
@@ -95,7 +95,7 @@ public class ADTestGoodness implements HTest {
                 sigmaHat = Math.sqrt(sigmaHat);
             } else {
                 // both variance and mean are unknown
-                sigmaHat = Variance.from(x).sdValue();
+                sigmaHat = Variance.of(x).sdValue();
             }
         }
 

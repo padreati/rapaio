@@ -67,11 +67,11 @@ public class StandardScaler implements Scaler {
         for (String varName : df.varNames()) {
             if (center) {
                 varNames.add(varName);
-                mean.put(varName, Mean.from(df.rvar(varName)).value());
+                mean.put(varName, Mean.of(df.rvar(varName)).value());
             }
             if (scale) {
                 varNames.add(varName);
-                sd.put(varName, Variance.from(df.rvar(varName)).sdValue());
+                sd.put(varName, Variance.of(df.rvar(varName)).sdValue());
             }
         }
     }

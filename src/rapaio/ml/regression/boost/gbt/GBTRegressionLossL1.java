@@ -51,7 +51,7 @@ public class GBTRegressionLossL1 implements GBTRegressionLoss {
         for (int i = 0; i < y.rowCount(); i++) {
             values.addDouble(y.getDouble(i) - fx.getDouble(i));
         }
-        double result = Quantiles.from(values, new double[]{0.5}).values()[0];
+        double result = Quantiles.of(values, new double[]{0.5}).values()[0];
         if (Double.isNaN(result)) {
             WS.println();
         }

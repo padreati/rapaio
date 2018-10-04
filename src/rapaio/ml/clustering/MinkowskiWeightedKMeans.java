@@ -29,6 +29,7 @@ package rapaio.ml.clustering;
 
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
@@ -53,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
-
-import static rapaio.core.CoreTools.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
@@ -311,7 +310,7 @@ public class MinkowskiWeightedKMeans implements Printable {
                 means[arrows.getInt(i)].addDouble(df.getDouble(i, input));
             }
             for (int i = 0; i < k; i++) {
-                centroids.setDouble(i, input, Mean.from(means[i]).value());
+                centroids.setDouble(i, input, Mean.of(means[i]).value());
             }
         }
     }
@@ -433,11 +432,11 @@ public class MinkowskiWeightedKMeans implements Printable {
             errors.get(arrows.getInt(i)).addDouble(d);
             summaryAllDist.addDouble(d);
         }
-        double tvar = variance(summaryAllDist).value();
+        double tvar = Variance.of(summaryAllDist).value();
         for (Map.Entry<Integer, VarDouble> e : errors.entrySet()) {
             summaryCount.setInt(e.getKey(), e.getValue().rowCount());
-            summaryMean.setDouble(e.getKey(), mean(e.getValue()).value());
-            double v = variance(e.getValue()).value();
+            summaryMean.setDouble(e.getKey(), Mean.of(e.getValue()).value());
+            double v = Variance.of(e.getValue()).value();
             summaryVar.setDouble(e.getKey(), v);
             summaryVarP.setDouble(e.getKey(), v / tvar);
             summarySd.setDouble(e.getKey(), Math.sqrt(v));
@@ -470,9 +469,9 @@ public class MinkowskiWeightedKMeans implements Printable {
         } else {
             sb.append("Overall: \n");
             sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");
-            sb.append("> mean: ").append(WS.formatFlex(mean(summaryAllDist).value())).append("\n");
-            sb.append("> var: ").append(WS.formatFlex(variance(summaryAllDist).value())).append("\n");
-            sb.append("> sd: ").append(WS.formatFlex(variance(summaryAllDist).sdValue())).append("\n");
+            sb.append("> mean: ").append(WS.formatFlex(Mean.of(summaryAllDist).value())).append("\n");
+            sb.append("> var: ").append(WS.formatFlex(Variance.of(summaryAllDist).value())).append("\n");
+            sb.append("> sd: ").append(WS.formatFlex(Variance.of(summaryAllDist).sdValue())).append("\n");
             sb.append("\n");
 
             sb.append("Per cluster: \n");

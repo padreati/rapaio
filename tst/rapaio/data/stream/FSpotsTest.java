@@ -115,7 +115,7 @@ public class FSpotsTest {
         VarDouble x = VarDouble.from(10_000, RandomSource::nextDouble);
         double sum1 = x.stream().parallel().mapToDouble().sum();
         double sum3 = x.stream().sequential().mapToDouble().sum();
-        double sum2 = Sum.from(x).value();
+        double sum2 = Sum.of(x).value();
         assertEquals(sum2, sum1, TOL);
         assertEquals(sum3, sum1, TOL);
     }

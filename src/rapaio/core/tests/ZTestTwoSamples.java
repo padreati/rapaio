@@ -28,9 +28,9 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 
-import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -153,9 +153,9 @@ public class ZTestTwoSamples implements HTest {
             return;
         }
 
-        xSampleMean = mean(xComplete).value();
+        xSampleMean = Mean.of(xComplete).value();
         xSampleSize = xComplete.rowCount();
-        ySampleMean = mean(yComplete).value();
+        ySampleMean = Mean.of(yComplete).value();
         ySampleSize = yComplete.rowCount();
         sampleMean = xSampleMean - ySampleMean;
 
@@ -251,7 +251,7 @@ public class ZTestTwoSamples implements HTest {
 
         zScore = (xSampleMean - ySampleMean - mu) / sv;
 
-        Normal normal = new Normal(0, 1);
+        Normal normal = Normal.std();
         switch (alt) {
             case GREATER_THAN:
                 pValue = 1 - normal.cdf(zScore);
@@ -263,8 +263,8 @@ public class ZTestTwoSamples implements HTest {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = new Normal(xSampleMean - ySampleMean, sv).quantile(sl / 2);
-        ciHigh = new Normal(xSampleMean - ySampleMean, sv).quantile(1 - sl / 2);
+        ciLow = Normal.from(xSampleMean - ySampleMean, sv).quantile(sl / 2);
+        ciHigh = Normal.from(xSampleMean - ySampleMean, sv).quantile(1 - sl / 2);
     }
 
     @Override

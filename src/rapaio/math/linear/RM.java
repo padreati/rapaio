@@ -220,7 +220,7 @@ public interface RM extends Serializable, Printable {
                 values.addDouble(get(i, j));
             }
         }
-        return Mean.from(values);
+        return Mean.of(values);
     }
 
     default Variance var() {
@@ -230,7 +230,7 @@ public interface RM extends Serializable, Printable {
                 values.addDouble(get(i, j));
             }
         }
-        return Variance.from(values);
+        return Variance.of(values);
     }
 
     /**

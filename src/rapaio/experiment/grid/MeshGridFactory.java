@@ -27,7 +27,8 @@
 
 package rapaio.experiment.grid;
 
-import rapaio.core.CoreTools;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -41,10 +42,10 @@ public class MeshGridFactory {
 
     public static MeshGrid1D buildFrom(Classifier c, Frame df, String x1Name, String x2Name, int steps, String labelName) {
 
-        double x1min = CoreTools.min(df.rvar(x1Name)).value();
-        double x1max = CoreTools.max(df.rvar(x1Name)).value();
-        double x2min = CoreTools.min(df.rvar(x2Name)).value();
-        double x2max = CoreTools.max(df.rvar(x2Name)).value();
+        double x1min = Minimum.of(df.rvar(x1Name)).value();
+        double x1max = Maximum.of(df.rvar(x1Name)).value();
+        double x2min = Minimum.of(df.rvar(x2Name)).value();
+        double x2max = Maximum.of(df.rvar(x2Name)).value();
 
         VarDouble x1 = VarDouble.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
         VarDouble x2 = VarDouble.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);

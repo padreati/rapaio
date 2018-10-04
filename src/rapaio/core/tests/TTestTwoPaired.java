@@ -28,10 +28,11 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.StudentT;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static rapaio.core.CoreTools.*;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -112,8 +113,8 @@ public class TTestTwoPaired implements HTest {
             return;
         }
 
-        sampleMean = mean(complete).value();
-        sd = variance(complete).sdValue();
+        sampleMean = Mean.of(complete).value();
+        sd = Variance.of(complete).sdValue();
 
         double sv = sd / Math.sqrt(complete.rowCount());
 

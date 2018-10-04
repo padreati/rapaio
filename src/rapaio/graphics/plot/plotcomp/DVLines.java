@@ -59,8 +59,8 @@ public class DVLines extends PlotComponent {
     @Override
     protected Range buildRange() {
         return new Range(
-                Minimum.from(indexes).value(), Minimum.from(values).value(),
-                Maximum.from(indexes).value(), Maximum.from(values).value());
+                Minimum.of(indexes).value(), Minimum.of(values).value(),
+                Maximum.of(indexes).value(), Maximum.of(values).value());
     }
 
     @Override

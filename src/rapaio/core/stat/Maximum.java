@@ -41,7 +41,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Maximum implements Printable {
 
-    public static Maximum from(Var var) {
+    public static Maximum of(Var var) {
         return new Maximum(var);
     }
 

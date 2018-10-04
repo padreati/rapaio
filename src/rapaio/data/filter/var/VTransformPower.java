@@ -51,7 +51,7 @@ public class VTransformPower implements VFilter {
 
     @Override
     public void fit(Var var) {
-        GeometricMean mygm = GeometricMean.from(var);
+        GeometricMean mygm = GeometricMean.of(var);
         if (mygm.isDefined()) {
             gm = mygm.value();
         } else {

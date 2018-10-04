@@ -149,7 +149,7 @@ public class BoxPlot extends HostFigure {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
-            double[] q = Quantiles.from(v, p).values();
+            double[] q = Quantiles.of(v, p).values();
             double iqr = q[2] - q[0];
             double innerFence = 1.5 * iqr;
             double outerFence = 3 * iqr;

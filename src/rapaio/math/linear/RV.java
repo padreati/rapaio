@@ -208,7 +208,7 @@ public interface RV extends Serializable, Printable {
         for (int i = 0; i < count(); i++) {
             values.addDouble(get(i));
         }
-        return Mean.from(values);
+        return Mean.of(values);
     }
 
     /**
@@ -222,7 +222,7 @@ public interface RV extends Serializable, Printable {
         for (int i = 0; i < count(); i++) {
             values.addDouble(get(i));
         }
-        return Variance.from(values);
+        return Variance.of(values);
     }
 
     /**

@@ -52,7 +52,7 @@ public class Normal implements Distribution {
      * @param mu mean
      * @param sd standard deviation
      */
-    public Normal(double mu, double sd) {
+    private Normal(double mu, double sd) {
         this.mu = mu;
         this.sd = sd;
         this.var = sd * sd;

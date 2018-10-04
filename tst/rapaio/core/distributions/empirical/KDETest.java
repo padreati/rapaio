@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class KDETest {
 
 
-    private Normal normal = new Normal(0, 1);
+    private Normal normal = Normal.from(0, 1);
     private Var sample;
 
     private Var x = VarDouble.seq(-20, 20, 0.01);
@@ -66,7 +66,7 @@ public class KDETest {
         KDE kde = new KDE(sample, fun);
         Var z = VarDouble.from(x, kde::pdf);
         Var delta = VarDouble.from(x.rowCount(), row -> y.getDouble(row)-z.getDouble(row));
-        Mean mean = Mean.from(delta);
+        Mean mean = Mean.of(delta);
         mean.printSummary();
         assertTrue(Math.abs(mean.value())<1e-5);
     }

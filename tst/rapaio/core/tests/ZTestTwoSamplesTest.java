@@ -25,11 +25,11 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
+import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.core.CoreTools.mean;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -55,7 +55,7 @@ public class ZTestTwoSamplesTest {
         assertEquals(2.211040435576059, z1.ciHigh(), TOL);
 
 
-        z1 = ZTestTwoSamples.test(mean(x).value(), x.rowCount(), mean(y).value(), y.rowCount(), 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
+        z1 = ZTestTwoSamples.test(Mean.of(x).value(), x.rowCount(), Mean.of(y).value(), y.rowCount(), 2, 0.5, 0.5, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(1.7556818181818183, z1.getSampleMean(), TOL);
         assertEquals(7.0181818181818185, z1.getXSampleMean(), TOL);

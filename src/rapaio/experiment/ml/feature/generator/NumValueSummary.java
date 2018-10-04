@@ -117,8 +117,8 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
         }
     }
 
-    public static Aggregate sum = new Aggregate("sum", v -> Sum.from(v).value());
-    public static Aggregate mean = new Aggregate("mean", v -> Mean.from(v).value());
-    public static Aggregate variance = new Aggregate("variance", v -> Variance.from(v).value());
+    public static Aggregate sum = new Aggregate("sum", v -> Sum.of(v).value());
+    public static Aggregate mean = new Aggregate("mean", v -> Mean.of(v).value());
+    public static Aggregate variance = new Aggregate("variance", v -> Variance.of(v).value());
     public static Aggregate count = new Aggregate("count", v -> (double) v.rowCount());
 }

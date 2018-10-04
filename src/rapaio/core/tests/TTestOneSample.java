@@ -27,8 +27,9 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.CoreTools;
 import rapaio.core.distributions.StudentT;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 
 import static rapaio.sys.WS.formatFlex;
@@ -166,8 +167,8 @@ public class TTestOneSample implements HTest {
             ciHigh = Double.NaN;
             return;
         }
-        sampleMean = CoreTools.mean(clean).value();
-        sampleSd = CoreTools.variance(clean).sdValue();
+        sampleMean = Mean.of(clean).value();
+        sampleSd = Variance.of(clean).sdValue();
         compute();
     }
 

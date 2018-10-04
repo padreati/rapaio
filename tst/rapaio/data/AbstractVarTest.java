@@ -106,7 +106,7 @@ public class AbstractVarTest {
 
         assertEquals(10, d.rowCount());
 
-        double mean = Mean.from(d).value();
+        double mean = Mean.of(d).value();
         assertEquals(5.5, mean, 10e-12);
 
         for (int i = 0; i < 10; i++) {

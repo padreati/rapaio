@@ -27,9 +27,13 @@ package rapaio.graphics;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Minimum;
+import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -126,7 +130,7 @@ public class ImageGraphicsTest {
 
         final int N = 100;
         Var x = df.rvar(2);
-        Distribution normal = CoreTools.distNormal(CoreTools.mean(x).value(), CoreTools.variance(x).sdValue());
+        Distribution normal = Normal.from(Mean.of(x).value(), Variance.of(x).sdValue());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));
@@ -199,8 +203,8 @@ public class ImageGraphicsTest {
 
         Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
-        double min = CoreTools.min(x).value();
-        double max = CoreTools.max(x).value();
+        double min = Minimum.of(x).value();
+        double max = Maximum.of(x).value();
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
                 .add(lines(x).yLim(-2, -1));

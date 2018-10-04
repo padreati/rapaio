@@ -53,11 +53,11 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Quantiles implements Printable {
 
-    public static Quantiles from(Var var, double...percentiles) {
+    public static Quantiles of(Var var, double...percentiles) {
         return new Quantiles(var, Type.R7, percentiles);
     }
 
-    public static Quantiles from(Var var, Quantiles.Type type, double...percentiles) {
+    public static Quantiles of(Var var, Quantiles.Type type, double...percentiles) {
         return new Quantiles(var, type, percentiles);
     }
 

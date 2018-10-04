@@ -46,7 +46,7 @@ public class GBTRegressionLossL2 implements GBTRegressionLoss {
 
     @Override
     public double findMinimum(Var y, Var fx) {
-        return Mean.from(gradient(y, fx)).value();
+        return Mean.of(gradient(y, fx)).value();
     }
 
     @Override

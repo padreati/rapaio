@@ -49,7 +49,7 @@ public class SolidRVTest {
 
     @Before
     public void setUp() throws Exception {
-        normal = new Normal(0, 10);
+        normal = Normal.from(0, 10);
         varx = VarDouble.from(N, normal::sampleNext);
         x = SolidRV.from(varx);
     }
@@ -198,7 +198,7 @@ public class SolidRVTest {
             }
             pnorm = Math.pow(pnorm, p > 0 ? 1.0 / p : 1.0);
             if (Double.POSITIVE_INFINITY == p) {
-                pnorm = Maximum.from(varx).value();
+                pnorm = Maximum.of(varx).value();
             }
             assertEquals("pnorm failed for p=" + p, pnorm, x.norm(p), TOL);
         }
@@ -206,8 +206,8 @@ public class SolidRVTest {
 
     @Test
     public void meanVarTest() {
-        assertEquals(Mean.from(varx).value(), x.mean().value(), TOL);
-        assertEquals(Variance.from(varx).value(), x.variance().value(), TOL);
+        assertEquals(Mean.of(varx).value(), x.mean().value(), TOL);
+        assertEquals(Variance.of(varx).value(), x.variance().value(), TOL);
     }
 
     @Test

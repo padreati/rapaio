@@ -27,15 +27,15 @@ package rapaio.core.tests;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
+import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static rapaio.core.CoreTools.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -56,7 +56,7 @@ public class KSTestTest {
     @Test
     public void testNormal() {
         RandomSource.setSeed(1);
-        Normal d = distNormal();
+        Normal d = new Normal();
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
@@ -68,7 +68,7 @@ public class KSTestTest {
     public void testUniform() {
         RandomSource.setSeed(1);
         VarDouble sample = new Uniform(0, 1).sample(1_000);
-        KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
+        KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
         Assert.assertTrue(test.pValue() < 0.001);
@@ -79,7 +79,7 @@ public class KSTestTest {
         RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
         VarDouble sample = d.sample(1000);
-        KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
+        KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);
         Assert.assertTrue(test.pValue() < 0.05);

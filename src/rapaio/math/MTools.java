@@ -27,9 +27,9 @@
 
 package rapaio.math;
 
-import java.util.ArrayList;
+import rapaio.core.distributions.Normal;
 
-import static rapaio.core.CoreTools.distNormal;
+import java.util.ArrayList;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -452,7 +452,7 @@ public class MTools {
      * @return the erf of x
      */
     public static double erf(double x) {
-        return 2 * distNormal().cdf(x * Math.sqrt(2.0)) - 1;
+        return 2 * Normal.std().cdf(x * Math.sqrt(2.0)) - 1;
     }
 
     /**
@@ -468,7 +468,7 @@ public class MTools {
      * @return the invErf of x
      */
     public static double inverf(double x) {
-        return distNormal(0, 1).quantile(x / 2 + 0.5) / Math.sqrt(2.0);
+        return Normal.std().quantile(x / 2 + 0.5) / Math.sqrt(2.0);
     }
 
     /**
@@ -482,7 +482,7 @@ public class MTools {
      * @return the erf of x
      */
     public static double erfc(double x) {
-        return 2 * distNormal().cdf(-x * Math.sqrt(2.0));
+        return 2 * Normal.std().cdf(-x * Math.sqrt(2.0));
     }
 
     /**
@@ -498,7 +498,7 @@ public class MTools {
      * @return the invErf of x
      */
     public static double inverfc(double x) {
-        return distNormal().quantile(x / 2) / -Math.sqrt(2.0);
+        return Normal.std().quantile(x / 2) / -Math.sqrt(2.0);
     }
 
     /**

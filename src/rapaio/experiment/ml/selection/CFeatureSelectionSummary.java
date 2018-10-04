@@ -27,7 +27,8 @@
 
 package rapaio.experiment.ml.selection;
 
-import rapaio.core.CoreTools;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -80,14 +81,14 @@ public class CFeatureSelectionSummary implements Printable {
         if (usePearson) {
             df.varStream()
                     .filter(v -> !v.name().equals(targetVar))
-                    .forEach(v -> topPearson.add(Pair.from(v.name(), CoreTools.corrPearson(df.rvar(targetVar), v).singleValue())));
+                    .forEach(v -> topPearson.add(Pair.from(v.name(), CorrPearson.of(df.rvar(targetVar), v).singleValue())));
             topPearson.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 
         if (usePearson) {
             df.varStream()
                     .filter(v -> !v.name().equals(targetVar))
-                    .forEach(v -> topSpearman.add(Pair.from(v.name(), CoreTools.corrSpearman(df.rvar(targetVar), v).singleValue())));
+                    .forEach(v -> topSpearman.add(Pair.from(v.name(), CorrSpearman.of(df.rvar(targetVar), v).singleValue())));
             topSpearman.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
         }
 

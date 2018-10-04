@@ -83,7 +83,7 @@ public class L2Regression extends AbstractRegression {
     protected boolean coreFit(Frame df, Var weights) {
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
-            double mean = Mean.from(df.rvar(targetName(i))).value();
+            double mean = Mean.of(df.rvar(targetName(i))).value();
             means[i] = mean;
         }
         return true;

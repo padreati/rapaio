@@ -73,15 +73,15 @@ public class RTreeNumericMethodTest {
         Var test = df.rvar(NUM_TEST).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var weights = w.fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
 
-        double variance = Variance.from(target).value();
+        double variance = Variance.of(target).value();
         for(int i=1; i<test.rowCount()-2; i++) {
             double value = test.getDouble(i);
 
             Var left = target.stream().filter(s -> test.getDouble(s.row()) <= value).toMappedVar();
             Var right = target.stream().filter(s -> test.getDouble(s.row()) > value).toMappedVar();
 
-            double varLeft = Variance.from(left).value();
-            double varRight = Variance.from(right).value();
+            double varLeft = Variance.of(left).value();
+            double varRight = Variance.of(right).value();
 
             System.out.println(value + "  => " + varLeft + " | " + varRight + "    -> "
                     + (variance - varLeft*left.rowCount()/test.rowCount() - varRight*right.rowCount()/test.rowCount()));

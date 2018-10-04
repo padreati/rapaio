@@ -88,7 +88,7 @@ public class SVDecompositionTest {
 
         // for ill conditioned the condition number explodes
 
-        Normal norm = new Normal(0, 0.000001);
+        Normal norm = Normal.from(0, 0.000001);
 
         for (int i = 0; i < 100; i++) {
             RM a = SolidRM.random(10, 10);

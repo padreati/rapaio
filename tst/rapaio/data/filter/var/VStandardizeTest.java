@@ -22,8 +22,8 @@ public class VStandardizeTest {
         Distribution d = new Gamma(0.5, 2);
         VarDouble x = VarDouble.from(1000, d::sampleNext);
 
-        double mean = Mean.from(x).value();
-        double sd = Variance.from(x).sdValue();
+        double mean = Mean.of(x).value();
+        double sd = Variance.of(x).sdValue();
 
         Var m1 = x.solidCopy().fapply(VStandardize.filter());
         Var m2 = x.solidCopy().fapply(VStandardize.filter(mean));

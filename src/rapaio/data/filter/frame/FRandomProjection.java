@@ -105,7 +105,7 @@ public class FRandomProjection extends AbstractFF {
 
     private static Method gaussian(int k) {
         return rowCount -> {
-            Normal norm = new Normal(0, 1);
+            Normal norm = Normal.std();
             RV v = SolidRV.empty(rowCount);
             for (int i = 0; i < v.count(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));

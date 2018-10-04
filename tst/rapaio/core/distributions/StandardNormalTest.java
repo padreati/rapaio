@@ -52,7 +52,7 @@ public class StandardNormalTest {
 
     @Test
     public void testStandardQuantile() {
-        Normal d = new Normal(0, 1);
+        Normal d = Normal.std();
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") > 0 && df.getDouble(i, "x") < 1) {
                 Assert.assertEquals(df.getDouble(i, "quantile"), d.quantile(df.getDouble(i, "x")), ERROR);
@@ -62,7 +62,7 @@ public class StandardNormalTest {
 
     @Test
     public void testStandardPdf() {
-        Normal d = new Normal(0, 1);
+        Normal d = Normal.std();
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(df.getDouble(i, "pdf"), d.pdf(df.getDouble(i, "x")), ERROR);
         }
@@ -70,7 +70,7 @@ public class StandardNormalTest {
 
     @Test
     public void testStandardCdf() {
-        Normal d = new Normal(0, 1);
+        Normal d = Normal.std();
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(df.getDouble(i, "cdf"), d.cdf(df.getDouble(i, "x")), ERROR);
         }

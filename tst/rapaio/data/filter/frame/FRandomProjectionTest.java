@@ -26,8 +26,8 @@ package rapaio.data.filter.frame;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
+import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
@@ -54,7 +54,7 @@ public class FRandomProjectionTest {
         Assert.assertEquals("RP_3", df.rvar(2).name());
 
 
-        double corr = CoreTools.corrPearson(df).singleValue();
+        double corr = CorrPearson.of(df).singleValue();
         Assert.assertEquals(0.4085654587641364, corr, 1e-20);
     }
 
@@ -72,7 +72,7 @@ public class FRandomProjectionTest {
         Assert.assertEquals("RP_3", df.rvar(2).name());
 
 
-        double corr = CoreTools.corrPearson(df).singleValue();
+        double corr = CorrPearson.of(df).singleValue();
         Assert.assertEquals(-0.5035565970961098, corr, 1e-20);
     }
 
@@ -90,7 +90,7 @@ public class FRandomProjectionTest {
         Assert.assertEquals("RP_3", df.rvar(2).name());
 
 
-        double corr = CoreTools.corrPearson(df).singleValue();
+        double corr = CorrPearson.of(df).singleValue();
         Assert.assertEquals(-0.5195786390214067, corr, 1e-20);
     }
 }

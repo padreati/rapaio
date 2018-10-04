@@ -79,7 +79,7 @@ public class VarBooleanTest {
     public void testNumericStats() {
         VarBoolean b = VarBoolean.copy(1, 1, 0, 0, 1, 0, 1, 1);
         b.printSummary();
-        assertEquals(0.625, Mean.from(b).value(), 10e-10);
+        assertEquals(0.625, Mean.of(b).value(), 10e-10);
     }
 
     @Test

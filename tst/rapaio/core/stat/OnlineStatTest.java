@@ -25,7 +25,6 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
@@ -45,7 +44,7 @@ public class OnlineStatTest {
         RandomSource.setSeed(1223);
 
         int LEN = 1_000;
-        Var v = new Normal(0, 1).sample(LEN);
+        Var v = Normal.std().sample(LEN);
 
         OnlineStat onlineStat = OnlineStat.empty();
 
@@ -88,8 +87,8 @@ public class OnlineStatTest {
 
         soA.update(soB);
 
-        assertEquals(soA.variance(), CoreTools.variance(ab).biasedValue(), 1e-12);
-        assertEquals(soA.mean(), CoreTools.mean(ab).value(), 1e-14);
+        assertEquals(soA.variance(), Variance.of(ab).biasedValue(), 1e-12);
+        assertEquals(soA.mean(), Mean.of(ab).value(), 1e-14);
 
         assertEquals(soA.variance(), soAll.variance(), 1e-12);
         assertEquals(soA.mean(), soAll.mean(), 1e-30);

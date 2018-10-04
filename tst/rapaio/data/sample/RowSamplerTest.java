@@ -27,8 +27,8 @@ package rapaio.data.sample;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
+import rapaio.core.stat.Mean;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -73,7 +73,7 @@ public class RowSamplerTest {
         }
 
         // close to 1 - 1 / exp(1)
-        Assert.assertEquals(0.63328, CoreTools.mean(count).value(), 1e-5);
+        Assert.assertEquals(0.63328, Mean.of(count).value(), 1e-5);
     }
 
     @Test

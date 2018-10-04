@@ -19,7 +19,7 @@ public class VTransformBoxCoxTest {
     public void testDouble() {
 
         RandomSource.setSeed(1233);
-        Normal normal = new Normal(1, 10);
+        Normal normal = Normal.from(1, 10);
         double[] values = new double[100];
         for (int i = 0; i < values.length; i++) {
             values[i] = normal.sampleNext();

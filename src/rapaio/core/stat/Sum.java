@@ -42,7 +42,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Sum implements Printable {
 
-    public static Sum from(Var var) {
+    public static Sum of(Var var) {
         return new Sum(var);
     }
 

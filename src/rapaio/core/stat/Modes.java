@@ -37,7 +37,11 @@ import java.util.Arrays;
  */
 public class Modes implements Printable {
 
-    public static Modes from(Var var, boolean includeMissing) {
+    public static Modes of(Var var) {
+        return new Modes(var, false);
+    }
+
+    public static Modes of(Var var, boolean includeMissing) {
         return new Modes(var, includeMissing);
     }
 

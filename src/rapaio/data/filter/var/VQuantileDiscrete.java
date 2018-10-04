@@ -27,7 +27,7 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.CoreTools;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VFilter;
@@ -83,7 +83,7 @@ public class VQuantileDiscrete implements VFilter {
         if(!var.type().isNumeric()) {
             return;
         }
-        qv = CoreTools.quantiles(var, qp).values();
+        qv = Quantiles.of(var, qp).values();
 
         // first interval
 

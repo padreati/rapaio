@@ -25,13 +25,13 @@
 package rapaio.core;
 
 import org.junit.Test;
+import rapaio.core.distributions.DUniform;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
 import rapaio.data.VarDouble;
 
 import static org.junit.Assert.*;
-import static rapaio.core.CoreTools.distDUnif;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -103,7 +103,7 @@ public class SamplingToolsTest {
         for (double f : freq) {
             System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
         }
-        KSTestOneSample.from(v, distDUnif(0, 9)).printSummary();
+        KSTestOneSample.from(v, new DUniform(0, 9)).printSummary();
         System.out.println();
     }
 }

@@ -327,7 +327,7 @@ public class Summary {
         TextTable tt1 = TextTable.newEmpty(2, 5).withHeaderRows(1);
 
         String[] headers1 = new String[] {"Min", "1Q", "Median", "3Q","Max"};
-        double[] values1 = Quantiles.from(var, 0, 0.25, 0.5, 0.75, 1).values();
+        double[] values1 = Quantiles.of(var, 0, 0.25, 0.5, 0.75, 1).values();
         for (int i = 0; i < 5; i++) {
             tt1.set(0, i, headers1[i], 1);
             tt1.set(1, i, WS.formatFlex(values1[i]), -1);

@@ -325,7 +325,7 @@ public class RTree extends AbstractRegression {
 
         node.setLeaf(true);
         node.setValue(regressionLoss.findWeightedMinimum(df, firstTargetName(), weights));
-        node.setWeight(Sum.from(weights).value());
+        node.setWeight(Sum.of(weights).value());
 
         if (node.weight() == 0) {
             node.setValue(node.getParent() != null ? node.getParent().value() : Double.NaN);

@@ -48,7 +48,7 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class GeometricMean implements Printable {
 
-    public static GeometricMean from(Var var) {
+    public static GeometricMean of(Var var) {
         return new GeometricMean(var);
     }
 

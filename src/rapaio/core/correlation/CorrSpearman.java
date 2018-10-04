@@ -55,11 +55,11 @@ public class CorrSpearman implements Correlation, Printable {
 
     private static final long serialVersionUID = -270091303091388587L;
 
-    public static CorrSpearman from(Frame df) {
+    public static CorrSpearman of(Frame df) {
         return new CorrSpearman(df.varStream().toArray(Var[]::new));
     }
 
-    public static CorrSpearman from(Var... vars) {
+    public static CorrSpearman of(Var... vars) {
         return new CorrSpearman(vars);
     }
 
@@ -121,7 +121,7 @@ public class CorrSpearman implements Correlation, Printable {
         }
 
         // compute Pearson on ranks
-        return CorrPearson.from(ranks).matrix();
+        return CorrPearson.of(ranks).matrix();
     }
 
     @Override

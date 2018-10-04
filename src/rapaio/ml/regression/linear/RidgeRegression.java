@@ -168,11 +168,11 @@ public class RidgeRegression extends AbstractLinearRegression {
                 inputSd.put(INTERCEPT, 1.0);
                 continue;
             }
-            inputMean.put(inputName, centering ? Mean.from(df.rvar(inputName)).value() : 0);
-            inputSd.put(inputName, scaling ? Variance.from(df.rvar(inputName)).sdValue() : 1);
+            inputMean.put(inputName, centering ? Mean.of(df.rvar(inputName)).value() : 0);
+            inputSd.put(inputName, scaling ? Variance.of(df.rvar(inputName)).sdValue() : 1);
         }
         for (String targetName : targetNames) {
-            targetMean.put(targetName, centering ? Mean.from(df.rvar(targetName)).value() : 0);
+            targetMean.put(targetName, centering ? Mean.of(df.rvar(targetName)).value() : 0);
         }
 
         String[] selNames = Arrays.copyOfRange(inputNames, intercept ? 1 : 0, inputNames.length);

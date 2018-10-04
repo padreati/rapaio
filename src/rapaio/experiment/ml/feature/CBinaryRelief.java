@@ -105,8 +105,8 @@ public class CBinaryRelief {
                 case DOUBLE:
                 case INT:
                     numeric[i] = true;
-                    double min = Minimum.from(v).value();
-                    double max = Maximum.from(v).value();
+                    double min = Minimum.of(v).value();
+                    double max = Maximum.of(v).value();
                     for (int j = 0; j < df.rowCount(); j++) {
                         if (v.isMissing(j)) {
                             x.set(j, i, Double.NaN);

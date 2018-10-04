@@ -74,7 +74,7 @@ public class MeshGrid1D implements Serializable {
     }
 
     public double[] quantiles(double... qs) {
-        return Quantiles.from(grid, qs).values();
+        return Quantiles.of(grid, qs).values();
     }
 
     public void fillWithFunction(BiFunction<Double, Double, Double> f) {

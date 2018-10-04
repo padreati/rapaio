@@ -25,8 +25,8 @@
 package rapaio.core.distributions;
 
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
+import rapaio.core.stat.Sum;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
@@ -54,15 +54,15 @@ public class BernoulliTest {
         Var x50 = b50.sample(N);
         Var x10 = b10.sample(N);
 
-        System.out.println(CoreTools.sum(x90).value()/N);
-        System.out.println(CoreTools.sum(x80).value()/N);
-        System.out.println(CoreTools.sum(x50).value()/N);
-        System.out.println(CoreTools.sum(x10).value()/N);
+        System.out.println(Sum.of(x90).value()/N);
+        System.out.println(Sum.of(x80).value()/N);
+        System.out.println(Sum.of(x50).value()/N);
+        System.out.println(Sum.of(x10).value()/N);
 
-        assertEquals(9024, CoreTools.sum(x90).value(), TOL);
-        assertEquals(8075, CoreTools.sum(x80).value(), TOL);
-        assertEquals(5045, CoreTools.sum(x50).value(), TOL);
-        assertEquals(997, CoreTools.sum(x10).value(), TOL);
+        assertEquals(9024, Sum.of(x90).value(), TOL);
+        assertEquals(8075, Sum.of(x80).value(), TOL);
+        assertEquals(5045, Sum.of(x50).value(), TOL);
+        assertEquals(997, Sum.of(x10).value(), TOL);
 
         assertEquals(true, b90.discrete());
         assertEquals("Ber(p=0.9)", b90.name());

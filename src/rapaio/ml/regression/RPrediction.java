@@ -27,7 +27,7 @@
 
 package rapaio.ml.regression;
 
-import rapaio.core.CoreTools;
+import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -204,7 +204,7 @@ public class RPrediction implements Printable {
                     residuals.get(target).setDouble(i, df.getDouble(i, target) - fit(target).getDouble(i));
                 }
 
-                double mu = CoreTools.mean(df.rvar(target)).value();
+                double mu = Mean.of(df.rvar(target)).value();
                 double tssValue = 0;
                 double essValue = 0;
                 double rssValue = 0;

@@ -28,9 +28,10 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.StudentT;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 
-import static rapaio.core.CoreTools.*;
 import static rapaio.sys.WS.formatFlex;
 
 /**
@@ -281,12 +282,12 @@ public class TTestTwoSamples implements HTest {
             return;
         }
 
-        this.xSampleMean = mean(xComplete).value();
+        this.xSampleMean = Mean.of(xComplete).value();
         this.xSampleSize = xComplete.rowCount();
-        this.xSampleSd = variance(xComplete).sdValue();
-        this.ySampleMean = mean(yComplete).value();
+        this.xSampleSd = Variance.of(xComplete).sdValue();
+        this.ySampleMean = Mean.of(yComplete).value();
         this.ySampleSize = yComplete.rowCount();
-        this.ySampleSd = variance(yComplete).sdValue();
+        this.ySampleSd = Variance.of(yComplete).sdValue();
 
         this.sampleMean = xSampleMean - ySampleMean;
 

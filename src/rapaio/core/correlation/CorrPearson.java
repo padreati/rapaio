@@ -53,11 +53,11 @@ public class CorrPearson implements Correlation, Printable {
 
     private static final long serialVersionUID = -7342261109217205843L;
 
-    public static CorrPearson from(Frame df) {
+    public static CorrPearson of(Frame df) {
         return new CorrPearson(df);
     }
 
-    public static CorrPearson from(Var... vars) {
+    public static CorrPearson of(Var... vars) {
         return new CorrPearson(vars);
     }
 
@@ -89,10 +89,10 @@ public class CorrPearson implements Correlation, Printable {
         Mapping map = Mapping.wrap(IntStream.range(0, len)
                 .filter(i -> !(x.isMissing(i) || y.isMissing(i)))
                 .toArray());
-        double xMean = Mean.from(x.mapRows(map)).value();
-        double yMean = Mean.from(y.mapRows(map)).value();
+        double xMean = Mean.of(x.mapRows(map)).value();
+        double yMean = Mean.of(y.mapRows(map)).value();
 
-        double sdp = Variance.from(x.mapRows(map)).sdValue() * Variance.from(y.mapRows(map)).sdValue();
+        double sdp = Variance.of(x.mapRows(map)).sdValue() * Variance.of(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
             sum += ((x.getDouble(pos) - xMean) * (y.getDouble(pos) - yMean));
