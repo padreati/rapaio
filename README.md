@@ -8,18 +8,97 @@ Statistics, data mining and machine learning toolbox in Java.
 
 ![codecov.io](https://codecov.io/gh/padreati/rapaio/branch/master/graphs/tree.svg)
 
-**Rapaio Manual** is published on [gitbooks.com](https://www.gitbook.com/book/aureliantutuianu/rapaio-manual/details).
-Using the previous link you can select the format of manual. To read it directly online you can use this direct link:
-[Rapaio Manual - read on-line](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/).
+**Rapaio Manual** is now published in this repository in the form of IPython notebooks format. Please inspect the notebooks folder 
+of this repository.
 
 The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
 Acknowledgements
 ================
 
-Many thanks to ej-technologies GmbH for providing an open source license for their [Java Profiler](http://www.ej-technologies.com/products/jprofiler/overview.html)
-and to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
+Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
 
+
+**CURRENT STATE OF THE CODE**
+
+Currently the code can be classified into three categories of code maturity:
+
+* __Definitive__ - This category includes all the code which has a stable API and it was covered carefully with tests, 
+usually with a percentage over 95%
+* __Stable__ - This category includes all the code which is stable but it is not yet covered properly at a production 
+required level.
+* __Experimental__ - All the code found under the package `rapaio.experimental`. This includes drafts and untested code, 
+which can be used, but production tools cannot rely on this code. Usually, when code migrates outside the experimental 
+package, API can change and sometimes even the philosophy behind the implementation.
+
+
+Definitive Features
+====================
+
+**Data structures**
+
+* Variables and frames. There are 3 flavors of variables and frames: solid, mapped or bind. Access
+using streams is also available on variables and also on data frames.
+
+**Frame Filters**
+
+* FJitter - add jitter to data according with a noise distribution
+* FIntercept - add an intercept variable to a given data frame
+* FMapVars - select some variables according with a VRange pattern
+* FRemoveVars - removes some variables according with a VRange pattern
+* FStandardize - standardize variables from a given data frame
+* FRandomProjection - project a data frame onto random projections
+* FQuantileDiscrete - splits numeric variables into nominal categories based on quantile intervals
+* FOneHotEncoding - encodes nominal variables into multiple 0/1 variables
+* FApplyDouble - apply a function on the double values of variables
+* FFillNaDouble - apply a given fill value over all missing values
+* FRetainTypes - retain only variables of given types
+* FRefSort - sort a data frame based on reference comparators
+* FToDouble - convert variables to double
+    
+**Var filters**
+
+* VApply - apply a function over the stream spots
+* VApplyDouble - apply a function over the double values
+* VApplyInt - updates a variable using a lambda on int value
+* VApplyLabel - updates a variable using a lambda on label value
+* VCumSum - builds a numeric vector with a cumulative sum
+* VJitter - adds noise to a given numeric vector according with a noise distribution
+* VQUantileDiscrete - converts a numerical variable into a nominal based on quantile intervals
+* VRefSort - sorts a variable according with a given set of row comparators
+* VShuffle - shuffles values from a variable
+* VSort - sorts a variable according with default comparator
+* VStandardize - standardize values from a given numeric variable
+* VToInt - transforms a variable into an int type using a lambda
+* VToDouble - transforms a variable into double using a lambda
+* VTransformBoxCox - transform a variable with BoxCox transform
+* VTransformPower - transform a variable with power transform
+
+**Correlations**
+
+* Pearson product-moment coefficient
+* Spearman's rank correlation coefficient
+
+**Hypothesis Testing**
+
+* z test
+    * one sample test for testing the sample mean
+    * two unpaired samples test for testing difference of the sample means
+    * two paired samples test for testing sample mean of the differences
+* t test
+    * one sample test for testing the sample mean
+    * two unpaired samples t test with same variance
+    * two unpaired samples Welch t test with different variances
+    * two paired samples test for testing sample mean of differences
+* Kolmogorov Smirnoff KS test
+    * one sample test for testing if a sample belongs to a distribution
+    * two samples test for testing if both samples comes from the same distribution
+* Pearson Chi-Square tests
+    * goodness of fit 
+    * independence test
+    * conditional independence test
+* Anderson-Darling goodness of fit
+    * normality test
 
 Stable Features
 ====================
@@ -38,10 +117,6 @@ If there are no notes it means the feature is considered to be fully implemented
 * DTable
 * Distance Matrix
 
-**Correlations**
-
-* Pearson product-moment coefficient
-* Spearman's rank correlation coefficient
 
 **Distributions**
 
@@ -64,26 +139,6 @@ If there are no notes it means the feature is considered to be fully implemented
     * offers utility methods for bootstraps, simple random, stratified sampling
 * Samplers used in machine learning algorithms
 
-**Hypothesis Testing**
-
-* z test
-    * one sample test for testing the sample mean
-    * two unpaired samples test for testing difference of the sample means
-    * two paired samples test for testing sample mean of the differences
-* t test
-    * one sample test for testing the sample mean
-    * two unpaired samples t test with same variance
-    * two unpaired samples Welch t test with different variances
-    * two paired samples test for testing sample mean of differences
-* Kolmogorov Smirnoff KS test
-    * one sample test for testing if a sample belongs to a distribution
-    * two samples test for testing if both samples comes from the same distribution
-* Pearson Chi-Square tests
-    * goodness of fit 
-    * independence test
-    * conditional independence test
-* Anderson-Darling goodness of fit
-    * normality test
 
 
 **Frame Filters**
