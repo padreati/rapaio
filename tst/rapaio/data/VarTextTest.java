@@ -152,27 +152,6 @@ public class VarTextTest {
     }
 
     @Test
-    public void testGetBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).getBoolean(0);
-    }
-
-    @Test
-    public void testSetBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).setBoolean(0, true);
-    }
-
-    @Test
-    public void testAddBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).addBoolean(true);
-    }
-
-    @Test
     public void testSetLevels() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("This operation is not available for text variables");

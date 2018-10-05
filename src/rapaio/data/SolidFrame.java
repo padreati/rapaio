@@ -319,26 +319,6 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean getBoolean(int row, int col) {
-        return vars[col].getBoolean(row);
-    }
-
-    @Override
-    public boolean getBoolean(int row, String varName) {
-        return vars[varIndex(varName)].getBoolean(row);
-    }
-
-    @Override
-    public void setBoolean(int row, int col, boolean value) {
-        vars[col].setBoolean(row, value);
-    }
-
-    @Override
-    public void setBoolean(int row, String varName, boolean value) {
-        vars[varIndex(varName)].setBoolean(row, value);
-    }
-
-    @Override
     public boolean isMissing(int row, int col) {
         return vars[col].isMissing(row);
     }

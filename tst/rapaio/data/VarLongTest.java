@@ -187,20 +187,6 @@ public class VarLongTest {
         x.addInt(10);
         assertEquals(10, x.getLong(x.rowCount() - 1), 10e-10);
 
-        VarLong b = VarLong.empty();
-        b.addBoolean(true);
-        b.addBoolean(false);
-
-        assertTrue(b.getBoolean(0));
-        assertFalse(b.getBoolean(1));
-
-        assertEquals(1, b.getLong(0), 10e-10);
-        assertEquals(0, b.getLong(1), 10e-10);
-
-        b.setBoolean(1, true);
-        assertEquals(1, b.getLong(1), 10e-10);
-        assertTrue(b.getBoolean(1));
-
         VarLong s = VarLong.empty();
         s.addLong(1);
         s.addLong(-100000000000L);

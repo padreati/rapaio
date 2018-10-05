@@ -256,23 +256,6 @@ public class VarIntTest {
     }
 
     @Test
-    public void testBinary() {
-        VarInt x = VarInt.empty();
-        x.addBoolean(true);
-        x.addBoolean(false);
-        x.addMissing();
-        x.setBoolean(2, true);
-
-        assertEquals(1, x.getInt(0));
-        assertEquals(0, x.getInt(1));
-        assertEquals(1, x.getInt(2));
-
-        assertTrue(x.getBoolean(0));
-        assertFalse(x.getBoolean(1));
-        assertTrue(x.getBoolean(2));
-    }
-
-    @Test
     public void testDouble() {
 
         double[] values = new double[] {0, 1, Double.NaN, 3, 4, Double.NaN, 6, 7, -8, -100};

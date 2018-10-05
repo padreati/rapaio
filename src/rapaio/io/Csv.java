@@ -56,7 +56,7 @@ import static java.util.stream.Collectors.toSet;
 public class Csv {
 
     private static VType[] DEFAULT_TYPES = new VType[]{
-            VType.BOOLEAN, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+            VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
 
     private boolean trimSpaces = true;
     private boolean header = true;
@@ -65,7 +65,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VType[] defaultTypes = new VType[]{VType.BOOLEAN, VType.DOUBLE, VType.NOMINAL};
+    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;

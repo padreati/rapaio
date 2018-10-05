@@ -374,26 +374,6 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean getBoolean(int row, int col) {
-        return vars.get(col).getBoolean(row);
-    }
-
-    @Override
-    public boolean getBoolean(int row, String varName) {
-        return vars.get(varIndex(varName)).getBoolean(row);
-    }
-
-    @Override
-    public void setBoolean(int row, int col, boolean value) {
-        vars.get(col).setBoolean(row, value);
-    }
-
-    @Override
-    public void setBoolean(int row, String varName, boolean value) {
-        vars.get(varIndex(varName)).setBoolean(row, value);
-    }
-
-    @Override
     public boolean isMissing(int row, int col) {
         return vars.get(col).isMissing(row);
     }

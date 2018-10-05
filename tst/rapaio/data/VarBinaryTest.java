@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import rapaio.core.stat.Mean;
-import rapaio.data.stream.VSpot;
 
 import java.util.List;
 
@@ -37,61 +36,61 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class VarBooleanTest {
+public class VarBinaryTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testEmpty() {
-        VarBoolean b = VarBoolean.empty();
-        b.addBoolean(true);
-        b.addBoolean(true);
-        b.addBoolean(false);
+        VarBinary b = VarBinary.empty();
+        b.addInt(1);
+        b.addInt(1);
+        b.addInt(0);
         b.addMissing();
         b.addMissing();
-        b.addBoolean(true);
+        b.addInt(1);
 
-        assertEquals(1, b.stream().complete().filter(s -> !s.getBoolean()).count());
-        assertEquals(3, b.stream().complete().filter(VSpot::getBoolean).count());
+        assertEquals(1, b.stream().complete().filter(s -> s.getInt() != 1).count());
+        assertEquals(3, b.stream().complete().filter(s -> s.getInt() == 1).count());
         assertEquals(2, b.stream().incomplete().count());
 
-        assertEquals(10, VarBoolean.empty(10).stream().incomplete().count());
-        assertEquals(0, VarBoolean.empty().stream().incomplete().count());
+        assertEquals(10, VarBinary.empty(10).stream().incomplete().count());
+        assertEquals(0, VarBinary.empty().stream().incomplete().count());
     }
 
     @Test
     public void testFill() {
-        VarBoolean b = VarBoolean.fill(10, false);
+        VarBinary b = VarBinary.fill(10, 0);
 
         assertEquals(0, b.stream().incomplete().count());
-        assertEquals(10, b.stream().complete().filter(s -> !s.getBoolean()).count());
-        assertEquals(0, b.stream().complete().filter(VSpot::getBoolean).count());
+        assertEquals(10, b.stream().complete().filter(s -> s.getInt() != 1).count());
+        assertEquals(0, b.stream().complete().filter(s -> s.getInt() == 1).count());
 
-        b = VarBoolean.fill(10, true);
+        b = VarBinary.fill(10, 1);
 
         assertEquals(0, b.stream().incomplete().count());
-        assertEquals(0, b.stream().complete().filter(s -> !s.getBoolean()).count());
-        assertEquals(10, b.stream().complete().filter(VSpot::getBoolean).count());
+        assertEquals(0, b.stream().complete().filter(s -> s.getInt() != 1).count());
+        assertEquals(10, b.stream().complete().filter(s -> s.getInt() == 1).count());
     }
 
     @Test
     public void testNumericStats() {
-        VarBoolean b = VarBoolean.copy(1, 1, 0, 0, 1, 0, 1, 1);
+        VarBinary b = VarBinary.copy(1, 1, 0, 0, 1, 0, 1, 1);
         b.printSummary();
         assertEquals(0.625, Mean.of(b).value(), 10e-10);
     }
 
     @Test
     public void testMissingValues() {
-        VarBoolean bin = VarBoolean.copy(1, 0, 1, 0, -1, -1, 1, 0);
+        VarBinary bin = VarBinary.copy(1, 0, 1, 0, -1, -1, 1, 0);
         assertEquals(8, bin.rowCount());
         assertTrue(bin.isMissing(4));
         assertFalse(bin.isMissing(7));
 
-        bin = VarBoolean.empty();
+        bin = VarBinary.empty();
         bin.addMissing();
-        bin.addBoolean(true);
+        bin.addInt(1);
         bin.setMissing(1);
 
         assertEquals(2, bin.rowCount());
@@ -101,22 +100,22 @@ public class VarBooleanTest {
 
     @Test
     public void testBuilders() {
-        VarBoolean bin = VarBoolean.copy(true, true, false, false);
+        VarBinary bin = VarBinary.copy(1, 1, 0, 0);
         assertEquals(4, bin.rowCount());
-        assertTrue(bin.getBoolean(0));
-        assertFalse(bin.getBoolean(3));
+        assertEquals(1, bin.getInt(0));
+        assertEquals(0, bin.getInt(3));
 
-        VarBoolean bin2 = VarBoolean.fromIndex(100, i -> i % 3 == 0 ? -1 : i % 3 == 1 ? 0 : 1);
+        VarBinary bin2 = VarBinary.fromIndex(100, i -> i % 3 == 0 ? -1 : i % 3 == 1 ? 0 : 1);
         for (int i = 0; i < bin2.rowCount(); i++) {
             switch (i % 3) {
                 case 0:
                     assertTrue(bin2.isMissing(i));
                     break;
                 case 1:
-                    assertFalse(bin2.getBoolean(i));
+                    assertEquals(0, bin2.getInt(i));
                     break;
                 default:
-                    assertTrue(bin2.getBoolean(i));
+                    assertEquals(1, bin2.getInt(i));
             }
         }
 
@@ -134,15 +133,15 @@ public class VarBooleanTest {
             }
         }
 
-        VarBoolean bin4 = VarBoolean.from(100, row -> array[row]);
+        VarBinary bin4 = VarBinary.from(100, row -> array[row]);
         assertTrue(bin2.deepEquals(bin4));
 
-        assertTrue(VarBoolean.empty(10).deepEquals(bin4.newInstance(10)));
+        assertTrue(VarBinary.empty(10).deepEquals(bin4.newInstance(10)));
     }
 
     @Test
     public void testOther() {
-        VarBoolean bin = VarBoolean.empty();
+        VarBinary bin = VarBinary.empty();
         bin.addDouble(1);
         bin.setDouble(0, 0);
         bin.addInt(1);
@@ -151,54 +150,40 @@ public class VarBooleanTest {
         assertEquals(0, bin.getDouble(0), 10e-10);
         assertEquals(0, bin.getInt(1));
 
-        VarBoolean copy = bin.solidCopy();
-        assertFalse(copy.getBoolean(0));
-        assertFalse(copy.getBoolean(1));
+        VarBinary copy = bin.solidCopy();
+        assertEquals(0, copy.getInt(0));
+        assertEquals(0, copy.getInt(1));
         assertEquals(2, copy.rowCount());
 
         copy.removeRow(0);
         assertEquals(1, copy.rowCount());
-        assertFalse(copy.getBoolean(0));
+        assertEquals(0, copy.getInt(0));
 
         copy.clearRows();
         assertEquals(0, copy.rowCount());
 
         copy.removeRow(10);
 
-        VarBoolean bin1 = VarBoolean.fill(10, true);
+        VarBinary bin1 = VarBinary.fill(10, 1);
         bin1.addRows(10);
         assertEquals(20, bin1.rowCount());
         for (int i = 0; i < 10; i++) {
-            assertTrue(bin1.getBoolean(i));
-            assertTrue(bin1.isMissing(i+10));
+            assertEquals(1, bin1.getInt(i));
+            assertTrue(bin1.isMissing(i + 10));
         }
-    }
-
-    @Test
-    public void testAddInvalidDouble() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value 2.000000 is not a valid binary value");
-        VarBoolean.empty().addDouble(2);
-    }
-
-    @Test
-    public void testSetInvalidDouble() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value 2.000000 is not a valid binary value");
-        VarBoolean.empty(1).setDouble(0, 2);
     }
 
     @Test
     public void testDouble() {
 
-        VarBoolean bin = VarBoolean.empty();
+        VarBinary bin = VarBinary.empty();
         bin.addDouble(1);
         bin.addDouble(0);
         bin.addDouble(-1);
 
         assertEquals(3, bin.rowCount());
-        assertTrue(bin.getBoolean(0));
-        assertFalse(bin.getBoolean(1));
+        assertEquals(1, bin.getInt(0));
+        assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
 
         bin.setDouble(0, -1);
@@ -206,72 +191,44 @@ public class VarBooleanTest {
         bin.setDouble(2, 1);
 
         assertTrue(bin.isMissing(0));
-        assertFalse(bin.getBoolean(1));
-        assertTrue(bin.getBoolean(2));
-    }
-
-    @Test
-    public void testAddInvalidInt() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value 2 is not a valid binary value");
-        VarBoolean.empty().addInt(2);
-    }
-
-    @Test
-    public void testSetInvalidInt() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value 2 is not a valid binary value");
-        VarBoolean.empty(1).setInt(0, 2);
+        assertEquals(0, bin.getInt(1));
+        assertEquals(1, bin.getInt(2));
     }
 
     @Test
     public void testInt() {
 
-        VarBoolean bin = VarBoolean.empty();
+        VarBinary bin = VarBinary.empty();
         bin.addInt(1);
         bin.addInt(0);
         bin.addInt(-1);
 
         assertEquals(3, bin.rowCount());
-        assertTrue(bin.getBoolean(0));
-        assertFalse(bin.getBoolean(1));
+        assertEquals(1, bin.getInt(0));
+        assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
-        assertEquals(-1, bin.getInt(2));
+        assertEquals(Integer.MIN_VALUE, bin.getInt(2));
 
         bin.setInt(0, -1);
         bin.setInt(1, 0);
         bin.setInt(2, 1);
 
         assertTrue(bin.isMissing(0));
-        assertFalse(bin.getBoolean(1));
-        assertTrue(bin.getBoolean(2));
-    }
-
-    @Test
-    public void testAddInvalidLong() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This value 2 is not a valid binary value");
-        VarBoolean.empty().addLong(2);
-    }
-
-    @Test
-    public void testSetInvalidLong() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This value 2 is not a valid binary value");
-        VarBoolean.empty(0).setLong(0, 2);
+        assertEquals(0, bin.getInt(1));
+        assertEquals(1, bin.getInt(2));
     }
 
     @Test
     public void testLong() {
 
-        VarBoolean bin = VarBoolean.empty();
+        VarBinary bin = VarBinary.empty();
         bin.addLong(1);
         bin.addLong(0);
         bin.addLong(-1);
 
         assertEquals(3, bin.rowCount());
-        assertTrue(bin.getBoolean(0));
-        assertFalse(bin.getBoolean(1));
+        assertEquals(1, bin.getInt(0));
+        assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
 
         bin.setLong(0, -1);
@@ -279,33 +236,33 @@ public class VarBooleanTest {
         bin.setLong(2, 1);
 
         assertTrue(bin.isMissing(0));
-        assertFalse(bin.getBoolean(1));
-        assertTrue(bin.getBoolean(2));
+        assertEquals(0, bin.getInt(1));
+        assertEquals(1, bin.getInt(2));
 
-        assertEquals(1L, bin.getLong(0));
+        assertEquals(Long.MIN_VALUE, bin.getLong(0));
     }
 
     @Test
     public void testAddInvalidLabel() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("The value x could not be converted to a binary value");
-        VarBoolean.empty().addLabel("x");
+        VarBinary.empty().addLabel("x");
     }
 
     @Test
     public void testSetInvalidLabel() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("The value x could not be converted to a binary value");
-        VarBoolean.empty(0).setLabel(0, "x");
+        VarBinary.empty(0).setLabel(0, "x");
     }
 
     @Test
     public void testLabel() {
 
-        String[] labels = new String[] {"true","false","true","?"};
+        String[] labels = new String[]{"1", "0", "1", "?"};
 
-        VarBoolean bin = VarBoolean.empty();
-        for(String label : labels) {
+        VarBinary bin = VarBinary.empty();
+        for (String label : labels) {
             bin.addLabel(label);
         }
 
@@ -322,7 +279,7 @@ public class VarBooleanTest {
             assertEquals(labels[i], bin.getLabel(i));
         }
 
-        List<String> levels = VarBoolean.empty().levels();
+        List<String> levels = VarBinary.empty().levels();
         assertEquals(3, levels.size());
         assertEquals("?", levels.get(0));
         assertEquals("true", levels.get(1));
@@ -333,6 +290,6 @@ public class VarBooleanTest {
     public void testIllegalSetLevels() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Operation not implemented on binary variables");
-        VarBoolean.empty().setLevels("?", "1");
+        VarBinary.empty().setLevels("?", "1");
     }
 }

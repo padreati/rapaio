@@ -160,21 +160,6 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        return source.getBoolean(mapping.get(row));
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        source.setBoolean(mapping.get(row), value);
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        throw nowAllowedException();
-    }
-
-    @Override
     public long getLong(int row) {
         return source.getLong(mapping.get(row));
     }

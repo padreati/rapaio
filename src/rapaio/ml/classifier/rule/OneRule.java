@@ -86,7 +86,7 @@ public class OneRule extends AbstractClassifier {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG)
+                .withInputTypes(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG)
                 .withTargetTypes(VType.NOMINAL)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);
@@ -98,7 +98,7 @@ public class OneRule extends AbstractClassifier {
         for (String testCol : inputNames()) {
             RuleSet ruleSet;
             switch (df.rvar(testCol).type()) {
-                case BOOLEAN:
+                case BINARY:
                 case INT:
                 case DOUBLE:
                 case LONG:
@@ -141,7 +141,7 @@ public class OneRule extends AbstractClassifier {
         }
         String testVar = bestRuleSet.getVarName();
         switch (df.rvar(testVar).type()) {
-            case BOOLEAN:
+            case BINARY:
             case INT:
             case DOUBLE:
             case LONG:

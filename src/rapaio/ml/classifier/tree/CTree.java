@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VType;
 import rapaio.data.filter.FFilter;
@@ -93,7 +93,7 @@ public class CTree extends AbstractClassifier {
     // static builders
 
     public CTree() {
-        testMap.put(VType.BOOLEAN, CTreeTest.BinaryBinary);
+        testMap.put(VType.BINARY, CTreeTest.BinaryBinary);
         testMap.put(VType.INT, CTreeTest.NumericBinary);
         testMap.put(VType.DOUBLE, CTreeTest.NumericBinary);
         testMap.put(VType.NOMINAL, CTreeTest.NominalBinary);
@@ -290,7 +290,7 @@ public class CTree extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BOOLEAN)
+                .withInputTypes(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BINARY)
                 .withInputCount(1, 1_000_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VType.NOMINAL)
@@ -471,10 +471,10 @@ public class CTree extends AbstractClassifier {
 
         List<Var> varList = new ArrayList<>();
         for (int i = 0; i < indexMap.size(); i++) {
-            varList.add(VarBoolean.fill(df.rowCount(), false).withName(varPrefix + i));
+            varList.add(VarBinary.fill(df.rowCount(), 0).withName(varPrefix + i));
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            varList.get(indexMap.get(predictPointNodeIndex(root, df, i))).setBoolean(i, true);
+            varList.get(indexMap.get(predictPointNodeIndex(root, df, i))).setInt(i, 1);
         }
         return SolidFrame.byVars(varList);
     }

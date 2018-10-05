@@ -106,7 +106,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
-                .withInputTypes(VType.BOOLEAN, VType.INT, VType.NOMINAL, VType.DOUBLE)
+                .withInputTypes(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VType.NOMINAL)

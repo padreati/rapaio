@@ -248,27 +248,6 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testInvalidGetBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").getBoolean(0);
-    }
-
-    @Test
-    public void testInvalidAddBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").addBoolean(true);
-    }
-
-    @Test
-    public void testInvalidSetBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").setBoolean(0, true);
-    }
-
-    @Test
     public void testInvalidGetLong() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("This operation is not available for nominal variables");

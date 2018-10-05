@@ -259,26 +259,6 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean getBoolean(int row, int col) {
-        return source.getBoolean(mapping.get(row), colIndexes[col]);
-    }
-
-    @Override
-    public boolean getBoolean(int row, String varName) {
-        return source.getBoolean(mapping.get(row), varName);
-    }
-
-    @Override
-    public void setBoolean(int row, int col, boolean value) {
-        source.setBoolean(mapping.get(row), colIndexes[col], value);
-    }
-
-    @Override
-    public void setBoolean(int row, String varName, boolean value) {
-        source.setBoolean(mapping.get(row), varName, value);
-    }
-
-    @Override
     public boolean isMissing(int row, int col) {
         return source.isMissing(mapping.get(row), colIndexes[col]);
     }

@@ -86,12 +86,12 @@ public class AbstractVarTest {
 
     @Test
     public void soliBinaryCopyTest() {
-        Var main = VarBoolean.copy(true, false, false, true);
+        Var main = VarBinary.copy(1, 0, 0, 1);
         main.addMissing();
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
         assertEquals(main.rowCount(), copy.rowCount());
         for (int i = 0; i < main.rowCount(); i++) {
-            assertEquals(main.getBoolean(i), copy.getBoolean(i));
+            assertEquals(main.getInt(i), copy.getInt(i));
         }
     }
 

@@ -131,22 +131,6 @@ public class VSpot implements Comparable<VSpot>, Serializable {
     }
 
     /**
-     * @return binary value of the observation
-     */
-    public boolean getBoolean() {
-        return var.getBoolean(row);
-    }
-
-    /**
-     * Assigns binary value to the current observation value
-     *
-     * @param value binary value
-     */
-    public void setBoolean(boolean value) {
-        var.setBoolean(row, value);
-    }
-
-    /**
      * @return stamp value of the observation
      */
     public long getLong() {
@@ -167,12 +151,11 @@ public class VSpot implements Comparable<VSpot>, Serializable {
         switch (var.type()) {
             case DOUBLE:
                 return Double.compare(getDouble(), o.getDouble());
+            case BINARY:
             case INT:
                 return Integer.compare(getInt(), o.getInt());
             case LONG:
                 return Long.compare(getLong(), o.getLong());
-            case BOOLEAN:
-                return Boolean.compare(getBoolean(), o.getBoolean());
             default:
                 return getLabel().compareTo(o.getLabel());
         }

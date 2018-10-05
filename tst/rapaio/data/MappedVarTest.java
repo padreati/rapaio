@@ -110,14 +110,14 @@ public class MappedVarTest {
     public void testInvalidAddBoolean() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Operation not available on mapped vectors");
-        VarBoolean.fill(1, true).mapRows(0).addBoolean(true);
+        VarBinary.fill(1, 1).mapRows(0).addInt(1);
     }
 
     @Test
     public void testInvalidAddMissing() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Operation not available on mapped vectors");
-        VarBoolean.fill(1, true).mapRows(0).addMissing();
+        VarBinary.fill(1, 1).mapRows(0).addMissing();
     }
 
     @Test
@@ -137,14 +137,14 @@ public class MappedVarTest {
 
     @Test
     public void testMappedBinary() {
-        Var x = VarBoolean.copy(true, false, true).mapRows(0, 2);
+        Var x = VarBinary.copy(1, 0, 1).mapRows(0, 2);
         assertEquals(2, x.rowCount());
-        assertTrue(x.getBoolean(0));
-        assertTrue(x.getBoolean(1));
+        assertEquals(1, x.getInt(0));
+        assertEquals(1, x.getInt(1));
 
-        x.setBoolean(1, false);
-        assertTrue(x.getBoolean(0));
-        assertFalse(x.getBoolean(1));
+        x.setInt(1, 0);
+        assertEquals(1, x.getInt(0));
+        assertEquals(0, x.getInt(1));
     }
 
     @Test

@@ -31,7 +31,7 @@ import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
@@ -175,7 +175,7 @@ public class VSpotsTest {
             assertTrue(s1.getLong(i-1) <= s1.getLong(i));
         }
 
-        Var s4 = VarBoolean.from(100, row -> RandomSource.nextDouble() > 0.5)
+        Var s4 = VarBinary.from(100, row -> RandomSource.nextDouble() > 0.5)
                 .stream().sorted().toMappedVar();
         for (int i = 1; i < s1.rowCount(); i++) {
             assertTrue(s1.getInt(i-1) <= s1.getInt(i));
@@ -215,9 +215,6 @@ public class VSpotsTest {
 
         spot.setLabel("12");
         assertEquals("12.0", spot.getLabel());
-
-        spot.setBoolean(true);
-        assertTrue(spot.getBoolean());
 
         spot.setMissing();
         assertTrue(spot.isMissing());

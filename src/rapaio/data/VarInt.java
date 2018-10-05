@@ -328,21 +328,6 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        return getInt(row) == 1;
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        setInt(row, value ? 1 : 0);
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        addInt(value ? 1 : 0);
-    }
-
-    @Override
     public long getLong(int row) {
         return getInt(row);
     }

@@ -5,7 +5,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
 import rapaio.math.MTools;
@@ -72,7 +72,7 @@ public class RowPredicateTest {
     public void testBinaryPredicates() {
 
         int[] values = SamplingTools.sampleWR(2, 100);
-        SolidFrame df = SolidFrame.byVars(VarBoolean.from(values.length, row -> values[row] == 1).withName("x"));
+        SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).withName("x"));
 
         assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.frame())).count()
                 + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.frame())).count());

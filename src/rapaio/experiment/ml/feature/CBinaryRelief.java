@@ -116,13 +116,13 @@ public class CBinaryRelief {
                     }
                     break;
 
-                case BOOLEAN:
+                case BINARY:
                     numeric[i] = true;
                     for (int j = 0; j < df.rowCount(); j++) {
                         if (v.isMissing(j)) {
                             x.set(j, i, Double.NaN);
                         } else {
-                            x.set(j, i, v.getBoolean(j) ? 1 : 0);
+                            x.set(j, i, v.getInt(j));
                         }
                     }
                     break;

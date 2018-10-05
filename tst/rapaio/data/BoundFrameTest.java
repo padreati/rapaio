@@ -101,7 +101,7 @@ public class BoundFrameTest {
                 VarDouble.wrap(1, 2, 3, Double.NaN).withName("a"),
                 VarInt.wrap(1, 2, 3, Integer.MIN_VALUE).withName("b"),
                 VarLong.wrap(1, 2, 3, Long.MIN_VALUE).withName("c"),
-                VarBoolean.copy(1, 0, 1, -1).withName("d"),
+                VarBinary.copy(1, 0, 1, -1).withName("d"),
                 VarNominal.copy("x1", "x2", "x3", "?").withName("e")
         };
 
@@ -155,17 +155,17 @@ public class BoundFrameTest {
         Frame bound = BoundFrame.byRows(df1, df2);
         assertTrue(bound.deepEquals(source));
 
-        VType[] types = new VType[]{VType.BOOLEAN, VType.DOUBLE, VType.INT, VType.LONG, VType.NOMINAL};
+        VType[] types = new VType[]{VType.BINARY, VType.DOUBLE, VType.INT, VType.LONG, VType.NOMINAL};
         String[] names = new String[]{"boolean", "double", "int", "long", "nominal"};
         BiConsumer[] verifyIndex = new BiConsumer[]{
-                (i, j) -> assertEquals(source.getBoolean((int) i, (int) j), bound.getBoolean((int) i, (int) j)),
+                (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, (int) j), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLabel((int) i, (int) j), bound.getLabel((int) i, (int) j)),
         };
         BiConsumer[] verifyName = new BiConsumer[]{
-                (i, j) -> assertEquals(source.getBoolean((int) i, (int) j), bound.getBoolean((int) i, names[(int) j])),
+                (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, names[(int) j]), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
                 (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, names[(int) j])),
@@ -181,8 +181,8 @@ public class BoundFrameTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            bound.setBoolean(i, 0, true);
-            bound.setBoolean(i+10, "boolean", false);
+            bound.setInt(i, 0, 1);
+            bound.setInt(i+10, "boolean", 0);
             bound.setMissing(i+20, 0);
             bound.setMissing(i+30, "boolean");
 

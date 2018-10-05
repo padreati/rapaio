@@ -5,7 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import rapaio.data.Var;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
@@ -25,7 +25,7 @@ public class VToIntTest {
         Var nom1 = VarNominal.copy("1", "2", "1.2", "?", "3", "?", "4");
         Var nom2 = VarNominal.copy("1", "2", "1.2", "mimi", "3", "lulu", "3.2");
         Var idx1 = VarInt.copy(1, 2, 3, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4);
-        Var bin1 = VarBoolean.copy(1, 0, 1, -1, 1, -1, 0);
+        Var bin1 = VarBinary.copy(1, 0, 1, -1, 1, -1, 0);
 
         // by default transformer
 

@@ -174,21 +174,6 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        throw notImplemented();
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        throw notImplemented();
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        throw notImplemented();
-    }
-
-    @Override
     public long getLong(int row) {
         throw notImplemented();
     }

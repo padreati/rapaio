@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class VTypeTest {
 
     private VType[] types = new VType[]{
-            VType.BOOLEAN, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+            VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
 
     @Test
     public void testNewInstance() {
@@ -18,14 +18,14 @@ public class VTypeTest {
         VarDouble varDouble = VarDouble.empty();
         VarLong varLong = VarLong.empty();
         VarInt varInt = VarInt.empty();
-        VarBoolean varBoolean = VarBoolean.empty();
+        VarBinary varBinary = VarBinary.empty();
         VarNominal varNominal = VarNominal.empty();
         VarText varText = VarText.empty();
 
         assertTrue(varDouble.deepEquals(varDouble.type().newInstance()));
         assertTrue(varLong.deepEquals(varLong.type().newInstance()));
         assertTrue(varInt.deepEquals(varInt.type().newInstance()));
-        assertTrue(varBoolean.deepEquals(varBoolean.type().newInstance()));
+        assertTrue(varBinary.deepEquals(varBinary.type().newInstance()));
         assertTrue(varNominal.deepEquals(varNominal.type().newInstance()));
         assertTrue(varText.deepEquals(varText.type().newInstance()));
     }

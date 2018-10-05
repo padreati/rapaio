@@ -128,21 +128,21 @@ public class CsvTest {
         Frame df = new Csv()
                 .withQuotes(true)
                 .withHeader(true)
-                .withDefaultTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.NOMINAL)
+                .withDefaultTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
 
         assertEquals(7, df.rowCount());
 
         // x1 is binary
 
-        assertEquals(VType.BOOLEAN, df.rvar("x1").type());
-        assertEquals(false, df.getBoolean(0, "x1"));
-        assertEquals(true, df.getBoolean(1, "x1"));
-        assertEquals(false, df.getBoolean(2, "x1"));
-        assertEquals(true, df.getBoolean(3, "x1"));
-        assertEquals(true, df.isMissing(4, "x1"));
-        assertEquals(false, df.getBoolean(5, "x1"));
-        assertEquals(true, df.getBoolean(6, "x1"));
+        assertEquals(VType.BINARY, df.rvar("x1").type());
+        assertEquals(0, df.getInt(0, "x1"));
+        assertEquals(1, df.getInt(1, "x1"));
+        assertEquals(0, df.getInt(2, "x1"));
+        assertEquals(1, df.getInt(3, "x1"));
+        assertTrue(df.isMissing(4, "x1"));
+        assertEquals(0, df.getInt(5, "x1"));
+        assertEquals(1, df.getInt(6, "x1"));
 
         // x2 is index
 
@@ -151,7 +151,7 @@ public class CsvTest {
         assertEquals(1, df.getInt(1, "x2"));
         assertEquals(0, df.getInt(2, "x2"));
         assertEquals(1, df.getInt(3, "x2"));
-        assertEquals(true, df.isMissing(4, "x2"));
+        assertTrue(df.isMissing(4, "x2"));
         assertEquals(2, df.getInt(5, "x2"));
         assertEquals(3, df.getInt(6, "x2"));
 

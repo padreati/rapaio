@@ -420,21 +420,6 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        return getLong(row) == 1;
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        setLong(row, value ? 1 : 0);
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        addLong(value ? 1 : 0);
-    }
-
-    @Override
     public long getLong(int row) {
         return data[row];
     }

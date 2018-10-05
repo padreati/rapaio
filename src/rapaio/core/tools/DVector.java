@@ -150,7 +150,7 @@ public class DVector implements Printable, Serializable {
 
     private DVector(boolean useFirst, List<String> labels, Var var, Var weights) {
         this(useFirst, labels);
-        int off = var.type().equals(VType.BOOLEAN) ? 1 : 0;
+        int off = var.type().equals(VType.BINARY) ? 1 : 0;
         for (int i = 0; i < var.rowCount(); i++) {
             double w = weights == null ? 1 : weights.getDouble(i);
             values[var.getInt(i) + off] += w;

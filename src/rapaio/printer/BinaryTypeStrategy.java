@@ -31,8 +31,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 
 public class BinaryTypeStrategy implements TypeStrategy {
-	public void getVarSummary(Frame df, Var v,String[][] first, String[][] second, int th ){
-		first[th][0] = "0";
+    public void getVarSummary(Frame df, Var v, String[][] first, String[][] second, int th) {
+        first[th][0] = "0";
         first[th][1] = "1";
         first[th][2] = "NA's";
 
@@ -43,7 +43,7 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(j)) {
                 missing++;
             } else {
-                if (v.getBoolean(j))
+                if (v.getInt(j) == 1)
                     ones++;
                 else
                     zeros++;
@@ -52,11 +52,11 @@ public class BinaryTypeStrategy implements TypeStrategy {
         second[th][0] = String.valueOf(zeros);
         second[th][1] = String.valueOf(ones);
         second[th][2] = String.valueOf(missing);
-	}
+    }
 
-	@Override
-	public void getPrintSummary(Var v, String[] first, String[] second) {
-		first[0] = "0";
+    @Override
+    public void getPrintSummary(Var v, String[] first, String[] second) {
+        first[0] = "0";
         first[1] = "1";
         first[2] = "NA's";
 
@@ -67,7 +67,7 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(i)) {
                 missing++;
             } else {
-                if (v.getBoolean(i))
+                if (v.getInt(i) == 1)
                     ones++;
                 else
                     zeros++;
@@ -76,7 +76,7 @@ public class BinaryTypeStrategy implements TypeStrategy {
         second[0] = String.valueOf(zeros);
         second[1] = String.valueOf(ones);
         second[2] = String.valueOf(missing);
-	}
-	
+    }
+
 
 }

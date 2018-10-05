@@ -486,21 +486,6 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        return data[row] == 1.0;
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        data[row] = value ? 1 : 0;
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        addDouble(value ? 1 : 0);
-    }
-
-    @Override
     public long getLong(int row) {
         return (long) Math.rint(data[row]);
     }

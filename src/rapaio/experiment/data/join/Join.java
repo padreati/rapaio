@@ -286,9 +286,7 @@ public class Join {
             return;
         }
         switch (dst.type()) {
-            case BOOLEAN:
-                dst.addBoolean(src.getBoolean(row, varIndex));
-                return;
+            case BINARY:
             case INT:
                 dst.addInt(src.getInt(row, varIndex));
                 return;

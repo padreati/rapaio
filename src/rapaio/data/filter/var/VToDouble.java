@@ -112,7 +112,7 @@ public class VToDouble implements VFilter {
                 case DOUBLE:
                     return new TransformDouble(x -> x).apply(var);
                 case INT:
-                case BOOLEAN:
+                case BINARY:
                     return new TransformInt(x -> x).apply(var);
                 case NOMINAL:
                 case TEXT:

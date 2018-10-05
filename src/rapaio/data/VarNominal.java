@@ -331,21 +331,6 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        throw notImplementedException();
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        throw notImplementedException();
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        throw notImplementedException();
-    }
-
-    @Override
     public long getLong(int row) {
         throw notImplementedException();
     }

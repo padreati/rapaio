@@ -182,7 +182,7 @@ public class BoundVarTest {
     public void testInvalidAddBoolean() {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("This operation is not available for bound variable");
-        BoundVar.from(a, b, c).addBoolean(true);
+        BoundVar.from(a, b, c).addInt(1);
     }
 
     @Test
@@ -260,12 +260,12 @@ public class BoundVarTest {
 
     @Test
     public void testBinaryBound() {
-        Var a = VarBoolean.copy(true);
-        Var b = VarBoolean.copy(false);
+        Var a = VarBinary.copy(1);
+        Var b = VarBinary.copy(0);
 
         Var x = a.bindRows(b);
-        x.setBoolean(0, false);
-        assertFalse(x.getBoolean(0));
+        x.setInt(0, 0);
+        assertEquals(0, x.getInt(0));
     }
 
     @Test

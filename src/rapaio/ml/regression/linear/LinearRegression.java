@@ -78,7 +78,7 @@ public class LinearRegression extends AbstractLinearRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VType.DOUBLE, VType.INT, VType.BOOLEAN)
+                .withInputTypes(VType.DOUBLE, VType.INT, VType.BINARY)
                 .withTargetTypes(VType.DOUBLE)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1_000_000)

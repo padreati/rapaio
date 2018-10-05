@@ -221,23 +221,6 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        int pos = findIndex(row);
-        return vars.get(pos).getBoolean(localRow(pos, row));
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        int pos = findIndex(row);
-        vars.get(pos).setBoolean(localRow(pos, row), value);
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        throw unavailableException();
-    }
-
-    @Override
     public long getLong(int row) {
         int pos = findIndex(row);
         return vars.get(pos).getLong(localRow(pos, row));

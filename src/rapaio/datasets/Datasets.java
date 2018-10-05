@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
@@ -147,7 +147,7 @@ public class Datasets {
 
         int n = 100;
         List<Var> vars = new ArrayList<>();
-        vars.add(VarBoolean.fromIndex(n,
+        vars.add(VarBinary.fromIndex(n,
                 row -> row % 7 == 2 ? Integer.MIN_VALUE : RandomSource.nextInt(3) - 1)
                 .withName("boolean"));
         vars.add(VarDouble.from(n,

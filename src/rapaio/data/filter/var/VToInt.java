@@ -82,7 +82,7 @@ public class VToInt implements VFilter {
                 case DOUBLE:
                     return new VToInt.TransformDouble(x -> (int) Math.rint(x)).apply(var);
                 case INT:
-                case BOOLEAN:
+                case BINARY:
                     return new VToInt.TransformInt(x -> x).apply(var);
                 case NOMINAL:
                 case TEXT:

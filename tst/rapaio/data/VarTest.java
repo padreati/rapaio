@@ -93,7 +93,7 @@ public class VarTest {
         assertEquals(idx.name(), idx.solidCopy().name());
         assertEquals(idx.name(), idx.mapRows(2, 5).solidCopy().name());
 
-        VarBoolean bin = VarBoolean.copy(true, false, true, false, true).withName("bin");
+        VarBinary bin = VarBinary.copy(1, 0, 1, 0, 1).withName("bin");
         assertEquals(bin.name(), bin.solidCopy().name());
         assertEquals(bin.name(), bin.mapRows(2, 5).solidCopy().name());
 

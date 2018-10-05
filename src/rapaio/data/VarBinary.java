@@ -36,20 +36,26 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Numerical variable which store only 1,0 and missing values.
- * This is a storage-optimized version of a binary variable
+ * Numerical variable which store only 1,0 and missing values. This is a storage-optimized version of a
+ * binary variable which does not allows update operations. The implementation uses bit sets for storing
+ * values, one bit set for 0 or 1, and another for missing values.
+ * <p>
+ * The possible numerical values are: 0, 1. Any other values is treating as missing value. However each representation
+ * returns it's specific missing values: "?", Double.NaN, Integer.MIN_VALUE, Long.MIN_VALUE.
+ * 0 and 1 are the only possible two non missing values.
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public final class VarBoolean extends AbstractVar {
+public final class VarBinary extends AbstractVar {
 
     /**
      * Builds an empty binary var
      *
      * @return new instance of binary var
      */
-    public static VarBoolean empty() {
-        return new VarBoolean(0, false, false);
+    public static VarBinary empty() {
+        // fill with missing values
+        return new VarBinary(0, 1, 0);
     }
 
     /**
@@ -58,8 +64,9 @@ public final class VarBoolean extends AbstractVar {
      * @param rows size of variable
      * @return new instance of binary var
      */
-    public static VarBoolean empty(int rows) {
-        return new VarBoolean(rows, true, false);
+    public static VarBinary empty(int rows) {
+        // fill with missing values
+        return new VarBinary(rows, 1, 0);
     }
 
     /**
@@ -69,8 +76,11 @@ public final class VarBoolean extends AbstractVar {
      * @param fillValue fill value
      * @return new instance of binary var
      */
-    public static VarBoolean fill(int rows, boolean fillValue) {
-        return new VarBoolean(rows, false, fillValue);
+    public static VarBinary fill(int rows, int fillValue) {
+        if (fillValue == 1 || fillValue == 0) {
+            return new VarBinary(rows, 0, fillValue);
+        }
+        return new VarBinary(rows, 1, 0);
     }
 
     /**
@@ -79,12 +89,12 @@ public final class VarBoolean extends AbstractVar {
      * @param values given array of values
      * @return new instance of binary var
      */
-    public static VarBoolean copy(int... values) {
-        final VarBoolean b = new VarBoolean(values.length, false, false);
+    public static VarBinary copy(int... values) {
+        final VarBinary b = new VarBinary(values.length, 0, 0);
         for (int i = 0; i < values.length; i++) {
             if (values[i] == 0) continue;
             if (values[i] == 1) {
-                b.setBoolean(i, true);
+                b.values.flip(i);
                 continue;
             }
             b.setMissing(i);
@@ -92,32 +102,22 @@ public final class VarBoolean extends AbstractVar {
         return b;
     }
 
-    /**
-     * Builds a new binary variable with values copied from the given array of boolean values
-     *
-     * @param values source values
-     * @return new instance of binary var
-     */
-    public static VarBoolean copy(boolean... values) {
-        final VarBoolean b = new VarBoolean(values.length, false, false);
-        for (int i = 0; i < values.length; i++) {
-            if (values[i]) {
-                b.setBoolean(i, true);
+    public static VarBinary fromIndex(int rows, Function<Integer, Integer> supplier) {
+        VarBinary result = new VarBinary(rows, 0, 0);
+        for (int i = 0; i < rows; i++) {
+            int value = supplier.apply(i);
+            if (value == 0) continue;
+            if (value == 1) {
+                result.values.flip(i);
+            } else {
+                result.missing.flip(i);
             }
         }
-        return b;
+        return result;
     }
 
-    public static VarBoolean fromIndex(int rows, Function<Integer, Integer> supplier) {
-        int[] data = new int[rows];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = supplier.apply(i);
-        }
-        return VarBoolean.copy(data);
-    }
-
-    public static VarBoolean from(int rows, Function<Integer, Boolean> supplier) {
-        VarBoolean result = new VarBoolean(rows, false, false);
+    public static VarBinary from(int rows, Function<Integer, Boolean> supplier) {
+        VarBinary result = new VarBinary(rows, 0, 0);
         for (int i = 0; i < rows; i++) {
             Boolean value = supplier.apply(i);
             if (value == null) {
@@ -134,30 +134,34 @@ public final class VarBoolean extends AbstractVar {
 
     private static final long serialVersionUID = -4977697633437126744L;
     private int rows;
+
+    // bit set of flags for missing values
     private BitSet missing;
+
+    // bit set of flags for 1=true or 0=false values
     private BitSet values;
 
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
      */
-    private VarBoolean(final int rows, final boolean fillMissing, final boolean fillValue) {
+    private VarBinary(final int rows, final int fillMissing, final int fillValue) {
         this.rows = rows;
         this.missing = new BitSet(rows);
         this.values = new BitSet(rows);
-        if (fillMissing)
+        if (fillMissing == 1)
             this.missing.flip(0, rows);
-        else if (fillValue)
+        else if (fillValue == 1)
             this.values.flip(0, rows);
     }
 
     @Override
     public VType type() {
-        return VType.BOOLEAN;
+        return VType.BINARY;
     }
 
     @Override
-    public VarBoolean withName(String name) {
-        return (VarBoolean) super.withName(name);
+    public VarBinary withName(String name) {
+        return (VarBinary) super.withName(name);
     }
 
     void increaseCapacity(int minCapacity) {
@@ -205,88 +209,78 @@ public final class VarBoolean extends AbstractVar {
 
     @Override
     public double getDouble(int row) {
-        if (isMissing(row)) return -1.0;
+        if (isMissing(row)) return Double.NaN;
         return values.get(row) ? 1.0 : 0.0;
     }
 
     @Override
     public void setDouble(int row, double value) {
         if (value == 1.0) {
-            setBoolean(row, true);
+            setInt(row, 1);
             return;
         }
         if (value == 0.0) {
-            setBoolean(row, false);
+            setInt(row, 0);
             return;
         }
-        if (value == -1.0) {
-            setMissing(row);
-            return;
-        }
-        throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
+        setMissing(row);
     }
 
     @Override
     public void addDouble(double value) {
-        if (Math.abs(value - 1.0) <= 10e-3) {
-            addBoolean(true);
+        if (value == 1.0) {
+            addInt(1);
             return;
         }
-        if (Math.abs(value) <= 10e-3) {
-            addBoolean(false);
+        if (value == 0) {
+            addInt(0);
             return;
         }
-        if (Math.abs(value + 1.0) <= 10e-3) {
-            addMissing();
-            return;
-        }
-        throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
+        addMissing();
     }
 
     @Override
     public int getInt(int row) {
-        if (isMissing(row))
-            return -1;
-        return getBoolean(row) ? 1 : 0;
+        if (missing.get(row))
+            return Integer.MIN_VALUE;
+        return values.get(row) ? 1 : 0;
     }
 
     @Override
     public void setInt(int row, int value) {
         if (value == 1) {
-            setBoolean(row, true);
+            values.set(row, true);
+            missing.set(row, false);
             return;
         }
         if (value == 0) {
-            setBoolean(row, false);
+            values.set(row, false);
+            missing.set(row, false);
             return;
         }
-        if (value == -1) {
-            setMissing(row);
-            return;
-        }
-        throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
+        missing.set(row, true);
     }
 
     @Override
     public void addInt(int value) {
+        increaseCapacity(rows + 1);
+        rows++;
         if (value == 1) {
-            addBoolean(true);
+            values.set(rows - 1, true);
+            missing.set(rows - 1, false);
             return;
         }
         if (value == 0) {
-            addBoolean(false);
+            values.set(rows - 1, false);
+            missing.set(rows - 1, false);
             return;
         }
-        if (value == -1) {
-            addMissing();
-            return;
-        }
-        throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
+        missing.set(rows - 1, true);
     }
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? "?" : (getBoolean(row) ? "true" : "false");
+        return isMissing(row) ? "?" : (getInt(row) == 0 ? "0" : "1");
     }
 
     @Override
@@ -296,11 +290,11 @@ public final class VarBoolean extends AbstractVar {
             return;
         }
         if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            setBoolean(row, true);
+            setInt(row, 1);
             return;
         }
         if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            setBoolean(row, false);
+            setInt(row, 0);
             return;
         }
         throw new IllegalArgumentException(
@@ -314,11 +308,11 @@ public final class VarBoolean extends AbstractVar {
             return;
         }
         if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
-            addBoolean(true);
+            addInt(1);
             return;
         }
         if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
-            addBoolean(false);
+            addInt(0);
             return;
         }
         throw new IllegalArgumentException(
@@ -336,61 +330,37 @@ public final class VarBoolean extends AbstractVar {
     }
 
     @Override
-    public boolean getBoolean(int row) {
-        return values.get(row);
-    }
-
-    @Override
-    public void setBoolean(int row, boolean value) {
-        if (isMissing(row))
-            missing.set(row, false);
-        values.set(row, value);
-    }
-
-    @Override
-    public void addBoolean(boolean value) {
-        increaseCapacity(rows + 1);
-        setBoolean(rows, value);
-        rows++;
-    }
-
-    @Override
     public long getLong(int row) {
-        return getBoolean(row) ? 1L : 0L;
+        if (isMissing(row)) {
+            return Long.MIN_VALUE;
+        }
+        return getInt(row);
     }
 
     @Override
     public void setLong(int row, long value) {
         if (value == 1) {
-            setBoolean(row, true);
+            setInt(row, 1);
             return;
         }
         if (value == 0) {
-            setBoolean(row, false);
+            setInt(row, 0);
             return;
         }
-        if (value == -1) {
-            setMissing(row);
-            return;
-        }
-        throw new IllegalArgumentException(String.format("This value %d is not a valid binary value", value));
+        setMissing(row);
     }
 
     @Override
     public void addLong(long value) {
         if (value == 1) {
-            addBoolean(true);
+            addInt(1);
             return;
         }
         if (value == 0) {
-            addBoolean(false);
+            addInt(0);
             return;
         }
-        if (value == -1) {
-            addMissing();
-            return;
-        }
-        throw new IllegalArgumentException(String.format("This value %d is not a valid binary value", value));
+        addMissing();
     }
 
     @Override
@@ -412,12 +382,12 @@ public final class VarBoolean extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return VarBoolean.empty(rows).withName(name());
+        return VarBinary.empty(rows).withName(name());
     }
 
     @Override
-    public VarBoolean solidCopy() {
-        return (VarBoolean) super.solidCopy();
+    public VarBinary solidCopy() {
+        return (VarBinary) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

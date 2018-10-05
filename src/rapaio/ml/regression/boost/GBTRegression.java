@@ -108,7 +108,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         return new Capabilities()
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VType.BOOLEAN, VType.INT, VType.DOUBLE, VType.NOMINAL)
+                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
                 .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(false);

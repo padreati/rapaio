@@ -58,10 +58,10 @@ public enum VType {
      * Numeric values stored on 1 bit, encodes also
      * boolean values. Possible values are 0,1 or true,false.
      */
-    BOOLEAN(true, false, true, "binary") {
+    BINARY(true, false, true, "binary") {
         @Override
         public Var newInstance(int rows) {
-            return VarBoolean.empty(rows);
+            return VarBinary.empty(rows);
         }
     },
     /**

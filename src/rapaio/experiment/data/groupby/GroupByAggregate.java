@@ -288,11 +288,9 @@ public class GroupByAggregate implements Printable {
                     case DOUBLE:
                         unstacked.setDouble(rowIndex, varIndex, result.getDouble(i, aggregateVarIndex));
                         break;
+                    case BINARY:
                     case INT:
                         unstacked.setInt(rowIndex, varIndex, result.getInt(i, aggregateVarIndex));
-                        break;
-                    case BOOLEAN:
-                        unstacked.setBoolean(rowIndex, varIndex, result.getBoolean(i, aggregateVarIndex));
                         break;
                     default:
                         throw new IllegalArgumentException("var type " + aggregateType.code() + " not unstacked.");

@@ -420,42 +420,6 @@ public interface Frame extends Serializable, Printable {
     List<String> levels(String varName);
 
     /**
-     * Returns binary value from the given cell
-     *
-     * @param row row number
-     * @param col variable index
-     * @return binary value found
-     */
-    boolean getBoolean(int row, int col);
-
-    /**
-     * Returns binary value from given cell
-     *
-     * @param row     row number
-     * @param varName var name
-     * @return binary value found
-     */
-    boolean getBoolean(int row, String varName);
-
-    /**
-     * Binary value setter for given cell
-     *
-     * @param row   row number
-     * @param col   var index
-     * @param value value to be set
-     */
-    void setBoolean(int row, int col, boolean value);
-
-    /**
-     * Binary value setter for given cell
-     *
-     * @param row     row number
-     * @param varName var name
-     * @param value   value to be set
-     */
-    void setBoolean(int row, String varName, boolean value);
-
-    /**
      * Convenient shortcut method for calling {@link Var#isMissing(int)} for given column
      *
      * @param row row number

@@ -114,10 +114,10 @@ final class NumLessEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName)) {
+        if (df.isMissing(row, testName)) {
             return false;
         }
-        return df.getDouble(row, testName)<= testValue;
+        return df.getDouble(row, testName) <= testValue;
     }
 
     @Override
@@ -139,7 +139,7 @@ final class NumGreaterEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
         return df.getDouble(row, testName) >= testValue;
     }
@@ -163,7 +163,7 @@ final class NumLess implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
         double value = df.getDouble(row, testName);
         return value < testValue;
@@ -188,7 +188,7 @@ final class NumGreater implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
         double value = df.getDouble(row, testName);
         return value > testValue;
@@ -205,18 +205,18 @@ final class BinaryEqual implements RowPredicate {
     private static final long serialVersionUID = 830863153933290391L;
 
     private final String testName;
-    private final boolean testValue;
+    private final int testValue;
 
     public BinaryEqual(String testName, boolean testValue) {
         this.testName = testName;
-        this.testValue = testValue;
+        this.testValue = testValue ? 1 : 0;
     }
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
-        return df.getBoolean(row, testName) == testValue;
+        return df.getInt(row, testName) == testValue;
     }
 
     @Override
@@ -230,18 +230,18 @@ final class BinaryNotEqual implements RowPredicate {
     private static final long serialVersionUID = 830863153933290391L;
 
     private final String testName;
-    private final boolean testValue;
+    private final int testValue;
 
     public BinaryNotEqual(String testName, boolean testValue) {
         this.testName = testName;
-        this.testValue = testValue;
+        this.testValue = testValue ? 1 : 0;
     }
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
-        return df.getBoolean(row, testName) != testValue;
+        return df.getInt(row, testName) != testValue;
     }
 
     @Override
@@ -264,7 +264,7 @@ final class NominalEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
         return df.getLabel(row, testName).equals(testValue);
     }
@@ -289,7 +289,7 @@ final class NominalNotEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if(df.isMissing(row, testName))
+        if (df.isMissing(row, testName))
             return false;
         return !df.getLabel(row, testName).equals(testValue);
     }

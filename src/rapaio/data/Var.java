@@ -242,27 +242,6 @@ public interface Var extends Serializable, Printable {
     }
 
     /**
-     * @param row position of the observation
-     * @return boolean binary value
-     */
-    boolean getBoolean(int row);
-
-    /**
-     * Set a binary/boolean value
-     *
-     * @param row   position of the observation
-     * @param value boolean binary value
-     */
-    void setBoolean(int row, boolean value);
-
-    /**
-     * Adds a binary/boolean value
-     *
-     * @param value boolean binary value to be added
-     */
-    void addBoolean(boolean value);
-
-    /**
      * Gets long value.
      *
      * @param row position of the observation
@@ -374,7 +353,7 @@ public interface Var extends Serializable, Printable {
             case LONG:
                 return RowComparators.longComparator(this, asc);
             case INT:
-            case BOOLEAN:
+            case BINARY:
                 return RowComparators.integerComparator(this, asc);
             default:
                 return RowComparators.labelComparator(this, asc);

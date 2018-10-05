@@ -157,7 +157,7 @@ public class PCA implements Printable {
     }
 
     private void validate(Frame df) {
-        Set<VType> allowedTypes = new HashSet<>(Arrays.asList(VType.BOOLEAN, VType.INT, VType.DOUBLE));
+        Set<VType> allowedTypes = new HashSet<>(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE));
         df.varStream().forEach(var -> {
             if (!allowedTypes.contains(var.type())) {
                 throw new IllegalArgumentException("Var type not allowed. Var name: " + var.name() + ", type: " + var.type().name());

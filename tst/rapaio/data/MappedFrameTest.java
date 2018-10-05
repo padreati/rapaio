@@ -202,7 +202,7 @@ public class MappedFrameTest {
                 VarInt.wrap(0, Integer.MIN_VALUE, 2, Integer.MIN_VALUE).withName("b"),
                 VarNominal.copy("a", "?", "b", "?").withName("c"),
                 VarLong.copy(0, Long.MIN_VALUE, 2, Long.MIN_VALUE).withName("d"),
-                VarBoolean.copy(true, false, true, false).withName("e")
+                VarBinary.copy(1, 0, 1, 1).withName("e")
         );
         varList.get(4).setMissing(1);
 
@@ -226,9 +226,9 @@ public class MappedFrameTest {
         assertTrue(map.isMissing(1, "d"));
         assertEquals(2, map.getLong(2, "d"));
 
-        assertTrue(map.getBoolean(0, "e"));
+        assertEquals(1, map.getInt(0, "e"));
         assertTrue(map.isMissing(1, "e"));
-        assertTrue(map.getBoolean(2, "e"));
+        assertEquals(1, map.getInt(2, "e"));
 
         map.setDouble(0, 0, 10);
         map.setDouble(1, "a", 20);
@@ -238,8 +238,8 @@ public class MappedFrameTest {
         map.setLabel(1, "c", "20");
         map.setLong(0, 3, 10);
         map.setLong(1, "d", 20);
-        map.setBoolean(0, 4, true);
-        map.setBoolean(1, "e", false);
+        map.setInt(0, 4, 1);
+        map.setInt(1, "e", 0);
 
         map.printLines();
 
@@ -251,8 +251,8 @@ public class MappedFrameTest {
         assertEquals("20", map.getLabel(1, "c"));
         assertEquals(10, map.getLong(0, 3));
         assertEquals(20, map.getLong(1, "d"));
-        assertTrue(map.getBoolean(0, 4));
-        assertFalse(map.getBoolean(1, "e"));
+        assertEquals(1, map.getInt(0, 4));
+        assertEquals(0, map.getInt(1, "e"));
 
         List<String> levels = map.levels("c");
         assertEquals(5, levels.size());

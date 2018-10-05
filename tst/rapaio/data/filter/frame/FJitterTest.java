@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
-import rapaio.data.VarBoolean;
+import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.FFilter;
@@ -50,7 +50,7 @@ public class FJitterTest {
         Frame a = SolidFrame.byVars(
                 VarDouble.fill(100, 0).withName("num1"),
                 VarDouble.fill(100, 0).withName("num2"),
-                VarBoolean.fill(100, true).withName("bin"),
+                VarBinary.fill(100, 1).withName("bin"),
                 VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 

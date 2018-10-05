@@ -66,7 +66,7 @@ public class UniqueRows {
         }
 
         switch (var.type()) {
-            case BOOLEAN:
+            case BINARY:
                 return fromBoolean(var);
             case INT:
                 return fromInt(var);
