@@ -97,8 +97,7 @@ public class GeometricMean implements Printable {
 
     @Override
     public String summary() {
-        return "\n" +
-                "> geometricMean[" + varName + "]\n" +
+        return "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +
                 "mean: " + formatFlex(value) + "\n";
     }

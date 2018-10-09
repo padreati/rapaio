@@ -73,8 +73,7 @@ public class Minimum implements Printable {
 
     @Override
     public String summary() {
-        return "\n" +
-                "> minimum[" + varName + "]\n" +
+        return "> minimum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "minimum: " + formatFlex(value) + "\n";
     }

@@ -89,8 +89,9 @@ public class Covariance implements Printable {
 
     @Override
     public String summary() {
-        return "> cov[" + varName1 + ", " + varName2 + "]\n" +
-                "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + " )\n" +
+        return "> cov[" + varName1 + "," + varName2 + "]\n" +
+                "total rows: " + (completeCount + missingCount) +
+                " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "covariance: " + formatFlex(value) + "\n";
     }
 }

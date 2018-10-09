@@ -73,7 +73,7 @@ public class Sum implements Printable {
         // A running compensation for lost low-order bits.
         double c = 0.0;
         for (int i = pos; i < var.rowCount(); i++) {
-            if(var.isMissing(i)) {
+            if (var.isMissing(i)) {
                 missingCount++;
                 continue;
             }
@@ -99,10 +99,10 @@ public class Sum implements Printable {
 
     @Override
     public String summary() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("\n > sum['%s']\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("sum: %s\n", formatFlex(value)));
-        return sb.toString();
+        return String.format("> sum[%s]\n" +
+                        "total rows: %d (complete: %d, missing: %d)\n" +
+                        "sum: %s\n",
+                varName, completeCount + missingCount, completeCount, missingCount,
+                formatFlex(value));
     }
 }

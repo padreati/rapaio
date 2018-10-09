@@ -45,10 +45,6 @@ public final class Mean implements Printable {
         return new Mean(var);
     }
 
-    public static Mean of(double[] values) {
-        return new Mean(values, 0, values.length);
-    }
-
     public static Mean of(double[] values, int start, int end) {
         return new Mean(values, start, end);
     }
@@ -121,8 +117,7 @@ public final class Mean implements Printable {
 
     @Override
     public String summary() {
-        return "\n" +
-                "> mean[" + varName + "]\n" +
+        return "> mean[" + varName + "]\n" +
                 "total rows: " + formatFlex(completeCount + missingCount) +
                 " (complete: " + formatFlex(completeCount) +
                 ", missing: " + formatFlex(missingCount) + ")\n" +

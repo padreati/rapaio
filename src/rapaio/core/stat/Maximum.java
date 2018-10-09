@@ -70,9 +70,8 @@ public class Maximum implements Printable {
 
     @Override
     public String summary() {
-        return "\n" +
-                "> maximum[" + varName + "]\n" +
-                "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + " missing: " + missingCount + ")\n" +
+        return "> maximum[" + varName + "]\n" +
+                "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "maximum: " + formatFlex(value) + "\n";
     }
 }
