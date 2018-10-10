@@ -74,6 +74,12 @@ using streams is also available on variables and also on data frames.
 * VTransformBoxCox - transform a variable with BoxCox transform
 * VTransformPower - transform a variable with power transform
 
+**Core**
+
+* Maximum, Minimum, Sum, Mean, Variance, Quantiles, GeometricMean, Skewness, Kurtosis
+* Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
+* WeightedMean, WeightedOnlineStat
+
 **Correlations**
 
 * Pearson product-moment coefficient
@@ -108,8 +114,6 @@ If there are no notes it means the feature is considered to be fully implemented
 **Core**
 
 * Special Math functions
-* Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance, Quantiles
-* Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
 
 **Core tools**
 
