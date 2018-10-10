@@ -40,11 +40,11 @@ import static rapaio.sys.WS.formatFlex;
  */
 public final class WeightedMean implements Printable {
 
-    public static WeightedMean from(Var var, Var weights) {
+    public static WeightedMean of(Var var, Var weights) {
         return new WeightedMean(var, weights);
     }
 
-    public static WeightedMean from(Frame df, Var weights, String varName) {
+    public static WeightedMean of(Frame df, Var weights, String varName) {
         return new WeightedMean(df, weights, varName);
     }
 
@@ -135,8 +135,9 @@ public final class WeightedMean implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("\n > weightedMean[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
+        sb.append(String.format("> weightedMean[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
+                completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("weightedMean: %s\n", formatFlex(mean)));
         return sb.toString();
     }

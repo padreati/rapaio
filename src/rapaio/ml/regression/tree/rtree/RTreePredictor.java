@@ -92,7 +92,7 @@ public interface RTreePredictor extends Serializable {
                 values.addDouble(prediction._1);
                 weights.addDouble(prediction._2);
             }
-            return DoublePair.from(WeightedMean.from(values, weights).value(), Mean.of(weights).value());
+            return DoublePair.from(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
         }
     };
 }

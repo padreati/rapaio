@@ -55,14 +55,14 @@ public class OnlineStat {
         return new OnlineStat();
     }
 
-    double n; // number of elements
-    double m1;
-    double m2;
-    double m3;
-    double m4;
-    double min = 0;
-    double max = 0;
-    double sum = 0;
+    private double n;
+    private double m1;
+    private double m2;
+    private double m3;
+    private double m4;
+    private double min;
+    private double max;
+    private double sum;
 
     private OnlineStat() {
         clean();
@@ -70,8 +70,9 @@ public class OnlineStat {
 
     public final void clean() {
         n = 0;
-        min = 0;
+        min = Double.POSITIVE_INFINITY;
         max = 0;
+        sum = 0;
         m1 = 0;
         m2 = 0;
         m3 = 0;
@@ -79,12 +80,9 @@ public class OnlineStat {
     }
 
     /**
-     * For now implement this method using only positive values for times. It
-     * may be later modified in order to support negative values for times, with
-     * the new meaning that we "remove" elements from calculations and as a side
-     * effect to decrease the value of N;
+     * Adds an element with weight 1 to the sample.
      *
-     * @param x value to be used to out statistics
+     * @param x added sample value
      */
     public void update(double x) {
         double n1 = n;
@@ -149,9 +147,9 @@ public class OnlineStat {
         return n * m4 / (m2 * m2) - 3.0;
     }
 
-    public void update(OnlineStat a) {
+    public OnlineStat update(OnlineStat a) {
         if (a.n == 0)
-            return;
+            return this;
 
         OnlineStat combined = new OnlineStat();
         combined.n += a.n + this.n;
@@ -179,5 +177,7 @@ public class OnlineStat {
         m4 = combined.m4;
         min = combined.min;
         max = combined.max;
+
+        return this;
     }
 }

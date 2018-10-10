@@ -38,7 +38,7 @@ public class WeightedOnlineStat {
         return new WeightedOnlineStat();
     }
 
-    public static WeightedOnlineStat from(WeightedOnlineStat... woss) {
+    public static WeightedOnlineStat of(WeightedOnlineStat... woss) {
         WeightedOnlineStat wos = new WeightedOnlineStat();
         for (WeightedOnlineStat w : woss) {
             wos.update(w);

@@ -25,6 +25,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
+import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 
 import static org.junit.Assert.*;
@@ -34,42 +35,52 @@ import static org.junit.Assert.*;
  */
 public class WeightedMeanTest {
 
+    private static final double TOL = 1e-12;
+
     @Test
     public void testBasic() {
 
-        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
 
         VarDouble weights = VarDouble.fill(10, 1);
-        assertEquals(5.5, WeightedMean.from(values, weights).value(), 10e-12);
 
-        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
-        assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
+        assertEquals(5.5, WeightedMean.of(values, weights).value(), TOL);
+        assertEquals(5.5, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), TOL);
+
+        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2).withName("x");
+        assertEquals(5.666666666666667, WeightedMean.of(values, weights).value(), 10e-12);
+        assertEquals(5.666666666666667, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), TOL);
 
         WeightedOnlineStat wos = WeightedOnlineStat.empty();
         for (int i = 0; i < values.rowCount(); i++) {
             wos.update(values.getDouble(i), weights.getDouble(i));
         }
+        assertEquals(WeightedMean.of(values, weights).value(), wos.mean(), TOL);
 
-        System.out.println(WeightedMean.from(values, weights).value());
-        System.out.println(wos.mean());
-
+        assertEquals("> weightedMean[x]\n" +
+                        "total rows: 10 (complete: 10, missing: 0)\n" +
+                        "weightedMean: 5.6666667\n",
+                WeightedMean.of(values, weights).summary());
     }
 
     @Test
     public void testMissing() {
 
-        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN);
+        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN).withName("x");
         VarDouble weights = VarDouble.copy(1, 1);
 
-        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
+        assertTrue(Double.isNaN(WeightedMean.of(values, weights).value()));
+        assertTrue(Double.isNaN(WeightedMean.of(SolidFrame.byVars(values), weights, "x").value()));
 
-        values = VarDouble.copy(1, 2);
+        values = VarDouble.copy(1, 2).withName("x");
         weights = VarDouble.copy(Double.NaN, Double.NaN);
-        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
+        assertTrue(Double.isNaN(WeightedMean.of(values, weights).value()));
+        assertTrue(Double.isNaN(WeightedMean.of(SolidFrame.byVars(values), weights, "x").value()));
 
-        values = VarDouble.copy(Double.NaN, 1, 2);
+        values = VarDouble.copy(Double.NaN, 1, 2).withName("x");
         weights = VarDouble.copy(1, 2, Double.NaN);
-        assertEquals(1.0, WeightedMean.from(values, weights).value(), 10e-12);
+        assertEquals(1.0, WeightedMean.of(values, weights).value(), 10e-12);
+        assertEquals(1.0, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), 10e-12);
     }
 
 }

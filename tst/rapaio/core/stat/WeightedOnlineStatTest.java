@@ -4,7 +4,6 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
@@ -32,8 +31,6 @@ public class WeightedOnlineStatTest {
         for (int i = 0; i < w.rowCount(); i++) {
             w.setDouble(i, w.getDouble(i) / wsum);
         }
-
-        SolidFrame.byVars(x, w).printLines();
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.rowCount(); i++) {
@@ -115,7 +112,7 @@ public class WeightedOnlineStatTest {
             wosTotal.update(x.getDouble(i), w.getDouble(i));
         }
 
-        WeightedOnlineStat t1 = WeightedOnlineStat.from(wos1, wos2, wos3);
+        WeightedOnlineStat t1 = WeightedOnlineStat.of(wos1, wos2, wos3);
 
         assertEquals(wosTotal.mean(), t1.mean(), TOL);
         assertEquals(wosTotal.variance(), t1.variance(), TOL);

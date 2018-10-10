@@ -24,6 +24,7 @@
 
 package rapaio.core.stat;
 
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
@@ -37,6 +38,13 @@ import static org.junit.Assert.assertEquals;
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class OnlineStatTest {
+
+    private static final double TOL = 1e-12;
+
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
 
     @Test
     public void testVariance() {
@@ -92,5 +100,34 @@ public class OnlineStatTest {
 
         assertEquals(soA.variance(), soAll.variance(), 1e-12);
         assertEquals(soA.mean(), soAll.mean(), 1e-30);
+
+        assertEquals(soA.mean(), soA.update(OnlineStat.empty()).mean(), TOL);
+    }
+
+    @Test
+    public void testDouble() {
+        int N = 1000;
+        double[] values = new double[N];
+        for (int i = 0; i < N; i++) {
+            values[i] = RandomSource.nextDouble();
+        }
+        VarDouble x = VarDouble.wrap(values);
+
+        OnlineStat os = OnlineStat.empty();
+        for (int i = 0; i < N; i++) {
+            os.update(values[i]);
+        }
+
+        assertEquals(N, os.n(), TOL);
+        assertEquals(Mean.of(x).value(), os.mean(), TOL);
+        assertEquals(Sum.of(x).value(), os.sum(), TOL);
+        assertEquals(Minimum.of(x).value(), os.min(), TOL);
+        assertEquals(Maximum.of(x).value(), os.max(), TOL);
+        assertEquals(Variance.of(x).value(), os.sampleVariance(), TOL);
+        assertEquals(Variance.of(x).sdValue(), os.sampleSd(), TOL);
+        assertEquals(Variance.of(x).biasedValue(), os.variance(), TOL);
+        assertEquals(Variance.of(x).biasedSdValue(), os.sd(), TOL);
+        assertEquals(Skewness.of(x).g1(), os.skewness(), TOL);
+        assertEquals(Kurtosis.of(x).g2(), os.kurtosis(), TOL);
     }
 }

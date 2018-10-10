@@ -31,7 +31,6 @@ import rapaio.data.Var;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -87,7 +86,8 @@ public class Quantiles implements Printable {
         missingCount = var.rowCount() - completeCount;
 
         if (completeCount == 0) {
-            return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
+            Arrays.fill(x, Double.NaN);
+            return x;
         }
         if (completeCount == 1) {
             double[] values = new double[percentiles.length];

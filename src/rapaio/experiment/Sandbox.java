@@ -28,9 +28,17 @@
 package rapaio.experiment;
 
 import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.FFilter;
 import rapaio.data.filter.var.VTransformBoxCox;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
@@ -44,5 +52,45 @@ public class Sandbox {
         Var y = x.solidCopy().fapply(VTransformBoxCox.with(0.1)).withName("y");
 
         BoundFrame.byVars(x, y).printLines(100);
+    }
+}
+
+class TitleFilter implements FFilter {
+    private HashMap<String, String[]> replaceMap = new HashMap<>();
+    private Function<String, String> titleFun = txt -> {
+        for (Map.Entry<String, String[]> e : replaceMap.entrySet()) {
+            for (int i = 0; i < e.getValue().length; i++) {
+                if (txt.contains(" " + e.getValue()[i] + ". "))
+                    return e.getKey();
+            }
+        }
+        return "?";
+    };
+
+    @Override
+    public void fit(Frame df) {
+        replaceMap.put("Mrs", new String[]{"Mrs", "Mme", "Lady", "Countess"});
+        replaceMap.put("Mr", new String[]{"Mr", "Sir", "Don", "Ms"});
+        replaceMap.put("Miss", new String[]{"Miss", "Mlle"});
+        replaceMap.put("Master", new String[]{"Master"});
+        replaceMap.put("Dr", new String[]{"Dr"});
+        replaceMap.put("Military", new String[]{"Col", "Major", "Jonkheer", "Capt"});
+        replaceMap.put("Rev", new String[]{"Rev"});
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        VarNominal title = VarNominal.empty(0, new ArrayList<>(replaceMap.keySet())).withName("Title");
+        df.rvar("Name").stream().mapToString().forEach(name -> title.addLabel(titleFun.apply(name)));
+        return df.bindVars(title);
+    }
+
+    @Override
+    public TitleFilter newInstance() {
+        return new TitleFilter();
+    }
+
+    public String[] varNames() {
+        return new String[0];
     }
 }

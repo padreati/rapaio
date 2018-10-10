@@ -43,12 +43,12 @@ public class L2RegressionLoss implements RegressionLoss {
 
     @Override
     public double findWeightedMinimum(Var y, Var w) {
-        return WeightedMean.from(y, w).value();
+        return WeightedMean.of(y, w).value();
     }
 
     @Override
     public double findWeightedMinimum(Frame df, String varName, Var w) {
-        return WeightedMean.from(df, w, varName).value();
+        return WeightedMean.of(df, w, varName).value();
     }
 
     @Override

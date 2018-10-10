@@ -150,7 +150,7 @@ class NominalFull implements RTreeNominalTest {
         }
 
         // make the payload
-        WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);
+        WeightedOnlineStat wos = WeightedOnlineStat.of(onlineStats);
         RTreeTestPayload p = new RTreeTestPayload(len);
 
         p.totalWeight = wos.weightSum();
@@ -206,7 +206,7 @@ class NominalBinary implements RTreeNominalTest {
             onlineStats[index - 1].update(df.getDouble(i, targetNameIndex), w.getDouble(i));
         }
 
-        WeightedOnlineStat wos = WeightedOnlineStat.from(onlineStats);
+        WeightedOnlineStat wos = WeightedOnlineStat.of(onlineStats);
 
         RTreeCandidate best = null;
         double bestScore = Double.NaN;
