@@ -144,32 +144,6 @@ If there are no notes it means the feature is considered to be fully implemented
 * Samplers used in machine learning algorithms
 
 
-
-**Frame Filters**
-
-* FFJitter - add jitter to data according with a noise distribution
-* FFAddIntercept - add an intercept variable to a given data set
-* FFMapVars - select some variables according with a VRange pattern
-* FFRemoveVars - removes some variables according with a VRange pattern
-* FFStandardize - standardize variables from a given data frame
-* FFRandomProjection - project a data frame onto random projections
-    
-**Var filters**
-
-* VFCumulativeSum - builds a numeric vector with a cumulative sum
-* VFJitter - adds noise to a given numeric vector according with a noise distribution
-* VFRefSort - sorts a variable according with a given set of row comparators
-* VFShuffle - shuffles values from a variable
-* VFSort - sorts a variable according with default comparator
-* VFStandardize - standardize values from a given numeric variable
-* VFToIndex - transforms a variable into an index type using a lambda
-* VFToNumeric - transforms a variable into numeric using a lambda
-* VFTransformPower - transform a variable withg power transform
-* VFUpdate - updates a variable using a lambda on VSpot
-* VFUpdateIndex - updates a variable using a lambda on index value
-* VFUpdateLabel - updates a variable using a lambda on label value
-* VFUpdateValue - updates a variable using a lambda on double value
-
 **Evaluation**
 
 * Confusion Matrix
