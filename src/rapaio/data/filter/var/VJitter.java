@@ -53,7 +53,7 @@ public class VJitter implements VFilter {
      * @param sd standard deviation of Gaussian distribution
      */
     public static VJitter gaussian(double mu, double sd) {
-        return new VJitter(Normal.from(mu, sd));
+        return new VJitter(Normal.of(mu, sd));
     }
 
     /**

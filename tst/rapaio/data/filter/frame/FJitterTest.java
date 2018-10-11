@@ -77,7 +77,7 @@ public class FJitterTest {
         RandomSource.setSeed(111);
         Frame df2 = df.solidCopy().fapply(FJitter.on(0.1, VRange.all()));
         RandomSource.setSeed(111);
-        Frame df3 = df.solidCopy().fapply(FJitter.on(Normal.from(0.0, 0.1), VRange.all()));
+        Frame df3 = df.solidCopy().fapply(FJitter.on(Normal.of(0.0, 0.1), VRange.all()));
 
         assertTrue(df1.deepEquals(df2));
         assertTrue(df2.deepEquals(df3));

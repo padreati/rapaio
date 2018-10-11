@@ -31,6 +31,8 @@ import rapaio.core.RandomSource;
 import rapaio.math.MTools;
 import rapaio.sys.WS;
 
+import static rapaio.math.MTools.*;
+
 /**
  * ChiSquare distribution.
  * <p>
@@ -38,13 +40,17 @@ import rapaio.sys.WS;
  */
 public class ChiSquare implements Distribution {
 
+    public static ChiSquare of(double df) {
+        return new ChiSquare(df);
+    }
+
     private static final long serialVersionUID = 2967287812574824823L;
     private final double df;
     private final double b;
     private final double vm;
     private final double vd;
 
-    public ChiSquare(double df) {
+    private ChiSquare(double df) {
         if (df < 1) {
             throw new IllegalArgumentException("degrees of freedom parameter must have value greater than zero");
         }
@@ -69,15 +75,14 @@ public class ChiSquare implements Distribution {
     public double pdf(double x) {
         if (x < 0.0)
             return 0;
-        double logGamma = MTools.lnGamma(df / 2.0);
-        return Math.exp((df / 2.0 - 1.0) * Math.log(x / 2.0) - x / 2.0 - logGamma) / 2.0;
+        return exp((df / 2.0 - 1.0) * log(x / 2.0) - x / 2.0 - lnGamma(df / 2.0)) / 2.0;
     }
 
     @Override
     public double cdf(double x) {
-        if (x < 0.0 || df < 1.0)
+        if (x < 0.0)
             return 0.0;
-        return MTools.incompleteGamma(df / 2.0, x / 2.0);
+        return incompleteGamma(df / 2.0, x / 2.0);
     }
 
     @Override
@@ -123,7 +128,7 @@ public class ChiSquare implements Distribution {
 
     @Override
     public double mode() {
-        return Math.max(0, df - 2);
+        return MTools.max(0, df - 2);
     }
 
     @Override
@@ -143,12 +148,12 @@ public class ChiSquare implements Distribution {
 
     @Override
     public double entropy() {
-        throw new IllegalArgumentException("not implemented");
+        throw new IllegalArgumentException("Not implemented");
     }
 
     @Override
     public double sampleNext() {
-        /***********************************************************************
+        /* *********************************************************************
          * * Chi Distribution - Ratio of Uniforms with shift * *
          * ***************************************************************** *
          * FUNCTION : - chru samples a random number from the Chi * distribution

@@ -28,7 +28,7 @@ public class RMSETest {
     public void basicTest() {
 
         RandomSource.setSeed(123);
-        Normal normal = Normal.from(0, 10);
+        Normal normal = Normal.of(0, 10);
         VarDouble x = normal.sample(100).withName("x");
         VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
         VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");

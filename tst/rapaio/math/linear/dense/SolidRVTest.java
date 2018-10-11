@@ -49,7 +49,7 @@ public class SolidRVTest {
 
     @Before
     public void setUp() throws Exception {
-        normal = Normal.from(0, 10);
+        normal = Normal.of(0, 10);
         varx = VarDouble.from(N, normal::sampleNext);
         x = SolidRV.from(varx);
     }

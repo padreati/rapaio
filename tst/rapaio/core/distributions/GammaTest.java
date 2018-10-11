@@ -26,7 +26,9 @@ package rapaio.core.distributions;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.core.RandomSource;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.data.Frame;
@@ -37,10 +39,14 @@ import rapaio.io.Csv;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static rapaio.math.MTools.sqrt;
 
 public class GammaTest {
 
     private static final double TOL = 1e-13;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     private Frame df;
     private Gamma g_low_low;
@@ -55,31 +61,55 @@ public class GammaTest {
 
     @Before
     public void setUp() throws Exception {
-        df = new Csv()
-                .withNAValues("NaN")
-                .read(HypergeometricTest.class, "gamma.csv")
-        .mapRows(Mapping.range(1_000))
-        ;
-        df.printSummary();
-        g_low_low = new Gamma(0.5, 0.5);
-        g_one_low = new Gamma(0.5, 1);
-        g_high_low = new Gamma(0.5, 5);
-        g_low_one = new Gamma(1, 0.5);
-        g_one_one = new Gamma(1, 1);
-        g_high_one = new Gamma(1, 5);
-        g_low_high = new Gamma(5, 0.5);
-        g_one_high = new Gamma(5, 1);
-        g_high_high = new Gamma(5, 5);
+        df = new Csv().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
+        g_low_low = Gamma.of(0.5, 0.5);
+        g_one_low = Gamma.of(0.5, 1);
+        g_high_low = Gamma.of(0.5, 5);
+        g_low_one = Gamma.of(1, 0.5);
+        g_one_one = Gamma.of(1, 1);
+        g_high_one = Gamma.of(1, 5);
+        g_low_high = Gamma.of(5, 0.5);
+        g_one_high = Gamma.of(5, 1);
+        g_high_high = Gamma.of(5, 5);
     }
 
     @Test
-    public void draftTest() {
-        Gamma g = new Gamma(0.5, 0.5);
+    public void testInvalidParamAlpha() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Value parameters alpha (-1) and beta (1) parameters should be strictly positive.");
+        Gamma.of(-1, 1);
+    }
+
+    @Test
+    public void testInvalidParamBeta() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Value parameters alpha (1) and beta (-1) parameters should be strictly positive.");
+        Gamma.of(1, -1);
+    }
+
+    @Test
+    public void testNotImplementedEntropy() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Not implemented");
+        Gamma.of(2, 3).entropy();
+    }
+
+    @Test
+    public void testMiscelaneous() {
+        Gamma g = Gamma.of(0.5, 0.5);
 
         assertFalse(g.discrete());
         assertEquals("Gamma(alpha=0.5, beta=0.5)", g.name());
         assertEquals(0, g.min(), TOL);
         assertEquals(Double.POSITIVE_INFINITY, g.max(), TOL);
+        assertEquals(Double.NaN, g.pdf(-1), TOL);
+        assertEquals(0, g.cdf(-1), TOL);
+        assertEquals(Double.NaN, g.mode(), TOL);
+
+        assertEquals(1.5, Gamma.of(3, 2).mean(), TOL);
+        assertEquals(sqrt(2), Gamma.of(3, 2).skewness(), TOL);
+        assertEquals(3/4., Gamma.of(3, 2).var(), TOL);
+        assertEquals(2, Gamma.of(3, 2).kurtosis(), TOL);
     }
 
     @Test
@@ -132,11 +162,10 @@ public class GammaTest {
     @Test
     public void testSampling() {
         RandomSource.setSeed(1234);
-        Gamma g = new Gamma(10, 10);
+        Gamma g = Gamma.of(10, 10);
         Var sample = g.sample(100);
 
         KSTestOneSample test = KSTestOneSample.from(sample, g);
-        test.printSummary();
         Assert.assertTrue(test.pValue()>0.05);
     }
 }

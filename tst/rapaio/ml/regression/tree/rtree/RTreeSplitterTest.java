@@ -60,13 +60,13 @@ public class RTreeSplitterTest {
         Uniform u;
         switch (group) {
             case 0:
-                u = new Uniform(0, 9);
+                u = Uniform.of(0, 9);
                 break;
             case 1:
-                u = new Uniform(21, 30);
+                u = Uniform.of(21, 30);
                 break;
             default:
-                u = new Uniform(11, 19);
+                u = Uniform.of(11, 19);
         }
         VarDouble sample = u.sample(count);
         for (int i = 0; i < sample.rowCount(); i++) {

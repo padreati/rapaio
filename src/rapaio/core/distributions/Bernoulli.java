@@ -36,13 +36,17 @@ import rapaio.core.RandomSource;
  */
 public class Bernoulli implements Distribution {
 
-    private static final long serialVersionUID = -180129876504915848L;
+    public static Bernoulli of(double p) {
+        return new Bernoulli(p);
+    }
 
+    private static final long serialVersionUID = -180129876504915848L;
     private final double prob;
 
-    public Bernoulli(double p) {
-        if (p < 0 || p > 1)
+    private Bernoulli(double p) {
+        if (p < 0 || p > 1) {
             throw new IllegalArgumentException("Probability parameter must be in closed interval [0,1]");
+        }
         this.prob = p;
     }
 

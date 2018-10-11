@@ -89,7 +89,7 @@ public class SolidRM implements RM {
     }
 
     public static SolidRM random(int rowCount, int colCount) {
-        Normal normal = new Normal();
+        Normal normal = Normal.std();
         return SolidRM.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
     }
 

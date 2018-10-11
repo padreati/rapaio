@@ -29,7 +29,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Var;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/17/16.
@@ -43,10 +43,10 @@ public class BernoulliTest {
 
         RandomSource.setSeed(1234);
 
-        Bernoulli b90 = new Bernoulli(0.9);
-        Bernoulli b80 = new Bernoulli(0.8);
-        Bernoulli b50 = new Bernoulli(0.5);
-        Bernoulli b10 = new Bernoulli(0.1);
+        Bernoulli b90 = Bernoulli.of(0.9);
+        Bernoulli b80 = Bernoulli.of(0.8);
+        Bernoulli b50 = Bernoulli.of(0.5);
+        Bernoulli b10 = Bernoulli.of(0.1);
 
         int N = 10_000;
         Var x90 = b90.sample(N);
@@ -64,7 +64,7 @@ public class BernoulliTest {
         assertEquals(5045, Sum.of(x50).value(), TOL);
         assertEquals(997, Sum.of(x10).value(), TOL);
 
-        assertEquals(true, b90.discrete());
+        assertTrue(b90.discrete());
         assertEquals("Ber(p=0.9)", b90.name());
 
         assertEquals(0, b90.pdf(-1), TOL);
@@ -99,6 +99,6 @@ public class BernoulliTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidProbabilityTest() {
-        new Bernoulli(12);
+        Bernoulli.of(12);
     }
 }

@@ -56,7 +56,7 @@ public class KSTestTest {
     @Test
     public void testNormal() {
         RandomSource.setSeed(1);
-        Normal d = new Normal();
+        Normal d = Normal.std();
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
@@ -67,7 +67,7 @@ public class KSTestTest {
     @Test
     public void testUniform() {
         RandomSource.setSeed(1);
-        VarDouble sample = new Uniform(0, 1).sample(1_000);
+        VarDouble sample = Uniform.of(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
@@ -77,7 +77,7 @@ public class KSTestTest {
     @Test
     public void testStudentT() {
         RandomSource.setSeed(1);
-        StudentT d = new StudentT(3, 0, 1);
+        StudentT d = StudentT.of(3, 0, 1);
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();

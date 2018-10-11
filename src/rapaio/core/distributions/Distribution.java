@@ -50,23 +50,6 @@ public interface Distribution extends Serializable {
     boolean discrete();
 
     /**
-     * @return true if the distribution is continuous, false if it is discrete
-     */
-    default boolean continuous() {
-        return !discrete();
-    }
-
-    /**
-     * Logarithm of the probability density/mass function
-     *
-     * @param x value for which it calculates log of probability
-     * @return log of probability of x
-     */
-    default double logPdf(double x) {
-        return Math.log(pdf(x));
-    }
-
-    /**
      * Calculates probability density/mass function for given value x
      *
      * @param x value for which it calculates
@@ -92,6 +75,7 @@ public interface Distribution extends Serializable {
      * @return quantile value
      */
     double quantile(double p);
+
     /**
      * Minimum value for which this pdf is defined
      *

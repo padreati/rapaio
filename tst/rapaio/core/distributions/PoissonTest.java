@@ -48,10 +48,10 @@ public class PoissonTest {
                 .withNAValues("NaN","Inf")
                 .read(rapaio.core.distributions.HypergeometricTest.class, "pois.csv");
 
-        pois1 = new Poisson(1);
-        pois5 = new Poisson(5);
-        pois10 = new Poisson(10);
-        pois100 = new Poisson(100);
+        pois1 = Poisson.of(1);
+        pois5 = Poisson.of(5);
+        pois10 = Poisson.of(10);
+        pois100 = Poisson.of(100);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class PoissonTest {
     }
 
     @Test
-    public void rQuantileTest() throws IOException {
+    public void rQuantileTest() {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") >= 1)
                 break;

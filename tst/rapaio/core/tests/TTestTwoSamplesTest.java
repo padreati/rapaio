@@ -39,7 +39,7 @@ public class TTestTwoSamplesTest {
 
     @Test
     public void precomputedTest() {
-        Normal n = Normal.from(0, 10);
+        Normal n = Normal.of(0, 10);
         Var x = VarDouble.from(100, n::sampleNext).withName("x");
         Var y = VarDouble.from(100, n::sampleNext).withName("y");
         Var z = VarDouble.from(40, n::sampleNext).withName("z");

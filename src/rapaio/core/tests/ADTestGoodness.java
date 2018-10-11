@@ -100,7 +100,7 @@ public class ADTestGoodness implements HTest {
         }
 
         Var y = VarDouble.from(x, value -> (value - muHat) / sigmaHat);
-        Normal normal = new Normal();
+        Normal normal = Normal.std();
 
         a2 = 0.0;
         int n = y.rowCount();

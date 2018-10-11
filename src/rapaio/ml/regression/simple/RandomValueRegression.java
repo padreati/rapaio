@@ -46,7 +46,7 @@ import rapaio.ml.regression.Regression;
 public class RandomValueRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 819192240406617594L;
-    private Distribution distribution = new Uniform(0, 1);
+    private Distribution distribution = Uniform.of(0, 1);
 
     public static RandomValueRegression create() {
         return new RandomValueRegression();

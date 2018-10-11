@@ -23,7 +23,7 @@ public class DistanceMatrixTest {
 
         RandomSource.setSeed(1234);
 
-        Normal normal = Normal.from(0, 10);
+        Normal normal = Normal.of(0, 10);
 
         // generate symmetric matrix
         RM sym = SolidRM.empty(4, 4);

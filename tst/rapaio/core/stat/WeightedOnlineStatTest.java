@@ -20,7 +20,7 @@ public class WeightedOnlineStatTest {
     public void reverseTest() {
 
         RandomSource.setSeed(124);
-        Uniform unif = new Uniform(0, 1);
+        Uniform unif = Uniform.of(0, 1);
 
         Var x = VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 10, 20);
 
@@ -50,7 +50,7 @@ public class WeightedOnlineStatTest {
 
         RandomSource.setSeed(123);
 
-        Normal normal = Normal.from(0, 100);
+        Normal normal = Normal.of(0, 100);
         VarDouble x = VarDouble.from(100, normal::sampleNext);
         VarDouble w = VarDouble.fill(100, 1);
 
@@ -87,8 +87,8 @@ public class WeightedOnlineStatTest {
         WeightedOnlineStat wosTotal = WeightedOnlineStat.empty();
 
         RandomSource.setSeed(1234L);
-        Normal normal = Normal.from(0, 1);
-        Uniform uniform = new Uniform(0, 1);
+        Normal normal = Normal.of(0, 1);
+        Uniform uniform = Uniform.of(0, 1);
 
         VarDouble x = VarDouble.from(100, normal::sampleNext);
         VarDouble w = VarDouble.from(100, uniform::sampleNext);

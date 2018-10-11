@@ -38,7 +38,7 @@ public class KFuncGaussian implements KFunc {
 
     private static final long serialVersionUID = 4766872325548110258L;
 
-    private final Normal normal = new Normal();
+    private final Normal normal = Normal.std();
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {

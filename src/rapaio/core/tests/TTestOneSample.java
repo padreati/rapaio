@@ -185,7 +185,7 @@ public class TTestOneSample implements HTest {
     private void compute() {
         t = (sampleMean - mu) * Math.sqrt(sampleSize) / sampleSd;
 
-        StudentT dist = new StudentT(sampleSize - 1);
+        StudentT dist = StudentT.of(sampleSize - 1);
 
         switch (alt) {
             case GREATER_THAN:
@@ -198,8 +198,8 @@ public class TTestOneSample implements HTest {
                 pValue = dist.cdf(-Math.abs(this.t)) * 2;
         }
 
-        ciLow = new StudentT(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(sl / 2);
-        ciHigh = new StudentT(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
+        ciLow = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(sl / 2);
+        ciHigh = StudentT.of(sampleSize - 1, sampleMean, sampleSd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
     }
 
     @Override

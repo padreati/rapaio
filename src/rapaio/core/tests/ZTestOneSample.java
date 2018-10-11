@@ -197,8 +197,8 @@ public class ZTestOneSample implements HTest {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = Normal.from(sampleMean, sd / Math.sqrt(sampleSize)).quantile(sl / 2);
-        ciHigh = Normal.from(sampleMean, sd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
+        ciLow = Normal.of(sampleMean, sd / Math.sqrt(sampleSize)).quantile(sl / 2);
+        ciHigh = Normal.of(sampleMean, sd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
     }
 
     @Override

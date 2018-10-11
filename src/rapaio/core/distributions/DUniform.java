@@ -34,12 +34,16 @@ package rapaio.core.distributions;
  */
 public class DUniform implements Distribution {
 
+    public static DUniform of(int a, int b) {
+        return new DUniform(a, b);
+    }
+
     private static final long serialVersionUID = -6164593855805329051L;
     private final double a;
     private final double b;
     private final double n;
 
-    public DUniform(int a, int b) {
+    private DUniform(int a, int b) {
         this.a = a;
         this.b = b;
         this.n = b - a + 1;

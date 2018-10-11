@@ -55,7 +55,7 @@ public class VTransformPowerTest {
 
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("The source variable ? contains negative values, geometric mean cannot be computed");
-        VarDouble.from(100, row -> new Normal().sampleNext()).fapply(VTransformPower.with(10)).printLines();
+        VarDouble.from(100, row -> Normal.std().sampleNext()).fapply(VTransformPower.with(10)).printLines();
     }
 
 }

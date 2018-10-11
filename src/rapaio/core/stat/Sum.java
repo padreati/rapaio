@@ -28,15 +28,13 @@
 package rapaio.core.stat;
 
 import rapaio.data.Var;
-import rapaio.math.MTools;
 import rapaio.printer.Printable;
 
 import static rapaio.sys.WS.formatFlex;
 
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.
- * <p>
- * Ignore invalid numeric values. See {@link MTools#validNumber(double)}.
+ * Ignore missing data values.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

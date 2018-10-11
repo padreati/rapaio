@@ -120,7 +120,7 @@ public class TTestTwoPaired implements HTest {
 
         t = (sampleMean - mu) / sv;
 
-        StudentT st = new StudentT(df);
+        StudentT st = StudentT.of(df);
         switch (alt) {
             case GREATER_THAN:
                 pValue = 1 - st.cdf(t);
@@ -132,8 +132,8 @@ public class TTestTwoPaired implements HTest {
                 pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
-        ciLow = new StudentT(df, sampleMean, sv).quantile(sl / 2);
-        ciHigh = new StudentT(df, sampleMean, sv).quantile(1 - sl / 2);
+        ciLow = StudentT.of(df, sampleMean, sv).quantile(sl / 2);
+        ciHigh = StudentT.of(df, sampleMean, sv).quantile(1 - sl / 2);
     }
 
     public double getMu() {

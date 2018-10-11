@@ -69,7 +69,7 @@ public class GaussianPdf implements NumericEstimator {
             }
             double mu = onlineStatMap.get(label).mean();
             double sd = onlineStatMap.get(label).sd();
-            normals.put(label, Normal.from(mu, sd));
+            normals.put(label, Normal.of(mu, sd));
         }
     }
 

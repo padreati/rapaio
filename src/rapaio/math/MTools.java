@@ -247,22 +247,6 @@ public class MTools {
             0.005554733551962801371038690 /* 15.0 */
     };
 
-    public static double sqrt(double x) {
-        return Math.sqrt(x);
-    }
-
-    public static double rint(double x) {
-        return Math.rint(x);
-    }
-
-    public static double floor(double x) {
-        return Math.floor(x);
-    }
-
-    public static double log(double x) {
-        return Math.log(x);
-    }
-
     /**
      * Returns the base 2 logarithm of a {@code double} value.
      *
@@ -271,19 +255,6 @@ public class MTools {
      */
     public static double log2(double x) {
         return Math.log(x) / Math.log(2);
-    }
-
-    /**
-     * Returns {@code boolean} value indicating if the number if finite and different than {@code Double.NaN}.
-     * <p>
-     * This function is used to check if a computation can produce finite results or not.
-     * Another situation where is useful is when we test for a default numeric value which is usually set to {@code Double.NaN}.
-     *
-     * @param x the number which needs to be verified
-     * @return true if the number is finite and different than {@code Double.NaN}
-     */
-    public static boolean validNumber(double x) {
-        return x == x && !Double.isInfinite(x);
     }
 
     /*
@@ -981,6 +952,11 @@ public class MTools {
         return factors.stream().mapToInt(i -> i).toArray();
     }
 
+    public static double fdist(double x, double d1, double d2) {
+        if (x <= 0.0) return 0.0;
+        return 1 - betaIncReg(d1 * x / (d1 * x + d2), d1 / 2, d2 / 2);
+    }
+
     public static double log1pExp(double x) {
         if (x > 0) {
             return x + Math.log1p(Math.exp(-x));
@@ -989,14 +965,37 @@ public class MTools {
         }
     }
 
-    public static double fdist(double x, double d1, double d2) {
-        if (x <= 0.0) return 0.0;
-        return 1 - betaIncReg(d1 * x / (d1 * x + d2), d1 / 2, d2 / 2);
-    }
-
     /// math wappers
 
     public static double sin(double x) {
         return Math.sin(x);
+    }
+
+    public static double exp(double x) {
+        return Math.exp(x);
+    }
+
+    public static double sqrt(double x) {
+        return Math.sqrt(x);
+    }
+
+    public static double rint(double x) {
+        return Math.rint(x);
+    }
+
+    public static double floor(double x) {
+        return Math.floor(x);
+    }
+
+    public static double log(double x) {
+        return Math.log(x);
+    }
+
+    public static double max(double x, double y) {
+        return Math.max(x, y);
+    }
+
+    public static int max(int x, int y) {
+        return Math.max(x, y);
     }
 }

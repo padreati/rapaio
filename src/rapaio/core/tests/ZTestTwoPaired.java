@@ -137,8 +137,8 @@ public class ZTestTwoPaired implements HTest {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = Normal.from(sampleMean, sv).quantile(sl / 2);
-        ciHigh = Normal.from(sampleMean, sv).quantile(1 - sl / 2);
+        ciLow = Normal.of(sampleMean, sv).quantile(sl / 2);
+        ciHigh = Normal.of(sampleMean, sv).quantile(1 - sl / 2);
     }
 
     public double getMu() {

@@ -45,7 +45,7 @@ public class MatrixMultiplicationTest {
     @Test
     public void basicTestMM() {
 
-        Normal normal = new Normal();
+        Normal normal = Normal.std();
         RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
         RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
 
@@ -61,7 +61,7 @@ public class MatrixMultiplicationTest {
 
         RandomSource.setSeed(1234);
 
-        Normal normal = new Normal();
+        Normal normal = Normal.std();
         RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
         RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
 
@@ -82,7 +82,7 @@ public class MatrixMultiplicationTest {
         RandomSource.setSeed(1234);
 
         int N = 100;
-        Normal norm = Normal.from(1, 12);
+        Normal norm = Normal.of(1, 12);
 
         System.out.println("create matrix A");
         RM A = Time.showRun(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()));

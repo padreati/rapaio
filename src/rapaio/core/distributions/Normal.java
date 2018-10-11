@@ -35,10 +35,10 @@ import static rapaio.sys.WS.formatFlex;
 public class Normal implements Distribution {
 
     public static Normal std() {
-        return new Normal();
+        return new Normal(0, 1);
     }
 
-    public static Normal from(double mean, double sd) {
+    public static Normal of(double mean, double sd) {
         return new Normal(mean, sd);
     }
 
@@ -47,11 +47,6 @@ public class Normal implements Distribution {
     private final double sd;
     private final double var;
 
-    /**
-     * Instantiates a normal distribution
-     * @param mu mean
-     * @param sd standard deviation
-     */
     private Normal(double mu, double sd) {
         this.mu = mu;
         this.sd = sd;
@@ -68,10 +63,6 @@ public class Normal implements Distribution {
         return false;
     }
 
-    public Normal() {
-        this(0, 1);
-    }
-
     @Override
     public double pdf(double x) {
         return 1 / Math.sqrt(2 * Math.PI * var) * Math.exp(-Math.pow(x - mu, 2) / (2 * var));
@@ -83,10 +74,14 @@ public class Normal implements Distribution {
     }
 
     private double cdf(double x, double mu, double sd) {
-        if (Double.isNaN(x) || Double.isInfinite(x)) {
-            throw new IllegalArgumentException("X is not a real number");
+        if (Double.isFinite(x)) {
+            return cdfMarsaglia((x - mu) / sd);
         }
-        return cdfMarsaglia((x - mu) / sd);
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        // for infinity we return 0
+        return 0;
     }
 
     @Override

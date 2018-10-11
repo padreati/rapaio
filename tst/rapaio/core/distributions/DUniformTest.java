@@ -25,7 +25,9 @@
 package rapaio.core.distributions;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,11 +38,14 @@ public class DUniformTest {
 
     private static final double TOL = 1e-12;
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void testOtherFeatures() {
-        DUniform du = new DUniform(1, 6);
+        DUniform du = DUniform.of(1, 6);
 
-        Assert.assertEquals(true, du.discrete());
+        Assert.assertTrue(du.discrete());
         Assert.assertEquals(1, du.a(), TOL);
         Assert.assertEquals(6, du.b(), TOL);
         Assert.assertEquals(3.5, du.mean(), TOL);
@@ -52,22 +57,26 @@ public class DUniformTest {
         Assert.assertEquals(-1.2685714285714285, du.kurtosis(), TOL);
         Assert.assertEquals(1.791759469228055, du.entropy(), TOL);
 
-        Assert.assertEquals(8, new DUniform(8, 8).quantile(0.7), TOL);
+        Assert.assertEquals(8, DUniform.of(8, 8).quantile(0.7), TOL);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testLowQuantile() {
-        new DUniform(1, 6).quantile(-0.1);
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability must be interface the range [0,1], not -0.1");
+        DUniform.of(1, 6).quantile(-0.1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHighQuantile() {
-        new DUniform(1, 6).quantile(1.1);
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability must be interface the range [0,1], not 1.1");
+        DUniform.of(1, 6).quantile(1.1);
     }
 
     @Test
     public void testDUniformPdf() {
-        DUniform u = new DUniform(0, 5);
+        DUniform u = DUniform.of(0, 5);
 
         assertEquals("DUniform(a=0,b=5)", u.name());
 
@@ -81,7 +90,7 @@ public class DUniformTest {
 
     @Test
     public void testDUniformCdf() {
-        DUniform u = new DUniform(0, 5);
+        DUniform u = DUniform.of(0, 5);
 
         assertEquals("DUniform(a=0,b=5)", u.name());
 
@@ -95,7 +104,7 @@ public class DUniformTest {
 
     @Test
     public void testDUniformQuantile() {
-        DUniform u = new DUniform(0, 5);
+        DUniform u = DUniform.of(0, 5);
 
         assertEquals("DUniform(a=0,b=5)", u.name());
 

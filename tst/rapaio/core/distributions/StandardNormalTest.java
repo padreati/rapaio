@@ -25,13 +25,13 @@
 package rapaio.core.distributions;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -41,7 +41,8 @@ public class StandardNormalTest {
     private static final double ERROR = 1e-12;
     private Frame df;
 
-    public StandardNormalTest() throws IOException, URISyntaxException {
+    @Before
+    public void setUp() throws IOException {
         df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
@@ -74,18 +75,5 @@ public class StandardNormalTest {
         for (int i = 0; i < df.rowCount(); i++) {
             Assert.assertEquals(df.getDouble(i, "cdf"), d.cdf(df.getDouble(i, "x")), ERROR);
         }
-    }
-
-    @Test
-    public void testOtherAspects() {
-        Normal normal = new Normal();
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, normal.min(), ERROR);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, normal.max(), ERROR);
-        Assert.assertEquals(0, normal.mean(), ERROR);
-        Assert.assertEquals(0, normal.mode(), ERROR);
-        Assert.assertEquals(1, normal.var(), ERROR);
-        Assert.assertEquals(0, normal.skewness(), ERROR);
-        Assert.assertEquals(0, normal.kurtosis(), ERROR);
-        Assert.assertEquals(2.8378770664093453, normal.entropy(), ERROR);
     }
 }

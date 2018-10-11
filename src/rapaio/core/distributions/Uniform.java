@@ -36,11 +36,15 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Uniform implements Distribution {
 
+    public static Uniform of(double a, double b) {
+        return new Uniform(a, b);
+    }
+
     private static final long serialVersionUID = -6077483164719205038L;
     private final double a;
     private final double b;
 
-    public Uniform(double a, double b) {
+    private Uniform(double a, double b) {
         this.a = a;
         this.b = b;
     }

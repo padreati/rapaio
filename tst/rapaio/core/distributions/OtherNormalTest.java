@@ -24,24 +24,32 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class OtherNormalTest {
 
-    private static final double ERROR = 1e-12;
+    private static final double TOL = 1e-12;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     private Frame df;
 
-    public OtherNormalTest() throws IOException, URISyntaxException {
+    @Before
+    public void setUp() throws IOException {
         df = new Csv()
                 .withHeader(true)
                 .withSeparatorChar(',')
@@ -52,40 +60,76 @@ public class OtherNormalTest {
 
     @Test
     public void testStandardQuantile() {
-        Normal d = Normal.from(10, 2);
+        Normal d = Normal.of(10, 2);
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") > 0 && df.getDouble(i, "x") < 1) {
-                Assert.assertEquals(df.getDouble(i, "quantile"), d.quantile(df.getDouble(i, "x")), ERROR);
+                assertEquals(df.getDouble(i, "quantile"), d.quantile(df.getDouble(i, "x")), TOL);
             }
         }
     }
 
     @Test
     public void testStandardPdf() {
-        Normal d = Normal.from(10, 2);
+        Normal d = Normal.of(10, 2);
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.getDouble(i, "pdf"), d.pdf(df.getDouble(i, "x")), ERROR);
+            assertEquals(df.getDouble(i, "pdf"), d.pdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
     public void testStandardCdf() {
-        Normal d = Normal.from(10, 2);
+        Normal d = Normal.of(10, 2);
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(df.getDouble(i, "cdf"), d.cdf(df.getDouble(i, "x")), ERROR);
+            assertEquals(df.getDouble(i, "cdf"), d.cdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
     public void testOtherAspects() {
-        Normal normal = new Normal();
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, normal.min(), ERROR);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, normal.max(), ERROR);
-        Assert.assertEquals(0, normal.mean(), ERROR);
-        Assert.assertEquals(0, normal.mode(), ERROR);
-        Assert.assertEquals(1, normal.var(), ERROR);
-        Assert.assertEquals(0, normal.skewness(), ERROR);
-        Assert.assertEquals(0, normal.kurtosis(), ERROR);
-        Assert.assertEquals(2.8378770664093453, normal.entropy(), ERROR);
+        Normal normal = Normal.std();
+        assertEquals(Double.NEGATIVE_INFINITY, normal.min(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, normal.max(), TOL);
+        assertEquals(0, normal.mean(), TOL);
+        assertEquals(0, normal.mode(), TOL);
+        assertEquals(1, normal.var(), TOL);
+        assertEquals(0, normal.skewness(), TOL);
+        assertEquals(0, normal.kurtosis(), TOL);
+        assertEquals(2.8378770664093453, normal.entropy(), TOL);
+
+        assertEquals(Double.NaN, Normal.std().cdf(Double.NaN), TOL);
+        assertEquals(0, Normal.std().cdf(Double.NEGATIVE_INFINITY), TOL);
+        assertEquals(0, Normal.std().cdf(Double.POSITIVE_INFINITY), TOL);
+
+        assertEquals(Double.NEGATIVE_INFINITY, normal.quantile(0), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, normal.quantile(1), TOL);
+
+        assertEquals(1, normal.sd(), TOL);
+        assertEquals(0, normal.median(), TOL);
+    }
+
+    @Test
+    public void testInvalidQuantileSmallInput() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Inverse of a probability requires a probablity in the range [0,1], not -1.0");
+        Normal.std().quantile(-1);
+    }
+
+    @Test
+    public void testInvalidQuantileBigInput() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Inverse of a probability requires a probablity in the range [0,1], not 2.0");
+        Normal.std().quantile(2);
+    }
+
+    @Test
+    public void testName() {
+        assertEquals("Normal(mu=10, sd=20)", Normal.of(10, 20).name());
+        assertEquals("Normal(mu=10.3, sd=20.3)", Normal.of(10.3, 20.3).name());
+    }
+
+    @Test
+    public void testIsDiscrete() {
+        assertFalse(Normal.std().discrete());
+        assertFalse(Normal.of(0, 23).discrete());
     }
 }

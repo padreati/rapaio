@@ -29,6 +29,7 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.math.MTools;
+import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -80,7 +81,11 @@ import static rapaio.sys.WS.formatFlex;
  * @author wolfgang.hoschek@cern.ch
  * @version 1.0, 09/24/99
  */
-public class Gamma extends AbstractDistribution {
+public class Gamma implements Distribution {
+
+    public static Gamma of(double alpha, double beta) {
+        return new Gamma(alpha, beta);
+    }
 
     private static final long serialVersionUID = -7748384822665249829L;
     private final double alpha;
@@ -91,9 +96,10 @@ public class Gamma extends AbstractDistribution {
      *
      * @throws IllegalArgumentException if <tt>alpha <= 0.0 || beta <= 0.0</tt>.
      */
-    public Gamma(double alpha, double beta) {
+    private Gamma(double alpha, double beta) {
         if (alpha <= 0 || beta <= 0)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Value parameters alpha (" + WS.formatFlex(alpha) +
+                    ") and beta (" + WS.formatFlex(beta) + ") parameters should be strictly positive.");
         this.alpha = alpha;
         this.beta = beta;
     }
@@ -113,7 +119,7 @@ public class Gamma extends AbstractDistribution {
      */
     public double pdf(double x) {
         if (x < 0)
-            throw new IllegalArgumentException();
+            return Double.NaN;
         if (x == 0) {
             if (alpha == 1.0)
                 return 1.0 / beta;
@@ -134,6 +140,44 @@ public class Gamma extends AbstractDistribution {
         if (x < 0.0)
             return 0.0;
         return MTools.incompleteGamma(alpha, x / beta);
+    }
+
+    @Override
+    public double quantile(double p) {
+        if (p == 1)
+            return Double.POSITIVE_INFINITY;
+
+        double cdf0 = cdf(0);
+        if (p <= cdf0)
+            return 0;
+
+        // unbounded binary search
+        double low = 0;
+        double up = 1;
+
+        // double up until we found a bound
+        double cdf_up = cdf(up);
+        while (cdf_up <= p) {
+            up *= 2;
+            cdf_up = cdf(up);
+        }
+        while (low < up) {
+            double mid = (low + up) / 2;
+            double cdf_mid = cdf(mid);
+            double err = Math.abs(cdf_mid - cdf_up);
+            if (err <= 1e-15)
+                return up;
+            if (cdf_mid < p) {
+                if (low >= mid)
+                    return up;
+                low = mid;
+            } else {
+                if (up <= mid)
+                    return up;
+                up = mid;
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -164,7 +208,7 @@ public class Gamma extends AbstractDistribution {
          * N(0,1). * *
          **********************************************************************/
         double a = alpha;
-        double beta1 = 1/beta;
+        double beta1 = 1 / beta;
         double aa = -1.0, aaa = -1.0, b = 0.0, c = 0.0, d = 0.0, e, r, s = 0.0, si = 0.0, ss = 0.0;
         double q0 = 0.0;
         double q1 = 0.0416666664;
@@ -337,6 +381,5 @@ public class Gamma extends AbstractDistribution {
     @Override
     public double entropy() {
         throw new IllegalArgumentException("Not implemented");
-//        return alpha - Math.log(beta) + Math.log(Math.floor(Math.exp(MTools.lnGamma(alpha)))) + (1.0-alpha)*\phi(alpha);
     }
 }

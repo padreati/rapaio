@@ -36,12 +36,16 @@ import rapaio.sys.WS;
  * if these events occur with a known average rate and independent
  * of the last occurrence of last events.
  */
-public class Poisson extends AbstractDistribution {
+public class Poisson implements Distribution {
+
+    public static Poisson of(double lambda) {
+        return new Poisson(lambda);
+    }
 
     private static final long serialVersionUID = 2013039227493064895L;
     private final double lambda;
 
-    public Poisson(double lambda) {
+    private Poisson(double lambda) {
         if (lambda <= 0) {
             throw new IllegalArgumentException("lambda parameter value must be a real positive value");
         }
@@ -73,6 +77,38 @@ public class Poisson extends AbstractDistribution {
         if (x < 0)
             return 0.0;
         return MTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
+    }
+
+    @Override
+    public double quantile(double p) {
+        if (p == 1)
+            return Double.POSITIVE_INFINITY;
+
+        if (p <= cdf(0))
+            return 0;
+
+        // unbounded binary search
+        int low = 0;
+        int up = 1;
+
+        // double up until we found a bound
+        double cdf_up = cdf(up);
+        while (cdf_up <= p) {
+            up *= 2;
+            cdf_up = cdf(up);
+        }
+        while (low < up) {
+            int mid = Math.floorDiv(low + up, 2);
+            if (mid == low)
+                return up;
+            double cdf_mid = cdf(mid);
+            if (cdf_mid < p) {
+                low = mid;
+            } else {
+                up = mid;
+            }
+        }
+        return 0;
     }
 
     @Override

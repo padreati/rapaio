@@ -66,7 +66,7 @@ public class CorrPearsonTest {
     @Test
     public void randomTest() {
         RandomSource.setSeed(123);
-        Normal norm = Normal.from(0, 12);
+        Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
 
@@ -78,7 +78,7 @@ public class CorrPearsonTest {
     @Test
     public void testNonLinearCorr() {
         RandomSource.setSeed(123);
-        Normal norm = Normal.from(0, 12);
+        Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
@@ -91,7 +91,7 @@ public class CorrPearsonTest {
     public void testMultipleVarsNonLinear() {
 
         RandomSource.setSeed(123);
-        Normal norm = Normal.from(0, 12);
+        Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");

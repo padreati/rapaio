@@ -130,7 +130,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             sum += Math.pow(o - e, 2) / expected.getDouble(i - dv.start());
         }
         chiValue = sum;
-        pValue = 1.0 - new ChiSquare(df).cdf(chiValue);
+        pValue = 1.0 - ChiSquare.of(df).cdf(chiValue);
     }
 
     public int df() {

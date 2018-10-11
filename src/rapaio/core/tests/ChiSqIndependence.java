@@ -119,7 +119,7 @@ public class ChiSqIndependence implements HTest {
             }
         }
         chiValue = sum;
-        pValue = 1.0 - new ChiSquare(df).cdf(sum);
+        pValue = 1.0 - ChiSquare.of(df).cdf(sum);
     }
 
     public int getDegrees() {

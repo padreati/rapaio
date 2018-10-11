@@ -24,13 +24,12 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.io.Csv;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
 public class HypergeometricTest {
 
@@ -42,37 +41,35 @@ public class HypergeometricTest {
 
     @Before
     public void setUp() throws Exception {
-        df = new Csv()
-                .withNAValues("NaN")
-                .read(HypergeometricTest.class, "hyper.csv");
+        df = new Csv().withNAValues("NaN").read(HypergeometricTest.class, "hyper.csv");
 
-        hg1 = new Hypergeometric(20, 20, 30);
-        hg2 = new Hypergeometric(70, 70, 100);
+        hg1 = Hypergeometric.of(20, 20, 30);
+        hg2 = Hypergeometric.of(70, 70, 100);
     }
 
     @Test
-    public void rPdfTest() throws IOException {
+    public void rPdfTest() {
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_20_20_30"), hg1.pdf(df.getDouble(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_70_70_100"), hg2.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_20_20_30"), hg1.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_70_70_100"), hg2.pdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void rCdfTest() throws IOException {
+    public void rCdfTest() {
         for (int i = 0; i < df.rowCount(); i++) {
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_20_20_30"), hg1.cdf(df.getDouble(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_70_70_100"), hg2.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_20_20_30"), hg1.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_70_70_100"), hg2.cdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void rQuantileTest() throws IOException {
+    public void rQuantileTest() {
         for (int i = 0; i < df.rowCount(); i++) {
             if(df.getDouble(i, "x")>1)
                 break;
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_20_20_30"), hg1.quantile(df.getDouble(i, "x")), TOL);
-            Assert.assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_70_70_100"), hg2.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_20_20_30"), hg1.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_70_70_100"), hg2.quantile(df.getDouble(i, "x")), TOL);
         }
     }
 }

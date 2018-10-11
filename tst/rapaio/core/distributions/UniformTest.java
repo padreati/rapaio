@@ -24,11 +24,9 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/4/14.
@@ -39,9 +37,9 @@ public class UniformTest {
 
     @Test
     public void testVariousFeatures() {
-        Uniform u = new Uniform(0, 10);
+        Uniform u = Uniform.of(0, 10);
 
-        assertEquals(false, u.discrete());
+        assertFalse(u.discrete());
         assertEquals(0, u.min(), TOL);
         assertEquals(10, u.max(), TOL);
         assertEquals(5, u.mean(), TOL);
@@ -51,12 +49,12 @@ public class UniformTest {
         assertEquals(-1.2, u.kurtosis(), TOL);
         assertEquals(2.302585092994046, u.entropy(), TOL);
 
-        assertEquals(1, new Uniform(9, 9).pdf(9), TOL);
+        assertEquals(1, Uniform.of(9, 9).pdf(9), TOL);
     }
 
     @Test
     public void testUniformPdf() {
-        Distribution u = new Uniform(0, 2);
+        Distribution u = Uniform.of(0, 2);
 
         assertEquals("Uniform(a=0,b=2)", u.name());
 
@@ -69,7 +67,7 @@ public class UniformTest {
 
     @Test
     public void testUniformCdf() {
-        Distribution u = new Uniform(0, 2);
+        Distribution u = Uniform.of(0, 2);
 
         assertEquals(0, u.cdf(-1), TOL);
         assertEquals(0.0, u.cdf(0), TOL);
@@ -81,7 +79,7 @@ public class UniformTest {
 
     @Test
     public void testUniformQuantile() {
-        Distribution u = new Uniform(0, 2);
+        Distribution u = Uniform.of(0, 2);
 
         assertEquals(0, u.quantile(0), TOL);
         assertEquals(0.5, u.quantile(0.25), TOL);
@@ -92,11 +90,11 @@ public class UniformTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testLoqQuantile() {
-        new Uniform(0, 10).quantile(-1);
+        Uniform.of(0, 10).quantile(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testHighQuantile() {
-        new Uniform(0, 10).quantile(1.1);
+        Uniform.of(0, 10).quantile(1.1);
     }
 }

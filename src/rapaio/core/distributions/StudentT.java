@@ -40,17 +40,21 @@ import static rapaio.math.MTools.*;
  */
 public class StudentT implements Distribution {
 
+    public static StudentT of(double df) {
+        return new StudentT(df, 0, 1);
+    }
+
+    public static StudentT of(double df, double mu, double sigma) {
+        return new StudentT(df, mu, sigma);
+    }
+
     private static final long serialVersionUID = 2573925611489986427L;
 
     private final double df;
     private final double mu;
     private final double sigma;
 
-    public StudentT(double df) {
-        this(df, 0, 1);
-    }
-
-    public StudentT(double df, double mu, double sigma) {
+    private StudentT(double df, double mu, double sigma) {
         if(df < 1) {
             throw new IllegalArgumentException("degrees of freedom in student t distribution must have a value greater than 0.");
         }

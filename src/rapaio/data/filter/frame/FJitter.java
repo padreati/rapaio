@@ -38,11 +38,11 @@ import rapaio.data.VRange;
 public class FJitter extends AbstractFF {
 
     public static FJitter on(VRange vRange) {
-        return new FJitter(Normal.from(0, 0.1), vRange);
+        return new FJitter(Normal.of(0, 0.1), vRange);
     }
 
     public static FJitter on(double sd, VRange vRange) {
-        return new FJitter(Normal.from(0, sd), vRange);
+        return new FJitter(Normal.of(0, sd), vRange);
     }
 
     public static FJitter on(Distribution d, VRange vRange) {

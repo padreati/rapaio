@@ -396,7 +396,7 @@ public class TTestTwoSamples implements HTest {
             pv = Math.sqrt(xv + yv);
         }
 
-        StudentT st = new StudentT(df);
+        StudentT st = StudentT.of(df);
         switch (alt) {
             case GREATER_THAN:
                 pValue = 1 - st.cdf(t);
@@ -408,8 +408,8 @@ public class TTestTwoSamples implements HTest {
                 pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
-        ciLow = new StudentT(df, xSampleMean - ySampleMean, pv).quantile(sl / 2);
-        ciHigh = new StudentT(df, xSampleMean - ySampleMean, pv).quantile(1 - sl / 2);
+        ciLow = StudentT.of(df, xSampleMean - ySampleMean, pv).quantile(sl / 2);
+        ciHigh = StudentT.of(df, xSampleMean - ySampleMean, pv).quantile(1 - sl / 2);
     }
 
     @Override

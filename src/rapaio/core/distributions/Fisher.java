@@ -41,12 +41,15 @@ import static rapaio.math.MTools.*;
  */
 public class Fisher implements Distribution {
 
-    private static final long serialVersionUID = 2272786897584427248L;
+    public static Fisher of(double df1, double df2) {
+        return new Fisher(df1, df2);
+    }
 
+    private static final long serialVersionUID = 2272786897584427248L;
     private final double df1;
     private final double df2;
 
-    public Fisher(double df1, double df2) {
+    private Fisher(double df1, double df2) {
         this.df1 = df1;
         this.df2 = df2;
     }
@@ -111,7 +114,10 @@ public class Fisher implements Distribution {
 
     @Override
     public double skewness() {
-        return Double.NaN;
+        if (df2 <= 6) {
+            return Double.NaN;
+        }
+        return (2 * df1 + df2 - 2) * sqrt(8 * (df2 - 4)) / ((df2 - 6) * sqrt(df1 * (df1 + df2 - 2)));
     }
 
     @Override

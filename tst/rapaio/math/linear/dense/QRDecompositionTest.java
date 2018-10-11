@@ -107,8 +107,8 @@ public class QRDecompositionTest {
     public void testLMS() {
 
         RandomSource.setSeed(1234);
-        Normal normal = new Normal();
-        Uniform unif = new Uniform(0, 100);
+        Normal normal = Normal.std();
+        Uniform unif = Uniform.of(0, 100);
 
         for (int round = 0; round < 5; round++) {
 

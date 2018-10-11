@@ -103,7 +103,7 @@ public class SamplingToolsTest {
         for (double f : freq) {
             System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
         }
-        KSTestOneSample.from(v, new DUniform(0, 9)).printSummary();
+        KSTestOneSample.from(v, DUniform.of(0, 9)).printSummary();
         System.out.println();
     }
 }

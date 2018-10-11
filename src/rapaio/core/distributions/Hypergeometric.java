@@ -37,6 +37,10 @@ import java.util.Arrays;
  */
 public class Hypergeometric implements Distribution {
 
+    public static Hypergeometric of(int m, int n, int k) {
+        return new Hypergeometric(m, n, k);
+    }
+
     private static final long serialVersionUID = 5557359074330033049L;
 
     private final int m; // the number of white balls from the urn
@@ -52,7 +56,7 @@ public class Hypergeometric implements Distribution {
      * @param n the number of black / not success balls from the urn
      * @param k the number of draws
      */
-    public Hypergeometric(int m, int n, int k) {
+    private Hypergeometric(int m, int n, int k) {
         if (m < 0) {
             throw new IllegalArgumentException("m parameter should not be negative.");
         }

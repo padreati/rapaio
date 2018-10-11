@@ -116,7 +116,7 @@ public class LinearRPrediction extends RPrediction {
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));
                     beta_t_value.set(j, i, coeff.get(j) / beta_std_error.get(j, i));
-                    double pValue = degrees < 1 ? Double.NaN : new StudentT(degrees).cdf(-Math.abs(beta_t_value.get(j, i))) * 2;
+                    double pValue = degrees < 1 ? Double.NaN : StudentT.of(degrees).cdf(-Math.abs(beta_t_value.get(j, i))) * 2;
                     beta_p_value.set(j, i, pValue);
                     String signif = " ";
                     if (pValue <= 0.1)

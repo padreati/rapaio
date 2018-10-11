@@ -41,12 +41,15 @@ import static rapaio.math.MTools.*;
  */
 public class Binomial implements Distribution {
 
-    private static final long serialVersionUID = 8813621560796556828L;
+    public static Binomial of(double p, int n) {
+        return new Binomial(p, n);
+    }
 
+    private static final long serialVersionUID = 8813621560796556828L;
     private final double p;
     private final int n;
 
-    public Binomial(double p, int n) {
+    private Binomial(double p, int n) {
         this.p = p;
         this.n = n;
     }
@@ -120,7 +123,7 @@ public class Binomial implements Distribution {
 
         if (y > n) /* way off */ y = n;
 
-        z = new Binomial(pr, n).cdf(y);
+        z = Binomial.of(pr, n).cdf(y);
 
         /* fuzz to ensure left continuity: */
         p *= 1 - 64 * DBL_EPSILON;
@@ -141,7 +144,7 @@ public class Binomial implements Distribution {
         if (z[0] >= p) {
             /* search to the left */
             while (true) {
-                double newz = new Binomial(pr, n).cdf(y - incr);
+                double newz = Binomial.of(pr, n).cdf(y - incr);
                 if (y == 0 || newz < p)
                     return y;
                 y = Math.max(0, y - incr);
@@ -150,7 +153,7 @@ public class Binomial implements Distribution {
         } else {        /* search to the right */
             while (true) {
                 y = Math.min(y + incr, n);
-                if (y == n || (z[0] = new Binomial(pr, n).cdf(y)) >= p)
+                if (y == n || (z[0] = Binomial.of(pr, n).cdf(y)) >= p)
                     return y;
             }
         }

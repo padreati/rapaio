@@ -130,7 +130,7 @@ public class ImageGraphicsTest {
 
         final int N = 100;
         Var x = df.rvar(2);
-        Distribution normal = Normal.from(Mean.of(x).value(), Variance.of(x).sdValue());
+        Distribution normal = Normal.of(Mean.of(x).value(), Variance.of(x).sdValue());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));

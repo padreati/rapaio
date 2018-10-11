@@ -48,7 +48,7 @@ public class VJitterTest {
     @Test
     public void testJitterDistributed() {
         RandomSource.setSeed(1);
-        Var a = VarDouble.fill(100_000, 1).fapply(VJitter.with(new ChiSquare(5)));
+        Var a = VarDouble.fill(100_000, 1).fapply(VJitter.with(ChiSquare.of(5)));
         Mean mean = Mean.of(a);
         Variance var = Variance.of(a);
         mean.printSummary();

@@ -32,7 +32,6 @@ import rapaio.data.Var;
 import rapaio.io.Csv;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.graphics.Plotter.lines;
 
 /**
  * Test for binomial distribution
@@ -53,19 +52,19 @@ public class BinomialTest {
 
     @Test
     public void nameTest() {
-        assertEquals("Binomial(p=0.5,n=10)", new Binomial(0.5, 10).name());
+        assertEquals("Binomial(p=0.5,n=10)", Binomial.of(0.5, 10).name());
     }
 
     @Test
     public void bigN() {
-        Binomial b = new Binomial(0.5, 10000000);
+        Binomial b = Binomial.of(0.5, 10000000);
         assertEquals(10000000/2, b.quantile(0.5), TOL);
     }
 
     @Test
     public void testVariousArtifacts() {
 
-        Binomial b = new Binomial(0.2, 120);
+        Binomial b = Binomial.of(0.2, 120);
         Assert.assertTrue(b.discrete());
         assertEquals(0, b.min(), TOL);
         assertEquals(120, b.max(), TOL);
@@ -81,10 +80,10 @@ public class BinomialTest {
     @Test
     public void testBinomialPdf() {
 
-        Binomial b1 = new Binomial(0.1, 10);
-        Binomial b2 = new Binomial(0.1, 100);
-        Binomial b3 = new Binomial(0.9, 100);
-        Binomial b4 = new Binomial(0.9, 2000);
+        Binomial b1 = Binomial.of(0.1, 10);
+        Binomial b2 = Binomial.of(0.1, 100);
+        Binomial b3 = Binomial.of(0.9, 100);
+        Binomial b4 = Binomial.of(0.9, 2000);
 
         Var x = df.rvar("x");
 
@@ -104,10 +103,10 @@ public class BinomialTest {
     @Test
     public void testBinomialCdf() {
 
-        Binomial b1 = new Binomial(0.1, 10);
-        Binomial b2 = new Binomial(0.1, 100);
-        Binomial b3 = new Binomial(0.9, 100);
-        Binomial b4 = new Binomial(0.9, 2000);
+        Binomial b1 = Binomial.of(0.1, 10);
+        Binomial b2 = Binomial.of(0.1, 100);
+        Binomial b3 = Binomial.of(0.9, 100);
+        Binomial b4 = Binomial.of(0.9, 2000);
 
         Var x = df.rvar("x");
 
@@ -127,10 +126,10 @@ public class BinomialTest {
     @Test
     public void testBinomialQuantile() {
 
-        Binomial b1 = new Binomial(0.1, 10);
-        Binomial b2 = new Binomial(0.1, 100);
-        Binomial b3 = new Binomial(0.9, 100);
-        Binomial b4 = new Binomial(0.9, 2000);
+        Binomial b1 = Binomial.of(0.1, 10);
+        Binomial b2 = Binomial.of(0.1, 100);
+        Binomial b3 = Binomial.of(0.9, 100);
+        Binomial b4 = Binomial.of(0.9, 2000);
 
         Var x = df.rvar("x");
 

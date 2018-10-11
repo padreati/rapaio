@@ -92,7 +92,7 @@ public class ChiSqConditionalIndependence implements HTest {
         for (ChiSqIndependence ztest : ztests) {
             statistic += ztest.getChiValue();
         }
-        pValue = 1.0 - new ChiSquare(degrees).cdf(statistic);
+        pValue = 1.0 - ChiSquare.of(degrees).cdf(statistic);
     }
 
     public double getDegrees() {

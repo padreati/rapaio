@@ -19,7 +19,7 @@ public class VStandardizeTest {
     @Test
     public void testDouble() {
 
-        Distribution d = new Gamma(0.5, 2);
+        Distribution d = Gamma.of(0.5, 2);
         VarDouble x = VarDouble.from(1000, d::sampleNext);
 
         double mean = Mean.of(x).value();
