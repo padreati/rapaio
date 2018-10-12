@@ -36,8 +36,6 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.io.Csv;
 
-import java.io.IOException;
-
 import static org.junit.Assert.*;
 import static rapaio.math.MTools.sqrt;
 
@@ -113,7 +111,7 @@ public class GammaTest {
     }
 
     @Test
-    public void rPdfTest() throws IOException {
+    public void testRPdf() {
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_1"), g_low_low.pdf(df.getDouble(i, "x")), TOL);
             assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_2"), g_low_one.pdf(df.getDouble(i, "x")), TOL);
@@ -128,7 +126,7 @@ public class GammaTest {
     }
 
     @Test
-    public void rCdfTest() throws IOException {
+    public void testRCdf() {
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_1"), g_low_low.cdf(df.getDouble(i, "x")), TOL);
             assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_2"), g_low_one.cdf(df.getDouble(i, "x")), TOL);
@@ -143,7 +141,7 @@ public class GammaTest {
     }
 
     @Test
-    public void rQuantileTest() throws IOException {
+    public void testRQuantile() {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") > 1)
                 break;

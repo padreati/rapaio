@@ -57,6 +57,6 @@ public class KFuncGaussian implements KFunc {
 
     @Override
     public String summary() {
-        return "KFuncGaussian(" + normal.name() + ")";
+        return "KFuncGaussian";
     }
 }

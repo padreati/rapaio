@@ -24,15 +24,16 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Test for
@@ -40,10 +41,13 @@ import static org.junit.Assert.assertEquals;
  */
 public class StudentTTest {
 
-    private static final double ERROR = 1e-12;
+    private static final double TOL = 1e-12;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void densityTest() throws IOException {
+    public void testPdf() throws IOException {
         Frame df = new Csv()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -65,7 +69,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void distributionTest() throws IOException {
+    public void testCdf() throws IOException {
         Frame df = new Csv()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -87,7 +91,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void quantileTest() throws IOException {
+    public void testQuantile() throws IOException {
         Frame df = new Csv()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -122,42 +126,42 @@ public class StudentTTest {
         StudentT t10 = StudentT.of(10);
         StudentT t100 = StudentT.of(100);
 
-        Assert.assertEquals("StudentT(df=1, mu=0, sigma=1)", t1.name());
-        Assert.assertFalse(t1.discrete());
+        assertEquals("StudentT(df=1, mu=0, sigma=1)", t1.name());
+        assertFalse(t1.discrete());
 
         for (int i = 0; i < df.rowCount(); i++) {
 
             double x = df.getDouble(i, "x");
 
-            Assert.assertEquals(df.getDouble(i, "pdf_1"), t1.pdf(x), ERROR);
-            Assert.assertEquals(df.getDouble(i, "cdf_1"), t1.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_1"), t1.pdf(x), TOL);
+            assertEquals(df.getDouble(i, "cdf_1"), t1.cdf(x), TOL);
             if (x > 0 && x < 1) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_1")))
-                    Assert.assertEquals(df.getDouble(i, "quantile_1"), t1.quantile(df.getDouble(i, "x")), ERROR);
+                    assertEquals(df.getDouble(i, "quantile_1"), t1.quantile(df.getDouble(i, "x")), TOL);
             }
-            Assert.assertEquals(df.getDouble(i, "pdf_2"), t2.pdf(x), ERROR);
-            Assert.assertEquals(df.getDouble(i, "cdf_2"), t2.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_2"), t2.pdf(x), TOL);
+            assertEquals(df.getDouble(i, "cdf_2"), t2.cdf(x), TOL);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_2")))
-                    Assert.assertEquals(df.getDouble(i, "quantile_2"), t2.quantile(df.getDouble(i, "x")), ERROR);
+                    assertEquals(df.getDouble(i, "quantile_2"), t2.quantile(df.getDouble(i, "x")), TOL);
             }
-            Assert.assertEquals(df.getDouble(i, "pdf_5"), t5.pdf(x), ERROR);
-            Assert.assertEquals(df.getDouble(i, "cdf_5"), t5.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_5"), t5.pdf(x), TOL);
+            assertEquals(df.getDouble(i, "cdf_5"), t5.cdf(x), TOL);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_5")))
-                    Assert.assertEquals(df.getDouble(i, "quantile_5"), t5.quantile(df.getDouble(i, "x")), ERROR);
+                    assertEquals(df.getDouble(i, "quantile_5"), t5.quantile(df.getDouble(i, "x")), TOL);
             }
-            Assert.assertEquals(df.getDouble(i, "pdf_10"), t10.pdf(x), ERROR);
-            Assert.assertEquals(df.getDouble(i, "cdf_10"), t10.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_10"), t10.pdf(x), TOL);
+            assertEquals(df.getDouble(i, "cdf_10"), t10.cdf(x), TOL);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_10")))
-                    Assert.assertEquals(df.getDouble(i, "quantile_10"), t10.quantile(df.getDouble(i, "x")), ERROR);
+                    assertEquals(df.getDouble(i, "quantile_10"), t10.quantile(df.getDouble(i, "x")), TOL);
             }
-            Assert.assertEquals(df.getDouble(i, "pdf_100"), t100.pdf(x), ERROR);
-            Assert.assertEquals(df.getDouble(i, "cdf_100"), t100.cdf(x), ERROR);
+            assertEquals(df.getDouble(i, "pdf_100"), t100.pdf(x), TOL);
+            assertEquals(df.getDouble(i, "cdf_100"), t100.cdf(x), TOL);
             if (x > 0 && x < 1 && !Double.isNaN(x)) {
                 if (!Double.isNaN(df.getDouble(i, "quantile_100")))
-                    Assert.assertEquals(df.getDouble(i, "quantile_100"), t100.quantile(df.getDouble(i, "x")), ERROR);
+                    assertEquals(df.getDouble(i, "quantile_100"), t100.quantile(df.getDouble(i, "x")), TOL);
             }
         }
     }
@@ -166,12 +170,47 @@ public class StudentTTest {
     public void testOtherT() {
 
         StudentT t = StudentT.of(10, 2, 3);
-        Assert.assertEquals(2, t.mean(), ERROR);
-        Assert.assertEquals(2, t.mode(), ERROR);
-        Assert.assertEquals(11.25, t.var(), ERROR);
-        Assert.assertEquals(Double.NEGATIVE_INFINITY, t.min(), ERROR);
-        Assert.assertEquals(Double.POSITIVE_INFINITY, t.max(), ERROR);
-        Assert.assertEquals(0, t.skewness(), ERROR);
-        Assert.assertEquals(1, t.kurtosis(), ERROR);
+        assertEquals(2, t.mean(), TOL);
+        assertEquals(2, t.mode(), TOL);
+        assertEquals(11.25, t.var(), TOL);
+        assertEquals(Double.NEGATIVE_INFINITY, t.min(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, t.max(), TOL);
+        assertEquals(0, t.skewness(), TOL);
+        assertEquals(1, t.kurtosis(), TOL);
+
+        assertEquals(Double.NaN, StudentT.of(2).skewness(), TOL);
+        assertEquals(Double.NaN, StudentT.of(1).var(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, StudentT.of(2).var(), TOL);
+
+        assertEquals(Double.NaN, StudentT.of(2).kurtosis(), TOL);
+        assertEquals(Double.POSITIVE_INFINITY, StudentT.of(4).kurtosis(), TOL);
+    }
+
+    @Test
+    public void testInvalidDf() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("degrees of freedom in student t distribution must have a value greater than 0.");
+        StudentT.of(-1);
+    }
+
+    @Test
+    public void testInvalidNegativeProbabilityOnQuantile() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability must be in the range [0,1]");
+        StudentT.of(2).quantile(-1);
+    }
+
+    @Test
+    public void testInvalidPositiveProbabilityOnQuantile() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability must be in the range [0,1]");
+        StudentT.of(2).quantile(2);
+    }
+
+    @Test
+    public void testEntropy() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Not implemented.");
+        StudentT.of(4).entropy();
     }
 }

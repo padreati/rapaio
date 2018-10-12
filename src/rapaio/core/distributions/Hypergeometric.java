@@ -37,6 +37,14 @@ import java.util.Arrays;
  */
 public class Hypergeometric implements Distribution {
 
+    /**
+     * Builds a hypergeometric distribution.
+     *
+     * @param m number of white balls
+     * @param n number of black balls
+     * @param k number of draws
+     * @return instance of hypergeometric distribution
+     */
     public static Hypergeometric of(int m, int n, int k) {
         return new Hypergeometric(m, n, k);
     }
@@ -80,7 +88,7 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public String name() {
-        return "Hypergeometric(m=" + m + ", n=" + n + ", k=" + k + ")";
+        return "Hypergeometric(m=" + m + ",n=" + n + ",k=" + k + ")";
     }
 
     @Override
@@ -269,7 +277,6 @@ public class Hypergeometric implements Distribution {
        Computing the kurtosis using the formula from this Wikipedia page:
        https://en.wikipedia.org/wiki/Hypergeometric_distribution
      */
-
     @Override
     public double kurtosis() {
         double total = m + n;

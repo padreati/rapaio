@@ -32,22 +32,22 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class KDETest {
 
+    private static final double TOL = 1e-5;
 
-    private Normal normal = Normal.of(0, 1);
     private Var sample;
-
     private Var x = VarDouble.seq(-20, 20, 0.01);
     private Var y;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RandomSource.setSeed(1234);
-        sample = normal.sample(1_000);
-        y = VarDouble.from(x, normal::pdf);
+        sample = Normal.of(0, 1).sample(1_000);
+        y = VarDouble.from(x, Normal.of(0, 1)::pdf);
     }
 
     @Test
@@ -62,12 +62,44 @@ public class KDETest {
         test(new KFuncUniform());
     }
 
-    public void test(KFunc fun) {
-        KDE kde = new KDE(sample, fun);
+    @Test
+    public void testNames() {
+        assertEquals("KFuncGaussian", new KFuncGaussian().summary());
+        assertEquals("KFuncBiWeight", new KFuncBiWeight().summary());
+        assertEquals("KFuncCosine", new KFuncCosine().summary());
+        assertEquals("KFuncEpanechnikov", new KFuncEpanechnikov().summary());
+        assertEquals("KFuncTriangular", new KFuncTriangular().summary());
+        assertEquals("KFuncTricube", new KFuncTricube().summary());
+        assertEquals("KFuncTriweight", new KFuncTriweight().summary());
+        assertEquals("KFuncUniform", new KFuncUniform().summary());
+    }
+
+    private void test(KFunc fun) {
+        KDE kde = KDE.of(sample, fun);
         Var z = VarDouble.from(x, kde::pdf);
         Var delta = VarDouble.from(x.rowCount(), row -> y.getDouble(row)-z.getDouble(row));
         Mean mean = Mean.of(delta);
-        assertTrue(Math.abs(mean.value())<1e-5);
+        assertTrue(Math.abs(mean.value())<TOL);
     }
 
+    @Test
+    public void testOtherThings() {
+        assertEquals(0, new KFuncCosine().pdf(10, 1, 2), TOL);
+        assertEquals(0, new KFuncTricube().pdf(10, 1, 2), TOL);
+        assertEquals(0, new KFuncTriweight().pdf(10, 1, 2), TOL);
+        assertEquals(0, new KFuncUniform().pdf(10, 1, 2), TOL);
+
+        assertEquals("KFuncGaussian", KDE.of(VarDouble.wrap(1, 2, 3, 4)).kernel().summary());
+        assertEquals(1.037094286807564, KDE.of(VarDouble.wrap(1, 2, 3, 4)).bandwidth(), TOL);
+    }
+
+    @Test
+    public void testBuilders() {
+        VarDouble sample = VarDouble.from(100, Normal.std()::sampleNext);
+
+        assertEquals("KFuncGaussian", KDE.of(sample).kernel().summary());
+        assertEquals("KFuncGaussian", KDE.of(sample, 10).kernel().summary());
+        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian()).kernel().summary());
+        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian(), 10).kernel().summary());
+    }
 }

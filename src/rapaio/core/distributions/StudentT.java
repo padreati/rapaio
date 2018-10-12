@@ -162,6 +162,6 @@ public class StudentT implements Distribution {
     @Override
     public double entropy() {
         // take a look at the wiki page - it's scary
-        throw new IllegalArgumentException("not implemented");
+        throw new IllegalArgumentException("Not implemented.");
     }
 }

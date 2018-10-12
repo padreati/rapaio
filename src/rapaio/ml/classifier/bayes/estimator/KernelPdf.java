@@ -73,7 +73,7 @@ public class KernelPdf implements NumericEstimator {
                         return;
                     Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetVar))).toMappedFrame();
                     Var v = cond.rvar(testVar);
-                    KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.silvermanBandwidth(v) : bandwidth);
+                    KDE k = KDE.of(v, kfunc, (bandwidth == 0) ? KDE.silvermanBandwidth(v) : bandwidth);
                     kde.put(classLabel, k);
                 });
     }

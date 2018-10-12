@@ -80,6 +80,21 @@ using streams is also available on variables and also on data frames.
 * Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
 * WeightedMean, WeightedOnlineStat
 
+**Distributions**
+
+* Bernoulli
+* Binomial
+* ChiSquare
+* Discrete Uniform
+* Fisher
+* Gamma
+* Hypergeometric
+* Normal/Gaussian
+* Poisson
+* Student t
+* Continuous Uniform
+* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
+
 **Correlations**
 
 * Pearson product-moment coefficient
@@ -121,20 +136,6 @@ If there are no notes it means the feature is considered to be fully implemented
 * DTable
 * Distance Matrix
 
-
-**Distributions**
-
-* Bernoulli
-* Binomial
-* Poisson
-* Normal/Gaussian
-* Student t
-* ChiSquare
-* Discrete Uniform
-* Continuous Uniform
-* Hypergeometric
-* Gamma
-* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 
 **Sampling**
 

@@ -24,7 +24,9 @@
 
 package rapaio.core.distributions;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
@@ -33,13 +35,18 @@ import static org.junit.Assert.*;
  */
 public class UniformTest {
 
-    private final double TOL = 1e-12;
+    private static final double TOL = 1e-12;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testVariousFeatures() {
         Uniform u = Uniform.of(0, 10);
 
         assertFalse(u.discrete());
+        assertEquals(0, u.a(), TOL);
+        assertEquals(10, u.b(), TOL);
         assertEquals(0, u.min(), TOL);
         assertEquals(10, u.max(), TOL);
         assertEquals(5, u.mean(), TOL);
@@ -88,13 +95,17 @@ public class UniformTest {
         assertEquals(2.0, u.quantile(1), TOL);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testLoqQuantile() {
+    @Test
+    public void testLowQuantile() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("probability value should lie in [0,1] interval");
         Uniform.of(0, 10).quantile(-1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testHighQuantile() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("probability value should lie in [0,1] interval");
         Uniform.of(0, 10).quantile(1.1);
     }
 }

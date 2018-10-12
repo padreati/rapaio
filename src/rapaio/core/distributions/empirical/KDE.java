@@ -43,36 +43,70 @@ import java.util.Arrays;
  */
 public class KDE implements Serializable {
 
+    /**
+     * Builds a Gaussian kernel density estimator with bandwidth found by Silverman technique.
+     *
+     * @param values sample values
+     * @return kernel density estimator instance
+     */
+    public static KDE of(Var values) {
+        return new KDE(values, new KFuncGaussian(), silvermanBandwidth(values));
+    }
+
+    /**
+     * Builds a Gaussian kernel density estimator with given bandwidth.
+     *
+     * @param values sample values
+     * @param bandwidth desired bandwidth
+     * @return kernel density estimator instance
+     */
+    public static KDE of(Var values, double bandwidth) {
+        return new KDE(values, new KFuncGaussian(), bandwidth);
+    }
+
+    /**
+     * Builds a kernel density estimator with bandwidth found by Silverman technique.
+     *
+     * @param values sample values
+     * @param kernel kernel function
+     * @return kernel density estimator instance
+     */
+    public static KDE of(Var values, KFunc kernel) {
+        return new KDE(values, kernel, silvermanBandwidth(values));
+    }
+
+    /**
+     * Builds a kernel density estimator with given bandwidth.
+     *
+     * @param values sample values
+     * @param kernel kernel function
+     * @param bandwidth desired bandwidth
+     * @return kernel density estimator instance
+     */
+    public static KDE of(Var values, KFunc kernel, double bandwidth) {
+        return new KDE(values, kernel, bandwidth);
+    }
+
     private static final long serialVersionUID = -9221394390068126299L;
     private final double[] values;
     private final KFunc kernel;
     private final double bandwidth;
 
-    public KDE(Var values) {
-        this.values = values.stream().mapToDouble().toArray();
-        this.kernel = new KFuncGaussian();
-        this.bandwidth = silvermanBandwidth(values);
-    }
-
-    public KDE(Var values, double bandwidth) {
-        this(values, new KFuncGaussian(), bandwidth);
-    }
-
-    public KDE(Var values, KFunc kernel) {
-        this(values, kernel, silvermanBandwidth(values));
-    }
-
-    public KDE(Var values, KFunc kernel, double bandwidth) {
+    private KDE(Var values, KFunc kernel, double bandwidth) {
         this.values = VSort.asc().fapply(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }
 
     public double pdf(double x) {
+        // to optimize the computation, we find all sample values which have positive weights
         int from = Arrays.binarySearch(values, kernel.minValue(x, bandwidth));
         if (from < 0) from = -from - 1;
+
         int to = Arrays.binarySearch(values, kernel.maxValue(x, bandwidth));
         if (to < 0) to = -to - 1;
+
+        // compute the pdf kernel estimator as \frac{1}{nh} sum_{i=1}^{n} k(\frac{x-x_i}{h})
         double sum = 0;
         for (int i = from; i < to; i++) {
             sum += kernel.pdf(x, values[i], bandwidth);

@@ -24,7 +24,9 @@
 
 package rapaio.core.distributions;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Var;
@@ -37,6 +39,9 @@ import static org.junit.Assert.*;
 public class BernoulliTest {
 
     private static final double TOL = 1e-12;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void testBase() {
@@ -53,11 +58,6 @@ public class BernoulliTest {
         Var x80 = b80.sample(N);
         Var x50 = b50.sample(N);
         Var x10 = b10.sample(N);
-
-        System.out.println(Sum.of(x90).value()/N);
-        System.out.println(Sum.of(x80).value()/N);
-        System.out.println(Sum.of(x50).value()/N);
-        System.out.println(Sum.of(x10).value()/N);
 
         assertEquals(9024, Sum.of(x90).value(), TOL);
         assertEquals(8075, Sum.of(x80).value(), TOL);
@@ -97,8 +97,10 @@ public class BernoulliTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void invalidProbabilityTest() {
+    @Test
+    public void testInvalidProbability() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability parameter must be in closed interval [0,1]");
         Bernoulli.of(12);
     }
 }

@@ -68,7 +68,7 @@ public class DensityLine extends PlotComponent {
     public DensityLine(Var var, KFunc kfunc, double bandwidth, GOption... opts) {
         this.var = var;
         this.bandwidth = bandwidth;
-        this.kde = new KDE(var, kfunc, bandwidth);
+        this.kde = KDE.of(var, kfunc, bandwidth);
         this.options.bind(opts);
     }
 
