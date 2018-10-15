@@ -998,4 +998,8 @@ public class MTools {
     public static int max(int x, int y) {
         return Math.max(x, y);
     }
+
+    public static double pow(double x, double pow) {
+        return Math.pow(x, pow);
+    }
 }

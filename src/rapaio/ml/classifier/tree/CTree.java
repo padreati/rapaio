@@ -357,7 +357,7 @@ public class CTree extends AbstractClassifier {
 
     private void learnNode(CTreeNode node, Frame df, Var weights) {
         node.density = DVector.fromWeights(false, df.rvar(firstTargetName()), weights);
-        node.counter = DVector.fromCount(false, df.rvar(firstTargetName()));
+        node.counter = DVector.fromCounts(false, df.rvar(firstTargetName()));
         node.bestIndex = node.density.findBestIndex();
 
         if (df.rowCount() == 0) {
@@ -555,7 +555,7 @@ public class CTree extends AbstractClassifier {
         for (CTreeNode child : node.getChildren()) {
             DVector d = this.predictPoint(tree, child, row, df)._2;
             double wc = child.getDensity().sum();
-            dv.increment(d, wc);
+            dv.plus(d, wc);
             w += wc;
         }
         for (int i = 0; i < dict.size(); i++) {

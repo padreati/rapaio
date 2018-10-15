@@ -29,7 +29,7 @@ package rapaio.core.tools;
 
 import static rapaio.math.MTools.log2;
 
-public class ConcreteRowIntrinsicInfo extends AbstractSplit{
+public class ConcreteRowIntrinsicInfo extends AbstractDTableFunction {
 
 	@Override
 	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,

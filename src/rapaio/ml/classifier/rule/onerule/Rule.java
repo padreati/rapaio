@@ -55,7 +55,7 @@ public abstract class Rule implements Serializable {
     }
 
     public String getTargetClass() {
-        return dv.label(targetIndex);
+        return dv.level(targetIndex);
     }
 
     public double getErrorCount() {

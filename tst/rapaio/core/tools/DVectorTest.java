@@ -24,62 +24,124 @@
 
 package rapaio.core.tools;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class DVectorTest {
 
+    private static final double TOL = 1e-20;
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void testBuilders() {
-        assertTrue(DVector.empty(true, "a", "b").equalsFull(DVector.empty(false, "?", "a", "b")));
-        assertTrue(DVector.fromCount(true, VarNominal.copy("a", "b", "a")).equalsFull(DVector.fromCount(true, VarNominal.copy("a", "a", "b"))));
+        assertTrue(DVector.empty(true, "a", "b").equalsFull(DVector.empty(false, Arrays.asList("?", "a", "b"))));
+        assertTrue(DVector.fromCounts(true, VarNominal.copy("a", "b", "a"))
+                .equalsFull(DVector.fromCounts(true, VarNominal.copy("a", "a", "b"))));
         assertTrue(DVector.empty(false, 2).equalsFull(DVector.empty(true, "v1")));
-        assertTrue(DVector.fromCount(true, VarNominal.copy("a", "a", "b", "c"))
+        assertTrue(DVector.fromCounts(true, VarNominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.fromWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
                         VarDouble.copy(0.5, 1.5, 1, 1))));
-        assertTrue(DVector.fromCount(true, VarNominal.copy("a", "a", "b", "c"))
+        assertTrue(DVector.fromCounts(true, VarNominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.fromWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
-                        VarDouble.copy(0.5, 1.5, 1, 1))));
+                        VarDouble.copy(0.5, 1.5, 1, 1),
+                        "?", "a", "b", "c")));
+    }
+
+    @Test
+    public void testUseFirst() {
+        assertTrue(DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).isFirstUsed());
+        assertFalse(DVector.fromCounts(false, VarNominal.copy("a", "b", "c")).isFirstUsed());
+
+        assertEquals(0, DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).start());
+        assertEquals(1, DVector.fromCounts(false, VarNominal.copy("a", "b", "c")).start());
+
+        double[] v1 = DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).streamValues().toArray();
+        double[] v2 = DVector.fromCounts(false, VarNominal.copy("a", "b", "c")).streamValues().toArray();
+
+        assertEquals(v1.length, v2.length + 1);
+        for (int i = 0; i < v2.length; i++) {
+            assertEquals(v1[i + 1], v2[i], TOL);
+        }
+
+        assertEquals(" ? a b c\n" +
+                " - - - -\n" +
+                " 0 1 1 1\n", DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).summary());
+    }
+
+    @Test
+    public void testLevels() {
+        DVector dv = DVector.fromCounts(true, VarNominal.copy("a", "a", "b", "a", "b"));
+        List<String> levels = dv.levels();
+        assertEquals(3, levels.size());
+        assertEquals("?", levels.get(0));
+        assertEquals("a", levels.get(1));
+        assertEquals("b", levels.get(2));
+
+        assertEquals("?", dv.level(0));
+        assertEquals("a", dv.level(1));
+        assertEquals("b", dv.level(2));
+
+        assertEquals(0, dv.get("?"), TOL);
+        assertEquals(3, dv.get("a"), TOL);
+        assertEquals(2, dv.get("b"), TOL);
     }
 
     @Test
     public void testIncrement() {
-        DVector ndv1 = DVector.fromWeights(
-                true,
-                VarNominal.copy("a", "b", "c"),
-                VarDouble.copy(1.0, 7.0, 5.0)
-        );
+        DVector dv1 = DVector.fromWeights(true, VarNominal.copy("a", "b", "c"), VarDouble.copy(1.0, 7.0, 5.0));
 
-        DVector ndv2 = DVector.empty(true, "?", "a", "b", "c");
-        ndv2.increment(1, 1);
-        ndv2.increment(2, 4);
-        ndv2.increment(2, 3);
-        ndv2.increment(3, 5);
+        DVector dv2 = DVector.empty(true, "?", "a", "b", "c");
+        dv2.increment(1, 1);
+        dv2.increment(2, 4);
+        dv2.increment("b", 3);
+        dv2.increment(3, 5);
 
-        assertTrue(ndv1.equalsFull(ndv2));
+        assertTrue(dv1.equalsFull(dv2));
+
+        dv1.plus(dv2, 0);
+        assertTrue(dv1.equalsFull(dv2));
+
+        dv2.plus(dv1, 2);
+        for (int i = 0; i < dv2.levels().size(); i++) {
+            assertEquals(dv1.get(i) * 3, dv2.get(i), TOL);
+        }
+    }
+
+    @Test
+    public void invalidPlusSize() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Cannot update density vector, row count is different");
+        DVector.empty(true, 10).plus(DVector.empty(true, 9), 0);
     }
 
     @Test
     public void testSet() {
-        DVector ndv1 = DVector.fromWeights(false,
+        DVector dv1 = DVector.fromWeights(false,
                 VarNominal.copy("?", "a", "b", "c"),
                 VarDouble.copy(0.0, 1.0, 7.0, 5.0)
         );
 
-        DVector ndv2 = DVector.empty(false, "?", "a", "b", "c");
-        ndv2.increment(1, ndv1.get(1));
-        ndv2.set(2, 4);
-        ndv2.increment(2, 3);
-        ndv2.increment(3, 5);
+        DVector dv2 = DVector.empty(false, "?", "a", "b", "c");
+        dv2.increment(1, dv1.get(1));
+        dv2.set(2, 4);
+        dv2.increment(2, 3);
+        dv2.set("c", 5);
 
-        assertTrue(ndv1.equalsFull(ndv2));
+        assertTrue(dv1.equalsFull(dv2));
     }
 
     @Test
@@ -104,22 +166,37 @@ public class DVectorTest {
 
     @Test
     public void testNormalize() {
-        DVector dv = DVector.fromWeights(true,
+        DVector dv1 = DVector.fromWeights(true,
                 VarNominal.copy("a", "b", "c"),
                 VarDouble.copy(1.0, 1.0, 1.0)
         );
-        dv.normalize();
+        dv1.normalize();
 
-        for (int i = 1; i < dv.getRowCount(); i++) {
-            assertEquals(1.0 / 3.0, dv.get(i), 1e-20);
+        for (int i = 1; i < dv1.rowCount(); i++) {
+            assertEquals(1.0 / 3.0, dv1.get(i), TOL);
         }
 
-        dv.set(0, 1.0 / 3.0);
-        dv.normalize();
+        dv1.set(0, 1.0 / 3.0);
+        dv1.normalize();
 
-        for (int i = 0; i < dv.getRowCount(); i++) {
-            assertEquals(dv.get(i), 1.0 / 4.0, 1e-20);
+        for (int i = 0; i < dv1.rowCount(); i++) {
+            assertEquals(dv1.get(i), 1.0 / 4.0, TOL);
         }
+
+        DVector dv2 = DVector.fromWeights(true,
+                VarNominal.copy("a", "b", "c"),
+                VarDouble.copy(-2, 0, 2));
+
+        dv2.normalize();
+        assertEquals(-2, dv2.get(1), TOL);
+        assertEquals(0, dv2.get(2), TOL);
+        assertEquals(2, dv2.get(3), TOL);
+
+        dv2.normalize(2);
+
+        assertEquals(-1. / 4, dv2.get(1), TOL);
+        assertEquals(0, dv2.get(2), TOL);
+        assertEquals(1. / 4, dv2.get(3), TOL);
     }
 
     @Test
@@ -129,10 +206,8 @@ public class DVectorTest {
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
-        assertEquals(9.0, dv.withFirst(false).sum(), 1e-20);
-        assertEquals(10.0, dv.withFirst(true).sum(), 1e-20);
-        assertEquals(6.0, dv.withFirst(false).sumExcept(2), 1e-20);
-        assertEquals(7.0, dv.withFirst(true).sumExcept(2), 1e-20);
+        assertEquals(9.0, dv.sum(), 1e-20);
+        assertEquals(6.0, dv.sumExcept(2), 1e-20);
     }
 
 
@@ -143,8 +218,7 @@ public class DVectorTest {
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
-        assertEquals(2, dv.withFirst(true).countValues(x -> x <= 2));
-        assertEquals(1, dv.withFirst(false).countValues(x -> x <= 2));
+        assertEquals(2, dv.countValues(x -> x <= 2));
     }
 
     @Test

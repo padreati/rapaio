@@ -28,11 +28,13 @@
 package rapaio.core.tools;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Var;
 import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
+import rapaio.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -40,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoublePredicate;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
@@ -73,7 +74,7 @@ public class DVector implements Printable, Serializable {
     }
 
     /**
-     * Builds a distribution vector with given dimestion. Names are generated automatically.
+     * Builds a distribution vector with given dimension. Names are generated automatically.
      *
      * @param rows size of the distribution vector
      * @return new empty distribution vector
@@ -99,7 +100,7 @@ public class DVector implements Printable, Serializable {
      * @param var given nominal value
      * @return new distribution vector filled with counts
      */
-    public static DVector fromCount(boolean useFirst, Var var) {
+    public static DVector fromCounts(boolean useFirst, Var var) {
         return new DVector(useFirst, var.levels(), var, null);
     }
 
@@ -120,7 +121,7 @@ public class DVector implements Printable, Serializable {
      * Builds a new distribution vector, with given names, grouped by
      * the nominal variable and with values as sums on numeric weights
      *
-     * @param labels  levels used for names
+     * @param labels  array of names
      * @param var     defines nominal grouping
      * @param weights weights used to compute sums for each cell
      * @return new distribution vector
@@ -162,12 +163,6 @@ public class DVector implements Printable, Serializable {
         return useFirst;
     }
 
-    public DVector withFirst(boolean useFirst) {
-        this.useFirst = useFirst;
-        this.start = useFirst ? 0 : 1;
-        return this;
-    }
-
     public List<String> levels() {
         return levels;
     }
@@ -182,23 +177,27 @@ public class DVector implements Printable, Serializable {
         return values[pos];
     }
 
-    public double get(String name) {
-        return get(reverse.get(name));
+    public String level(int pos) {
+        return levels.get(pos);
     }
 
-    public String label(int pos) {
-        return levels.get(pos);
+    public double get(String name) {
+        return get(reverse.get(name));
     }
 
     /**
      * Updates the value from the given position {@param pos} by adding the {@param value}
      *
-     * @param pos   position of the denity vector to be updated
+     * @param pos   position of the density vector to be updated
      * @param value value to be added to given cell
      */
     public void increment(int pos, double value) {
         values[pos] += value;
         total += value;
+    }
+
+    public void increment(String name, double value) {
+        increment(reverse.get(name), value);
     }
 
     /**
@@ -207,24 +206,13 @@ public class DVector implements Printable, Serializable {
      * @param dv     density vector which will be added
      * @param factor the factor used to multiply added density vector with
      */
-    public void increment(DVector dv, double factor) {
+    public void plus(DVector dv, double factor) {
+        if (values.length != dv.values.length)
+            throw new IllegalArgumentException("Cannot update density vector, row count is different");
         for (int i = 0; i < values.length; i++) {
             values[i] += dv.get(i) * factor;
             total += dv.get(i) * factor;
         }
-    }
-
-    public void increment(String name, double value) {
-        increment(reverse.get(name), value);
-    }
-
-    public void increment(DVector dv) {
-        if (values.length != dv.values.length)
-            throw new IllegalArgumentException("Cannot update density vector, row count is different");
-        for (int i = 0; i < values.length; i++) {
-            values[i] += dv.values[i];
-        }
-        total += dv.total;
     }
 
     /**
@@ -271,12 +259,20 @@ public class DVector implements Printable, Serializable {
     }
 
     /**
-     * Normalize values from density vector
+     * Normalize values from density vector to sum
      */
     public DVector normalize() {
+        normalize(1);
+        return this;
+    }
+
+    /**
+     * Normalize values from density vector to sum of powers
+     */
+    public DVector normalize(double pow) {
         total = 0.0;
         for (int i = start; i < values.length; i++) {
-            total += values[i];
+            total += MTools.pow(values[i], pow);
         }
         if (total == 0)
             return this;
@@ -288,8 +284,7 @@ public class DVector implements Printable, Serializable {
     }
 
     /**
-     * Computes the sum of all cells.
-     * Missing cell might be used or not,
+     * Computes the sum of all cells. First cell is skipped if {@link #isFirstUsed()} = false
      *
      * @return sum of elements
      */
@@ -304,26 +299,29 @@ public class DVector implements Printable, Serializable {
      * @return partial sum of cells
      */
     public double sumExcept(int except) {
+        if (except <= 0) {
+            throw new IllegalArgumentException("except index must be greater than 0");
+        }
         return sum() - values[except];
     }
 
     /**
      * Count values which respects the condition given by the predicate.
      *
-     * @param pred condition used to filter the values
+     * @param predicate condition used to filter the values
      * @return count of filtered values
      */
-    public int countValues(DoublePredicate pred) {
+    public int countValues(DoublePredicate predicate) {
         int count = 0;
         for (int i = start; i < values.length; i++) {
-            if (pred.test(values[i])) {
+            if (predicate.test(values[i])) {
                 count++;
             }
         }
         return count;
     }
 
-    public int getRowCount() {
+    public int rowCount() {
         return levels.size();
     }
 
@@ -347,13 +345,17 @@ public class DVector implements Printable, Serializable {
     }
 
     public DoubleStream streamValues() {
-        return Arrays.stream(values);
+        if(isFirstUsed()) {
+            return Arrays.stream(values);
+        }
+        return Arrays.stream(values).skip(1);
     }
 
     @Override
     public String toString() {
         return "DVector{" +
-                "levels=" + levels.stream().collect(Collectors.joining(",")) +
+                "levels=[" + String.join(",", levels) +
+                "], firstUsed=" + useFirst +
                 ", values=" + Arrays.toString(values) +
                 ", total=" + total +
                 '}';
@@ -383,18 +385,9 @@ public class DVector implements Printable, Serializable {
         TextTable tt = TextTable.newEmpty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
             tt.set(0, i, levels.get(i), 1);
-            tt.set(1, i, repeat(levels.get(i).length(), '-'), 1);
+            tt.set(1, i, StringUtil.repeat(levels.get(i).length(), '-'), 1);
             tt.set(2, i, WS.formatFlex(values[i]), 1);
         }
         return tt.summary();
     }
-
-    private String repeat(int len, char ch) {
-        char[] lineChars = new char[len];
-        for (int i = 0; i < len; i++) {
-            lineChars[i] = ch;
-        }
-        return String.valueOf(lineChars);
-    }
-
 }

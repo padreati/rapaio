@@ -25,27 +25,28 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.util;
 
-import static rapaio.math.MTools.log2;
+/**
+ * Various utility tools for string processing
+ *
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/18.
+ */
+public final class StringUtil {
 
-public class ConcreteTotalRowEntropy extends AbstractSplit{
-
-	@Override
-	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,
-			int colLength) {
-		double entropy = 0;
-        for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                entropy += -log2(totals[i] / total) * totals[i] / total;
-            }
+    /**
+     * Builds a string of a given length filled with the same character
+     *
+     * @param len length of the string
+     * @param ch fill character
+     * @return string instance
+     */
+    public static String repeat(int len, char ch) {
+        char[] lineChars = new char[len];
+        for (int i = 0; i < len; i++) {
+            lineChars[i] = ch;
         }
-        return entropy;
-	}
-
-	@Override
-	protected int chooseLine(int row, int col) {
-		return row;
-	}
+        return String.valueOf(lineChars);
+    }
 
 }

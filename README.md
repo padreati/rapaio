@@ -19,7 +19,8 @@ Acknowledgements
 Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
 
 
-**CURRENT STATE OF THE CODE**
+CURRENT STATE OF THE CODE
+=========================
 
 Currently the code can be classified into three categories of code maturity:
 

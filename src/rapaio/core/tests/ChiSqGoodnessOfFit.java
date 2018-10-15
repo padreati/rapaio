@@ -85,7 +85,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         switch (x.type()) {
             case BINARY:
             case NOMINAL:
-                return DVector.fromCount(false, x);
+                return DVector.fromCounts(false, x);
             case DOUBLE:
             case INT:
                 DVector dv = DVector.empty(true, x.rowCount());
@@ -103,7 +103,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 
-        if (dv.getRowCount() - dv.start() != expected.rowCount()) {
+        if (dv.rowCount() - dv.start() != expected.rowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
         }
 
@@ -116,7 +116,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         }
 
         double sum = 0;
-        for (int i = dv.start(); i < dv.getRowCount(); i++) {
+        for (int i = dv.start(); i < dv.rowCount(); i++) {
             double o = dv.get(i);
             double e = expected.getDouble(i - dv.start());
 
@@ -171,7 +171,7 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         sb.append("Data:  \n");
 
-        TextTable tt = TextTable.newEmpty(5, dv.getRowCount() + 1);
+        TextTable tt = TextTable.newEmpty(5, dv.rowCount() + 1);
 
         tt.withHeaderRows(1);
         tt.withHeaderCols(1);
@@ -182,9 +182,9 @@ public class ChiSqGoodnessOfFit implements HTest {
         tt.set(4, 0, "Expected prob", -1);
 
         int off = dv.isFirstUsed() ? 0 : 1;
-        for (int i = 0; i < dv.getRowCount() - off; i++) {
-            tt.set(0, i + 1, dv.label(i + off), 1);
-            tt.set(1, i + 1, new String(new char[dv.label(i + off).length()]).replace("\0", "-"), 1);
+        for (int i = 0; i < dv.rowCount() - off; i++) {
+            tt.set(0, i + 1, dv.level(i + off), 1);
+            tt.set(1, i + 1, new String(new char[dv.level(i + off).length()]).replace("\0", "-"), 1);
             tt.set(2, i + 1, WS.formatFlex(dv.get(i + off)), 1);
             tt.set(3, i + 1, WS.formatFlex(expected.getDouble(i)), 1);
             tt.set(4, i + 1, WS.formatFlex(p.getDouble(i)), 1);

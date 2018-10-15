@@ -46,19 +46,15 @@ public class DTableTest {
         Frame df = Datasets.loadPlay();
 
         DTable id = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), false);
-        assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.694, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.246, id.splitByRowInfoGain(), 1e-3);
 
-        assertEquals(1.577, id.splitByRowIntrinsicInfo(), 1e-3);
         assertEquals(0.156, id.splitByRowGainRatio(), 1e-3);
 
         id = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), false);
-        assertEquals(0.940, id.totalColEntropy(), 1e-3);
         assertEquals(0.892, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.048, id.splitByRowInfoGain(), 1e-3);
 
-        assertEquals(0.985, id.splitByRowIntrinsicInfo(), 1e-3);
         assertEquals(0.048, id.splitByRowGainRatio(), 1e-3);
     }
 
@@ -71,11 +67,9 @@ public class DTableTest {
         DTable id = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), false);
         id.printSummary();
 
-        assertEquals(0.961, id.totalColEntropy(), 1e-3);
         assertEquals(0.747, id.splitByRowAverageEntropy(), 1e-3);
         assertEquals(0.214, id.splitByRowInfoGain(), 1e-3);
 
-        assertEquals(1.549, id.splitByRowIntrinsicInfo(), 1e-3);
         assertEquals(0.138, id.splitByRowGainRatio(), 1e-3);
     }
 
@@ -113,29 +107,14 @@ public class DTableTest {
 
         dt2.printSummary();
 
-        WS.println("totalColEntropy: " + WS.formatFlex(dt1.totalColEntropy()));
-        assertEquals(dt1.totalColEntropy(), dt2.totalColEntropy(), 1e-30);
-
-        WS.println("totalRowEntropy: " + WS.formatFlex(dt1.totalRowEntropy()));
-        assertEquals(dt1.totalRowEntropy(), dt2.totalRowEntropy(), 1e-30);
-
         WS.println("splitByRowAverageEntropy: " + WS.formatFlex(dt1.splitByRowAverageEntropy()));
         assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
-
-        WS.println("splitByColAverageEntropy: " + WS.formatFlex(dt1.splitByColAverageEntropy()));
-        assertEquals(dt1.splitByColAverageEntropy(), dt2.splitByColAverageEntropy(), 1e-30);
 
         WS.println("splitByRowInfoGain: " + WS.formatFlex(dt1.splitByRowInfoGain()));
         assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
 
-        WS.println("splitByColInfoGain: " + WS.formatFlex(dt1.splitByColInfoGain()));
-        assertEquals(dt1.splitByColInfoGain(), dt2.splitByColInfoGain(), 1e-30);
-
         WS.println("splitByRowGainRatio: " + WS.formatFlex(dt1.splitByRowGainRatio()));
         assertEquals(dt1.splitByRowGainRatio(), dt2.splitByRowGainRatio(), 1e-30);
-
-        WS.println("splitByColGainRatio: " + WS.formatFlex(dt1.splitByColGainRatio()));
-        assertEquals(dt1.splitByColGainRatio(), dt2.splitByColGainRatio(), 1e-30);
 
         WS.println("splitByRowGiniGain: " + WS.formatFlex(dt1.splitByRowGiniGain()));
         assertEquals(dt1.splitByRowGiniGain(), dt2.splitByRowGiniGain(), 1e-30);

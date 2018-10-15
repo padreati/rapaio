@@ -27,26 +27,21 @@
 
 package rapaio.core.tools;
 
-import static rapaio.math.MTools.log2;
-
-public class ConcreteColAverageEntropy extends AbstractSplit{
-
-	@Override
-	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,
-			int colLength) {
-		double gain = 0;
+public abstract class AbstractDTableFunction {
+	public double getSplitInfo(int start, int rowLength, int colLength, double[][] values) {
+		double[] totals = new double[chooseLine(rowLength, colLength)];
         for (int i = start; i < rowLength; i++) {
             for (int j = start; j < colLength; j++) {
-                if (values[i][j] > 0)
-                    gain += -log2(values[i][j] / totals[j]) * values[i][j] / total;
+                totals[chooseLine(i, j)] += values[i][j];
             }
         }
-        return gain;
+        double total = 0;
+        for (int i = start; i < totals.length; i++) {
+            total += totals[i];
+        }
+        return getInfo(start, total, totals, values, rowLength, colLength);
 	}
 
-	@Override
-	protected int chooseLine(int row, int col) {
-		return col;
-	}
-
+	protected abstract int chooseLine(int row, int col);
+	protected abstract double getInfo(int start, double total, double[] totals, double[][] values, int rowLength, int colLength);
 }

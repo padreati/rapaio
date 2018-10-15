@@ -230,6 +230,11 @@ public final class DTable implements Printable, Serializable {
         }
     }
 
+    public DTable withTotalSummary(boolean totalSummary) {
+        this.totalSummary = totalSummary;
+        return this;
+    }
+
     public boolean useFirst() {
         return start == 0;
     }
@@ -254,77 +259,26 @@ public final class DTable implements Printable, Serializable {
         return colLevels;
     }
 
-    public DTable withTotalSummary(boolean totalSummary) {
-        this.totalSummary = totalSummary;
-        return this;
-    }
-
     public double get(int row, int col) {
         return values[row][col];
-    }
-
-    public void reset() {
-        for (double[] line : values) Arrays.fill(line, 0, line.length, 0);
     }
 
     public void update(int row, int col, double weight) {
         values[row][col] += weight;
     }
 
-    public void moveOnCol(int row1, int row2, int col, double weight) {
-        update(row1, col, -weight);
-        update(row2, col, weight);
-    }
-
-    public void moveOnRow(int row, int col1, int col2, double weight) {
-        update(row, col1, -weight);
-        update(row, col2, weight);
-    }
-
-    public double totalColEntropy() {
-        AbstractSplit abstractSplit = new ConcreteTotalColEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
-    }
-
-    public double totalRowEntropy() {
-        AbstractSplit abstractSplit = new ConcreteTotalRowEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
-    }
-
     public double splitByRowAverageEntropy() {
-        AbstractSplit abstractSplit = new ConcreteRowAverageEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
-    }
-
-    public double splitByColAverageEntropy() {
-        AbstractSplit abstractSplit = new ConcreteColAverageEntropy();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
+        return new ConcreteRowAverageEntropy().getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
     }
 
     public double splitByRowInfoGain() {
-        return totalColEntropy() - splitByRowAverageEntropy();
-    }
-
-    public double splitByColInfoGain() {
-        return totalRowEntropy() - splitByColAverageEntropy();
-    }
-
-    public double splitByRowIntrinsicInfo() {
-        AbstractSplit abstractSplit = new ConcreteRowIntrinsicInfo();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
-    }
-
-    public double splitByColIntrinsicInfo() {
-        AbstractSplit abstractSplit = new ConcreteColIntrinsicInfo();
-        return abstractSplit.getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
+        double totalColEntropy = new ConcreteTotalColEntropy().getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
+        return totalColEntropy - splitByRowAverageEntropy();
     }
 
     public double splitByRowGainRatio() {
-        return splitByRowInfoGain() / splitByRowIntrinsicInfo();
-    }
-
-    public double splitByColGainRatio() {
-        return splitByColInfoGain() / splitByColIntrinsicInfo();
+        double splitByRowIntrinsicInfo = new ConcreteRowIntrinsicInfo().getSplitInfo(start, rowLevels.size(), colLevels.size(), values);
+        return splitByRowInfoGain() / splitByRowIntrinsicInfo;
     }
 
     /**

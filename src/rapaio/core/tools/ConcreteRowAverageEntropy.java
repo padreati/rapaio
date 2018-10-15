@@ -29,11 +29,10 @@ package rapaio.core.tools;
 
 import static rapaio.math.MTools.log2;
 
-public class ConcreteRowAverageEntropy extends AbstractSplit{
+public class ConcreteRowAverageEntropy extends AbstractDTableFunction {
 
 	@Override
-	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,
-			int colLength) {
+	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength, int colLength) {
 		double gain = 0;
         for (int i = start; i < rowLength; i++) {
             for (int j = start; j < colLength; j++) {

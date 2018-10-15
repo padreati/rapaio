@@ -267,7 +267,7 @@ public class OneRule extends AbstractClassifier {
             }
             if (last.getTargetClass().equals(rule.getTargetClass())) {
                 DVector dv = last.getDV().solidCopy();
-                dv.increment(rule.getDV());
+                dv.plus(rule.getDV(), 1);
                 last = new NumericRule(last.getMinValue(), rule.getMaxValue(), false, last.getTargetIndex(), dv);
             } else {
                 set.getRules().add(last);
