@@ -30,15 +30,13 @@ package rapaio.core;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static rapaio.core.RandomSource.nextDouble;
 
@@ -57,28 +55,6 @@ public final class SamplingTools {
             sample[i] = RandomSource.nextInt(populationSize);
         }
         return sample;
-    }
-
-    /**
-     * Draws an uniform discrete sample without replacement.
-     * <p>
-     * Implements reservoir sampling.
-     *
-     * @param populationSize population size
-     * @param sampleSizes     sample size
-     * @return sampling indexes
-     */
-    public static int[][] multiSampleWOR(final int populationSize, final int... sampleSizes) {
-        int total = Arrays.stream(sampleSizes).sum();
-        int[] sample = sampleWOR(populationSize, total);
-        int[][] result = new int[sampleSizes.length][];
-        int start = 0;
-        for (int i = 0; i < sampleSizes.length; i++) {
-            result[i] = new int[sampleSizes[i]];
-            System.arraycopy(sample, start, result[i], 0, result[i].length);
-            start += result[i].length;
-        }
-        return result;
     }
 
     /**
@@ -159,7 +135,7 @@ public final class SamplingTools {
     public static int[] sampleWeightedWOR(final int sampleSize, final double[] freq) {
         // validation
         if (sampleSize > freq.length) {
-            throw new IllegalArgumentException("required sample size is bigger than population size");
+            throw new IllegalArgumentException("Required sample size is bigger than population size.");
         }
 
         normalize(freq);
@@ -252,20 +228,18 @@ public final class SamplingTools {
     }
 
     private static void normalize(double[] freq) {
-
         if (freq == null) {
-            throw new IllegalArgumentException("sampling probability array cannot be null");
+            throw new IllegalArgumentException("Sampling probability array cannot be null.");
         }
-
         double total = 0;
         for (double p : freq) {
             if (p < 0) {
-                throw new IllegalArgumentException("frequencies must be positive.");
+                throw new IllegalArgumentException("Frequencies must be positive.");
             }
             total += p;
         }
         if (total <= 0) {
-            throw new IllegalArgumentException("sum of frequencies must be strict positive");
+            throw new IllegalArgumentException("Sum of frequencies must be strict positive.");
         }
         if (total != 1.0) {
             for (int i = 0; i < freq.length; i++) {
@@ -322,63 +296,63 @@ public final class SamplingTools {
         }
     }
 
-    public static List<Frame> randomSampleSlices(Frame frame, double... freq) {
-        int total = 0;
-        for (double f : freq) {
-            total += (int) (f * frame.rowCount());
+    public static Frame[] randomSampleSlices(Frame frame, double... freq) {
+        normalize(freq);
+        int[] rows = new int[frame.rowCount()];
+        for (int i = 0; i < rows.length; i++) {
+            rows[i] = i;
         }
-        if (total > frame.rowCount()) {
-            throw new IllegalArgumentException("total counts greater than available number of rows");
-        }
-        List<Frame> result = new ArrayList<>();
-
-        int[] rows = IntStream.range(0, frame.rowCount()).toArray();
         IntArrays.shuffle(rows, RandomSource.getRandom());
 
+        Frame[] result = new Frame[freq.length];
         int start = 0;
-        for (double f : freq) {
-            int len = (int) (f * frame.rowCount());
-            result.add(frame.mapRows(Arrays.copyOfRange(rows, start, start + len)));
+        for (int i = 0; i < freq.length; i++) {
+            int len = (int) (freq[i] * frame.rowCount());
+            if (i == freq.length - 1) {
+                len = frame.rowCount() - start;
+            }
+            result[i] = frame.mapRows(Arrays.copyOfRange(rows, start, start + len));
             start += len;
-        }
-        if (start < frame.rowCount()) {
-            result.add(frame.mapRows(Arrays.copyOfRange(rows, start, frame.rowCount())));
         }
         return result;
     }
 
-    public static List<Frame> randomSampleStratifiedSplit(Frame df, String strataName, double p) {
-        if (p <= 0 || p >= 1) {
-            throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
-        }
-        List<IntList> maps = new ArrayList<>();
+    public static Frame[] randomSampleStratifiedSplit(Frame df, String strataName, double... freq) {
+        normalize(freq);
+        List<IntList> groups = new ArrayList<>();
         for (int i = 0; i < df.levels(strataName).size(); i++) {
-            maps.add(new IntArrayList());
+            groups.add(new IntArrayList());
         }
+        int varIndex = df.varIndex(strataName);
         for (int i = 0; i < df.rowCount(); i++) {
-            maps.get(df.getInt(i, strataName)).add(i);
+            groups.get(df.getInt(i, varIndex)).add(i);
         }
-        IntList left = new IntArrayList();
-        IntList right = new IntArrayList();
-        for (List<Integer> map : maps) {
-            Collections.shuffle(map, RandomSource.getRandom());
-            left.addAll(map.subList(0, (int) (p * map.size())));
-            right.addAll(map.subList((int) (p * map.size()), map.size()));
-        }
-        Collections.shuffle(left, RandomSource.getRandom());
-        Collections.shuffle(right, RandomSource.getRandom());
 
-        List<Frame> list = new ArrayList<>();
-        list.add(df.mapRows(Mapping.wrap(left)));
-        list.add(df.mapRows(Mapping.wrap(right)));
+        IntList[] maps = new IntList[freq.length];
+        for (int i = 0; i < freq.length; i++) {
+            maps[i] = new IntArrayList();
+        }
+
+        for (IntList group : groups) {
+            IntLists.shuffle(group, RandomSource.getRandom());
+            int start = 0;
+            for (int i = 0; i < freq.length; i++) {
+                if (i == freq.length - 1) {
+                    maps[i].addAll(group.subList(start, group.size()));
+                    break;
+                }
+                maps[i].addAll(group.subList(start, start + (int) (group.size() * freq[i])));
+                start += (int) (group.size() * freq[i]);
+            }
+        }
+        for (int i = 0; i < freq.length; i++) {
+            IntLists.shuffle(maps[i], RandomSource.getRandom());
+        }
+
+        Frame[] list = new Frame[freq.length];
+        for (int i = 0; i < freq.length; i++) {
+            list[i] = df.mapRows(Mapping.wrap(maps[i]));
+        }
         return list;
-    }
-
-    public static Frame randomBootstrap(Frame frame) {
-        return randomBootstrap(frame, 1.0);
-    }
-
-    public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.byRow(frame, Mapping.wrap(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

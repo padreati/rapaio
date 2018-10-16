@@ -39,7 +39,6 @@ import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Test for regression decision trees
@@ -154,10 +153,10 @@ public class RTreeTest {
     public void testISLR() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
-        List<Frame> frames = SamplingTools.randomSampleSlices(df, 0.7);
+        Frame[] frames = SamplingTools.randomSampleSlices(df, 0.7);
 
-        Frame train = frames.get(0);
-        Frame test = frames.get(1);
+        Frame train = frames[0];
+        Frame test = frames[1];
 
         WS.setPrinter(new IdeaPrinter());
 

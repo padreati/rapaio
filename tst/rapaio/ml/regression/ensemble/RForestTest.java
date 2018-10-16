@@ -34,7 +34,6 @@ import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
-import java.util.List;
 
 public class RForestTest {
 
@@ -51,10 +50,10 @@ public class RForestTest {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
         df.printSummary();
 
-        List<Frame> dfs = SamplingTools.randomSampleSlices(df, 0.7);
+        Frame[] dfs = SamplingTools.randomSampleSlices(df, 0.7, 0.3);
 
-        Frame train = dfs.get(0);
-        Frame test = dfs.get(1);
+        Frame train = dfs[0];
+        Frame test = dfs[1];
 
 
         tree.fit(train, "Sales");

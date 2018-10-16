@@ -24,12 +24,19 @@
 
 package rapaio.core;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import rapaio.core.distributions.DUniform;
+import org.junit.rules.ExpectedException;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
-import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -38,10 +45,52 @@ import static org.junit.Assert.*;
  */
 public class SamplingToolsTest {
 
-    @Test
-    public void worTest() {
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
+    @Before
+    public void setUp() {
         RandomSource.setSeed(123);
+    }
+
+    @Test
+    public void testSampleWR() {
+        final int N = 1000;
+        int[] sample = SamplingTools.sampleWR(10, N);
+        assertEquals(N, sample.length);
+        for (int aSample : sample) {
+            assertTrue(aSample >= 0);
+            assertTrue(aSample < 10);
+        }
+        ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit
+                .from(VarNominal.from(sample.length, row -> String.valueOf(sample[row])),
+                        VarDouble.fill(10, 0.1));
+        assertTrue(test.pValue() > 0.05);
+    }
+
+    @Test
+    public void testInvalidSizeSamplingWOR() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Can't draw a sample without replacement bigger than population size.");
+        SamplingTools.sampleWOR(10, 100);
+    }
+
+    @Test
+    public void testSamplingWOR() {
+        final int TRIALS = 100_000;
+        VarDouble v = VarDouble.empty();
+        for (int next : SamplingTools.sampleWOR(TRIALS * 2, TRIALS)) {
+            v.addDouble(next);
+        }
+        double[] values = v.getDataAccessor().getData();
+        DoubleArrays.quickSort(values, 0, v.rowCount());
+        for (int i = 1; i < v.rowCount(); i++) {
+            assertTrue(values[i] - values[i - 1] >= 1);
+        }
+    }
+
+    @Test
+    public void testSamplingWeightedWOR() {
 
         double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
         DVector freq = DVector.empty(true, w.length);
@@ -65,15 +114,39 @@ public class SamplingToolsTest {
         }
         ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(w));
         assertTrue(test.pValue() > 0.05);
-        test.printSummary();
     }
 
     @Test
-    public void wrTest() {
+    public void testInvalidNullProbWR() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Sampling probability array cannot be null.");
+        SamplingTools.sampleWeightedWR(10, null);
+    }
 
-        RandomSource.setSeed(123);
+    @Test
+    public void testInvalidNegativeProbabilities() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Frequencies must be positive.");
+        SamplingTools.sampleWeightedWR(2, new double[]{-1, 1});
+    }
 
-        double[] w = new double[]{0.001, 0.009, 0.09, 0.9};
+    @Test
+    public void testInvalidSizeWeightedWOR() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Required sample size is bigger than population size.");
+        SamplingTools.sampleWeightedWOR(20, new double[]{0.1, 0.2, 0.3, 0.4});
+    }
+
+    @Test
+    public void testInvalidSumZeroWeightedWR() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Sum of frequencies must be strict positive.");
+        SamplingTools.sampleWeightedWR(2, new double[]{0, 0});
+    }
+
+    @Test
+    public void testSampleWeightedWR() {
+        double[] w = new double[]{0.002, 0.018, 0.18, 1.8};
         DVector freq = DVector.empty(true, w.length);
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
@@ -84,26 +157,41 @@ public class SamplingToolsTest {
         }
         ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(freq, VarDouble.wrap(w));
         assertTrue(test.pValue() > 0.05);
-        test.printSummary();
     }
 
     @Test
-    public void worUnifTest() {
+    public void testRandomSampleSizes() {
 
-        double[] freq = new double[10];
-        final int TRIALS = 100_000;
-        final int SAMPLES = 3;
-        VarDouble v = VarDouble.empty();
-        for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
-                freq[next]++;
-                v.addDouble(next);
-            }
+        Frame df = SolidFrame.byVars(VarDouble.seq(100).withName("x"));
+
+        double[] freq = new double[]{0.127, 0.5, 0.333};
+        Frame[] frames = SamplingTools.randomSampleSlices(df, freq);
+
+        for (int i = 0; i < frames.length - 1; i++) {
+            assertEquals(((int) (100 * freq[i])), frames[i].rowCount());
         }
-        for (double f : freq) {
-            System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
+
+        int total = 0;
+        for (Frame frame : frames) {
+            total += frame.rowCount();
         }
-        KSTestOneSample.from(v, DUniform.of(0, 9)).printSummary();
-        System.out.println();
+        assertEquals(df.rowCount(), total);
+    }
+
+    @Test
+    public void testRandomStratifiedSplit() {
+
+        Frame df = SolidFrame.byVars(
+                VarDouble.seq(100).withName("x"),
+                VarNominal.from(100, row -> String.valueOf(row % 3)).withName("strata")
+        );
+
+        double[] p = new double[3];
+        Arrays.fill(p, 1./3);
+        Frame[] strata = SamplingTools.randomSampleStratifiedSplit(df, "strata", p);
+        for (Frame st : strata) {
+            ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(st.rvar("strata"), VarDouble.wrap(p));
+            assertTrue(test.pValue() >= 0.9);
+        }
     }
 }
