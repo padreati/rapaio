@@ -94,8 +94,8 @@
                 <version>3.7.0</version>
                 <configuration>
                     <fork>true</fork>
-                    <source>1.9</source>
-                    <target>1.9</target>
+                    <source>10</source>
+                    <target>10</target>
                 </configuration>
             </plugin>
             <plugin>
