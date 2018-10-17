@@ -153,7 +153,7 @@ public class RTreeTest {
     public void testISLR() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
-        Frame[] frames = SamplingTools.randomSampleSlices(df, 0.7);
+        Frame[] frames = SamplingTools.randomSampleSlices(df, 0.7, 0.3);
 
         Frame train = frames[0];
         Frame test = frames[1];
