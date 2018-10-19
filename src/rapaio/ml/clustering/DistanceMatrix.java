@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.ml.clustering;
 
 import rapaio.data.Frame;
 import rapaio.ml.common.distance.Distance;
@@ -52,7 +52,7 @@ public class DistanceMatrix implements Serializable {
         return new DistanceMatrix(names);
     }
 
-    public static DistanceMatrix fromInstances(Frame df, String[] varNames, Distance dist) {
+    public static DistanceMatrix from(Frame df, String[] varNames, Distance dist) {
         String[] names = new String[df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
             names[i] = "" + i;

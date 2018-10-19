@@ -25,27 +25,23 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment.core.tools;
 
-import static rapaio.math.MTools.log2;
-
-public class ConcreteRowIntrinsicInfo extends AbstractDTableFunction {
-
-	@Override
-	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,
-			int colLength) {
-		double splitInfo = 0;
-		for (int i = start; i < totals.length; i++) {
-            if (totals[i] > 0) {
-                splitInfo += -log2(totals[i] / total) * totals[i] / total;
+public abstract class AbstractDTableFunction {
+	public double getSplitInfo(int start, int rowLength, int colLength, double[][] values) {
+		double[] totals = new double[chooseLine(rowLength, colLength)];
+        for (int i = start; i < rowLength; i++) {
+            for (int j = start; j < colLength; j++) {
+                totals[chooseLine(i, j)] += values[i][j];
             }
         }
-		return splitInfo;
+        double total = 0;
+        for (int i = start; i < totals.length; i++) {
+            total += totals[i];
+        }
+        return getInfo(start, total, totals, values, rowLength, colLength);
 	}
 
-	@Override
-	protected int chooseLine(int row, int col) {
-		return row;
-	}
-
+	protected abstract int chooseLine(int row, int col);
+	protected abstract double getInfo(int start, double total, double[] totals, double[][] values, int rowLength, int colLength);
 }

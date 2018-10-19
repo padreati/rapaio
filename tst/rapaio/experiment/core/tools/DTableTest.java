@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment.core.tools;
 
 import org.junit.Assert;
 import org.junit.Test;

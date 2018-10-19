@@ -27,7 +27,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.tools.DistanceMatrix;
+import rapaio.ml.clustering.DistanceMatrix;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.PlotComponent;

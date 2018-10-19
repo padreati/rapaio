@@ -28,7 +28,7 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.tests.ChiSqIndependence;
-import rapaio.core.tools.DTable;
+import rapaio.experiment.core.tools.DTable;
 import rapaio.util.Tagged;
 
 import java.io.Serializable;

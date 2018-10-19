@@ -28,7 +28,6 @@
 package rapaio.core;
 
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -51,14 +50,6 @@ public final class RandomSource implements Serializable {
      */
     public static void setSeed(long seed) {
         rand.setSeed(seed);
-    }
-
-    /**
-     * Use secure random implementation with given seed
-     * @param seed seed of the secure seed
-     */
-    public static void withSecureRandom(byte[] seed) {
-        rand = new SecureRandom(seed);
     }
 
     /**

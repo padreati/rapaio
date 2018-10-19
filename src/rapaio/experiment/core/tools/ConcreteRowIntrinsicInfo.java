@@ -25,22 +25,22 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment.core.tools;
 
 import static rapaio.math.MTools.log2;
 
-public class ConcreteRowAverageEntropy extends AbstractDTableFunction {
+public class ConcreteRowIntrinsicInfo extends AbstractDTableFunction {
 
 	@Override
-	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength, int colLength) {
-		double gain = 0;
-        for (int i = start; i < rowLength; i++) {
-            for (int j = start; j < colLength; j++) {
-                if (values[i][j] > 0)
-                    gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
+	protected double getInfo(int start, double total, double[] totals, double[][] values, int rowLength,
+			int colLength) {
+		double splitInfo = 0;
+		for (int i = start; i < totals.length; i++) {
+            if (totals[i] > 0) {
+                splitInfo += -log2(totals[i] / total) * totals[i] / total;
             }
         }
-        return gain;
+		return splitInfo;
 	}
 
 	@Override

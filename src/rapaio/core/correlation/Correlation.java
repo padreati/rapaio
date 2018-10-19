@@ -27,7 +27,7 @@
 
 package rapaio.core.correlation;
 
-import rapaio.core.tools.DistanceMatrix;
+import rapaio.ml.clustering.DistanceMatrix;
 
 import java.io.Serializable;
 

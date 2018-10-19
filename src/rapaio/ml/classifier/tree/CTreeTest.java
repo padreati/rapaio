@@ -30,7 +30,7 @@ package rapaio.ml.classifier.tree;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.RandomSource;
-import rapaio.core.tools.DTable;
+import rapaio.experiment.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.common.predicate.RowPredicate;

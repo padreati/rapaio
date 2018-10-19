@@ -1,7 +1,6 @@
 package rapaio.ml.clustering;
 
 import org.junit.Test;
-import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.VarInt;
 import rapaio.data.Var;
 

@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment.core.tools;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -46,6 +46,7 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class DTable implements Printable, Serializable {
 
     public static final List<String> NUMERIC_DEFAULT_LABELS = Arrays.asList("?", "less-equals", "greater");

@@ -27,7 +27,6 @@
 
 package rapaio.ml.clustering;
 
-import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 

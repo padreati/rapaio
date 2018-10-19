@@ -28,7 +28,7 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
-import rapaio.core.tools.DTable;
+import rapaio.experiment.core.tools.DTable;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
 import rapaio.sys.WS;

@@ -24,11 +24,13 @@
 
 package rapaio.core.correlation;
 
-import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.core.tools.DistanceMatrix;
+import rapaio.ml.clustering.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -42,8 +44,26 @@ import static org.junit.Assert.assertEquals;
  */
 public class CorrSpearmanTest {
 
+    private static final double TOL = 1e-20;
+
     private final Var iq = VarDouble.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = VarDouble.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
+
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
+
+    @Test
+    public void testInvalidSingleVariable() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Correlation can be computed only between two variables.");
+        CorrSpearman.of(VarDouble.seq(10));
+    }
 
     @Test
     public void testFromWikipedia() {
@@ -65,52 +85,39 @@ public class CorrSpearmanTest {
     public void maxCorrTest() {
         VarDouble x = VarDouble.from(1_000, Math::sqrt).withName("x");
         CorrSpearman cp = CorrSpearman.of(x, x);
-        cp.printSummary();
-        Assert.assertEquals(1, cp.singleValue(), 1e-12);
-
-        cp = CorrSpearman.of(x);
-        cp.printSummary();
-        Assert.assertEquals(1, cp.singleValue(), 1e-20);
+        assertEquals(1, cp.singleValue(), 1e-12);
 
         VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).withName("y");
-        cp = CorrSpearman.of(x, y);
-        cp.printSummary();
-        Assert.assertEquals(-1, cp.singleValue(), 1e-12);
+        cp = CorrSpearman.of(SolidFrame.byVars(x, y));
+        assertEquals(-1, cp.singleValue(), 1e-12);
     }
 
     @Test
     public void randomTest() {
-        RandomSource.setSeed(123);
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
-        cp.printSummary();
-        Assert.assertEquals(0.023296211476962116, cp.singleValue(), 1e-20);
+        assertEquals(0.023296211476962116, cp.singleValue(), TOL);
     }
 
     @Test
     public void testNonLinearCorr() {
-        RandomSource.setSeed(123);
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
-        cp.printSummary();
-        Assert.assertEquals(0.8789432182134321, cp.singleValue(), 1e-20);
+        assertEquals(0.8789432182134321, cp.singleValue(), TOL);
     }
 
     @Test
     public void testMultipleVarsNonLinear() {
-
-        RandomSource.setSeed(123);
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
-
 
         RM exp = SolidRM.copy(3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
@@ -118,24 +125,12 @@ public class CorrSpearmanTest {
                 0.8789431613694316, 0.999999997876, 1);
 
         CorrSpearman cp = CorrSpearman.of(x, y, z);
-        cp.printSummary();
-
         DistanceMatrix m = cp.matrix();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), m.get(i,j), 1e-20);
-            }
-        }
-
-        cp = CorrSpearman.of(SolidFrame.byVars(x, y, x));
-        cp.printSummary();
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                Assert.assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), m.get(i,j), 1e-20);
+                assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
+                        exp.get(i, j), m.get(i,j), TOL);
             }
         }
     }
@@ -146,11 +141,8 @@ public class CorrSpearmanTest {
         VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
-        cp.printSummary();
-
-        Assert.assertEquals(1, cp.singleValue(), 1e-20);
+        assertEquals(1, cp.singleValue(), TOL);
     }
-
 
     @Test
     public void testCollisions() {
@@ -158,8 +150,23 @@ public class CorrSpearmanTest {
         VarDouble y = VarDouble.from(x, value -> value*value);
 
         CorrSpearman cp = CorrSpearman.of(x, y);
-        cp.printSummary();
+        assertEquals(1.0, cp.singleValue(), TOL);
+    }
 
-        Assert.assertEquals(1.0, cp.singleValue(), 1e-20);
+    @Test
+    public void testSummary() {
+
+        Var x1 = VarDouble.from(100, Normal.std()::sampleNext);
+        Var x2 = VarDouble.from(100, Normal.std()::sampleNext);
+        Var x3 = VarDouble.seq(99);
+
+        assertEquals("> spearman[?, ?] - Spearman's rank correlation coefficient\n" +
+                "0.2875008\n", CorrSpearman.of(x1, x2).summary());
+
+        assertEquals("> spearman[[?, ?, ?]] - Spearman's rank correlation coefficient\n" +
+                "         1.?       2.?       3.? \n" +
+                "1.         x 0.2875008 0.0649745 \n" +
+                "2. 0.2875008         x 0.2294869 \n" +
+                "3. 0.0649745 0.2294869         x \n", CorrSpearman.of(x1, x2, x3).summary());
     }
 }

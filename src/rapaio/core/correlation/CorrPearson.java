@@ -29,7 +29,7 @@ package rapaio.core.correlation;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.core.tools.DistanceMatrix;
+import rapaio.ml.clustering.DistanceMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -72,6 +72,9 @@ public class CorrPearson implements Correlation, Printable {
     }
 
     private CorrPearson(Var[] vars, String[] names) {
+        if (vars.length == 1) {
+            throw new IllegalArgumentException("Correlation can be computed only between two variables.");
+        }
         d = DistanceMatrix.empty(names);
         for (int i = 0; i < vars.length; i++) {
             d.set(i,i, 1);
@@ -97,7 +100,7 @@ public class CorrPearson implements Correlation, Printable {
             int pos = map.get(i);
             sum += ((x.getDouble(pos) - xMean) * (y.getDouble(pos) - yMean));
         }
-        return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
+        return sdp == 0 ? Double.NaN : sum / (sdp * (map.size() - 1));
     }
 
     @Override
@@ -106,8 +109,6 @@ public class CorrPearson implements Correlation, Printable {
     }
 
     public double singleValue() {
-        if (d.names().length == 1)
-            return 1;
         return d.get(0,1);
     }
 
@@ -115,9 +116,6 @@ public class CorrPearson implements Correlation, Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         switch (d.names().length) {
-            case 1:
-                summaryOne(sb);
-                break;
             case 2:
                 summaryTwo(sb);
                 break;
@@ -127,24 +125,14 @@ public class CorrPearson implements Correlation, Printable {
         return sb.toString();
     }
 
-    private void summaryOne(StringBuilder sb) {
-        sb.append(String.format("\n" +
-                        "> pearson[%s] - Pearson product-moment correlation coefficient\n",
-                d.name(0)));
-        sb.append("1\n");
-        sb.append("pearson correlation is 1 for identical vectors\n");
-    }
-
     private void summaryTwo(StringBuilder sb) {
-        sb.append(String.format("\n" +
-                        "> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 d.name(0), d.name(1)));
         sb.append(formatFlex(d.get(0,1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
-        sb.append(String.format("\n" +
-                        "> pearson[%s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(d.names())));
 
         String[][] table = new String[d.names().length + 1][d.names().length + 1];
