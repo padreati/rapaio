@@ -431,7 +431,7 @@ public class CForest extends AbstractClassifier {
         CPrediction fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().getInt(j);
-            oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
+            oobDensities.get(oobIndexes.getInt(j)).increment(fitIndex, 1.0);
         }
         oobFit.clearRows();
         totalOobError = 0.0;

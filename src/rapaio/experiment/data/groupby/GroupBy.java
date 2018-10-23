@@ -36,7 +36,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.experiment.data.unique.UniqueRows;
+import rapaio.data.unique.Unique;
 import rapaio.datasets.Datasets;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
@@ -106,7 +106,7 @@ public class GroupBy implements Printable {
     private final Frame df;
     private final List<String> groupVarNames;
     private final List<String> featureVarNames;
-    private final List<UniqueRows> groupByUniqueRows;
+    private final List<Unique> groupByUniqueRows;
     private final Int2IntOpenHashMap rowIndex = new Int2IntOpenHashMap();
     private final Int2ObjectOpenHashMap<IndexNode> groupIndex = new Int2ObjectOpenHashMap<>();
     private final IntList sortedGroupIds = new IntArrayList();
@@ -119,7 +119,7 @@ public class GroupBy implements Printable {
         this.groupByUniqueRows = new ArrayList<>();
         for (String varName : groupVarNames) {
             Var var = df.rvar(varName);
-            groupByUniqueRows.add(UniqueRows.from(var));
+            groupByUniqueRows.add(Unique.of(var));
         }
         this.featureVarNames = new ArrayList<>();
         HashSet<String> groupSet = new HashSet<>(groupVarNames);
@@ -237,7 +237,7 @@ public class GroupBy implements Printable {
             for (int j = 0; j < groupVarNames.size(); j++) {
                 String groupName = groupVarNames.get(j);
                 String groupValue = df.getLabel(i, groupName);
-                int groupUniqueId = groupByUniqueRows.get(j).getUniqueId(i);
+                int groupUniqueId = groupByUniqueRows.get(j).idByRow(i);
                 IndexNode child = node.getChildNode(groupUniqueId);
                 if (child == null) {
                     if (j != groupVarNames.size() - 1) {

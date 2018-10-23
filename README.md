@@ -121,6 +121,11 @@ using streams is also available on variables and also on data frames.
     * conditional independence test
 * Anderson-Darling goodness of fit
     * normality test
+    
+**Core tools**
+
+* DVector
+* Unique (Double, Int, Label)
 
 Stable Features
 ====================
@@ -133,7 +138,6 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Core tools**
 
-* DVector
 * DTable
 * Distance Matrix
 

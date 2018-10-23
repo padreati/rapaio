@@ -25,8 +25,8 @@ public class IntervalMappingTest {
 
         assertEquals(10, mapping1.size());
         assertEquals(10, mapping2.size());
-        assertEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
-        assertEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
 
         assertEquals(mapping1.get(0), mapping2.get(0));
 
@@ -34,15 +34,15 @@ public class IntervalMappingTest {
         mapping1.remove(9);
         mapping2.remove(9);
         mapping3.remove(9);
-        assertEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
-        assertEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
 
         mapping1 = new IntervalMapping(10, 20);
         mapping1.removeAll(IntArrayList.wrap(new int[]{7, 8, 9}));
         mapping2.removeAll(IntArrayList.wrap(new int[]{7, 8}));
         mapping3.removeAll(IntArrayList.wrap(new int[]{7, 8}));
-        assertEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
-        assertEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping2.toList().toArray());
+        assertArrayEquals(mapping1.toList().toArray(), mapping3.toList().toArray());
 
         int[] arr = mapping1.stream().toArray();
         assertArrayEquals(arr, mapping2.toList().toIntArray());
