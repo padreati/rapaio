@@ -234,8 +234,7 @@ public class ClusterSilhouette implements Printable {
             sb.append("\n");
         }
 
-        for (int i = 0; i < clusterOrder.size(); i++) {
-            int cluster = clusterOrder.get(i);
+        for (int cluster : clusterOrder) {
             sb.append("Cluster ").append(clusterIds[cluster]).append(" has average silhouette width: ").append(clusterScore[cluster]).append("\n");
         }
         sb.append("\n");

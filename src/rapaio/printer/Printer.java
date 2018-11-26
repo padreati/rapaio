@@ -37,55 +37,39 @@ import rapaio.sys.WS;
  */
 public interface Printer {
 
+    Printer withTextWidth(int chars);
+
     int textWidth();
 
-    Printer withTextWidth(int chars);
+    Printer withGraphicShape(int width, int height);
 
     int graphicWidth();
 
-    void withGraphicWidth(int width);
-
     int graphicHeight();
-
-    void withGraphicHeight(int height);
 
     void print(String message);
 
     void println();
 
-    void error(String message, Throwable throwable);
-
-    void head(int h, String lines);
-
-    void code(String lines);
-
-    void p(String lines);
-
     void draw(Figure figure, int width, int height);
 
-    void draw(Figure figure);
-
-    void openPrinter();
-
-    void closePrinter();
+    default void draw(Figure figure) {
+        draw(figure, graphicWidth(), graphicHeight());
+    }
 
     /**
      * Prints a printSummary of the object to the system printer configured
      * with {@link WS#setPrinter(rapaio.printer.Printer)}.
      */
     default void printSummary(Printable printable) {
-        code(printable.summary());
-    }
-
-    default void printDescription(Printable printable) {
-        code(printable.description());
+        print(printable.summary());
     }
 
     default void printContent(Printable printable) {
-        code(printable.content());
+        print(printable.content());
     }
 
     default void printFullContent(Printable printable) {
-        WS.code(printable.fullContent());
+        WS.println(printable.fullContent());
     }
 }

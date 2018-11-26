@@ -33,7 +33,6 @@ import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
@@ -98,8 +97,8 @@ public class Confusion implements Printable {
             if (!actual.levels().get(i).equals(predict.levels().get(i))) {
                 throw new IllegalArgumentException(
                         String.format("not the same nominal levels (actual:%s, predict:%s)",
-                                actual.levels().stream().collect(Collectors.joining(",")),
-                                predict.levels().stream().collect(Collectors.joining(","))));
+                                String.join(",", actual.levels()),
+                                String.join(",", predict.levels())));
             }
         }
     }

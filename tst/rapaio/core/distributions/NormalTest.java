@@ -53,13 +53,13 @@ public class NormalTest {
 
     @Before
     public void setUp() throws IOException {
-        otherDf = new Csv()
+        otherDf = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)
                 .withNAValues("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "other_normal.csv");
-        stdDf = new Csv()
+        stdDf = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)

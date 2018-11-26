@@ -43,14 +43,6 @@ import rapaio.sys.WS;
  */
 public interface Printable {
 
-    default void printDescription() {
-        WS.getPrinter().printDescription(this);
-    }
-
-    default String description() {
-        return "Not implemented.\n";
-    }
-
     default void printSummary() {
         WS.getPrinter().printSummary(this);
     }
@@ -72,5 +64,4 @@ public interface Printable {
     default String fullContent() {
         return "Not implemented.\n";
     }
-
 }

@@ -34,20 +34,23 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-public class NominalData extends NaiveBayesData implements Serializable{
-	public NominalEstimator nomEstimator;
-	public Map<String, NominalEstimator> nomMap;
+public class NominalData extends NaiveBayesData implements Serializable {
 
-	public NominalData(NominalEstimator nomEstimator) {
-		this.nomEstimator = nomEstimator;
-	}
-	
-	public Set<String> keySet() {
-		return nomMap.keySet();
-	}
+    private static final long serialVersionUID = 6894116115802577531L;
 
-	@Override
-	public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
-		return nomMap.get(testCol).cpValue(df.getLabel(i, testCol), firstTargetLevel);
-	}
+    public NominalEstimator nomEstimator;
+    public Map<String, NominalEstimator> nomMap;
+
+    public NominalData(NominalEstimator nomEstimator) {
+        this.nomEstimator = nomEstimator;
+    }
+
+    public Set<String> keySet() {
+        return nomMap.keySet();
+    }
+
+    @Override
+    public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
+        return nomMap.get(testCol).cpValue(df.getLabel(i, testCol), firstTargetLevel);
+    }
 }

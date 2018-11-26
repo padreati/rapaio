@@ -29,9 +29,9 @@ package rapaio.io;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarText;
-import rapaio.data.VType;
 import rapaio.util.func.SPredicate;
 
 import java.io.*;
@@ -49,14 +49,20 @@ import java.util.zip.GZIPInputStream;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * Comma separated file reader and writer utility.
+ * CSV file reader and writer utility.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Csv {
 
-    private static VType[] DEFAULT_TYPES = new VType[]{
-            VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+    /**
+     * @return new instance of Csv utility with default parameters values
+     */
+    public static Csv instance() {
+        return new Csv();
+    }
+
+    private static VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
 
     private boolean trimSpaces = true;
     private boolean header = true;
@@ -64,7 +70,7 @@ public class Csv {
     private char separatorChar = ',';
     private char escapeChar = '\"';
     private HashMap<String, VType> typeFieldHints = new HashMap<>();
-    private HashSet<String> naValues = new HashSet<>();
+    private HashSet<String> naValues = new HashSet<>(Arrays.asList("?", "", " ", "na", "N/A", "NaN"));
     private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
@@ -72,40 +78,116 @@ public class Csv {
     private Predicate<Integer> skipCols = row -> false;
     private Frame template;
 
-    public Csv() {
-        naValues.add("?");
+    private Csv() {
     }
 
+    /**
+     * Configure the Csv utility to consider a header or not. If the {@code hasHeader} parameter
+     * is true the header feature is on, otherwise not.
+     *
+     * @param hasHeader if true the header feature is on, otherwise not
+     * @return the Csv utility instance
+     */
     public Csv withHeader(boolean hasHeader) {
         this.header = hasHeader;
         return this;
     }
 
-    public Csv withSeparatorChar(char separator) {
-        this.separatorChar = separator;
+    /**
+     * @return true if header feature is on, otherwise it returns false
+     */
+    public boolean hashHeader() {
+        return header;
+    }
+
+    /**
+     * Configures field character separator.
+     *
+     * @param separatorChar the field char separator value
+     * @return Csv utility instance
+     */
+    public Csv withSeparatorChar(char separatorChar) {
+        this.separatorChar = separatorChar;
         return this;
     }
 
+    /**
+     * @return char used as field separator
+     */
+    public char getSeparatorChar() {
+        return separatorChar;
+    }
+
+    /**
+     * If double quotes (\") character is used to enclose the field values.
+     * If this feature is turned on, the values are discarded of eventual first and last characters
+     * if those characters are double quotes. This is useful if the separator char is used inside
+     * string field values, for example.
+     *
+     * @param quotes true if feature is turned on, false otherwise
+     * @return Csv utility instance
+     */
     public Csv withQuotes(boolean quotes) {
         this.quotes = quotes;
         return this;
     }
 
+    public boolean hasQuotes() {
+        return quotes;
+    }
+
+    /**
+     * Configures default escape char. If the field value contains escape char, than the following char after
+     * the escape does not have semantics and is considered as part of the field value. This enables one to
+     * use inside field values chars with semantics, like separator char.
+     *
+     * @param escapeChar configured escape char
+     * @return Csv instance utility
+     */
     public Csv withEscapeChar(char escapeChar) {
         this.escapeChar = escapeChar;
         return this;
     }
 
+    /**
+     * Configures white space trimming for field values. If the white space trimming is enabled,
+     * the field values are trimmed at start and end of white char values.
+     *
+     * @param trimSpaces if true feature is enabled, false otherwise
+     * @return Csv instance utility
+     */
     public Csv withTrimSpaces(boolean trimSpaces) {
         this.trimSpaces = trimSpaces;
         return this;
     }
 
+    /**
+     * Specifies the first row number to be collected from csv file. By default this value is 0,
+     * which means it will collect starting from the first row. If the value is greater than 0
+     * it will skip the first {@code startRow-1} rows.
+     *
+     * @param startRow first row to be collected
+     * @return Csv instance utility
+     */
     public Csv withStartRow(int startRow) {
         this.startRow = startRow;
         return this;
     }
 
+    /**
+     * @return first row number to be collected
+     */
+    public int getStartRow() {
+        return startRow;
+    }
+
+    /**
+     * Specifies the last row number to be collected from csv file. By default this is value
+     * is {@code Integer.MAX_VALUE}, which means all rows from file.
+     *
+     * @param endRow last row to be collected
+     * @return Csv instance utility
+     */
     public Csv withEndRow(int endRow) {
         this.endRow = endRow;
         return this;
@@ -311,7 +393,7 @@ public class Csv {
         return SolidFrame.byVars(rows - startRow, variables);
     }
 
-    List<String> parseLine(String line) {
+    public List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
         int start = 0;
         int colNum = 0;
@@ -365,7 +447,7 @@ public class Csv {
      * @param tok if (trimSpaces) {
      * @return string cleaned
      */
-    private String clean(String tok) {
+    public String clean(String tok) {
         if (trimSpaces) {
             tok = tok.trim();
         }
@@ -412,7 +494,7 @@ public class Csv {
         }
     }
 
-    public void write(Frame df, OutputStream os) throws IOException {
+    public void write(Frame df, OutputStream os) {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
             if (header) {
@@ -446,7 +528,7 @@ public class Csv {
         }
     }
 
-    private String unclean(String label) {
+    public String unclean(String label) {
         char[] line = new char[label.length() * 2];
         int len = 0;
         for (int i = 0; i < label.length(); i++) {

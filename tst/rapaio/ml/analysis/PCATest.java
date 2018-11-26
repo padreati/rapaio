@@ -40,7 +40,6 @@ import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.Confusion;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -56,7 +55,7 @@ public class PCATest {
 
     @Before
     public void setUp() throws Exception {
-        df = new Csv().read(PCATest.class.getResourceAsStream("pca.csv"));
+        df = Csv.instance().read(PCATest.class.getResourceAsStream("pca.csv"));
     }
 
     @Test
@@ -94,9 +93,6 @@ public class PCATest {
 
         double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();
-
-        WS.println(acc1);
-        WS.println(acc2);
 
         Assert.assertTrue(acc1<acc2);
     }

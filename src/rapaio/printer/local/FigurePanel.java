@@ -38,8 +38,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FigurePanel extends JPanel {
+
+    private static final long serialVersionUID = 6956337145639708156L;
 
     private final Figure figure;
     protected volatile BufferedImage currentImage;
@@ -85,9 +86,9 @@ public class FigurePanel extends JPanel {
      * Creates a new worker to do the image rendering in the background.
      */
     private void createBackgroundImage() {
-        drawWorker = new SwingWorker<BufferedImage, Object>() {
+        drawWorker = new SwingWorker<>() {
             @Override
-            protected BufferedImage doInBackground() throws Exception {
+            protected BufferedImage doInBackground() {
                 if (figure == null) {
                     return currentImage;
                 }

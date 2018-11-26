@@ -127,10 +127,10 @@ public class FOneHotEncoding extends AbstractFF {
                 List<Var> oneHotVars = new ArrayList<>();
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
-                for (int i = 0; i < dict.size(); i++) {
-                    Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + dict.get(i));
+                for (String token : dict) {
+                    Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + token);
                     oneHotVars.add(v);
-                    index.put(dict.get(i), v);
+                    index.put(token, v);
                 }
                 // populate encoding variables
                 for (int i = 0; i < df.rowCount(); i++) {

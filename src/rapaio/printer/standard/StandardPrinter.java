@@ -25,9 +25,10 @@
  *
  */
 
-package rapaio.printer;
+package rapaio.printer.standard;
 
 import rapaio.graphics.base.Figure;
+import rapaio.printer.AbstractPrinter;
 import rapaio.printer.local.FigurePanel;
 
 import javax.swing.*;
@@ -60,8 +61,7 @@ public class StandardPrinter extends AbstractPrinter {
         }
 
         withTextWidth(190);
-        withGraphicWidth(1280);
-        withGraphicHeight(800);
+        withGraphicShape(1280, 800);
     }
 
     @Override
@@ -73,17 +73,6 @@ public class StandardPrinter extends AbstractPrinter {
     @Override
     public void println() {
         writer.println();
-        writer.flush();
-    }
-
-    @Override
-    public void error(String message, Throwable throwable) {
-        if (message != null) {
-            writer.println(message);
-        }
-        if (throwable != null) {
-            writer.println(throwable.getMessage());
-        }
         writer.flush();
     }
 
@@ -101,14 +90,11 @@ public class StandardPrinter extends AbstractPrinter {
         frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
 
         frame.setSize(width, height);
-        while (true) {
+        do {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {
             }
-            if (!frame.isVisible()) {
-                break;
-            }
-        }
+        } while (frame.isVisible());
     }
 }

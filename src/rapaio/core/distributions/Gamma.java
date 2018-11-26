@@ -262,7 +262,6 @@ public class Gamma implements Distribution {
         } else { // CASE B: Acceptance complement algorithm gd (gaussian
             // distribution, box muller transformation)
             if (a != aa) { // Step 1. Preparations
-                aa = a;
                 ss = a - 0.5;
                 s = Math.sqrt(ss);
                 d = 5.656854249 - 12.0 * s;
@@ -284,7 +283,6 @@ public class Gamma implements Distribution {
                 return (gds / beta1); // Squeeze acceptance
 
             if (a != aaa) { // Step 4. Set-up for hat case
-                aaa = a;
                 r = 1.0 / a;
                 q0 = ((((((((q9 * r + q8) * r + q7) * r + q6) * r + q5) * r + q4) * r + q3) * r + q2) * r + q1) * r;
                 if (a > 3.686) {

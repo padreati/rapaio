@@ -41,7 +41,6 @@ import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,29 +49,29 @@ import java.util.List;
  */
 public class Datasets {
 
-    public static Frame loadIrisDataset() throws IOException, URISyntaxException {
-        return new Csv()
+    public static Frame loadIrisDataset() throws IOException {
+        return Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withTypes(VType.NOMINAL, "class")
                 .read(Datasets.class, "iris-r.csv");
     }
 
-    public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
-        return new Csv()
+    public static Frame loadPearsonHeightDataset() throws IOException {
+        return Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
-    public static Frame loadChestDataset() throws IOException, URISyntaxException {
-        return new Csv()
+    public static Frame loadChestDataset() throws IOException {
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withQuotes(true)
                 .withDefaultTypes(VType.DOUBLE)
                 .read(Datasets.class, "chest.csv");
     }
 
-    public static Frame loadCarMpgDataset() throws IOException, URISyntaxException {
-        return new Csv()
+    public static Frame loadCarMpgDataset() throws IOException {
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotes(true)
@@ -82,13 +81,13 @@ public class Datasets {
     }
 
     public static Frame loadSpamBase() throws IOException {
-        return new Csv().withDefaultTypes(VType.DOUBLE)
+        return Csv.instance().withDefaultTypes(VType.DOUBLE)
                 .withTypes(VType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
 
     public static Frame loadMushrooms() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotes(false)
@@ -96,7 +95,7 @@ public class Datasets {
     }
 
     public static Frame loadPlay() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotes(false)
@@ -106,21 +105,21 @@ public class Datasets {
     }
 
     public static Frame loadOlympic() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withQuotes(false)
                 .withTypes(VType.DOUBLE, "Edition")
                 .read(Datasets.class, "olympic.csv");
     }
 
     public static Frame loadProstateCancer() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withSeparatorChar('\t')
                 .withDefaultTypes(VType.DOUBLE, VType.NOMINAL)
                 .read(Datasets.class, "prostate.csv");
     }
 
     public static Frame loadHousing() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)
 //                .withTypes(VarType.BINARY, "CHAS")
@@ -128,7 +127,7 @@ public class Datasets {
     }
 
     public static Frame loadLifeScience() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)
                 .withTypes(VType.NOMINAL, "class")
@@ -136,7 +135,7 @@ public class Datasets {
     }
 
     public static Frame loadISLAdvertising() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withQuotes(true)
                 .withDefaultTypes(VType.DOUBLE)
                 .withTypes(VType.NOMINAL, "ID")
@@ -171,7 +170,7 @@ public class Datasets {
     }
 
     public static Frame loadCoverType() throws IOException {
-        return new Csv()
+        return Csv.instance()
                 .withQuotes(true)
                 .read(Datasets.class.getResourceAsStream("covtype.csv"));
     }

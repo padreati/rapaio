@@ -104,7 +104,7 @@ public abstract class AbstractVar implements Var {
         out.writeUTF(name);
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException {
         name = in.readUTF();
     }
 }

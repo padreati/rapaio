@@ -30,12 +30,10 @@ package rapaio.sys;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.printer.Printer;
-import rapaio.printer.StandardPrinter;
+import rapaio.printer.standard.StandardPrinter;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.logging.LogManager;
 
@@ -99,14 +97,6 @@ public class WS {
         WS.printer = printer;
     }
 
-    public static void preparePrinter() {
-        printer.openPrinter();
-    }
-
-    public static void closePrinter() {
-        printer.closePrinter();
-    }
-
     public static String formatFlex(double value) {
         if (Double.isNaN(value))
             return "?";
@@ -161,21 +151,8 @@ public class WS {
         printer.println();
     }
 
-    public static void println(double value) {
-        println(formatFlex(value));
-    }
-
-    public static void println(Boolean b) {
-        println(String.valueOf(b));
-    }
-
     public static void println(String message) {
         printer.print(message);
-        printer.println();
-    }
-
-    public static void println(long n) {
-        printer.print(String.valueOf(n));
         printer.println();
     }
 
@@ -183,54 +160,13 @@ public class WS {
         printer.print(String.format(message, args));
     }
 
-    public static void printfln(String message, Object... args) {
-        printer.print(String.format(message, args));
-        printer.println();
-    }
-
-    public static void heading(int h, String lines) {
-        printer.head(h, lines);
-    }
-
-    public static void error(String message, Throwable ex) {
-        printer.error(message, ex);
-    }
-
-    public static void code(String lines) {
-        printer.code(lines);
-    }
-
-    public static void p(String lines) {
-        printer.p(lines);
-    }
-
     public static void draw(Figure figure) {
         printer.draw(figure);
-    }
-
-    public static void draw(Figure figure, int width, int height) {
-        printer.draw(figure, width, height);
-    }
-
-    public static BufferedImage image(Figure figure) {
-        return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
-    }
-
-    public static BufferedImage image(Figure figure, int width, int height) {
-        return ImageUtility.buildImage(figure, width, height);
     }
 
     public static void saveImage(Figure figure, int width, int height, String fileName) {
         try {
             ImageUtility.saveImage(figure, width, height, fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void saveImage(Figure figure, int width, int height, OutputStream os) {
-        try {
-            ImageUtility.saveImage(figure, width, height, os);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

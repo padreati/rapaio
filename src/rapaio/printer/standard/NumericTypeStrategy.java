@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.printer;
+package rapaio.printer.standard;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;

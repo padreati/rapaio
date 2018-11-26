@@ -149,14 +149,14 @@ public abstract class AbstractClassifier implements Classifier {
         }
         Frame result = df;
         List<String> targets = VRange.of(targetVars).parseVarNames(result);
-        this.targetNames = targets.stream().toArray(String[]::new);
+        this.targetNames = targets.toArray(new String[0]);
         this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
         this.dict = new HashMap<>();
         this.dict.put(firstTargetName(), result.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
-        this.inputNames = inputs.stream().toArray(String[]::new);
+        this.inputNames = inputs.toArray(new String[0]);
         this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);

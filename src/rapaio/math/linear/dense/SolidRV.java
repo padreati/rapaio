@@ -165,14 +165,14 @@ public class SolidRV implements RV {
         }
         if (p == Double.POSITIVE_INFINITY) {
             double max = Double.NaN;
-            for (int i = 0; i < values.length; i++) {
-                if (Double.isNaN(values[i]))
+            for (double value : values) {
+                if (Double.isNaN(value))
                     continue;
                 if (Double.isNaN(max)) {
-                    max = values[i];
+                    max = value;
                     continue;
                 }
-                max = Math.max(max, values[i]);
+                max = Math.max(max, value);
             }
             return max;
         }

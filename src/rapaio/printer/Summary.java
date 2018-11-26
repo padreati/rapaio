@@ -32,6 +32,10 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VType;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.standard.BinaryTypeStrategy;
+import rapaio.printer.standard.NominalTypeStrategy;
+import rapaio.printer.standard.NumericTypeStrategy;
+import rapaio.printer.standard.TypeStrategy;
 import rapaio.sys.WS;
 
 import static rapaio.sys.WS.*;
@@ -203,7 +207,7 @@ public class Summary {
 
         if (v.type() == VType.BINARY) {
              typeStrategy = new BinaryTypeStrategy();
-             typeStrategy.getPrintSummary(v, first, second);;
+             typeStrategy.getPrintSummary(v, first, second);
         }
 
         if (v.type() == VType.INT || v.type() == VType.DOUBLE) {
@@ -250,7 +254,7 @@ public class Summary {
         for (int i = 0; i < df.varCount(); i++) {
             buffer.append(df.varNames()[i]).append("\n");
         }
-        code(buffer.toString());
+        println(buffer.toString());
     }
 
     @Deprecated
@@ -283,7 +287,7 @@ public class Summary {
     }
 
     public static void head(boolean merge, int lines, Var[] vars, String[] names) {
-        WS.code(headString(merge, lines, vars, names));
+        WS.println(headString(merge, lines, vars, names));
     }
 
     public static String headString(Frame df) {

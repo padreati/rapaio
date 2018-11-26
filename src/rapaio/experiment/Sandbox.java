@@ -51,6 +51,8 @@ public class Sandbox {
         VarDouble x = VarDouble.seq(0, 1000).withName("x");
         Var y = x.solidCopy().fapply(VTransformBoxCox.with(0.1)).withName("y");
 
+        y.fapply(var -> var);
+
         BoundFrame.byVars(x, y).printLines(100);
     }
 }

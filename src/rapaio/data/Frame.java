@@ -558,7 +558,7 @@ public interface Frame extends Serializable, Printable {
     }
 
     default void printLines(int to) {
-        WS.code(lines(to));
+        WS.println(lines(to));
     }
 
     default boolean deepEquals(Frame df) {

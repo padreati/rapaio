@@ -48,7 +48,7 @@ public class StudentTTest {
 
     @Test
     public void testPdf() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-density.csv");
@@ -70,7 +70,7 @@ public class StudentTTest {
 
     @Test
     public void testCdf() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-distribution.csv");
@@ -92,7 +92,7 @@ public class StudentTTest {
 
     @Test
     public void testQuantile() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-quantile.csv");
@@ -114,7 +114,7 @@ public class StudentTTest {
 
     @Test
     public void testWithR() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)

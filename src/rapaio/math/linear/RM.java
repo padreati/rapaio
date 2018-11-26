@@ -336,21 +336,17 @@ public interface RM extends Serializable, Printable {
         int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
         int vCount = Math.min(rowCount() + 1, 101);
         int hLast = 0;
-        while (true) {
+        while (hLast < colCount()) {
 
             // take vertical stripes
-            if (hLast >= colCount())
-                break;
 
             int hStart = hLast;
             int hEnd = Math.min(hLast + hCount, colCount());
             int vLast = 0;
 
-            while (true) {
+            while (vLast < rowCount()) {
 
                 // print rows
-                if (vLast >= rowCount())
-                    break;
 
                 int vStart = vLast;
                 int vEnd = Math.min(vLast + vCount, rowCount());

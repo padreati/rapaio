@@ -34,20 +34,23 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-public class NumericData extends NaiveBayesData implements Serializable{
-	public NumericEstimator numEstimator;
-	public Map<String, NumericEstimator> numMap;
+public class NumericData extends NaiveBayesData implements Serializable {
 
-	public NumericData(NumericEstimator numEstimator) {
-		this.numEstimator = numEstimator;
-	}
-	
-	public Set<String> keySet() {
-		return numMap.keySet();
-	}
+    private static final long serialVersionUID = 2635948778240636329L;
 
-	@Override
-	public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
-		return numMap.get(testCol).cpValue(df.getDouble(i, testCol), firstTargetLevel);
-	}
+    public NumericEstimator numEstimator;
+    public Map<String, NumericEstimator> numMap;
+
+    public NumericData(NumericEstimator numEstimator) {
+        this.numEstimator = numEstimator;
+    }
+
+    public Set<String> keySet() {
+        return numMap.keySet();
+    }
+
+    @Override
+    public double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel) {
+        return numMap.get(testCol).cpValue(df.getDouble(i, testCol), firstTargetLevel);
+    }
 }

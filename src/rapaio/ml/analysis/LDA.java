@@ -178,7 +178,7 @@ public class LDA implements Printable {
             rows[i] = i;
         }
 
-        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1)).compareTo(eigenValues.get(o2)));
+        Arrays.sort(rows, (o1, o2) -> -Double.compare(eigenValues.get(o1), eigenValues.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
         eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).solidCopy();

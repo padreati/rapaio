@@ -24,11 +24,14 @@
 
 package rapaio.io;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import rapaio.data.*;
+import org.junit.rules.ExpectedException;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -45,70 +48,60 @@ public class CsvTest {
 
     private Csv persistence;
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void setUp() {
-        persistence = new Csv().withTrimSpaces(true).withEscapeChar('\"');
-    }
-
-    @After
-    public void tearDown() {
+        persistence = Csv.instance().withTrimSpaces(true).withEscapeChar('\"');
     }
 
     @Test
-    public void testHeader() {
-        try {
-            Frame f = persistence.read(getClass(), "csv-test.csv");
-            assertNotNull(f);
-            assertEquals(5, f.varCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.varNames());
-        } catch (IOException ex) {
-            assertTrue("this should not happen.", false);
-        }
+    public void testHeader() throws IOException {
+        Frame f = persistence.read(getClass(), "csv-test.csv");
+        assertNotNull(f);
+        assertEquals(5, f.varCount());
+        assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.varNames());
     }
 
     @Test
     public void testLineWithoutQuotas() {
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 "  , ,,,", new String[]{"  ", " ", "", ""});
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
                 "  , ,,,", new String[]{"", "", "", ""});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
                 " ana , are , mere ", new String[]{"ana", "are", "mere"});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 " ana , are , mere ", new String[]{" ana ", " are ", " mere "});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 "ana,are,mere", new String[]{"ana", "are", "mere"});
     }
 
     @Test
     public void testLineWithQuotas() {
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana", new String[]{"ana"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana again\"", new String[]{"ana", "ana again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana,again\"", new String[]{"ana", "ana,again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana\\\"again\"", new String[]{"ana", "ana\"again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\"'),
+        checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\"'),
                 " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
     }
 
     @Test
-    public void testFullFrame() {
-        try {
-            persistence.withQuotes(true);
-            Frame df = persistence.read(getClass(), "csv-test.csv");
-            assertNotNull(df);
-            assertEquals(5, df.varCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.varNames());
-        } catch (IOException ex) {
-            assertTrue("this should not happen.", false);
-        }
-
+    public void testFullFrame() throws IOException {
+        persistence.withQuotes(true);
+        Frame df = persistence.read(getClass(), "csv-test.csv");
+        assertNotNull(df);
+        assertEquals(5, df.varCount());
+        assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.varNames());
     }
 
     private void checkLine(Csv csv, String line, String[] matches) {
@@ -125,7 +118,7 @@ public class CsvTest {
 
     @Test
     public void testDefaults() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withQuotes(true)
                 .withHeader(true)
                 .withDefaultTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
@@ -189,16 +182,16 @@ public class CsvTest {
         allVarNames.add("class");
 
         // test no skip
-        Frame full = new Csv().read(Datasets.class, "iris-r.csv");
+        Frame full = Csv.instance().read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(5, full.varCount());
         Assert.assertArrayEquals(allVarNames.toArray(), full.varNames());
 
         // test skip first 10 rows
 
-        Frame r1 = new Csv().withSkipRows(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).read(Datasets.class, "iris-r.csv");
-        Frame r2 = new Csv().withSkipRows(row -> row < 10).read(Datasets.class, "iris-r.csv");
-        Frame r3 = new Csv().withRows(IntStream.range(10, 150).toArray()).read(Datasets.class, "iris-r.csv");
-        Frame r4 = new Csv().withRows(row -> row >= 10).read(Datasets.class, "iris-r.csv");
+        Frame r1 = Csv.instance().withSkipRows(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).read(Datasets.class, "iris-r.csv");
+        Frame r2 = Csv.instance().withSkipRows(row -> row < 10).read(Datasets.class, "iris-r.csv");
+        Frame r3 = Csv.instance().withRows(IntStream.range(10, 150).toArray()).read(Datasets.class, "iris-r.csv");
+        Frame r4 = Csv.instance().withRows(row -> row >= 10).read(Datasets.class, "iris-r.csv");
 
         Assert.assertTrue(r1.deepEquals(r2));
         Assert.assertTrue(r1.deepEquals(r3));
@@ -206,17 +199,17 @@ public class CsvTest {
 
         // test skip row % 2 == 0 and between 50 and 100
 
-        Frame r5 = new Csv().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
+        Frame r5 = Csv.instance().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(25, r5.rowCount());
         assertEquals("?", r5.rvar("class").levels().get(0));
         assertEquals("virginica", r5.rvar("class").levels().get(1));
 
         // test skip vars 0 and 2
 
-        Frame v1 = new Csv().withSkipCols(0, 2).read(Datasets.class, "iris-r.csv");
-        Frame v2 = new Csv().withSkipCols(row -> row == 0 || row == 2).read(Datasets.class, "iris-r.csv");
-        Frame v3 = new Csv().withCols(1, 3, 4).read(Datasets.class, "iris-r.csv");
-        Frame v4 = new Csv().withCols(row -> (row != 0) && (row != 2)).read(Datasets.class, "iris-r.csv");
+        Frame v1 = Csv.instance().withSkipCols(0, 2).read(Datasets.class, "iris-r.csv");
+        Frame v2 = Csv.instance().withSkipCols(row -> row == 0 || row == 2).read(Datasets.class, "iris-r.csv");
+        Frame v3 = Csv.instance().withCols(1, 3, 4).read(Datasets.class, "iris-r.csv");
+        Frame v4 = Csv.instance().withCols(row -> (row != 0) && (row != 2)).read(Datasets.class, "iris-r.csv");
 
         Assert.assertEquals(3, v1.varCount());
         Assert.assertTrue(v1.deepEquals(v2));
@@ -225,14 +218,14 @@ public class CsvTest {
 
         // test mixed
 
-        Frame m1 = new Csv().withRows(row -> row >= 20 && row < 30).withCols(col -> col >= 2).read(Datasets.class, "iris-r.csv");
+        Frame m1 = Csv.instance().withRows(row -> row >= 20 && row < 30).withCols(col -> col >= 2).read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(10, m1.rowCount());
         Assert.assertEquals(3, m1.varCount());
     }
 
     @Test
     public void testTypes() throws IOException {
-        Frame t1 = new Csv()
+        Frame t1 = Csv.instance()
                 .withTypes(VType.DOUBLE, "sepal-length")
                 .withTypes(VType.NOMINAL, "petal-width", "sepal-length")
                 .read(Datasets.class, "iris-r.csv");
@@ -241,24 +234,24 @@ public class CsvTest {
         VType[] types = new VType[]{VType.NOMINAL, VType.DOUBLE, VType.DOUBLE, VType.NOMINAL, VType.NOMINAL};
         Assert.assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
-        Frame t2 = new Csv().withTemplate(t1).read(Datasets.class, "iris-r.csv");
+        Frame t2 = Csv.instance().withTemplate(t1).read(Datasets.class, "iris-r.csv");
         Assert.assertTrue(t1.deepEquals(t2));
     }
 
     @Test
     public void testNAValues() throws IOException {
         // no NA values
-        Frame na1 = new Csv().read(Datasets.class, "iris-r.csv");
+        Frame na1 = Csv.instance().read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(150, na1.stream().complete().count());
 
         // non existent NA values
-        Frame na2 = new Csv().withNAValues("", "xxxx").read(Datasets.class, "iris-r.csv");
+        Frame na2 = Csv.instance().withNAValues("", "xxxx").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(150, na2.stream().complete().count());
 
-        Frame na3 = new Csv().withNAValues("virginica").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na3 = Csv.instance().withNAValues("virginica").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(100, na3.stream().complete().count());
 
-        Frame na4 = new Csv().withNAValues("virginica", "5").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Frame na4 = Csv.instance().withNAValues("virginica", "5").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
         Assert.assertEquals(89, na4.stream().complete().count());
     }
 }

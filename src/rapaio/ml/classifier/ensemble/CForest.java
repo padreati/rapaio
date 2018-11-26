@@ -79,13 +79,13 @@ public class CForest extends AbstractClassifier {
 
     private static final long serialVersionUID = -145958939373105497L;
 
-    private boolean oobComp = false;
+    private boolean oobComp;
     private boolean freqVIComp = false;
     private boolean gainVIComp = false;
     private boolean permVIComp = false;
 
-    private Classifier c = CTree.newCART();
-    private BaggingMode baggingMode = BaggingMode.DISTRIBUTION;
+    private Classifier c;
+    private BaggingMode baggingMode;
 
     // learning artifacts
     private double oobError = Double.NaN;
@@ -193,7 +193,7 @@ public class CForest extends AbstractClassifier {
         Capabilities cc = c.capabilities();
         return new Capabilities()
                 .withInputCount(cc.minInputCount(), cc.maxInputCount())
-                .withInputTypes(cc.inputTypes().stream().toArray(VType[]::new))
+                .withInputTypes(cc.inputTypes().toArray(new VType[0]))
                 .withAllowMissingInputValues(cc.allowMissingInputValues())
                 .withTargetCount(1, 1)
                 .withTargetTypes(VType.NOMINAL)

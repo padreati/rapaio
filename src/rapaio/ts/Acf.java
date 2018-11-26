@@ -33,7 +33,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.format.*;
 import rapaio.sys.WS;
 
 /**
@@ -98,10 +98,7 @@ public class Acf implements Printable {
         sb.append("===========\n");
         sb.append("\n");
 
-        TextTable tt = TextTable
-                .newEmpty(lags.rowCount()+1, 3)
-                .withHeaderRows(1)
-                ;
+        TextTableRenderer tt = TextTableRenderer.empty(lags.rowCount()+1, 3, 1, 0);
         tt.set(0, 0, "Lag", 0);
         tt.set(0, 1, "correlation", 0);
         tt.set(0, 2, "covariance", 0);
@@ -110,7 +107,7 @@ public class Acf implements Printable {
             tt.set(i+1, 1, WS.formatFlex(correlation.getDouble(i)), 1);
             tt.set(i+1, 2, WS.formatFlex(covariance.getDouble(i)), 1);
         }
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         sb.append("\n");
         return sb.toString();
     }

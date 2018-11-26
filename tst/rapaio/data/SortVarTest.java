@@ -136,7 +136,7 @@ public class SortVarTest {
     @Test
     public void testGetterSetter() throws IOException, URISyntaxException {
 
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withQuotes(false)
                 .withTypes(VType.DOUBLE, "z")
                 .withTypes(VType.INT, "y")

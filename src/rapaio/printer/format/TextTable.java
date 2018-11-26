@@ -37,7 +37,12 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/16/14.
  */
+@Deprecated
 public class TextTable implements Printable {
+
+    public static TextTable newEmpty(int rows, int cols) {
+        return new TextTable(rows, cols);
+    }
 
     private final int rows;
     private final int cols;
@@ -62,10 +67,6 @@ public class TextTable implements Printable {
                 alignValues[i][j] = -1;
             }
         }
-    }
-
-    public static TextTable newEmpty(int rows, int cols) {
-        return new TextTable(rows, cols);
     }
 
     public int rows() {

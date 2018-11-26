@@ -27,8 +27,6 @@
 
 package rapaio.printer;
 
-import rapaio.graphics.base.Figure;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -50,52 +48,19 @@ public abstract class AbstractPrinter implements Printer {
     }
 
     @Override
+    public Printer withGraphicShape(int width, int height) {
+        graphicWidth = width;
+        graphicHeight = height;
+        return this;
+    }
+
+    @Override
     public int graphicWidth() {
         return graphicWidth;
     }
 
     @Override
-    public void withGraphicWidth(int width) {
-        graphicWidth = width;
-    }
-
-    @Override
     public int graphicHeight() {
         return graphicHeight;
-    }
-
-    @Override
-    public void withGraphicHeight(int height) {
-        graphicHeight = height;
-    }
-
-    @Override
-    public void openPrinter() {
-        // do nothing in standard setup
-    }
-
-    @Override
-    public void closePrinter() {
-        // do nothing in standard setup
-    }
-
-    @Override
-    public void head(int h, String lines) {
-        print("*" + lines + "*\n");
-    }
-
-    @Override
-    public void code(String lines) {
-        print(lines);
-    }
-
-    @Override
-    public void p(String lines) {
-        print(lines);
-    }
-
-    @Override
-    public void draw(Figure figure) {
-        draw(figure, graphicWidth(), graphicHeight());
     }
 }

@@ -49,7 +49,7 @@ public class FJPool {
     public static <T> Optional<T> compute(int threads, Callable<T> r) {
         ForkJoinPool pool = new ForkJoinPool(threads);
         try {
-            return Optional.of(pool.submit(r::call).get());
+            return Optional.of(pool.submit(r).get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return Optional.empty();

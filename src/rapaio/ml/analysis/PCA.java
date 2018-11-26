@@ -122,7 +122,7 @@ public class PCA implements Printable {
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(values.get(o1)).compareTo(values.get(o2)));
+        Arrays.sort(rows, (o1, o2) -> -Double.compare(values.get(o1), values.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
         values = values.asMatrix().mapRows(indexes).mapCol(0).solidCopy();

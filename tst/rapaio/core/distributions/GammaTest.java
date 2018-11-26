@@ -59,7 +59,7 @@ public class GammaTest {
 
     @Before
     public void setUp() throws Exception {
-        df = new Csv().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
+        df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
         g_low_low = Gamma.of(0.5, 0.5);
         g_one_low = Gamma.of(0.5, 1);
         g_high_low = Gamma.of(0.5, 5);

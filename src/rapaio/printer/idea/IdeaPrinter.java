@@ -28,7 +28,8 @@
 package rapaio.printer.idea;
 
 import rapaio.graphics.base.Figure;
-import rapaio.printer.StandardPrinter;
+import rapaio.printer.Printer;
+import rapaio.printer.standard.StandardPrinter;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -45,16 +46,13 @@ public class IdeaPrinter extends StandardPrinter {
     }
 
     @Override
-    public void withGraphicWidth(int width) {
+    public Printer withGraphicShape(int width, int height) {
+        return this;
     }
 
     @Override
     public int graphicHeight() {
         return 400;
-    }
-
-    @Override
-    public void withGraphicHeight(int height) {
     }
 
     @Override

@@ -50,7 +50,7 @@ public class PoissonTest {
 
     @Before
     public void setUp() throws Exception {
-        df = new Csv()
+        df = Csv.instance()
                 .withNAValues("NaN","Inf")
                 .read(rapaio.core.distributions.HypergeometricTest.class, "pois.csv");
 

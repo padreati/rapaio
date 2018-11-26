@@ -27,13 +27,11 @@
 
 package rapaio.ts;
 
-import rapaio.core.stat.Maximum;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
 
 /**
  * Partial auto correlation function
@@ -79,7 +77,6 @@ public class Pacf implements Printable {
             }
             c = a / b;
             pacf.setDouble(ll, c);
-            ;
             if (ll + 1 == nlag) break;
             w[ll] = c;
             for (int i = 0; i < ll; i++)
@@ -104,16 +101,14 @@ public class Pacf implements Printable {
         sb.append("===========\n");
         sb.append("\n");
 
-        TextTable tt = TextTable
-                .newEmpty(lags.rowCount() + 1, 2)
-                .withHeaderRows(1);
+        TextTableRenderer tt = TextTableRenderer.empty(lags.rowCount() + 1, 2, 1, 0);
         tt.set(0, 0, "Lag", 0);
         tt.set(0, 1, "pacf", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
             tt.set(i + 1, 0, lags.getLabel(i), 1);
             tt.set(i + 1, 1, WS.formatFlex(pacf.getDouble(i)), 1);
         }
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         sb.append("\n");
         return sb.toString();
     }

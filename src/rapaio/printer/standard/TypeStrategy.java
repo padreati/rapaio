@@ -25,35 +25,14 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.printer.standard;
 
-import rapaio.graphics.base.HostFigure;
-import rapaio.graphics.base.Range;
-import rapaio.ml.clustering.ClusterSilhouette;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 
-import java.awt.*;
+public interface TypeStrategy {
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/17.
- */
-@Deprecated
-public class ClusterSilhuettePlot extends HostFigure {
+    void getVarSummary(Frame df, Var v, String[][] first, String[][] second, int th);
 
-    private final ClusterSilhouette silhouette;
-
-    public ClusterSilhuettePlot(ClusterSilhouette silhouette) {
-        this.silhouette = silhouette;
-    }
-
-    @Override
-    protected Range buildRange() {
-        return null;
-    }
-
-    @Override
-    public void paint(Graphics2D g2d, Rectangle rect) {
-        super.paint(g2d, rect);
-
-
-    }
+    void getPrintSummary(Var v, String[] first, String[] second);
 }

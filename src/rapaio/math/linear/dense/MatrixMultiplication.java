@@ -240,9 +240,6 @@ public class MatrixMultiplication {
             RM b21 = SolidRM.empty(newSize, newSize);
             RM b22 = SolidRM.empty(newSize, newSize);
 
-            RM aResult = SolidRM.empty(newSize, newSize);
-            RM bResult = SolidRM.empty(newSize, newSize);
-
             // dividing the matrices in 4 sub-matrices:
             for (int i = 0; i < newSize; i++) {
                 for (int j = 0; j < newSize; j++) {
@@ -259,8 +256,8 @@ public class MatrixMultiplication {
             }
 
             // Calculating p1 to p7:
-            aResult = add(a11, a22);
-            bResult = add(b11, b22);
+            RM aResult = add(a11, a22);
+            RM bResult = add(b11, b22);
             RM p1 = strassenR(aResult, bResult, leafSize);
             // p1 = (a11+a22) * (b11+b22)
 

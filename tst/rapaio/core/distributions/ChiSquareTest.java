@@ -45,7 +45,7 @@ public class ChiSquareTest {
 
     @Test
     public void testWithR() throws IOException {
-        Frame df = new Csv()
+        Frame df = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
                 .withDefaultTypes(VType.DOUBLE)

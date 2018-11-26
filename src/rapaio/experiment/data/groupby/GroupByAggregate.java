@@ -342,11 +342,6 @@ public class GroupByAggregate implements Printable {
     }
 
     @Override
-    public String description() {
-        return summary();
-    }
-
-    @Override
     public String content() {
 
         int headRows = 100;

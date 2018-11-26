@@ -46,7 +46,7 @@ public class SortedFrameTest {
 
     @Before
     public void init() throws IOException, URISyntaxException {
-        df = new Csv()
+        df = Csv.instance()
                 .withQuotes(false)
                 .withTypes(VType.DOUBLE, "z")
                 .withTypes(VType.INT, "y")

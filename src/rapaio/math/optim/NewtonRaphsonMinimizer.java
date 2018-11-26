@@ -48,7 +48,7 @@ import static java.lang.Math.*;
 public class NewtonRaphsonMinimizer implements Minimizer {
 
     private double tol = 1e-3;
-    private int maxIt = 100;
+    private int maxIt;
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
