@@ -27,13 +27,11 @@
 
 package rapaio.core.correlation;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.ml.clustering.DistanceMatrix;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.ml.clustering.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -128,7 +126,7 @@ public class CorrPearson implements Correlation, Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 d.name(0), d.name(1)));
-        sb.append(formatFlex(d.get(0,1))).append("\n");
+        sb.append(Format.floatFlex(d.get(0,1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
@@ -141,7 +139,7 @@ public class CorrPearson implements Correlation, Printable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + d.name(i - 1);
             for (int j = 1; j < d.names().length + 1; j++) {
-                table[i][j] = formatShort(d.get(i - 1,j - 1));
+                table[i][j] = Format.floatShort(d.get(i - 1,j - 1));
                 if (i == j) {
                     table[i][j] = "x";
                 }

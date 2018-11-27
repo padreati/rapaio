@@ -50,7 +50,7 @@ import rapaio.printer.Printable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Gradient Boosting Tree
@@ -96,7 +96,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         sb.append("loss=").append(regressionLoss.name()).append(", ");
         sb.append("initRegression=").append(initRegression.fullName()).append(", ");
         sb.append("regression=").append(regressor.fullName()).append(", ");
-        sb.append("shrinkage=").append(formatFlex(shrinkage)).append(", ");
+        sb.append("shrinkage=").append(floatFlex(shrinkage)).append(", ");
         sb.append("sampler=").append(sampler()).append(", ");
         sb.append("runs=").append(runs());
         sb.append("}");

@@ -27,14 +27,12 @@
 
 package rapaio.sys;
 
-import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
-import rapaio.printer.Printer;
-import rapaio.printer.standard.StandardPrinter;
+import rapaio.graphics.base.*;
+import rapaio.printer.*;
+import rapaio.printer.standard.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.logging.LogManager;
 
 /**
@@ -45,30 +43,7 @@ import java.util.logging.LogManager;
 public class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
-    private static DecimalFormat formatDecShort = new DecimalFormat();
-    private static DecimalFormat formatDecMedium = new DecimalFormat();
-    private static DecimalFormat formatDecLong = new DecimalFormat();
-    private static DecimalFormat formatDecFlex = new DecimalFormat();
-    private static DecimalFormat formatDecFlexShort = new DecimalFormat();
     private static Printer printer = new StandardPrinter();
-
-    static {
-        formatDecShort.setMinimumIntegerDigits(1);
-        formatDecShort.setMinimumFractionDigits(3);
-        formatDecShort.setMaximumFractionDigits(3);
-        formatDecMedium.setMinimumIntegerDigits(1);
-        formatDecMedium.setMinimumFractionDigits(6);
-        formatDecMedium.setMaximumFractionDigits(6);
-        formatDecLong.setMinimumFractionDigits(30);
-        formatDecLong.setMaximumFractionDigits(30);
-        formatDecLong.setMinimumIntegerDigits(1);
-        formatDecFlex.setMinimumFractionDigits(0);
-        formatDecFlex.setMaximumFractionDigits(7);
-        formatDecFlex.setMinimumIntegerDigits(1);
-        formatDecFlexShort.setMinimumFractionDigits(0);
-        formatDecFlexShort.setMaximumFractionDigits(3);
-        formatDecFlexShort.setMinimumIntegerDigits(1);
-    }
 
     static {
         try {
@@ -95,52 +70,6 @@ public class WS {
 
     public static void setPrinter(Printer printer) {
         WS.printer = printer;
-    }
-
-    public static String formatFlex(double value) {
-        if (Double.isNaN(value))
-            return "?";
-        if (Double.isInfinite(value))
-            return Double.toString(value);
-        return formatDecFlex.format(value);
-    }
-
-    public static String formatFlexShort(double value) {
-        if (Double.isNaN(value))
-            return "?";
-        if (Double.isInfinite(value))
-            return Double.toString(value);
-        return formatDecFlexShort.format(value);
-    }
-
-    public static String formatShort(double value) {
-        return formatDecShort.format(value);
-    }
-
-    public static String formatMedium(double value) {
-        return formatDecMedium.format(value);
-    }
-
-    public static String formatLong(double value) {
-        return formatDecLong.format(value);
-    }
-
-    public static String formatPValue(double pvalue) {
-        if (pvalue <= 1e-16) {
-            return "<2e-16";
-        }
-        if (pvalue >= 1e-6) {
-            return formatMedium(pvalue);
-        }
-        return String.format("%10.2e", pvalue);
-    }
-
-    public static String getPValueStars(double pValue) {
-        if (pValue > 0.1) return "";
-        if (pValue > 0.05) return ".";
-        if (pValue > 0.01) return "*";
-        if (pValue > 0.001) return "**";
-        return "***";
     }
 
     public static void print(String message) {

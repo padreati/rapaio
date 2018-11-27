@@ -87,12 +87,25 @@ public class TextTableRenderer {
         return left[row][col] + right[row][col];
     }
 
+    /**
+     * This method is required to implement custom things:
+     * <p>
+     * * if left is null, right is not - text from right will be rights aligned
+     * * if right is null, left is not - text from left will be left aligned
+     * * if left and right are non nulls - left will be right aligned, right will be left aligned
+     */
+    public void set(int row, int col, String left, String right) {
+        computedLayout = false;
+        this.left[row][col] = left;
+        this.right[row][col] = right;
+    }
 
     public void set(int row, int col, String value, int align) {
         set(row, col, value, align, '\0');
     }
 
     public void set(int row, int col, String value, int align, char anchor) {
+        computedLayout = false;
         if (anchor == NO_ANCHOR) {
             // no anchor
             if (align < 0) {

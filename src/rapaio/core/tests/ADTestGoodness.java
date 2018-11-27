@@ -27,16 +27,14 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.printer.format.*;
 
 import static java.lang.Math.*;
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Hypothesis test which assess if a given samples belongs to a normal distribution.
@@ -173,12 +171,12 @@ public class ADTestGoodness implements HTest {
         sb.append("\n");
 
         sb.append("sample size: ").append(x.rowCount()).append("\n");
-        sb.append("given mean: ").append(WS.formatFlex(mu)).append(", used mean : ").append(WS.formatFlex(muHat)).append("\n");
-        sb.append("given sd  : ").append(WS.formatFlex(sigma)).append(", used sd   : ").append(WS.formatFlex(sigmaHat)).append("\n");
+        sb.append("given mean: ").append(Format.floatFlex(mu)).append(", used mean : ").append(Format.floatFlex(muHat)).append("\n");
+        sb.append("given sd  : ").append(Format.floatFlex(sigma)).append(", used sd   : ").append(Format.floatFlex(sigmaHat)).append("\n");
         sb.append("\n");
 
-        sb.append("A^2  statistic: ").append(formatFlex(a2)).append(", p-value: ").append(formatFlex(pValue)).append(" ").append(WS.getPValueStars(pValue)).append("\n");
-        sb.append("A*^2 statistic: ").append(formatFlex(a2star)).append(", p-value: ").append(formatFlex(pValueStar)).append(" ").append(WS.getPValueStars(pValueStar)).append("\n");
+        sb.append("A^2  statistic: ").append(floatFlex(a2)).append(", p-value: ").append(floatFlex(pValue)).append(" ").append(Format.pValueStars(pValue)).append("\n");
+        sb.append("A*^2 statistic: ").append(floatFlex(a2star)).append(", p-value: ").append(floatFlex(pValueStar)).append(" ").append(Format.pValueStars(pValueStar)).append("\n");
         sb.append("\n");
         return sb.toString();
     }

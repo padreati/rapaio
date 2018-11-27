@@ -29,7 +29,7 @@ package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * The GaussianPdf kernel is an example of radial basis function kernel.
@@ -74,6 +74,6 @@ public class RBFKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "RBF(sigma=" + formatFlex(sigma) + ")";
+        return "RBF(sigma=" + floatFlex(sigma) + ")";
     }
 }

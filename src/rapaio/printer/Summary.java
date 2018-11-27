@@ -31,13 +31,14 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VType;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.format.*;
 import rapaio.printer.standard.BinaryTypeStrategy;
 import rapaio.printer.standard.NominalTypeStrategy;
 import rapaio.printer.standard.NumericTypeStrategy;
 import rapaio.printer.standard.TypeStrategy;
 import rapaio.sys.WS;
 
+import static rapaio.printer.format.Format.*;
 import static rapaio.sys.WS.*;
 
 /**
@@ -334,7 +335,7 @@ public class Summary {
         double[] values1 = Quantiles.of(var, 0, 0.25, 0.5, 0.75, 1).values();
         for (int i = 0; i < 5; i++) {
             tt1.set(0, i, headers1[i], 1);
-            tt1.set(1, i, WS.formatFlex(values1[i]), -1);
+            tt1.set(1, i, floatFlex(values1[i]), -1);
         }
         return tt1.summary();
     }

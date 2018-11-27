@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 import java.util.function.Function;
 
@@ -101,8 +101,8 @@ public class WaveletKernel extends AbstractKernel {
     @Override
     public String name() {
         return "Wavelet(invariant=" + invariant +
-                ",dilation=" + WS.formatFlex(dilation) +
-                ",translation=" + WS.formatFlex(translation) +
+                ",dilation=" + Format.floatFlex(dilation) +
+                ",translation=" + Format.floatFlex(translation) +
                 ")";
     }
 }

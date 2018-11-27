@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Compensated weighted mean.
@@ -138,7 +138,7 @@ public final class WeightedMean implements Printable {
         sb.append(String.format("> weightedMean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
                 completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("weightedMean: %s\n", formatFlex(mean)));
+        sb.append(String.format("weightedMean: %s\n", floatFlex(mean)));
         return sb.toString();
     }
 }

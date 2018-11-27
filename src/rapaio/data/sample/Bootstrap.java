@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Implements bootstrap row sampling (sampling with replacement)
@@ -57,6 +57,6 @@ final class Bootstrap implements RowSampler {
 
     @Override
     public String name() {
-        return "Bootstrap(p=" + formatFlex(percent) + ")";
+        return "Bootstrap(p=" + floatFlex(percent) + ")";
     }
 }

@@ -27,11 +27,11 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.sys.WS;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Set of rules for one rule algorithm, one rule algorithm builds all possible rule sets and
@@ -70,6 +70,6 @@ public class RuleSet implements Serializable {
 
     @Override
     public String toString() {
-        return "RuleSet {" + "var=" + varName + ", acc=" + WS.formatFlex(getAccuracy()) + "}";
+        return "RuleSet {" + "var=" + varName + ", acc=" + floatFlex(getAccuracy()) + "}";
     }
 }

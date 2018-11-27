@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Core tool which computes geometric mean for a given numerical variable.
@@ -99,6 +99,6 @@ public class GeometricMean implements Printable {
     public String summary() {
         return "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +
-                "mean: " + formatFlex(value) + "\n";
+                "mean: " + floatFlex(value) + "\n";
     }
 }

@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VType;
 import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.format.*;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
@@ -445,51 +445,46 @@ public final class DTable implements Printable, Serializable {
     public String summary() {
 
         if (totalSummary) {
-            TextTable tt = TextTable.newEmpty(rowLevels.size() - start + 2, colLevels.size() - start + 2);
-            tt.withHeaderRows(1);
-            tt.withSplit(WS.getPrinter().textWidth());
+            TextTableRenderer tt = TextTableRenderer.empty(rowLevels.size() - start + 2, colLevels.size() - start + 2, 1, 0);
 
-            for (int i = start; i < rowLevels.size(); i++) {
-                tt.set(i - start + 1, 0, rowLevels.get(i), 1);
-            }
-            for (int i = start; i < colLevels.size(); i++) {
-                tt.set(0, i - start + 1, colLevels.get(i), 1);
-            }
+            putLevels(tt);
             tt.set(0, colLevels.size() - start + 1, "total", 1);
             tt.set(rowLevels.size() - start + 1, 0, "total", 1);
-            for (int i = start; i < rowLevels.size(); i++) {
-                for (int j = start; j < colLevels.size(); j++) {
-                    tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
-                }
-            }
+            putValues(tt);
             double[] rowTotals = rowTotals();
             for (int i = start; i < rowLevels.size(); i++) {
-                tt.set(i - start + 1, colLevels.size() - start + 1, WS.formatFlex(rowTotals[i]), 1);
+                tt.set(i - start + 1, colLevels.size() - start + 1, Format.floatFlex(rowTotals[i]), 1);
             }
             double[] colTotals = colTotals();
             for (int i = start; i < colLevels.size(); i++) {
-                tt.set(rowLevels.size() - start + 1, i - start + 1, WS.formatFlex(colTotals[i]), 1);
+                tt.set(rowLevels.size() - start + 1, i - start + 1, Format.floatFlex(colTotals[i]), 1);
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
-            tt.set(rowLevels.size() - start + 1, colLevels.size() - start + 1, WS.formatFlex(total), 1);
-            return tt.summary();
+            tt.set(rowLevels.size() - start + 1, colLevels.size() - start + 1, Format.floatFlex(total), 1);
+            return tt.getDefaultText();
         } else {
-            TextTable tt = TextTable.newEmpty(rowLevels.size() - start + 1, colLevels.size() - start + 1);
-            tt.withHeaderRows(1);
-            tt.withSplit(WS.getPrinter().textWidth());
+            TextTableRenderer tt = TextTableRenderer.empty(rowLevels.size() - start + 1, colLevels.size() - start + 1, 1, 0);
 
-            for (int i = start; i < rowLevels.size(); i++) {
-                tt.set(i - start + 1, 0, rowLevels.get(i), 1);
+            putLevels(tt);
+            putValues(tt);
+            return tt.getDefaultText();
+        }
+    }
+
+    private void putLevels(TextTableRenderer tt) {
+        for (int i = start; i < rowLevels.size(); i++) {
+            tt.set(i - start + 1, 0, rowLevels.get(i), 1);
+        }
+        for (int i = start; i < colLevels.size(); i++) {
+            tt.set(0, i - start + 1, colLevels.get(i), 1);
+        }
+    }
+
+    private void putValues(TextTableRenderer tt) {
+        for (int i = start; i < rowLevels.size(); i++) {
+            for (int j = start; j < colLevels.size(); j++) {
+                tt.set(i - start + 1, j - start + 1, Format.floatFlex(values[i][j]), 1);
             }
-            for (int i = start; i < colLevels.size(); i++) {
-                tt.set(0, i - start + 1, colLevels.get(i), 1);
-            }
-            for (int i = start; i < rowLevels.size(); i++) {
-                for (int j = start; j < colLevels.size(); j++) {
-                    tt.set(i - start + 1, j - start + 1, WS.formatFlex(values[i][j]), 1);
-                }
-            }
-            return tt.summary();
         }
     }
 }

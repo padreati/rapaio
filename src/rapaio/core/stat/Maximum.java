@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Finds the maximum value from a {@link rapaio.data.Var} of values.
@@ -72,6 +72,6 @@ public class Maximum implements Printable {
     public String summary() {
         return "> maximum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
-                "maximum: " + formatFlex(value) + "\n";
+                "maximum: " + floatFlex(value) + "\n";
     }
 }

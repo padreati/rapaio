@@ -31,7 +31,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * one sample z test
@@ -209,17 +209,17 @@ public class ZTestOneSample implements HTest {
         sb.append("\n");
         sb.append(" One Sample z-test\n");
         sb.append("\n");
-        sb.append("mean: ").append(formatFlex(mu)).append("\n");
-        sb.append("sd: ").append(formatFlex(sd)).append("\n");
-        sb.append("significance level: ").append(formatFlex(sl)).append("\n");
+        sb.append("mean: ").append(floatFlex(mu)).append("\n");
+        sb.append("sd: ").append(floatFlex(sd)).append("\n");
+        sb.append("significance level: ").append(floatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
         sb.append("sample size: ").append(sampleSize).append("\n");
-        sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
-        sb.append("z score: ").append(formatFlex(zScore)).append("\n");
+        sb.append("sample mean: ").append(floatFlex(sampleMean)).append("\n");
+        sb.append("z score: ").append(floatFlex(zScore)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh)).append("]\n");
+        sb.append("conf int: [").append(floatFlex(ciLow)).append(",").append(floatFlex(ciHigh)).append("]\n");
 
         return sb.toString();
     }

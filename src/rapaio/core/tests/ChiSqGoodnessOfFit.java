@@ -27,12 +27,10 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.ChiSquare;
-import rapaio.core.tools.DVector;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * Pearson Chi Square goodness of predict test.
@@ -163,18 +161,15 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         sb.append("Chi-squared test for given probabilities (goodness of predict)\n");
         sb.append("\n");
-        sb.append("X-squared = ").append(WS.formatFlex(chiValue))
+        sb.append("X-squared = ").append(Format.floatFlex(chiValue))
                 .append(", df = ").append(df)
-                .append(", p-value = ").append(WS.formatPValue(pValue))
+                .append(", p-value = ").append(Format.pValue(pValue))
                 .append("\n");
         sb.append("\n");
 
         sb.append("Data:  \n");
 
-        TextTable tt = TextTable.newEmpty(5, dv.rowCount() + 1);
-
-        tt.withHeaderRows(1);
-        tt.withHeaderCols(1);
+        TextTableRenderer tt = TextTableRenderer.empty(5, dv.rowCount() + 1, 1, 1);
 
 
         tt.set(2, 0, "Observed count", -1);
@@ -185,12 +180,12 @@ public class ChiSqGoodnessOfFit implements HTest {
         for (int i = 0; i < dv.rowCount() - off; i++) {
             tt.set(0, i + 1, dv.level(i + off), 1);
             tt.set(1, i + 1, new String(new char[dv.level(i + off).length()]).replace("\0", "-"), 1);
-            tt.set(2, i + 1, WS.formatFlex(dv.get(i + off)), 1);
-            tt.set(3, i + 1, WS.formatFlex(expected.getDouble(i)), 1);
-            tt.set(4, i + 1, WS.formatFlex(p.getDouble(i)), 1);
+            tt.set(2, i + 1, Format.floatFlex(dv.get(i + off)), 1);
+            tt.set(3, i + 1, Format.floatFlex(expected.getDouble(i)), 1);
+            tt.set(4, i + 1, Format.floatFlex(p.getDouble(i)), 1);
         }
 
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         sb.append("\n");
 
         return sb.toString();

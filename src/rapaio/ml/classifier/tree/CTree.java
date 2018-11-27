@@ -29,23 +29,14 @@ package rapaio.ml.classifier.tree;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarBinary;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.VarSelector;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
-import rapaio.util.Tag;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
+import rapaio.ml.common.predicate.*;
+import rapaio.printer.format.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -646,18 +637,18 @@ public class CTree extends AbstractClassifier {
             sb.append((i == level - 1) ? "   |- " : "   |");
         }
         sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
-        sb.append(WS.formatFlexShort(node.getCounter().sum())).append("/");
-        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
+        sb.append(Format.floatFlexShort(node.getCounter().sum())).append("/");
+        sb.append(Format.floatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
         sb.append(firstTargetLevels().get(node.getBestIndex())).append(" (");
         DVector d = node.getDensity().solidCopy().normalize();
         for (int i = 1; i < firstTargetLevels().size(); i++) {
-            sb.append(WS.formatFlexShort(d.get(i))).append(" ");
+            sb.append(Format.floatFlexShort(d.get(i))).append(" ");
         }
         sb.append(") ");
         if (node.isLeaf()) {
             sb.append("*");
         } else {
-            sb.append("[").append(WS.formatFlex(node.getBestCandidate().getScore())).append("]");
+            sb.append("[").append(Format.floatFlex(node.getBestCandidate().getScore())).append("]");
         }
         sb.append("\n");
 

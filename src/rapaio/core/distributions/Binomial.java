@@ -27,8 +27,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MTools;
-import rapaio.sys.WS;
+import rapaio.math.*;
+import rapaio.printer.format.*;
 
 import static rapaio.math.MTools.*;
 
@@ -61,7 +61,7 @@ public class Binomial implements Distribution {
 
     @Override
     public String name() {
-        return "Binomial(p=" + WS.formatFlex(p) + ",n=" + n + ")";
+        return "Binomial(p=" + Format.floatFlex(p) + ",n=" + n + ")";
     }
 
     @Override

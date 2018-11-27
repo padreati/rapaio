@@ -27,11 +27,11 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-import rapaio.math.MTools;
-import rapaio.sys.WS;
+import rapaio.core.*;
+import rapaio.math.*;
+import rapaio.printer.format.*;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Gamma distribution;
@@ -98,15 +98,15 @@ public class Gamma implements Distribution {
      */
     private Gamma(double alpha, double beta) {
         if (alpha <= 0 || beta <= 0)
-            throw new IllegalArgumentException("Value parameters alpha (" + WS.formatFlex(alpha) +
-                    ") and beta (" + WS.formatFlex(beta) + ") parameters should be strictly positive.");
+            throw new IllegalArgumentException("Value parameters alpha (" + Format.floatFlex(alpha) +
+                    ") and beta (" + Format.floatFlex(beta) + ") parameters should be strictly positive.");
         this.alpha = alpha;
         this.beta = beta;
     }
 
     @Override
     public String name() {
-        return "Gamma(alpha=" + formatFlex(alpha) + ", beta=" + formatFlex(beta) + ")";
+        return "Gamma(alpha=" + floatFlex(alpha) + ", beta=" + floatFlex(beta) + ")";
     }
 
     @Override

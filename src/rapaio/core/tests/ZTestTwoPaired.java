@@ -32,7 +32,7 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Two paired sample z test for testing mean of differences
@@ -187,16 +187,16 @@ public class ZTestTwoPaired implements HTest {
         sb.append("\n");
         sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
         sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
-        sb.append("mean: ").append(formatFlex(mu)).append("\n");
-        sb.append("x sd: ").append(formatFlex(sd)).append("\n");
-        sb.append("significance level: ").append(formatFlex(sl)).append("\n");
+        sb.append("mean: ").append(floatFlex(mu)).append("\n");
+        sb.append("x sd: ").append(floatFlex(sd)).append("\n");
+        sb.append("significance level: ").append(floatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
-        sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
-        sb.append("z score: ").append(formatFlex(zScore)).append("\n");
+        sb.append("sample mean: ").append(floatFlex(sampleMean)).append("\n");
+        sb.append("z score: ").append(floatFlex(zScore)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
 
-        sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh)).append("]\n");
+        sb.append("conf int: [").append(floatFlex(ciLow)).append(",").append(floatFlex(ciHigh)).append("]\n");
 
         return sb.toString();
     }

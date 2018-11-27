@@ -27,15 +27,11 @@
 
 package rapaio.experiment.selection;
 
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarNominal;
-import rapaio.data.VType;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -200,16 +196,16 @@ public class Apriori implements Printable {
             for (int j = 0; j < P.get(i).size(); j++) {
                 sb.append(j + 1).append(". ").append(P.get(i).get(j)._1.toString())
                         .append(" ")
-                        .append(WS.formatFlex(P.get(i).get(j)._2.sum())).append(" [");
+                        .append(Format.floatFlex(P.get(i).get(j)._2.sum())).append(" [");
                 for (int k = 1; k < targetLevels.size(); k++) {
-                    sb.append(WS.formatShort(P.get(i).get(j)._2.get(k))).append(",");
+                    sb.append(Format.floatShort(P.get(i).get(j)._2.get(k))).append(",");
                 }
                 sb.append("]\n");
             }
         }
         sb.append("\n");
         sb.append("Rules: ").append(rules.size()).append("\n");
-        sb.append("Coverage: ").append(WS.formatFlex(coverage)).append("\n");
+        sb.append("Coverage: ").append(Format.floatFlex(coverage)).append("\n");
         sb.append("\n");
         return sb.toString();
     }

@@ -27,15 +27,11 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.format.*;
 
 /**
  * Simple regression which predicts with the median value of the target columns.
@@ -125,7 +121,7 @@ public class L1Regression extends AbstractRegression {
 
             for (int i = 0; i < targetNames().length; i++) {
                 tt.set(1 + i, 0, targetName(i), 1);
-                tt.set(1 + i, 1, WS.formatFlex(medians[i]), 1);
+                tt.set(1 + i, 1, Format.floatFlex(medians[i]), 1);
             }
             sb.append(tt.summary());
         }

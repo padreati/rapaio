@@ -27,12 +27,11 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Var;
-import rapaio.data.VarNominal;
-import rapaio.data.filter.VFilter;
-import rapaio.sys.WS;
-import rapaio.util.func.SPredicate;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
+import rapaio.printer.format.*;
+import rapaio.util.func.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,21 +86,21 @@ public class VQuantileDiscrete implements VFilter {
 
         // first interval
 
-        dict.add("-Inf~" + WS.formatFlexShort(qv[0]));
-        predicates.put("-Inf~" + WS.formatFlexShort(qv[0]), x -> x <= qv[0]);
+        dict.add("-Inf~" + Format.floatFlexShort(qv[0]));
+        predicates.put("-Inf~" + Format.floatFlexShort(qv[0]), x -> x <= qv[0]);
 
         // mid intervals
 
         for (int i = 1; i < qv.length; i++) {
             int index = i;
-            dict.add(WS.formatFlexShort(qv[i - 1]) + "~" + WS.formatFlexShort(qv[i]));
-            predicates.put(WS.formatFlexShort(qv[i - 1]) + "~" + WS.formatFlexShort(qv[i]), x -> x > qv[index - 1] && x <= qv[index]);
+            dict.add(Format.floatFlexShort(qv[i - 1]) + "~" + Format.floatFlexShort(qv[i]));
+            predicates.put(Format.floatFlexShort(qv[i - 1]) + "~" + Format.floatFlexShort(qv[i]), x -> x > qv[index - 1] && x <= qv[index]);
         }
 
         // last interval
 
-        dict.add(WS.formatFlexShort(qv[qv.length - 1]) + "~Inf");
-        predicates.put(WS.formatFlexShort(qv[qv.length - 1]) + "~Inf", x -> x > qv[qv.length - 1]);
+        dict.add(Format.floatFlexShort(qv[qv.length - 1]) + "~Inf");
+        predicates.put(Format.floatFlexShort(qv[qv.length - 1]) + "~Inf", x -> x > qv[qv.length - 1]);
     }
 
     @Override

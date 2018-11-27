@@ -27,12 +27,11 @@
 
 package rapaio.experiment.ml.selection;
 
-import rapaio.core.correlation.CorrPearson;
-import rapaio.core.correlation.CorrSpearman;
-import rapaio.data.Frame;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
+import rapaio.core.correlation.*;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +108,7 @@ public class CFeatureSelectionSummary implements Printable {
 
             for (int i = 0; i < topPearson.size(); i++) {
                 Pair<String, Double> p = topPearson.get(i);
-                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, WS.formatFlex(p._2)));
+                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, Format.floatFlex(p._2)));
             }
             sb.append("\n");
         }
@@ -121,7 +120,7 @@ public class CFeatureSelectionSummary implements Printable {
 
             for (int i = 0; i < topSpearman.size(); i++) {
                 Pair<String, Double> p = topSpearman.get(i);
-                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, WS.formatFlex(p._2)));
+                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, Format.floatFlex(p._2)));
             }
             sb.append("\n");
         }

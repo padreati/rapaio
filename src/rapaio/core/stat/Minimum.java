@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Finds the minimum value from a {@link rapaio.data.Var} of values.
@@ -75,6 +75,6 @@ public class Minimum implements Printable {
     public String summary() {
         return "> minimum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
-                "minimum: " + formatFlex(value) + "\n";
+                "minimum: " + floatFlex(value) + "\n";
     }
 }

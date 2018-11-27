@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out. It is also a radial basis function kernel.
@@ -66,6 +66,6 @@ public class ExponentialKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Exponential(sigma=" + WS.formatFlex(sigma) + ",factor=" + WS.formatFlex(factor) + ")";
+        return "Exponential(sigma=" + Format.floatFlex(sigma) + ",factor=" + Format.floatFlex(factor) + ")";
     }
 }

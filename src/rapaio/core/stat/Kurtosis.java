@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Computes sample kurtosis. Formulas for sample kurtosis are taken from wikipedia page
@@ -98,8 +98,8 @@ public class Kurtosis implements Printable {
     public String summary() {
         return "> kurtosis[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
-                "kurtosis (g2): " + formatFlex(g2) + "\n" +
-                "kurtosis (b2): " + formatFlex(b2) + "\n" +
-                "kurtosis (G2): " + formatFlex(G2) + "\n";
+                "kurtosis (g2): " + floatFlex(g2) + "\n" +
+                "kurtosis (b2): " + floatFlex(b2) + "\n" +
+                "kurtosis (G2): " + floatFlex(G2) + "\n";
     }
 }

@@ -27,23 +27,15 @@
 
 package rapaio.ml.clustering;
 
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.data.filter.frame.FRefSort;
-import rapaio.ml.common.distance.Distance;
-import rapaio.ml.common.distance.KMeansInitMethod;
-import rapaio.printer.Printable;
-import rapaio.printer.Summary;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
-import rapaio.util.Tag;
+import rapaio.core.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.ml.common.distance.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
+import rapaio.util.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -408,9 +400,9 @@ public class KMeans implements Printable {
         } else {
             sb.append("Overall: \n");
             sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");
-            sb.append("> mean: ").append(WS.formatFlex(Mean.of(summaryAllDist).value())).append("\n");
-            sb.append("> var: ").append(WS.formatFlex(Variance.of(summaryAllDist).value())).append("\n");
-            sb.append("> sd: ").append(WS.formatFlex(Variance.of(summaryAllDist).sdValue())).append("\n");
+            sb.append("> mean: ").append(Format.floatFlex(Mean.of(summaryAllDist).value())).append("\n");
+            sb.append("> var: ").append(Format.floatFlex(Variance.of(summaryAllDist).value())).append("\n");
+            sb.append("> sd: ").append(Format.floatFlex(Variance.of(summaryAllDist).sdValue())).append("\n");
             sb.append("\n");
 
             sb.append("Per cluster: \n");

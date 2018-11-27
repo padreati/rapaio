@@ -1,5 +1,6 @@
 package rapaio.printer.format;
 
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.*;
 import rapaio.core.distributions.*;
@@ -15,6 +16,11 @@ import static org.junit.Assert.*;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/18.
  */
 public class TextTableRenderedTest {
+
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
 
     @Test
     public void testSimple() throws IOException {
@@ -78,7 +84,6 @@ public class TextTableRenderedTest {
 
     @Test
     public void testDynamic() {
-        RandomSource.setSeed(123);
         VarNominal headerCol = VarNominal.empty().withName("header col");
         VarDouble x1 = VarDouble.empty().withName("x1");
         VarDouble x2 = VarDouble.empty().withName("x2");
@@ -92,7 +97,7 @@ public class TextTableRenderedTest {
             x3.addDouble(normal.sampleNext());
         }
 
-        TextTableRenderer tt = TextTableRenderer.empty(headerCol.rowCount()+1, 4, 1, 1);
+        TextTableRenderer tt = TextTableRenderer.empty(headerCol.rowCount() + 1, 4, 1, 1);
         tt.set(0, 0, headerCol.name(), 0);
         tt.set(0, 1, x1.name(), 0);
         tt.set(0, 2, x2.name(), 0);
@@ -100,9 +105,9 @@ public class TextTableRenderedTest {
 
         for (int i = 0; i < headerCol.rowCount(); i++) {
             tt.set(i + 1, 0, headerCol.getLabel(i), 0);
-            tt.set(i + 1, 1, WS.formatFlex(x1.getDouble(i)), 0, '.');
-            tt.set(i + 1, 2, WS.formatFlex(x2.getDouble(i)), 0, '.');
-            tt.set(i + 1, 3, WS.formatFlex(x3.getDouble(i)), 0, '.');
+            tt.set(i + 1, 1, Format.floatFlex(x1.getDouble(i)), 0, '.');
+            tt.set(i + 1, 2, Format.floatFlex(x2.getDouble(i)), 0, '.');
+            tt.set(i + 1, 3, Format.floatFlex(x3.getDouble(i)), 0, '.');
         }
 
         assertEquals("header col   x1        \n" +
@@ -330,6 +335,39 @@ public class TextTableRenderedTest {
                 "  979799     5.1848768 -15.672808   -2.0997226   979999    10.1338974   9.1530262   6.5726676   979797   -10.9652756 -16.4312454  -2.1162765 \n" +
                 "  989898   -26.7227345  -3.8095887  22.947924    979897    15.1330668  -4.2091832 -17.8997236   979997     3.3390545   0.7376601 -20.338834  \n" +
                 "  989799    -0.0068314  41.4251087  16.9617833   999897    12.8722178  31.3450903  18.7648089   989898     8.453027   18.9186874 -20.4969131 \n", tt.getText(10000000));
+    }
+
+    @Test
+    public void testFloat() {
+        var normal = Normal.of(0, 10);
+        Var x = VarDouble.from(5, normal::sampleNext);
+        x.addDouble(1);
+        x.addDouble(-122682378);
+
+        TextTableRenderer tt = TextTableRenderer.empty(x.rowCount(), 1);
+        for (int i = 0; i < x.rowCount(); i++) {
+            tt.set(i, 0, Format.floatFlex(x.getDouble(i)), 1, '.');
+        }
+        // integers with no dots are misaligned, this is why we need custom methods
+        assertEquals("     5.9229719 \n" +
+                "    23.6147893 \n" +
+                "    -6.6416266 \n" +
+                "     2.7619375 \n" +
+                "     8.6277539 \n" +
+                "     1         \n" +
+                "-122,682,378   \n", tt.getRawText());
+
+        tt.set(4, 0, "left", ".right");
+        tt.set(5, 0, "", ".34442");
+        tt.set(6, 0, "-12", "");
+
+        assertEquals("   5.9229719 \n" +
+                "  23.6147893 \n" +
+                "  -6.6416266 \n" +
+                "   2.7619375 \n" +
+                "left.right   \n" +
+                "    .34442   \n" +
+                " -12         \n", tt.getRawText());
     }
 
     private String randomString() {

@@ -37,7 +37,7 @@ import rapaio.printer.Printable;
 
 import java.io.Serializable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 
 /**
@@ -230,12 +230,12 @@ public class ROC implements Printable, Serializable {
                 if (j > 0) {
                     sb.append(", ");
                 }
-                sb.append(String.format(fmt, formatFlex(data.getDouble(i, j))));
+                sb.append(String.format(fmt, floatFlex(data.getDouble(i, j))));
             }
             sb.append("\n");
         }
         sb.append("\n");
-        sb.append("AUC: ").append(formatFlex(auc)).append("\n");
+        sb.append("AUC: ").append(floatFlex(auc)).append("\n");
         return sb.toString();
     }
 }

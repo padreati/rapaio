@@ -38,7 +38,7 @@ import rapaio.ml.regression.Regression;
 
 import java.util.Arrays;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -114,7 +114,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
         sb.append("function=").append(function.name()).append(", ");
-        sb.append("learningRate=").append(formatFlex(learningRate)).append(", ");
+        sb.append("learningRate=").append(floatFlex(learningRate)).append(", ");
         sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).mapToObj(i -> i).toArray()));
         sb.append("}");
         return sb.toString();

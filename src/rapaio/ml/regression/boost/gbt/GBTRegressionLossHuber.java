@@ -31,7 +31,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
@@ -44,7 +44,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
     @Override
     public String name() {
-        return "Huber(alpha=" + formatFlex(alpha) + ")";
+        return "Huber(alpha=" + floatFlex(alpha) + ")";
     }
 
     public double getAlpha() {

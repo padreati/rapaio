@@ -30,7 +30,7 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 import rapaio.math.MTools;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
@@ -79,9 +79,9 @@ public class PolyKernel extends AbstractKernel {
     @Override
     public String name() {
         return "PolyKernel(" +
-                "exp=" + formatFlex(exponent) + "," +
-                "bias=" + formatFlex(bias) + "," +
-                "slope=" + formatFlex(slope) +
+                "exp=" + floatFlex(exponent) + "," +
+                "bias=" + floatFlex(bias) + "," +
+                "slope=" + floatFlex(slope) +
                 ")";
     }
 

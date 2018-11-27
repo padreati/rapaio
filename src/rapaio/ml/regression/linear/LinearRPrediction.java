@@ -27,18 +27,14 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.core.distributions.StudentT;
-import rapaio.data.Frame;
-import rapaio.data.VarDouble;
-import rapaio.math.MTools;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.regression.RPrediction;
-import rapaio.printer.Summary;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.math.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -154,7 +150,7 @@ public class LinearRPrediction extends RPrediction {
                 tt.set(0, 1, "Estimate", 0);
                 for (int j = 0; j < coeff.count(); j++) {
                     tt.set(j + 1, 0, lm.inputName(j), -1);
-                    tt.set(j + 1, 1, WS.formatFlex(coeff.get(j)), -1);
+                    tt.set(j + 1, 1, Format.floatFlex(coeff.get(j)), -1);
                 }
                 sb.append(tt.summary());
             } else {
@@ -186,10 +182,10 @@ public class LinearRPrediction extends RPrediction {
                 tt.set(0, 5, "", 1);
                 for (int j = 0; j < coeff.count(); j++) {
                     tt.set(j + 1, 0, model.inputName(j), -1);
-                    tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
-                    tt.set(j + 1, 2, WS.formatMedium(beta_std_error.get(j, i)), 1);
-                    tt.set(j + 1, 3, WS.formatMedium(beta_t_value.get(j, i)), 1);
-                    tt.set(j + 1, 4, WS.formatPValue(beta_p_value.get(j, i)), 1);
+                    tt.set(j + 1, 1, Format.floatMedium(coeff.get(j)), 1);
+                    tt.set(j + 1, 2, Format.floatMedium(beta_std_error.get(j, i)), 1);
+                    tt.set(j + 1, 3, Format.floatMedium(beta_t_value.get(j, i)), 1);
+                    tt.set(j + 1, 4, Format.pValue(beta_p_value.get(j, i)), 1);
                     tt.set(j + 1, 5, beta_significance[j][i], -1);
                 }
                 sb.append(tt.summary());
@@ -198,15 +194,15 @@ public class LinearRPrediction extends RPrediction {
 
 
                 sb.append(String.format("Residual standard error: %s on %d degrees of freedom\n",
-                        WS.formatFlex(Math.sqrt(var)),
+                        Format.floatFlex(Math.sqrt(var)),
                         degrees));
                 sb.append(String.format("Multiple R-squared:  %s, Adjusted R-squared:  %s\n",
-                        WS.formatFlex(rs), WS.formatFlex(rsa)));
+                        Format.floatFlex(rs), Format.floatFlex(rsa)));
                 sb.append(String.format("F-statistic: %s on %d and %d DF,  p-value: %s\n",
-                        WS.formatFlexShort(fvalue),
+                        Format.floatFlexShort(fvalue),
                         fdegree1,
                         degrees,
-                        WS.formatPValue(fpvalue)));
+                        Format.pValue(fpvalue)));
                 sb.append("\n");
             }
         }

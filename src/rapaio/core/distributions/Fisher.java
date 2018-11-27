@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.sys.WS;
+import rapaio.printer.format.*;
 
 import static java.lang.Math.pow;
 import static rapaio.math.MTools.*;
@@ -56,7 +56,7 @@ public class Fisher implements Distribution {
 
     @Override
     public String name() {
-        return "Fisher(" + WS.formatFlex(df1) + "," + WS.formatFlex(df2) + ")";
+        return "Fisher(" + Format.floatFlex(df1) + "," + Format.floatFlex(df2) + ")";
     }
 
     @Override

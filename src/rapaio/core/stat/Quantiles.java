@@ -32,7 +32,7 @@ import rapaio.printer.Printable;
 
 import java.util.Arrays;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 
 /**
@@ -137,7 +137,7 @@ public class Quantiles implements Printable {
         sb.append(String.format("\n > quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
-            sb.append(String.format("quantile[%s] = %s\n", formatFlex(percentiles[i]), formatFlex(quantiles[i])));
+            sb.append(String.format("quantile[%s] = %s\n", floatFlex(percentiles[i]), floatFlex(quantiles[i])));
         }
         return sb.toString();
     }

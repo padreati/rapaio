@@ -27,8 +27,8 @@
 
 package rapaio.ml.common.predicate;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 import java.io.Serializable;
 
@@ -122,7 +122,7 @@ final class NumLessEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " <= " + WS.formatFlex(testValue);
+        return testName + " <= " + Format.floatFlex(testValue);
     }
 }
 
@@ -146,7 +146,7 @@ final class NumGreaterEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " >= " + WS.formatFlex(testValue);
+        return testName + " >= " + Format.floatFlex(testValue);
     }
 }
 
@@ -171,7 +171,7 @@ final class NumLess implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " < " + WS.formatFlex(testValue);
+        return testName + " < " + Format.floatFlex(testValue);
     }
 }
 
@@ -196,7 +196,7 @@ final class NumGreater implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " > " + WS.formatFlex(testValue);
+        return testName + " > " + Format.floatFlex(testValue);
     }
 }
 

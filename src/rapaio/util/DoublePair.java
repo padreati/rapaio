@@ -27,7 +27,7 @@
 
 package rapaio.util;
 
-import rapaio.sys.WS;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
@@ -47,7 +47,7 @@ public class DoublePair {
 
     @Override
     public String toString() {
-        return "Pair{" + WS.formatFlex(_1) + ", " + WS.formatFlex(_2) + "}";
+        return "Pair{" + floatFlex(_1) + ", " + floatFlex(_2) + "}";
     }
 
 

@@ -27,15 +27,11 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.core.stat.Mean;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.format.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -117,7 +113,7 @@ public class L2Regression extends AbstractRegression {
 
             for (int i = 0; i < targetNames().length; i++) {
                 tt.set(1 + i, 0, targetName(i), 1);
-                tt.set(1 + i, 1, WS.formatFlex(means[i]), 1);
+                tt.set(1 + i, 1, Format.floatFlex(means[i]), 1);
             }
             sb.append(tt.summary());
         }

@@ -27,13 +27,11 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.filter.frame.FIntercept;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.math.linear.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.format.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -146,7 +144,7 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
             tt.set(0, 1, "Estimate", 0);
             for (int j = 0; j < coeff.count(); j++) {
                 tt.set(j + 1, 0, inputNames[j], -1);
-                tt.set(j + 1, 1, WS.formatMedium(coeff.get(j)), 1);
+                tt.set(j + 1, 1, Format.floatMedium(coeff.get(j)), 1);
             }
             sb.append(tt.summary());
             sb.append("\n");

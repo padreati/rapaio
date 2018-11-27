@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Sample obtaind by subsampling, which is a sample without replacement
@@ -56,6 +56,6 @@ final class SubSampler implements RowSampler {
 
     @Override
     public String name() {
-        return "SubSampler(p=" + formatFlex(percent) + ")";
+        return "SubSampler(p=" + floatFlex(percent) + ")";
     }
 }

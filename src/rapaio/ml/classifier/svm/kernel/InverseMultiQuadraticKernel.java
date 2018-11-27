@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * Inverse Multiquadric Kernel
@@ -64,6 +64,6 @@ public class InverseMultiQuadraticKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "InverseMultiQuadratic(c=" + WS.formatFlex(c) + ")";
+        return "InverseMultiQuadratic(c=" + Format.floatFlex(c) + ")";
     }
 }

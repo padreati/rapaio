@@ -27,21 +27,16 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VarDouble;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.Printer;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.graphics.plot.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
+import rapaio.util.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -231,8 +226,8 @@ public class ISLRNew {
             Pair<RV, VarDouble> pair = basicISLR(A, b, prob, 10_000, 1e-20);
             plot.lines(pair._2);
 
-            WS.println("Solution 1 for p=" + WS.formatFlex(prob));
-            WS.println("Min :" + WS.formatFlex(A.dot(pair._1).minus(b).norm(prob)));
+            WS.println("Solution 1 for p=" + Format.floatFlex(prob));
+            WS.println("Min :" + Format.floatFlex(A.dot(pair._1).minus(b).norm(prob)));
             p.printSummary(pair._1);
             WS.println();
 
@@ -240,8 +235,8 @@ public class ISLRNew {
             Pair<RV, VarDouble> pair2 = islrH(A, b, prob, h, 10_000, 1e-20);
             plot.lines(pair2._2, color(1));
 
-            WS.println("Solution 2 for p=" + WS.formatFlex(prob));
-            WS.println("Min :" + WS.formatFlex(A.dot(pair2._1).minus(b).norm(prob)));
+            WS.println("Solution 2 for p=" + Format.floatFlex(prob));
+            WS.println("Min :" + Format.floatFlex(A.dot(pair2._1).minus(b).norm(prob)));
             p.printSummary(pair2._1);
             WS.println();
 

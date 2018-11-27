@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * The Generalized T-Student Kernel has been proven to be a
@@ -63,6 +63,6 @@ public class GeneralizedStudentTKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "GeneralizedStudent(degree=" + WS.formatFlex(degree) + ")";
+        return "GeneralizedStudent(degree=" + Format.floatFlex(degree) + ")";
     }
 }

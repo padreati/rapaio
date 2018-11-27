@@ -27,9 +27,9 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-import rapaio.math.MTools;
-import rapaio.sys.WS;
+import rapaio.core.*;
+import rapaio.math.*;
+import rapaio.printer.format.*;
 
 import static rapaio.math.MTools.*;
 
@@ -63,7 +63,7 @@ public class ChiSquare implements Distribution {
 
     @Override
     public String name() {
-        return "ChiSq(df=" + WS.formatFlex(df) + ")";
+        return "ChiSq(df=" + Format.floatFlex(df) + ")";
     }
 
     @Override

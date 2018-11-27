@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Compute covariance of two variables
@@ -92,6 +92,6 @@ public class Covariance implements Printable {
         return "> cov[" + varName1 + "," + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) +
                 " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
-                "covariance: " + formatFlex(value) + "\n";
+                "covariance: " + floatFlex(value) + "\n";
     }
 }

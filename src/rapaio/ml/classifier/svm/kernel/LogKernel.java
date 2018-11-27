@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * Log Kernel
@@ -62,6 +62,6 @@ public class LogKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Log(degree=" + WS.formatFlex(degree) + ")";
+        return "Log(degree=" + Format.floatFlex(degree) + ")";
     }
 }

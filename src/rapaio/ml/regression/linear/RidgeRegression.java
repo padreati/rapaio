@@ -26,21 +26,14 @@
  */
 package rapaio.ml.regression.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.Regression;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.format.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,7 +88,7 @@ public class RidgeRegression extends AbstractLinearRegression {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
-        sb.append("(lambda=").append(WS.formatFlex(lambda));
+        sb.append("(lambda=").append(Format.floatFlex(lambda));
         sb.append(")");
         return sb.toString();
     }

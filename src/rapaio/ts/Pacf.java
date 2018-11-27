@@ -31,7 +31,8 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.printer.*;
 import rapaio.printer.format.*;
-import rapaio.sys.*;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Partial auto correlation function
@@ -106,7 +107,7 @@ public class Pacf implements Printable {
         tt.set(0, 1, "pacf", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
             tt.set(i + 1, 0, lags.getLabel(i), 1);
-            tt.set(i + 1, 1, WS.formatFlex(pacf.getDouble(i)), 1);
+            tt.set(i + 1, 1, floatFlex(pacf.getDouble(i)), 1);
         }
         sb.append(tt.getDefaultText());
         sb.append("\n");

@@ -27,12 +27,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.data.Var;
-import rapaio.data.filter.var.VSort;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.printer.format.*;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
 * One-sample KS (Kolmogorov-Smirnoff) test.
@@ -138,8 +138,8 @@ public class KSTestOneSample implements HTest {
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("densities: %s\n", cdf.name()));
-        sb.append("D statistic: ").append(formatFlex(D)).append("\n");
-        sb.append("p-value: ").append(formatFlex(pValue)).append(" ").append(WS.getPValueStars(pValue)).append("\n");
+        sb.append("D statistic: ").append(floatFlex(D)).append("\n");
+        sb.append("p-value: ").append(floatFlex(pValue)).append(" ").append(Format.pValueStars(pValue)).append("\n");
         sb.append("\n");
         return sb.toString();
     }

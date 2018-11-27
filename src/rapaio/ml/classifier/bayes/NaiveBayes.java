@@ -27,21 +27,13 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.bayes.estimator.BinaryEstimator;
-import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
-import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
-import rapaio.ml.classifier.bayes.estimator.NominalEstimator;
-import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
-import rapaio.ml.common.Capabilities;
-import rapaio.sys.WS;
-import rapaio.util.Tag;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.classifier.bayes.estimator.*;
+import rapaio.ml.common.*;
+import rapaio.util.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,6 +43,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Naive Bayes Classifier.
@@ -253,7 +247,7 @@ public class NaiveBayes extends AbstractClassifier {
 
         sb.append("prior probabilities:\n");
         String targetName = firstTargetName();
-        firstTargetLevels().stream().skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(WS.formatFlex(priors.get(label))).append("\n"));
+        firstTargetLevels().stream().skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(floatFlex(priors.get(label))).append("\n"));
 
         if (!numData.numMap.isEmpty()) {
             sb.append("numerical estimators:\n");

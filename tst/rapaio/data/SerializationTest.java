@@ -26,9 +26,10 @@ package rapaio.data;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.datasets.Datasets;
-import rapaio.io.JavaIO;
-import rapaio.sys.WS;
+import rapaio.datasets.*;
+import rapaio.io.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class SerializationTest {
 
         Frame restore = (Frame) JavaIO.restoreFromFile(tmp);
         WS.println("dataset " + name + " serialization size: " + tmp.length());
-        WS.println("achievement " + (initialSize - tmp.length()) + " ( " + WS.formatFlex((initialSize - tmp.length()) * 1.0 / initialSize) + "%)");
+        WS.println("achievement " + (initialSize - tmp.length()) + " ( " + Format.floatFlex((initialSize - tmp.length()) * 1.0 / initialSize) + "%)");
         WS.println();
 
         Assert.assertTrue(df.deepEquals(restore));

@@ -27,15 +27,11 @@
 
 package rapaio.core.correlation;
 
-import rapaio.ml.clustering.DistanceMatrix;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.ml.clustering.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -149,7 +145,7 @@ public class CorrSpearman implements Correlation, Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("> spearman[%s, %s] - Spearman's rank correlation coefficient\n",
                 d.name(0), d.name(1)));
-        sb.append(formatFlex(d.get(0, 1))).append("\n");
+        sb.append(Format.floatFlex(d.get(0, 1))).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
@@ -162,7 +158,7 @@ public class CorrSpearman implements Correlation, Printable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + d.name(i - 1);
             for (int j = 1; j < d.names().length + 1; j++) {
-                table[i][j] = formatFlex(d.get(i - 1, j - 1));
+                table[i][j] = Format.floatFlex(d.get(i - 1, j - 1));
                 if (i == j) {
                     table[i][j] = "x";
                 }

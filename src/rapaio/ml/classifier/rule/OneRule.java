@@ -27,22 +27,14 @@
 
 package rapaio.ml.classifier.rule;
 
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.data.VType;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.rule.onerule.NominalRule;
-import rapaio.ml.classifier.rule.onerule.NumericRule;
-import rapaio.ml.classifier.rule.onerule.Rule;
-import rapaio.ml.classifier.rule.onerule.RuleSet;
-import rapaio.ml.common.Capabilities;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.classifier.rule.onerule.*;
+import rapaio.ml.common.*;
+import rapaio.printer.format.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +60,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public String fullName() {
-        return String.format("OneRule (minCount=%s)", WS.formatFlex(minCount));
+        return String.format("OneRule (minCount=%s)", Format.floatFlex(minCount));
     }
 
     @Override

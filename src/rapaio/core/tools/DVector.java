@@ -32,7 +32,7 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.format.*;
 import rapaio.sys.WS;
 import rapaio.util.StringUtil;
 
@@ -382,12 +382,12 @@ public class DVector implements Printable, Serializable {
 
     @Override
     public String summary() {
-        TextTable tt = TextTable.newEmpty(3, levels.size());
+        TextTableRenderer tt = TextTableRenderer.empty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
             tt.set(0, i, levels.get(i), 1);
             tt.set(1, i, StringUtil.repeat(levels.get(i).length(), '-'), 1);
-            tt.set(2, i, WS.formatFlex(values[i]), 1);
+            tt.set(2, i, Format.floatFlex(values[i]), 1);
         }
-        return tt.summary();
+        return tt.getDefaultText();
     }
 }

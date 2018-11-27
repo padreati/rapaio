@@ -29,25 +29,17 @@ package rapaio.experiment.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.RandomSource;
-import rapaio.core.SamplingTools;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.data.filter.frame.FShuffle;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.eval.Confusion;
-import rapaio.ml.eval.ROC;
-import rapaio.printer.Printer;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
-import rapaio.util.Pin;
+import rapaio.core.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.eval.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +47,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.WS.print;
+import static rapaio.sys.WS.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -277,15 +269,15 @@ public class CEvaluation {
             }
             r.addInt(run);
             ROC roc = ROC.from(c.predict(test).firstDensity().rvar(label), test.rvar(targetVar), label);
-            WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
+            WS.draw(rocCurve(roc).title("testAuc: " + Format.floatFlex(roc.auc()) + ", run: " + run));
             testAuc.addDouble(roc.auc());
-            WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
+            WS.println("testAuc: " + Format.floatLong(roc.auc()) + ", run: " + run + ", auc gain: " + Format.floatLong(roc.auc()-prevAuc.get()));
             prevAuc.set(roc.auc());
 //            trainAuc.addValue(new ROC(c.predict(predict).firstDensity().rvar(label), predict.rvar(targetVar), label).auc());
 
 //            WS.draw(plot()
 //                            .lines(r, testAuc, color(1))
-//                            .title("testAuc: " + WS.formatFlex(testAuc.value(testAuc.rowCount() - 1)))
+//                            .title("testAuc: " + Format.floatFlex(testAuc.value(testAuc.rowCount() - 1)))
 //            );
         });
         c.withRuns(runs);

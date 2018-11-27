@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * Circular Kernel
@@ -69,6 +69,6 @@ public class CircularKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Circular(sigma=" + WS.formatFlex(sigma) + ")";
+        return "Circular(sigma=" + Format.floatFlex(sigma) + ")";
     }
 }

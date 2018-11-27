@@ -28,15 +28,11 @@
 package rapaio.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import rapaio.core.stat.Sum;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.data.filter.var.VCumSum;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 /**
  * This evaluation tool computes Gini and Normalized Gini Coefficients
@@ -121,8 +117,8 @@ public class Gini implements Printable {
 
         sb.append("> Gini" + (weighted ? " (Weighted):\n" : ":\n"));
         sb.append("\n");
-        sb.append("gini coefficient: " + WS.formatFlex(gini) + "\n");
-        sb.append("normalized gini coefficient: " + WS.formatFlex(normalizedGini) + "\n");
+        sb.append("gini coefficient: " + Format.floatFlex(gini) + "\n");
+        sb.append("normalized gini coefficient: " + Format.floatFlex(normalizedGini) + "\n");
         sb.append("\n");
 
         return sb.toString();

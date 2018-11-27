@@ -27,13 +27,9 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -127,14 +123,14 @@ public class RMSE implements Printable {
 
         for (int i = 0; i < actual.varCount(); i++) {
             tt.set(i + 1, 0, actual.varNames()[i] + " | " + fit.varNames()[i], 1);
-            tt.set(i + 1, 1, WS.formatFlex(rmse.getDouble(i)), 1);
-            tt.set(i + 1, 2, WS.formatFlex(mse.getDouble(i)), 1);
+            tt.set(i + 1, 1, Format.floatFlex(rmse.getDouble(i)), 1);
+            tt.set(i + 1, 2, Format.floatFlex(mse.getDouble(i)), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");
 
-        sb.append("Total RMSE: ").append(WS.formatFlex(totalRmse)).append("\n");
-        sb.append("Total MSE: ").append(WS.formatFlex(totalMse)).append("\n");
+        sb.append("Total RMSE: ").append(Format.floatFlex(totalRmse)).append("\n");
+        sb.append("Total MSE: ").append(Format.floatFlex(totalMse)).append("\n");
         sb.append("\n");
 
         return sb.toString();

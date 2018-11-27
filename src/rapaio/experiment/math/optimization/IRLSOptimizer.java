@@ -27,14 +27,10 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.LUDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.printer.format.*;
 
 import java.util.List;
 import java.util.function.Function;
@@ -93,7 +89,7 @@ public class IRLSOptimizer {
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
             maxChange = iterationStep(f, fd, vars, inputs, outputs);
-            logger.finer("IRLS maxChange: " + WS.formatFlex(maxChange));
+            logger.finer("IRLS maxChange: " + Format.floatFlex(maxChange));
         }
         return vars;
     }

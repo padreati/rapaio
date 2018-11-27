@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
@@ -62,6 +62,6 @@ public class MultiQuadricKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "MultiQuadratic(c=" + WS.formatFlex(c) + ")";
+        return "MultiQuadratic(c=" + Format.floatFlex(c) + ")";
     }
 }

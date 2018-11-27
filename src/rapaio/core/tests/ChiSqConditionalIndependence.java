@@ -27,11 +27,10 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.ChiSquare;
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
 
 import java.util.List;
 
@@ -134,9 +133,9 @@ public class ChiSqConditionalIndependence implements HTest {
         sb.append(" + P(").append(y.name()).append("|").append(z.name()).append(")\n");
         sb.append("\n");
 
-        sb.append("X-squared = ").append(WS.formatFlex(statistic))
+        sb.append("X-squared = ").append(Format.floatFlex(statistic))
                 .append(", df = ").append(degrees)
-                .append(", p-value = ").append(WS.formatPValue(pValue))
+                .append(", p-value = ").append(Format.pValue(pValue))
                 .append("\n");
         sb.append("\n");
 

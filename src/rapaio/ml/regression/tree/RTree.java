@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Implements a regression decision tree.
@@ -395,8 +395,8 @@ public class RTree extends AbstractRegression {
         }
         sb.append(node.groupName()).append("  ");
 
-        sb.append(formatFlex(node.value()));
-        sb.append(" (").append(formatFlex(node.weight())).append(") ");
+        sb.append(floatFlex(node.value()));
+        sb.append(" (").append(floatFlex(node.weight())).append(") ");
         if (node.isLeaf()) sb.append(" *");
         sb.append("\n");
 

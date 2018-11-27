@@ -27,8 +27,8 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.format.*;
 
 /**
  * The Power kernel is also known as the (unrectified) triangular kernel.
@@ -61,6 +61,6 @@ public class PowerKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "Power(degree=" + WS.formatFlex(degree) + ")";
+        return "Power(degree=" + Format.floatFlex(degree) + ")";
     }
 }

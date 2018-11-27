@@ -27,12 +27,12 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.ml.clustering.DistanceMatrix;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.ColorGradient;
-import rapaio.graphics.plot.PlotComponent;
-import rapaio.math.MTools;
-import rapaio.sys.WS;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.*;
+import rapaio.math.*;
+import rapaio.ml.clustering.*;
+import rapaio.printer.format.*;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -96,7 +96,7 @@ public class CorrGram extends PlotComponent {
                             ystep));
                 }
                 if (labels) {
-                    String label = WS.formatFlexShort(d.get(i, j));
+                    String label = Format.floatFlexShort(d.get(i, j));
                     if (i == j) {
                         label = d.name(i);
                     }

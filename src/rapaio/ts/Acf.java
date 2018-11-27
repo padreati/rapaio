@@ -27,14 +27,12 @@
 
 package rapaio.ts;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.printer.Printable;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
-import rapaio.sys.WS;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Sample AutoCorrelation Function
@@ -104,8 +102,8 @@ public class Acf implements Printable {
         tt.set(0, 2, "covariance", 0);
         for (int i = 0; i < lags.rowCount(); i++) {
             tt.set(i+1, 0, lags.getLabel(i), 1);
-            tt.set(i+1, 1, WS.formatFlex(correlation.getDouble(i)), 1);
-            tt.set(i+1, 2, WS.formatFlex(covariance.getDouble(i)), 1);
+            tt.set(i+1, 1, floatFlex(correlation.getDouble(i)), 1);
+            tt.set(i+1, 2, floatFlex(covariance.getDouble(i)), 1);
         }
         sb.append(tt.getDefaultText());
         sb.append("\n");

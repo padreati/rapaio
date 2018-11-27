@@ -27,11 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.ChiSquare;
-import rapaio.experiment.core.tools.DTable;
-import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.sys.WS;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.experiment.core.tools.*;
+import rapaio.math.linear.*;
+import rapaio.printer.format.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,9 +153,9 @@ public class ChiSqIndependence implements HTest {
 
         sb.append("Pearson's Chi-squared test").append(yates ? " with Yates' continuity correction" : "").append("\n");
         sb.append("\n");
-        sb.append("X-squared = ").append(WS.formatFlex(chiValue))
+        sb.append("X-squared = ").append(Format.floatFlex(chiValue))
                 .append(", df = ").append(df)
-                .append(", p-value = ").append(WS.formatPValue(pValue))
+                .append(", p-value = ").append(Format.pValue(pValue))
                 .append("\n");
         sb.append("\n");
 

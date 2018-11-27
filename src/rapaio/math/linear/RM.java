@@ -27,17 +27,13 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.VarDouble;
-import rapaio.math.MTools;
-import rapaio.math.linear.dense.MappedRM;
-import rapaio.math.linear.dense.MatrixMultiplication;
-import rapaio.math.linear.dense.SVDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.math.*;
+import rapaio.math.linear.dense.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -326,7 +322,7 @@ public interface RM extends Serializable, Printable {
         int max = 1;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m[i][j] = WS.formatShort(get(i, j));
+                m[i][j] = Format.floatShort(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }

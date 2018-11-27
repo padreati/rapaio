@@ -27,15 +27,12 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.eval.Confusion;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
+import rapaio.ml.eval.*;
+import rapaio.printer.format.*;
+import rapaio.sys.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,7 +160,7 @@ public class CStepwiseSelection extends AbstractClassifier {
                     double acc = cm.accuracy();
                     if (acc > bestAcc) {
 
-                        WS.println(WS.formatFlex(acc));
+                        WS.println(Format.floatFlex(acc));
                         bestAcc = acc;
                         bestClassifier = cNext;
                         forwardNext = test;
@@ -193,7 +190,7 @@ public class CStepwiseSelection extends AbstractClassifier {
                     double acc = cm.accuracy();
 
                     if (acc > bestAcc) {
-                        WS.println(WS.formatFlex(acc));
+                        WS.println(Format.floatFlex(acc));
                         bestAcc = acc;
                         bestClassifier = cNext;
                         forwardNext = null;

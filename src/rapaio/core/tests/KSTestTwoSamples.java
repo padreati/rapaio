@@ -27,9 +27,9 @@
 
 package rapaio.core.tests;
 
-import rapaio.data.Var;
-import rapaio.data.filter.var.VSort;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.printer.format.*;
 
 /**
  * Two-samples K-S test
@@ -132,7 +132,7 @@ public class KSTestTwoSamples implements HTest {
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("D statistic: %.6f\n", D));
-        sb.append(String.format("p-value: %.16f %s\n", pValue, WS.getPValueStars(pValue)));
+        sb.append(String.format("p-value: %.16f %s\n", pValue, Format.pValueStars(pValue)));
         sb.append("\n");
         return sb.toString();
     }

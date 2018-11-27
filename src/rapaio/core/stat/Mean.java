@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Var}.
@@ -118,9 +118,9 @@ public final class Mean implements Printable {
     @Override
     public String summary() {
         return "> mean[" + varName + "]\n" +
-                "total rows: " + formatFlex(completeCount + missingCount) +
-                " (complete: " + formatFlex(completeCount) +
-                ", missing: " + formatFlex(missingCount) + ")\n" +
-                "mean: " + formatFlex(value) + "\n";
+                "total rows: " + floatFlex(completeCount + missingCount) +
+                " (complete: " + floatFlex(completeCount) +
+                ", missing: " + floatFlex(missingCount) + ")\n" +
+                "mean: " + floatFlex(value) + "\n";
     }
 }

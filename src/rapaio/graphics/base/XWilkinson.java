@@ -27,7 +27,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.sys.WS;
+import rapaio.printer.format.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -212,7 +212,7 @@ public class XWilkinson {
 
         @Override
         public String toString() {
-            StringBuilder s = new StringBuilder("(Score: " + WS.formatFlex(score) + ", " +
+            StringBuilder s = new StringBuilder("(Score: " + Format.floatFlex(score) + ", " +
                     "min: " + min + ", " +
                     "max: " + max + ", " +
                     "step: " + step + ")\n\t");

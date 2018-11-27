@@ -27,12 +27,9 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -109,11 +106,11 @@ public class MAE implements Printable {
 
         for (int i = 0; i < actual.varCount(); i++) {
             tt.set(i + 1, 0, actual.varName(i) + " | " + fit.varName(i), 1);
-            tt.set(i + 1, 1, WS.formatFlex(mae[i]), 1);
+            tt.set(i + 1, 1, Format.floatFlex(mae[i]), 1);
         }
         sb.append(tt.summary());
         sb.append("\n");
-        sb.append("Total mae: " + WS.formatFlex(totalMae) + "\n");
+        sb.append("Total mae: " + Format.floatFlex(totalMae) + "\n");
         sb.append("\n");
 
         return sb.toString();

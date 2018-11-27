@@ -27,8 +27,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MTools;
-import rapaio.sys.WS;
+import rapaio.math.*;
+import rapaio.printer.format.*;
 
 /**
  * Discrete probability distribution which expresses the probability of a
@@ -54,7 +54,7 @@ public class Poisson implements Distribution {
 
     @Override
     public String name() {
-        return "Poisson(lambda=" + WS.formatFlex(lambda) + ")";
+        return "Poisson(lambda=" + Format.floatFlex(lambda) + ")";
     }
 
     @Override

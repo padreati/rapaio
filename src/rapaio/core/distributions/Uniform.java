@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Continuous uniform distribution
@@ -59,7 +59,7 @@ public class Uniform implements Distribution {
 
     @Override
     public String name() {
-        return "Uniform(a=" + formatFlex(a) + ",b=" + formatFlex(b) + ")";
+        return "Uniform(a=" + floatFlex(a) + ",b=" + floatFlex(b) + ")";
     }
 
     @Override

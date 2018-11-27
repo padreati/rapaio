@@ -27,15 +27,14 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Confusion matrix utility.
@@ -144,13 +143,13 @@ public class Confusion implements Printable {
 
     private void addDetails(StringBuilder sb) {
         sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
-        sb.append(String.format("Acc: %s         (Accuracy )\n", formatFlex(acc)));
+        sb.append(String.format("Acc: %s         (Accuracy )\n", floatFlex(acc)));
         if (binary) {
-            sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", formatFlex(f1)));
-            sb.append(String.format("MCC: %s         (Matthew correlation coefficient)\n", formatFlex(mcc)));
-            sb.append(String.format("Pre: %s         (Precision)\n", formatFlex(precision)));
-            sb.append(String.format("Rec: %s         (Recall)\n", formatFlex(recall)));
-            sb.append(String.format("G:   %s         (G-measure)\n", formatFlex(g)));
+            sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", floatFlex(f1)));
+            sb.append(String.format("MCC: %s         (Matthew correlation coefficient)\n", floatFlex(mcc)));
+            sb.append(String.format("Pre: %s         (Precision)\n", floatFlex(precision)));
+            sb.append(String.format("Rec: %s         (Recall)\n", floatFlex(recall)));
+            sb.append(String.format("G:   %s         (G-measure)\n", floatFlex(g)));
         }
     }
 
@@ -243,14 +242,14 @@ public class Confusion implements Printable {
 
             for (int i = 0; i < factors.size() - 1; i++) {
                 for (int j = 0; j < factors.size() - 1; j++) {
-                    tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + WS.formatShort(cmf[i][j] / completeCases), 1);
+                    tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatShort(cmf[i][j] / completeCases), 1);
                 }
             }
             for (int i = 0; i < factors.size() - 1; i++) {
-                tt.set(factors.size() + 2, i + 2, WS.formatShort(colTotals[i] / completeCases), 1);
-                tt.set(i + 2, factors.size() + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
+                tt.set(factors.size() + 2, i + 2, Format.floatShort(colTotals[i] / completeCases), 1);
+                tt.set(i + 2, factors.size() + 2, Format.floatShort(rowTotals[i] / completeCases), 1);
             }
-            tt.set(factors.size() + 2, factors.size() + 2, WS.formatShort(grandTotal / completeCases), 1);
+            tt.set(factors.size() + 2, factors.size() + 2, Format.floatShort(grandTotal / completeCases), 1);
             sb.append(tt.summary());
 
         }

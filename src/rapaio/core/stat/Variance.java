@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -98,8 +98,8 @@ public class Variance implements Printable {
         sb.append(String.format("> variance[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
                 completeCount() + missingCount(), completeCount(), missingCount()));
-        sb.append(String.format("variance: %s\n", formatFlex(value)));
-        sb.append(String.format("sd: %s\n", formatFlex(sdValue())));
+        sb.append(String.format("variance: %s\n", floatFlex(value)));
+        sb.append(String.format("sd: %s\n", floatFlex(sdValue())));
         return sb.toString();
     }
 

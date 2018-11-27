@@ -27,8 +27,9 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
-import rapaio.sys.WS;
+import rapaio.core.tools.*;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Rule from one rule based algorithm for nominal variables
@@ -55,9 +56,9 @@ public class NominalRule extends Rule {
         return "NominalRule {"
                 + "value=" + testLabel
                 + ", class=" + dv.level(targetIndex)
-                + ", errors=" + WS.formatFlex(getErrorCount())
-                + ", total=" + WS.formatFlex(getTotalCount())
-                + ", acc=" + WS.formatFlex(getAcc())
+                + ", errors=" + floatFlex(getErrorCount())
+                + ", total=" + floatFlex(getTotalCount())
+                + ", acc=" + floatFlex(getAcc())
                 + '}';
     }
 }

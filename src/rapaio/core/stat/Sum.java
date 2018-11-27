@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.
@@ -101,6 +101,6 @@ public class Sum implements Printable {
                         "total rows: %d (complete: %d, missing: %d)\n" +
                         "sum: %s\n",
                 varName, completeCount + missingCount, completeCount, missingCount,
-                formatFlex(value));
+                floatFlex(value));
     }
 }

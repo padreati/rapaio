@@ -30,7 +30,7 @@ package rapaio.core.stat;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Computes sample skewness. Formulas for sample skewness are taken from wikipedia page
@@ -100,8 +100,8 @@ public class Skewness implements Printable {
     public String summary() {
         return "> skewness[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
-                "skewness (g1): " + formatFlex(g1) + "\n" +
-                "skewness (b1): " + formatFlex(b1) + "\n" +
-                "skewness (G1): " + formatFlex(G1) + "\n";
+                "skewness (g1): " + floatFlex(g1) + "\n" +
+                "skewness (b1): " + floatFlex(b1) + "\n" +
+                "skewness (G1): " + floatFlex(G1) + "\n";
     }
 }

@@ -27,8 +27,9 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
-import rapaio.sys.WS;
+import rapaio.core.tools.*;
+
+import static rapaio.printer.format.Format.*;
 
 /**
  * Rule for one rule algoritm for numeric variables
@@ -67,18 +68,18 @@ public class NumericRule extends Rule {
             return "NumericRule {"
                     + "missing=true"
                     + ", class=" + dv.level(targetIndex)
-                    + ", errors=" + WS.formatFlex(getErrorCount())
-                    + ", total=" + WS.formatFlex(getTotalCount())
-                    + ", acc=" + WS.formatFlex(getAcc())
+                    + ", errors=" + floatFlex(getErrorCount())
+                    + ", total=" + floatFlex(getTotalCount())
+                    + ", acc=" + floatFlex(getAcc())
                     + " }";
         }
         return "NumericRule {"
-                + "min=" + WS.formatFlex(minValue)
-                + ", max=" + WS.formatFlex(maxValue)
+                + "min=" + floatFlex(minValue)
+                + ", max=" + floatFlex(maxValue)
                 + ", class=" + dv.level(targetIndex)
-                + ", errors=" + WS.formatFlex(getErrorCount())
-                + ", total=" + WS.formatFlex(getTotalCount())
-                + ", acc=" + WS.formatFlex(getAcc())
+                + ", errors=" + floatFlex(getErrorCount())
+                + ", total=" + floatFlex(getTotalCount())
+                + ", acc=" + floatFlex(getAcc())
                 + " }";
     }
 }

@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * @author <a href="mailto:padreatiyahoo.com">Aurelian Tutuianu</a>
@@ -55,7 +55,7 @@ public class Normal implements Distribution {
 
     @Override
     public String name() {
-        return "Normal(mu=" + formatFlex(mu) + ", sd=" + formatFlex(sd) + ")";
+        return "Normal(mu=" + floatFlex(mu) + ", sd=" + floatFlex(sd) + ")";
     }
 
     @Override
