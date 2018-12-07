@@ -32,14 +32,12 @@ import rapaio.data.*;
 import rapaio.printer.*;
 import rapaio.printer.format.*;
 
-import static rapaio.printer.format.Format.*;
-
 /**
  * Partial auto correlation function
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
-public class Pacf implements Printable {
+public class Pacf implements DefaultPrintable {
 
     public static Pacf from(Var ts, int maxLag) {
         return new Pacf(ts, VarInt.seq(1, maxLag));
@@ -102,12 +100,12 @@ public class Pacf implements Printable {
         sb.append("===========\n");
         sb.append("\n");
 
-        TextTableRenderer tt = TextTableRenderer.empty(lags.rowCount() + 1, 2, 1, 0);
-        tt.set(0, 0, "Lag", 0);
-        tt.set(0, 1, "pacf", 0);
+        TextTable tt = TextTable.empty(lags.rowCount() + 1, 2, 1, 0);
+        tt.textCenter(0, 0, "Lag");
+        tt.textCenter(0, 1, "pacf");
         for (int i = 0; i < lags.rowCount(); i++) {
-            tt.set(i + 1, 0, lags.getLabel(i), 1);
-            tt.set(i + 1, 1, floatFlex(pacf.getDouble(i)), 1);
+            tt.textRight(i + 1, 0, lags.getLabel(i));
+            tt.floatFlex(i + 1, 1, pacf.getDouble(i));
         }
         sb.append(tt.getDefaultText());
         sb.append("\n");

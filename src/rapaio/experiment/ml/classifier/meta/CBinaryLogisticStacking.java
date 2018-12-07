@@ -38,6 +38,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CBinaryLogisticStacking extends AbstractClassifier {
+public class CBinaryLogisticStacking extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 

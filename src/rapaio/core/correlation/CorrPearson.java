@@ -47,7 +47,7 @@ import static rapaio.sys.WS.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CorrPearson implements Correlation, Printable {
+public class CorrPearson implements Correlation, DefaultPrintable {
 
     private static final long serialVersionUID = -7342261109217205843L;
 

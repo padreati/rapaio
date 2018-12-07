@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VType;
-import rapaio.printer.Printable;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import static java.util.stream.Collectors.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-public class Capabilities implements Printable {
+public class Capabilities implements DefaultPrintable {
 
     private Integer minInputCount;
     private Integer maxInputCount;

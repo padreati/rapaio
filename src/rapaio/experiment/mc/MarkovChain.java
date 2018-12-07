@@ -32,7 +32,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.Printable;
+import rapaio.printer.*;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class MarkovChain implements Printable {
+public class MarkovChain implements DefaultPrintable {
 
     private List<String> states;
     private Map<String, Integer> revert;

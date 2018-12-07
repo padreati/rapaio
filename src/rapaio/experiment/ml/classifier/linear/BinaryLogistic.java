@@ -35,6 +35,7 @@ import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.*;
 import rapaio.util.func.SFunction;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class BinaryLogistic extends AbstractClassifier {
+public class BinaryLogistic extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 1609956190070125059L;
 

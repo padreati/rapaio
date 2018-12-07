@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.
@@ -38,7 +38,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Sum implements Printable {
+public class Sum implements DefaultPrintable {
 
     public static Sum of(Var var) {
         return new Sum(var);

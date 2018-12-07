@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Var}.
@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-public final class Mean implements Printable {
+public final class Mean implements DefaultPrintable {
 
     public static Mean of(Var var) {
         return new Mean(var);

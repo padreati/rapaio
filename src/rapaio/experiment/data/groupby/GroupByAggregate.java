@@ -34,9 +34,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.*;
-import rapaio.math.MTools;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
+import rapaio.math.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByAggregate implements Printable {
+public class GroupByAggregate implements DefaultPrintable {
 
     private static final String SEP = "_";
 
@@ -361,32 +361,29 @@ public class GroupByAggregate implements Printable {
             selectedGroupIds.addAll(sortedGroupIds.subList(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
         }
 
-        TextTable tt = TextTable.newEmpty(
-                selectedGroupIds.size() + 1,
-                groupBy.getGroupVarNames().size() + aggregateDf.varCount() + 1);
-        tt.withHeaderRows(1);
-        tt.withHeaderCols(groupBy.getGroupVarNames().size() + 1);
+        TextTable tt = TextTable.empty(selectedGroupIds.size() + 1,
+                groupBy.getGroupVarNames().size() + aggregateDf.varCount() + 1, 1, groupBy.getGroupVarNames().size() + 1);
 
         // group header
         for (int i = 0; i < groupBy.getGroupVarNames().size(); i++) {
-            tt.set(0, i + 1, groupBy.getGroupVarNames().get(i), 0);
+            tt.textCenter(0, i + 1, groupBy.getGroupVarNames().get(i));
         }
         // feature header
         for (int i = 0; i < aggregateDf.varCount(); i++) {
-            tt.set(0, i + groupBy.getGroupVarNames().size() + 1, aggregateDf.varName(i), 0);
+            tt.textCenter(0, i + groupBy.getGroupVarNames().size() + 1, aggregateDf.varName(i));
         }
         // row numbers
         if (full) {
             for (int i = 0; i < selectedGroupIds.size(); i++) {
-                tt.set(i + 1, 0, String.format("[%d]", i), 0);
+                tt.textRight(i + 1, 0, String.format("[%d]", i));
             }
         } else {
             for (int i = 0; i < headRows; i++) {
-                tt.set(i + 1, 0, String.format("[%d]", i), 0);
+                tt.textRight(i + 1, 0, String.format("[%d]", i));
             }
-            tt.set(headRows + 1, 0, "...", 0);
+            tt.textCenter(headRows + 1, 0, "...");
             for (int i = 0; i < tailRows; i++) {
-                tt.set(headRows + i + 1, 0, String.format("[%d]", aggregateDf.rowCount() - tailRows + i), 0);
+                tt.textCenter(headRows + i + 1, 0, String.format("[%d]", aggregateDf.rowCount() - tailRows + i));
             }
         }
         // populate rows
@@ -398,15 +395,14 @@ public class GroupByAggregate implements Printable {
 
             // write group values
             for (int i = 0; i < groupValues.size(); i++) {
-                tt.set(pos, i + 1, groupValues.get(i), 1);
+                tt.textRight(pos, i + 1, groupValues.get(i));
             }
             for (int i = 0; i < aggregateDf.varCount(); i++) {
-                tt.set(pos, i + groupValues.size() + 1,
-                        aggregateDf.getLabel(groupId, i), 1);
+                tt.textRight(pos, i + groupValues.size() + 1, aggregateDf.getLabel(groupId, i));
             }
             pos++;
         }
-        sb.append(tt.summary()).append("\n");
+        sb.append(tt.getDefaultText()).append("\n");
         return sb.toString();
     }
 }

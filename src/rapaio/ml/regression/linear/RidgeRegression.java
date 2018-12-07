@@ -33,6 +33,7 @@ import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import java.util.HashMap;
 /**
  * @author VHG6KOR
  */
-public class RidgeRegression extends AbstractLinearRegression {
+public class RidgeRegression extends AbstractLinearRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -6014222985456365210L;
 

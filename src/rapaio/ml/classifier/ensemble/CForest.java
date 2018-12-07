@@ -56,6 +56,7 @@ import rapaio.ml.classifier.tree.CTreeNode;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.Confusion;
+import rapaio.printer.*;
 import rapaio.util.Pair;
 import rapaio.util.Util;
 
@@ -75,7 +76,7 @@ import static java.util.stream.Collectors.toSet;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-public class CForest extends AbstractClassifier {
+public class CForest extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = -145958939373105497L;
 

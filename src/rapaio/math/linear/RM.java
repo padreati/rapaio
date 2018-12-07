@@ -46,7 +46,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RM extends Serializable, Printable {
+public interface RM extends Serializable, DefaultPrintable {
 
     /**
      * @return number of rows

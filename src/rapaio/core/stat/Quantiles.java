@@ -27,12 +27,12 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 
 /**
@@ -50,7 +50,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Quantiles implements Printable {
+public class Quantiles implements DefaultPrintable {
 
     public static Quantiles of(Var var, double...percentiles) {
         return new Quantiles(var, Type.R7, percentiles);

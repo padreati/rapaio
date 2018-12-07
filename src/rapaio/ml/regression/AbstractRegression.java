@@ -268,29 +268,25 @@ public abstract class AbstractRegression implements Regression {
 
         sb.append("> input variables: \n");
 
-        TextTable tt = TextTable.newEmpty(inputNames().length, 3);
+        TextTable tt = TextTable.empty(inputNames().length, 3);
         for (int i = 0; i < inputNames().length; i++) {
-            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
-            tt.set(i, 1, inputName(i), -1);
-            tt.set(i, 2, inputType(i).code(), -1);
+            tt.textRight(i, 0, (i + 1) + ".");
+            tt.textLeft(i, 1, inputName(i));
+            tt.textLeft(i, 2, inputType(i).code());
         }
-        tt.withHeaderRows(0);
-        tt.withMerge();
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
 
         // targets
 
         sb.append("> target variables: \n");
 
-        tt = TextTable.newEmpty(targetNames().length, 3);
+        tt = TextTable.empty(targetNames().length, 3);
         for (int i = 0; i < targetNames().length; i++) {
-            tt.set(i, 0, String.valueOf(i + 1) + ".", 1);
-            tt.set(i, 1, targetName(i), -1);
-            tt.set(i, 2, targetType(i).code(), -1);
+            tt.textRight(i, 0, (i + 1) + ".");
+            tt.textLeft(i, 1, targetName(i));
+            tt.textLeft(i, 2, targetType(i).code());
         }
-        tt.withHeaderRows(0);
-        tt.withMerge();
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
 
         return sb.toString();
     }

@@ -50,7 +50,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
-public class MinkowskiWeightedKMeans implements Printable {
+public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
 
     private int k = 2;
     private double p = 2;

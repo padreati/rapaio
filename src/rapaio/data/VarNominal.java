@@ -151,7 +151,7 @@ public final class VarNominal extends AbstractVar {
     
     public static Collector<String, VarNominal, VarNominal> collector() {
 
-        return new Collector<>() {
+        return new Collector<String, VarNominal, VarNominal>() {
             @Override
             public Supplier<VarNominal> supplier() {
                 return VarNominal::empty;

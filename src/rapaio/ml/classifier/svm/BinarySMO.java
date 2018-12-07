@@ -46,6 +46,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -56,7 +57,7 @@ import static rapaio.printer.format.Format.floatFlex;
 /**
  * Class for building a binary support vector machine.
  */
-public class BinarySMO extends AbstractClassifier implements Serializable {
+public class BinarySMO extends AbstractClassifier implements Serializable, DefaultPrintable {
 
     private static final long serialVersionUID = 1208515184777030598L;
 

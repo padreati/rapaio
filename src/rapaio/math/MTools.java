@@ -27,8 +27,10 @@
 
 package rapaio.math;
 
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -255,6 +257,17 @@ public class MTools {
      */
     public static double log2(double x) {
         return Math.log(x) / Math.log(2);
+    }
+
+    /**
+     * Returns the logarithm of value in a given base.
+     *
+     * @param x    value
+     * @param base logarithm's base
+     * @return logarithm of value in specified base
+     */
+    public static double logBase(double x, double base) {
+        return Math.log(x) / Math.log(base);
     }
 
     /*
@@ -965,6 +978,14 @@ public class MTools {
         }
     }
 
+    public static int significantDigits(double x) {
+        return BigDecimal.valueOf(x).scale();
+    }
+
+    public static double round(double value, int digits) {
+        return BigDecimal.valueOf(value).setScale(digits, RoundingMode.HALF_UP).doubleValue();
+    }
+
     /// math wappers
 
     public static double sin(double x) {
@@ -1002,4 +1023,18 @@ public class MTools {
     public static double pow(double x, double pow) {
         return Math.pow(x, pow);
     }
+
+    public static int floorMod(int a, int b) {
+        return Math.floorMod(a, b);
+    }
+
+    public static long floorMod(long a, long b) {
+        return Math.floorMod(a, b);
+    }
+
+    public static double floorMod(double a, double n) {
+        return a - n * Math.floor(a / n);
+    }
+
+
 }

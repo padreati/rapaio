@@ -24,12 +24,15 @@
 
 package rapaio.data;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import rapaio.core.*;
 import rapaio.core.stat.Mean;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +43,11 @@ public class VarBinaryTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
 
     @Test
     public void testEmpty() {
@@ -291,5 +299,11 @@ public class VarBinaryTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Operation not implemented on binary variables");
         VarBinary.empty().setLevels("?", "1");
+    }
+
+    @Test
+    public void testPrint() {
+        VarBinary var = VarBinary.copy(IntStream.range(0, 100).map(x -> RandomSource.nextInt(3) - 1).toArray()).withName("x");
+        assertEquals("VarBinary [name: \"x\", rowCount: 100, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., ?, 0]", var.toString());
     }
 }

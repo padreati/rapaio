@@ -35,6 +35,7 @@ import rapaio.data.filter.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.ml.common.predicate.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.util.*;
 
@@ -58,7 +59,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class CTree extends AbstractClassifier {
+public class CTree extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 1203926824359387358L;
 

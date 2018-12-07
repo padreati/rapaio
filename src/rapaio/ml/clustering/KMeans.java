@@ -51,7 +51,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KMeans implements Printable {
+public class KMeans implements Printable, DefaultPrintable {
 
     private int k = 2;
     private int nstart = 1;

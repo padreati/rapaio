@@ -27,17 +27,12 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.common.Capabilities;
-import rapaio.util.Util;
+import rapaio.data.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.classifier.ensemble.*;
+import rapaio.ml.common.*;
+import rapaio.printer.*;
+import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +46,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends AbstractClassifier {
+public class CStacking extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 

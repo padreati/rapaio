@@ -31,6 +31,7 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 /**
@@ -44,7 +45,7 @@ import rapaio.printer.format.*;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1Regression extends AbstractRegression {
+public class L1Regression extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = 6125284399953219419L;
 
@@ -115,15 +116,15 @@ public class L1Regression extends AbstractRegression {
             sb.append("Fitted values:\n");
             sb.append("\n");
 
-            TextTable tt = TextTable.newEmpty(1 + targetNames.length, 2);
-            tt.set(0, 0, "Target", 1);
-            tt.set(0, 1, "Estimate", 1);
+            TextTable tt = TextTable.empty(1 + targetNames.length, 2);
+            tt.textLeft(0, 0, "Target");
+            tt.textRight(0, 1, "Estimate");
 
             for (int i = 0; i < targetNames().length; i++) {
-                tt.set(1 + i, 0, targetName(i), 1);
-                tt.set(1 + i, 1, Format.floatFlex(medians[i]), 1);
+                tt.textRight(1 + i, 0, targetName(i));
+                tt.floatFlex(1 + i, 1, medians[i]);
             }
-            sb.append(tt.summary());
+            sb.append(tt.getDefaultText());
         }
         sb.append("\n");
         return sb.toString();

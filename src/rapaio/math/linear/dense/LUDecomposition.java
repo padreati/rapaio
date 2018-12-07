@@ -27,8 +27,8 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
-import rapaio.printer.Printable;
+import rapaio.math.linear.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -47,7 +47,7 @@ import java.util.function.BiConsumer;
  * decomposition is in the solution of square systems of simultaneous linear
  * equations. This will fail if isNonSingular() returns false.
  */
-public class LUDecomposition implements Serializable, Printable {
+public class LUDecomposition implements Serializable, DefaultPrintable {
 
     private static final long serialVersionUID = -4226024886673558685L;
 

@@ -27,18 +27,17 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Compensated weighted mean.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/25/14.
  */
-public final class WeightedMean implements Printable {
+public final class WeightedMean implements DefaultPrintable {
 
     public static WeightedMean of(Var var, Var weights) {
         return new WeightedMean(var, weights);

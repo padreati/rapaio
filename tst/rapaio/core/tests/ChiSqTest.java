@@ -92,16 +92,16 @@ public class ChiSqTest {
                 "X-squared = 33.1119728, df = 1, p-value =   8.70e-09\n" +
                 "\n" +
                 "Observed data:\n" +
-                "       C1 C2 total\n" +
-                "    R1 38 11    49\n" +
-                "    R2 14 51    65\n" +
-                " total 52 62   114\n" +
+                "      C1 C2 total \n" +
+                "   R1 38 11   49  \n" +
+                "   R2 14 51   65  \n" +
+                "total 52 62  114  \n" +
                 "\n" +
                 "Expected data:\n" +
-                "               C1         C2 total\n" +
-                "    R1 22.3508772 26.6491228    49\n" +
-                "    R2 29.6491228 35.3508772    65\n" +
-                " total         52         62   114\n" +
+                "              C1         C2 total \n" +
+                "   R1 22.3508772 26.6491228   49  \n" +
+                "   R2 29.6491228 35.3508772   65  \n" +
+                "total 52         62          114  \n" +
                 "\n", test1.summary());
 
         ChiSqIndependence test2 = ChiSqIndependence.from(SolidRM.copy(2, 2, 38, 11, 14, 51), false);
@@ -112,16 +112,16 @@ public class ChiSqTest {
                 "X-squared = 35.3337785, df = 1, p-value =   2.78e-09\n" +
                 "\n" +
                 "Observed data:\n" +
-                "       C1 C2 total\n" +
-                "    R1 38 11    49\n" +
-                "    R2 14 51    65\n" +
-                " total 52 62   114\n" +
+                "      C1 C2 total \n" +
+                "   R1 38 11   49  \n" +
+                "   R2 14 51   65  \n" +
+                "total 52 62  114  \n" +
                 "\n" +
                 "Expected data:\n" +
-                "               C1         C2 total\n" +
-                "    R1 22.3508772 26.6491228    49\n" +
-                "    R2 29.6491228 35.3508772    65\n" +
-                " total         52         62   114\n" +
+                "              C1         C2 total \n" +
+                "   R1 22.3508772 26.6491228   49  \n" +
+                "   R2 29.6491228 35.3508772   65  \n" +
+                "total 52         62          114  \n" +
                 "\n", test2.summary());
     }
 

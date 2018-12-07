@@ -86,7 +86,7 @@ public class FigurePanel extends JPanel {
      * Creates a new worker to do the image rendering in the background.
      */
     private void createBackgroundImage() {
-        drawWorker = new SwingWorker<>() {
+        drawWorker = new SwingWorker<BufferedImage, Object>() {
             @Override
             protected BufferedImage doInBackground() {
                 if (figure == null) {

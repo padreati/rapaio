@@ -28,10 +28,9 @@
 package rapaio.data;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import rapaio.data.filter.VFilter;
-import rapaio.data.stream.VSpots;
-import rapaio.printer.Printable;
-import rapaio.printer.Summary;
+import rapaio.data.filter.*;
+import rapaio.data.stream.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -42,7 +41,7 @@ import java.util.Objects;
  *
  * @author Aurelian Tutuianu
  */
-public interface Var extends Serializable, Printable {
+public interface Var extends Serializable, DefaultPrintable {
 
     /**
      * @return name of the variable

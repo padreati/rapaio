@@ -31,18 +31,15 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.unique.Unique;
-import rapaio.datasets.Datasets;
-import rapaio.printer.Printable;
-import rapaio.printer.format.TextTable;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
-import rapaio.util.Time;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.unique.*;
+import rapaio.datasets.*;
+import rapaio.printer.*;
+import rapaio.printer.format.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
+import rapaio.util.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -54,7 +51,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/18.
  */
-public class GroupBy implements Printable {
+public class GroupBy implements DefaultPrintable {
 
     public static GroupBy from(Frame df, String... varNames) {
         return new GroupBy(df, Arrays.asList(varNames));
@@ -181,22 +178,20 @@ public class GroupBy implements Printable {
         sb.append("group count: ").append(groupIndex.size()).append("\n\n");
 
 
-        TextTable tt = TextTable.newEmpty(df.rowCount() + 1, groupVarNames.size() + featureVarNames.size() + 2);
-        tt.withHeaderRows(1);
-        tt.withHeaderCols(groupVarNames.size() + 2);
+        TextTable tt = TextTable.empty(df.rowCount() + 1, groupVarNames.size() + featureVarNames.size() + 2, 1, groupVarNames.size() + 2);
 
         // group header
         for (int i = 0; i < groupVarNames.size(); i++) {
-            tt.set(0, i + 1, groupVarNames.get(i), -1);
+            tt.textLeft(0, i + 1, groupVarNames.get(i));
         }
-        tt.set(0, groupVarNames.size() + 1, "row", -1);
+        tt.textLeft(0, groupVarNames.size() + 1, "row");
         // feature header
         for (int i = 0; i < featureVarNames.size(); i++) {
-            tt.set(0, i + groupVarNames.size() + 2, featureVarNames.get(i), -1);
+            tt.textLeft(0, i + groupVarNames.size() + 2, featureVarNames.get(i));
         }
         // row numbers
         for (int i = 0; i < df.rowCount(); i++) {
-            tt.set(i + 1, 0, String.format("[%d]", i), 0);
+            tt.textRight(i + 1, 0, String.format("[%d]", i));
         }
         // populate rows
         int pos = 1;
@@ -208,16 +203,16 @@ public class GroupBy implements Printable {
 
                 // write group values
                 for (int i = 0; i < groupValues.size(); i++) {
-                    tt.set(pos, i + 1, groupValues.get(i), -1);
+                    tt.textLeft(pos, i + 1, groupValues.get(i));
                 }
-                tt.set(pos, groupValues.size() + 1, String.format("%d  -> ", row), -1);
+                tt.textLeft(pos, groupValues.size() + 1, String.format("%d  -> ", row));
                 for (int i = 0; i < featureVarNames.size(); i++) {
-                    tt.set(pos, i + groupValues.size() + 2, df.getLabel(row, featureVarNames.get(i)), -1);
+                    tt.textLeft(pos, i + groupValues.size() + 2, df.getLabel(row, featureVarNames.get(i)));
                 }
                 pos++;
             }
         }
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         return sb.toString();
     }
 

@@ -27,6 +27,8 @@
 
 package rapaio.data;
 
+import rapaio.printer.*;
+
 import java.util.List;
 
 /**

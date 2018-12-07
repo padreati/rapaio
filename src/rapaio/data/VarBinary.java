@@ -409,4 +409,39 @@ public final class VarBinary extends AbstractVar {
         in.readFully(buff);
         missing = BitSet.valueOf(buff);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("VarBinary [name: \"").append(name()).append("\", ");
+        sb.append("rowCount: ").append(rows).append(", ");
+        sb.append("values: ");
+        int prefix = 16;
+        if (rowCount() <= prefix + 2) {
+            for (int i = 0; i < rowCount(); i++) {
+                sb.append(getLabel(i));
+                if (i < rowCount() - 1) {
+                    sb.append(", ");
+                }
+            }
+        } else {
+            for (int i = 0; i < prefix; i++) {
+                sb.append(getLabel(i)).append(", ");
+            }
+            sb.append("..., ");
+            sb.append(getLabel(rowCount() - 2)).append(", ").append(getLabel(rowCount() - 1));
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        return null;
+    }
+
+    @Override
+    public String fullContent() {
+        return null;
+    }
 }

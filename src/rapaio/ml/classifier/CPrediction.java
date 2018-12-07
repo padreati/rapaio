@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 import rapaio.ml.eval.Confusion;
-import rapaio.printer.Printable;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +46,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CPrediction implements Printable {
+public class CPrediction implements Printable, DefaultPrintable {
 
     private final Classifier model;
     private final Frame df;

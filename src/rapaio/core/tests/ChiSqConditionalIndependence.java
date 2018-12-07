@@ -30,7 +30,6 @@ package rapaio.core.tests;
 import rapaio.core.distributions.*;
 import rapaio.data.*;
 import rapaio.printer.format.*;
-import rapaio.sys.*;
 
 import java.util.List;
 
@@ -120,7 +119,7 @@ public class ChiSqConditionalIndependence implements HTest {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("> ChiSqIndependence\n");
+        sb.append("> ChiSqConditionalIndependence\n");
         sb.append("\n");
 
         sb.append("Chi-squared conditional independence test\n");

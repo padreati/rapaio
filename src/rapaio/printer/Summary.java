@@ -27,18 +27,12 @@
 
 package rapaio.printer;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 import rapaio.printer.format.*;
-import rapaio.printer.standard.BinaryTypeStrategy;
-import rapaio.printer.standard.NominalTypeStrategy;
-import rapaio.printer.standard.NumericTypeStrategy;
-import rapaio.printer.standard.TypeStrategy;
-import rapaio.sys.WS;
+import rapaio.printer.standard.*;
+import rapaio.sys.*;
 
-import static rapaio.printer.format.Format.*;
 import static rapaio.sys.WS.*;
 
 /**
@@ -72,17 +66,15 @@ public class Summary {
         buffer.append("* varCount: ").append(df.varCount()).append("\n");
         buffer.append("* varNames: \n");
 
-        TextTable tt = TextTable.newEmpty(df.varCount(), 5);
+        TextTable tt = TextTable.empty(df.varCount(), 5);
         for (int i = 0; i < df.varCount(); i++) {
-            tt.set(i, 0, i + ".", 1);
-            tt.set(i, 1, df.rvar(i).name(), 1);
-            tt.set(i, 2, ":", -1);
-            tt.set(i, 3, df.rvar(i).type().code(), -1);
-            tt.set(i, 4, "|", 1);
+            tt.textRight(i, 0, i + ".");
+            tt.textRight(i, 1, df.rvar(i).name());
+            tt.textLeft(i, 2, ":");
+            tt.textLeft(i, 3, df.rvar(i).type().code());
+            tt.textRight(i, 4, "|");
         }
-        tt.withMerge();
-        buffer.append("\n").append(tt.summary()).append("\n");
-
+        buffer.append("\n").append(tt.getDefaultText()).append("\n");
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
@@ -97,7 +89,7 @@ public class Summary {
             int i = df.varIndex(names[k]);
 
             Var v = df.rvar(i);
-            
+
             if (v.type() == VType.BINARY) {
                 typeStrategy = new BinaryTypeStrategy();
                 typeStrategy.getVarSummary(df, v, first, second, k);
@@ -207,8 +199,8 @@ public class Summary {
         }
 
         if (v.type() == VType.BINARY) {
-             typeStrategy = new BinaryTypeStrategy();
-             typeStrategy.getPrintSummary(v, first, second);
+            typeStrategy = new BinaryTypeStrategy();
+            typeStrategy.getPrintSummary(v, first, second);
         }
 
         if (v.type() == VType.INT || v.type() == VType.DOUBLE) {
@@ -308,35 +300,30 @@ public class Summary {
             lines = vars[0].rowCount();
         }
 
-        TextTable tt = TextTable.newEmpty(lines + 1, vars.length + 1);
-        if (merge)
-            tt.withMerge(getPrinter().textWidth());
-        tt.withHeaderRows(1);
-        tt.withHeaderCols(1);
-
+        TextTable tt = TextTable.empty(lines + 1, vars.length + 1, 1, 1);
         for (int i = 0; i < vars.length; i++) {
-            tt.set(0, i + 1, names[i], 0);
+            tt.textCenter(0, i + 1, names[i]);
         }
         for (int i = 0; i < lines; i++) {
-            tt.set(i + 1, 0, "[" + i + "]", 1);
+            tt.textRight(i + 1, 0, "[" + i + "]");
         }
         for (int i = 0; i < lines; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.set(i + 1, j + 1, vars[j].getLabel(i), 1);
+                tt.textRight(i + 1, j + 1, vars[j].getLabel(i));
             }
         }
-        return tt.summary();
+        return tt.getDefaultText();
     }
 
     public static String getHorizontalSummary5(Var var) {
-        TextTable tt1 = TextTable.newEmpty(2, 5).withHeaderRows(1);
+        TextTable tt1 = TextTable.empty(2, 5, 1, 0);
 
-        String[] headers1 = new String[] {"Min", "1Q", "Median", "3Q","Max"};
+        String[] headers1 = new String[]{"Min", "1Q", "Median", "3Q", "Max"};
         double[] values1 = Quantiles.of(var, 0, 0.25, 0.5, 0.75, 1).values();
         for (int i = 0; i < 5; i++) {
-            tt1.set(0, i, headers1[i], 1);
-            tt1.set(1, i, floatFlex(values1[i]), -1);
+            tt1.textRight(0, i, headers1[i]);
+            tt1.floatFlex(1, i, values1[i]);
         }
-        return tt1.summary();
+        return tt1.getDefaultText();
     }
 }

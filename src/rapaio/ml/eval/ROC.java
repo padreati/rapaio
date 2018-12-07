@@ -27,17 +27,13 @@
 
 package rapaio.ml.eval;
 
-import rapaio.data.Frame;
-import rapaio.data.RowComparators;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 
 /**
@@ -47,7 +43,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class ROC implements Printable, Serializable {
+public class ROC implements DefaultPrintable, Serializable {
 
     public static final String threshold = "threshold";
     public static final String fpr = "fpr";

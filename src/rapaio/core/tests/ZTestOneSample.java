@@ -27,11 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Mean;
-import rapaio.data.Var;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * one sample z test

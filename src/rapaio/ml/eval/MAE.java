@@ -39,7 +39,7 @@ import rapaio.printer.format.*;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MAE implements Printable {
+public class MAE implements DefaultPrintable {
 
     public static MAE from(Var actual, Var fit) {
         return new MAE(BoundFrame.byVars(actual), BoundFrame.byVars(fit));
@@ -99,16 +99,16 @@ public class MAE implements Printable {
         sb.append("> MAE (Mean Absolute Error):\n");
         sb.append("\n");
 
-        TextTable tt = TextTable.newEmpty(actual.varCount() + 1, 2).withHeaderRows(1).withHeaderCols(1);
+        TextTable tt = TextTable.empty(actual.varCount() + 1, 2, 1, 1);
 
-        tt.set(0, 0, "names", 1);
-        tt.set(0, 1, "mae", 1);
+        tt.textRight(0, 0, "names");
+        tt.textRight(0, 1, "mae");
 
         for (int i = 0; i < actual.varCount(); i++) {
-            tt.set(i + 1, 0, actual.varName(i) + " | " + fit.varName(i), 1);
-            tt.set(i + 1, 1, Format.floatFlex(mae[i]), 1);
+            tt.textRight(i + 1, 0, actual.varName(i) + " | " + fit.varName(i));
+            tt.floatFlex(i + 1, 1, mae[i]);
         }
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         sb.append("\n");
         sb.append("Total mae: " + Format.floatFlex(totalMae) + "\n");
         sb.append("\n");

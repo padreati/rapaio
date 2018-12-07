@@ -41,7 +41,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/22/15.
  */
-public class CFeatureSelectionSummary implements Printable {
+public class CFeatureSelectionSummary implements DefaultPrintable {
 
     private final String targetVar;
     private final Frame df;

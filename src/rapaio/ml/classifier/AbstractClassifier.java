@@ -206,16 +206,15 @@ public abstract class AbstractClassifier implements Classifier {
         sb.append("input vars: \n");
 
         int varCount = inputNames.length;
-        TextTable tt = TextTable.newEmpty(varCount, 5);
+        TextTable tt = TextTable.empty(varCount, 5);
         for (int i = 0; i < varCount; i++) {
-            tt.set(i, 0, i + ".", 1);
-            tt.set(i, 1, inputNames[i], 1);
-            tt.set(i, 2, ":", -1);
-            tt.set(i, 3, inputTypes[i].name(), -1);
-            tt.set(i, 4, " |", 1);
+            tt.textRight(i, 0, i + ".");
+            tt.textRight(i, 1, inputNames[i]);
+            tt.textLeft(i, 2, ":");
+            tt.textLeft(i, 3, inputTypes[i].name());
+            tt.textRight(i, 4, " |");
         }
-        tt.withMerge();
-        sb.append(tt.summary()).append("\n");
+        sb.append(tt.getDefaultText()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")

@@ -33,6 +33,7 @@ import rapaio.data.filter.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.classifier.bayes.estimator.*;
 import rapaio.ml.common.*;
+import rapaio.printer.*;
 import rapaio.util.*;
 
 import java.io.Serializable;
@@ -52,7 +53,7 @@ import static rapaio.printer.format.Format.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class NaiveBayes extends AbstractClassifier {
+public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = -7602854063045679683L;
     private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());

@@ -30,6 +30,7 @@ package rapaio.ml.regression.simple;
 import rapaio.data.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 import static rapaio.printer.format.Format.*;
@@ -37,7 +38,7 @@ import static rapaio.printer.format.Format.*;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegression extends AbstractRegression {
+public class ConstantRegression extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -2537862585258148528L;
 
@@ -114,15 +115,15 @@ public class ConstantRegression extends AbstractRegression {
             sb.append("Fitted values:\n");
             sb.append("\n");
 
-            TextTable tt = TextTable.newEmpty(1 + targetNames.length, 2);
-            tt.set(0, 0, "Target", 1);
-            tt.set(0, 1, "Estimate", 1);
+            TextTable tt = TextTable.empty(1 + targetNames.length, 2);
+            tt.textRight(0, 0, "Target");
+            tt.textRight(0, 1, "Estimate");
 
             for (int i = 0; i < targetNames().length; i++) {
-                tt.set(1 + i, 0, targetName(i), 1);
-                tt.set(1 + i, 1, Format.floatFlex(constant), 1);
+                tt.textRight(1 + i, 0, targetName(i));
+                tt.floatFlex(1 + i, 1, constant);
             }
-            sb.append(tt.summary());
+            sb.append(tt.getDefaultText());
         }
         sb.append("\n");
         return sb.toString();

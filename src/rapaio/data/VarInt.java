@@ -189,7 +189,7 @@ public final class VarInt extends AbstractVar {
     }
 
     public static Collector<? super Integer, VarInt, VarInt> collector() {
-        return new Collector<>() {
+        return new Collector<Integer, VarInt, VarInt>() {
             @Override
             public Supplier<VarInt> supplier() {
                 return VarInt::empty;

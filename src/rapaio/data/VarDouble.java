@@ -310,7 +310,7 @@ public final class VarDouble extends AbstractVar {
 
     public static Collector<Double, VarDouble, VarDouble> collector() {
 
-        return new Collector<>() {
+        return new Collector<Double, VarDouble, VarDouble>() {
             @Override
             public Supplier<VarDouble> supplier() {
                 return VarDouble::empty;

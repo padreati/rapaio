@@ -27,17 +27,17 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Compute covariance of two variables
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
-public class Covariance implements Printable {
+public class Covariance implements DefaultPrintable {
 
     public static Covariance of(Var var1, Var var2) {
         return new Covariance(var1, var2);

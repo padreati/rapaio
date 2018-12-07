@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Computes sample skewness. Formulas for sample skewness are taken from wikipedia page
@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
-public class Skewness implements Printable {
+public class Skewness implements DefaultPrintable {
 
     public static Skewness of(Var x) {
         return new Skewness(x);

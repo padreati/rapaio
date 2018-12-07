@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Computes sample kurtosis. Formulas for sample kurtosis are taken from wikipedia page
@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
-public class Kurtosis implements Printable {
+public class Kurtosis implements DefaultPrintable {
 
     public static Kurtosis of(Var x) {
         return new Kurtosis(x);

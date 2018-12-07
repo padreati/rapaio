@@ -27,14 +27,12 @@
 
 package rapaio.core.tools;
 
-import rapaio.core.RandomSource;
-import rapaio.data.VType;
-import rapaio.data.Var;
-import rapaio.math.MTools;
-import rapaio.printer.Printable;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.math.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
-import rapaio.sys.WS;
-import rapaio.util.StringUtil;
+import rapaio.util.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,7 +49,7 @@ import java.util.stream.DoubleStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class DVector implements Printable, Serializable {
+public class DVector implements DefaultPrintable, Serializable {
 
     /**
      * Builds a distribution vector with given levels
@@ -382,11 +380,11 @@ public class DVector implements Printable, Serializable {
 
     @Override
     public String summary() {
-        TextTableRenderer tt = TextTableRenderer.empty(3, levels.size());
+        TextTable tt = TextTable.empty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
-            tt.set(0, i, levels.get(i), 1);
-            tt.set(1, i, StringUtil.repeat(levels.get(i).length(), '-'), 1);
-            tt.set(2, i, Format.floatFlex(values[i]), 1);
+            tt.textRight(0, i, levels.get(i));
+            tt.textRight(1, i, StringUtil.repeat(levels.get(i).length(), '-'));
+            tt.floatFlex(2, i, values[i]);
         }
         return tt.getDefaultText();
     }

@@ -27,12 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.StudentT;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.Var;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * t test for checking if two samples have the same mean

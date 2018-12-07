@@ -31,6 +31,7 @@ import rapaio.graphics.base.*;
 import rapaio.printer.*;
 import rapaio.printer.standard.*;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.LogManager;
@@ -99,5 +100,9 @@ public class WS {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static BufferedImage image(Figure figure) {
+        return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }
 }

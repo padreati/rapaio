@@ -31,12 +31,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import rapaio.data.filter.FFilter;
-import rapaio.data.stream.FSpot;
-import rapaio.data.stream.FSpots;
-import rapaio.printer.Printable;
-import rapaio.printer.Summary;
-import rapaio.sys.WS;
+import rapaio.data.filter.*;
+import rapaio.data.stream.*;
+import rapaio.printer.*;
+import rapaio.sys.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -56,7 +54,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Frame extends Serializable, Printable {
+public interface Frame extends Serializable, DefaultPrintable {
 
     /**
      * Number of observations contained in frame. Observations are accessed by position.

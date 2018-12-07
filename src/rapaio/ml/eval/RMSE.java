@@ -39,7 +39,7 @@ import rapaio.printer.format.*;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class RMSE implements Printable {
+public class RMSE implements DefaultPrintable {
 
     public static RMSE from(Var actual, Var fit) {
         return new RMSE(SolidFrame.byVars(actual.solidCopy()),
@@ -113,20 +113,18 @@ public class RMSE implements Printable {
         sb.append("> Root Mean Squared Error (RMSE):\n");
         sb.append("\n");
 
-        TextTable tt = TextTable.newEmpty(actual.varCount() + 1, 3)
-                .withHeaderRows(1)
-                .withHeaderCols(1);
+        TextTable tt = TextTable.empty(actual.varCount() + 1, 3, 1, 1);
 
-        tt.set(0, 0, "target", 0);
-        tt.set(0, 1, "rmse", 0);
-        tt.set(0, 2, "mse", 0);
+        tt.textCenter(0, 0, "target");
+        tt.textCenter(0, 1, "rmse");
+        tt.textCenter(0, 2, "mse");
 
         for (int i = 0; i < actual.varCount(); i++) {
-            tt.set(i + 1, 0, actual.varNames()[i] + " | " + fit.varNames()[i], 1);
-            tt.set(i + 1, 1, Format.floatFlex(rmse.getDouble(i)), 1);
-            tt.set(i + 1, 2, Format.floatFlex(mse.getDouble(i)), 1);
+            tt.textRight(i + 1, 0, actual.varNames()[i] + " | " + fit.varNames()[i]);
+            tt.textRight(i + 1, 1, Format.floatFlex(rmse.getDouble(i)));
+            tt.textRight(i + 1, 2, Format.floatFlex(mse.getDouble(i)));
         }
-        sb.append(tt.summary());
+        sb.append(tt.getDefaultText());
         sb.append("\n");
 
         sb.append("Total RMSE: ").append(Format.floatFlex(totalRmse)).append("\n");

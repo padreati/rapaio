@@ -43,25 +43,25 @@ import rapaio.sys.WS;
  */
 public interface Printable {
 
+    String summary();
+
+    String content();
+
+    String fullContent();
+
+    default void printString() {
+        WS.getPrinter().printString(this);
+    }
+
     default void printSummary() {
         WS.getPrinter().printSummary(this);
     }
-
-    String summary();
 
     default void printContent() {
         WS.getPrinter().printContent(this);
     }
 
-    default String content() {
-        return "Not implemented.\n";
-    }
-
     default void printFullContent() {
         WS.getPrinter().printFullContent(this);
-    }
-
-    default String fullContent() {
-        return "Not implemented.\n";
     }
 }

@@ -143,16 +143,14 @@ public class LinearRPrediction extends RPrediction {
                 sb.append("> Coefficients: \n");
                 RV coeff = lm.coefficients(i);
 
-                TextTable tt = TextTable
-                        .newEmpty(coeff.count() + 1, 2)
-                        .withHeaderRows(1);
-                tt.set(0, 0, "Name", 0);
-                tt.set(0, 1, "Estimate", 0);
+                TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+                tt.textCenter(0, 0, "Name");
+                tt.textCenter(0, 1, "Estimate");
                 for (int j = 0; j < coeff.count(); j++) {
-                    tt.set(j + 1, 0, lm.inputName(j), -1);
-                    tt.set(j + 1, 1, Format.floatFlex(coeff.get(j)), -1);
+                    tt.textLeft(j + 1, 0, lm.inputName(j));
+                    tt.floatFlex(j + 1, 1, coeff.get(j));
                 }
-                sb.append(tt.summary());
+                sb.append(tt.getDefaultText());
             } else {
                 VarDouble res = residuals.get(targetName);
 
@@ -172,23 +170,23 @@ public class LinearRPrediction extends RPrediction {
 
                 sb.append("> Coefficients: \n");
 
-                TextTable tt = TextTable.newEmpty(coeff.count() + 1, 6).withHeaderRows(1).withHeaderCols(1);
+                TextTable tt = TextTable.empty(coeff.count() + 1, 6, 1, 1);
 
-                tt.set(0, 0, "Name", 1);
-                tt.set(0, 1, "Estimate", 1);
-                tt.set(0, 2, "Std. error", 1);
-                tt.set(0, 3, "t value", 1);
-                tt.set(0, 4, "P(>|t|)", 1);
-                tt.set(0, 5, "", 1);
+                tt.textRight(0, 0, "Name");
+                tt.textRight(0, 1, "Estimate");
+                tt.textRight(0, 2, "Std. error");
+                tt.textRight(0, 3, "t value");
+                tt.textRight(0, 4, "P(>|t|)");
+                tt.textRight(0, 5, "");
                 for (int j = 0; j < coeff.count(); j++) {
-                    tt.set(j + 1, 0, model.inputName(j), -1);
-                    tt.set(j + 1, 1, Format.floatMedium(coeff.get(j)), 1);
-                    tt.set(j + 1, 2, Format.floatMedium(beta_std_error.get(j, i)), 1);
-                    tt.set(j + 1, 3, Format.floatMedium(beta_t_value.get(j, i)), 1);
-                    tt.set(j + 1, 4, Format.pValue(beta_p_value.get(j, i)), 1);
-                    tt.set(j + 1, 5, beta_significance[j][i], -1);
+                    tt.textLeft(j + 1, 0, model.inputName(j));
+                    tt.floatMedium(j + 1, 1, coeff.get(j));
+                    tt.floatMedium(j + 1, 2, beta_std_error.get(j, i));
+                    tt.floatMedium(j + 1, 3, beta_t_value.get(j, i));
+                    tt.pValue(j + 1, 4, beta_p_value.get(j, i));
+                    tt.textLeft(j + 1, 5, beta_significance[j][i]);
                 }
-                sb.append(tt.summary());
+                sb.append(tt.getDefaultText());
                 sb.append("--------\n");
                 sb.append("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n");
 

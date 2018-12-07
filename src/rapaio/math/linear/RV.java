@@ -27,11 +27,10 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.printer.Printable;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.math.linear.dense.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;
@@ -41,10 +40,11 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RV extends Serializable, Printable {
+public interface RV extends Serializable, DefaultPrintable {
 
     /**
      * Gets value from zero-based position index
+     *
      * @param i given position
      * @return value stored at the given position
      */
@@ -53,7 +53,7 @@ public interface RV extends Serializable, Printable {
     /**
      * Sets a value to the given position
      *
-     * @param i zero based index
+     * @param i     zero based index
      * @param value value to be stored
      */
     void set(int i, double value);
@@ -61,7 +61,7 @@ public interface RV extends Serializable, Printable {
     /**
      * Increment with the given value the value from the given position.
      *
-     * @param i zero-based index position
+     * @param i     zero-based index position
      * @param value value used for increment
      */
     void increment(int i, double value);
@@ -100,7 +100,7 @@ public interface RV extends Serializable, Printable {
      * corresponding positions of the vector B.
      * The resulted vectors will have values:
      * this[i] <- this[i] + B[i].
-     *
+     * <p>
      * Vectors must be conformant for addition, which means
      * that they have to have the same size.
      *
@@ -134,7 +134,7 @@ public interface RV extends Serializable, Printable {
      * corresponding positions of the vector B.
      * The resulted vectors will have values:
      * this[i] <- this[i] + B[i].
-     *
+     * <p>
      * Vectors must be conformant for addition, which means
      * that they have to have the same size.
      *
@@ -154,10 +154,10 @@ public interface RV extends Serializable, Printable {
     /**
      * Computes the p norm of the vector.
      * <ul>
-     *     <li>if <b>p == 1</b> it returns the absolute value norm (L1 norm)</li>
-     *     <li>if <b>p == 2</b> it returns the euclidean norm (L2 norm)</li>
-     *     <li>if <b>p == Inf</b> it returns the value of the biggest element</li>
-     *     <li>in general it returns p-norm
+     * <li>if <b>p == 1</b> it returns the absolute value norm (L1 norm)</li>
+     * <li>if <b>p == 2</b> it returns the euclidean norm (L2 norm)</li>
+     * <li>if <b>p == Inf</b> it returns the value of the biggest element</li>
+     * <li>in general it returns p-norm
      * </ul>
      *
      * @param p the order of the norm
@@ -168,10 +168,10 @@ public interface RV extends Serializable, Printable {
     /**
      * Divides all the values by the given p norm. Thus, after normalization
      * the specific p norm is equal with 1.
-     *
+     * <p>
      * An example of usage is to make a unit vector from a given vector.
      * Thus the normalized vector keeps the same direction with a different size.
-     *
+     * <p>
      * If the p-norm equals 0, than the vector is kept the same.
      *
      * @param p order of the p norm used at normalization.
@@ -230,11 +230,11 @@ public interface RV extends Serializable, Printable {
      * There are two common reasons why we would need such an operations:
      *
      * <ul>
-     *     <li>the current vector could be the result of multiple
-     *     mapping or binding operations and we would like to have a solid
-     *     copy of all those values</li>
-     *     <li>most of the operations work on the current instance, if we want
-     *     to avoid altering this instance than we need a new copy</li>
+     * <li>the current vector could be the result of multiple
+     * mapping or binding operations and we would like to have a solid
+     * copy of all those values</li>
+     * <li>most of the operations work on the current instance, if we want
+     * to avoid altering this instance than we need a new copy</li>
      * </ul>
      *
      * @return a new solid copy of the vector

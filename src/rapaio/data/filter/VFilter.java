@@ -27,8 +27,8 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 
@@ -56,7 +56,7 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-public interface VFilter extends Serializable, Printable {
+public interface VFilter extends Serializable, DefaultPrintable {
 
     /**
      * Method for fitting eventual parameter values from given data

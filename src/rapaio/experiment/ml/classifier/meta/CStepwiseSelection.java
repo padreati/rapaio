@@ -31,6 +31,7 @@ import rapaio.data.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.ml.eval.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.sys.*;
 
@@ -47,7 +48,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
-public class CStepwiseSelection extends AbstractClassifier {
+public class CStepwiseSelection extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 2642562123626893974L;
     Classifier best;

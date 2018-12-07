@@ -38,8 +38,8 @@ public class RMSETest {
 
         assertEquals("> Root Mean Squared Error (RMSE):\n" +
                 "\n" +
-                " target rmse mse\n" +
-                "  x | y    1   1\n" +
+                "target rmse mse \n" +
+                " x | y    1   1 \n" +
                 "\n" +
                 "Total RMSE: 1\n" +
                 "Total MSE: 1\n" +
@@ -47,8 +47,8 @@ public class RMSETest {
 
         assertEquals("> Root Mean Squared Error (RMSE):\n" +
                 "\n" +
-                " target rmse mse\n" +
-                "  x | z    2   4\n" +
+                "target rmse mse \n" +
+                " x | z    2   4 \n" +
                 "\n" +
                 "Total RMSE: 2\n" +
                 "Total MSE: 4\n" +

@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Finds the maximum value from a {@link rapaio.data.Var} of values.
@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Maximum implements Printable {
+public class Maximum implements DefaultPrintable {
 
     public static Maximum of(Var var) {
         return new Maximum(var);

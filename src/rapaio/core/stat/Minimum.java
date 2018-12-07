@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Finds the minimum value from a {@link rapaio.data.Var} of values.
@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-public class Minimum implements Printable {
+public class Minimum implements DefaultPrintable {
 
     public static Minimum of(Var var) {
         return new Minimum(var);

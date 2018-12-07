@@ -27,30 +27,20 @@
 
 package rapaio.ml.regression.boost;
 
-import rapaio.data.Frame;
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.sample.RowSampler;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.Regression;
-import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
-import rapaio.ml.regression.boost.gbt.GBTRegressionLossL1;
-import rapaio.ml.regression.loss.L2RegressionLoss;
-import rapaio.ml.regression.loss.RegressionLoss;
-import rapaio.ml.regression.simple.L2Regression;
-import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.ml.regression.boost.gbt.*;
+import rapaio.ml.regression.loss.*;
+import rapaio.ml.regression.simple.*;
+import rapaio.ml.regression.tree.*;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Gradient Boosting Tree
@@ -58,7 +48,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class GBTRegression extends AbstractRegression implements Printable {
+public class GBTRegression extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = 4559540258922653130L;
 

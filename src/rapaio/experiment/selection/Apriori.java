@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/23/15.
  */
-public class Apriori implements Printable {
+public class Apriori implements DefaultPrintable {
 
     private Frame inputDf;
     private BiPredicate<Integer, DVector> filter;

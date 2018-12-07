@@ -27,11 +27,12 @@
 
 package rapaio.graphics.base;
 
-import rapaio.printer.format.*;
+import rapaio.math.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import static rapaio.math.MTools.*;
 
 /**
  * Reference:
@@ -107,7 +108,7 @@ public class XWilkinson {
     public boolean loose = false;
 
     // scale-goodness weights for simplicity, coverage, density, legibility
-    final private double w[];
+    private final double w[];
 
     // calculation of scale-goodness
     private double w(double s, double c, double d, double l) {
@@ -115,27 +116,16 @@ public class XWilkinson {
     }
 
     // Initial step sizes which we use as seed of generator
-    final private double[] Q;
+    private final double[] Q;
 
     // Number base used to calculate logarithms
-    final private double base;
-
-    private double logB(double a) {
-        return Math.log(a) / Math.log(base);
-    }
-
-    /*
-     * a mod b for float numbers (reminder of a/b)
-     */
-    private double flooredMod(double a, double n) {
-        return a - n * Math.floor(a / n);
-    }
+    private final double base;
 
     // can be injected via c'tor depending on your application, default is 1e-10
     final private double eps;
 
     private double v(double min, double max, double step) {
-        return (flooredMod(min, step) < eps && min <= 0 && max >= 0) ? 1 : 0;
+        return (floorMod(min, step) < eps && min <= 0 && max >= 0) ? 1 : 0;
     }
 
     private double simplicity(int i, int j, double min, double max, double step) {
@@ -172,7 +162,6 @@ public class XWilkinson {
         }
     }
 
-
     /*
      *
      * @param k		number of labels
@@ -191,67 +180,49 @@ public class XWilkinson {
     private double density(int k, int m, double dmin, double dmax, double lmin, double lmax) {
         double r = (k - 1) / (lmax - lmin);
         double rt = (m - 1) / (Math.max(lmax, dmax) - Math.min(lmin, dmin));
-        return 2 - Math.max(r / rt, rt / r);   // return 1-Math.max(r/rt, rt/r); (paper is wrong)
+        // return 1-Math.max(r/rt, rt/r); (paper is wrong)
+        return 2 - Math.max(r / rt, rt / r);
     }
 
     private double density_max(int k, int m) {
-        if (k >= m) {
-            return 2 - (k - 1) / (m - 1);        // return 2-(k-1)/(m-1); (paper is wrong)
-        } else {
-            return 1;
-        }
+        // return 2-(k-1)/(m-1); (paper is wrong)
+        return (k >= m) ? 2 - (k - 1) / (m - 1) : 1;
     }
 
     private double legibility(double min, double max, double step) {
         return 1; // Maybe later more...
     }
 
-    public class Labels implements Iterable<Double> {
+    public class Labels {
 
         private double min, max, step, score;
 
-        @Override
-        public String toString() {
-            StringBuilder s = new StringBuilder("(Score: " + Format.floatFlex(score) + ", " +
-                    "min: " + min + ", " +
-                    "max: " + max + ", " +
-                    "step: " + step + ")\n\t");
-            if (step == 0)
-                return s.toString();
-            for (Double x : getList()) {
-                s.append(x).append("\t");
-            }
-            return s.toString();
-        }
-
-        @Override
-        public Iterator<Double> iterator() {
-            return getList().iterator();
-        }
-
         public List<Double> getList() {
-            int digits = getSignificantDigits(step);
+            int digits = significantDigits(step);
             List<Double> list = new ArrayList<>();
             if (step == 0) {
-                if(!Double.isFinite(min) || !Double.isFinite(max)) {
+                if (!Double.isFinite(min) || !Double.isFinite(max)) {
                     return list;
                 }
-                list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", min)));
+                list.add(round(min, digits));
                 if (min < max) {
-                    list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", max)));
+                    list.add(round(max, digits));
                     return list;
                 }
                 return list;
             }
-            for (double i = min; i <= max; i += step) {
-                list.add(Double.valueOf(String.format("%." + Math.abs(digits) + "f", i)));
+            for (double i = 0; i <= 100; i++) {
+                if (min + i * step <= max) {
+                    list.add(round(min + i * step, digits));
+                    continue;
+                }
+                break;
             }
             return list;
         }
 
         public String getFormattedValue(double x) {
-            int digits = getSignificantDigits(step);
-            return String.valueOf(Double.valueOf(String.format("%." + Math.abs(digits) + "f", x)));
+            return String.valueOf(round(x, significantDigits(step)));
         }
 
         public double getMin() {
@@ -269,21 +240,6 @@ public class XWilkinson {
         public double getScore() {
             return score;
         }
-
-        private int getSignificantDigits(double x) {
-            String formatted = Double.toString(x);
-            int indexE = formatted.indexOf("E");
-            int exp = (indexE == -1) ? 0 : Integer.parseInt(formatted.substring(indexE + 1));
-            for (int i = 2; i < formatted.length(); i++) {
-                if (formatted.charAt(i) != 'E') {
-                    exp--;
-                }
-                break;
-            }
-            return exp;
-
-        }
-
     }
 
     /**
@@ -326,9 +282,9 @@ public class XWilkinson {
                         break;
                     }
                     delta = (dmax - dmin) / (k + 1) / (j * q);
-                    int z = (int) Math.ceil(logB(delta));
+                    int z = (int) Math.ceil(MTools.logBase(delta, base));
                     while (z < Integer.MAX_VALUE) {
-                        double step = j * q * Math.pow(base, z);
+                        double step = z == -1 ? j * q : j * q * Math.pow(base, z);
                         cm = coverage_max(dmin, dmax, step * (k - 1));
                         if (w(sm, cm, dm, 1) < bestScore) {
                             break;

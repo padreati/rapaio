@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Core tool which computes geometric mean for a given numerical variable.
@@ -46,7 +46,7 @@ import static rapaio.printer.format.Format.floatFlex;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/15.
  */
-public class GeometricMean implements Printable {
+public class GeometricMean implements DefaultPrintable {
 
     public static GeometricMean of(Var var) {
         return new GeometricMean(var);

@@ -27,11 +27,9 @@
 
 package rapaio.ml.regression;
 
-import rapaio.core.stat.Mean;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-import rapaio.printer.Printable;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +44,7 @@ import static java.util.Collections.nCopies;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RPrediction implements Printable {
+public class RPrediction implements DefaultPrintable {
     protected final Regression model;
     protected final Frame df;
     protected final boolean withResiduals;
@@ -233,10 +231,10 @@ public class RPrediction implements Printable {
         for (String target : model.targetNames()) {
             sb.append("Fit and residuals for ").append(target).append("\n");
             sb.append("======================")
-                    .append(String.join("", nCopies(target.length(), "=")));
+                    .append(String.join("", nCopies(target.length(), "="))).append('\n');
 
             String fullSummary = SolidFrame.byVars(fit(target), residual(target)).summary();
-            List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
+            List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {
                 pos++;

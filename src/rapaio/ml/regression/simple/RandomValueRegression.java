@@ -27,15 +27,11 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Uniform;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.Regression;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.*;
 
 /**
  * A trivial regression which predicts using random
@@ -43,7 +39,7 @@ import rapaio.ml.regression.Regression;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegression extends AbstractRegression {
+public class RandomValueRegression extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = 819192240406617594L;
     private Distribution distribution = Uniform.of(0, 1);

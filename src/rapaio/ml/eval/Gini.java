@@ -40,7 +40,7 @@ import rapaio.printer.format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
-public class Gini implements Printable {
+public class Gini implements DefaultPrintable {
 
     public static Gini from(Var actual, Var fit) {
         return new Gini(actual, fit, null);

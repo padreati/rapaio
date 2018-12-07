@@ -33,6 +33,7 @@ import rapaio.data.filter.var.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.classifier.rule.onerule.*;
 import rapaio.ml.common.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.util.*;
 
@@ -44,7 +45,7 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifier {
+public class OneRule extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 6220103690711818091L;
 

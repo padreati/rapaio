@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.*;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-public class Variance implements Printable {
+public class Variance implements DefaultPrintable {
 
     public static Variance of(Var var) {
         return new Variance(var);

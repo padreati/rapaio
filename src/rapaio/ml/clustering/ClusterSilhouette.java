@@ -28,7 +28,7 @@
 package rapaio.ml.clustering;
 
 import rapaio.data.Var;
-import rapaio.printer.Printable;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
  */
-public class ClusterSilhouette implements Printable {
+public class ClusterSilhouette implements Printable, DefaultPrintable {
 
     public static ClusterSilhouette from(Var asgn, DistanceMatrix d, boolean similarity) {
         return new ClusterSilhouette(asgn, d, similarity);

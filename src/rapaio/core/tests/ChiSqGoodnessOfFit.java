@@ -169,20 +169,20 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         sb.append("Data:  \n");
 
-        TextTableRenderer tt = TextTableRenderer.empty(5, dv.rowCount() + 1, 1, 1);
+        TextTable tt = TextTable.empty(5, dv.rowCount() + 1, 1, 1);
 
 
-        tt.set(2, 0, "Observed count", -1);
-        tt.set(3, 0, "Expected count", -1);
-        tt.set(4, 0, "Expected prob", -1);
+        tt.textLeft(2, 0, "Observed count");
+        tt.textLeft(3, 0, "Expected count");
+        tt.textLeft(4, 0, "Expected prob");
 
         int off = dv.isFirstUsed() ? 0 : 1;
         for (int i = 0; i < dv.rowCount() - off; i++) {
-            tt.set(0, i + 1, dv.level(i + off), 1);
-            tt.set(1, i + 1, new String(new char[dv.level(i + off).length()]).replace("\0", "-"), 1);
-            tt.set(2, i + 1, Format.floatFlex(dv.get(i + off)), 1);
-            tt.set(3, i + 1, Format.floatFlex(expected.getDouble(i)), 1);
-            tt.set(4, i + 1, Format.floatFlex(p.getDouble(i)), 1);
+            tt.textRight(0, i + 1, dv.level(i + off));
+            tt.textRight(1, i + 1, new String(new char[dv.level(i + off).length()]).replace("\0", "-"));
+            tt.floatFlex(2, i + 1, dv.get(i + off));
+            tt.floatFlex(3, i + 1, expected.getDouble(i));
+            tt.floatFlex(4, i + 1, p.getDouble(i));
         }
 
         sb.append(tt.getDefaultText());

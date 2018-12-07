@@ -25,23 +25,28 @@
  *
  */
 
-package rapaio.experiment;
-
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.sys.*;
-
-import java.io.IOException;
-
-import static rapaio.graphics.Plotter.*;
+package rapaio.printer;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/17.
+ * Marker interface which is deprecated to show the lack of implementation
+ * of full Printable interface. Once a printable object implements the full
+ * printable API it should implement directly the API.
+ *
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/29/18.
  */
-public class Sandbox {
+@Deprecated
+public interface DefaultPrintable extends Printable {
 
-    public static void main(String[] args) throws IOException {
-        Frame iris = Datasets.loadIrisDataset();
-        WS.draw(hist(iris.rvar(0), 0, 10, bins(40), color(10), prob(true)));
+    default String summary() {
+        return "Not implemented!";
     }
+
+    default String content() {
+        return "Not Implemented!";
+    }
+
+    default String fullContent() {
+        return "Not Implemented!";
+    }
+
 }

@@ -38,6 +38,7 @@ import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RPrediction;
 import rapaio.ml.regression.Regression;
 import rapaio.ml.regression.tree.RTree;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-public class RForest extends AbstractRegression {
+public class RForest extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -3926256335736143438L;
 

@@ -30,14 +30,10 @@ package rapaio.experiment.ml.classifier.meta;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Var;
-import rapaio.data.stream.FSpot;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.stream.*;
+import rapaio.ml.classifier.*;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +44,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class SplitClassifier extends AbstractClassifier implements Printable {
+public class SplitClassifier extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 3332377951136731541L;
 

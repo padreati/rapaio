@@ -1,9 +1,7 @@
 package rapaio.graphics.base;
 
 import org.junit.Test;
-import rapaio.data.VarDouble;
-import rapaio.graphics.Plotter;
-import rapaio.sys.WS;
+import rapaio.sys.*;
 
 import java.time.LocalTime;
 
@@ -11,20 +9,6 @@ import java.time.LocalTime;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
 public class XWilkinsonTest {
-
-    @Test
-    public void sandboxTest() {
-        XWilkinson x = XWilkinson.base10(XWilkinson.DEEFAULT_EPS);
-        XWilkinson.Labels l = x.searchBounded(1.1e-100, 3e-100, 10);
-        WS.println(l.toString());
-
-        VarDouble xx = VarDouble.seq(l.getList().size());
-        VarDouble yy = VarDouble.from(l.getList().size(), row -> l.getList().get(row));
-
-//        WS.setPrinter(new IdeaPrinter());
-        WS.draw(Plotter.points(yy, xx));
-    }
-
 
     @Test
     public void baseTest() {

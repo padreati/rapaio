@@ -38,7 +38,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.Printable;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-public class PCA implements Printable {
+public class PCA implements DefaultPrintable {
 
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 

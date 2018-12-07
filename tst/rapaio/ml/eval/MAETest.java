@@ -39,8 +39,8 @@ public class MAETest {
 
         assertEquals("> MAE (Mean Absolute Error):\n" +
                 "\n" +
-                " names  mae\n" +
-                " x | y 50.5\n" +
+                "names  mae \n" +
+                "x | y 50.5 \n" +
                 "\n" +
                 "Total mae: 50.5\n" +
                 "\n", mae1.summary());

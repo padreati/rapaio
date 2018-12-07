@@ -38,6 +38,7 @@ import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ import java.util.function.BiConsumer;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifier {
+public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = -9154973036108114765L;
     private static final double delta_error = 10e-10;

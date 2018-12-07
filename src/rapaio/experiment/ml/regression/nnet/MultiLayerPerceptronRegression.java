@@ -27,24 +27,21 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.Regression;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class MultiLayerPerceptronRegression extends AbstractRegression {
+public class MultiLayerPerceptronRegression extends AbstractRegression implements DefaultPrintable {
 
     private final int[] layerSizes;
     private final NetNode[][] net;

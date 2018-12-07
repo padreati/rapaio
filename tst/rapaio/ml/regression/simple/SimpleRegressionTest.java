@@ -70,14 +70,14 @@ public class SimpleRegressionTest {
                 "\n" +
                 "\n" +
                 "> input variables: \n" +
-                " 1. Son double                                    \n" +
+                "1. Son double \n" +
                 "> target variables: \n" +
-                " 1. Father double                              \n" +
+                "1. Father double \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
-                " Target Estimate\n" +
-                " Father       66\n" +
+                "Target Estimate \n" +
+                "Father    66    \n" +
                 "\n", r1.summary());
 
         ConstantRegression r2 = ConstantRegression.with(1);
@@ -134,14 +134,14 @@ public class SimpleRegressionTest {
                 "Model instance: L2Regression\n" +
                 "\n" +
                 "> input variables: \n" +
-                " 1. Son double                                    \n" +
+                "1. Son double \n" +
                 "> target variables: \n" +
-                " 1. Father double                              \n" +
+                "1. Father double \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
-                " Target   Estimate\n" +
-                " Father 67.6868275\n" +
+                "Target   Estimate \n" +
+                "Father 67.6868275 \n" +
                 "\n", r1.summary());
 
         RPrediction fit1 = r1.predict(df, true);
@@ -152,9 +152,9 @@ public class SimpleRegressionTest {
                         "Model instance: L2Regression\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. Son double                                    \n" +
+                        "1. Son double \n" +
                         "> target variables: \n" +
-                        " 1. Father double                              \n" +
+                        "1. Father double \n" +
                         "\n" +
                         "Fit and residuals for Father\n" +
                         "============================\n" +

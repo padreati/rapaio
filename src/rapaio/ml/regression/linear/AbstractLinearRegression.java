@@ -137,16 +137,14 @@ public abstract class AbstractLinearRegression extends AbstractRegression {
             sb.append("> Coefficients: \n");
             RV coeff = beta.mapCol(i);
 
-            TextTable tt = TextTable
-                    .newEmpty(coeff.count() + 1, 2)
-                    .withHeaderRows(1);
-            tt.set(0, 0, "Name", 0);
-            tt.set(0, 1, "Estimate", 0);
+            TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+            tt.textCenter(0, 0, "Name");
+            tt.textCenter(0, 1, "Estimate");
             for (int j = 0; j < coeff.count(); j++) {
-                tt.set(j + 1, 0, inputNames[j], -1);
-                tt.set(j + 1, 1, Format.floatMedium(coeff.get(j)), 1);
+                tt.textLeft(j + 1, 0, inputNames[j]);
+                tt.floatMedium(j + 1, 1, coeff.get(j));
             }
-            sb.append(tt.summary());
+            sb.append(tt.getDefaultText());
             sb.append("\n");
         }
         return sb.toString();

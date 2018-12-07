@@ -172,7 +172,7 @@ public interface Mapping extends Serializable {
     IntList toList();
 
     static Collector<Integer, IntList, Mapping> collector() {
-        return new Collector<>() {
+        return new Collector<Integer, IntList, Mapping>() {
             @Override
             public Supplier<IntList> supplier() {
                 return IntArrayList::new;

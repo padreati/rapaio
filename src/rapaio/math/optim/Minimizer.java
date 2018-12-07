@@ -27,15 +27,15 @@
 
 package rapaio.math.optim;
 
-import rapaio.math.linear.RV;
-import rapaio.printer.Printable;
+import rapaio.math.linear.*;
+import rapaio.printer.*;
 
 import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
  */
-public interface Minimizer extends Printable {
+public interface Minimizer extends DefaultPrintable {
 
     void compute();
 

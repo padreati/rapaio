@@ -57,4 +57,14 @@ public interface HTest extends Printable {
     double ciHigh();
 
     double ciLow();
+
+    @Override
+    default String content() {
+        return summary();
+    }
+
+    @Override
+    default String fullContent() {
+        return summary();
+    }
 }

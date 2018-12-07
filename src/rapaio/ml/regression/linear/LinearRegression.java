@@ -27,22 +27,18 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.Regression;
+import rapaio.data.*;
+import rapaio.data.filter.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.printer.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class LinearRegression extends AbstractLinearRegression {
+public class LinearRegression extends AbstractLinearRegression implements DefaultPrintable {
 
     public static LinearRegression newLm() {
         return new LinearRegression()

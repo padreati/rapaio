@@ -76,16 +76,17 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) double 2. TV double                  \n" +
+                        "1. (Intercept) double \n" +
+                        "2. TV          double \n" +
                         "> target variables: \n" +
-                        " 1. Radio double                              \n" +
+                        "1. Radio double \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
                         "> Coefficients: \n" +
-                        "     Name     Estimate\n" +
-                        " (Intercept) 21.870319\n" +
-                        " TV           0.009478\n" +
+                        "   Name       Estimate    \n" +
+                        "(Intercept)   21.870319 \n" +
+                        "TV             0.009478 \n" +
                         "\n", lm.summary());
 
         LinearRPrediction lmfit = lm.predict(df, true);
@@ -97,20 +98,21 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) double 2. TV double                  \n" +
+                        "1. (Intercept) double \n" +
+                        "2. TV          double \n" +
                         "> target variables: \n" +
-                        " 1. Radio double                              \n" +
+                        "1. Radio double \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
                         "> Residuals: \n" +
-                        "         Min          1Q     Median         3Q       Max\n" +
-                        " -22.6304611 -13.2782023 -0.3958475 13.1830607 26.947222\n" +
+                        "        Min          1Q     Median         3Q       Max \n" +
+                        "-22.6304611 -13.2782023 -0.3958475 13.1830607 26.947222 \n" +
                         "\n" +
                         "> Coefficients: \n" +
-                        "        Name  Estimate Std. error   t value  P(>|t|)    \n" +
-                        " (Intercept) 21.870319   2.088102 10.473778   <2e-16 ***\n" +
-                        " TV           0.009478   0.012271  0.772387 0.440806    \n" +
+                        "       Name  Estimate Std. error   t value       P(>|t|)     \n" +
+                        "(Intercept) 21.870319  2.088102         10.473778 <2e-16        *** \n" +
+                        "TV           0.009478  0.012271          0.772387      0.440806     \n" +
                         "--------\n" +
                         "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                         "\n" +
@@ -128,16 +130,17 @@ public class LinearRegressionTest {
                         "Model instance: LinearRegression()\n" +
                         "\n" +
                         "> input variables: \n" +
-                        " 1. (Intercept) double 2. TV double                  \n" +
+                        "1. (Intercept) double \n" +
+                        "2. TV          double \n" +
                         "> target variables: \n" +
-                        " 1. Radio double                              \n" +
+                        "1. Radio double \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
                         "> Coefficients: \n" +
-                        "     Name     Estimate \n" +
-                        " (Intercept) 21.8703186\n" +
-                        " TV          0.0094781 \n",
+                        "   Name       Estimate     \n" +
+                        "(Intercept)   21.8703186 \n" +
+                        "TV             0.0094781 \n",
                 lmfit2.summary());
 
     }
@@ -158,21 +161,24 @@ public class LinearRegressionTest {
                 "Model instance: LinearRegression()\n" +
                 "\n" +
                 "> input variables: \n" +
-                " 1. (Intercept) double 2. TV double 3. Newspaper double               \n" +
+                "1. (Intercept) double \n" +
+                "2. TV          double \n" +
+                "3. Newspaper   double \n" +
                 "> target variables: \n" +
-                " 1. Sales double 2. Radio double                           \n" +
+                "1. Sales double \n" +
+                "2. Radio double \n" +
                 "\n" +
                 "Target <<< Sales >>>\n" +
                 "\n" +
                 "> Residuals: \n" +
-                "        Min         1Q     Median        3Q       Max\n" +
-                " -8.6230898 -1.7346082 -0.0948177 1.8925968 8.4512125\n" +
+                "       Min         1Q     Median        3Q       Max \n" +
+                "-8.6230898 -1.7346082 -0.0948177 1.8925968 8.4512125 \n" +
                 "\n" +
                 "> Coefficients: \n" +
-                "        Name Estimate Std. error   t value  P(>|t|)    \n" +
-                " (Intercept) 5.774948   0.525338 10.992828   <2e-16 ***\n" +
-                " TV          0.046901   0.002581 18.172707   <2e-16 ***\n" +
-                " Newspaper   0.044219   0.010174  4.346276 0.000022 ***\n" +
+                "       Name Estimate Std. error   t value       P(>|t|)     \n" +
+                "(Intercept) 5.774948  0.525338         10.992828 <2e-16        *** \n" +
+                "TV          0.046901  0.002581         18.172707 <2e-16        *** \n" +
+                "Newspaper   0.044219  0.010174          4.346276      0.000022 *** \n" +
                 "--------\n" +
                 "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +
@@ -183,14 +189,14 @@ public class LinearRegressionTest {
                 "Target <<< Radio >>>\n" +
                 "\n" +
                 "> Residuals: \n" +
-                "         Min          1Q     Median         3Q        Max\n" +
-                " -33.4130794 -11.7301826 -0.5438912 10.5752129 31.8607305\n" +
+                "        Min          1Q     Median         3Q        Max \n" +
+                "-33.4130794 -11.7301826 -0.5438912 10.5752129 31.8607305 \n" +
                 "\n" +
                 "> Coefficients: \n" +
-                "        Name  Estimate Std. error  t value    P(>|t|)    \n" +
-                " (Intercept) 15.043008   2.347560 6.407932   1.06e-09 ***\n" +
-                " TV           0.006029   0.011533 0.522724   0.601754    \n" +
-                " Newspaper    0.240052   0.045465 5.279958   3.40e-07 ***\n" +
+                "       Name  Estimate Std. error  t value    P(>|t|)     \n" +
+                "(Intercept) 15.043008  2.347560         6.407932   1.06e-09 *** \n" +
+                "TV           0.006029  0.011533         0.522724   0.601754     \n" +
+                "Newspaper    0.240052  0.045465         5.279958   3.40e-07 *** \n" +
                 "--------\n" +
                 "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +

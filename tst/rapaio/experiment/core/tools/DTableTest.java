@@ -142,7 +142,7 @@ public class DTableTest {
         Assert.assertEquals("              x         y         z     total \n" +
                 "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +
                 "    b 0.4444444 0.7307692 0.6666667 1.8418803 \n" +
-                "total         1         1         1         3 \n", dt2.normalizeOnCols().summary());
+                "total 1         1         1         3         \n", dt2.normalizeOnCols().summary());
 
         dt2.withTotalSummary(false);
 

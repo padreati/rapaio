@@ -32,14 +32,12 @@ import rapaio.data.*;
 import rapaio.printer.*;
 import rapaio.printer.format.*;
 
-import static rapaio.printer.format.Format.*;
-
 /**
  * Sample AutoCorrelation Function
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
-public class Acf implements Printable {
+public class Acf implements DefaultPrintable {
 
     private final Var ts;
     private final VarInt lags;
@@ -88,7 +86,6 @@ public class Acf implements Printable {
         }
     }
 
-
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
@@ -96,14 +93,14 @@ public class Acf implements Printable {
         sb.append("===========\n");
         sb.append("\n");
 
-        TextTableRenderer tt = TextTableRenderer.empty(lags.rowCount()+1, 3, 1, 0);
-        tt.set(0, 0, "Lag", 0);
-        tt.set(0, 1, "correlation", 0);
-        tt.set(0, 2, "covariance", 0);
+        TextTable tt = TextTable.empty(lags.rowCount() + 1, 3, 1, 0);
+        tt.textCenter(0, 0, "Lag");
+        tt.textCenter(0, 1, "correlation");
+        tt.textCenter(0, 2, "covariance");
         for (int i = 0; i < lags.rowCount(); i++) {
-            tt.set(i+1, 0, lags.getLabel(i), 1);
-            tt.set(i+1, 1, floatFlex(correlation.getDouble(i)), 1);
-            tt.set(i+1, 2, floatFlex(covariance.getDouble(i)), 1);
+            tt.textRight(i + 1, 0, lags.getLabel(i));
+            tt.floatFlex(i + 1, 1, correlation.getDouble(i));
+            tt.floatFlex(i + 1, 2, covariance.getDouble(i));
         }
         sb.append(tt.getDefaultText());
         sb.append("\n");

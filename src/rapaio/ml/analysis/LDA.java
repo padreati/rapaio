@@ -41,8 +41,7 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.Printable;
-import rapaio.printer.Summary;
+import rapaio.printer.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,7 +56,7 @@ import java.util.logging.Logger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA implements Printable {
+public class LDA implements DefaultPrintable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
     private double tol = 1e-24;

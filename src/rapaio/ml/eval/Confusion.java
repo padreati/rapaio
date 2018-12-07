@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Confusion implements Printable {
+public class Confusion implements DefaultPrintable {
 
     public static Confusion from(Var actual, Var predict) {
         return new Confusion(actual, predict);
@@ -157,36 +157,35 @@ public class Confusion implements Printable {
         sb.append("> Confusion\n");
 
         sb.append("\n");
-        TextTable tt = TextTable.newEmpty(factors.size() + 3, factors.size() + 3);
-        tt.withSplit();
+        TextTable tt = TextTable.empty(factors.size() + 3, factors.size() + 3);
 
-        tt.set(0, 0, "Ac\\Pr", 0);
+        tt.textCenter(0, 0, "Ac\\Pr");
 
         for (int i = 0; i < factors.size() - 1; i++) {
-            tt.set(i + 2, 0, factors.get(i + 1), 1);
-            tt.set(i + 2, 1, "|", 0);
-            tt.set(i + 2, factors.size() + 1, "|", 0);
-            tt.set(0, i + 2, factors.get(i + 1), 1);
-            tt.set(1, i + 2, line(factors.get(i + 1).length()), 1);
-            tt.set(factors.size() + 1, i + 2, line(factors.get(i + 1).length()), 1);
+            tt.textRight(i + 2, 0, factors.get(i + 1));
+            tt.textCenter(i + 2, 1, "|");
+            tt.textCenter(i + 2, factors.size() + 1, "|");
+            tt.textRight(0, i + 2, factors.get(i + 1));
+            tt.textRight(1, i + 2, line(factors.get(i + 1).length()));
+            tt.textRight(factors.size() + 1, i + 2, line(factors.get(i + 1).length()));
         }
-        tt.set(factors.size() + 2, 0, "total", 1);
-        tt.set(0, factors.size() + 2, "total", 1);
+        tt.textRight(factors.size() + 2, 0, "total");
+        tt.textRight(0, factors.size() + 2, "total");
 
-        tt.set(1, 0, line("Ac\\Pr".length()), 0);
-        tt.set(factors.size() + 1, 0, line("Ac\\Pr".length()), 0);
-        tt.set(1, factors.size() + 2, line("Ac\\Pr".length()), 0);
-        tt.set(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()), 0);
+        tt.textCenter(1, 0, line("Ac\\Pr".length()));
+        tt.textCenter(factors.size() + 1, 0, line("Ac\\Pr".length()));
+        tt.textCenter(1, factors.size() + 2, line("Ac\\Pr".length()));
+        tt.textCenter(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()));
 
-        tt.set(0, 1, "|", 0);
-        tt.set(1, 1, "|", 0);
-        tt.set(factors.size() + 1, 1, "|", 0);
-        tt.set(factors.size() + 2, 1, "|", 0);
+        tt.textCenter(0, 1, "|");
+        tt.textCenter(1, 1, "|");
+        tt.textCenter(factors.size() + 1, 1, "|");
+        tt.textCenter(factors.size() + 2, 1, "|");
 
-        tt.set(0, factors.size() + 1, "|", 0);
-        tt.set(1, factors.size() + 1, "|", 0);
-        tt.set(factors.size() + 1, factors.size() + 1, "|", 0);
-        tt.set(factors.size() + 2, factors.size() + 1, "|", 0);
+        tt.textCenter(0, factors.size() + 1, "|");
+        tt.textCenter(1, factors.size() + 1, "|");
+        tt.textCenter(factors.size() + 1, factors.size() + 1, "|");
+        tt.textCenter(factors.size() + 2, factors.size() + 1, "|");
 
         int[] rowTotals = new int[factors.size() - 1];
         int[] colTotals = new int[factors.size() - 1];
@@ -194,63 +193,62 @@ public class Confusion implements Printable {
 
         for (int i = 0; i < factors.size() - 1; i++) {
             for (int j = 0; j < factors.size() - 1; j++) {
-                tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + cmf[i][j], 1);
+                tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + cmf[i][j]);
                 grandTotal += cmf[i][j];
                 rowTotals[i] += cmf[i][j];
                 colTotals[j] += cmf[i][j];
             }
         }
         for (int i = 0; i < factors.size() - 1; i++) {
-            tt.set(factors.size() + 2, i + 2, String.valueOf(colTotals[i]), 1);
-            tt.set(i + 2, factors.size() + 2, String.valueOf(rowTotals[i]), 1);
+            tt.textRight(factors.size() + 2, i + 2, String.valueOf(colTotals[i]));
+            tt.textRight(i + 2, factors.size() + 2, String.valueOf(rowTotals[i]));
         }
-        tt.set(factors.size() + 2, factors.size() + 2, String.valueOf(grandTotal), 1);
-        sb.append(tt.summary());
+        tt.textRight(factors.size() + 2, factors.size() + 2, String.valueOf(grandTotal));
+        sb.append(tt.getDefaultText());
 
         if (percents && completeCases > 0.) {
 
-            tt = TextTable.newEmpty(factors.size() + 3, factors.size() + 3);
-            tt.withSplit();
+            tt = TextTable.empty(factors.size() + 3, factors.size() + 3);
 
-            tt.set(0, 0, "Ac\\Pr", 0);
+            tt.textCenter(0, 0, "Ac\\Pr");
 
             for (int i = 0; i < factors.size() - 1; i++) {
-                tt.set(i + 2, 0, factors.get(i + 1), 1);
-                tt.set(i + 2, 1, "|", 0);
-                tt.set(i + 2, factors.size() + 1, "|", 0);
-                tt.set(0, i + 2, factors.get(i + 1), 1);
-                tt.set(1, i + 2, line(factors.get(i + 1).length()), 1);
-                tt.set(factors.size() + 1, i + 2, line(factors.get(i + 1).length()), 1);
+                tt.textRight(i + 2, 0, factors.get(i + 1));
+                tt.textCenter(i + 2, 1, "|");
+                tt.textCenter(i + 2, factors.size() + 1, "|");
+                tt.textRight(0, i + 2, factors.get(i + 1));
+                tt.textRight(1, i + 2, line(factors.get(i + 1).length()));
+                tt.textRight(factors.size() + 1, i + 2, line(factors.get(i + 1).length()));
             }
-            tt.set(factors.size() + 2, 0, "total", 1);
-            tt.set(0, factors.size() + 2, "total", 1);
+            tt.textRight(factors.size() + 2, 0, "total");
+            tt.textRight(0, factors.size() + 2, "total");
 
-            tt.set(1, 0, line("Ac\\Pr".length()), 0);
-            tt.set(factors.size() + 1, 0, line("Ac\\Pr".length()), 0);
-            tt.set(1, factors.size() + 2, line("Ac\\Pr".length()), 0);
-            tt.set(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()), 0);
+            tt.textCenter(1, 0, line("Ac\\Pr".length()));
+            tt.textCenter(factors.size() + 1, 0, line("Ac\\Pr".length()));
+            tt.textCenter(1, factors.size() + 2, line("Ac\\Pr".length()));
+            tt.textCenter(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()));
 
-            tt.set(0, 1, "|", 0);
-            tt.set(1, 1, "|", 0);
-            tt.set(factors.size() + 1, 1, "|", 0);
-            tt.set(factors.size() + 2, 1, "|", 0);
+            tt.textCenter(0, 1, "|");
+            tt.textCenter(1, 1, "|");
+            tt.textCenter(factors.size() + 1, 1, "|");
+            tt.textCenter(factors.size() + 2, 1, "|");
 
-            tt.set(0, factors.size() + 1, "|", 0);
-            tt.set(1, factors.size() + 1, "|", 0);
-            tt.set(factors.size() + 1, factors.size() + 1, "|", 0);
-            tt.set(factors.size() + 2, factors.size() + 1, "|", 0);
+            tt.textCenter(0, factors.size() + 1, "|");
+            tt.textCenter(1, factors.size() + 1, "|");
+            tt.textCenter(factors.size() + 1, factors.size() + 1, "|");
+            tt.textCenter(factors.size() + 2, factors.size() + 1, "|");
 
             for (int i = 0; i < factors.size() - 1; i++) {
                 for (int j = 0; j < factors.size() - 1; j++) {
-                    tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatShort(cmf[i][j] / completeCases), 1);
+                    tt.textRight(i + 2, j + 2, ((i == j) ? ">" : " ") + Format.floatShort(cmf[i][j] / completeCases));
                 }
             }
             for (int i = 0; i < factors.size() - 1; i++) {
-                tt.set(factors.size() + 2, i + 2, Format.floatShort(colTotals[i] / completeCases), 1);
-                tt.set(i + 2, factors.size() + 2, Format.floatShort(rowTotals[i] / completeCases), 1);
+                tt.textRight(factors.size() + 2, i + 2, Format.floatShort(colTotals[i] / completeCases));
+                tt.textRight(i + 2, factors.size() + 2, Format.floatShort(rowTotals[i] / completeCases));
             }
-            tt.set(factors.size() + 2, factors.size() + 2, Format.floatShort(grandTotal / completeCases), 1);
-            sb.append(tt.summary());
+            tt.textRight(factors.size() + 2, factors.size() + 2, Format.floatShort(grandTotal / completeCases));
+            sb.append(tt.getDefaultText());
 
         }
         sb.append("\n");

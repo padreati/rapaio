@@ -27,13 +27,9 @@
 
 package rapaio.experiment.core.tools;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.printer.*;
 import rapaio.printer.format.*;
-import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -47,7 +43,7 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public final class DTable implements Printable, Serializable {
+public final class DTable implements DefaultPrintable, Serializable {
 
     public static final List<String> NUMERIC_DEFAULT_LABELS = Arrays.asList("?", "less-equals", "greater");
     private static final long serialVersionUID = 4359080329548577980L;
@@ -445,25 +441,25 @@ public final class DTable implements Printable, Serializable {
     public String summary() {
 
         if (totalSummary) {
-            TextTableRenderer tt = TextTableRenderer.empty(rowLevels.size() - start + 2, colLevels.size() - start + 2, 1, 0);
+            TextTable tt = TextTable.empty(rowLevels.size() - start + 2, colLevels.size() - start + 2, 1, 0);
 
             putLevels(tt);
-            tt.set(0, colLevels.size() - start + 1, "total", 1);
-            tt.set(rowLevels.size() - start + 1, 0, "total", 1);
+            tt.textRight(0, colLevels.size() - start + 1, "total");
+            tt.textRight(rowLevels.size() - start + 1, 0, "total");
             putValues(tt);
             double[] rowTotals = rowTotals();
             for (int i = start; i < rowLevels.size(); i++) {
-                tt.set(i - start + 1, colLevels.size() - start + 1, Format.floatFlex(rowTotals[i]), 1);
+                tt.floatFlex(i - start + 1, colLevels.size() - start + 1, rowTotals[i]);
             }
             double[] colTotals = colTotals();
             for (int i = start; i < colLevels.size(); i++) {
-                tt.set(rowLevels.size() - start + 1, i - start + 1, Format.floatFlex(colTotals[i]), 1);
+                tt.floatFlex(rowLevels.size() - start + 1, i - start + 1, colTotals[i]);
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
-            tt.set(rowLevels.size() - start + 1, colLevels.size() - start + 1, Format.floatFlex(total), 1);
+            tt.floatFlex(rowLevels.size() - start + 1, colLevels.size() - start + 1, total);
             return tt.getDefaultText();
         } else {
-            TextTableRenderer tt = TextTableRenderer.empty(rowLevels.size() - start + 1, colLevels.size() - start + 1, 1, 0);
+            TextTable tt = TextTable.empty(rowLevels.size() - start + 1, colLevels.size() - start + 1, 1, 0);
 
             putLevels(tt);
             putValues(tt);
@@ -471,19 +467,19 @@ public final class DTable implements Printable, Serializable {
         }
     }
 
-    private void putLevels(TextTableRenderer tt) {
+    private void putLevels(TextTable tt) {
         for (int i = start; i < rowLevels.size(); i++) {
-            tt.set(i - start + 1, 0, rowLevels.get(i), 1);
+            tt.textRight(i - start + 1, 0, rowLevels.get(i));
         }
         for (int i = start; i < colLevels.size(); i++) {
-            tt.set(0, i - start + 1, colLevels.get(i), 1);
+            tt.textRight(0, i - start + 1, colLevels.get(i));
         }
     }
 
-    private void putValues(TextTableRenderer tt) {
+    private void putValues(TextTable tt) {
         for (int i = start; i < rowLevels.size(); i++) {
             for (int j = start; j < colLevels.size(); j++) {
-                tt.set(i - start + 1, j - start + 1, Format.floatFlex(values[i][j]), 1);
+                tt.floatFlex(i - start + 1, j - start + 1, values[i][j]);
             }
         }
     }

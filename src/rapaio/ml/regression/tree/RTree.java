@@ -28,27 +28,16 @@
 package rapaio.ml.regression.tree;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import rapaio.core.stat.Sum;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.common.VarSelector;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.boost.gbt.GBTRegressionLoss;
-import rapaio.ml.regression.loss.L2RegressionLoss;
-import rapaio.ml.regression.loss.RegressionLoss;
-import rapaio.ml.regression.tree.rtree.RTreeCandidate;
-import rapaio.ml.regression.tree.rtree.RTreeNode;
-import rapaio.ml.regression.tree.rtree.RTreeNominalTest;
-import rapaio.ml.regression.tree.rtree.RTreeNumericTest;
-import rapaio.ml.regression.tree.rtree.RTreePredictor;
-import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
-import rapaio.util.DoublePair;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.ml.common.*;
+import rapaio.ml.common.predicate.*;
+import rapaio.ml.regression.*;
+import rapaio.ml.regression.boost.gbt.*;
+import rapaio.ml.regression.loss.*;
+import rapaio.ml.regression.tree.rtree.*;
+import rapaio.printer.*;
+import rapaio.util.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,14 +47,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Implements a regression decision tree.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegression {
+public class RTree extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
