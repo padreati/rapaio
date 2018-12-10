@@ -189,7 +189,7 @@ public final class VarInt extends AbstractVar {
     }
 
     public static Collector<? super Integer, VarInt, VarInt> collector() {
-        return new Collector<Integer, VarInt, VarInt>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarInt> supplier() {
                 return VarInt::empty;
@@ -390,27 +390,22 @@ public final class VarInt extends AbstractVar {
 
     public VarIntDataAccessor getDataAccessor() {
         return new VarIntDataAccessor() {
-
             @Override
             public int getMissingValue() {
                 return MISSING_VALUE;
             }
-
             @Override
             public int getRowCount() {
                 return rows;
             }
-
             @Override
             public void setRowCount(int rowCount) {
                 rows = rowCount;
             }
-
             @Override
             public int[] getData() {
                 return data;
             }
-
             @Override
             public void setData(int[] values) {
                 data = values;
@@ -432,5 +427,4 @@ public final class VarInt extends AbstractVar {
             data[i] = in.readInt();
         }
     }
-
 }

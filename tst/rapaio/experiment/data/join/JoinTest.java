@@ -36,7 +36,7 @@ public class JoinTest {
 
     @Test
     public void leftJoinTest() {
-        assertEquals("    id   city      age children     id   city      age children \n" +
+        assertEquals("    id   city    age children     id   city    age children \n" +
                         "[0]  a      Iasi  20      1.0 [4]  c      Iasi  40      3.0 \n" +
                         "[1]  a Bucharest  20      1.0 [5]  d Bucharest   ?        ? \n" +
                         "[2]  a      Iasi  30      0.0 [6]  d Constanta   ?        ? \n" +

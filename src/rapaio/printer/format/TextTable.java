@@ -54,6 +54,7 @@ public class TextTable {
     private final int headerRows;
     private final int headerCols;
 
+    private final String[][] center;
     private final String[][] left;
     private final String[][] right;
 
@@ -69,6 +70,7 @@ public class TextTable {
         this.headerRows = headerRows;
         this.headerCols = headerCols;
 
+        center = new String[rows][cols];
         left = new String[rows][cols];
         right = new String[rows][cols];
 
@@ -104,6 +106,10 @@ public class TextTable {
         }
     }
 
+    public void intRow(int r, int c, int row) {
+        textRight(r, c, '[' + String.valueOf(row) + ']');
+    }
+
     public void floatMedium(int r, int c, double x) {
         String text = Format.floatMedium(x);
         if (text.indexOf('.') > -0) {
@@ -119,7 +125,17 @@ public class TextTable {
         if (index >= 0) {
             set(r, c, text, 1, '.');
         } else {
-            set(r, c, text, "");
+            boolean number = true;
+            for (int i = 0; i < text.length(); i++) {
+                if (!Character.isDigit(text.charAt(i))) {
+                    number = false;
+                }
+            }
+            if (number) {
+                set(r, c, text, null);
+            } else {
+                set(r, c, null, text);
+            }
         }
     }
 
@@ -145,18 +161,20 @@ public class TextTable {
         if (anchor == NO_ANCHOR) {
             // no anchor
             if (align < 0) {
+                center[row][col] = null;
                 left[row][col] = value;
                 right[row][col] = null;
                 return;
             }
             if (align > 0) {
+                center[row][col] = null;
                 left[row][col] = null;
                 right[row][col] = value;
                 return;
             }
-            int mid = (int) Math.ceil(value.length() / 2.0);
-            left[row][col] = value.substring(0, mid);
-            right[row][col] = value.substring(mid);
+            center[row][col] = value;
+            left[row][col] = null;
+            right[row][col] = null;
         } else {
             // anchor
             IntArrayList indexes = new IntArrayList();
@@ -187,7 +205,7 @@ public class TextTable {
         if (!computedLayout) {
             computedLayout = true;
 
-            Arrays.fill(finalLen, -1);
+            Arrays.fill(finalLen, 0);
             int[] len_left = Arrays.copyOf(finalLen, cols);
             int[] len_right = Arrays.copyOf(finalLen, cols);
 
@@ -195,6 +213,10 @@ public class TextTable {
 
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
+                    if (left[i][j] == null && right[i][j] == null) {
+                        finalLen[j] = Math.max(finalLen[j], center[i][j].length());
+                        continue;
+                    }
                     if (left[i][j] == null) {
                         finalLen[j] = Math.max(finalLen[j], right[i][j].length());
                         continue;
@@ -215,8 +237,9 @@ public class TextTable {
                     finalLen[i] = len_left[i] + len_right[i];
                 }
                 if (len_left[i] + len_right[i] < finalLen[i]) {
-                    len_left[i] += (finalLen[i] - len_left[i] - len_right[i]) / 2;
-                    len_right[i] += finalLen[i] - len_left[i];
+                    int delta = finalLen[i] - len_left[i] - len_right[i];
+                    len_left[i] += delta / 2;
+                    len_right[i] += delta - (delta / 2);
                 }
             }
 
@@ -224,6 +247,10 @@ public class TextTable {
 
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
+                    if (left[i][j] == null && right[i][j] == null) {
+                        finalText[i][j] = fillCenter(center[i][j], finalLen[j]);
+                        continue;
+                    }
                     if (left[i][j] == null) {
                         finalText[i][j] = fillLeft(right[i][j], finalLen[j]);
                         continue;
@@ -258,6 +285,18 @@ public class TextTable {
             return value;
         }
         return value + spaces(len - sz);
+    }
+
+    /**
+     * Fill the string with spaces to the right until the given length
+     */
+    private String fillCenter(String value, int len) {
+        int sz = value.length();
+        if (sz >= len) {
+            return value;
+        }
+        int delta = len - sz;
+        return spaces(delta / 2) + value + spaces(delta - (delta / 2));
     }
 
     private String spaces(int len) {
@@ -346,7 +385,7 @@ public class TextTable {
         while (true) {
             int newSets = sets + 1;
             int newCurrentLen = currentLen + totoalColLen;
-            int newNonHeaderRows = (int) Math.ceil(((double) nonHeaderRows) / newSets);
+            int newNonHeaderRows = (int) Math.ceil(((double) (rows - headerRows)) / newSets);
             if (newNonHeaderRows > newSets && newCurrentLen <= consoleWidth) {
                 sets = newSets;
                 currentLen = newCurrentLen;
