@@ -27,7 +27,8 @@
 
 package rapaio.data;
 
-import rapaio.data.accessor.VarIntDataAccessor;
+import rapaio.data.accessor.*;
+import rapaio.printer.format.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -379,11 +380,6 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public String toString() {
-        return "VarInt[name:" + name() + ", rowCount:" + rowCount() + "]";
-    }
-
-    @Override
     public VarInt solidCopy() {
         return (VarInt) super.solidCopy();
     }
@@ -394,18 +390,22 @@ public final class VarInt extends AbstractVar {
             public int getMissingValue() {
                 return MISSING_VALUE;
             }
+
             @Override
             public int getRowCount() {
                 return rows;
             }
+
             @Override
             public void setRowCount(int rowCount) {
                 rows = rowCount;
             }
+
             @Override
             public int[] getData() {
                 return data;
             }
+
             @Override
             public void setData(int[] values) {
                 data = values;
@@ -426,5 +426,79 @@ public final class VarInt extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = in.readInt();
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("VarInt [name:\"").append(name()).append("\", rowCount:").append(rowCount());
+        sb.append(", values: ");
+
+        int prefix = 12;
+        if (rowCount() <= prefix + 2) {
+            for (int i = 0; i < rowCount(); i++) {
+                sb.append(getLabel(i));
+                if (i < rowCount() - 1) {
+                    sb.append(", ");
+                }
+            }
+        } else {
+            for (int i = 0; i < prefix; i++) {
+                sb.append(getLabel(i)).append(", ");
+            }
+            sb.append("..., ");
+            sb.append(getLabel(rowCount() - 2)).append(", ").append(getLabel(rowCount() - 1));
+        }
+
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("VarInt [name: \"").append(name()).append("\", rowCount: ").append(rowCount()).append("]\n");
+
+        if (rowCount() > 100) {
+            TextTable tt = TextTable.empty(102, 2, 1, 1);
+            tt.textCenter(0, 0, "row");
+            tt.textCenter(0, 1, "value");
+
+            for (int i = 0; i < 80; i++) {
+                tt.intRow(i + 1, 0, i);
+                tt.textRight(i + 1, 1, getLabel(i));
+            }
+            tt.textRight(80, 0, "...");
+            tt.textRight(80, 1, "...");
+            for (int i = rowCount() - 20; i < rowCount(); i++) {
+                tt.intRow(i + 101 - rowCount(), 0, i);
+                tt.textRight(i + 101 - rowCount(), 1, getLabel(i));
+            }
+            sb.append(tt.getDefaultText());
+        } else {
+            fullTable(sb);
+        }
+        return sb.toString();
+    }
+
+    private void fullTable(StringBuilder sb) {
+        TextTable tt = TextTable.empty(rowCount() + 1, 2, 1, 1);
+        tt.textCenter(0, 0, "row");
+        tt.textCenter(0, 1, "value");
+        for (int i = 0; i < rowCount(); i++) {
+            tt.intRow(i + 1, 0, i);
+            tt.textRight(i + 1, 1, getLabel(i));
+        }
+        sb.append(tt.getDefaultText());
+    }
+
+    @Override
+    public String fullContent() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("VarInt [name: \"").append(name()).append("\", rowCount: ").append(rowCount()).append("]\n");
+        fullTable(sb);
+        return sb.toString();
     }
 }
