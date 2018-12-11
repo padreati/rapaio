@@ -279,7 +279,7 @@ public class VarLong extends AbstractVar {
 
     public static Collector<Long, VarLong, VarLong> collector() {
 
-        return new Collector<>() {
+        return new Collector<Long, VarLong, VarLong>() {
             @Override
             public Supplier<VarLong> supplier() {
                 return VarLong::empty;

@@ -78,8 +78,8 @@
                 <version>3.7.0</version>
                 <configuration>
                     <fork>true</fork>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>
