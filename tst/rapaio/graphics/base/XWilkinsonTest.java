@@ -4,11 +4,35 @@ import org.junit.Test;
 import rapaio.sys.*;
 
 import java.time.LocalTime;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
 public class XWilkinsonTest {
+
+    @Test
+    public void testLocale() {
+
+        XWilkinson.Labels labels1 = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(0.123, 0.96, 5);
+        XWilkinson.Labels labels2 = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(0, 10000000, 5);
+
+        assertEquals("0.15;0.3;0.45;0.6;0.75;0.9",
+                labels1.getList().stream().map(labels1::getFormattedValue).collect(Collectors.joining(";")));
+        assertEquals("0;2,500,000;5,000,000;7,500,000;10,000,000",
+                labels2.getList().stream().map(labels2::getFormattedValue).collect(Collectors.joining(";")));
+
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("ru-RU"));
+
+        assertEquals("0,15;0,3;0,45;0,6;0,75;0,9",
+                labels1.getList().stream().map(labels1::getFormattedValue).collect(Collectors.joining(";")));
+
+        Locale.setDefault(defaultLocale);
+    }
 
     @Test
     public void baseTest() {

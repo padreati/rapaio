@@ -27,11 +27,14 @@
 
 package rapaio.experiment;
 
+import rapaio.core.*;
 import rapaio.data.*;
 import rapaio.datasets.*;
+import rapaio.printer.idea.*;
 import rapaio.sys.*;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static rapaio.graphics.Plotter.*;
 
@@ -42,6 +45,13 @@ public class Sandbox {
 
     public static void main(String[] args) throws IOException {
         Frame iris = Datasets.loadIrisDataset();
-        WS.draw(hist(iris.rvar(0), 0, 10, bins(40), color(10), prob(true)));
+
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("ru-RU"));
+
+        Var x = VarDouble.from(1000, i -> RandomSource.nextDouble() * 1e16);
+        WS.setPrinter(new IdeaPrinter());
+        WS.draw(hist(x, bins(30)));
+        Locale.setDefault(defaultLocale);
     }
 }

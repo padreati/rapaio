@@ -29,8 +29,10 @@ package rapaio.graphics.base;
 
 import rapaio.math.*;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static rapaio.math.MTools.*;
 
@@ -222,7 +224,7 @@ public class XWilkinson {
         }
 
         public String getFormattedValue(double x) {
-            return String.valueOf(round(x, significantDigits(step)));
+            return NumberFormat.getInstance(Locale.getDefault()).format(round(x, significantDigits(step)));
         }
 
         public double getMin() {
