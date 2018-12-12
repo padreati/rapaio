@@ -263,7 +263,18 @@ public class GroupBy implements DefaultPrintable {
             groupUniqueIds.add(groupIndex.get(i).getGroupUniqueIds(new int[groupVarNames.size() + 1]));
             sortedGroupIds.add(i);
         }
-        sortedGroupIds.sort((i1, i2) -> Arrays.compare(groupUniqueIds.get(i1), groupUniqueIds.get(i2)));
+
+        sortedGroupIds.sort((i1, i2) -> {
+            int[] gui1 = groupUniqueIds.get(i1);
+            int[] gui2 = groupUniqueIds.get(i2);
+            for (int i = 0; i < gui1.length; i++) {
+                int comp = Integer.compare(gui1[i], gui2[i]);
+                if (comp != 0) {
+                    return comp;
+                }
+            }
+            return gui1.length - gui2.length;
+        });
     }
 
     public static class IndexNode {

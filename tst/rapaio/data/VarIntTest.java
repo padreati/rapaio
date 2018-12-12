@@ -350,7 +350,7 @@ public class VarIntTest {
 
     @Test
     public void testString() {
-        var x = VarInt.wrap(1, 2, Integer.MIN_VALUE, -10, 0, 100, Integer.MIN_VALUE, 16, 1, 2, 3, 4, 5, 6, 7, 34, 322342, 2424, 24324, 24, 234234, 2423, 4, 234, 23, 4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
+        final VarInt x = VarInt.wrap(1, 2, Integer.MIN_VALUE, -10, 0, 100, Integer.MIN_VALUE, 16, 1, 2, 3, 4, 5, 6, 7, 34, 322342, 2424, 24324, 24, 234234, 2423, 4, 234, 23, 4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
         assertEquals("VarInt [name:\"?\", rowCount:38, values: 1, 2, ?, -10, 0, 100, ?, 16, 1, 2, 3, 4, ..., 34, 23]", x.toString());
 
         WS.getPrinter().withTextWidth(100);
