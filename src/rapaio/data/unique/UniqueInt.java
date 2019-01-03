@@ -32,54 +32,72 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Var;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import rapaio.data.*;
+
+import java.io.Serializable;
 
 /**
  * Unique value feature for integer values.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueInt extends AbstractUnique {
 
-    public static UniqueInt of(Var var) {
-        return new UniqueInt(var);
+    public static UniqueInt of(Var var, boolean sorted) {
+        return new UniqueInt(var, sorted);
     }
 
-    private IntArrayList uniqueValues;
+    private IntArrayList values;
 
-    private UniqueInt(Var var) {
-        uniqueIds = new IntArrayList();
-        uniqueValues = new IntArrayList();
-        uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        int rowCount = var.rowCount();
-
-        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
-        for (int i = 0; i < rowCount; i++) {
+    private UniqueInt(Var var, boolean sorted) {
+        super(sorted);
+        IntOpenHashSet keySet = new IntOpenHashSet();
+        for (int i = 0; i < var.rowCount(); i++) {
             int key = var.getInt(i);
-            if (!uniqueKeys.containsKey(key)) {
-                uniqueIds.add(uniqueKeys.size());
-                uniqueValues.add(key);
-                uniqueKeys.put(key, uniqueKeys.size());
+            if (!keySet.contains(key)) {
+                keySet.add(key);
             }
+        }
+        int[] elements = keySet.toIntArray();
+        if (sorted) {
+            IntArrays.quickSort(elements, new UniqueIntComparator());
+        }
+        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
+        values = new IntArrayList(elements);
+        for (int i = 0; i < elements.length; i++) {
+            uniqueKeys.put(elements[i], i);
+        }
+        rowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < var.rowCount(); i++) {
+            int key = var.getInt(i);
             int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
+            if (!rowLists.containsKey(id)) {
+                rowLists.put(id, new IntArrayList());
             }
-            uniqueRowLists.get(id).add(i);
+            rowLists.get(id).add(i);
         }
         updateIdsByRow(var.rowCount());
     }
 
     @Override
     public int uniqueCount() {
-        return uniqueIds.size();
+        return values.size();
     }
 
     @Override
     public IntList valueSortedIds() {
-        if(valueSortedIds==null) {
-            int[] ids = uniqueIds.toIntArray();
-            IntArrays.quickSort(ids, (i, j) -> Integer.compare(uniqueValues.getInt(i), uniqueValues.getInt(j)));
+        if (valueSortedIds == null) {
+            int[] ids = new int[uniqueCount()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = i;
+            }
+            if (sorted) {
+                valueSortedIds = new IntArrayList(ids);
+            } else {
+                UniqueIntComparator cmp = new UniqueIntComparator();
+                IntArrays.quickSort(ids, (i, j) -> cmp.compare(values.getInt(i), values.getInt(j)));
+            }
             valueSortedIds = new IntArrayList(ids);
         }
         return valueSortedIds;
@@ -87,10 +105,21 @@ public class UniqueInt extends AbstractUnique {
 
     @Override
     public IntList rowList(int id) {
-        return uniqueRowLists.get(id);
+        return rowLists.get(id);
     }
 
     public int uniqueValue(int id) {
-        return uniqueValues.getInt(id);
+        return values.getInt(id);
+    }
+}
+
+@SuppressWarnings("ComparatorMethodParameterNotUsed")
+class UniqueIntComparator implements it.unimi.dsi.fastutil.ints.IntComparator, Serializable {
+
+    private static final long serialVersionUID = 1347615489598406390L;
+
+    @Override
+    public int compare(int v1, int v2) {
+        return (v1 < v2) ? -1 : 1;
     }
 }

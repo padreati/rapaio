@@ -23,7 +23,7 @@ public class UniqueIntTest {
     }
 
     @Test
-    public void testRandom() {
+    public void testRandomUnsorted() {
         final int N = 100;
         int[] values = new int[N];
         for (int i = 0; i < N; i++) {
@@ -32,7 +32,7 @@ public class UniqueIntTest {
         VarDouble x = VarDouble.copy(values);
         Arrays.sort(values);
 
-        UniqueDouble unique = UniqueDouble.of(x);
+        UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();
@@ -53,7 +53,7 @@ public class UniqueIntTest {
     }
 
     @Test
-    public void testDuplicates() {
+    public void testDuplicatesUnsorted() {
         int[] sample = new int[]{3, 1, 7, 5, Integer.MIN_VALUE};
         final int N = 100;
         int[] values = new int[N];
@@ -63,7 +63,7 @@ public class UniqueIntTest {
         VarInt x = VarInt.copy(values);
         IntArrays.quickSort(values, Integer::compare);
 
-        UniqueInt unique = UniqueInt.of(x);
+        UniqueInt unique = UniqueInt.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();

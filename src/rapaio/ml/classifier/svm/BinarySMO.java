@@ -90,7 +90,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
     private boolean oneVsAll = false;
     private int maxRuns = Integer.MAX_VALUE;
     private double C = 1.0; // complexity parameter
-    private double tol = 1e-3; // tolerance of accuracy
+    private double tol = 1e-3; // tolerance of accurac
     private Frame train;
     private Var weights;
     private int targetIndex;

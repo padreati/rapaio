@@ -24,7 +24,7 @@ public class UniqueDoubleTest {
     }
 
     @Test
-    public void testRandom() {
+    public void testRandomUnsorted() {
         final int N = 100;
         double[] values = new double[N];
         for (int i = 0; i < N; i++) {
@@ -33,7 +33,7 @@ public class UniqueDoubleTest {
         VarDouble x = VarDouble.copy(values);
         Arrays.sort(values);
 
-        UniqueDouble unique = UniqueDouble.of(x);
+        UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();
@@ -54,7 +54,7 @@ public class UniqueDoubleTest {
     }
 
     @Test
-    public void testDuplicates() {
+    public void testDuplicatesUnsorted() {
         double[] sample = new double[]{3.4, 1.2, 7.8, 5.6, Double.NaN};
         final int N = 100;
         double[] values = new double[N];
@@ -72,7 +72,7 @@ public class UniqueDoubleTest {
             return cmp;
         });
 
-        UniqueDouble unique = UniqueDouble.of(x);
+        UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();

@@ -116,7 +116,7 @@ public class GroupBy implements DefaultPrintable {
         this.groupByUniqueRows = new ArrayList<>();
         for (String varName : groupVarNames) {
             Var var = df.rvar(varName);
-            groupByUniqueRows.add(Unique.of(var));
+            groupByUniqueRows.add(Unique.of(var, true));
         }
         this.featureVarNames = new ArrayList<>();
         HashSet<String> groupSet = new HashSet<>(groupVarNames);

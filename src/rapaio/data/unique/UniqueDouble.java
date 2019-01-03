@@ -29,66 +29,74 @@ package rapaio.data.unique;
 
 import it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Var;
+import rapaio.data.*;
+
+import java.io.Serializable;
 
 /**
  * Unique value feature for double values.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueDouble extends AbstractUnique {
 
-    public static UniqueDouble of(Var var) {
-        return new UniqueDouble(var);
+    public static UniqueDouble of(Var var, boolean sorted) {
+        return new UniqueDouble(var, sorted);
     }
 
-    private DoubleArrayList uniqueValues;
+    private DoubleArrayList values;
 
-    private UniqueDouble(Var var) {
-        uniqueIds = new IntArrayList();
-        uniqueValues = new DoubleArrayList();
-        uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        int rowCount = var.rowCount();
-
+    private UniqueDouble(Var var, boolean sorted) {
+        super(sorted);
+        DoubleOpenHashSet keySet = new DoubleOpenHashSet();
+        for (int i = 0; i < var.rowCount(); i++) {
+            keySet.add(var.getDouble(i));
+        }
+        double[] elements = keySet.toDoubleArray();
+        if (sorted) {
+            DoubleArrays.quickSort(elements, new UniqueDoubleComparator());
+        }
         Double2IntOpenHashMap uniqueKeys = new Double2IntOpenHashMap();
-        for (int i = 0; i < rowCount; i++) {
+        values = new DoubleArrayList(elements);
+        for (int i = 0; i < elements.length; i++) {
+            uniqueKeys.put(elements[i], i);
+        }
+        rowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < var.rowCount(); i++) {
             double key = var.getDouble(i);
-            if (!uniqueKeys.containsKey(key)) {
-                uniqueIds.add(uniqueKeys.size());
-                uniqueValues.add(key);
-                uniqueKeys.put(key, uniqueKeys.size());
-            }
             int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
+            if (!rowLists.containsKey(id)) {
+                rowLists.put(id, new IntArrayList());
             }
-            uniqueRowLists.get(id).add(i);
+            rowLists.get(id).add(i);
         }
         updateIdsByRow(var.rowCount());
     }
 
     @Override
     public int uniqueCount() {
-        return uniqueIds.size();
+        return values.size();
     }
 
     @Override
     public IntList valueSortedIds() {
-        if(valueSortedIds==null) {
-            int[] ids = uniqueIds.toIntArray();
-            IntArrays.quickSort(ids, (i, j) -> {
-                int cmp = Double.compare(uniqueValues.getDouble(i), uniqueValues.getDouble(j));
-                if(cmp==0) {
-                    return 0;
-                }
-                if (Double.isNaN(uniqueValues.getDouble(i))) return -1;
-                if (Double.isNaN(uniqueValues.getDouble(i))) return 1;
-                return cmp;
-            });
+        if (valueSortedIds == null) {
+            int[] ids = new int[uniqueCount()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = i;
+            }
+            if (sorted) {
+                valueSortedIds = new IntArrayList(ids);
+            } else {
+                UniqueDoubleComparator cmp = new UniqueDoubleComparator();
+                IntArrays.quickSort(ids, (i, j) -> cmp.compare(values.getDouble(i), values.getDouble(j)));
+            }
             valueSortedIds = new IntArrayList(ids);
         }
         return valueSortedIds;
@@ -96,10 +104,26 @@ public class UniqueDouble extends AbstractUnique {
 
     @Override
     public IntList rowList(int id) {
-        return uniqueRowLists.get(id);
+        return rowLists.get(id);
     }
 
     public double uniqueValue(int id) {
-        return uniqueValues.getDouble(id);
+        return values.getDouble(id);
+    }
+}
+
+@SuppressWarnings("ComparatorMethodParameterNotUsed")
+class UniqueDoubleComparator implements it.unimi.dsi.fastutil.doubles.DoubleComparator, Serializable {
+
+    private static final long serialVersionUID = 1347615489598406390L;
+
+    @Override
+    public int compare(double v1, double v2) {
+        boolean nan1 = Double.isNaN(v1);
+        boolean nan2 = Double.isNaN(v2);
+        if (!(nan1 || nan2)) {
+            return (v1 < v2) ? -1 : 1;
+        }
+        return nan1 ? -1 : 1;
     }
 }

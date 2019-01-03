@@ -31,10 +31,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Var;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import rapaio.data.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.HashSet;
 
 /**
  * Unique value feature for label values.
@@ -43,51 +46,55 @@ import java.util.HashMap;
  */
 public class UniqueLabel extends AbstractUnique {
 
-    public static UniqueLabel of(Var var) {
-        return new UniqueLabel(var);
+    public static UniqueLabel of(Var var, boolean sorted) {
+        return new UniqueLabel(var, sorted);
     }
 
-    private ArrayList<String> uniqueValues;
+    private ArrayList<String> values;
 
-    private UniqueLabel(Var var) {
-        uniqueIds = new IntArrayList();
-        uniqueValues = new ArrayList<>();
-        uniqueRowLists = new Int2ObjectOpenHashMap<>();
-        int rowCount = var.rowCount();
-
-        HashMap<String, Integer> uniqueKeys = new HashMap<>();
-        for (int i = 0; i < rowCount; i++) {
-            String key = var.getLabel(i);
-            if (!uniqueKeys.containsKey(key)) {
-                uniqueIds.add(uniqueKeys.size());
-                uniqueValues.add(key);
-                uniqueKeys.put(key, uniqueKeys.size());
+    private UniqueLabel(Var var, boolean sorted) {
+        super(sorted);
+        HashSet<String> keySet = new HashSet<>();
+        for (int i = 0; i < var.rowCount(); i++) {
+            keySet.add(var.getLabel(i));
+        }
+        values = new ArrayList<>(keySet);
+        if(sorted) {
+            values.sort(new UniqueLabelComparator());
+        }
+        Object2IntOpenHashMap<String> uniqueKeys = new Object2IntOpenHashMap<>();
+        for (int i = 0; i < values.size(); i++) {
+            uniqueKeys.put(values.get(i), i);
+        }
+        rowLists = new Int2ObjectOpenHashMap<>();
+        for (int i = 0; i < var.rowCount(); i++) {
+            int id = uniqueKeys.getInt(var.getLabel(i));
+            if (!rowLists.containsKey(id)) {
+                rowLists.put(id, new IntArrayList());
             }
-            int id = uniqueKeys.get(key);
-            if (!uniqueRowLists.containsKey(id)) {
-                uniqueRowLists.put(id, new IntArrayList());
-            }
-            uniqueRowLists.get(id).add(i);
+            rowLists.get(id).add(i);
         }
         updateIdsByRow(var.rowCount());
     }
 
     @Override
     public int uniqueCount() {
-        return uniqueIds.size();
+        return values.size();
     }
 
     @Override
     public IntList valueSortedIds() {
         if (valueSortedIds == null) {
-            int[] ids = uniqueIds.toIntArray();
-            IntArrays.quickSort(ids, (i, j) -> {
-                int cmp = uniqueValues.get(i).compareTo(uniqueValues.get(j));
-                if (cmp == 0) return 0;
-                if ("?".equals(uniqueValues.get(i))) return -1;
-                if ("?".equals(uniqueValues.get(j))) return 1;
-                return cmp;
-            });
+            int[] ids = new int[uniqueCount()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = i;
+            }
+            if (sorted) {
+                valueSortedIds = new IntArrayList(ids);
+            } else {
+                UniqueLabelComparator cmp = new UniqueLabelComparator();
+                IntArrays.quickSort(ids, (i, j) -> cmp.compare(values.get(i), values.get(j)));
+            }
             valueSortedIds = new IntArrayList(ids);
         }
         return valueSortedIds;
@@ -95,10 +102,25 @@ public class UniqueLabel extends AbstractUnique {
 
     @Override
     public IntList rowList(int id) {
-        return uniqueRowLists.get(id);
+        return rowLists.get(id);
     }
 
     public String uniqueValue(int id) {
-        return uniqueValues.get(id);
+        return values.get(id);
+    }
+}
+
+class UniqueLabelComparator implements Comparator<String>, Serializable {
+
+    private static final long serialVersionUID = 1347615489598406390L;
+
+    @Override
+    public int compare(String v1, String v2) {
+        boolean nan1 = "?".equals(v1);
+        boolean nan2 = "?".equals(v2);
+        if (!(nan1 || nan2)) {
+            return (v1.compareTo(v2));
+        }
+        return nan1 ? -1 : 1;
     }
 }

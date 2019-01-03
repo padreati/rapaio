@@ -48,35 +48,45 @@ import rapaio.data.Var;
  * values. The specialized implementations, however, expose more data specific
  * information.
  * <p>
+ * Unique value ids can be in sorted order if desired. This is useful if one
+ * wants to do further operations with the data structure. If one does not want
+ * the unique values to be sorted for speed purposes, than he had this option using
+ * the sorted parameter flag.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public interface Unique {
 
-    static Unique of(Var var) {
+    static Unique of(Var var, boolean sorted) {
         switch (var.type()) {
             case DOUBLE:
-                return ofDouble(var);
+                return ofDouble(var, sorted);
             case NOMINAL:
-                return ofLabel(var);
+                return ofLabel(var, sorted);
             case INT:
             case BINARY:
-                return ofInt(var);
+                return ofInt(var, sorted);
             default:
-                throw new IllegalArgumentException("Cannot build ");
+                throw new IllegalArgumentException("Cannot build unique structure for given type: not implemented.");
         }
     }
 
-    static UniqueDouble ofDouble(Var var) {
-        return UniqueDouble.of(var);
+    static UniqueDouble ofDouble(Var var, boolean sorted) {
+        return UniqueDouble.of(var, sorted);
     }
 
-    static UniqueInt ofInt(Var var) {
-        return UniqueInt.of(var);
+    static UniqueInt ofInt(Var var, boolean sorted) {
+        return UniqueInt.of(var, sorted);
     }
 
-    static UniqueLabel ofLabel(Var var) {
-        return UniqueLabel.of(var);
+    static UniqueLabel ofLabel(Var var, boolean sorted) {
+        return UniqueLabel.of(var, sorted);
     }
+
+    /**
+     * Tells if the unique structure has group ids in sorted order
+     */
+    boolean isSorted();
 
     /**
      * @return total number of unique values, including missing value if found

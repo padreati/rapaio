@@ -37,15 +37,24 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public abstract class AbstractUnique implements Unique {
 
-    protected IntArrayList uniqueIds;
-    protected Int2ObjectOpenHashMap<IntList> uniqueRowLists;
+    protected final boolean sorted;
+    protected Int2ObjectOpenHashMap<IntList> rowLists;
     protected IntArrayList countSortedIds;
     protected IntArrayList valueSortedIds;
     protected int[] idsByRow;
 
+    public AbstractUnique(boolean sorted) {
+        this.sorted = sorted;
+    }
+
+    @Override
+    public boolean isSorted() {
+        return sorted;
+    }
+
     protected void updateIdsByRow(int len) {
         idsByRow = new int[len];
-        for (Int2ObjectOpenHashMap.Entry<IntList> e : uniqueRowLists.int2ObjectEntrySet()) {
+        for (Int2ObjectOpenHashMap.Entry<IntList> e : rowLists.int2ObjectEntrySet()) {
             for (int row : e.getValue()) {
                 idsByRow[row] = e.getIntKey();
             }
@@ -55,14 +64,14 @@ public abstract class AbstractUnique implements Unique {
     @Override
     public IntList countSortedIds() {
         if (countSortedIds == null) {
-            int[] counts = new int[uniqueIds.size()];
-            int[] ids = new int[uniqueIds.size()];
-            for (int i = 0; i < uniqueIds.size(); i++) {
-                counts[i] = uniqueRowLists.get(uniqueIds.getInt(i)).size();
-                ids[i] = uniqueIds.getInt(i);
+            int[] counts = new int[uniqueCount()];
+            int[] ids2 = new int[uniqueCount()];
+            for (int i = 0; i < uniqueCount(); i++) {
+                counts[i] = rowLists.get(i).size();
+                ids2[i] = i;
             }
-            IntArrays.quickSort(ids, (i, j) -> Integer.compare(counts[i], counts[j]));
-            countSortedIds = new IntArrayList(ids);
+            IntArrays.quickSort(ids2, (i, j) -> Integer.compare(counts[i], counts[j]));
+            countSortedIds = new IntArrayList(ids2);
         }
         return countSortedIds;
     }

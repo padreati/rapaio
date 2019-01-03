@@ -21,7 +21,7 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testRandom() {
+    public void testRandomUnsorted() {
         final int N = 100;
         String[] values = new String[N];
         for (int i = 0; i < N; i++) {
@@ -36,7 +36,7 @@ public class UniqueLabelTest {
             return cmp;
         });
 
-        UniqueLabel unique = UniqueLabel.of(x);
+        UniqueLabel unique = UniqueLabel.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();
@@ -57,7 +57,7 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testDuplicates() {
+    public void testDuplicatesUnsorted() {
         String[] sample = new String[]{"3", "1", "7", "5", "?"};
         final int N = 100;
         String[] values = new String[N];
@@ -73,7 +73,7 @@ public class UniqueLabelTest {
             return cmp;
         });
 
-        UniqueInt unique = UniqueInt.of(x);
+        UniqueInt unique = UniqueInt.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
         IntList valueSortedIds = unique.valueSortedIds();
@@ -97,9 +97,9 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testIdsByRow() {
+    public void testIdsByRowUnsorted() {
         VarNominal x = VarNominal.copy("a", "b", "c", "d", "e");
-        Unique unique = Unique.of(x);
+        Unique unique = Unique.of(x, false);
         for (int i = 0; i < x.rowCount(); i++) {
             assertEquals(i, unique.idByRow(i));
         }
