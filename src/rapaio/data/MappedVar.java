@@ -27,6 +27,8 @@
 
 package rapaio.data;
 
+import rapaio.printer.format.*;
+
 import java.util.List;
 
 /**
@@ -224,5 +226,14 @@ public class MappedVar extends AbstractVar {
             return ((AbstractVar) source).stringPrefix();
         }
         return 10;
+    }
+
+    @Override
+    void stringPutValue(TextTable tt, int i, int j, int row) {
+        if (source instanceof AbstractVar) {
+            ((AbstractVar) source).stringPutValue(tt, i, j, row);
+        } else {
+            super.stringPutValue(tt, i, j, row);
+        }
     }
 }

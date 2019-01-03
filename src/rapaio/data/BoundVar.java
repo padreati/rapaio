@@ -27,6 +27,8 @@
 
 package rapaio.data;
 
+import rapaio.printer.format.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -271,5 +273,14 @@ public class BoundVar extends AbstractVar {
             return ((AbstractVar) vars.get(0)).stringPrefix();
         }
         return 10;
+    }
+
+    @Override
+    void stringPutValue(TextTable tt, int i, int j, int row) {
+        if (vars.get(0) instanceof AbstractVar) {
+            ((AbstractVar) vars.get(0)).stringPutValue(tt, i, j, row);
+        } else {
+            super.stringPutValue(tt, i, j, row);
+        }
     }
 }

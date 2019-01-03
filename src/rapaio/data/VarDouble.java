@@ -30,6 +30,7 @@ package rapaio.data;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import rapaio.data.accessor.*;
+import rapaio.printer.format.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -565,5 +566,14 @@ public final class VarDouble extends AbstractVar {
     @Override
     protected int stringPrefix() {
         return 10;
+    }
+
+    @Override
+    void stringPutValue(TextTable tt, int i, int j, int row) {
+        if (isMissing(row)) {
+            tt.textCenter(i, j, "?");
+        } else {
+            tt.floatFlex(i, j, getDouble(row));
+        }
     }
 }
