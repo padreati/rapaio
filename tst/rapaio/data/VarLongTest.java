@@ -100,7 +100,7 @@ public class VarLongTest {
         assertFalse(v.type().isNominal());
 
         assertEquals(0, v.rowCount());
-        assertEquals("VarLong[name:?, rowCount:1]", VarLong.empty(1).toString());
+        assertEquals("VarLong [name:\"?\", rowCount:1, values: ?]", VarLong.empty(1).toString());
 
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Illegal row count: -1");

@@ -370,11 +370,6 @@ public final class VarNominal extends AbstractVar {
         return (VarNominal) super.solidCopy();
     }
 
-    @Override
-    public String toString() {
-        return "VarNominal[name:" + name() + ", rowCount:" + rowCount() + "]";
-    }
-
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(rowCount());
         out.writeInt(dict.size());
@@ -399,5 +394,15 @@ public final class VarNominal extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = in.readInt();
         }
+    }
+
+    @Override
+    protected String stringClassName() {
+        return "VarNominal";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        return 10;
     }
 }

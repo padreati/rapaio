@@ -126,7 +126,7 @@ public class VarDoubleTest {
         assertFalse(v.type().isNominal());
 
         assertEquals(0, v.rowCount());
-        assertEquals("VarDouble[name:?, rowCount:1]", VarDouble.empty(1).toString());
+        assertEquals("VarDouble [name:\"?\", rowCount:1, values: ?]", VarDouble.empty(1).toString());
 
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Illegal row count: -1");

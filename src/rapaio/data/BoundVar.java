@@ -259,4 +259,17 @@ public class BoundVar extends AbstractVar {
     public Var newInstance(int rows) {
         return vars.get(0).newInstance(rows);
     }
+
+    @Override
+    protected String stringClassName() {
+        return "BoundVar(type=" + vars.get(0).type().code() + ")";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        if (vars.get(0) instanceof AbstractVar) {
+            return ((AbstractVar) vars.get(0)).stringPrefix();
+        }
+        return 10;
+    }
 }

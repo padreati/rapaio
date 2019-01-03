@@ -29,7 +29,7 @@ package rapaio.data;
 
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import rapaio.data.accessor.VarDoubleDataAccessor;
+import rapaio.data.accessor.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -506,11 +506,6 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public String toString() {
-        return "VarDouble[name:" + name() + ", rowCount:" + rowCount() + "]";
-    }
-
-    @Override
     public VarDouble solidCopy() {
         VarDouble copy = new VarDouble(0, 0, 0).withName(name());
         copy.data = Arrays.copyOf(data, rows);
@@ -560,5 +555,15 @@ public final class VarDouble extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = in.readDouble();
         }
+    }
+
+    @Override
+    protected String stringClassName() {
+        return "VarDouble";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        return 10;
     }
 }

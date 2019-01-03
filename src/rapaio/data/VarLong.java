@@ -198,7 +198,7 @@ public class VarLong extends AbstractVar {
     /**
      * Builds a long value variable with values provided by a supplier
      *
-     * @param rows number of rows
+     * @param rows     number of rows
      * @param supplier long value supplier
      * @return long value variable
      */
@@ -214,7 +214,7 @@ public class VarLong extends AbstractVar {
      * Builds a long value variable with given values provided by a function
      * of row number
      *
-     * @param rows number of rows
+     * @param rows     number of rows
      * @param supplier supplier function which produces a long value from row number
      * @return long value variable
      */
@@ -230,7 +230,7 @@ public class VarLong extends AbstractVar {
      * Builds a long value variable with given values provided by a function of transformation applied
      * to the values from the source variable
      *
-     * @param source source variable
+     * @param source    source variable
      * @param transform transform function applied to values of the source variable
      * @return long value variable
      */
@@ -388,6 +388,9 @@ public class VarLong extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
+        if (isMissing(row)) {
+            return "?";
+        }
         return String.valueOf(getLong(row));
     }
 
@@ -506,7 +509,12 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public String toString() {
-        return "VarLong[name:" + name() + ", rowCount:" + rowCount() + "]";
+    protected String stringClassName() {
+        return "VarLong";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        return 10;
     }
 }

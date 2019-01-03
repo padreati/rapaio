@@ -305,15 +305,15 @@ public class VarBinaryTest {
     @Test
     public void testPrint() {
         VarBinary var = VarBinary.copy(IntStream.range(0, 200).map(x -> RandomSource.nextInt(3) - 1).toArray()).withName("x");
-        assertEquals("VarBinary [name: \"x\", rowCount: 200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]", var.toString());
+        assertEquals("VarBinary [name:\"x\", rowCount:200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]", var.toString());
 
         WS.getPrinter().withTextWidth(100);
 
-        assertEquals("VarBinary [name: \"x\", rowCount: 200]\n" +
+        assertEquals("VarBinary [name:\"x\", rowCount:200]\n" +
                 " row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value \n" +
                 "  [0]   1    [11]   ?    [22]   ?    [33]   ?    [44]   1    [55]   ?    [66]   ?    [77]   0   [188]   ?   [199]   0   \n" +
                 "  [1]   1    [12]   1    [23]   1    [34]   ?    [45]   0    [56]   0    [67]   0    [78]   0   [189]   ?               \n" +
-                "  [2]   1    [13]   1    [24]   1    [35]   ?    [46]   0    [57]   1    [68]   1     ...  ...  [190]   1   \n" +
+                "  [2]   1    [13]   1    [24]   1    [35]   ?    [46]   0    [57]   1    [68]   1    ...   ...  [190]   1   \n" +
                 "  [3]   1    [14]   0    [25]   1    [36]   0    [47]   ?    [58]   ?    [69]   1   [180]   ?   [191]   ?   \n" +
                 "  [4]   ?    [15]   ?    [26]   0    [37]   ?    [48]   0    [59]   0    [70]   0   [181]   ?   [192]   ?   \n" +
                 "  [5]   1    [16]   1    [27]   0    [38]   1    [49]   0    [60]   0    [71]   0   [182]   ?   [193]   0   \n" +
@@ -323,7 +323,7 @@ public class VarBinaryTest {
                 "  [9]   0    [20]   1    [31]   1    [42]   ?    [53]   1    [64]   1    [75]   ?   [186]   1   [197]   ?   \n" +
                 " [10]   1    [21]   ?    [32]   ?    [43]   0    [54]   ?    [65]   1    [76]   0   [187]   0   [198]   0   \n", var.content());
 
-        assertEquals("VarBinary [name: \"x\", rowCount: 200]\n" +
+        assertEquals("VarBinary [name:\"x\", rowCount:200]\n" +
                 " row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value \n" +
                 "  [0]   1    [20]   1    [40]   0    [60]   0    [80]   ?   [100]   1   [120]   1   [140]   1   [160]   ?   [180]   ?   \n" +
                 "  [1]   1    [21]   ?    [41]   1    [61]   ?    [81]   1   [101]   ?   [121]   0   [141]   0   [161]   0   [181]   ?   \n" +

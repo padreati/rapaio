@@ -64,7 +64,7 @@ public class VarTextTest {
         VarText copy3 = copy2.solidCopy();
         assertTrue(copy2.deepEquals(copy3));
 
-        assertEquals("VarText[rowCount:100]", copy2.toString());
+        assertEquals("VarText [name:\"copy\", rowCount:100, values: omt, hyhvnlwuznrcbaqk, iyedusfwdkelqbxete, ovascfqio, maajxky, rnlrytgkbgic, ahcbrqdsxv, hpfqgtmdypsbzxvf, oeygjbumaa, k, ..., ldif, tciudeieeo]", copy2.toString());
     }
 
     @Test

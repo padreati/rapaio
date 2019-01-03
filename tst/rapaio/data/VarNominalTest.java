@@ -62,7 +62,7 @@ public class VarNominalTest {
         assertEquals(1, v.rowCount());
         assertEquals("?", v.getLabel(0));
 
-        assertEquals("VarNominal[name:?, rowCount:10]", VarNominal.empty(10).toString());
+        assertEquals("VarNominal [name:\"?\", rowCount:10, values: ?, ?, ?, ?, ?, ?, ?, ?, ?, ?]", VarNominal.empty(10).toString());
     }
 
     @Test

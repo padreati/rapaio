@@ -41,7 +41,7 @@ import java.util.Objects;
  *
  * @author Aurelian Tutuianu
  */
-public interface Var extends Serializable, DefaultPrintable {
+public interface Var extends Serializable, Printable {
 
     /**
      * @return name of the variable

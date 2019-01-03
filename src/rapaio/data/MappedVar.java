@@ -27,8 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.*;
-
 import java.util.List;
 
 /**
@@ -213,5 +211,18 @@ public class MappedVar extends AbstractVar {
     @Override
     public String toString() {
         return "MappedVar[type=" + source.type().code() + ", name:" + name() + ", rowCount:" + mapping.size() + ']';
+    }
+
+    @Override
+    protected String stringClassName() {
+        return "MappedVar(type=" + source.type().code() + ")";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        if (source instanceof AbstractVar) {
+            return ((AbstractVar) source).stringPrefix();
+        }
+        return 10;
     }
 }

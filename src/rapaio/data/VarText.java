@@ -216,7 +216,12 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public String toString() {
-        return "VarText[rowCount:" + values.size() + "]";
+    protected String stringClassName() {
+        return "VarText";
+    }
+
+    @Override
+    protected int stringPrefix() {
+        return 10;
     }
 }
