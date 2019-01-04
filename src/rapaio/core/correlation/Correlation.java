@@ -28,13 +28,16 @@
 package rapaio.core.correlation;
 
 import rapaio.ml.clustering.DistanceMatrix;
+import rapaio.printer.*;
 
 import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/17.
  */
-public interface Correlation extends Serializable {
+public interface Correlation extends Serializable, Printable {
 
     DistanceMatrix matrix();
+
+    double singleValue();
 }

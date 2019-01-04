@@ -36,6 +36,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.sys.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,19 +67,29 @@ public class CorrSpearmanTest {
     }
 
     @Test
+    public void testUnequalRowCount() {
+        Var x = VarDouble.from(100, Normal.std()::sampleNext);
+        Var y = VarDouble.from(10, Normal.std()::sampleNext);
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Variables does not have the same size.");
+        CorrSpearman.of(x,y);
+    }
+
+    @Test
     public void testFromWikipedia() {
         CorrSpearman sc = CorrSpearman.of(iq, tvHours);
         // according with wikipedia article rho must be -0.175757575
-        assertEquals(-0.175757575, sc.matrix().get(0,1), 1e-8);
+        assertEquals(-0.175757575, sc.matrix().get(0, 1), 1e-8);
     }
 
     @Test
     public void testSameVector() {
         CorrSpearman same = CorrSpearman.of(iq, iq);
-        assertEquals(1., same.matrix().get(0,1), 1e-10);
+        assertEquals(1., same.matrix().get(0, 1), 1e-10);
 
         same = CorrSpearman.of(tvHours, tvHours);
-        assertEquals(1., same.matrix().get(0,1), 1e-10);
+        assertEquals(1., same.matrix().get(0, 1), 1e-10);
     }
 
     @Test
@@ -130,7 +141,7 @@ public class CorrSpearmanTest {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), m.get(i,j), TOL);
+                        exp.get(i, j), m.get(i, j), TOL);
             }
         }
     }
@@ -147,7 +158,7 @@ public class CorrSpearmanTest {
     @Test
     public void testCollisions() {
         VarDouble x = VarDouble.wrap(1, 2, 3, 3, 3, 3, 4, 5, 6);
-        VarDouble y = VarDouble.from(x, value -> value*value);
+        VarDouble y = VarDouble.from(x, value -> value * value);
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(1.0, cp.singleValue(), TOL);
@@ -161,12 +172,89 @@ public class CorrSpearmanTest {
         Var x3 = VarDouble.seq(99);
 
         assertEquals("> spearman[?, ?] - Spearman's rank correlation coefficient\n" +
-                "0.2875008\n", CorrSpearman.of(x1, x2).summary());
+                "0.2875008\n", CorrSpearman.of(x1, x2).fullContent());
 
         assertEquals("> spearman[[?, ?, ?]] - Spearman's rank correlation coefficient\n" +
-                "         1.?       2.?       3.? \n" +
-                "1.         x 0.2875008 0.0649745 \n" +
-                "2. 0.2875008         x 0.2294869 \n" +
-                "3. 0.0649745 0.2294869         x \n", CorrSpearman.of(x1, x2, x3).summary());
+                "       1.?       2.?       3.?    \n" +
+                "1.? 1         0.2875008 0.0649745 \n" +
+                "2.? 0.2875008 1         0.2294869 \n" +
+                "3.? 0.0649745 0.2294869 1         \n", CorrSpearman.of(x1, x2, x3).summary());
+    }
+
+    @Test
+    public void testManyVars() {
+        int K = 10;
+        Var[] vars = new Var[K];
+        for (int i = 0; i < K; i++) {
+            vars[i] = VarDouble.from(100, Normal.std()::sampleNext).withName("Var_" + (i + 1));
+        }
+
+        WS.getPrinter().withTextWidth(100);
+
+        CorrSpearman cs = CorrSpearman.of(vars);
+        assertEquals("spearman[Var_1, Var_2, Var_3, Var_4, Var_5, Var_6, Var_7, Var_8, Var_9, Var_10] " +
+                "= [[1,0.2875008,-0.1588839,0.0274587,-0.0455086,-0.0454365,-0.0772997," +
+                "-0.0059766,0.110303,-0.0820642],[0.2875008,...],...]", cs.toString());
+        assertEquals("> spearman[[Var_1, Var_2, Var_3, Var_4, Var_5, Var_6, Var_7, Var_8, Var_9, Var_10]] - Spearman's rank correlation coefficient\n" +
+                "           1.Var_1    2.Var_2   \n" +
+                "1.Var_1    1          0.2875008 \n" +
+                "2.Var_2    0.2875008  1         \n" +
+                "3.Var_3   -0.1588839  0.0247105 \n" +
+                "4.Var_4    0.0274587  0.0608101 \n" +
+                "5.Var_5   -0.0455086 -0.0108731 \n" +
+                "6.Var_6   -0.0454365  0.0363396 \n" +
+                "7.Var_7   -0.0772997 -0.0076088 \n" +
+                "8.Var_8   -0.0059766 -0.0181578 \n" +
+                "9.Var_9    0.110303   0.1333933 \n" +
+                "10.Var_10 -0.0820642  0.0953735 \n" +
+                "\n" +
+                "           3.Var_3    4.Var_4   \n" +
+                "1.Var_1   -0.1588839  0.0274587 \n" +
+                "2.Var_2    0.0247105  0.0608101 \n" +
+                "3.Var_3    1          0.0814881 \n" +
+                "4.Var_4    0.0814881  1         \n" +
+                "5.Var_5   -0.0459646  0.1019262 \n" +
+                "6.Var_6   -0.0460366 -0.0236664 \n" +
+                "7.Var_7   -0.1936994  0.009997  \n" +
+                "8.Var_8   -0.0515692  0.050405  \n" +
+                "9.Var_9    0.0290189  0.1585119 \n" +
+                "10.Var_10 -0.0436964 -0.0872727 \n" +
+                "\n" +
+                "           5.Var_5    6.Var_6   \n" +
+                "1.Var_1   -0.0455086 -0.0454365 \n" +
+                "2.Var_2   -0.0108731  0.0363396 \n" +
+                "3.Var_3   -0.0459646 -0.0460366 \n" +
+                "4.Var_4    0.1019262 -0.0236664 \n" +
+                "5.Var_5    1          0.0151215 \n" +
+                "6.Var_6    0.0151215  1         \n" +
+                "7.Var_7   -0.0793399  0.0345515 \n" +
+                "8.Var_8    0.1506391  0.0709031 \n" +
+                "9.Var_9    0.0516172  0.1235044 \n" +
+                "10.Var_10 -0.2266307 -0.0289229 \n" +
+                "\n" +
+                "           7.Var_7    8.Var_8   \n" +
+                "1.Var_1   -0.0772997 -0.0059766 \n" +
+                "2.Var_2   -0.0076088 -0.0181578 \n" +
+                "3.Var_3   -0.1936994 -0.0515692 \n" +
+                "4.Var_4    0.009997   0.050405  \n" +
+                "5.Var_5   -0.0793399  0.1506391 \n" +
+                "6.Var_6    0.0345515  0.0709031 \n" +
+                "7.Var_7    1          0.1090069 \n" +
+                "8.Var_8    0.1090069  1         \n" +
+                "9.Var_9    0.0387279  0.03988   \n" +
+                "10.Var_10  0.0641104 -0.0858206 \n" +
+                "\n" +
+                "           9.Var_9   10.Var_10  \n" +
+                "1.Var_1    0.110303  -0.0820642 \n" +
+                "2.Var_2    0.1333933  0.0953735 \n" +
+                "3.Var_3    0.0290189 -0.0436964 \n" +
+                "4.Var_4    0.1585119 -0.0872727 \n" +
+                "5.Var_5    0.0516172 -0.2266307 \n" +
+                "6.Var_6    0.1235044 -0.0289229 \n" +
+                "7.Var_7    0.0387279  0.0641104 \n" +
+                "8.Var_8    0.03988   -0.0858206 \n" +
+                "9.Var_9    1         -0.129961  \n" +
+                "10.Var_10 -0.129961   1         \n" +
+                "\n", cs.content());
     }
 }

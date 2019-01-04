@@ -24,6 +24,7 @@
 
 package rapaio.core.correlation;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,6 +50,11 @@ public class CorrPearsonTest {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
+    @Before
+    public void setUp() {
+        RandomSource.setSeed(123);
+    }
+
     @Test
     public void testInvalidSingleVar() {
         expectedException.expect(IllegalArgumentException.class);
@@ -73,13 +79,15 @@ public class CorrPearsonTest {
 
     @Test
     public void randomTest() {
-        RandomSource.setSeed(123);
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
 
         CorrPearson cp = CorrPearson.of(x, y);
         assertEquals(0.021769705986371478, cp.singleValue(), TOL);
+        assertEquals("pearson[x, y] = [[1,0.0217697],[0.0217697,1]]", cp.toString());
+        assertEquals("> pearson[x, y] - Pearson product-moment correlation coefficient\n" +
+                "0.0217697\n", cp.content());
     }
 
     @Test
@@ -116,6 +124,13 @@ public class CorrPearsonTest {
                         exp.get(i, j), m.get(i,j), TOL);
             }
         }
+
+        assertEquals("pearson[x, y, z] = [[1,0.8356446,0.7997143],[0.8356446,1,0.9938073],[0.7997143,0.9938073,1]]", cp.toString());
+        assertEquals("> pearson[[x, y, z]] - Pearson product-moment correlation coefficient\n" +
+                "       1.x       2.y       3.z    \n" +
+                "1.x 1         0.8356446 0.7997143 \n" +
+                "2.y 0.8356446 1         0.9938073 \n" +
+                "3.z 0.7997143 0.9938073 1         \n", cp.content());
     }
 
     @Test
@@ -130,13 +145,14 @@ public class CorrPearsonTest {
         VarDouble x = VarDouble.fill(100, 10);
         assertEquals(Double.NaN, CorrPearson.of(x, x).singleValue(), TOL);
 
+        assertEquals("pearson[?, ?] = [[1,?],[?,1]]", CorrPearson.of(x, x).toString());
         assertEquals("> pearson[?, ?] - Pearson product-moment correlation coefficient\n" +
                 "?\n", CorrPearson.of(x, x).summary());
 
         assertEquals("> pearson[[?, ?, ?]] - Pearson product-moment correlation coefficient\n" +
-                "   1.? 2.? 3.? \n" +
-                "1.   x NaN NaN \n" +
-                "2. NaN   x NaN \n" +
-                "3. NaN NaN   x \n", CorrPearson.of(x, x, x).summary());
+                "    1.? 2.? 3.? \n" +
+                "1.?  1  NaN NaN \n" +
+                "2.? NaN  1  NaN \n" +
+                "3.? NaN NaN  1  \n", CorrPearson.of(x, x, x).summary());
     }
 }

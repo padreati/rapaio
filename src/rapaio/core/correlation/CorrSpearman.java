@@ -30,13 +30,9 @@ package rapaio.core.correlation;
 import rapaio.data.*;
 import rapaio.data.filter.var.*;
 import rapaio.ml.clustering.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
-
-import static rapaio.sys.WS.*;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -47,32 +43,23 @@ import static rapaio.sys.WS.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CorrSpearman implements Correlation, DefaultPrintable {
+public class CorrSpearman extends AbstractCorrelation {
 
     private static final long serialVersionUID = -270091303091388587L;
 
     public static CorrSpearman of(Frame df) {
-        return new CorrSpearman(df.varStream().toArray(Var[]::new));
+        return new CorrSpearman(df.varStream().toArray(Var[]::new), df.varNames());
     }
 
     public static CorrSpearman of(Var... vars) {
-        return new CorrSpearman(vars);
+        return new CorrSpearman(vars, Arrays.stream(vars).map(Var::name).toArray(String[]::new));
     }
 
-    private final DistanceMatrix d;
-
-    private CorrSpearman(Var... variables) {
-        if (variables.length == 1) {
-            throw new IllegalArgumentException("Correlation can be computed only between two variables.");
-        }
-        int rowCount = Integer.MAX_VALUE;
-        for (Var var : variables) {
-            rowCount = Math.min(var.rowCount(), rowCount);
-        }
-
+    private CorrSpearman(Var[] vars, String[] names) {
+        super(vars, names);
         Mapping map = Mapping.wrap(IntStream.range(0, rowCount)
                 .filter(row -> {
-                    for (Var var : variables) {
+                    for (Var var : vars) {
                         if (var.isMissing(row))
                             return false;
                     }
@@ -80,14 +67,14 @@ public class CorrSpearman implements Correlation, DefaultPrintable {
                 })
                 .toArray());
 
-        Var[] vars = new Var[variables.length];
+        Var[] variables = new Var[vars.length];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = variables[i].mapRows(map);
+            variables[i] = vars[i].mapRows(map);
         }
-        d = compute(vars);
+        compute(variables);
     }
 
-    private DistanceMatrix compute(Var[] vars) {
+    private void compute(Var[] vars) {
         String[] names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = vars[i].name();
@@ -119,75 +106,21 @@ public class CorrSpearman implements Correlation, DefaultPrintable {
         }
 
         // compute Pearson on ranks
-        return CorrPearson.of(ranks).matrix();
+        DistanceMatrix dp = CorrPearson.of(ranks).matrix();
+        for (int i = 0; i < dp.length(); i++) {
+            for (int j = 0; j < dp.length(); j++) {
+                d.set(i, j, dp.get(i, j));
+            }
+        }
     }
 
     @Override
-    public DistanceMatrix matrix() {
-        return d;
-    }
-
-    public double singleValue() {
-        return d.get(0, 1);
+    protected String corrName() {
+        return "spearman";
     }
 
     @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder();
-        if (d.names().length == 2) {
-            summaryTwo(sb);
-        } else {
-            summaryMore(sb);
-        }
-        return sb.toString();
+    protected String corrDescription() {
+        return "Spearman's rank correlation coefficient";
     }
-
-    private void summaryTwo(StringBuilder sb) {
-        sb.append(String.format("> spearman[%s, %s] - Spearman's rank correlation coefficient\n",
-                d.name(0), d.name(1)));
-        sb.append(Format.floatFlex(d.get(0, 1))).append("\n");
-    }
-
-    private void summaryMore(StringBuilder sb) {
-        sb.append(String.format("> spearman[%s] - Spearman's rank correlation coefficient\n",
-                Arrays.deepToString(d.names())));
-
-        String[][] table = new String[d.names().length + 1][d.names().length + 1];
-        table[0][0] = "";
-        for (int i = 1; i < d.names().length + 1; i++) {
-            table[0][i] = i + ".";
-            table[i][0] = i + "." + d.name(i - 1);
-            for (int j = 1; j < d.names().length + 1; j++) {
-                table[i][j] = Format.floatFlex(d.get(i - 1, j - 1));
-                if (i == j) {
-                    table[i][j] = "x";
-                }
-            }
-        }
-
-        int width = getPrinter().textWidth();
-        int start = 0;
-        int end = start;
-        int[] ws = new int[table[0].length];
-        for (int i = 0; i < table.length; i++) {
-            for (int j = 0; j < table[0].length; j++) {
-                ws[i] = Math.max(ws[i], table[i][j].length());
-            }
-        }
-        while (start < d.names().length + 1) {
-            int w = 0;
-            while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
-                w += ws[end + 1] + 1;
-                end++;
-            }
-            for (int j = 0; j < table.length; j++) {
-                for (int i = start; i <= end; i++) {
-                    sb.append(String.format("%" + ws[i] + "s", table[i][j])).append(" ");
-                }
-                sb.append("\n");
-            }
-            start = end + 1;
-        }
-    }
-
 }
