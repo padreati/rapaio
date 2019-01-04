@@ -88,6 +88,7 @@ public class BernoulliTest {
         assertEquals(0, b90.min(), TOL);
         assertEquals(1, b90.max(), TOL);
         assertEquals(0.9, b90.mean(), TOL);
+        assertEquals(0, b10.mode(), TOL);
         assertEquals(1, b90.mode(), TOL);
 
         assertEquals(0.08999999999999998, b90.var(), TOL);
@@ -102,5 +103,12 @@ public class BernoulliTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Probability parameter must be in closed interval [0,1]");
         Bernoulli.of(12);
+    }
+
+    @Test
+    public void testInvalidProbabilityLow() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Probability parameter must be in closed interval [0,1]");
+        Bernoulli.of(-0.1);
     }
 }

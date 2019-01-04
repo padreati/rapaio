@@ -172,12 +172,8 @@ public class ChiSquare implements Distribution {
                 u = RandomSource.nextDouble();
                 v = RandomSource.nextDouble() * 0.857763884960707;
                 z = v / u;
-                if (z < 0)
-                    continue;
                 zz = z * z;
                 r = 2.5 - zz;
-                if (z < 0.0)
-                    r = r + zz * z / (3.0 * z);
                 if (u < r * 0.3894003915)
                     return (z * z);
                 if (zz > (1.036961043 / u + 1.4))

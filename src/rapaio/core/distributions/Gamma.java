@@ -161,11 +161,11 @@ public class Gamma implements Distribution {
             up *= 2;
             cdf_up = cdf(up);
         }
-        while (low < up) {
+        while (true) {
             double mid = (low + up) / 2;
             double cdf_mid = cdf(mid);
-            double err = Math.abs(cdf_mid - cdf_up);
-            if (err <= 1e-15)
+            double err = Math.abs(up - low);
+            if (err <= 1e-20)
                 return up;
             if (cdf_mid < p) {
                 if (low >= mid)
@@ -177,7 +177,6 @@ public class Gamma implements Distribution {
                 up = mid;
             }
         }
-        return 0;
     }
 
     @Override
@@ -193,17 +192,16 @@ public class Gamma implements Distribution {
     @Override
     public double sampleNext() {
         /***********************************************************************
-         * * Gamma Distribution - Acceptance Rejection combined with *
-         * Acceptance Complement * *
+         * * Gamma Distribution - Acceptance Rejection combined with Acceptance Complement * *
          * ***************************************************************** *
          * FUNCTION: - gds samples a random number from the standard * gamma
          * distribution with parameter a > 0. * Acceptance Rejection gs for a <
          * 1 , * Acceptance Complement gd for a >= 1 . * REFERENCES: - J.H.
-         * Ahrens, U. Dieter (1974): Computer methods * for sampling from gamma,
-         * beta, Poisson and * binomial distributions, Computing 12, 223-246. *
-         * - J.H. Ahrens, U. Dieter (1982): Generating gamma * variates by a
-         * modified rejection technique, * Communications of the ACM 25, 47-54.
-         * * SUBPROGRAMS: - drand(seed) ... (0,1)-Uniform generator with *
+         * Ahrens, U. Dieter (1974): Computer methods for sampling from gamma,
+         * beta, Poisson and binomial distributions, Computing 12, 223-246. *
+         * - J.H. Ahrens, U. Dieter (1982): Generating gamma variates by a
+         * modified rejection technique, Communications of the ACM 25, 47-54.
+         * * SUBPROGRAMS: - drand(seed) ... (0,1)-Uniform generator with
          * unsigned long integer *seed * - NORMAL(seed) ... Normal generator
          * N(0,1). * *
          **********************************************************************/
@@ -242,30 +240,30 @@ public class Gamma implements Distribution {
 
         // Check for invalid input values
 
-        if (a <= 0.0)
-            throw new IllegalArgumentException();
-
-        if (a < 1.0) { // CASE A: Acceptance rejection algorithm gs
-            b = 1.0 + 0.36788794412 * a; // Step 1
+        if (a < 1.0) {
+            // CASE A: Acceptance rejection algorithm gs
+            b = 1.0 + 0.36788794412 * a;
+            // Step 1
             for (; ; ) {
                 p = b * RandomSource.nextDouble();
-                if (p <= 1.0) { // Step 2. Case gds <= 1
+                if (p <= 1.0) {
+                    // Step 2. Case gds <= 1
                     gds = Math.exp(Math.log(p) / a);
                     if (Math.log(RandomSource.nextDouble()) <= -gds)
                         return (gds / beta1);
-                } else { // Step 3. Case gds > 1
+                } else {
+                    // Step 3. Case gds > 1
                     gds = -Math.log((b - p) / a);
                     if (Math.log(RandomSource.nextDouble()) <= ((a - 1.0) * Math.log(gds)))
                         return (gds / beta1);
                 }
             }
-        } else { // CASE B: Acceptance complement algorithm gd (gaussian
-            // distribution, box muller transformation)
-            if (a != aa) { // Step 1. Preparations
-                ss = a - 0.5;
-                s = Math.sqrt(ss);
-                d = 5.656854249 - 12.0 * s;
-            }
+        } else {
+            // CASE B: Acceptance complement algorithm gd (gaussian distribution, box muller transformation)
+            // Step 1. Preparations
+            ss = a - 0.5;
+            s = Math.sqrt(ss);
+            d = 5.656854249 - 12.0 * s;
             // Step 2. Normal deviate
             do {
                 v1 = 2.0 * RandomSource.nextDouble() - 1.0;
@@ -278,11 +276,13 @@ public class Gamma implements Distribution {
             if (t >= 0.0)
                 return (gds / beta1); // Immediate acceptance
 
-            u = RandomSource.nextDouble(); // Step 3. Uniform random number
+            // Step 3. Uniform random number
+            u = RandomSource.nextDouble();
             if (d * u <= t * t * t)
                 return (gds / beta1); // Squeeze acceptance
 
-            if (a != aaa) { // Step 4. Set-up for hat case
+            // Step 4. Set-up for hat case
+            if (a != aaa) {
                 r = 1.0 / a;
                 q0 = ((((((((q9 * r + q8) * r + q7) * r + q6) * r + q5) * r + q4) * r + q3) * r + q2) * r + q1) * r;
                 if (a > 3.686) {

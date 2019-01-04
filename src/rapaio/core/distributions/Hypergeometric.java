@@ -212,12 +212,9 @@ public class Hypergeometric implements Distribution {
         if (Double.isInfinite(x)) {
             return x > 0 ? 1.0 : 0.0;
         }
-        if (x > m)
-            return 1.0;
-        if (x > k)
-            return 1.0;
-        if (x > n)
-            return 1.0;
+        if (x > m) return 1.0;
+        if (x > k) return 1.0;
+        if (x > n) return 1.0;
 
         double cdf = 0;
         for (int i = 0; i <= x; i++) {

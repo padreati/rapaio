@@ -59,6 +59,7 @@ public class GammaTest {
 
     @Before
     public void setUp() throws Exception {
+        RandomSource.setSeed(123);
         df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
         g_low_low = Gamma.of(0.5, 0.5);
         g_one_low = Gamma.of(0.5, 1);
@@ -106,7 +107,7 @@ public class GammaTest {
 
         assertEquals(1.5, Gamma.of(3, 2).mean(), TOL);
         assertEquals(sqrt(2), Gamma.of(3, 2).skewness(), TOL);
-        assertEquals(3/4., Gamma.of(3, 2).var(), TOL);
+        assertEquals(3 / 4., Gamma.of(3, 2).var(), TOL);
         assertEquals(2, Gamma.of(3, 2).kurtosis(), TOL);
     }
 
@@ -159,11 +160,12 @@ public class GammaTest {
 
     @Test
     public void testSampling() {
-        RandomSource.setSeed(1234);
-        Gamma g = Gamma.of(10, 10);
-        Var sample = g.sample(100);
+        Gamma g1 = Gamma.of(10, 10);
+        Var sample1 = g1.sample(100);
+        Assert.assertTrue(KSTestOneSample.from(sample1, g1).pValue() > 0.05);
 
-        KSTestOneSample test = KSTestOneSample.from(sample, g);
-        Assert.assertTrue(test.pValue()>0.05);
+        Gamma g2 = Gamma.of(0.1, 0.1);
+        Var sample2 = g2.sample(100);
+        Assert.assertTrue(KSTestOneSample.from(sample2, g2).pValue() > 0.05);
     }
 }

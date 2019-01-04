@@ -104,6 +104,10 @@ public class ChiSquareTest {
         assertEquals(2.8284271247461903, c.skewness(), TOL);
         assertEquals(12, c.kurtosis(), TOL);
 
+        ChiSquare c1 = ChiSquare.of(1);
+        Var sample1 = c1.sample(1000_000);
+        assertEquals(sample1.rowCount(), sample1.stream().mapToDouble().filter(x -> x > 0).count());
+
         ChiSquare c2 = ChiSquare.of(2);
         Var sample = c2.sample(100);
         long count = sample.stream().mapToDouble().filter(x -> x > 0).count();

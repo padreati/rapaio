@@ -97,7 +97,7 @@ public class Poisson implements Distribution {
             up *= 2;
             cdf_up = cdf(up);
         }
-        while (low < up) {
+        while (true) {
             int mid = Math.floorDiv(low + up, 2);
             if (mid == low)
                 return up;
@@ -108,7 +108,6 @@ public class Poisson implements Distribution {
                 up = mid;
             }
         }
-        return 0;
     }
 
     @Override

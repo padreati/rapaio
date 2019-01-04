@@ -26,7 +26,7 @@ public class QuantilesTest {
         Normal normal = Normal.std();
         VarDouble x = VarDouble.from(1_000_000, normal::sampleNext);
 
-        Quantiles q = Quantiles.of(x, Quantiles.Type.R7, 0, 0.025, 0.5, 0.975, 1);
+        Quantiles q = Quantiles.of(x, 0, 0.025, 0.5, 0.975, 1);
         double[] qq = q.values();
 
         assertEquals(Minimum.of(x).value(), qq[0], TOL);

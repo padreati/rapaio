@@ -69,7 +69,7 @@ public class DUniform implements Distribution {
     @Override
     public double pdf(double x) {
         double rint = Math.rint(x);
-        if (!Double.isNaN(x) && !Double.isInfinite(x) && x == rint) {
+        if (Double.isFinite(x) && x == rint) {
             if (x < a || x > b) {
                 return 0;
             }

@@ -86,6 +86,10 @@ public class DUniformTest {
         assertEquals(1 / 6.0, u.pdf(3), TOL);
         assertEquals(1 / 6.0, u.pdf(5), TOL);
         assertEquals(0.0, u.pdf(6), TOL);
+        assertEquals(0.0, u.pdf(0.5), TOL);
+        assertEquals(0.0, u.pdf(1.5), TOL);
+        assertEquals(0.0, u.pdf(Double.POSITIVE_INFINITY), TOL);
+        assertEquals(0.0, u.pdf(Double.NaN), TOL);
     }
 
     @Test
