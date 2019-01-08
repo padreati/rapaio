@@ -38,15 +38,15 @@ import static rapaio.printer.format.Format.*;
  * are encountered in vector the {@link Double#NaN} value is returned and
  * {@link #isDefined()} will return true. The geometric mean is also undefined
  * when all the available values are negative or missing.
- *
+ * <p>
  * The geometric mean is defined as the n-th square root of the product of
  * all the values from the variable. The algorithm implied below uses
  * the the logarithmic approach. As such the geometric mean is computed as
  * \exp(\frac{1}{n}\sum{log{x_i}}).
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/15.
  */
-public class GeometricMean implements DefaultPrintable {
+public class GeometricMean implements Printable {
 
     public static GeometricMean of(Var var) {
         return new GeometricMean(var);
@@ -96,9 +96,24 @@ public class GeometricMean implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "geometricMean[" + varName + "] = " + floatFlex(value);
+    }
+
+    @Override
+    public String content() {
         return "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +
                 "mean: " + floatFlex(value) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

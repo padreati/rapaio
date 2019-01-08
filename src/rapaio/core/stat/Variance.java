@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.*;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-public class Variance implements DefaultPrintable {
+public class Variance implements Printable {
 
     public static Variance of(Var var) {
         return new Variance(var);
@@ -92,17 +92,6 @@ public class Variance implements DefaultPrintable {
         return biasedValue;
     }
 
-    @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("> variance[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
-                completeCount() + missingCount(), completeCount(), missingCount()));
-        sb.append(String.format("variance: %s\n", floatFlex(value)));
-        sb.append(String.format("sd: %s\n", floatFlex(sdValue())));
-        return sb.toString();
-    }
-
     public double sdValue() {
         return Math.sqrt(value);
     }
@@ -117,5 +106,31 @@ public class Variance implements DefaultPrintable {
 
     public int missingCount() {
         return missingCount;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("variance[%s] = %s, std: %s", varName, floatFlex(value), floatFlex(sdValue()));
+    }
+
+    @Override
+    public String content() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("> variance[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
+                completeCount() + missingCount(), completeCount(), missingCount()));
+        sb.append(String.format("variance: %s\n", floatFlex(value)));
+        sb.append(String.format("sd: %s\n", floatFlex(sdValue())));
+        return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

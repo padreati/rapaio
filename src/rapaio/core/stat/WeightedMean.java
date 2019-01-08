@@ -37,7 +37,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/25/14.
  */
-public final class WeightedMean implements DefaultPrintable {
+public final class WeightedMean implements Printable {
 
     public static WeightedMean of(Var var, Var weights) {
         return new WeightedMean(var, weights);
@@ -132,12 +132,27 @@ public final class WeightedMean implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return String.format("weightedMean[%s] = %s", varName, floatFlex(mean));
+    }
+
+    @Override
+    public String content() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("> weightedMean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
                 completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("weightedMean: %s\n", floatFlex(mean)));
         return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

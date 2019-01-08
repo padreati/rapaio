@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
-public class Kurtosis implements DefaultPrintable {
+public class Kurtosis implements Printable {
 
     public static Kurtosis of(Var x) {
         return new Kurtosis(x);
@@ -73,7 +73,7 @@ public class Kurtosis implements DefaultPrintable {
         m4 /= n;
         complete = (int) n;
 
-        g2 = m4 / (m2*m2) - 3;
+        g2 = m4 / (m2 * m2) - 3;
         b2 = (g2 + 3) * Math.pow(1 - 1 / n, 2) - 3;
         G2 = ((n + 1) * g2 + 6) * (n - 1) / ((n - 2) * n - 3);
     }
@@ -95,11 +95,26 @@ public class Kurtosis implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "kurtosis[" + varName + "] = g2:" + floatFlex(g2) + ", b2:" + floatFlex(b2) + ", G2:" + floatFlex(G2);
+    }
+
+    @Override
+    public String content() {
         return "> kurtosis[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "kurtosis (g2): " + floatFlex(g2) + "\n" +
                 "kurtosis (b2): " + floatFlex(b2) + "\n" +
                 "kurtosis (G2): " + floatFlex(G2) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

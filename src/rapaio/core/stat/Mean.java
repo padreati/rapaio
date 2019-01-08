@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.*;
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-public final class Mean implements DefaultPrintable {
+public final class Mean implements Printable {
 
     public static Mean of(Var var) {
         return new Mean(var);
@@ -98,7 +98,7 @@ public final class Mean implements DefaultPrintable {
         final double mean = sum / completeCount;
         double mean2 = 0.0;
         for (int i = start; i < end; i++) {
-            if(Double.isNaN(values[i])) {
+            if (Double.isNaN(values[i])) {
                 continue;
             }
             mean2 += values[i] - mean;
@@ -116,11 +116,26 @@ public final class Mean implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "mean[" + varName + "] = " + floatFlex(value);
+    }
+
+    @Override
+    public String content() {
         return "> mean[" + varName + "]\n" +
                 "total rows: " + floatFlex(completeCount + missingCount) +
                 " (complete: " + floatFlex(completeCount) +
                 ", missing: " + floatFlex(missingCount) + ")\n" +
                 "mean: " + floatFlex(value) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

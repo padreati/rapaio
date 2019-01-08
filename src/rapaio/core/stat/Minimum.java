@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.*;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-public class Minimum implements DefaultPrintable {
+public class Minimum implements Printable {
 
     public static Minimum of(Var var) {
         return new Minimum(var);
@@ -72,9 +72,24 @@ public class Minimum implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "minimum[" + varName + "] = " + floatFlex(value);
+    }
+
+    @Override
+    public String content() {
         return "> minimum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "minimum: " + floatFlex(value) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

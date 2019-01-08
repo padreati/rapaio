@@ -50,13 +50,13 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Quantiles implements DefaultPrintable {
+public class Quantiles implements Printable {
 
-    public static Quantiles of(Var var, double...percentiles) {
+    public static Quantiles of(Var var, double... percentiles) {
         return new Quantiles(var, Type.R7, percentiles);
     }
 
-    public static Quantiles of(Var var, Quantiles.Type type, double...percentiles) {
+    public static Quantiles of(Var var, Quantiles.Type type, double... percentiles) {
         return new Quantiles(var, type, percentiles);
     }
 
@@ -79,7 +79,7 @@ public class Quantiles implements DefaultPrintable {
         double[] x = new double[var.rowCount()];
         completeCount = 0;
         for (int i = 0; i < x.length; i++) {
-            if(var.isMissing(i))
+            if (var.isMissing(i))
                 continue;
             x[completeCount++] = var.getDouble(i);
         }
@@ -132,14 +132,39 @@ public class Quantiles implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("\n > quantiles[%s] - estimated quantiles\n", varName));
+        sb.append("quantiles[").append(varName).append("] = {");
+        for (int i = 0; i < quantiles.length; i++) {
+            sb.append(floatFlex(percentiles[i])).append(":").append(floatFlex(quantiles[i]));
+            if (i < quantiles.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%s] = %s\n", floatFlex(percentiles[i]), floatFlex(quantiles[i])));
         }
+        sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 
     public enum Type {

@@ -38,7 +38,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Sum implements DefaultPrintable {
+public class Sum implements Printable {
 
     public static Sum of(Var var) {
         return new Sum(var);
@@ -96,11 +96,26 @@ public class Sum implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return String.format("sum[%s] = %s", varName, floatFlex(value));
+    }
+
+    @Override
+    public String content() {
         return String.format("> sum[%s]\n" +
                         "total rows: %d (complete: %d, missing: %d)\n" +
                         "sum: %s\n",
                 varName, completeCount + missingCount, completeCount, missingCount,
                 floatFlex(value));
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

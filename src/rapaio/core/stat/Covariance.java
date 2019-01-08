@@ -37,7 +37,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
-public class Covariance implements DefaultPrintable {
+public class Covariance implements Printable {
 
     public static Covariance of(Var var1, Var var2) {
         return new Covariance(var1, var2);
@@ -61,7 +61,7 @@ public class Covariance implements DefaultPrintable {
         double[] xx = new double[len];
         double[] yy = new double[len];
         for (int i = 0; i < len; i++) {
-            if(x.isMissing(i) || y.isMissing(i)) {
+            if (x.isMissing(i) || y.isMissing(i)) {
                 missingCount++;
                 continue;
             }
@@ -88,10 +88,25 @@ public class Covariance implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "cov [" + varName1 + "," + varName2 + "] = " + floatFlex(value);
+    }
+
+    @Override
+    public String content() {
         return "> cov[" + varName1 + "," + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) +
                 " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "covariance: " + floatFlex(value) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

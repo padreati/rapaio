@@ -39,7 +39,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Maximum implements DefaultPrintable {
+public class Maximum implements Printable {
 
     public static Maximum of(Var var) {
         return new Maximum(var);
@@ -69,9 +69,24 @@ public class Maximum implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "maximum[" + varName + "] = " + floatFlex(value);
+    }
+
+    @Override
+    public String content() {
         return "> maximum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "maximum: " + floatFlex(value) + "\n";
+    }
+
+    @Override
+    public String summary() {
+        return content();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
     }
 }

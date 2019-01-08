@@ -41,7 +41,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
  */
-public class Skewness implements DefaultPrintable {
+public class Skewness implements Printable {
 
     public static Skewness of(Var x) {
         return new Skewness(x);
@@ -97,11 +97,26 @@ public class Skewness implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return "skewness[" + varName + "] = g1: " + floatFlex(g1) + ", b1: " + floatFlex(b1) + ", G1: " + floatFlex(G1);
+    }
+
+    @Override
+    public String content() {
         return "> skewness[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "skewness (g1): " + floatFlex(g1) + "\n" +
                 "skewness (b1): " + floatFlex(b1) + "\n" +
                 "skewness (G1): " + floatFlex(G1) + "\n";
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }
