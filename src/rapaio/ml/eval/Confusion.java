@@ -204,7 +204,7 @@ public class Confusion implements DefaultPrintable {
             tt.textRight(i + 2, factors.size() + 2, String.valueOf(rowTotals[i]));
         }
         tt.textRight(factors.size() + 2, factors.size() + 2, String.valueOf(grandTotal));
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getRawText());
 
         if (percents && completeCases > 0.) {
 
@@ -248,7 +248,7 @@ public class Confusion implements DefaultPrintable {
                 tt.textRight(i + 2, factors.size() + 2, Format.floatShort(rowTotals[i] / completeCases));
             }
             tt.textRight(factors.size() + 2, factors.size() + 2, Format.floatShort(grandTotal / completeCases));
-            sb.append(tt.getDefaultText());
+            sb.append(tt.getRawText());
 
         }
         sb.append("\n");

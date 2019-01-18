@@ -31,6 +31,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
+import rapaio.printer.format.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
@@ -78,8 +79,22 @@ public class VStandardize implements VFilter {
             return var;
         for (int i = 0; i < var.rowCount(); i++) {
             double x = var.getDouble(i);
-            var.setDouble(i, (x-mean)/sd);
+            var.setDouble(i, (x - mean) / sd);
         }
         return var;
+    }
+
+    @Override
+    public String content() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("VStandardize(mean=");
+        sb.append(Format.floatFlex(mean)).append(", sd:");
+        sb.append(Format.floatFlex(sd)).append(")");
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return content();
     }
 }

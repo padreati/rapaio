@@ -49,7 +49,7 @@ import java.util.stream.DoubleStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class DVector implements DefaultPrintable, Serializable {
+public class DVector implements Printable, Serializable {
 
     /**
      * Builds a distribution vector with given levels
@@ -343,20 +343,10 @@ public class DVector implements DefaultPrintable, Serializable {
     }
 
     public DoubleStream streamValues() {
-        if(isFirstUsed()) {
+        if (isFirstUsed()) {
             return Arrays.stream(values);
         }
         return Arrays.stream(values).skip(1);
-    }
-
-    @Override
-    public String toString() {
-        return "DVector{" +
-                "levels=[" + String.join(",", levels) +
-                "], firstUsed=" + useFirst +
-                ", values=" + Arrays.toString(values) +
-                ", total=" + total +
-                '}';
     }
 
     public boolean equalsFull(DVector o) {
@@ -379,7 +369,13 @@ public class DVector implements DefaultPrintable, Serializable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return String.format("DVector{levels=[%s], firstUsed=%b, values=%s, total=%f}",
+                String.join(",", levels), useFirst, Arrays.toString(values), total);
+    }
+
+    @Override
+    public String content() {
         TextTable tt = TextTable.empty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
             tt.textRight(0, i, levels.get(i));
@@ -387,5 +383,15 @@ public class DVector implements DefaultPrintable, Serializable {
             tt.floatFlex(2, i, values[i]);
         }
         return tt.getDefaultText();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

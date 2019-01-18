@@ -58,4 +58,14 @@ public class VApplyInt implements VFilter {
         var.stream().forEach(s -> s.setInt(f.apply(s.getInt())));
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VApplyInt";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

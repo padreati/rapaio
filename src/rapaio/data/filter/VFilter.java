@@ -56,7 +56,7 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-public interface VFilter extends Serializable, DefaultPrintable {
+public interface VFilter extends Serializable, Printable {
 
     /**
      * Method for fitting eventual parameter values from given data
@@ -89,7 +89,12 @@ public interface VFilter extends Serializable, DefaultPrintable {
     }
 
     @Override
+    default String fullContent() {
+        return content();
+    }
+
+    @Override
     default String summary() {
-        throw new IllegalStateException("Not implemented.");
+        return content();
     }
 }

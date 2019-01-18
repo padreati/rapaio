@@ -59,4 +59,14 @@ public class VShuffle implements VFilter {
         IntArrays.shuffle(mapping, RandomSource.getRandom());
         return var.mapRows(Mapping.wrap(mapping));
     }
+
+    @Override
+    public String content() {
+        return "VShuffle";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

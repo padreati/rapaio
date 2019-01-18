@@ -48,4 +48,16 @@ public class VCumSum implements VFilter {
         }
         return var;
     }
+
+
+    @Override
+    public String content() {
+        return "VCumSum";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
+
 }

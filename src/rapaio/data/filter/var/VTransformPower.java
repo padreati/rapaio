@@ -30,6 +30,7 @@ package rapaio.data.filter.var;
 import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
+import rapaio.printer.format.*;
 
 /**
  * Filter to create monotonic power transformations
@@ -74,4 +75,15 @@ public class VTransformPower implements VFilter {
         }
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VTransformPower(lambda=" + Format.floatFlex(lambda) + ")";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
+
 }

@@ -36,7 +36,7 @@ import java.io.Serializable;
  *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface KFunc extends DefaultPrintable, Serializable {
+public interface KFunc extends Printable, Serializable {
 
     /**
      * pdf of the kernel
@@ -64,4 +64,14 @@ public interface KFunc extends DefaultPrintable, Serializable {
      * @return maximum value where is an influence
      */
     double maxValue(double x, double bandwidth);
+
+    @Override
+    default String fullContent() {
+        return content();
+    }
+
+    @Override
+    default String summary() {
+        return content();
+    }
 }

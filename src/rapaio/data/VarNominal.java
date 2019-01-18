@@ -27,8 +27,8 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ShortMap;
+import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,24 +45,22 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Categorical variable type. The nominal variable type is represented as a string label and/or as an integer 
- * index value, assigned to each string label.
- *
- * Nominal var contains values for categorical observations where order of labels is not important.
+ * Categorical variable type. The nominal variable type is represented as a string label and/or as an short
+ * index value, assigned to each string label. Nominal variable contains values for categorical observations
+ * where order of labels is not important.
  * <p>
  * The domain of the definition is called levels and is given at construction time or can be changed latter.
- * <p>
  * This type of variable accepts two value representation: as labels and as indexes.
  * <p>
- * Label representation is the natural representation since in experiments
- * the nominal vectors are given as string values.
+ * Label representation is the natural representation since in experiments the nominal vectors are given as
+ * string values.
  * <p>
- * The index representation is learn based on the term levels and is used often for performance
- * reasons instead of label representation, where the actual label value does not matter.
+ * The index representation is based on the term levels and is used often for performance reasons instead of label
+ * representation, where the actual label value does not matter. Even if index values is a short number the
+ * order of the indexes for nominal variables is irrelevant.
  * <p>
- * Even if index values is an integer number the order of the indexes for
- * nominal variables is irrelevant.
- * 
+ * Additionally the nominal variable is limited to 32767 levels, including missing label index.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public final class VarNominal extends AbstractVar {
@@ -102,9 +100,9 @@ public final class VarNominal extends AbstractVar {
             if (used.contains(next)) continue;
             used.add(next);
             nominal.dict.add(next);
-            nominal.reverse.put(next, nominal.reverse.size());
+            nominal.reverse.put(next, (short) nominal.reverse.size());
         }
-        nominal.data = new int[rows];
+        nominal.data = new short[rows];
         nominal.rows = rows;
         return nominal;
     }
@@ -137,18 +135,18 @@ public final class VarNominal extends AbstractVar {
 
     private int rows;
     private ArrayList<String> dict;
-    private int[] data;
-    private Object2IntMap<String> reverse;
+    private short[] data;
+    private Object2ShortMap<String> reverse;
 
     private VarNominal() {
-        this.reverse = new Object2IntOpenHashMap<>();
-        this.reverse.put("?", 0);
+        this.reverse = new Object2ShortOpenHashMap<>();
+        this.reverse.put("?", (short) 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
-        data = new int[0];
+        data = new short[0];
         rows = 0;
     }
-    
+
     public static Collector<String, VarNominal, VarNominal> collector() {
 
         return new Collector<String, VarNominal, VarNominal>() {
@@ -233,6 +231,9 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
+        if (value > 128) {
+            throw new IllegalArgumentException("Invalid value for nominal index.");
+        }
         data[row] = (short) value;
     }
 
@@ -268,11 +269,14 @@ public final class VarNominal extends AbstractVar {
             return;
         }
         if (!reverse.containsKey(value)) {
+            if (dict.size() == 128) {
+                throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size.");
+            }
             dict.add(value);
-            reverse.put(value, reverse.size());
-            data[row] = reverse.size() - 1;
+            reverse.put(value, (short) reverse.size());
+            data[row] = (short) (reverse.size() - 1);
         } else {
-            data[row] = reverse.getInt(value);
+            data[row] = reverse.getShort(value);
         }
     }
 
@@ -280,10 +284,13 @@ public final class VarNominal extends AbstractVar {
     public void addLabel(String label) {
         grow(rows + 1);
         if (!reverse.containsKey(label)) {
+            if (dict.size() == Short.MAX_VALUE - 1) {
+                throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size.");
+            }
             dict.add(label);
-            reverse.put(label, reverse.size());
+            reverse.put(label, (short) reverse.size());
         }
-        data[rows++] = reverse.getInt(label);
+        data[rows++] = reverse.getShort(label);
     }
 
     @Override
@@ -306,19 +313,19 @@ public final class VarNominal extends AbstractVar {
         }
 
         this.dict = new ArrayList<>();
-        this.reverse = new Object2IntOpenHashMap<>(dict.length);
+        this.reverse = new Object2ShortOpenHashMap<>(dict.length);
         this.dict.add("?");
-        this.reverse.put("?", 0);
+        this.reverse.put("?", (short) 0);
 
-        int[] pos = new int[oldDict.size()];
+        short[] pos = new short[oldDict.size()];
         for (int i = 0; i < dict.length; i++) {
             String term = dict[i];
             if (!reverse.containsKey(term)) {
                 this.dict.add(term);
-                this.reverse.put(term, this.reverse.size());
+                this.reverse.put(term, (short) this.reverse.size());
             }
             if (i < oldDict.size())
-                pos[i] = this.reverse.getInt(term);
+                pos[i] = this.reverse.getShort(term);
         }
 
         for (int i = 0; i < rows; i++) {
@@ -377,22 +384,22 @@ public final class VarNominal extends AbstractVar {
             out.writeUTF(factor);
         }
         for (int i = 0; i < rowCount(); i++) {
-            out.writeInt(data[i]);
+            out.writeShort(data[i]);
         }
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         rows = in.readInt();
         dict = new ArrayList<>();
-        reverse = new Object2IntOpenHashMap<>();
+        reverse = new Object2ShortOpenHashMap<>();
         int len = in.readInt();
         for (int i = 0; i < len; i++) {
             dict.add(in.readUTF());
-            reverse.put(dict.get(i), i);
+            reverse.put(dict.get(i), (short) i);
         }
-        data = new int[rows];
+        data = new short[rows];
         for (int i = 0; i < rows; i++) {
-            data[i] = in.readInt();
+            data[i] = in.readShort();
         }
     }
 

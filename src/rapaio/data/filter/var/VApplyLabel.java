@@ -58,4 +58,14 @@ public class VApplyLabel implements VFilter {
         var.stream().forEach(s -> s.setLabel(f.apply(s.getLabel())));
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VApplyLabel";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

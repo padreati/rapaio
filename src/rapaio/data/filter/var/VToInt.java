@@ -168,4 +168,13 @@ public class VToInt implements VFilter {
         }
     }
 
+    @Override
+    public String content() {
+        return "VToInt";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

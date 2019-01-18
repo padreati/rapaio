@@ -90,6 +90,10 @@ public class WS {
         printer.print(String.format(message, args));
     }
 
+    public static void draw(Figure figure, int w, int h) {
+        printer.draw(figure, w, h);
+    }
+
     public static void draw(Figure figure) {
         printer.draw(figure);
     }

@@ -64,4 +64,14 @@ public class VRefSort implements VFilter {
         IntArrays.quickSort(rows, aggregateComparator == null ? var.refComparator() : aggregateComparator);
         return var.mapRows(Mapping.wrap(IntArrayList.wrap(rows)));
     }
+
+    @Override
+    public String content() {
+        return "VRefSort";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

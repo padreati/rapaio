@@ -29,6 +29,7 @@ package rapaio.data.filter.var;
 
 import rapaio.data.Var;
 import rapaio.data.filter.VFilter;
+import rapaio.printer.format.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
@@ -71,5 +72,15 @@ public class VTransformBoxCox implements VFilter {
                 var.setDouble(i, (Math.pow(var.getDouble(i) + shift, lambda) - 1) / lambda);
             }
         return var;
+    }
+
+    @Override
+    public String content() {
+        return "VTransformBoxCox(lambda=" + Format.floatFlex(lambda) + ", shift:" + Format.floatFlex(shift) + ")";
+    }
+
+    @Override
+    public String toString() {
+        return content();
     }
 }

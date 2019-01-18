@@ -60,4 +60,14 @@ public class VApply implements VFilter {
         var.stream().forEach(consumer);
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VApply";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

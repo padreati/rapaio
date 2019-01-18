@@ -110,6 +110,10 @@ public class UniqueDouble extends AbstractUnique {
     public double uniqueValue(int id) {
         return values.getDouble(id);
     }
+
+    public DoubleArrayList getValues() {
+        return values;
+    }
 }
 
 @SuppressWarnings("ComparatorMethodParameterNotUsed")

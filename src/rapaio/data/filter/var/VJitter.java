@@ -77,4 +77,14 @@ public class VJitter implements VFilter {
         }
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VJitter(d=" + d.name() + ")";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

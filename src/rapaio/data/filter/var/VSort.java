@@ -54,4 +54,14 @@ public class VSort implements VFilter {
     public Var apply(Var var) {
         return new VRefSort(var.refComparator(asc)).fapply(var);
     }
+
+    @Override
+    public String content() {
+        return "VSort";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

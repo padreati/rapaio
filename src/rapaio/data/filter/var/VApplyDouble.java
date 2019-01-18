@@ -58,4 +58,14 @@ public final class VApplyDouble implements VFilter {
         var.stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
         return var;
     }
+
+    @Override
+    public String content() {
+        return "VApplyDouble";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
 }

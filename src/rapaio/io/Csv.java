@@ -71,7 +71,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>(Arrays.asList("?", "", " ", "na", "N/A", "NaN"));
-    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL};
+    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;

@@ -27,11 +27,7 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Replaces specified columns in ColRange with numeric one hot
+ * Replaces specified columns in VRange with numeric one hot
  * encodings. If the specified columns are numeric already, then these
  * columns will not be processed.
  * <p>
@@ -128,7 +124,7 @@ public class FOneHotEncoding extends AbstractFF {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (String token : dict) {
-                    Var v = VarDouble.fill(df.rowCount()).withName(varName + "." + token);
+                    Var v = VarBinary.fill(df.rowCount(), 0).withName(varName + "." + token);
                     oneHotVars.add(v);
                     index.put(token, v);
                 }
@@ -136,7 +132,7 @@ public class FOneHotEncoding extends AbstractFF {
                 for (int i = 0; i < df.rowCount(); i++) {
                     String level = df.getLabel(i, varName);
                     if (index.containsKey(level)) {
-                        index.get(level).setDouble(i, 1.0);
+                        index.get(level).setInt(i, 1);
                     }
                 }
                 vars.addAll(oneHotVars);

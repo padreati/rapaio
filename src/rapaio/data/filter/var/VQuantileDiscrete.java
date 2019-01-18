@@ -34,6 +34,7 @@ import rapaio.printer.format.*;
 import rapaio.util.func.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class VQuantileDiscrete implements VFilter {
 
     @Override
     public void fit(Var var) {
-        if(!var.type().isNumeric()) {
+        if (!var.type().isNumeric()) {
             return;
         }
         qv = Quantiles.of(var, qp).values();
@@ -105,7 +106,7 @@ public class VQuantileDiscrete implements VFilter {
 
     @Override
     public Var apply(Var var) {
-        if(!var.type().isNumeric()) {
+        if (!var.type().isNumeric()) {
             return var;
         }
         VarNominal result = VarNominal.empty(0, dict).withName(var.name());
@@ -121,5 +122,15 @@ public class VQuantileDiscrete implements VFilter {
             }
         }
         return result;
+    }
+
+    @Override
+    public String content() {
+        return "VQuantileDiscrete(q=[" + String.join(",", Arrays.stream(qp).mapToObj(Format::floatFlex).toArray(String[]::new)) + "])";
+    }
+
+    @Override
+    public String toString() {
+        return content();
     }
 }

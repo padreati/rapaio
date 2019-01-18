@@ -156,7 +156,7 @@ public class ROC implements DefaultPrintable, Serializable {
                 double accValue = (tp + n - fp) / (0. + n + p);
                 data.setDouble(pos, threshold, prev);
                 data.setDouble(pos, fpr, fp / (1. * n));
-                data.setDouble(pos, tpr, tp / (1. * p));
+                data.setDouble(pos, tpr, p>0 ? tp / (1. * p) : 0);
                 data.setDouble(pos, acc, accValue);
                 prevfp = fp;
                 prevtp = tp;

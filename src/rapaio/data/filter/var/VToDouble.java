@@ -197,5 +197,16 @@ public class VToDouble implements VFilter {
             return VarDouble.wrap(values).withName(var.name());
         }
     }
+
+    @Override
+    public String content() {
+        return "VToDouble";
+    }
+
+    @Override
+    public String toString() {
+        return content();
+    }
+
 }
 

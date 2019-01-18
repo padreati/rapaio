@@ -150,7 +150,7 @@ public class LinearRPrediction extends RPrediction {
                     tt.textLeft(j + 1, 0, lm.inputName(j));
                     tt.floatFlex(j + 1, 1, coeff.get(j));
                 }
-                sb.append(tt.getDefaultText());
+                sb.append(tt.getRawText());
             } else {
                 VarDouble res = residuals.get(targetName);
 
@@ -186,7 +186,7 @@ public class LinearRPrediction extends RPrediction {
                     tt.pValue(j + 1, 4, beta_p_value.get(j, i));
                     tt.textLeft(j + 1, 5, beta_significance[j][i]);
                 }
-                sb.append(tt.getDefaultText());
+                sb.append(tt.getRawText());
                 sb.append("--------\n");
                 sb.append("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n");
 

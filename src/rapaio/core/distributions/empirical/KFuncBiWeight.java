@@ -52,7 +52,12 @@ public class KFuncBiWeight implements KFunc {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return content();
+    }
+
+    @Override
+    public String content() {
         return "KFuncBiWeight";
     }
 }
