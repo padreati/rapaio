@@ -97,14 +97,11 @@ public class MappedFrameTest {
                 .mapRows(Mapping.range(0, 4))
                 .mapVars("x,y");
 
-        df1.printLines();
-
         Frame b = df1.mapRows(Mapping.range(0, 4)).mapVars("z");
         Frame c = df1.mapRows(Mapping.range(4, 10)).mapVars("x,y");
         Frame d = df1.mapRows(Mapping.range(4, 10)).mapVars("z");
 
         Frame df2 = a.bindVars(b).bindRows(c.bindVars(d));
-        df2.printLines();
 
         assertEquals(df1.rowCount(), df2.rowCount());
         assertEquals(df1.varCount(), df2.varCount());
@@ -112,7 +109,6 @@ public class MappedFrameTest {
         assertTrue(df1.deepEquals(df2));
 
         df2 = df2.solidCopy();
-        df2.printLines();
 
         assertEquals(df1.rowCount(), df2.rowCount());
         assertEquals(df1.varCount(), df2.varCount());
@@ -126,13 +122,11 @@ public class MappedFrameTest {
         }
 
         df2 = a.bindRows(c).bindVars(b.bindRows(d));
-        df2.printLines();
 
         assertTrue(df1.deepEquals(df2));
 
         df2 = MappedFrame.byRow(df1, Mapping.range(0, 10)).mapVars("x");
         df2 = df2.bindVars(y, z);
-        df2.printLines();
 
         assertTrue(df1.deepEquals(df2));
 
@@ -141,7 +135,6 @@ public class MappedFrameTest {
                 .mapVars("x,z")
                 .mapRows(1, 3)
                 .mapVars("z");
-        df3.printLines();
 
         assertEquals(1, df3.varCount());
         assertSame(df3.rvar(0).type(), VType.DOUBLE);
@@ -240,8 +233,6 @@ public class MappedFrameTest {
         map.setLong(1, "d", 20);
         map.setInt(0, 4, 1);
         map.setInt(1, "e", 0);
-
-        map.printLines();
 
         assertEquals(10, map.getDouble(0, 0), TOL);
         assertEquals(20, map.getDouble(1, "a"), TOL);

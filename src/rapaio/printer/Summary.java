@@ -31,7 +31,6 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.printer.format.*;
 import rapaio.printer.standard.*;
-import rapaio.sys.*;
 
 import static rapaio.sys.WS.*;
 
@@ -239,80 +238,6 @@ public class Summary {
         }
 
         return sb.toString();
-    }
-
-    public static void printNames(Frame df) {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("\n > names(frame)\n");
-        for (int i = 0; i < df.varCount(); i++) {
-            buffer.append(df.varNames()[i]).append("\n");
-        }
-        println(buffer.toString());
-    }
-
-    @Deprecated
-    public static void lines(boolean merge, Var v) {
-        head(merge, v.rowCount(), new Var[]{v}, new String[]{""});
-    }
-
-    @Deprecated
-    public static void head(boolean merge, int lines, Var v) {
-        head(merge, lines, new Var[]{v}, new String[]{""});
-    }
-
-    @Deprecated
-    public static void lines(boolean merge, Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        String[] names = df.varNames();
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.rvar(i);
-        }
-        head(merge, df.rowCount(), vars, names);
-    }
-
-    public static void head(boolean merge, int lines, Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        String[] names = df.varNames();
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.rvar(i);
-        }
-        head(merge, Math.min(lines, df.rowCount()), vars, names);
-    }
-
-    public static void head(boolean merge, int lines, Var[] vars, String[] names) {
-        WS.println(headString(merge, lines, vars, names));
-    }
-
-    public static String headString(Frame df) {
-        return headString(true, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
-    }
-
-    public static String headString(boolean merge, Frame df) {
-        return headString(merge, df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
-    }
-
-    public static String headString(int lines, Var[] vars, String[] names) {
-        return headString(false, lines, vars, names);
-    }
-
-    public static String headString(boolean merge, int lines, Var[] vars, String[] names) {
-        if (lines == -1) {
-            lines = vars[0].rowCount();
-        }
-
-        TextTable tt = TextTable.empty(lines + 1, vars.length + 1, 1, 1);
-        for (int i = 0; i < vars.length; i++) {
-            tt.textCenter(0, i + 1, names[i]);
-        }
-        for (int i = 0; i < lines; i++) {
-            tt.textRight(i + 1, 0, "[" + i + "]");
-        }
-        for (int i = 0; i < lines; i++) {
-            for (int j = 0; j < vars.length; j++) {
-                tt.textRight(i + 1, j + 1, vars[j].getLabel(i));
-            }
-        }
-        return tt.getDefaultText();
     }
 
     public static String getHorizontalSummary5(Var var) {

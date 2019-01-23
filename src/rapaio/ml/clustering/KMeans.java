@@ -406,7 +406,8 @@ public class KMeans implements Printable, DefaultPrintable {
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(Summary.headString(false, summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false)))));
+            Frame sorted = summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false)));
+            sb.append(sorted.fullContent());
         }
 
         return sb.toString();

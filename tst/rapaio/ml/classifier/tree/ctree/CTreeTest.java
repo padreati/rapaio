@@ -25,21 +25,17 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.VType;
-import rapaio.data.filter.frame.FRetainTypes;
-import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeCandidate;
-import rapaio.ml.classifier.tree.CTreeNode;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.printer.Summary;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.datasets.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.classifier.tree.*;
+import rapaio.ml.common.predicate.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -74,7 +70,6 @@ public class CTreeTest {
     @Test
     public void testBuilderID3() throws IOException, URISyntaxException {
         Frame df = Datasets.loadMushrooms();
-        Summary.printNames(df);
         df = FRetainTypes.on(VType.NOMINAL).fapply(df);
         df.printSummary();
     }

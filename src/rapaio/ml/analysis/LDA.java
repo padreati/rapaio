@@ -253,7 +253,7 @@ public class LDA implements DefaultPrintable {
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(Summary.headString(true, eval)).append("\n");
+        sb.append(eval.fullContent()).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
         sb.append(eigenVectors.summary()).append("\n");

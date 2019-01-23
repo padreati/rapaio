@@ -109,7 +109,7 @@ public class CTreeSplitterTest {
     public void testToRandom() {
         Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c.getGroupPredicates());
 
-        df.printLines();
+        df.printHead();
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());

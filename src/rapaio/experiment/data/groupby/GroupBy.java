@@ -357,8 +357,8 @@ public class GroupBy implements DefaultPrintable {
         String[] vars = new String[]{"weight"};
 
         GroupByAggregate agg = Time.showRun(() -> GroupBy.from(dff, gbVars).aggregate(VRange.of("weight"), count()));
-        agg.toFrame().printLines();
-        agg.toFrame(1).printLines();
-        agg.toFrame(2).printLines();
+        agg.toFrame().printContent();
+        agg.toFrame(1).printContent();
+        agg.toFrame(2).printContent();
     }
 }

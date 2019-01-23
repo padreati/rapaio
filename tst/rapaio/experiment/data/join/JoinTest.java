@@ -41,7 +41,7 @@ public class JoinTest {
                         "[1]  a Bucharest  20      1.0 [5]  d Bucharest   ?        ? \n" +
                         "[2]  a      Iasi  30      0.0 [6]  d Constanta   ?        ? \n" +
                         "[3]  a Bucharest  30      0.0 \n",
-                Join.from(df2, df1, VRange.of("id"), VRange.of("id"), Join.Type.LEFT).lines(7));
+                Join.from(df2, df1, VRange.of("id"), VRange.of("id"), Join.Type.LEFT).head(7));
 
         assertTrue(Join.leftJoin(df1, df2).deepEquals(Join.from(df1, df2, VRange.of("id"), VRange.of("id"), Join.Type.LEFT)));
         assertTrue(Join.leftJoin(df2, df1).deepEquals(Join.leftJoin(df2, df1, VRange.of("id"))));
@@ -54,8 +54,8 @@ public class JoinTest {
         a1 = a1.fapply(FRefSort.by(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));
         Frame b1 = Join.rightJoin(df2, df1);
         b1 = b1.fapply(FRefSort.by(b1.rvar(0).refComparator(), b1.rvar(0).refComparator()));
-        a1.printLines();
-        b1.printLines();
+        a1.printHead();
+        b1.printHead();
         assertTrue(a1.deepEquals(b1));
 
         assertTrue(Join.rightJoin(df1, df2).deepEquals(Join.leftJoin(df2, df1)));

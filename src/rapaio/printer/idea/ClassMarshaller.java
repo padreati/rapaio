@@ -41,7 +41,6 @@ import java.io.OutputStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ClassMarshaller {
 
     public void marshallDraw(OutputStream out, Figure figure) throws IOException {

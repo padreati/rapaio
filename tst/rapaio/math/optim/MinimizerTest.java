@@ -101,7 +101,6 @@ public class MinimizerTest {
                 .skip(10)
                 .mapToDouble(s -> s.get(0)).boxed().collect(VarDouble.collector());
 
-        sol.printLines();
         WS.setPrinter(new IdeaPrinter());
         WS.draw(lines(VarInt.seq(sol.rowCount()), sol));
 
@@ -168,6 +167,6 @@ public class MinimizerTest {
         WS.setPrinter(new IdeaPrinter());
         WS.draw(lines(vars.get(init.count())));
 
-        SolidFrame.byVars(vars).printLines();
+        SolidFrame.byVars(vars).printHead();
     }
 }

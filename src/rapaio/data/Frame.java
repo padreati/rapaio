@@ -34,7 +34,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import rapaio.data.filter.*;
 import rapaio.data.stream.*;
 import rapaio.printer.*;
-import rapaio.sys.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -54,7 +53,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Frame extends Serializable, DefaultPrintable {
+public interface Frame extends Serializable, Printable {
 
     /**
      * Number of observations contained in frame. Observations are accessed by position.
@@ -537,27 +536,13 @@ public interface Frame extends Serializable, DefaultPrintable {
         return df;
     }
 
-    @Override
-    default String summary() {
-        return Summary.getSummary(this);
-    }
+    String head();
 
-    default void printLines() {
-        printLines(rowCount());
-    }
+    String head(int lines);
 
-    default String lines(int to) {
-        Var[] vars = new Var[varCount()];
-        String[] names = varNames();
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = rvar(i);
-        }
-        return Summary.headString(to, vars, names);
-    }
+    void printHead();
 
-    default void printLines(int to) {
-        WS.println(lines(to));
-    }
+    void printHead(int lines);
 
     default boolean deepEquals(Frame df) {
         if (rowCount() != df.rowCount())

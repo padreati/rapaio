@@ -59,7 +59,7 @@ public class ClassifierSerializationTest {
         testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
 
-        SolidFrame.byVars(varData, varModel, varAcc).printLines();
+        SolidFrame.byVars(varData, varModel, varAcc).printHead();
     }
 
     private <T extends Classifier> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {

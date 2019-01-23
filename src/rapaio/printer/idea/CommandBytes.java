@@ -32,7 +32,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CommandBytes implements Serializable {
 
     private static final long serialVersionUID = -2188530209904804396L;

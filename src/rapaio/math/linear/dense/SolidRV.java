@@ -27,10 +27,8 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.RV;
-import rapaio.printer.Summary;
+import rapaio.data.*;
+import rapaio.math.linear.*;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -202,7 +200,7 @@ public class SolidRV implements RV {
     }
 
     public String summary() {
-        return Summary.headString(true, values.length, new Var[]{VarDouble.wrap(values)}, new String[]{""});
+        return SolidFrame.byVars(VarDouble.wrap(values)).fullContent();
     }
 
     @Override

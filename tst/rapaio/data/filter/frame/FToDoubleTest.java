@@ -24,6 +24,7 @@
 
 package rapaio.data.filter.frame;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -68,7 +69,7 @@ public class FToDoubleTest {
     @Test
     public void testNullVector() {
         try {
-            FRefSort.by(null).fapply(null);
+            FRefSort.by((IntComparator[]) null).fapply(null);
         } catch (Exception ex) {
             assertTrue(true);
         }

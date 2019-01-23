@@ -88,7 +88,7 @@ public class RowSamplerTest {
         }
 
         // uniform counts close to 500
-        count.printLines();
+        count.printContent();
 
         DVector freq = DVector.empty(true, df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {

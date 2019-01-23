@@ -388,20 +388,4 @@ public interface Var extends Serializable, Printable {
     default String summary() {
         return Summary.getSummary(this);
     }
-
-    default void printLines() {
-        printLines(true);
-    }
-
-    default void printLines(boolean merge) {
-        Summary.lines(merge, this);
-    }
-
-    default void printLines(int n) {
-        printLines(true, n);
-    }
-
-    default void printLines(boolean merge, int n) {
-        Summary.lines(merge, this.mapRows(Mapping.range(0, Math.min(n, this.rowCount()))));
-    }
 }

@@ -223,7 +223,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
-        return indexes.get(name);
+        return indexes.getInt(name);
     }
 
     @Override
@@ -236,12 +236,12 @@ public class BoundFrame extends AbstractFrame {
         if (!indexes.containsKey(name)) {
             throw new IllegalArgumentException("Variable with name: " + name + " does not exists.");
         }
-        return vars.get(indexes.get(name));
+        return vars.get(indexes.getInt(name));
     }
 
     @Override
     public VType type(String varName) {
-        return vars.get(indexes.get(varName)).type();
+        return vars.get(indexes.getInt(varName)).type();
     }
 
     @Override
