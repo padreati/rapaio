@@ -28,14 +28,13 @@
 package rapaio.math.optim;
 
 import rapaio.math.linear.*;
-import rapaio.printer.*;
 
 import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
  */
-public interface Minimizer extends DefaultPrintable {
+public interface Minimizer {
 
     void compute();
 

@@ -45,7 +45,7 @@ import rapaio.printer.format.*;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1Regression extends AbstractRegression implements DefaultPrintable {
+public class L1Regression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = 6125284399953219419L;
 
@@ -107,7 +107,12 @@ public class L1Regression extends AbstractRegression implements DefaultPrintable
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return fullName();
+    }
+
+    @Override
+    public String content() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -124,9 +129,19 @@ public class L1Regression extends AbstractRegression implements DefaultPrintable
                 tt.textRight(1 + i, 0, targetName(i));
                 tt.floatFlex(1 + i, 1, medians[i]);
             }
-            sb.append(tt.getDefaultText());
+            sb.append(tt.getRawText());
         }
         sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

@@ -37,7 +37,7 @@ import rapaio.printer.format.*;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L2Regression extends AbstractRegression implements DefaultPrintable {
+public class L2Regression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = -8666168876139028337L;
 
@@ -99,11 +99,15 @@ public class L2Regression extends AbstractRegression implements DefaultPrintable
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return fullName();
+    }
+
+    @Override
+    public String content() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
-
         if (isFitted()) {
             sb.append("Fitted values:\n");
             sb.append("\n");
@@ -116,9 +120,19 @@ public class L2Regression extends AbstractRegression implements DefaultPrintable
                 tt.textRight(1 + i, 0, targetName(i));
                 tt.floatFlex(1 + i, 1, means[i]);
             }
-            sb.append(tt.getDefaultText());
+            sb.append(tt.getRawText());
         }
         sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

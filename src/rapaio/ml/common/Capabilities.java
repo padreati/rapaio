@@ -27,11 +27,7 @@
 
 package rapaio.ml.common;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.printer.*;
+import rapaio.data.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +40,7 @@ import static java.util.stream.Collectors.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-public class Capabilities implements DefaultPrintable {
+public class Capabilities {
 
     private Integer minInputCount;
     private Integer maxInputCount;
@@ -247,7 +243,7 @@ public class Capabilities implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
         sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")
@@ -255,5 +251,4 @@ public class Capabilities implements DefaultPrintable {
         sb.append("missing inputs/targets: ").append(allowMissingInputValues).append("/").append(allowMissingTargetValues).append("\n");
         return sb.toString();
     }
-
 }

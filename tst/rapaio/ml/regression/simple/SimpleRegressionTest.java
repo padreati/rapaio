@@ -24,17 +24,18 @@
 
 package rapaio.ml.regression.simple;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Frame;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VToDouble;
-import rapaio.datasets.Datasets;
-import rapaio.ml.regression.RPrediction;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
+import rapaio.core.tests.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.datasets.*;
+import rapaio.ml.regression.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Test for simple regression algorithms
@@ -58,16 +59,11 @@ public class SimpleRegressionTest {
         ConstantRegression r1 = ConstantRegression.with(66).newInstance();
         r1.fit(df, father);
         RPrediction fit1 = r1.predict(df);
-        fit1.printSummary();
-
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
                 "Model class: ConstantRegression\n" +
-                "Model instance: ConstantRegression {\n" +
-                "\tconstant=66\n" +
-                "}\n" +
-                "\n" +
+                "Model instance: ConstantRegression{constant=66}\n" +
                 "\n" +
                 "> input variables: \n" +
                 "1. Son double \n" +
@@ -83,39 +79,53 @@ public class SimpleRegressionTest {
         ConstantRegression r2 = ConstantRegression.with(1);
         r2.fit(df, father);
         RPrediction fit2 = r2.predict(df, true);
-        fit2.printSummary();
 
-        Assert.assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
+        assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstFit()));
-        Assert.assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 66)).withName("Father-residual")
+        assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
-        Assert.assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
+        assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
                 .deepEquals(fit2.firstFit()));
-        Assert.assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 1)).withName("Father-residual")
+        assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
+
+        assertEquals("ConstantRegression{constant=66}", r1.toString());
+        assertEquals("ConstantRegression{constant=66}", r1.content());
+        assertEquals("ConstantRegression{constant=66}", r1.fullContent());
+        assertEquals("Regression predict summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: ConstantRegression\n" +
+                "Model instance: ConstantRegression{constant=66}\n" +
+                "\n" +
+                "> input variables: \n" +
+                "1. Son double \n" +
+                "> target variables: \n" +
+                "1. Father double \n" +
+                "\n" +
+                "Fitted values:\n" +
+                "\n" +
+                "Target Estimate \n" +
+                "Father    66    \n" +
+                "\n", r1.summary());
     }
 
     @Test
     public void testL1Regression() {
 
-        L1Regression r1 = L1Regression.create().newInstance();
+        L1Regression r1 = L1Regression.create();
         r1.fit(df, father);
-
-        r1.printSummary();
-
         RPrediction fit1 = r1.predict(df);
-        fit1.printSummary();
 
         double median = Quantiles.of(df.rvar(father), 0.5).values()[0];
-        Assert.assertTrue(VarDouble.fill(df.rowCount(), median).withName(father)
-                .deepEquals(fit1.firstFit()));
+        assertTrue(VarDouble.fill(df.rowCount(), median).withName(father).deepEquals(fit1.firstFit()));
     }
 
     @Test
     public void testL2Regression() {
 
-        L2Regression r1 = L2Regression.create().newInstance();
+        L2Regression r1 = L2Regression.create();
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
@@ -177,9 +187,17 @@ public class SimpleRegressionTest {
 
     @Test
     public void testRandomValueRegression() {
-        RandomValueRegression r1 = RandomValueRegression.create();
-        r1.fit(df, father);
-        RPrediction fit1 = r1.predict(df);
-        fit1.printSummary();
+        RandomSource.setSeed(123);
+
+        RPrediction fit1 = RandomValueRegression.create().fit(df, father).predict(df);
+        RPrediction fit2 = RandomValueRegression.create(Normal.of(10, 0.1)).fit(df, father).predict(df);
+
+        // unsignificant if test on true distribution
+        assertTrue(KSTestOneSample.from(fit1.firstFit(), Uniform.of(0, 1)).pValue() > 0.01);
+        assertTrue(KSTestOneSample.from(fit2.firstFit(), Normal.of(10, 0.1)).pValue() > 0.01);
+
+        // significant if test on a different distribution
+        assertTrue(KSTestOneSample.from(fit1.firstFit(), Normal.of(10, 0.1)).pValue() < 0.01);
+        assertTrue(KSTestOneSample.from(fit2.firstFit(), Uniform.of(0, 1)).pValue() < 0.01);
     }
 }

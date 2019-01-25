@@ -274,7 +274,7 @@ public abstract class AbstractRegression implements Regression {
             tt.textLeft(i, 1, inputName(i));
             tt.textLeft(i, 2, inputType(i).code());
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getRawText());
 
         // targets
 
@@ -286,7 +286,7 @@ public abstract class AbstractRegression implements Regression {
             tt.textLeft(i, 1, targetName(i));
             tt.textLeft(i, 2, targetType(i).code());
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getRawText());
 
         return sb.toString();
     }

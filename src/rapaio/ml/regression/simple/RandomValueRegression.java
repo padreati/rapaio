@@ -39,21 +39,27 @@ import rapaio.printer.*;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegression extends AbstractRegression implements DefaultPrintable {
+public class RandomValueRegression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = 819192240406617594L;
-    private Distribution distribution = Uniform.of(0, 1);
 
     public static RandomValueRegression create() {
-        return new RandomValueRegression();
+        return new RandomValueRegression(Uniform.of(0, 1));
     }
 
-    private RandomValueRegression() {
+    public static RandomValueRegression create(Distribution distribution) {
+        return new RandomValueRegression(distribution);
+    }
+
+    private final Distribution distribution;
+
+    private RandomValueRegression(Distribution distribution) {
+        this.distribution = distribution;
     }
 
     @Override
     public Regression newInstance() {
-        return new RandomValueRegression();
+        return new RandomValueRegression(distribution);
     }
 
     @Override
@@ -63,7 +69,7 @@ public class RandomValueRegression extends AbstractRegression implements Default
 
     @Override
     public String fullName() {
-        return name() + String.format("(%s)", distribution.name());
+        return name() + String.format("(distribution:%s)", distribution.name());
     }
 
     @Override
@@ -79,11 +85,6 @@ public class RandomValueRegression extends AbstractRegression implements Default
 
     public Distribution distribution() {
         return distribution;
-    }
-
-    public RandomValueRegression withDistribution(final Distribution distribution) {
-        this.distribution = distribution;
-        return this;
     }
 
     @Override
@@ -102,17 +103,29 @@ public class RandomValueRegression extends AbstractRegression implements Default
     }
 
     @Override
-    public String summary() {
+    public String toString() {
+        return fullName();
+    }
+
+    @Override
+    public String content() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
-        sb.append("\n");
-
         if (isFitted()) {
             sb.append("Model is trained.\n");
         } else {
             sb.append("Model is not trained.\n");
         }
-        sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String fullContent() {
+        return content();
+    }
+
+    @Override
+    public String summary() {
+        return content();
     }
 }

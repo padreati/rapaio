@@ -38,7 +38,7 @@ import static rapaio.printer.format.Format.*;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegression extends AbstractRegression implements DefaultPrintable {
+public class ConstantRegression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = -2537862585258148528L;
 
@@ -65,9 +65,7 @@ public class ConstantRegression extends AbstractRegression implements DefaultPri
 
     @Override
     public String fullName() {
-        return "ConstantRegression {\n" +
-                "\tconstant=" + floatFlex(constantValue()) + "\n" +
-                "}\n";
+        return "ConstantRegression{constant=" + floatFlex(constantValue()) + '}';
     }
 
     @Override
@@ -103,6 +101,21 @@ public class ConstantRegression extends AbstractRegression implements DefaultPri
         }
         fit.buildComplete();
         return fit;
+    }
+
+    @Override
+    public String toString() {
+        return fullName();
+    }
+
+    @Override
+    public String content() {
+        return fullName();
+    }
+
+    @Override
+    public String fullContent() {
+        return fullName();
     }
 
     @Override
