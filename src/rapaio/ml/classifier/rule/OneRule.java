@@ -283,7 +283,7 @@ public class OneRule extends AbstractClassifier implements DefaultPrintable {
         sb.append(fullName()).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().summary()).append("\n");
+        sb.append(capabilities().toString()).append("\n");
 
         sb.append("Learned model:\n");
 

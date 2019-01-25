@@ -147,7 +147,7 @@ public class MinimizerTest {
 
     private void report(Minimizer alg, RV init, RFunction f) {
         alg.compute();
-        alg.printSummary();
+        WS.print(alg.toString());
 
         List<RV> sols = alg.solutions();
 

@@ -155,7 +155,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
     }
 
     @Override
-    public String summary() {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("solution: ").append(sol.summary()).append("\n");
         return sb.toString();

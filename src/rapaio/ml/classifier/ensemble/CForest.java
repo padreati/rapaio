@@ -508,7 +508,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
-        sb.append(capabilities().summary()).append("\n");
+        sb.append(capabilities().toString()).append("\n");
 
         if (!hasLearned()) {
             return sb.toString();
