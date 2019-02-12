@@ -115,20 +115,24 @@ public abstract class AbstractUnique implements Unique {
         if (max > 40) {
             max = 40;
         }
+        double total = rowLists.int2ObjectEntrySet().stream().mapToDouble(e -> e.getValue().size()).sum();
         if (uniqueCount() > max) {
-            TextTable tt = TextTable.empty(max + 1, 2, 1, 0);
+            TextTable tt = TextTable.empty(max + 1, 3, 1, 0);
             tt.textCenter(0, 0, "Value");
             tt.textCenter(0, 1, "Count");
+            tt.textCenter(0, 2, "Percentage");
 
             for (int i = 0; i < 30; i++) {
                 tt.textRight(i + 1, 0, stringUniqueValue(i));
                 tt.textRight(i + 1, 1, Integer.toString(rowList(i).size()));
+                tt.textRight(i + 1, 2, Format.floatShort(rowList(i).size() / total));
             }
             tt.textCenter(30 + 1, 0, "...");
             tt.textCenter(30 + 1, 1, "...");
             for (int i = 31; i < 40; i++) {
-                tt.textRight(i+1, 0, stringUniqueValue(uniqueCount() - 40 + i));
-                tt.textRight(i+1, 1, Integer.toString(rowList(uniqueCount() -40+ i).size()));
+                tt.textRight(i + 1, 0, stringUniqueValue(uniqueCount() - 40 + i));
+                tt.textRight(i + 1, 1, Integer.toString(rowList(uniqueCount() - 40 + i).size()));
+                tt.textRight(i + 1, 2, Format.floatShort(rowList(uniqueCount() - 40 + i).size() / total));
             }
             return tt.getDefaultText();
         }
@@ -137,13 +141,16 @@ public abstract class AbstractUnique implements Unique {
 
     @Override
     public String fullContent() {
-        TextTable tt = TextTable.empty(uniqueCount() + 1, 2, 1, 0);
+        TextTable tt = TextTable.empty(uniqueCount() + 1, 3, 1, 0);
         tt.textCenter(0, 0, "Value");
         tt.textCenter(0, 1, "Count");
+        tt.textCenter(0, 2, "Percentage");
 
+        double total = rowLists.int2ObjectEntrySet().stream().mapToDouble(e -> e.getValue().size()).sum();
         for (int i = 0; i < uniqueCount(); i++) {
             tt.textRight(i + 1, 0, stringUniqueValue(i));
             tt.textRight(i + 1, 1, Integer.toString(rowList(i).size()));
+            tt.textRight(i + 1, 2, Format.floatShort(rowList(i).size() / total));
         }
         return tt.getDefaultText();
     }

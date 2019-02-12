@@ -123,23 +123,25 @@ public class UniqueLabelTest {
         UniqueLabel ui1 = UniqueLabel.of(x1, true);
 
         assertEquals("UniqueLabel{count=43, values=[?:6,1:3,10:6,11:3,12:4,13:4,14:8,15:4,16:7,17:4,..]}", ui1.toString());
-        assertEquals("Value Count Value Count Value Count Value Count Value Count Value Count \n" +
-                "    ?     6    15     4    21     3    28     8    34     3     5     6 \n" +
-                "    1     3    16     7    22     5    29     3    35     6     6     4 \n" +
-                "   10     6    17     4    23     5     3     5  ...   ...      7     5 \n" +
-                "   11     3    18     3    24     2    30     5     4     6     8     3 \n" +
-                "   12     4    19     5    25     3    31     4    40     3     9     1 \n" +
-                "   13     4     2     2    26     5    32     4    41     7 \n" +
-                "   14     8    20    11    27     8    33     5    42     3 \n", ui1.content());
-        assertEquals("Value Count Value Count Value Count Value Count Value Count Value Count \n" +
-                "    ?     6    16     7    23     5    30     5    38     4     7     5 \n" +
-                "    1     3    17     4    24     2    31     4    39     4     8     3 \n" +
-                "   10     6    18     3    25     3    32     4     4     6     9     1 \n" +
-                "   11     3    19     5    26     5    33     5    40     3 \n" +
-                "   12     4     2     2    27     8    34     3    41     7 \n" +
-                "   13     4    20    11    28     8    35     6    42     3 \n" +
-                "   14     8    21     3    29     3    36     7     5     6 \n" +
-                "   15     4    22     5     3     5    37     3     6     4 \n", ui1.fullContent());
+        assertEquals("Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage \n" +
+                "    ?     6      0.030    16     7      0.035    23     5      0.025    30     5      0.025    40     3      0.015 \n" +
+                "    1     3      0.015    17     4      0.020    24     2      0.010    31     4      0.020    41     7      0.035 \n" +
+                "   10     6      0.030    18     3      0.015    25     3      0.015    32     4      0.020    42     3      0.015 \n" +
+                "   11     3      0.015    19     5      0.025    26     5      0.025    33     5      0.025     5     6      0.030 \n" +
+                "   12     4      0.020     2     2      0.010    27     8      0.040    34     3      0.015     6     4      0.020 \n" +
+                "   13     4      0.020    20    11      0.055    28     8      0.040    35     6      0.030     7     5      0.025 \n" +
+                "   14     8      0.040    21     3      0.015    29     3      0.015  ...   ...                 8     3      0.015 \n" +
+                "   15     4      0.020    22     5      0.025     3     5      0.025     4     6      0.030     9     1      0.005 \n", ui1.content());
+        assertEquals("Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage \n" +
+                "    ?     6      0.030    17     4      0.020    25     3      0.015    33     5      0.025    41     7      0.035 \n" +
+                "    1     3      0.015    18     3      0.015    26     5      0.025    34     3      0.015    42     3      0.015 \n" +
+                "   10     6      0.030    19     5      0.025    27     8      0.040    35     6      0.030     5     6      0.030 \n" +
+                "   11     3      0.015     2     2      0.010    28     8      0.040    36     7      0.035     6     4      0.020 \n" +
+                "   12     4      0.020    20    11      0.055    29     3      0.015    37     3      0.015     7     5      0.025 \n" +
+                "   13     4      0.020    21     3      0.015     3     5      0.025    38     4      0.020     8     3      0.015 \n" +
+                "   14     8      0.040    22     5      0.025    30     5      0.025    39     4      0.020     9     1      0.005 \n" +
+                "   15     4      0.020    23     5      0.025    31     4      0.020     4     6      0.030 \n" +
+                "   16     7      0.035    24     2      0.010    32     4      0.020    40     3      0.015 \n", ui1.fullContent());
         assertEquals(ui1.toString(), ui1.summary());
 
         VarNominal x2 = VarNominal.from(N, row -> sample[RandomSource.nextInt(5)]);
@@ -148,14 +150,14 @@ public class UniqueLabelTest {
         UniqueLabel ui2 = UniqueLabel.of(x2, true);
 
         assertEquals("UniqueLabel{count=5, values=[1:43,2:50,3:50,4:31,5:26]}", ui2.toString());
-        assertEquals("Value Count Value Count \n" +
-                "    1    43     4    31 \n" +
-                "    2    50     5    26 \n" +
-                "    3    50 \n", ui2.content());
-        assertEquals("Value Count Value Count \n" +
-                "    1    43     4    31 \n" +
-                "    2    50     5    26 \n" +
-                "    3    50 \n", ui2.fullContent());
+        assertEquals("Value Count Percentage Value Count Percentage \n" +
+                "    1    43      0.215     4    31      0.155 \n" +
+                "    2    50      0.250     5    26      0.130 \n" +
+                "    3    50      0.250 \n", ui2.content());
+        assertEquals("Value Count Percentage Value Count Percentage \n" +
+                "    1    43      0.215     4    31      0.155 \n" +
+                "    2    50      0.250     5    26      0.130 \n" +
+                "    3    50      0.250 \n", ui2.fullContent());
         assertEquals(ui2.toString(), ui2.summary());
     }
 }
