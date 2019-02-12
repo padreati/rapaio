@@ -29,6 +29,7 @@ package rapaio.data.unique;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Var;
+import rapaio.printer.*;
 
 /**
  * Interface which exposes information about unique values in a variable.
@@ -55,7 +56,7 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
-public interface Unique {
+public interface Unique extends Printable {
 
     static Unique of(Var var, boolean sorted) {
         switch (var.type()) {

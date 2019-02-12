@@ -36,6 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.*;
+import rapaio.printer.format.*;
 
 import java.io.Serializable;
 
@@ -113,6 +114,16 @@ public class UniqueDouble extends AbstractUnique {
 
     public DoubleArrayList getValues() {
         return values;
+    }
+
+    @Override
+    protected String stringClass() {
+        return "UniqueDouble";
+    }
+
+    @Override
+    protected String stringUniqueValue(int i) {
+        return Double.isNaN(values.getDouble(i)) ? "?" : Format.floatFlex(values.getDouble(i));
     }
 }
 

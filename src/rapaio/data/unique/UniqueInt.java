@@ -111,6 +111,16 @@ public class UniqueInt extends AbstractUnique {
     public int uniqueValue(int id) {
         return values.getInt(id);
     }
+
+    @Override
+    protected String stringClass() {
+        return "UniqueInt";
+    }
+
+    @Override
+    protected String stringUniqueValue(int i) {
+        return values.getInt(i) == Integer.MIN_VALUE ? "?" : Integer.toString(values.getInt(i));
+    }
 }
 
 @SuppressWarnings("ComparatorMethodParameterNotUsed")

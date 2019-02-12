@@ -108,6 +108,16 @@ public class UniqueLabel extends AbstractUnique {
     public String uniqueValue(int id) {
         return values.get(id);
     }
+
+    @Override
+    protected String stringClass() {
+        return "UniqueLabel";
+    }
+
+    @Override
+    protected String stringUniqueValue(int i) {
+        return values.get(i);
+    }
 }
 
 class UniqueLabelComparator implements Comparator<String>, Serializable {
