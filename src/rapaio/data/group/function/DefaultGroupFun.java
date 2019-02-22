@@ -25,32 +25,37 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
  */
-public class GroupByFunctionStd implements GroupByFunction {
+public abstract class DefaultGroupFun implements GroupFun {
+
+    protected final String name;
+    protected final List<String> varNames;
+
+    public DefaultGroupFun(String name, List<String> varNames) {
+        this.name = name;
+        this.varNames = varNames;
+    }
+
     @Override
     public String name() {
-        return "std";
+        return name;
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        OnlineStat os = OnlineStat.empty();
-        int varIndex = src.varIndex(varName);
-        for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
-                continue;
-            }
-            os.update(src.getDouble(row, varIndex));
-        }
-        return os.sd();
+    public List<String> varNames() {
+        return varNames;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupByFunction{name=" + name() + ",varNames=[" + String.join(",", varNames) + "]}";
     }
 }
-

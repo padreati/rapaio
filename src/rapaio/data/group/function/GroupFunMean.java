@@ -25,32 +25,41 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionKurtosis implements GroupByFunction {
-    @Override
-    public String name() {
-        return "kurtosis";
+public class GroupFunMean extends DefaultSingleGroupFun {
+
+    public GroupFunMean(int normalizeLevel, List<String> varNames) {
+        super("mean", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
+    public Var buildVar(Group group, String varName) {
+        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame src, int varIndex, IntList rows) {
         OnlineStat os = OnlineStat.empty();
-        int varIndex = src.varIndex(varName);
         for (int row : rows) {
             if (src.isMissing(row, varIndex)) {
                 continue;
             }
             os.update(src.getDouble(row, varIndex));
         }
-        return os.kurtosis();
+        if (os.n() > 0) {
+            aggregate.setDouble(aggregateRow, os.mean());
+        }
     }
 }
 

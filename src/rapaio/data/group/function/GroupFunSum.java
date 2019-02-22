@@ -25,33 +25,41 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.core.stat.OnlineStat;
+import rapaio.data.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionMin implements GroupByFunction {
-    @Override
-    public String name() {
-        return "min";
+public class GroupFunSum extends DefaultSingleGroupFun {
+
+    public GroupFunSum(int normalizeLevel, List<String> varNames) {
+        super("sum", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        double min = Double.NaN;
-        int varIndex = src.varIndex(varName);
+    public Var buildVar(Group group, String varName) {
+        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+        OnlineStat os = OnlineStat.empty();
         for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
+            if (df.isMissing(row, varIndex)) {
                 continue;
             }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(min) || min > value) {
-                min = value;
-            }
+            os.update(df.getDouble(row, varIndex));
         }
-        return min;
+        if (os.n() == 0)
+            return;
+        aggregate.setDouble(aggregateRow, os.sum());
     }
 }
+

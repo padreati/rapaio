@@ -25,32 +25,39 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionSkewness implements GroupByFunction {
-    @Override
-    public String name() {
-        return "skewness";
+public class GroupFunKurtosis extends DefaultSingleGroupFun {
+
+    public GroupFunKurtosis(int normalizeLevel, List<String> varNames) {
+        super("kurtosis", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
+    public Var buildVar(Group group, String varName) {
+        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
         OnlineStat os = OnlineStat.empty();
-        int varIndex = src.varIndex(varName);
         for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
+            if (df.isMissing(row, varIndex)) {
                 continue;
             }
-            os.update(src.getDouble(row, varIndex));
+            os.update(df.getDouble(row, varIndex));
         }
-        return os.skewness();
+        aggregate.setDouble(aggregateRow, os.kurtosis());
     }
 }
 

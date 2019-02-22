@@ -121,25 +121,28 @@ abstract class AbstractFrame implements Frame {
             tt.textCenter(0, i + 1, names[i]);
         }
         for (int i = 0; i < head; i++) {
-            tt.textRight(i + 1, 0, "[" + i + "]");
+            tt.intRow(i + 1, 0, i);
         }
         for (int i = head + dots; i < head + dots + tail; i++) {
-            tt.textRight(i + 1, 0, "[" + (rowCount - tail - dots - head + i) + "]");
+            tt.intRow(i + 1, 0, rowCount - tail - dots - head + i);
         }
 
         for (int i = 0; i < head; i++) {
             for (int j = 0; j < vars.length; j++) {
-                tt.textRight(i + 1, j + 1, vars[j].getLabel(i));
+                tt.textType(i + 1, j + 1, vars[j], i);
             }
         }
-        for (int i = head; i < head + dots; i++) {
-            for (int j = 0; j < vars.length; j++) {
-                tt.textCenter(i + 1, j + 1, "...");
+
+        if (tail != 0) {
+            for (int i = head; i < head + dots; i++) {
+                for (int j = 0; j < vars.length; j++) {
+                    tt.textCenter(i + 1, j + 1, "...");
+                }
             }
-        }
-        for (int i = head + dots; i < head + dots + tail; i++) {
-            for (int j = 0; j < vars.length; j++) {
-                tt.textRight(i + 1, j + 1, vars[j].getLabel(rowCount - tail - dots - head + i));
+            for (int i = head + dots; i < head + dots + tail; i++) {
+                for (int j = 0; j < vars.length; j++) {
+                    tt.textType(i + 1, j + 1, vars[j], rowCount - tail - dots - head + i);
+                }
             }
         }
         return tt.getDefaultText();

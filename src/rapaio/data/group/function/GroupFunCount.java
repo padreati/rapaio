@@ -25,34 +25,36 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionMax implements GroupByFunction {
-    @Override
-    public String name() {
-        return "max";
+public class GroupFunCount extends DefaultSingleGroupFun {
+
+    public GroupFunCount(int normalizeLevel, List<String> varNames) {
+        super("count", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        double max = Double.NaN;
-        int varIndex = src.varIndex(varName);
+    public Var buildVar(Group group, String varName) {
+        return VarInt.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+        int count = 0;
         for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
-                continue;
-            }
-            double value = src.getDouble(row, varIndex);
-            if (Double.isNaN(max) || max < value) {
-                max = value;
+            if (!df.isMissing(row, varIndex)) {
+                count++;
             }
         }
-        return max;
+        aggregate.setInt(aggregateRow, count);
     }
 }
-

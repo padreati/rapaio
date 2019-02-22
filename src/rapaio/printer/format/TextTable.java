@@ -28,6 +28,7 @@
 package rapaio.printer.format;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import rapaio.data.*;
 import rapaio.sys.*;
 
 import java.util.ArrayList;
@@ -136,6 +137,22 @@ public class TextTable {
             } else {
                 set(r, c, null, text);
             }
+        }
+    }
+
+    public void textType(int row, int col, Var var, int pos) {
+        if (var.type() == VType.DOUBLE) {
+            floatFlex(row, col, var.getDouble(pos));
+        } else {
+            textRight(row, col, var.getLabel(pos));
+        }
+    }
+
+    public void textType(int row, int col, Frame df, int pos, String varName) {
+        if (df.type(varName) == VType.DOUBLE) {
+            floatFlex(row, col, df.getDouble(pos, varName));
+        } else {
+            textRight(row, col, df.getLabel(pos, varName));
         }
     }
 

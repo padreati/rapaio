@@ -37,10 +37,10 @@ public class JoinTest {
     @Test
     public void leftJoinTest() {
         assertEquals("    id   city    age children     id   city    age children \n" +
-                        "[0]  a      Iasi  20      1.0 [4]  c      Iasi  40      3.0 \n" +
-                        "[1]  a Bucharest  20      1.0 [5]  d Bucharest   ?        ? \n" +
-                        "[2]  a      Iasi  30      0.0 [6]  d Constanta   ?        ? \n" +
-                        "[3]  a Bucharest  30      0.0 \n",
+                        "[0]  a      Iasi  20    1     [4]  c      Iasi  40    3     \n" +
+                        "[1]  a Bucharest  20    1     [5]  d Bucharest   ?    ?     \n" +
+                        "[2]  a      Iasi  30    0     [6]  d Constanta   ?    ?     \n" +
+                        "[3]  a Bucharest  30    0     \n",
                 Join.from(df2, df1, VRange.of("id"), VRange.of("id"), Join.Type.LEFT).head(7));
 
         assertTrue(Join.leftJoin(df1, df2).deepEquals(Join.from(df1, df2, VRange.of("id"), VRange.of("id"), Join.Type.LEFT)));

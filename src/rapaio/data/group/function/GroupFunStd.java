@@ -25,34 +25,39 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.core.stat.OnlineStat;
+import rapaio.data.*;
+import rapaio.data.group.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionNUnique implements GroupByFunction {
-    @Override
-    public String name() {
-        return "nunique";
+public class GroupFunStd extends DefaultSingleGroupFun {
+
+    public GroupFunStd(int normalizeLevel, List<String> varNames) {
+        super("std", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        Set<String> set = new HashSet<>();
-        int varIndex = src.varIndex(varName);
+    public Var buildVar(Group group, String varName) {
+        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+        OnlineStat os = OnlineStat.empty();
         for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
+            if (df.isMissing(row, varIndex)) {
                 continue;
             }
-            set.add(src.getLabel(row, varIndex));
+            os.update(df.getDouble(row, varIndex));
         }
-        return set.size();
+        aggregate.setDouble(aggregateRow, os.sd());
     }
 }
 

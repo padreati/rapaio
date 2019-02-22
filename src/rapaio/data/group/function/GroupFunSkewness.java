@@ -25,30 +25,39 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionCount implements GroupByFunction {
+public class GroupFunSkewness extends DefaultSingleGroupFun {
 
-    @Override
-    public String name() {
-        return "count";
+    public GroupFunSkewness(int normalizeLevel, List<String> varNames) {
+        super("skewness", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        int count = 0;
-        int varIndex = src.varIndex(varName);
+    public Var buildVar(Group group, String varName) {
+        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+        OnlineStat os = OnlineStat.empty();
         for (int row : rows) {
-            if (!src.isMissing(row, varIndex)) {
-                count++;
+            if (df.isMissing(row, varIndex)) {
+                continue;
             }
+            os.update(df.getDouble(row, varIndex));
         }
-        return count;
+        aggregate.setDouble(aggregateRow, os.skewness());
     }
 }
+

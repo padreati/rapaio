@@ -49,11 +49,15 @@ import java.util.List;
  */
 public class Datasets {
 
-    public static Frame loadIrisDataset() throws IOException {
-        return Csv.instance()
-                .withDefaultTypes(VType.DOUBLE)
-                .withTypes(VType.NOMINAL, "class")
-                .read(Datasets.class, "iris-r.csv");
+    public static Frame loadIrisDataset() {
+        try {
+            return Csv.instance()
+                    .withDefaultTypes(VType.DOUBLE)
+                    .withTypes(VType.NOMINAL, "class")
+                    .read(Datasets.class, "iris-r.csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException {
@@ -94,14 +98,18 @@ public class Datasets {
                 .read(Datasets.class, "mushrooms.csv");
     }
 
-    public static Frame loadPlay() throws IOException {
-        return Csv.instance()
-                .withSeparatorChar(',')
-                .withHeader(true)
-                .withQuotes(false)
-                .withTypes(VType.DOUBLE, "temp", "humidity")
-                .withTypes(VType.NOMINAL, "windy")
-                .read(Datasets.class, "play.csv");
+    public static Frame loadPlay() {
+        try {
+            return Csv.instance()
+                    .withSeparatorChar(',')
+                    .withHeader(true)
+                    .withQuotes(false)
+                    .withTypes(VType.DOUBLE, "temp", "humidity")
+                    .withTypes(VType.NOMINAL, "windy")
+                    .read(Datasets.class, "play.csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Frame loadOlympic() throws IOException {

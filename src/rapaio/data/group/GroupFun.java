@@ -25,21 +25,36 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
+import rapaio.data.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/18.
  */
-public interface GroupByFunction {
+public interface GroupFun {
 
     /**
      * Name of the aggregate function
+     *
      * @return name of the aggregate function
      */
     String name();
 
-    double compute(Frame src, String varName, IntList rows);
+    /**
+     * @return the list of var names for which to apply the aggregation
+     */
+    List<String> varNames();
+
+    /**
+     * Computes a list of variables with the aggregated values using variable names
+     * given as parameters. Any combination is possible, as long as there is
+     * at least one input variable and one output variable.
+     *
+     * @param group group by data structure
+     * @return aggregated variable instance
+     */
+    List<Var> compute(Group group);
 }

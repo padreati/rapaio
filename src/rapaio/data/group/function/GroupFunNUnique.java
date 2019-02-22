@@ -25,32 +25,40 @@
  *
  */
 
-package rapaio.experiment.data.groupby;
+package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.data.unique.*;
+import rapaio.data.group.*;
+
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/18.
  */
-public class GroupByFunctionMean implements GroupByFunction {
-    @Override
-    public String name() {
-        return "mean";
+public class GroupFunNUnique extends DefaultSingleGroupFun {
+
+    public GroupFunNUnique(int normalizeLevel, List<String> varNames) {
+        super("nunique", normalizeLevel, varNames);
     }
 
     @Override
-    public double compute(Frame src, String varName, IntList rows) {
-        OnlineStat os = OnlineStat.empty();
-        int varIndex = src.varIndex(varName);
+    public Var buildVar(Group group, String varName) {
+        return VarInt.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+    }
+
+    @Override
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+        int offset = 0;
         for (int row : rows) {
-            if (src.isMissing(row, varIndex)) {
-                continue;
+            if (df.isMissing(row, varIndex)) {
+                offset = 1;
+                break;
             }
-            os.update(src.getDouble(row, varIndex));
         }
-        return os.n() > 0 ? os.mean() : Double.NaN;
+        Unique unique = Unique.of(df.rvar(varIndex).mapRows(Mapping.wrap(rows)), false);
+        aggregate.setInt(aggregateRow, unique.uniqueCount() - offset);
     }
 }
 
