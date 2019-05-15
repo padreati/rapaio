@@ -32,7 +32,7 @@ import rapaio.data.VRange;
 import rapaio.data.filter.frame.AbstractFF;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-import rapaio.ml.analysis.PCA;
+import rapaio.experiment.ml.analysis.PCA;
 
 import java.util.function.BiFunction;
 

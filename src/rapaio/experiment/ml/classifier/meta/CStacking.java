@@ -29,15 +29,15 @@ package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.ml.classifier.*;
-import rapaio.ml.classifier.ensemble.*;
+import rapaio.experiment.ml.classifier.ensemble.*;
 import rapaio.ml.common.*;
 import rapaio.printer.*;
-import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -105,7 +105,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
         int pos = 0;
         logger.fine("check learners for learning.... ");
         List<Var> vars =
-                Util.rangeStream(weaks.size(), true)
+                IntStream.range(0, weaks.size()).parallel()
                         .boxed()
                         .map(i -> {
                             if (!weaks.get(i).hasLearned()) {
@@ -136,7 +136,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
 
     protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("predict method called.");
-        List<Var> vars = Util.rangeStream(weaks.size(), true)
+        List<Var> vars = IntStream.range(0, weaks.size()).parallel()
                 .boxed()
                 .map(i -> {
                     logger.fine("started fitting weak learner ...");

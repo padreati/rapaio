@@ -130,7 +130,7 @@ public final class VarNominal extends AbstractVar {
     }
 
     private static final long serialVersionUID = -7541719735879481349L;
-    private static final String missingValue = "?";
+    public static final String MISSING_VALUE = "?";
     private static final int missingIndex = 0;
 
     private int rows;
@@ -264,7 +264,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void setLabel(int row, String value) {
-        if (value.equals(missingValue)) {
+        if (value.equals(MISSING_VALUE)) {
             data[row] = missingIndex;
             return;
         }

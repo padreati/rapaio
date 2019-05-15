@@ -73,6 +73,10 @@ public class WS {
         WS.printer = printer;
     }
 
+    public static void print(double value) {
+        printer.print(String.valueOf(value));
+    }
+
     public static void print(String message) {
         printer.print(message);
     }

@@ -27,11 +27,11 @@
 
 package rapaio.graphics.plot.plotcomp;
 
+import rapaio.experiment.ml.clustering.*;
 import rapaio.graphics.base.*;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.*;
 import rapaio.math.*;
-import rapaio.ml.clustering.*;
 import rapaio.printer.format.*;
 
 import java.awt.*;

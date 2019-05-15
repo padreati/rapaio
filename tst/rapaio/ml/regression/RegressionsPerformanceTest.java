@@ -14,8 +14,8 @@ import rapaio.data.Mapping;
 import rapaio.data.VRange;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.rtree.RTreeNumericTest;
+import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.experiment.ml.regression.tree.rtree.RTreeNumericTest;
 
 import java.io.IOException;
 

@@ -38,11 +38,11 @@ import rapaio.data.Mapping;
 import rapaio.data.VType;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.boost.GBTClassifier;
-import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeTest;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.experiment.ml.classifier.boost.GBTClassifier;
+import rapaio.experiment.ml.classifier.ensemble.CForest;
+import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.experiment.ml.classifier.tree.CTreeTest;
+import rapaio.experiment.ml.regression.tree.RTree;
 
 import java.io.IOException;
 

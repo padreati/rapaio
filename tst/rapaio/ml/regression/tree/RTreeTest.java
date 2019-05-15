@@ -32,9 +32,10 @@ import rapaio.data.VRange;
 import rapaio.data.filter.frame.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.ensemble.RForest;
-import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
+import rapaio.experiment.ml.regression.ensemble.RForest;
+import rapaio.experiment.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -174,5 +175,11 @@ public class RTreeTest {
 
         rf.fit(train, "Sales");
         rf.predict(test, true).printSummary();
+
+        tree = RTree.newDecisionStump();
+        tree.fit(train, "Sales");
+        tree.printSummary();
+
+        tree.predict(test, true).printSummary();
     }
 }

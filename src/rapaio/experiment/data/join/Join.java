@@ -31,10 +31,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
+import rapaio.core.*;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -328,5 +326,27 @@ public class Join {
                 ));
             }
         }
+    }
+
+    public static void main(String[] args) {
+        VarInt id = VarInt.empty().withName("id");
+        VarDouble x1 = VarDouble.empty().withName("x1");
+        VarDouble x2 = VarDouble.empty().withName("x2");
+
+        for (int i = 0; i < 30; i++) {
+            id.addInt(i + 1);
+            x1.addDouble((i + 1) * (i + 1));
+            x2.addDouble(Math.sqrt(i + 1));
+        }
+
+        int[] sample = SamplingTools.sampleWOR(id.rowCount(), id.rowCount());
+
+        Frame df1 = SolidFrame.byVars(id, x1);
+        Frame df2 = SolidFrame.byVars(id, x2).mapRows(Mapping.wrap(sample)).solidCopy();
+
+        df1.printFullContent();
+        df2.printFullContent();
+
+        Join.leftJoin(df1, df2).printFullContent();
     }
 }

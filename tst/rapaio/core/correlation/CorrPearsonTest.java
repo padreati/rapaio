@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.ml.clustering.DistanceMatrix;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.RM;

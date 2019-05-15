@@ -29,7 +29,7 @@ package rapaio.core.correlation;
 
 import rapaio.data.*;
 import rapaio.data.filter.var.*;
-import rapaio.ml.clustering.*;
+import rapaio.experiment.ml.clustering.*;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;

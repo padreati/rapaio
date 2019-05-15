@@ -32,10 +32,10 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
-import rapaio.ml.classifier.bayes.NaiveBayes;
-import rapaio.ml.classifier.bayes.estimator.KernelPdf;
+import rapaio.experiment.ml.classifier.bayes.NaiveBayes;
+import rapaio.experiment.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.rule.OneRule;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
 
 import java.io.File;

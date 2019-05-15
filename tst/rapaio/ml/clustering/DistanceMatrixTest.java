@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
+import rapaio.experiment.ml.clustering.*;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 

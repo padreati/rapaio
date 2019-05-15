@@ -45,7 +45,7 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifier implements DefaultPrintable {
+public class OneRule extends AbstractClassifier implements Printable {
 
     private static final long serialVersionUID = 6220103690711818091L;
 
@@ -272,6 +272,10 @@ public class OneRule extends AbstractClassifier implements DefaultPrintable {
         return set;
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 
     @Override
     public String summary() {
@@ -300,6 +304,16 @@ public class OneRule extends AbstractClassifier implements DefaultPrintable {
         }
         sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        return null;
+    }
+
+    @Override
+    public String fullContent() {
+        return null;
     }
 
 }

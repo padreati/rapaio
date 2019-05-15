@@ -25,9 +25,7 @@ CURRENT STATE OF THE CODE
 Currently the code can be classified into three categories of code maturity:
 
 * __Definitive__ - This category includes all the code which has a stable API and it was covered carefully with tests, 
-usually with a percentage over 95%
-* __Stable__ - This category includes all the code which is stable but it is not yet covered properly at a production 
-required level.
+usually with a percentage over 90%
 * __Experimental__ - All the code found under the package `rapaio.experimental`. This includes drafts and untested code, 
 which can be used, but production tools cannot rely on this code. Usually, when code migrates outside the experimental 
 package, API can change and sometimes even the philosophy behind the implementation.
@@ -40,22 +38,29 @@ Definitive Features
 
 * Variables and frames. There are 3 flavors of variables and frames: solid, mapped or bind. Access
 using streams is also available on variables and also on data frames.
+* Unique - data structure to collect and manipulate unique values of a variable
+* Group - data structure to build and manipulate group by aggregations
+* DVector - vector of frequencies
 
 **Frame Filters**
 
-* FJitter - add jitter to data according with a noise distribution
-* FIntercept - add an intercept variable to a given data frame
-* FMapVars - select some variables according with a VRange pattern
-* FRemoveVars - removes some variables according with a VRange pattern
-* FStandardize - standardize variables from a given data frame
-* FRandomProjection - project a data frame onto random projections
-* FQuantileDiscrete - splits numeric variables into nominal categories based on quantile intervals
-* FOneHotEncoding - encodes nominal variables into multiple 0/1 variables
 * FApplyDouble - apply a function on the double values of variables
 * FFillNaDouble - apply a given fill value over all missing values
-* FRetainTypes - retain only variables of given types
+* FIntercept - add an intercept variable to a given data frame
+* FJitter - add jitter to data according with a noise distribution
+* FMapVars - select some variables according with a VRange pattern
+* FOneHotEncoding - encodes nominal variables into multiple 0/1 variables
+* FQuantileDiscrete - splits numeric variables i**Core tools**
+
+nto nominal categories based on quantile intervals
+* FRandomProjection - project a data frame onto random projections
 * FRefSort - sort a data frame based on reference comparators
+* FRemoveVars - removes some variables according with a VRange pattern
+* FRetainTypes - retain only variables of given types
+* FShuffle - shuffle rows from a data frame
+* FStandardize - standardize variables from a given data frame
 * FToDouble - convert variables to double
+* FTransformBoxCox - apply box cox transformation
     
 **Var filters**
 
@@ -70,8 +75,8 @@ using streams is also available on variables and also on data frames.
 * VShuffle - shuffles values from a variable
 * VSort - sorts a variable according with default comparator
 * VStandardize - standardize values from a given numeric variable
-* VToInt - transforms a variable into an int type using a lambda
 * VToDouble - transforms a variable into double using a lambda
+* VToInt - transforms a variable into an int type using a lambda
 * VTransformBoxCox - transform a variable with BoxCox transform
 * VTransformPower - transform a variable with power transform
 
@@ -80,6 +85,8 @@ using streams is also available on variables and also on data frames.
 * Maximum, Minimum, Sum, Mean, Variance, Quantiles, GeometricMean, Skewness, Kurtosis
 * Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
 * WeightedMean, WeightedOnlineStat
+* Pearson product-moment coefficient
+* Spearman's rank correlation coefficient
 
 **Distributions**
 
@@ -95,11 +102,6 @@ using streams is also available on variables and also on data frames.
 * Student t
 * Continuous Uniform
 * Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
-
-**Correlations**
-
-* Pearson product-moment coefficient
-* Spearman's rank correlation coefficient
 
 **Hypothesis Testing**
 
@@ -122,13 +124,14 @@ using streams is also available on variables and also on data frames.
 * Anderson-Darling goodness of fit
     * normality test
     
-**Core tools**
+**Classification**
 
-* DVector
-* Unique (Double, Int, Label)
+* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 
-Stable Features
-====================
+
+Experminental Stage Features
+============================
+
 For each feature there are some notes regarding the development stage. 
 If there are no notes it means the feature is considered to be fully implemented and well tested.
 
@@ -166,7 +169,6 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Classification**
 
-* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 * Linear: BinaryLogistic
 * Rule: OneRule
 * Decision Trees - CTree: DecisionStump, ID3, C45, CART
@@ -179,6 +181,8 @@ If there are no notes it means the feature is considered to be fully implemented
 * Ensemble: CForest - Bagging, Random Forests
 * Boosting: AdaBoost.SAMME
 * SVM: BinarySMO (Platt)
+* Boosting: GBT (Gradient Boosting Trees) Classifier
+* Ensemble: SplitClassifier
 
 **Regression**
 
@@ -190,6 +194,8 @@ If there are no notes it means the feature is considered to be fully implemented
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 * LinearRegression (multiple targets, only numerical attributes)
+* Boost: GBT (Gradient Boosting Tree) Regressor
+* NNet: MultiLayer Perceptron Regressor
 
 **Clustering**
 
@@ -216,29 +222,10 @@ If there are no notes it means the feature is considered to be fully implemented
 * ROC Curve
 * Discrete Vertical Lines
 * Segment2D
+* Plot legend
+* BarChart
 
 **Matrices and vectors**
 
 * Numeric vector operations
 * Basic matrix operations and matrix decompositions
-
-Experminental Stage Features
-============================
-
-**Classification**
-
-* Boosting: GBT (Gradient Boosting Trees) Classifier
-* Ensemble: SplitClassifier
-
-**Regression**
-
-* Boost: GBT (Gradient Boosting Tree) Regressor
-* NNet: MultiLayer Perceptron Regressor
-
-**Graphics**
-
-All the graphics components are in usable state. However the graphics customization needs
-further improvements in order to make the utilization easier.
-
-* Plot legend
-* BarChart

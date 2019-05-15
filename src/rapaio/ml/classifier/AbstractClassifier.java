@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Abstract base class for all classifiers.
+ * Abstract base class for all classifier implementations.
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -59,7 +59,7 @@ public abstract class AbstractClassifier implements Classifier {
     private VType[] inputTypes;
     private String[] targetNames;
     private VType[] targetTypes;
-    private Map<String, List<String>> dict;
+    private Map<String, List<String>> targetLevels;
     private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
     private int poolSize = 0;
@@ -112,7 +112,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public Map<String, List<String>> targetLevels() {
-        return dict;
+        return targetLevels;
     }
 
     public boolean hasLearned() {
@@ -151,8 +151,8 @@ public abstract class AbstractClassifier implements Classifier {
         List<String> targets = VRange.of(targetVars).parseVarNames(result);
         this.targetNames = targets.toArray(new String[0]);
         this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
-        this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), result.rvar(firstTargetName()).levels());
+        this.targetLevels = new HashMap<>();
+        this.targetLevels.put(firstTargetName(), result.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
         List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
@@ -195,11 +195,6 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     protected abstract CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions);
-
-    @Override
-    public String summary() {
-        return "not implemented";
-    }
 
     public String baseSummary() {
         StringBuilder sb = new StringBuilder();

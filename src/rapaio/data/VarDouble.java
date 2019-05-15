@@ -288,7 +288,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     private static final long serialVersionUID = -3167416341273129670L;
-    private static final double missingValue = Double.NaN;
+    public static final double MISSING_VALUE = Double.NaN;
     private double[] data;
     private int rows;
 
@@ -371,7 +371,7 @@ public final class VarDouble extends AbstractVar {
     public void addRows(int rowCount) {
         ensureCapacity(rows + rowCount);
         for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = missingValue;
+            data[rows + i] = MISSING_VALUE;
         }
         rows += rowCount;
     }
@@ -397,12 +397,12 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public void setMissing(int row) {
-        setDouble(row, missingValue);
+        setDouble(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        addDouble(missingValue);
+        addDouble(MISSING_VALUE);
     }
 
     @Override
@@ -518,7 +518,7 @@ public final class VarDouble extends AbstractVar {
         return new VarDoubleDataAccessor() {
             @Override
             public double getMissingValue() {
-                return missingValue;
+                return MISSING_VALUE;
             }
 
             @Override

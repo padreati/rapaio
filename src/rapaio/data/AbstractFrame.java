@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-abstract class AbstractFrame implements Frame {
+public abstract class AbstractFrame implements Frame {
 
     private static final long serialVersionUID = -4375603852723666661L;
 

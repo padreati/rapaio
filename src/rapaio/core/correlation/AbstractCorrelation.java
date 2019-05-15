@@ -28,7 +28,7 @@
 package rapaio.core.correlation;
 
 import rapaio.data.*;
-import rapaio.ml.clustering.*;
+import rapaio.experiment.ml.clustering.*;
 import rapaio.printer.format.*;
 
 import java.util.Arrays;

@@ -68,75 +68,75 @@ public class Group implements Printable {
 
     ///// Group by functions /////
 
-    static GroupFun count(String... varNames) {
+    public static GroupFun count(String... varNames) {
         return count(-1, varNames);
     }
 
-    static GroupFun count(int normalizeLevel, String... varNames) {
+    public static GroupFun count(int normalizeLevel, String... varNames) {
         return new GroupFunCount(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun min(String... varNames) {
+    public static GroupFun min(String... varNames) {
         return min(-1, varNames);
     }
 
-    static GroupFun min(int normalizeLevel, String... varNames) {
+    public static GroupFun min(int normalizeLevel, String... varNames) {
         return new GroupFunMin(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun max(String... varNames) {
+    public static GroupFun max(String... varNames) {
         return max(-1, varNames);
     }
 
-    static GroupFun max(int normalizeLevel, String... varNames) {
+    public static GroupFun max(int normalizeLevel, String... varNames) {
         return new GroupFunMax(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun sum(String... varNames) {
+    public static GroupFun sum(String... varNames) {
         return sum(-1, varNames);
     }
 
-    static GroupFun sum(int normalizeLevel, String... varNames) {
+    public static GroupFun sum(int normalizeLevel, String... varNames) {
         return new GroupFunSum(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun skewness(String... varNames) {
+    public static GroupFun skewness(String... varNames) {
         return skewness(-1, varNames);
     }
 
-    static GroupFun skewness(int normalizeLevel, String... varNames) {
+    public static GroupFun skewness(int normalizeLevel, String... varNames) {
         return new GroupFunSkewness(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun mean(String... varNames) {
+    public static GroupFun mean(String... varNames) {
         return mean(-1, varNames);
     }
 
-    static GroupFun mean(int normalizeLevel, String... varNames) {
+    public static GroupFun mean(int normalizeLevel, String... varNames) {
         return new GroupFunMean(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun std(String... varNames) {
+    public static GroupFun std(String... varNames) {
         return std(-1, varNames);
     }
 
-    static GroupFun std(int normalizeLevel, String... varNames) {
+    public static GroupFun std(int normalizeLevel, String... varNames) {
         return new GroupFunStd(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun kurtosis(String... varNames) {
+    public static GroupFun kurtosis(String... varNames) {
         return kurtosis(-1, varNames);
     }
 
-    static GroupFun kurtosis(int normalizeLevel, String... varNames) {
+    public static GroupFun kurtosis(int normalizeLevel, String... varNames) {
         return new GroupFunKurtosis(normalizeLevel, Arrays.asList(varNames));
     }
 
-    static GroupFun nunique(String... varNames) {
+    public static GroupFun nunique(String... varNames) {
         return nunique(-1, varNames);
     }
 
-    static GroupFun nunique(int normalizeLevel, String... varNames) {
+    public static GroupFun nunique(int normalizeLevel, String... varNames) {
         return new GroupFunNUnique(normalizeLevel, Arrays.asList(varNames));
     }
 

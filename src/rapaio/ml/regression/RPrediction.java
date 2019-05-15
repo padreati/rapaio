@@ -84,6 +84,10 @@ public class RPrediction implements DefaultPrintable {
         return new RPrediction(model, df, withResiduals);
     }
 
+    public Regression getModel() {
+        return model;
+    }
+
     public Frame getFrame() {
         return df;
     }

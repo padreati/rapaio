@@ -33,6 +33,7 @@ import rapaio.core.tests.*;
 import rapaio.data.*;
 import rapaio.data.filter.var.*;
 import rapaio.datasets.*;
+import rapaio.experiment.ml.regression.simple.*;
 import rapaio.ml.regression.*;
 
 import static org.junit.Assert.*;
