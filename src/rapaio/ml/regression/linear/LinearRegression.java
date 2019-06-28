@@ -39,7 +39,7 @@ import rapaio.printer.format.*;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class LinearRegression extends AbstractRegression implements DefaultPrintable {
+public class LinearRegression extends AbstractRegression implements Printable {
 
     /**
      * Builds a linear regression model with intercept, no centering and no scaling.
@@ -203,6 +203,42 @@ public class LinearRegression extends AbstractRegression implements DefaultPrint
     @Override
     public LinearRPrediction predict(Frame df, boolean withResiduals) {
         return (LinearRPrediction) super.predict(df, withResiduals);
+    }
+
+    private String joinMax(int max, String[] tokens) {
+        StringBuilder sb = new StringBuilder();
+        int len = Math.min(tokens.length, max);
+        for (int i = 0; i < len; i++) {
+            sb.append(tokens[i]);
+            if (i < len - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName());
+        if (!isFitted()) {
+            sb.append(", not fitted.");
+        } else {
+            sb.append(", fitted on: ")
+                    .append(inputNames.length).append(" IVs [").append(joinMax(5, inputNames)).append("], ")
+                    .append(targetNames.length).append(" DVs [").append(joinMax(5, targetNames)).append("].");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        return summary();
+    }
+
+    @Override
+    public String fullContent() {
+        return summary();
     }
 
     @Override

@@ -126,7 +126,7 @@ public class BinarySMOTest {
 
         RandomSource.setSeed(1);
         double score = CEvaluation.cv(df.fapply(FStandardize.on(VRange.all())), target, smo1, 10);
-        assertEquals(0.7407142857142857, score, 1e-7);
+        assertEquals(0.7552380952380953, score, 1e-7);
     }
 
     @Test

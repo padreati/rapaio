@@ -25,17 +25,15 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
 import rapaio.data.*;
 import rapaio.datasets.*;
+import rapaio.math.linear.*;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Test for linear regression.
@@ -43,6 +41,8 @@ import static org.junit.Assert.assertEquals;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
 public class LinearRegressionTest {
+
+    private static final double TOL = 1e-20;
 
     @Test
     public void testOneTarget() throws IOException {
@@ -56,18 +56,21 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression()\n" +
+                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
                         "\n" +
                         "> model not trained.\n" +
                         "\n", lm.summary());
-
+        assertEquals("LinearRegression(intercept=true,centering=false,scaling=false), not fitted.",
+                lm.toString());
         lm.fit(df, "Radio");
+        assertEquals("LinearRegression(intercept=true,centering=false,scaling=false), fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
+                lm.toString());
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression()\n" +
+                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -89,7 +92,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression()\n" +
+                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -121,7 +124,7 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression()\n" +
+                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -151,7 +154,7 @@ public class LinearRegressionTest {
                 "=======================\n" +
                 "\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression()\n" +
+                "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
                 "\n" +
                 "> input variables: \n" +
                 "1. (Intercept) double \n" +
@@ -197,52 +200,65 @@ public class LinearRegressionTest {
                 "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +
                 "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.000002\n" +
                 "\n", lm.predict(df, true).summary());
+
+        assertEquals(lm.content(), lm.summary());
+        assertEquals(lm.fullContent(), lm.summary());
     }
 
     @Test
-    public void fewDegreesOfFreedom() {
-        Instant start = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(7, ChronoUnit.DAYS);
-        Instant end = start.plus(7, ChronoUnit.DAYS);
+    public void testIntercept() {
+        RandomSource.setSeed(123);
+        Normal normal = Normal.of(0, 10);
+        VarDouble x = VarDouble.seq(0, 100, 1).withName("x");
+        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).withName("I");
+        VarDouble y = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).withName("y");
 
-        List<Double> cpuData = new ArrayList<>();
-        List<Double> procData = new ArrayList<>();
+        Frame df1 = BoundFrame.byVars(x, y);
+        Frame df2 = BoundFrame.byVars(intercept, x, y);
 
-        Instant current = start;
-        Random random = new Random(1234);
-        while (current.compareTo(end) < 0) {
+        LinearRegression lm1 = LinearRegression.newLm().withIntercept(true).fit(df1, "y");
+        LinearRegression lm2 = LinearRegression.newLm().withIntercept(false).fit(df2, "y");
 
-            double cpu = random.nextDouble() * 10 + 3;
-            double proc = 1000 + 100 * cpu + random.nextGaussian();
+        LinearRPrediction pred1 = lm1.predict(df1, true);
+        LinearRPrediction pred2 = lm2.predict(df2, true);
 
-            cpuData.add(cpu);
-            procData.add(proc);
-            current = current.plus(5, ChronoUnit.MINUTES);
-        }
+        lm1.printContent();
+        lm2.printContent();
 
-        // get clean data for which both cpu and proc are not empty
-
-        VarDouble cpuClean = VarDouble.copy(cpuData).withName("cpu");
-        VarDouble procClean = VarDouble.copy(procData).withName("proc");
-
-        final int ESTIMATOR_TRAIN_SIZE = 12 * 24 * 2; // two days
-        final int ESTIMATOR_TEST_SIZE = 12 * 24; // one day
-
-        int step = 12 * 6;
-
-
-        Var trainCpu = cpuClean.withName("cpu");
-        Var trainProc = procClean.withName("proc");
-        Frame train = SolidFrame.byVars(trainCpu, trainProc);
-        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
-        lm.fit(train, "proc");
-        Var cpuTarget = VarDouble.empty().withName("cpu");
-        cpuTarget.addDouble(45);
-        Var procDummy = VarDouble.empty().withName("proc");
-        procDummy.addDouble(0.0);
-        LinearRPrediction lmfit = lm.predict(SolidFrame.byVars(cpuTarget, procDummy), true);
-        double procAtTargetPerHour = 12.0 * lmfit.firstPrediction().getDouble(0); // 12 * 5Min = 1H
-
-        lmfit.printSummary();
+        assertTrue(pred1.firstResidual().deepEquals(pred2.firstResidual()));
     }
 
+    @Test
+    public void testNewInstance() {
+        LinearRegression lm1 = LinearRegression.newLm().withIntercept(false).withCentering(true).withScaling(true);
+        LinearRegression lm2 = lm1.newInstance();
+
+        assertEquals(lm1.hasIntercept(), lm2.hasIntercept());
+        assertEquals(lm1.hasCentering(), lm2.hasCentering());
+        assertEquals(lm1.hasScaling(), lm2.hasScaling());
+    }
+
+    @Test
+    public void testCoefficients() {
+        RandomSource.setSeed(123);
+        Normal normal = Normal.of(0, 10);
+        VarDouble x = VarDouble.seq(0, 100, 1).withName("x");
+        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).withName("I");
+        VarDouble y1 = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).withName("y1");
+        VarDouble y2 = VarDouble.from(x, v -> v * 3 - 10 + normal.sampleNext()).withName("y2");
+
+        Frame df = BoundFrame.byVars(x, y1, y2);
+
+        LinearRegression lm = LinearRegression.newLm().withIntercept(true).fit(df, "y1,y2");
+        LinearRPrediction pred = lm.predict(df, true);
+
+        RM betas = lm.allCoefficients();
+        RV firstBetas = lm.firstCoefficients();
+        RV secondBetas = lm.getCoefficients(1);
+
+        for (int i = 0; i < 2; i++) {
+            assertEquals(betas.get(i, 0), firstBetas.get(i), TOL);
+            assertEquals(betas.get(i, 1), secondBetas.get(i), TOL);
+        }
+    }
 }
