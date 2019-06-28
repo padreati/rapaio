@@ -27,7 +27,6 @@
 
 package rapaio.experiment.ml.regression.loss;
 
-import org.apache.commons.lang.NotImplementedException;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -102,6 +101,6 @@ public class KDevianceRegressionLoss implements RegressionLoss {
 
     @Override
     public double computeResidualErrorScore(Var residual) {
-        throw new NotImplementedException();
+        throw new IllegalStateException();
     }
 }
