@@ -25,30 +25,16 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost.gbt;
+package rapaio.experiment.ml.regression.tree;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-
-import java.io.Serializable;
+import rapaio.data.*;
+import rapaio.experiment.ml.regression.boost.gbt.*;
+import rapaio.ml.regression.*;
 
 /**
- * Loss function used by gradient boosting algorithm.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
  */
-@Deprecated
-public interface GBTRegressionLoss extends Serializable {
+public interface GBTRtree extends Regression {
 
-    String name();
-
-    double findMinimum(Var y, Var fx);
-
-    /**
-     * Compute vector of gradients for
-     * @param y
-     * @param fx
-     * @return
-     */
-    VarDouble gradient(Var y, Var fx);
+    void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
 }

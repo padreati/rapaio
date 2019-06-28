@@ -33,12 +33,11 @@ import rapaio.core.distributions.*;
 import rapaio.core.stat.*;
 import rapaio.core.tools.*;
 import rapaio.data.*;
-import rapaio.data.filter.*;
 import rapaio.data.filter.frame.*;
 import rapaio.data.filter.var.*;
 import rapaio.data.sample.*;
-import rapaio.ml.classifier.*;
 import rapaio.experiment.ml.classifier.tree.*;
+import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.ml.eval.*;
 import rapaio.printer.*;
@@ -115,16 +114,13 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
 
     @Override
     public Classifier newInstance() {
-        return new CForest()
-                .withRuns(runs())
-                .withInputFilters(inputFilters())
+        return newInstanceDecoration(new CForest())
                 .withBaggingMode(baggingMode)
                 .withOobComp(oobComp)
                 .withFreqVIComp(freqVIComp)
                 .withGainVIComp(gainVIComp)
                 .withPermVIComp(permVIComp)
-                .withClassifier(c.newInstance())
-                .withSampler(sampler());
+                .withClassifier(c.newInstance());
     }
 
     public CForest withRuns(int runs) {
@@ -473,18 +469,8 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    public CForest withRunPoolSize(int poolSize) {
-        return (CForest) super.withRunPoolSize(poolSize);
-    }
-
-    @Override
-    public CForest withInputFilters(List<FFilter> filters) {
-        return (CForest) super.withInputFilters(filters);
-    }
-
-    @Override
-    public CForest withInputFilters(FFilter... filters) {
-        return (CForest) super.withInputFilters(filters);
+    public CForest withPoolSize(int poolSize) {
+        return (CForest) super.withPoolSize(poolSize);
     }
 
     @Override

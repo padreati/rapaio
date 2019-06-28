@@ -25,13 +25,8 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.frame.FIntercept;
-import rapaio.datasets.Datasets;
+import rapaio.data.*;
+import rapaio.datasets.*;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -55,8 +50,7 @@ public class LinearRegressionTest {
         Frame df = Datasets.loadISLAdvertising()
                 .removeVars(VRange.of("ID", "Sales", "Newspaper"));
 
-        LinearRegression lm = new LinearRegression();
-        lm.addInputFilters(FIntercept.filter());
+        LinearRegression lm = new LinearRegression().withIntercept(true);
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
@@ -149,8 +143,7 @@ public class LinearRegressionTest {
     public void testMultipleTargets() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
-        LinearRegression lm = new LinearRegression();
-        lm.addInputFilters(FIntercept.filter());
+        LinearRegression lm = new LinearRegression().withIntercept(true);
 
         lm.fit(df, "Sales", "Radio");
 
@@ -240,14 +233,14 @@ public class LinearRegressionTest {
         Var trainCpu = cpuClean.withName("cpu");
         Var trainProc = procClean.withName("proc");
         Frame train = SolidFrame.byVars(trainCpu, trainProc);
-        LinearRegression lm = LinearRegression.newLm().withInputFilters(FIntercept.filter());
+        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
         lm.fit(train, "proc");
         Var cpuTarget = VarDouble.empty().withName("cpu");
         cpuTarget.addDouble(45);
         Var procDummy = VarDouble.empty().withName("proc");
         procDummy.addDouble(0.0);
         LinearRPrediction lmfit = lm.predict(SolidFrame.byVars(cpuTarget, procDummy), true);
-        double procAtTargetPerHour = 12.0 * lmfit.firstFit().getDouble(0); // 12 * 5Min = 1H
+        double procAtTargetPerHour = 12.0 * lmfit.firstPrediction().getDouble(0); // 12 * 5Min = 1H
 
         lmfit.printSummary();
     }

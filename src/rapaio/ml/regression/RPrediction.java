@@ -40,15 +40,15 @@ import java.util.stream.Collectors;
 import static java.util.Collections.nCopies;
 
 /**
- * Result of a regression predict.
+ * Result of a regression prediction.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RPrediction implements DefaultPrintable {
-    protected final Regression model;
+public class RPrediction<T extends Regression> implements DefaultPrintable {
+    protected final T model;
     protected final Frame df;
     protected final boolean withResiduals;
-    protected final Map<String, VarDouble> fit;
+    protected final Map<String, VarDouble> prediction;
     protected final Map<String, VarDouble> residuals;
     protected final Map<String, Double> tss;
     protected final Map<String, Double> ess;
@@ -57,19 +57,19 @@ public class RPrediction implements DefaultPrintable {
 
     // static builder
 
-    protected RPrediction(final Regression model, final Frame df, final boolean withResiduals) {
+    protected RPrediction(final T model, final Frame df, final boolean withResiduals) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
 
-        this.fit = new HashMap<>();
+        this.prediction = new HashMap<>();
         this.residuals = new HashMap<>();
         this.tss = new HashMap<>();
         this.ess = new HashMap<>();
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
+            prediction.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
             residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
@@ -80,11 +80,11 @@ public class RPrediction implements DefaultPrintable {
 
     // private constructor
 
-    public static RPrediction build(Regression model, Frame df, boolean withResiduals) {
-        return new RPrediction(model, df, withResiduals);
+    public static <T extends Regression> RPrediction build(T model, Frame df, boolean withResiduals) {
+        return new RPrediction<>(model, df, withResiduals);
     }
 
-    public Regression getModel() {
+    public T getModel() {
         return model;
     }
 
@@ -119,8 +119,8 @@ public class RPrediction implements DefaultPrintable {
      *
      * @return map with numeric variables as predicted values
      */
-    public Map<String, VarDouble> fitMap() {
-        return fit;
+    public Map<String, VarDouble> predictionMap() {
+        return prediction;
     }
 
     /**
@@ -128,8 +128,8 @@ public class RPrediction implements DefaultPrintable {
      *
      * @return frame with fitted variables as columns
      */
-    public Frame fitFrame() {
-        return SolidFrame.byVars(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
+    public Frame predictionFrame() {
+        return SolidFrame.byVars(Arrays.stream(targetNames()).map(prediction::get).collect(Collectors.toList()));
     }
 
     /**
@@ -137,8 +137,8 @@ public class RPrediction implements DefaultPrintable {
      *
      * @return numeric variable with predicted values
      */
-    public VarDouble firstFit() {
-        return fit.get(firstTargetName());
+    public VarDouble firstPrediction() {
+        return prediction.get(firstTargetName());
     }
 
     /**
@@ -147,8 +147,8 @@ public class RPrediction implements DefaultPrintable {
      * @param targetVar given target variable name
      * @return numeric variable with predicted values
      */
-    public VarDouble fit(String targetVar) {
-        return fit.get(targetVar);
+    public VarDouble prediction(String targetVar) {
+        return prediction.get(targetVar);
     }
 
     public double firstRSquare() {
@@ -203,7 +203,7 @@ public class RPrediction implements DefaultPrintable {
         if (withResiduals) {
             for (String target : targetNames()) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(target).setDouble(i, df.getDouble(i, target) - fit(target).getDouble(i));
+                    residuals.get(target).setDouble(i, df.getDouble(i, target) - prediction(target).getDouble(i));
                 }
 
                 double mu = Mean.of(df.rvar(target)).value();
@@ -213,8 +213,8 @@ public class RPrediction implements DefaultPrintable {
 
                 for (int i = 0; i < df.rowCount(); i++) {
                     tssValue += Math.pow(df.getDouble(i, target) - mu, 2);
-                    essValue += Math.pow(fit(target).getDouble(i) - mu, 2);
-                    rssValue += Math.pow(df.getDouble(i, target) - fit(target).getDouble(i), 2);
+                    essValue += Math.pow(prediction(target).getDouble(i) - mu, 2);
+                    rssValue += Math.pow(df.getDouble(i, target) - prediction(target).getDouble(i), 2);
                 }
 
                 tss.put(target, tssValue);
@@ -237,7 +237,7 @@ public class RPrediction implements DefaultPrintable {
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "="))).append('\n');
 
-            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).summary();
+            String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).summary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {

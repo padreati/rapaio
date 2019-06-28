@@ -27,17 +27,11 @@
 
 package rapaio.experiment.ml.regression.ensemble;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.Sample;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.AbstractRegression;
-import rapaio.ml.regression.RPrediction;
-import rapaio.ml.regression.Regression;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.experiment.ml.regression.tree.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
 import rapaio.printer.*;
 
 import java.util.ArrayList;
@@ -52,7 +46,12 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
+    // parameter
+
     private Regression r = RTree.newC45();
+
+    // learning artifacts
+
     private List<Regression> regressors = new ArrayList<>();
 
     public static RForest newRF() {
@@ -64,9 +63,8 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
 
     @Override
     public Regression newInstance() {
-        return new RForest()
-                .withRegression(this.r)
-                .withInputFilters(this.inputFilters().toArray(new FFilter[0]));
+        return newInstanceDecoration(new RForest())
+                .withRegression(this.r);
     }
 
     @Override
@@ -125,14 +123,14 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         List<VarDouble> results = regressors
                 .parallelStream()
-                .map(r -> r.predict(df, false).firstFit())
+                .map(r -> r.predict(df, false).firstPrediction())
                 .collect(Collectors.toList());
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (VarDouble result : results) {
                 sum += result.getDouble(i);
             }
-            fit.firstFit().setDouble(i, sum / regressors.size());
+            fit.firstPrediction().setDouble(i, sum / regressors.size());
         }
         if (withResiduals)
             fit.buildComplete();

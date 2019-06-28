@@ -27,6 +27,7 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.*;
 import rapaio.data.stream.*;
@@ -387,5 +388,20 @@ public interface Var extends Serializable, Printable {
     @Override
     default String summary() {
         return Summary.getSummary(this);
+    }
+
+    default Var updateDouble(Double2DoubleFunction fun) {
+        for (int i = 0; i < rowCount(); i++) {
+            setDouble(i, fun.apply(getDouble(i)));
+        }
+        return this;
+    }
+
+    default Var cupdateDouble(Double2DoubleFunction fun) {
+        VarDouble copy = VarDouble.fill(rowCount(), 0.0).withName(name());
+        for (int i = 0; i < rowCount(); i++) {
+            copy.setDouble(i, fun.apply(getDouble(i)));
+        }
+        return copy;
     }
 }

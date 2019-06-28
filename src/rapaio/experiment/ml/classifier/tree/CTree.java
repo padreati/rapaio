@@ -31,7 +31,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.tools.*;
 import rapaio.data.*;
-import rapaio.data.filter.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.ml.common.predicate.*;
@@ -140,18 +139,14 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
 
     @Override
     public CTree newInstance() {
-        CTree tree = (CTree) new CTree()
+        CTree tree = newInstanceDecoration(new CTree())
                 .withMinCount(minCount)
                 .withMinGain(minGain)
                 .withMaxDepth(maxDepth)
                 .withFunction(function)
                 .withSplitter(splitter)
-                .withVarSelector(varSelector().newInstance())
-                .withRunningHook(runningHook())
-                .withSampler(sampler());
+                .withVarSelector(varSelector().newInstance());
 
-        tree.withRunPoolSize(runPoolSize());
-        tree.withRuns(runs());
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
 
@@ -578,11 +573,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
             node.getChildren().forEach(nodes::addLast);
         }
         return count;
-    }
-
-    @Override
-    public CTree withInputFilters(List<FFilter> filters) {
-        return (CTree) super.withInputFilters(filters);
     }
 
     @Override

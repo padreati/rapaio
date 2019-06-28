@@ -25,30 +25,33 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost.gbt;
+package rapaio.data.filter.frame;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-
-import java.io.Serializable;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 /**
- * Loss function used by gradient boosting algorithm.
- * <p>
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/1/19.
  */
-@Deprecated
-public interface GBTRegressionLoss extends Serializable {
+public class FTransform extends AbstractFF {
 
-    String name();
 
-    double findMinimum(Var y, Var fx);
+    public FTransform(VRange vRange) {
+        super(vRange);
+    }
 
-    /**
-     * Compute vector of gradients for
-     * @param y
-     * @param fx
-     * @return
-     */
-    VarDouble gradient(Var y, Var fx);
+    @Override
+    protected void coreFit(Frame df) {
+
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        return null;
+    }
+
+    @Override
+    public FFilter newInstance() {
+        return null;
+    }
 }

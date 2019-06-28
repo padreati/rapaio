@@ -269,15 +269,13 @@ public final class VarNominal extends AbstractVar {
             return;
         }
         if (!reverse.containsKey(value)) {
-            if (dict.size() == 128) {
+            if (dict.size() == Short.MAX_VALUE - 1) {
                 throw new IllegalStateException("Cannot add new label since dictionary achieved it's maximum size.");
             }
             dict.add(value);
             reverse.put(value, (short) reverse.size());
-            data[row] = (short) (reverse.size() - 1);
-        } else {
-            data[row] = reverse.getShort(value);
         }
+        data[row] = reverse.getShort(value);
     }
 
     @Override

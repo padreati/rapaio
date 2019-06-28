@@ -28,7 +28,7 @@ package rapaio.ml.regression.linear;
 
 import rapaio.core.stat.*;
 import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.data.filter.frame.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
 import rapaio.ml.common.*;
@@ -42,7 +42,7 @@ import java.util.HashMap;
 /**
  * @author VHG6KOR
  */
-public class RidgeRegression extends AbstractLinearRegression implements DefaultPrintable {
+public class RidgeRegression extends AbstractRegression implements DefaultPrintable {
 
     private static final long serialVersionUID = -6014222985456365210L;
 
@@ -60,6 +60,10 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
                 .withScaling(true);
     }
 
+    protected boolean intercept = true;
+    protected boolean centering = false;
+    protected boolean scaling = false;
+    protected RM beta;
     /*
     Regularization strength; must be a positive float. Regularization improves the conditioning
     of the problem and reduces the variance of the estimates.
@@ -73,11 +77,11 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
 
     @Override
     public Regression newInstance() {
-        return new RidgeRegression()
-                .withIntercept(intercept)
-                .withLambda(lambda)
-                .withCentering(centering)
-                .withScaling(scaling);
+        return newInstanceDecoration(new RidgeRegression())
+                .withIntercept(hasIntercept())
+                .withLambda(getLambda())
+                .withCentering(hasCentering())
+                .withScaling(hasScaling());
     }
 
     @Override
@@ -94,31 +98,6 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
         return sb.toString();
     }
 
-    public RidgeRegression withLambda(double lambda) {
-        this.lambda = lambda;
-        return this;
-    }
-
-    @Override
-    public RidgeRegression withIntercept(boolean intercept) {
-        return (RidgeRegression) super.withIntercept(intercept);
-    }
-
-    @Override
-    public RidgeRegression withCentering(boolean centering) {
-        return (RidgeRegression) super.withCentering(centering);
-    }
-
-    @Override
-    public RidgeRegression withScaling(boolean scaling) {
-        return (RidgeRegression) super.withScaling(scaling);
-    }
-
-    @Override
-    public RidgeRegression withInputFilters(FFilter... filters) {
-        return (RidgeRegression) super.withInputFilters(filters);
-    }
-
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
@@ -128,6 +107,63 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
                 .withTargetCount(1, 1_000_000)
                 .withAllowMissingInputValues(false)
                 .withAllowMissingTargetValues(false);
+    }
+
+    /**
+     * @return true if the linear model adds an intercept
+     */
+    public boolean hasIntercept() {
+        return intercept;
+    }
+
+    /**
+     * Configure the model to introduce an intercept or not.
+     *
+     * @param intercept if true an intercept variable will be generated, false otherwise
+     * @return linear model instance
+     */
+    public RidgeRegression withIntercept(boolean intercept) {
+        this.intercept = intercept;
+        return this;
+    }
+
+    public boolean hasCentering() {
+        return centering;
+    }
+
+    public RidgeRegression withCentering(boolean centering) {
+        this.centering = centering;
+        return this;
+    }
+
+    public boolean hasScaling() {
+        return scaling;
+    }
+
+    public RidgeRegression withScaling(boolean scaling) {
+        this.scaling = scaling;
+        return this;
+    }
+
+    public RV firstCoefficients() {
+        return beta.mapCol(0);
+    }
+
+    public RV getCoefficients(int targetIndex) {
+        return beta.mapCol(targetIndex);
+    }
+
+    public RM allCoefficients() {
+        return beta;
+    }
+
+    public double getLambda() {
+        return lambda;
+    }
+
+    public RidgeRegression withLambda(double lambda) {
+        this.lambda = lambda;
+        return this;
     }
 
     @Override
@@ -141,13 +177,11 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
     }
 
     @Override
-    protected TrainSetup prepareFit(TrainSetup trainSetup) {
-        if (!intercept) {
-            return super.prepareFit(trainSetup);
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
+        if (intercept) {
+            return super.prepareFit(FIntercept.filter().apply(df), weights, targetVarNames);
         }
-        VarDouble inter = VarDouble.fill(trainSetup.df.rowCount(), 1.0).withName(INTERCEPT);
-        Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), trainSetup.df);
-        return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
+        return super.prepareFit(df, weights, targetVarNames);
     }
 
     @Override
@@ -157,9 +191,9 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
         }
 
         for (String inputName : inputNames) {
-            if (INTERCEPT.equals(inputName)) {
-                inputMean.put(INTERCEPT, 0.0);
-                inputSd.put(INTERCEPT, 1.0);
+            if (FIntercept.INTERCEPT.equals(inputName)) {
+                inputMean.put(FIntercept.INTERCEPT, 0.0);
+                inputSd.put(FIntercept.INTERCEPT, 1.0);
                 continue;
             }
             inputMean.put(inputName, centering ? Mean.of(df.rvar(inputName)).value() : 0);
@@ -209,12 +243,38 @@ public class RidgeRegression extends AbstractLinearRegression implements Default
     }
 
     @Override
-    protected FitSetup preparePredict(FitSetup fitSetup) {
-        if (!intercept) {
-            return super.preparePredict(fitSetup);
+    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
+        if (intercept) {
+            return super.preparePredict(FIntercept.filter().apply(df), withResiduals);
         }
-        VarDouble inter = VarDouble.fill(fitSetup.df.rowCount(), 1.0).withName(INTERCEPT);
-        Frame prepared = BoundFrame.byVars(SolidFrame.byVars(inter), fitSetup.df);
-        return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
+        return super.preparePredict(df, withResiduals);
+    }
+
+    @Override
+    protected RidgeRPrediction corePredict(Frame df, boolean withResiduals) {
+        RidgeRPrediction rp = new RidgeRPrediction(this, df, withResiduals);
+        for (int i = 0; i < targetNames().length; i++) {
+            String target = targetName(i);
+            for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
+                double fit = 0.0;
+                for (int k = 0; k < inputNames().length; k++) {
+                    fit += beta.get(k, i) * df.getDouble(j, inputName(k));
+                }
+                rp.prediction(target).setDouble(j, fit);
+            }
+        }
+
+        rp.buildComplete();
+        return rp;
+    }
+
+    @Override
+    public RidgeRPrediction predict(Frame df) {
+        return predict(df, false);
+    }
+
+    @Override
+    public RidgeRPrediction predict(Frame df, boolean withResiduals) {
+        return (RidgeRPrediction) super.predict(df, withResiduals);
     }
 }

@@ -1,16 +1,11 @@
 package rapaio.ml.eval;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.frame.FIntercept;
-import rapaio.datasets.Datasets;
-import rapaio.ml.regression.linear.LinearRPrediction;
-import rapaio.ml.regression.linear.LinearRegression;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.ml.regression.linear.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -64,12 +59,11 @@ public class RMSETest {
 
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
-        LinearRegression lm = LinearRegression.newLm()
-                .withInputFilters(FIntercept.filter());
+        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
         lm.fit(df, targets);
 
         LinearRPrediction fit = lm.predict(df, true);
-        RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.fitFrame());
+        RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.predictionFrame());
 
         for (int i = 0; i < targets.length; i++) {
             assertEquals(fit.rss(targets[i])/df.rowCount(), rmse.mse().getDouble(i), TOL);

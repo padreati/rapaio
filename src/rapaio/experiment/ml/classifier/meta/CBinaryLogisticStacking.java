@@ -106,7 +106,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
     }
 
     @Override
-    protected BaseTrainSetup baseFit(Frame df, Var weights, String... targetVars) {
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVars) {
         logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
@@ -130,7 +130,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
         vars.add(df.rvar(targets.get(0)).solidCopy());
 
-        return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), weights, targetVars);
+        return FitSetup.valueOf(SolidFrame.byVars(vars), weights, targetVars);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
     }
 
     @Override
-    protected BaseFitSetup basePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected PredSetup preparePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("predict method called.");
         List<Var> vars = new ArrayList<>();
 
@@ -158,7 +158,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
                 .map(v -> v.solidCopy().fapply(VApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
-        return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
+        return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class RidgeRegressionTest {
 
         LinearRPrediction lmFit = lm.fit(df, "Sales").predict(df, true);
         lmFit.printSummary();
-        LinearRPrediction ridgeFit = rlm.fit(df, "Sales").predict(df, true);
+        RidgeRPrediction ridgeFit = rlm.fit(df, "Sales").predict(df, true);
         ridgeFit.printSummary();
 
         for (int i = 0; i < 3; i++) {
@@ -62,7 +62,7 @@ public class RidgeRegressionTest {
 
         for (int i = 0; i < lambda.rowCount(); i++) {
             RidgeRegression rr = RidgeRegression.newRidgeLm(lambda.getDouble(i));
-            LinearRPrediction fit = rr.fit(df, "Sales").predict(df, true);
+            RidgeRPrediction fit = rr.fit(df, "Sales").predict(df, true);
 
             fit.printSummary();
         }

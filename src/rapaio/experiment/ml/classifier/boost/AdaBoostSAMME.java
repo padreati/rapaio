@@ -27,17 +27,11 @@
 
 package rapaio.experiment.ml.classifier.boost;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.data.sample.Sample;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.ml.common.Capabilities;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.experiment.ml.classifier.tree.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
 import rapaio.printer.*;
 
 import java.util.ArrayList;
@@ -77,15 +71,10 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
 
     @Override
     public AdaBoostSAMME newInstance() {
-        return (AdaBoostSAMME) new AdaBoostSAMME()
-                .withInputFilters(inputFilters())
+        return newInstanceDecoration(new AdaBoostSAMME())
                 .withClassifier(this.weak.newInstance())
                 .withStopOnError(stopOnError)
-                .withShrinkage(shrinkage)
-                .withSampler(sampler())
-                .withRuns(runs())
-                .withRunningHook(runningHook())
-                .withRunPoolSize(runPoolSize());
+                .withShrinkage(shrinkage);
     }
 
     @Override
@@ -244,16 +233,6 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
     @Override
     public AdaBoostSAMME withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
         return (AdaBoostSAMME) super.withRunningHook(runningHook);
-    }
-
-    @Override
-    public AdaBoostSAMME withInputFilters(FFilter... filters) {
-        return (AdaBoostSAMME) super.withInputFilters(filters);
-    }
-
-    @Override
-    public AdaBoostSAMME withInputFilters(List<FFilter> filters) {
-        return (AdaBoostSAMME) super.withInputFilters(filters);
     }
 
     @Override

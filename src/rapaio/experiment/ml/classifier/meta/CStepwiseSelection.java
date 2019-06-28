@@ -73,15 +73,14 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
     }
 
     @Override
-    public Classifier newInstance() {
-        return new CStepwiseSelection()
+    public AbstractClassifier newInstance() {
+        return newInstanceDecoration(new CStepwiseSelection())
                 .withRestartAfter(restartAfter)
                 .withClassifier(c)
                 .withMaxVars(maxVars)
                 .withMinVars(minVars)
                 .withStartSelection(startSelection)
-                .withTestFrame(test)
-                .withRunPoolSize(runPoolSize());
+                .withTestFrame(test);
     }
 
     @Override

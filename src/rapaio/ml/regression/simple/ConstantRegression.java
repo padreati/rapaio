@@ -54,7 +54,7 @@ public class ConstantRegression extends AbstractRegression implements Printable 
 
     @Override
     public ConstantRegression newInstance() {
-        return new ConstantRegression()
+        return super.newInstanceDecoration(new ConstantRegression())
                 .withConstant(constant);
     }
 
@@ -97,7 +97,7 @@ public class ConstantRegression extends AbstractRegression implements Printable 
     protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (String targetName : targetNames) {
-            fit.fit(targetName).stream().forEach(s -> s.setDouble(constantValue()));
+            fit.prediction(targetName).stream().forEach(s -> s.setDouble(constantValue()));
         }
         fit.buildComplete();
         return fit;

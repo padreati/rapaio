@@ -65,6 +65,7 @@ public interface RegressionLoss {
 
     /**
      * Computes vector of values for the gradient of the loss function
+     * as a loss derivative of fit function
      *
      * @param y vector target values
      * @param y_hat vector of fitted values
@@ -79,7 +80,7 @@ public interface RegressionLoss {
      * @param y_hat vector of fitted values
      * @return vector with loss for each observation
      */
-    VarDouble computeLoss(Var y, Var y_hat);
+    VarDouble computeError(Var y, Var y_hat);
 
     /**
      * Compute a single loss score.
@@ -87,5 +88,12 @@ public interface RegressionLoss {
      * @param y_hat vector of fitted values
      * @return aggregate loss score for all observations
      */
-    double computeLossScore(Var y, Var y_hat);
+    double computeErrorScore(Var y, Var y_hat);
+
+    /**
+     * Compute a single loss score.
+     * @param residual vector of target values
+     * @return aggregate loss score for all observations
+     */
+    double computeResidualErrorScore(Var residual);
 }

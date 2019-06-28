@@ -28,6 +28,7 @@
 package rapaio.data;
 
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import rapaio.data.accessor.*;
 import rapaio.printer.format.*;
@@ -575,5 +576,22 @@ public final class VarDouble extends AbstractVar {
         } else {
             tt.floatFlex(i, j, getDouble(row));
         }
+    }
+
+    @Override
+    public VarDouble updateDouble(Double2DoubleFunction fun) {
+        for (int i = 0; i < data.length; i++) {
+            data[i] = fun.applyAsDouble(data[i]);
+        }
+        return this;
+    }
+
+    @Override
+    public VarDouble cupdateDouble(Double2DoubleFunction fun) {
+        double[] copy = new double[rowCount()];
+        for (int i = 0; i < data.length; i++) {
+            copy[i] = fun.applyAsDouble(data[i]);
+        }
+        return VarDouble.wrap(copy).withName(name());
     }
 }

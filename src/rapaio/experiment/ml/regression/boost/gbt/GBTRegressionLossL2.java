@@ -27,9 +27,8 @@
 
 package rapaio.experiment.ml.regression.boost.gbt;
 
-import rapaio.core.stat.Mean;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.

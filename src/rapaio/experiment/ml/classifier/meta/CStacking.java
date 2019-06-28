@@ -68,13 +68,9 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
 
     @Override
     public Classifier newInstance() {
-        return new CStacking()
+        return newInstanceDecoration(new CStacking())
                 .withLearners(weaks.stream().map(Classifier::newInstance).toArray(Classifier[]::new))
-                .withStacker(stacker.newInstance())
-                .withRunPoolSize(runPoolSize())
-                .withRunningHook(runningHook())
-                .withRuns(runs())
-                .withInputFilters(inputFilters());
+                .withStacker(stacker.newInstance());
     }
 
     @Override
@@ -100,7 +96,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
                 .withTargetCount(1, 1);
     }
 
-    protected BaseTrainSetup baseFit(Frame df, Var w, String... targetVars) {
+    protected FitSetup baseFit(Frame df, Var w, String... targetVars) {
         logger.fine("predict method called.");
         int pos = 0;
         logger.fine("check learners for learning.... ");
@@ -121,7 +117,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
         vars.add(df.rvar(targets.get(0)).solidCopy());
 
-        return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);
+        return FitSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);
     }
 
     @Override
@@ -134,7 +130,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
         return true;
     }
 
-    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected PredSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("predict method called.");
         List<Var> vars = IntStream.range(0, weaks.size()).parallel()
                 .boxed()
@@ -147,7 +143,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
                             .solidCopy()
                             .withName("V" + i);
                 }).collect(toList());
-        return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
+        return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }
 
     @Override

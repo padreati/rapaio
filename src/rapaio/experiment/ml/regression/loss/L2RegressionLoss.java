@@ -58,17 +58,28 @@ public class L2RegressionLoss implements RegressionLoss {
     }
 
     @Override
-    public VarDouble computeLoss(Var y, Var y_hat) {
+    public VarDouble computeError(Var y, Var y_hat) {
         int len = Math.min(y.rowCount(), y_hat.rowCount());
         return VarDouble.from(len, row -> Math.pow(y.getDouble(row) - y_hat.getDouble(row), 2));
     }
 
     @Override
-    public double computeLossScore(Var y, Var y_hat) {
+    public double computeErrorScore(Var y, Var y_hat) {
+
         double len = Math.min(y.rowCount(), y_hat.rowCount());
         double sum = 0.0;
         for (int i = 0; i < len; i++) {
             sum += Math.pow(y.getDouble(i) - y_hat.getDouble(i), 2);
+        }
+        return Math.sqrt(sum / len);
+    }
+
+    @Override
+    public double computeResidualErrorScore(Var residual) {
+        double len = residual.rowCount();
+        double sum = 0.0;
+        for (int i = 0; i < len; i++) {
+            sum += Math.pow(residual.getDouble(i), 2);
         }
         return Math.sqrt(sum / len);
     }

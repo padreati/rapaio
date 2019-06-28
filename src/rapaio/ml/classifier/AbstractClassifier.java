@@ -27,22 +27,17 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.printer.format.TextTable;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.printer.format.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -54,17 +49,32 @@ import java.util.stream.IntStream;
 public abstract class AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -6866948033065091047L;
-    private List<FFilter> inputFilters = new ArrayList<>();
-    private String[] inputNames;
-    private VType[] inputTypes;
-    private String[] targetNames;
-    private VType[] targetTypes;
-    private Map<String, List<String>> targetLevels;
+
+    // parameters
+
     private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
     private int poolSize = 0;
     private int runs = 1;
     private BiConsumer<Classifier, Integer> runningHook;
+    private BiFunction<Classifier, Integer, Boolean> stoppingHook;
+
+    // learning artifacts
+
+    private String[] inputNames;
+    private VType[] inputTypes;
+    private String[] targetNames;
+    private VType[] targetTypes;
+    private Map<String, List<String>> targetLevels;
+
+    public <T extends AbstractClassifier> T newInstanceDecoration(T classifier) {
+        return (T) classifier
+                .withSampler(sampler)
+                .withPoolSize(poolSize)
+                .withRuns(runs)
+                .withRunningHook(runningHook)
+                .withStoppingHook(stoppingHook);
+    }
 
     @Override
     public RowSampler sampler() {
@@ -78,15 +88,44 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public List<FFilter> inputFilters() {
-        return inputFilters;
+    public int runPoolSize() {
+        return poolSize;
     }
 
     @Override
-    public Classifier withInputFilters(List<FFilter> filters) {
-        inputFilters = new ArrayList<>();
-        for (FFilter filter : filters)
-            inputFilters.add(filter.newInstance());
+    public AbstractClassifier withPoolSize(int poolSize) {
+        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
+        return this;
+    }
+
+    @Override
+    public int runs() {
+        return runs;
+    }
+
+    @Override
+    public AbstractClassifier withRuns(int runs) {
+        this.runs = runs;
+        return this;
+    }
+
+    @Override
+    public BiConsumer<Classifier, Integer> runningHook() {
+        return runningHook;
+    }
+
+    @Override
+    public AbstractClassifier withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
+        this.runningHook = runningHook;
+        return this;
+    }
+
+    public BiFunction<Classifier, Integer, Boolean> stoppingHook() {
+        return stoppingHook;
+    }
+
+    public AbstractClassifier withStoppingHook(BiFunction<Classifier, Integer, Boolean> stoppingHook) {
+        this.stoppingHook = stoppingHook;
         return this;
     }
 
@@ -127,9 +166,8 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final Classifier fit(Frame df, Var weights, String... targetVars) {
-        BaseTrainSetup setup = baseFit(df, weights, targetVars);
-        Frame workDf = prepareFit(setup.df, setup.w, setup.targetVars);
-        learned = coreFit(workDf, setup.w);
+        FitSetup setup = prepareFit(df, weights, targetVars);
+        learned = coreFit(setup.df, setup.w);
         return this;
     }
 
@@ -138,33 +176,24 @@ public abstract class AbstractClassifier implements Classifier {
      * for all learners. It's tass includes initialization of target names,
      * input names, check the capabilities at learning phase, etc.
      *
-     * @param dfOld      data frame
+     * @param df         data frame
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    protected Frame prepareFit(Frame dfOld, final Var weights, final String... targetVars) {
-        Frame df = dfOld;
-        for (FFilter filter : inputFilters) {
-            df = filter.fapply(df);
-        }
-        Frame result = df;
-        List<String> targets = VRange.of(targetVars).parseVarNames(result);
+    protected FitSetup prepareFit(Frame df, final Var weights, final String... targetVars) {
+        List<String> targets = VRange.of(targetVars).parseVarNames(df);
         this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
         this.targetLevels = new HashMap<>();
-        this.targetLevels.put(firstTargetName(), result.rvar(firstTargetName()).levels());
+        this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
-        List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(name -> result.rvar(name).type()).toArray(VType[]::new);
+        this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
 
-        capabilities().checkAtLearnPhase(result, weights, targetVars);
-        return result;
-    }
-
-    protected BaseTrainSetup baseFit(Frame df, Var weights, String... targetVars) {
-        return BaseTrainSetup.valueOf(df, weights, targetVars);
+        capabilities().checkAtLearnPhase(df, weights, targetVars);
+        return FitSetup.valueOf(df, weights, targetVars);
     }
 
     protected abstract boolean coreFit(Frame df, Var weights);
@@ -176,22 +205,12 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public final CPrediction predict(Frame df, boolean withClasses, boolean withDistributions) {
-        BaseFitSetup setup = basePredict(df, withClasses, withDistributions);
-        Frame workDf = preparePredict(setup.df);
-        return corePredict(workDf, setup.withClasses, setup.withDistributions);
+        PredSetup setup = preparePredict(df, withClasses, withDistributions);
+        return corePredict(setup.df, setup.withClasses, setup.withDistributions);
     }
 
-    // by default do nothing, it is only for two stage training
-    protected BaseFitSetup basePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        return BaseFitSetup.valueOf(df, withClasses, withDistributions);
-    }
-
-    protected Frame preparePredict(Frame df) {
-        Frame result = df;
-        for (FFilter filter : inputFilters) {
-            result = filter.apply(result);
-        }
-        return result;
+    protected PredSetup preparePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        return PredSetup.valueOf(df, withClasses, withDistributions);
     }
 
     protected abstract CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions);
@@ -221,69 +240,32 @@ public abstract class AbstractClassifier implements Classifier {
         return sb.toString();
     }
 
-    @Override
-    public AbstractClassifier withRunPoolSize(int poolSize) {
-        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
-        return this;
-    }
+    protected static class FitSetup {
+        public Frame df;
+        public Var w;
+        public String[] targetVars;
 
-    @Override
-    public int runPoolSize() {
-        return poolSize;
-    }
-
-    @Override
-    public int runs() {
-        return runs;
-    }
-
-    @Override
-    public Classifier withRuns(int runs) {
-        this.runs = runs;
-        return this;
-    }
-
-    @Override
-    public BiConsumer<Classifier, Integer> runningHook() {
-        return runningHook;
-    }
-
-    @Override
-    public Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return this;
-    }
-
-    protected static class BaseTrainSetup {
-        public final Frame df;
-        public final Var w;
-        public final String[] targetVars;
-
-        private BaseTrainSetup(Frame df, Var w, String[] targetVars) {
-            this.df = df;
-            this.w = w;
-            this.targetVars = targetVars;
-        }
-
-        public static BaseTrainSetup valueOf(Frame df, Var w, String[] targetVars) {
-            return new BaseTrainSetup(df, w, targetVars);
+        public static FitSetup valueOf(Frame df, Var w, String[] targetVars) {
+            FitSetup setup = new FitSetup();
+            setup.df = df;
+            setup.w = w;
+            setup.targetVars = targetVars;
+            return setup;
         }
     }
 
-    protected static final class BaseFitSetup {
+    protected static final class PredSetup {
 
-        public final Frame df;
-        public final boolean withClasses;
-        public final boolean withDistributions;
+        public Frame df;
+        public boolean withClasses;
+        public boolean withDistributions;
 
-        private BaseFitSetup(Frame df, boolean withClasses, boolean withDistributions) {
-            this.df = df;
-            this.withClasses = withClasses;
-            this.withDistributions = withDistributions;
-        }
-
-        public static BaseFitSetup valueOf(Frame df, boolean withClasses, boolean withDistributions) {
-            return new BaseFitSetup(df, withClasses, withDistributions);
+        public static PredSetup valueOf(Frame df, boolean withClasses, boolean withDistributions) {
+            PredSetup setup = new PredSetup();
+            setup.df = df;
+            setup.withClasses = withClasses;
+            setup.withDistributions = withDistributions;
+            return setup;
         }
     }
 }

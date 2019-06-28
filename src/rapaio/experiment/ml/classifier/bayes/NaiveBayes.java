@@ -29,10 +29,9 @@ package rapaio.experiment.ml.classifier.bayes;
 
 import rapaio.core.tools.*;
 import rapaio.data.*;
-import rapaio.data.filter.*;
-import rapaio.ml.classifier.*;
 import rapaio.experiment.ml.classifier.bayes.data.*;
 import rapaio.experiment.ml.classifier.bayes.estimator.*;
+import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.printer.*;
 import rapaio.util.*;
@@ -40,7 +39,6 @@ import rapaio.util.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -84,7 +82,8 @@ public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
     private NumericData numData = new NumericData(new GaussianPdf());
     private NominalData nomData = new NominalData(new MultinomialPmf());
     private BinaryData binData = new BinaryData(new MultinomialPmf());
-	@Override
+
+    @Override
     public NaiveBayes newInstance() {
         return new NaiveBayes()
                 .withBinEstimator(binData.binEstimator)
@@ -216,15 +215,15 @@ public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
         return pred;
     }
 
-	private double buildSumLog(Frame df, int i, int j, NaiveBayesData data) {
-		double sumLog = 0.0;
-		for (String testCol : data.keySet()) {
-		    if (df.isMissing(i, testCol))
-		        continue;
-		    sumLog += Math.log(data.calcSumLog(testCol, df, i, firstTargetLevel(j)));
-		}
-		return sumLog;
-	}
+    private double buildSumLog(Frame df, int i, int j, NaiveBayesData data) {
+        double sumLog = 0.0;
+        for (String testCol : data.keySet()) {
+            if (df.isMissing(i, testCol))
+                continue;
+            sumLog += Math.log(data.calcSumLog(testCol, df, i, firstTargetLevel(j)));
+        }
+        return sumLog;
+    }
 
     @Override
     public String summary() {
@@ -260,16 +259,6 @@ public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
             nomData.nomMap.forEach((key, value) -> sb.append("> ").append(key).append(" : ").append(value.learningInfo()).append("\n"));
         }
         return sb.toString();
-    }
-
-    @Override
-    public NaiveBayes withInputFilters(List<FFilter> filters) {
-        return (NaiveBayes) super.withInputFilters(filters);
-    }
-
-    @Override
-    public NaiveBayes withInputFilters(FFilter... filters) {
-        return (NaiveBayes) super.withInputFilters(filters);
     }
 
     interface PriorSupplier extends Serializable {

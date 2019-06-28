@@ -28,18 +28,24 @@
 package rapaio.ml.regression.linear;
 
 import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.data.filter.frame.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
 import rapaio.printer.*;
+import rapaio.printer.format.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class LinearRegression extends AbstractLinearRegression implements DefaultPrintable {
+public class LinearRegression extends AbstractRegression implements DefaultPrintable {
 
+    /**
+     * Builds a linear regression model with intercept, no centering and no scaling.
+     *
+     * @return new instance of linear regression model
+     */
     public static LinearRegression newLm() {
         return new LinearRegression()
                 .withIntercept(true)
@@ -47,11 +53,16 @@ public class LinearRegression extends AbstractLinearRegression implements Defaul
                 .withScaling(false);
     }
 
-    private static final long serialVersionUID = 8610329390138787530L;
+    private static final long serialVersionUID = 8595413796946622895L;
+
+    protected boolean intercept = true;
+    protected boolean centering = false;
+    protected boolean scaling = false;
+    protected RM beta;
 
     @Override
-    public Regression newInstance() {
-        return new LinearRegression()
+    public LinearRegression newInstance() {
+        return newInstanceDecoration(new LinearRegression())
                 .withIntercept(intercept)
                 .withCentering(centering)
                 .withScaling(scaling);
@@ -65,8 +76,10 @@ public class LinearRegression extends AbstractLinearRegression implements Defaul
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name());
-        sb.append("(");
+        sb.append(name()).append("(");
+        sb.append("intercept=").append(intercept).append(",");
+        sb.append("centering=").append(centering).append(",");
+        sb.append("scaling=").append(scaling);
         sb.append(")");
         return sb.toString();
     }
@@ -82,24 +95,68 @@ public class LinearRegression extends AbstractLinearRegression implements Defaul
                 .withAllowMissingTargetValues(false);
     }
 
-    @Override
-    public LinearRegression withInputFilters(FFilter... filters) {
-        return (LinearRegression) super.withInputFilters(filters);
+    /**
+     * @return true if the linear model adds an intercept
+     */
+    public boolean hasIntercept() {
+        return intercept;
     }
 
-    @Override
+    /**
+     * Configure the model to introduce an intercept or not.
+     *
+     * @param intercept if true an intercept variable will be generated, false otherwise
+     * @return linear model instance
+     */
     public LinearRegression withIntercept(boolean intercept) {
-        return (LinearRegression) super.withIntercept(intercept);
+        this.intercept = intercept;
+        return this;
     }
 
-    @Override
+    public boolean hasCentering() {
+        return centering;
+    }
+
     public LinearRegression withCentering(boolean centering) {
-        return (LinearRegression) super.withCentering(centering);
+        this.centering = centering;
+        return this;
+    }
+
+    public boolean hasScaling() {
+        return scaling;
+    }
+
+    public LinearRegression withScaling(boolean scaling) {
+        this.scaling = scaling;
+        return this;
+    }
+
+    public RV firstCoefficients() {
+        return beta.mapCol(0);
+    }
+
+    public RV getCoefficients(int targetIndex) {
+        return beta.mapCol(targetIndex);
+    }
+
+    public RM allCoefficients() {
+        return beta;
     }
 
     @Override
-    public LinearRegression withScaling(boolean scaling) {
-        return (LinearRegression) super.withScaling(scaling);
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
+        if (intercept) {
+            return super.prepareFit(FIntercept.filter().apply(df), weights, targetVarNames);
+        }
+        return super.prepareFit(df, weights, targetVarNames);
+    }
+
+    @Override
+    protected boolean coreFit(Frame df, Var weights) {
+        RM X = SolidRM.copy(df.mapVars(inputNames()));
+        RM Y = SolidRM.copy(df.mapVars(targetNames()));
+        beta = QRDecomposition.from(X).solve(Y);
+        return true;
     }
 
     @Override
@@ -113,54 +170,67 @@ public class LinearRegression extends AbstractLinearRegression implements Defaul
     }
 
     @Override
-    protected TrainSetup prepareFit(TrainSetup trainSetup) {
+    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
         if (intercept) {
-            boolean exists = false;
-            Frame prepared = trainSetup.df;
-            for (String varName : prepared.varNames()) {
-                if (varName.equals(INTERCEPT)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                VarDouble var = VarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
-                prepared = SolidFrame.byVars(var).bindVars(prepared);
-                return super.prepareFit(TrainSetup.valueOf(prepared, trainSetup.w, trainSetup.targetVars));
-            }
+            return super.preparePredict(FIntercept.filter().apply(df), withResiduals);
         }
-        return super.prepareFit(trainSetup);
+        return super.preparePredict(df, withResiduals);
     }
 
     @Override
-    protected boolean coreFit(Frame df, Var weights) {
-        if (targetNames().length == 0) {
-            throw new IllegalArgumentException("OLS must specify at least one target variable name");
+    protected LinearRPrediction corePredict(Frame df, boolean withResiduals) {
+        LinearRPrediction rp = new LinearRPrediction(this, df, withResiduals);
+        for (int i = 0; i < targetNames().length; i++) {
+            String target = targetName(i);
+            for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
+                double fit = 0.0;
+                for (int k = 0; k < inputNames().length; k++) {
+                    fit += beta.get(k, i) * df.getDouble(j, inputName(k));
+                }
+                rp.prediction(target).setDouble(j, fit);
+            }
         }
 
-        RM X = SolidRM.copy(df.mapVars(inputNames()));
-        RM Y = SolidRM.copy(df.mapVars(targetNames()));
-        beta = QRDecomposition.from(X).solve(Y);
-        return true;
+        rp.buildComplete();
+        return rp;
     }
 
     @Override
-    protected FitSetup preparePredict(FitSetup fitSetup) {
-        if (intercept) {
-            boolean exists = false;
-            Frame prepared = fitSetup.df;
-            for (String varName : prepared.varNames()) {
-                if (varName.equals(INTERCEPT)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                VarDouble var = VarDouble.fill(prepared.rowCount(), 1).withName(INTERCEPT);
-                prepared = SolidFrame.byVars(var).bindVars(prepared);
-                return super.preparePredict(FitSetup.valueOf(prepared, fitSetup.withResiduals));
-            }
+    public LinearRPrediction predict(Frame df) {
+        return predict(df, false);
+    }
+
+    @Override
+    public LinearRPrediction predict(Frame df, boolean withResiduals) {
+        return (LinearRPrediction) super.predict(df, withResiduals);
+    }
+
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(headerSummary());
+        sb.append("\n");
+
+        if (!hasLearned) {
+            return sb.toString();
         }
-        return super.preparePredict(fitSetup);
+
+        for (int i = 0; i < targetNames.length; i++) {
+            String targetName = targetNames[i];
+            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
+            sb.append("> Coefficients: \n");
+            RV coeff = beta.mapCol(i);
+
+            TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+            tt.textCenter(0, 0, "Name");
+            tt.textCenter(0, 1, "Estimate");
+            for (int j = 0; j < coeff.count(); j++) {
+                tt.textLeft(j + 1, 0, inputNames[j]);
+                tt.floatMedium(j + 1, 1, coeff.get(j));
+            }
+            sb.append(tt.getDefaultText());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

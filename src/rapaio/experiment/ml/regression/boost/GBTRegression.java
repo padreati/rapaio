@@ -52,26 +52,23 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    private GBTRegressionLoss lossFunction = new GBTRegressionLossL1();
-    private RegressionLoss regressionLoss = new L2RegressionLoss();
     private Regression initRegression = L2Regression.create();
-    private RTree regressor = RTree.newCART()
-            .withMaxDepth(4)
-            .withMinCount(10);
+    private GBTRtree regressor = RTree.newCART().withMaxDepth(2).withMinCount(10);
+    private GBTRegressionLoss lossFunction = new GBTRegressionLossL2();
+    private RegressionLoss regressionLoss = new L2RegressionLoss();
     private double shrinkage = 1.0;
 
     // prediction
     VarDouble fitValues;
-    List<RTree> trees;
+    List<GBTRtree> trees;
 
     @Override
     public Regression newInstance() {
-        return new GBTRegression()
+        return newInstanceDecoration(new GBTRegression())
                 .withInitRegressor(initRegression)
                 .withRegressor(regressor)
-                .withShrinkage(shrinkage)
-                .withSampler(sampler())
-                .withRuns(runs());
+                .withLossFunction(regressionLoss)
+                .withShrinkage(shrinkage);
     }
 
     @Override
@@ -109,7 +106,7 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
         return this;
     }
 
-    public GBTRegression withRegressor(RTree regressor) {
+    public GBTRegression withRegressor(GBTRtree regressor) {
         this.regressor = regressor;
         return this;
     }
@@ -132,6 +129,10 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
         return (GBTRegression) super.withRuns(runs);
     }
 
+    public List<GBTRtree> getTrees() {
+        return trees;
+    }
+
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
@@ -141,13 +142,13 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.fit(df, weights, firstTargetName());
-        fitValues = initRegression.predict(df, false).firstFit().solidCopy();
+        fitValues = initRegression.predict(df, false).firstPrediction().solidCopy();
 
         for (int i = 1; i <= runs(); i++) {
             Var gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
-            RTree tree = regressor.newInstance();
+            GBTRtree tree = (GBTRtree) regressor.newInstance();
 
             // frame sampling
 
@@ -167,17 +168,22 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
                     lossFunction);
 
             // add next prediction to the predict values
-
             RPrediction treePred = tree.predict(df, false);
+            VarDouble nextFit = VarDouble.fill(df.rowCount(), 0.0).withName(fitValues.name());
             for (int j = 0; j < df.rowCount(); j++) {
-                fitValues.setDouble(j, fitValues.getDouble(j) + shrinkage * treePred.firstFit().getDouble(j));
+                nextFit.setDouble(j, fitValues.getDouble(j) + shrinkage * treePred.firstPrediction().getDouble(j));
             }
 
-            // add tree in the predictors list
+            double initScore = regressionLoss.computeErrorScore(y, fitValues);
+            double nextScore = regressionLoss.computeErrorScore(y, nextFit);
 
-            trees.add(tree);
+            if (initScore >= nextScore) {
+                fitValues = nextFit;
+                // add tree in the predictors list
+                trees.add(tree);
+            }
 
-            if(runningHook()!=null)
+            if (runningHook() != null)
                 runningHook().accept(this, i);
         }
         return true;
@@ -188,12 +194,12 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
         RPrediction pred = RPrediction.build(this, df, withResiduals);
         RPrediction initPred = initRegression.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
-            pred.firstFit().setDouble(i, initPred.firstFit().getDouble(i));
+            pred.firstPrediction().setDouble(i, initPred.firstPrediction().getDouble(i));
         }
-        for (RTree tree : trees) {
+        for (GBTRtree tree : trees) {
             RPrediction treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                pred.firstFit().setDouble(i, pred.firstFit().getDouble(i) + shrinkage * treePred.firstFit().getDouble(i));
+                pred.firstPrediction().setDouble(i, pred.firstPrediction().getDouble(i) + shrinkage * treePred.firstPrediction().getDouble(i));
             }
         }
         pred.buildComplete();

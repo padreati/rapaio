@@ -82,12 +82,12 @@ public class SimpleRegressionTest {
         RPrediction fit2 = r2.predict(df, true);
 
         assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
-                .deepEquals(fit1.firstFit()));
+                .deepEquals(fit1.firstPrediction()));
         assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
         assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
-                .deepEquals(fit2.firstFit()));
+                .deepEquals(fit2.firstPrediction()));
         assertTrue(df.rvar(father).solidCopy().fapply(VToDouble.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
 
@@ -120,7 +120,7 @@ public class SimpleRegressionTest {
         RPrediction fit1 = r1.predict(df);
 
         double median = Quantiles.of(df.rvar(father), 0.5).values()[0];
-        assertTrue(VarDouble.fill(df.rowCount(), median).withName(father).deepEquals(fit1.firstFit()));
+        assertTrue(VarDouble.fill(df.rowCount(), median).withName(father).deepEquals(fit1.firstPrediction()));
     }
 
     @Test
@@ -194,11 +194,11 @@ public class SimpleRegressionTest {
         RPrediction fit2 = RandomValueRegression.create(Normal.of(10, 0.1)).fit(df, father).predict(df);
 
         // unsignificant if test on true distribution
-        assertTrue(KSTestOneSample.from(fit1.firstFit(), Uniform.of(0, 1)).pValue() > 0.01);
-        assertTrue(KSTestOneSample.from(fit2.firstFit(), Normal.of(10, 0.1)).pValue() > 0.01);
+        assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Uniform.of(0, 1)).pValue() > 0.01);
+        assertTrue(KSTestOneSample.from(fit2.firstPrediction(), Normal.of(10, 0.1)).pValue() > 0.01);
 
         // significant if test on a different distribution
-        assertTrue(KSTestOneSample.from(fit1.firstFit(), Normal.of(10, 0.1)).pValue() < 0.01);
-        assertTrue(KSTestOneSample.from(fit2.firstFit(), Uniform.of(0, 1)).pValue() < 0.01);
+        assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Normal.of(10, 0.1)).pValue() < 0.01);
+        assertTrue(KSTestOneSample.from(fit2.firstPrediction(), Uniform.of(0, 1)).pValue() < 0.01);
     }
 }

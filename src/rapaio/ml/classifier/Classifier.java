@@ -27,20 +27,15 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.ml.common.Capabilities;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.ml.common.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 /**
  * Interface for all classification model algorithms.
@@ -95,55 +90,6 @@ public interface Classifier extends Printable, Serializable {
      * @param sampler instance of a new sampler
      */
     Classifier withSampler(RowSampler sampler);
-
-    /**
-     * Filters which will be applied on input variables
-     * for various transformations, before the data is learned.
-     * <p>
-     * Thus, input variables learned by a model are not derived
-     * directly from the data frame used by removing target
-     * variables, but by pre-processing them with filters.
-     * <p>
-     * Filters will be applied always in sequence.
-     * The filtering process has the following steps:
-     * <p>
-     * <ol>
-     * <li>consider data frame as draft data frame</li>
-     * <li>take in order the filters from input filter list</li>
-     * <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
-     * <li>after all filters are executed designate draft data frame as the workable data frame</li>
-     * <li>parse all the target variable names from pattern strings and workable data frame</li>
-     * <li>collect all the variable names from workable data frame</li>
-     * <li>collect target variable names from the list of available variable names</li>
-     * <li>collect input variable as all the variables which are not considered target variables</li>
-     * </ol>
-     * <p>
-     * This algorithm is executed each time for {@link #fit(Frame, Var, String...)},
-     * {@link #fit(Frame, String...)}, {@link #predict(Frame)} and {@link #predict(Frame, boolean, boolean)} methods.
-     *
-     * @return list of filter to transform data into input variables.
-     */
-    List<FFilter> inputFilters();
-
-    /**
-     * Specifies which filters will be used to transform data
-     * before learning and fitting.
-     *
-     * @param filters list of filters applied in chain
-     * @return self instance
-     */
-    default Classifier withInputFilters(FFilter... filters) {
-        return withInputFilters(Arrays.stream(filters).collect(Collectors.toList()));
-    }
-
-    /**
-     * Specifies which filters will be used to transform data
-     * before learning and fitting.
-     *
-     * @param filters list of filters applied in chain
-     * @return self instance
-     */
-    Classifier withInputFilters(List<FFilter> filters);
 
     /**
      * Returns input variable names built at learning time
@@ -297,7 +243,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param poolSize specified pool size
      */
-    Classifier withRunPoolSize(int poolSize);
+    Classifier withPoolSize(int poolSize);
 
     /**
      * Gets the configured pool size. Negative values are considered

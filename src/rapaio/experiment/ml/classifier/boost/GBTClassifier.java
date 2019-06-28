@@ -70,9 +70,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
 
     // learning artifacts
 
-    int K;
-    RM f;
-    RM residual;
+    private int K;
+    private RM f;
+    private RM residual;
     private List<List<RTree>> trees;
 
     private GBTClassifier() {
@@ -80,13 +80,10 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
 
     @Override
     public GBTClassifier newInstance() {
-        return (GBTClassifier) new GBTClassifier()
+        return newInstanceDecoration(new GBTClassifier())
                 .withShrinkage(shrinkage)
                 .withDebug(debug)
-                .withRTree(rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(-1)))
-                .withSampler(sampler())
-                .withRuns(runs())
-                .withRunPoolSize(runPoolSize());
+                .withRTree(rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(-1)));
     }
 
     @Override
@@ -204,7 +201,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
 
             RPrediction rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                f.increment(k,i, shrinkage * rr.firstFit().getDouble(i));
+                f.increment(k,i, shrinkage * rr.firstPrediction().getDouble(i));
             }
         }
     }
@@ -219,7 +216,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
             for (RTree tree : trees.get(k)) {
                 RPrediction rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.increment(k, i, shrinkage * rr.firstFit().getDouble(i));
+                    p_f.increment(k, i, shrinkage * rr.firstPrediction().getDouble(i));
                 }
             }
         }

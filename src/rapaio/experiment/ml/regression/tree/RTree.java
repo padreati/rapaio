@@ -54,7 +54,7 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegression implements DefaultPrintable {
+public class RTree extends AbstractRegression implements GBTRtree, DefaultPrintable {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
@@ -108,21 +108,17 @@ public class RTree extends AbstractRegression implements DefaultPrintable {
 
     @Override
     public RTree newInstance() {
-        return (RTree) new RTree()
+        return newInstanceDecoration(new RTree())
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
                 .withMaxSize(maxSize)
                 .withNominalTest(nominalTest)
                 .withNumericTest(numericTest)
-                .withRegressionLoss(regressionLoss)
                 .withPurityFunction(function)
                 .withSplitter(splitter)
                 .withPredictor(predictor)
                 .withVarSelector(varSelector)
-                .withRuns(runs)
-                .withPoolSize(poolSize)
-                .withRunningHook(runningHook)
-                .withSampler(sampler);
+                .withRegressionLoss(regressionLoss);
     }
 
     @Override
@@ -358,7 +354,7 @@ public class RTree extends AbstractRegression implements DefaultPrintable {
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);
-            pred.fit(firstTargetName()).setDouble(i, result._1);
+            pred.prediction(firstTargetName()).setDouble(i, result._1);
         }
         pred.buildComplete();
         return pred;

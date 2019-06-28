@@ -27,18 +27,14 @@
 
 package rapaio.ml.regression;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.ml.common.Capabilities;
-import rapaio.printer.Printable;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.ml.common.*;
+import rapaio.printer.*;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Interface implemented by all regression algorithms
@@ -85,59 +81,6 @@ public interface Regression extends Printable, Serializable {
      * @param sampler instance to be used as sampling device
      */
     Regression withSampler(RowSampler sampler);
-
-    /**
-     * Filters which will be applied on input variables
-     * for various transformations, before the data is learned.
-     *
-     * Thus, input variables learned by a model are not derived
-     * directly from the data frame used by removing target
-     * variables, but by pre-processing them with filters.
-     *
-     * Filters will be applied always in sequence.
-     * The filtering process has the following steps:
-     *
-     * <ol>
-     *     <li>consider data frame as draft data frame</li>
-     *     <li>take in order the filters from input filter list</li>
-     *     <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
-     *     <li>after all filters are executed designate draft data frame as the workable data frame</li>
-     *     <li>parse all the target variable names from pattern strings and workable data frame</li>
-     *     <li>collect all the variable names from workable data frame</li>
-     *     <li>collect target variable names from the list of available variable names</li>
-     *     <li>collect input variable as all the variables which are not considered target variables</li>
-     * </ol>
-     *
-     * @return list of filter to transform data into input variables.
-     */
-    List<FFilter> inputFilters();
-
-    /**
-     * Specifies which filters will be used to transform data
-     * before learning and fitting. All previously configured
-     * input filters will be deleted and the used input
-     * filters will be only those specified here.
-     *
-     * @param filters list of filters applied in chain
-     * @return self instance
-     */
-    Regression withInputFilters(FFilter... filters);
-
-    /**
-     * Specifies input filters which will be used to transform data
-     * before learning and fitting, additionally of the previously
-     * specified input filters.
-     *
-     * @param filters list of filters applied in chain
-     * @return self instance
-     */
-    Regression addInputFilters(FFilter... filters);
-
-    /**
-     * Removes all input filters
-     * @return self instance
-     */
-    Regression cleanInputFilters();
 
     /**
      * Returns input variable names built at learning time
@@ -270,16 +213,6 @@ public interface Regression extends Printable, Serializable {
     RPrediction predict(Frame df, boolean withResiduals);
 
     /**
-     * set the pool size for fork join tasks
-     * - poolSize == 0 it is executed in a single non fork join thread
-     * - poolSize < 0 pool size for fork join pool is the number of CPUs
-     * - poolSize > 0, pool size for fork join pool is this value
-     *
-     * @param poolSize specified pool size
-     */
-    Regression withPoolSize(int poolSize);
-
-    /**
      * Gets the configured pool size. Negative values are considered
      * automatically as pool of number of available CPUs, zero means
      * no pooling and positive values means pooling with a specified
@@ -288,6 +221,16 @@ public interface Regression extends Printable, Serializable {
      * @return pool size to be used
      */
     int poolSize();
+
+    /**
+     * set the pool size for fork join tasks
+     * - poolSize == 0 it is executed in a single non fork join thread
+     * - poolSize < 0 pool size for fork join pool is the number of CPUs
+     * - poolSize > 0, pool size for fork join pool is this value
+     *
+     * @param poolSize specified pool size
+     */
+    Regression withPoolSize(int poolSize);
 
     /**
      * @return number of runs
@@ -327,6 +270,27 @@ public interface Regression extends Printable, Serializable {
      * @return self-instance of the model
      */
     Regression withRunningHook(BiConsumer<Regression, Integer> runningHook);
+
+    /**
+     * Returns the stopping hook
+     *
+     * @return stopping hook instance
+     */
+    BiFunction<Regression, Integer, Boolean> stoppingHook();
+
+    /**
+     * Set up a lambda call hook which will be called after each iteration and
+     * returns true if the iterative training has to stop or not (in which case
+     * it will continue to train). The developer is free to implement early stopping
+     * of the training iterative process and some standard early stop implementations
+     * will be provided to avoid repetitive implementations.
+     *
+     * @param stoppingHook bi function method called at each iteration, first parameter
+     *                     is the regression model and the second parameter is the
+     *                     iteration counter.
+     * @return self instance of the model
+     */
+    Regression withStoppingHook(BiFunction<Regression, Integer, Boolean> stoppingHook);
 
     String headerSummary();
 }

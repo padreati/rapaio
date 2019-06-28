@@ -91,11 +91,15 @@ public class L2Regression extends AbstractRegression implements Printable {
         RPrediction fit = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
-            Var v = fit.fit(targetName(i));
+            Var v = fit.prediction(targetName(i));
             v.stream().forEach(s -> s.setDouble(mean));
         }
         fit.buildComplete();
         return fit;
+    }
+
+    public double[] getMeans() {
+        return means;
     }
 
     @Override

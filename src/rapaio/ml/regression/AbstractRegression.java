@@ -27,19 +27,15 @@
 
 package rapaio.ml.regression;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.printer.format.TextTable;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.printer.format.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -51,52 +47,31 @@ public abstract class AbstractRegression implements Regression {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
+    public static BiFunction<Regression, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;
+
+    // parameters
+
+    protected RowSampler sampler = RowSampler.identity();
+    protected int poolSize = -1;
+    protected int runs = 1;
+    protected boolean hasLearned;
+    protected BiFunction<Regression, Integer, Boolean> stoppingHook = DEFAULT_STOPPING_HOOK;
+    protected BiConsumer<Regression, Integer> runningHook;
+
+    // model artifacts
+
     protected String[] inputNames;
     protected VType[] inputTypes;
     protected String[] targetNames;
     protected VType[] targetTypes;
-    protected RowSampler sampler = RowSampler.identity();
-    protected boolean hasLearned;
-    protected int poolSize = -1;
-    protected int runs = 1;
-    protected List<FFilter> inputFilters = new ArrayList<>();
 
-    protected BiConsumer<Regression, Integer> runningHook;
-
-
-    @Override
-    public List<FFilter> inputFilters() {
-        return inputFilters;
-    }
-
-    @Override
-    public Regression withInputFilters(FFilter... filters) {
-        inputFilters = new ArrayList<>();
-        addInputFilters(filters);
-        return this;
-    }
-
-    @Override
-    public Regression addInputFilters(FFilter... filters) {
-        for (FFilter filter : filters)
-            inputFilters.add(filter.newInstance());
-        return this;
-    }
-
-    @Override
-    public Regression cleanInputFilters() {
-        inputFilters.clear();
-        return this;
-    }
-
-    @Override
-    public String[] inputNames() {
-        return inputNames;
-    }
-
-    @Override
-    public String[] targetNames() {
-        return targetNames;
+    public <T extends AbstractRegression> T newInstanceDecoration(T regression) {
+        return (T) regression
+                .withSampler(sampler)
+                .withPoolSize(poolSize)
+                .withRuns(runs)
+                .withRunningHook(runningHook)
+                .withStoppingHook(stoppingHook);
     }
 
     @Override
@@ -105,8 +80,19 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public AbstractRegression withSampler(RowSampler sampler) {
-        this.sampler = sampler;
+    public AbstractRegression withSampler(RowSampler rowSampler) {
+        this.sampler = rowSampler;
+        return this;
+    }
+
+    @Override
+    public int poolSize() {
+        return poolSize;
+    }
+
+    @Override
+    public Regression withPoolSize(int poolSize) {
+        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
         return this;
     }
 
@@ -121,64 +107,35 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public Regression fit(Frame df, Var weights, String... targetVarNames) {
-        TrainSetup setup = prepareFitSetup(df, weights, targetVarNames);
-        setup = prepareFit(setup);
-        hasLearned = coreFit(setup.df, setup.w);
+    public BiConsumer<Regression, Integer> runningHook() {
+        return runningHook;
+    }
+
+    @Override
+    public Regression withRunningHook(BiConsumer<Regression, Integer> runningHook) {
+        this.runningHook = runningHook;
         return this;
     }
 
-    protected TrainSetup prepareFit(TrainSetup trainSetup) {
-        Frame df = trainSetup.df;
-        for (FFilter filter : inputFilters) {
-            df = filter.fapply(df);
-        }
-        Frame result = df;
-        List<String> targets = VRange.of(trainSetup.targetVars).parseVarNames(result);
-        this.targetNames = targets.toArray(new String[0]);
-        this.targetTypes = targets.stream().map(result::type).toArray(VType[]::new);
-
-        HashSet<String> targetSet = new HashSet<>(targets);
-        List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
-        this.inputNames = inputs.toArray(new String[0]);
-        this.inputTypes = inputs.stream().map(result::type).toArray(VType[]::new);
-
-        capabilities().checkAtLearnPhase(result, trainSetup.w, trainSetup.targetVars);
-        return TrainSetup.valueOf(df, trainSetup.w);
+    @Override
+    public BiFunction<Regression, Integer, Boolean> stoppingHook() {
+        return stoppingHook;
     }
-
-    protected TrainSetup prepareFitSetup(Frame df, Var weights, String... targetVarNames) {
-        return TrainSetup.valueOf(df, weights, targetVarNames);
-    }
-
-    protected abstract boolean coreFit(Frame df, Var weights);
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
-        FitSetup setup = preparePredictSetup(df, withResiduals);
-        setup = preparePredict(setup);
-        return corePredict(setup.df, setup.withResiduals);
+    public AbstractRegression withStoppingHook(BiFunction<Regression, Integer, Boolean> stoppingHook) {
+        this.stoppingHook = stoppingHook;
+        return this;
     }
-
-    // by default do nothing, it is only for two stage training
-
-    protected FitSetup preparePredictSetup(Frame df, boolean withResiduals) {
-        return FitSetup.valueOf(df, withResiduals);
-    }
-
-    protected FitSetup preparePredict(FitSetup fitSetup) {
-        Frame result = fitSetup.df;
-        for (FFilter filter : inputFilters) {
-            result = filter.apply(result);
-        }
-        return FitSetup.valueOf(result, fitSetup.withResiduals);
-    }
-
-    protected abstract RPrediction corePredict(Frame df, boolean withResiduals);
 
     @Override
-    public boolean isFitted() {
-        return hasLearned;
+    public String[] inputNames() {
+        return inputNames;
+    }
+
+    @Override
+    public String[] targetNames() {
+        return targetNames;
     }
 
     @Override
@@ -192,59 +149,80 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public Regression withPoolSize(int poolSize) {
-        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
+    public boolean isFitted() {
+        return hasLearned;
+    }
+
+    @Override
+    public Regression fit(Frame df, Var weights, String... targetVarNames) {
+        FitSetup setup = prepareFit(df, weights, targetVarNames);
+        hasLearned = coreFit(setup.df, setup.w);
         return this;
     }
 
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
+        // we extract target and input names and types
+
+        List<String> targets = VRange.of(targetVarNames).parseVarNames(df);
+        this.targetNames = targets.toArray(new String[0]);
+        this.targetTypes = targets.stream().map(df::type).toArray(VType[]::new);
+
+        HashSet<String> targetSet = new HashSet<>(targets);
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.toArray(new String[0]);
+        this.inputTypes = inputs.stream().map(df::type).toArray(VType[]::new);
+
+        // we then check for compatibilities
+
+        capabilities().checkAtLearnPhase(df, weights, targetNames);
+
+        // if everything is conform, we return the training setup
+
+        return FitSetup.valueOf(df, weights);
+    }
+
+    protected abstract boolean coreFit(Frame df, Var weights);
+
     @Override
-    public int poolSize() {
-        return poolSize;
+    public RPrediction predict(Frame df, boolean withResiduals) {
+        PredSetup setup = preparePredict(df, withResiduals);
+        return corePredict(setup.df, setup.withResiduals);
     }
 
-    @Override
-    public BiConsumer<Regression, Integer> runningHook() {
-        return runningHook;
+    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
+        return PredSetup.valueOf(df, withResiduals);
     }
 
-    @Override
-    public Regression withRunningHook(BiConsumer<Regression, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return this;
-    }
+    protected abstract RPrediction corePredict(Frame df, boolean withResiduals);
 
-    protected static class TrainSetup {
-        public final Frame df;
-        public final Var w;
-        public final String[] targetVars;
+    protected static class FitSetup {
+        public Frame df;
+        public Var w;
+        public String[] targetVars;
 
-        private TrainSetup(Frame df, Var w, String[] targetVars) {
-            this.df = df;
-            this.w = w;
-            this.targetVars = targetVars;
+        public static FitSetup valueOf(Frame df, Var w, String[] targetVars) {
+            FitSetup setup = new FitSetup();
+            setup.df = df;
+            setup.w = w;
+            setup.targetVars = targetVars;
+            return setup;
         }
 
-        public static TrainSetup valueOf(Frame df, Var w, String[] targetVars) {
-            return new TrainSetup(df, w, targetVars);
-        }
-
-        public static TrainSetup valueOf(Frame df, Var w) {
-            return new TrainSetup(df, w, null);
+        public static FitSetup valueOf(Frame df, Var w) {
+            return valueOf(df, w, null);
         }
     }
 
-    protected static final class FitSetup {
+    protected static final class PredSetup {
 
-        public final Frame df;
-        public final boolean withResiduals;
+        public Frame df;
+        public boolean withResiduals;
 
-        private FitSetup(Frame df, boolean withResiduals) {
-            this.df = df;
-            this.withResiduals = withResiduals;
-        }
-
-        public static FitSetup valueOf(Frame df, boolean withResiduals) {
-            return new FitSetup(df, withResiduals);
+        public static PredSetup valueOf(Frame df, boolean withResiduals) {
+            PredSetup setup = new PredSetup();
+            setup.df = df;
+            setup.withResiduals = withResiduals;
+            return setup;
         }
     }
 

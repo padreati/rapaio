@@ -51,7 +51,7 @@ import static rapaio.sys.WS.*;
 public class REvaluation {
 
     public static double cv(Frame df, String targetVarName, Regression c, int folds, RMetric metric) {
-        print("\nCrossValidation with " + folds + " folds\n");
+        print("\nCrossValidation with " + folds + " folds for model: "+c.fullName()+"\n");
 
         List<IntList> strata = buildFolds(df, folds);
         VarDouble error = VarDouble.empty();
@@ -73,7 +73,7 @@ public class REvaluation {
             cc.fit(train, targetVarName);
             RPrediction cp = cc.predict(test);
 
-            error.addDouble(metric.compute(test.rvar(targetVarName), cp.firstFit()));
+            error.addDouble(metric.compute(test.rvar(targetVarName), cp.firstPrediction()));
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     error.getDouble(error.rowCount() - 1),
                     Mean.of(error).value(),

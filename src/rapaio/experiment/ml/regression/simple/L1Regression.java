@@ -73,6 +73,10 @@ public class L1Regression extends AbstractRegression implements Printable {
         return name();
     }
 
+    public double[] getMedians() {
+        return medians;
+    }
+
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
@@ -100,7 +104,7 @@ public class L1Regression extends AbstractRegression implements Printable {
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];
-            pred.fit(target).stream().forEach(s -> s.setDouble(median));
+            pred.prediction(target).stream().forEach(s -> s.setDouble(median));
         }
         pred.buildComplete();
         return pred;

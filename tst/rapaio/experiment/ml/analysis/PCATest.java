@@ -82,8 +82,8 @@ public class PCATest {
 
         Frame fit = pca.predict(x, 4).bindVars(iris.rvar("class"));
 
-        CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
-        CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
+        CForest rf1 = CForest.newRF().withPoolSize(0).withRuns(10);
+        CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(10);
 
         rf1.fit(iris, "class");
         CPrediction fit1 = rf1.predict(iris);

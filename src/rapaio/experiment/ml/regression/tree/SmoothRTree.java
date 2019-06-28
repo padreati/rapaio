@@ -30,26 +30,25 @@ package rapaio.experiment.ml.regression.tree;
 import rapaio.data.*;
 import rapaio.experiment.ml.regression.boost.gbt.*;
 import rapaio.experiment.ml.regression.loss.*;
-import rapaio.experiment.ml.regression.tree.nbrtree.*;
+import rapaio.experiment.ml.regression.tree.srt.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
-public class NestedBoostingRTree extends AbstractRegression implements GBTRtree {
+public class SmoothRTree extends AbstractRegression implements GBTRtree {
 
-    private static final long serialVersionUID = 1864784340491461993L;
+    private static final long serialVersionUID = 5062591010395009141L;
+
     private int minCount = 5;
+    private double minWeight = 1e-10;
     private int maxDepth = 3;
     private VarSelector varSelector = VarSelector.all();
-    private NBRFunction nbrFunction = NBRFunction.LINEAR;
+    private SmoothRFunction smoothRFunction = FixedScaleSmoothSplineRFunction.fromScales(1, 5, 0.1, new double[]{0.001, 0.01, 0.1});
     private RegressionLoss loss = new L2RegressionLoss();
-    private int basisCount = 1;
-    private double learningRate = 1;
-    private double diffusion = 0.05;
 
-    private NBRTreeNode root;
+    private SmoothRTreeNode root;
 
     @Override
     public String name() {
@@ -76,8 +75,17 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
         return minCount;
     }
 
-    public NestedBoostingRTree withMinCount(int minCount) {
+    public SmoothRTree withMinCount(int minCount) {
         this.minCount = minCount;
+        return this;
+    }
+
+    public double getMinWeight() {
+        return minWeight;
+    }
+
+    public SmoothRTree withMinWeight(double minWeight) {
+        this.minWeight = minWeight;
         return this;
     }
 
@@ -85,7 +93,7 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
         return maxDepth;
     }
 
-    public NestedBoostingRTree withMaxDepth(int maxDepth) {
+    public SmoothRTree withMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
         return this;
     }
@@ -94,17 +102,17 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
         return varSelector;
     }
 
-    public NestedBoostingRTree withVarSelector(VarSelector varSelector) {
+    public SmoothRTree withVarSelector(VarSelector varSelector) {
         this.varSelector = varSelector;
         return this;
     }
 
-    public NBRFunction getNbrFunction() {
-        return nbrFunction;
+    public SmoothRFunction getSmoothRFunction() {
+        return smoothRFunction;
     }
 
-    public NestedBoostingRTree withNBRFunction(NBRFunction nbrFunction) {
-        this.nbrFunction = nbrFunction;
+    public SmoothRTree withSmoothRFunction(SmoothRFunction smoothRFunction) {
+        this.smoothRFunction = smoothRFunction;
         return this;
     }
 
@@ -112,53 +120,25 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
         return loss;
     }
 
-    public NestedBoostingRTree withLoss(RegressionLoss loss) {
+    public SmoothRTree withLoss(RegressionLoss loss) {
         this.loss = loss;
-        return this;
-    }
-
-    public int getBasisCount() {
-        return basisCount;
-    }
-
-    public NestedBoostingRTree withBasisCount(int basisCount) {
-        this.basisCount = basisCount;
-        return this;
-    }
-
-    public double getLearningRate() {
-        return learningRate;
-    }
-
-    public NestedBoostingRTree withLearningRate(double learningRate) {
-        this.learningRate = learningRate;
-        return this;
-    }
-
-    public double getDiffusion() {
-        return diffusion;
-    }
-
-    public NestedBoostingRTree withDiffusion(double diffusion) {
-        this.diffusion = diffusion;
         return this;
     }
 
     @Override
     public Regression newInstance() {
-        return newInstanceDecoration(new NestedBoostingRTree())
-                .withMaxDepth(getMaxDepth())
+        return newInstanceDecoration(new SmoothRTree())
                 .withMinCount(getMinCount())
-                .withDiffusion(getDiffusion())
-                .withLearningRate(getLearningRate())
-                .withBasisCount(getBasisCount())
-                .withNBRFunction(getNbrFunction())
+                .withMinWeight(getMinWeight())
+                .withMaxDepth(getMaxDepth())
+                .withVarSelector(getVarSelector())
+                .withSmoothRFunction(getSmoothRFunction())
                 .withLoss(getLoss());
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        this.root = new NBRTreeNode(1, null);
+        this.root = new SmoothRTreeNode(null);
         root.coreFit(this, df, weights);
         return true;
     }
@@ -167,28 +147,7 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
     protected RPrediction corePredict(Frame df, boolean withResiduals) {
         RPrediction prediction = RPrediction.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
-            double y_true = 0.0;
-            NBRTreeNode node = root;
-            int depth = 1;
-            while (true) {
-                int ddepth = depth;
-                for (int j = 0; j < node.getFunctions().size(); j++) {
-                    NBRFunction fun = node.getFunctions().get(j);
-                    double factor = node.getFactors().get(j);
-                    double funEval = fun.eval(df, i);
-                    y_true += factor * learningRate * funEval;
-                }
-                if (node.isLeaf()) {
-                    break;
-                }
-                if (df.getDouble(i, node.getSplitVarName()) < node.getSplitValue()) {
-                    node = node.getLeftNode();
-                } else {
-                    node = node.getRightNode();
-                }
-                depth++;
-            }
-            prediction.firstPrediction().setDouble(i, y_true);
+            prediction.firstPrediction().setDouble(i, root.predict(df, i, this, 1.0));
         }
         prediction.buildComplete();
         return prediction;
@@ -206,13 +165,11 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
         return sb.toString();
     }
 
-    private void nodeContent(StringBuilder sb, NBRTreeNode node, int level) {
+    private void nodeContent(StringBuilder sb, SmoothRTreeNode node, int level) {
         for (int i = 0; i < level; i++) {
             sb.append("\t");
         }
-        for (NBRFunction fun : node.getFunctions()) {
-            sb.append("model: ").append(fun.toString()).append(";");
-        }
+        sb.append("model: ").append(node.getFunction().toString()).append(";");
         sb.append("\n");
         if (!node.isLeaf()) {
             nodeContent(sb, node.getLeftNode(), level + 1);

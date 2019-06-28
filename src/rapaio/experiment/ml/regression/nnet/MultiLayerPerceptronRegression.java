@@ -248,7 +248,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression implement
                 }
             }
             for (int i = 0; i < targetNames().length; i++) {
-                pred.fit(targetName(i)).setDouble(pos, net[net.length - 1][i].value);
+                pred.prediction(targetName(i)).setDouble(pos, net[net.length - 1][i].value);
             }
         }
         pred.buildComplete();

@@ -121,12 +121,11 @@ public class BinarySMOTest {
         String target = "Class";
 
         BinarySMO smo1 = new BinarySMO()
-                .withInputFilters(FStandardize.on(VRange.all()))
                 .withKernel(new PolyKernel(1))
                 .withC(0.1);
 
         RandomSource.setSeed(1);
-        double score = CEvaluation.cv(df, target, smo1, 10);
+        double score = CEvaluation.cv(df.fapply(FStandardize.on(VRange.all())), target, smo1, 10);
         assertEquals(0.7407142857142857, score, 1e-7);
     }
 
@@ -165,7 +164,7 @@ public class BinarySMOTest {
             RandomSource.setSeed(1);
 
             BinarySMO smo = new BinarySMO();
-            smo.withInputFilters(FStandardize.on(VRange.all()));
+            df = df.fapply(FStandardize.on(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
             Assert.assertTrue(s > 0.7);
 

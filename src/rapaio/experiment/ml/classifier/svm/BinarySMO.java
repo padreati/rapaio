@@ -31,28 +31,19 @@ package rapaio.experiment.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.data.filter.FFilter;
-import rapaio.data.sample.RowSampler;
-import rapaio.data.sample.Sample;
-import rapaio.math.MTools;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
-import rapaio.experiment.ml.classifier.svm.kernel.Kernel;
-import rapaio.experiment.ml.classifier.svm.kernel.PolyKernel;
-import rapaio.ml.common.Capabilities;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.experiment.ml.classifier.svm.kernel.*;
+import rapaio.math.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
 import rapaio.printer.*;
 
 import java.io.Serializable;
 import java.util.BitSet;
-import java.util.List;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Class for building a binary support vector machine.
@@ -121,16 +112,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
 
     @Override
     public Classifier newInstance() {
-        return new BinarySMO()
-                .withSampler(sampler())
+        return newInstanceDecoration(new BinarySMO())
                 .withKernel(kernel.newInstance())
                 .withC(C)
                 .withTol(tol)
                 .withFirstClassIndex(classIndex1)
                 .withSecondClassIndex(classIndex2)
                 .withOneVsAll(oneVsAll)
-                .withMaxRuns(maxRuns)
-                .withInputFilters(inputFilters());
+                .withMaxRuns(maxRuns);
     }
 
     public BinarySMO withKernel(Kernel value) {
@@ -921,15 +910,5 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
         }
 
         return sb.toString();
-    }
-
-    @Override
-    public BinarySMO withInputFilters(List<FFilter> filters) {
-        return (BinarySMO) super.withInputFilters(filters);
-    }
-
-    @Override
-    public BinarySMO withInputFilters(FFilter... filters) {
-        return (BinarySMO) super.withInputFilters(filters);
     }
 }
