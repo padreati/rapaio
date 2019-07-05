@@ -32,7 +32,7 @@ import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.ml.classifier.Classifier;
 
 /**
@@ -61,7 +61,7 @@ public class MeshGridFactory {
                 f2.addDouble(x2.getDouble(j));
             }
         }
-        CPrediction fit = c.predict(SolidFrame.byVars(f1, f2));
+        ClassResult fit = c.predict(SolidFrame.byVars(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

@@ -108,8 +108,8 @@ public class OneRule extends AbstractClassifier implements Printable {
     }
 
     @Override
-    protected CPrediction corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        CPrediction pred = CPrediction.build(this, test, withClasses, withDensities);
+    protected ClassResult corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
+        ClassResult pred = ClassResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {

@@ -226,8 +226,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression implement
     }
 
     @Override
-    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(final Frame df, final boolean withResiduals) {
+        RegResult pred = RegResult.build(this, df, withResiduals);
         for (int pos = 0; pos < df.rowCount(); pos++) {
 
             // set inputs

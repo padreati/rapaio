@@ -184,7 +184,7 @@ public abstract class AbstractRegression implements Regression {
     protected abstract boolean coreFit(Frame df, Var weights);
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
+    public RegResult predict(Frame df, boolean withResiduals) {
         PredSetup setup = preparePredict(df, withResiduals);
         return corePredict(setup.df, setup.withResiduals);
     }
@@ -193,7 +193,7 @@ public abstract class AbstractRegression implements Regression {
         return PredSetup.valueOf(df, withResiduals);
     }
 
-    protected abstract RPrediction corePredict(Frame df, boolean withResiduals);
+    protected abstract RegResult corePredict(Frame df, boolean withResiduals);
 
     protected static class FitSetup {
         public Frame df;

@@ -92,7 +92,7 @@ public class CTreeTest {
         tree.fit(df, "class");
         tree.printSummary();
 
-        CPrediction pred = tree.predict(df, true, true);
+        ClassResult pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();

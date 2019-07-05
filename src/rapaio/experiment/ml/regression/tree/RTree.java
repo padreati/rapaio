@@ -349,8 +349,8 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     }
 
     @Override
-    protected RPrediction corePredict(Frame df, boolean withResiduals) {
-        RPrediction pred = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(Frame df, boolean withResiduals) {
+        RegResult pred = RegResult.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);

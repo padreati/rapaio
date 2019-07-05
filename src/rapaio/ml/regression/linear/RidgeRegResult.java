@@ -37,18 +37,18 @@ import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/28/19.
  */
-public class LinearRPrediction extends RPrediction<LinearRegression> {
+public class RidgeRegResult extends RegResult<RidgeRegression> {
 
-    protected final LinearRegression lm;
+    protected final RidgeRegression lm;
     protected RM beta_hat;
     protected RM beta_std_error;
     protected RM beta_t_value;
     protected RM beta_p_value;
     protected String[][] beta_significance;
 
-    protected LinearRPrediction(LinearRegression model, Frame df, boolean withResiduals) {
+    protected RidgeRegResult(RidgeRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -206,5 +206,4 @@ public class LinearRPrediction extends RPrediction<LinearRegression> {
         }
         return sb.toString();
     }
-
 }

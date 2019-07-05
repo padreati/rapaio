@@ -199,12 +199,12 @@ public abstract class AbstractClassifier implements Classifier {
     protected abstract boolean coreFit(Frame df, Var weights);
 
     @Override
-    public final CPrediction predict(Frame df) {
+    public final ClassResult predict(Frame df) {
         return predict(df, true, true);
     }
 
     @Override
-    public final CPrediction predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public final ClassResult predict(Frame df, boolean withClasses, boolean withDistributions) {
         PredSetup setup = preparePredict(df, withClasses, withDistributions);
         return corePredict(setup.df, setup.withClasses, setup.withDistributions);
     }
@@ -213,7 +213,7 @@ public abstract class AbstractClassifier implements Classifier {
         return PredSetup.valueOf(df, withClasses, withDistributions);
     }
 
-    protected abstract CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions);
+    protected abstract ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions);
 
     public String baseSummary() {
         StringBuilder sb = new StringBuilder();

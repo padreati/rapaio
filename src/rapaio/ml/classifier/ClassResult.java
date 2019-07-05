@@ -46,7 +46,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CPrediction implements Printable, DefaultPrintable {
+public class ClassResult implements Printable, DefaultPrintable {
 
     private final Classifier model;
     private final Frame df;
@@ -59,17 +59,17 @@ public class CPrediction implements Printable, DefaultPrintable {
 
     // builder
 
-    public static CPrediction build(
+    public static ClassResult build(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
-        return new CPrediction(model, df, withClasses, withDensities);
+        return new ClassResult(model, df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private CPrediction(final Classifier model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
+    private ClassResult(final Classifier model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
         this.model = model;
         this.df = df;
         this.hasClasses = hasClasses;

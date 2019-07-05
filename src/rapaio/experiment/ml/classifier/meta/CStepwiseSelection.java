@@ -219,7 +219,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return best.predict(df, withClasses, withDistributions);
     }
 

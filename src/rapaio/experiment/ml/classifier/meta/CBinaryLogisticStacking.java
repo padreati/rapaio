@@ -35,7 +35,7 @@ import rapaio.data.Var;
 import rapaio.data.filter.var.VApplyDouble;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.*;
@@ -162,9 +162,9 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting binary logistic regression.. ");
-        CPrediction fit = log.predict(df);
+        ClassResult fit = log.predict(df);
 
         logger.config("end predict method call");
         return fit;

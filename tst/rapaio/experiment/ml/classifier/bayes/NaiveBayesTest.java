@@ -28,7 +28,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.experiment.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.eval.Confusion;
@@ -51,7 +51,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes();
         nb.fit(df, "class");
-        CPrediction pred = nb.predict(df);
+        ClassResult pred = nb.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
@@ -75,7 +75,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
         nb.fit(df, "class");
-        CPrediction pred = nb.predict(df);
+        ClassResult pred = nb.predict(df);
 
         Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
@@ -102,7 +102,7 @@ public class NaiveBayesTest {
 
         nb.printSummary();
 
-        CPrediction cp = nb.predict(df);
+        ClassResult cp = nb.predict(df);
 
         Confusion cm = new Confusion(df.rvar("classes"), cp.firstClasses());
         cm.printSummary();

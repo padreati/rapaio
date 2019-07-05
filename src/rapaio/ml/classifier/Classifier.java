@@ -223,7 +223,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    CPrediction predict(Frame df);
+    ClassResult predict(Frame df);
 
     /**
      * Predict classes for given instances, generating classes if specified and
@@ -233,7 +233,7 @@ public interface Classifier extends Printable, Serializable {
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    CPrediction predict(Frame df, boolean withClasses, boolean withDistributions);
+    ClassResult predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * set the pool size for fork join tasks

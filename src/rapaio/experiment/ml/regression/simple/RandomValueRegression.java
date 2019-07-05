@@ -93,8 +93,8 @@ public class RandomValueRegression extends AbstractRegression implements Printab
     }
 
     @Override
-    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(final Frame df, final boolean withResiduals) {
+        RegResult pred = RegResult.build(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.sampleNext()));
         }

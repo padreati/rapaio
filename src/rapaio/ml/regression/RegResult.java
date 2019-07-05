@@ -44,7 +44,7 @@ import static java.util.Collections.nCopies;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RPrediction<T extends Regression> implements DefaultPrintable {
+public class RegResult<T extends Regression> implements DefaultPrintable {
     protected final T model;
     protected final Frame df;
     protected final boolean withResiduals;
@@ -57,7 +57,7 @@ public class RPrediction<T extends Regression> implements DefaultPrintable {
 
     // static builder
 
-    protected RPrediction(final T model, final Frame df, final boolean withResiduals) {
+    protected RegResult(final T model, final Frame df, final boolean withResiduals) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
@@ -80,8 +80,8 @@ public class RPrediction<T extends Regression> implements DefaultPrintable {
 
     // private constructor
 
-    public static <T extends Regression> RPrediction build(T model, Frame df, boolean withResiduals) {
-        return new RPrediction<>(model, df, withResiduals);
+    public static <T extends Regression> RegResult build(T model, Frame df, boolean withResiduals) {
+        return new RegResult<>(model, df, withResiduals);
     }
 
     public T getModel() {

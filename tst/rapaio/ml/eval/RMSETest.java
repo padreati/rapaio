@@ -62,7 +62,7 @@ public class RMSETest {
         LinearRegression lm = LinearRegression.newLm().withIntercept(true);
         lm.fit(df, targets);
 
-        LinearRPrediction fit = lm.predict(df, true);
+        LinearRegResult fit = lm.predict(df, true);
         RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.predictionFrame());
 
         for (int i = 0; i < targets.length; i++) {

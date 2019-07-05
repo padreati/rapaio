@@ -33,7 +33,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.*;
 import rapaio.util.func.SFunction;
@@ -155,8 +155,8 @@ public class BinaryLogistic extends AbstractClassifier implements DefaultPrintab
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassResult cr = ClassResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {

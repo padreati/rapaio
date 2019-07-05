@@ -60,10 +60,9 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
                 .withScaling(true);
     }
 
-    protected boolean intercept = true;
-    protected boolean centering = false;
-    protected boolean scaling = false;
-    protected RM beta;
+    private boolean intercept = true;
+    private boolean centering = false;
+    private boolean scaling = false;
     /*
     Regularization strength; must be a positive float. Regularization improves the conditioning
     of the problem and reduces the variance of the estimates.
@@ -71,17 +70,20 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
      */
     private double lambda = 0.0;
 
-    protected HashMap<String, Double> inputMean = new HashMap<>();
-    protected HashMap<String, Double> inputSd = new HashMap<>();
-    protected HashMap<String, Double> targetMean = new HashMap<>();
+    // learning artifacts
+
+    private RM beta;
+    private HashMap<String, Double> inputMean = new HashMap<>();
+    private HashMap<String, Double> inputSd = new HashMap<>();
+    private HashMap<String, Double> targetMean = new HashMap<>();
 
     @Override
-    public Regression newInstance() {
+    public RidgeRegression newInstance() {
         return newInstanceDecoration(new RidgeRegression())
-                .withIntercept(hasIntercept())
-                .withLambda(getLambda())
-                .withCentering(hasCentering())
-                .withScaling(hasScaling());
+                .withLambda(lambda)
+                .withIntercept(intercept)
+                .withCentering(centering)
+                .withScaling(scaling);
     }
 
     @Override
@@ -93,8 +95,12 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
-        sb.append("(lambda=").append(Format.floatFlex(lambda));
-        sb.append(")");
+        sb.append("(");
+        sb.append("lambda=").append(Format.floatFlex(lambda)).append(",");
+        sb.append("intercept=").append(intercept).append(",");
+        sb.append("center=").append(centering).append(",");
+        sb.append("scaling=").append(scaling).append(")");
+
         return sb.toString();
     }
 
@@ -189,21 +195,22 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
         if (lambda < 0) {
             throw new IllegalArgumentException("lambda - regularization strength cannot be negative");
         }
-
+        boolean hasIntercept = false;
         for (String inputName : inputNames) {
             if (FIntercept.INTERCEPT.equals(inputName)) {
+                hasIntercept = true;
                 inputMean.put(FIntercept.INTERCEPT, 0.0);
                 inputSd.put(FIntercept.INTERCEPT, 1.0);
                 continue;
             }
-            inputMean.put(inputName, centering ? Mean.of(df.rvar(inputName)).value() : 0);
-            inputSd.put(inputName, scaling ? Variance.of(df.rvar(inputName)).sdValue() : 1);
+            inputMean.put(inputName, Mean.of(df.rvar(inputName)).value());
+            inputSd.put(inputName, Variance.of(df.rvar(inputName)).sdValue());
         }
         for (String targetName : targetNames) {
             targetMean.put(targetName, centering ? Mean.of(df.rvar(targetName)).value() : 0);
         }
 
-        String[] selNames = Arrays.copyOfRange(inputNames, intercept ? 1 : 0, inputNames.length);
+        String[] selNames = Arrays.copyOfRange(inputNames, hasIntercept ? 1 : 0, inputNames.length);
         RM X = SolidRM.empty(df.rowCount() + selNames.length, selNames.length);
         RM Y = SolidRM.empty(df.rowCount() + selNames.length, targetNames.length);
 
@@ -211,26 +218,27 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
         for (int i = 0; i < selNames.length; i++) {
             int varIndex = df.varIndex(selNames[i]);
             for (int j = 0; j < df.rowCount(); j++) {
-                X.set(j, i, (df.getDouble(j, varIndex) - inputMean.get(selNames[i])) / (inputSd.get(selNames[i])));
+                X.set(j, i, (df.getDouble(j, varIndex) - (centering ? inputMean.get(selNames[i]) : 0))
+                        / (scaling ? inputSd.get(selNames[i]) : 1));
             }
             X.set(i + df.rowCount(), i, sqrt);
         }
         for (int i = 0; i < targetNames.length; i++) {
             int varIndex = df.varIndex(targetNames[i]);
             for (int j = 0; j < df.rowCount(); j++) {
-                Y.set(j, i, (df.getDouble(j, varIndex) - targetMean.get(targetNames[i])));
+                Y.set(j, i, df.getDouble(j, varIndex));
             }
         }
 
         RM rawBeta = QRDecomposition.from(X).solve(Y);
-        int offset = intercept ? 1 : 0;
+        int offset = hasIntercept ? 1 : 0;
         beta = SolidRM.empty(rawBeta.rowCount() + offset, rawBeta.colCount());
         for (int i = 0; i < rawBeta.rowCount(); i++) {
             for (int j = 0; j < rawBeta.colCount(); j++) {
-                beta.set(i + offset, j, rawBeta.get(i, j) / inputSd.get(inputNames[i + offset]));
+                beta.set(i + offset, j, rawBeta.get(i, j) / (scaling ? inputSd.get(inputNames[i + offset]) : 1));
             }
         }
-        if (intercept) {
+        if (hasIntercept) {
             for (int i = 0; i < beta.colCount(); i++) {
                 double ym = targetMean.get(targetNames[i]);
                 for (int j = 0; j < rawBeta.rowCount(); j++) {
@@ -251,8 +259,8 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     }
 
     @Override
-    protected RidgeRPrediction corePredict(Frame df, boolean withResiduals) {
-        RidgeRPrediction rp = new RidgeRPrediction(this, df, withResiduals);
+    protected RidgeRegResult corePredict(Frame df, boolean withResiduals) {
+        RidgeRegResult rp = new RidgeRegResult(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
@@ -269,12 +277,12 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     }
 
     @Override
-    public RidgeRPrediction predict(Frame df) {
+    public RidgeRegResult predict(Frame df) {
         return predict(df, false);
     }
 
     @Override
-    public RidgeRPrediction predict(Frame df, boolean withResiduals) {
-        return (RidgeRPrediction) super.predict(df, withResiduals);
+    public RidgeRegResult predict(Frame df, boolean withResiduals) {
+        return (RidgeRegResult) super.predict(df, withResiduals);
     }
 }

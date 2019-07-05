@@ -48,24 +48,18 @@ public class LinearRegression extends AbstractRegression implements Printable {
      */
     public static LinearRegression newLm() {
         return new LinearRegression()
-                .withIntercept(true)
-                .withCentering(false)
-                .withScaling(false);
+                .withIntercept(true);
     }
 
     private static final long serialVersionUID = 8595413796946622895L;
 
     protected boolean intercept = true;
-    protected boolean centering = false;
-    protected boolean scaling = false;
     protected RM beta;
 
     @Override
     public LinearRegression newInstance() {
         return newInstanceDecoration(new LinearRegression())
-                .withIntercept(intercept)
-                .withCentering(centering)
-                .withScaling(scaling);
+                .withIntercept(intercept);
     }
 
     @Override
@@ -76,11 +70,7 @@ public class LinearRegression extends AbstractRegression implements Printable {
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("(");
-        sb.append("intercept=").append(intercept).append(",");
-        sb.append("centering=").append(centering).append(",");
-        sb.append("scaling=").append(scaling);
-        sb.append(")");
+        sb.append(name()).append("(intercept=").append(intercept).append(")");
         return sb.toString();
     }
 
@@ -110,24 +100,6 @@ public class LinearRegression extends AbstractRegression implements Printable {
      */
     public LinearRegression withIntercept(boolean intercept) {
         this.intercept = intercept;
-        return this;
-    }
-
-    public boolean hasCentering() {
-        return centering;
-    }
-
-    public LinearRegression withCentering(boolean centering) {
-        this.centering = centering;
-        return this;
-    }
-
-    public boolean hasScaling() {
-        return scaling;
-    }
-
-    public LinearRegression withScaling(boolean scaling) {
-        this.scaling = scaling;
         return this;
     }
 
@@ -178,8 +150,8 @@ public class LinearRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    protected LinearRPrediction corePredict(Frame df, boolean withResiduals) {
-        LinearRPrediction rp = new LinearRPrediction(this, df, withResiduals);
+    protected LinearRegResult corePredict(Frame df, boolean withResiduals) {
+        LinearRegResult rp = new LinearRegResult(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
@@ -196,13 +168,13 @@ public class LinearRegression extends AbstractRegression implements Printable {
     }
 
     @Override
-    public LinearRPrediction predict(Frame df) {
+    public LinearRegResult predict(Frame df) {
         return predict(df, false);
     }
 
     @Override
-    public LinearRPrediction predict(Frame df, boolean withResiduals) {
-        return (LinearRPrediction) super.predict(df, withResiduals);
+    public LinearRegResult predict(Frame df, boolean withResiduals) {
+        return (LinearRegResult) super.predict(df, withResiduals);
     }
 
     private String joinMax(int max, String[] tokens) {

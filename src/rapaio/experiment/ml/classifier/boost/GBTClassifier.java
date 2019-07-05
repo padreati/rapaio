@@ -37,10 +37,10 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.RPrediction;
+import rapaio.ml.regression.RegResult;
 import rapaio.experiment.ml.regression.loss.KDevianceRegressionLoss;
 import rapaio.experiment.ml.regression.tree.RTree;
 import rapaio.printer.*;
@@ -199,7 +199,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
-            RPrediction rr = tree.predict(df, false);
+            RegResult rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 f.increment(k,i, shrinkage * rr.firstPrediction().getDouble(i));
             }
@@ -207,14 +207,14 @@ public class GBTClassifier extends AbstractClassifier implements Classifier, Def
     }
 
     @Override
-    public CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
+    public ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassResult cr = ClassResult.build(this, df, withClasses, withDistributions);
 
         RM p_f = SolidRM.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
             for (RTree tree : trees.get(k)) {
-                RPrediction rr = tree.predict(df, false);
+                RegResult rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     p_f.increment(k, i, shrinkage * rr.firstPrediction().getDouble(i));
                 }

@@ -147,9 +147,9 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         logger.fine("started fitting stacker classifier .. ");
-        CPrediction fit = stacker.predict(df);
+        ClassResult fit = stacker.predict(df);
 
         logger.fine("end predict method call");
         return fit;

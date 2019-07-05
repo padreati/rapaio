@@ -33,7 +33,7 @@ import rapaio.data.filter.frame.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.regression.tree.*;
-import rapaio.ml.regression.RPrediction;
+import rapaio.ml.regression.RegResult;
 import rapaio.experiment.ml.regression.ensemble.RForest;
 import rapaio.experiment.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.printer.idea.IdeaPrinter;
@@ -145,7 +145,7 @@ public class RTreeTest {
                 "|   |   |   |   |   |   |TV <= 288.65  21.4 (5)  *\n" +
                 "|   |   |   |   |   |   |TV > 288.65  20.82 (5)  *\n", tree.summary());
 
-        RPrediction fit = tree.predict(t, true);
+        RegResult fit = tree.predict(t, true);
         fit.printSummary();
 
     }

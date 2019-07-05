@@ -333,7 +333,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         Frame oobFrame = df.mapRows(Mapping.wrap(oobIndexes));
 
         // build accuracy on oob data frame
-        CPrediction fit = c.predict(oobFrame);
+        ClassResult fit = c.predict(oobFrame);
         double refScore = new Confusion(
                 oobFrame.rvar(firstTargetName()),
                 fit.firstClasses())
@@ -350,7 +350,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
 
             // compute accuracy on oob shuffled frame
 
-            CPrediction pfit = c.predict(oobReduced);
+            ClassResult pfit = c.predict(oobReduced);
             double acc = new Confusion(
                     oobReduced.rvar(firstTargetName()),
                     pfit.firstClasses()
@@ -414,7 +414,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         double totalOobInstances;
         IntList oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
-        CPrediction fit = weak._1.predict(oobTest);
+        ClassResult fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().getInt(j);
             oobDensities.get(oobIndexes.getInt(j)).increment(fitIndex, 1.0);
@@ -454,9 +454,9 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        CPrediction cp = CPrediction.build(this, df, true, true);
-        List<CPrediction> treeFits = predictors.stream().parallel()
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassResult cp = ClassResult.build(this, df, true, true);
+        List<ClassResult> treeFits = predictors.stream().parallel()
                 .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
         baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());

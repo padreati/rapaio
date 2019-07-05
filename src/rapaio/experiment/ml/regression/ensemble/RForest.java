@@ -119,8 +119,8 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
     }
 
     @Override
-    protected RPrediction corePredict(Frame df, boolean withResiduals) {
-        RPrediction fit = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(Frame df, boolean withResiduals) {
+        RegResult fit = RegResult.build(this, df, withResiduals);
         List<VarDouble> results = regressors
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction())

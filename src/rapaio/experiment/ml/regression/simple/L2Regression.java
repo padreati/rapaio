@@ -87,8 +87,8 @@ public class L2Regression extends AbstractRegression implements Printable {
     }
 
     @Override
-    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
-        RPrediction fit = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(final Frame df, final boolean withResiduals) {
+        RegResult fit = RegResult.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
             Var v = fit.prediction(targetName(i));

@@ -56,21 +56,21 @@ public class LinearRegressionTest {
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
+                        "Model instance: LinearRegression(intercept=true)\n" +
                         "\n" +
                         "> model not trained.\n" +
                         "\n", lm.summary());
-        assertEquals("LinearRegression(intercept=true,centering=false,scaling=false), not fitted.",
+        assertEquals("LinearRegression(intercept=true), not fitted.",
                 lm.toString());
         lm.fit(df, "Radio");
-        assertEquals("LinearRegression(intercept=true,centering=false,scaling=false), fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
+        assertEquals("LinearRegression(intercept=true), fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
                 lm.toString());
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
+                        "Model instance: LinearRegression(intercept=true)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -86,13 +86,13 @@ public class LinearRegressionTest {
                         "TV           0.009478 \n" +
                         "\n", lm.summary());
 
-        LinearRPrediction lmfit = lm.predict(df, true);
+        LinearRegResult lmfit = lm.predict(df, true);
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
+                        "Model instance: LinearRegression(intercept=true)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -118,13 +118,13 @@ public class LinearRegressionTest {
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
                         "\n", lmfit.summary());
 
-        LinearRPrediction lmfit2 = lm.predict(df, false);
+        LinearRegResult lmfit2 = lm.predict(df, false);
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
+                        "Model instance: LinearRegression(intercept=true)\n" +
                         "\n" +
                         "> input variables: \n" +
                         "1. (Intercept) double \n" +
@@ -154,7 +154,7 @@ public class LinearRegressionTest {
                 "=======================\n" +
                 "\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression(intercept=true,centering=false,scaling=false)\n" +
+                "Model instance: LinearRegression(intercept=true)\n" +
                 "\n" +
                 "> input variables: \n" +
                 "1. (Intercept) double \n" +
@@ -219,8 +219,8 @@ public class LinearRegressionTest {
         LinearRegression lm1 = LinearRegression.newLm().withIntercept(true).fit(df1, "y");
         LinearRegression lm2 = LinearRegression.newLm().withIntercept(false).fit(df2, "y");
 
-        LinearRPrediction pred1 = lm1.predict(df1, true);
-        LinearRPrediction pred2 = lm2.predict(df2, true);
+        LinearRegResult pred1 = lm1.predict(df1, true);
+        LinearRegResult pred2 = lm2.predict(df2, true);
 
         lm1.printContent();
         lm2.printContent();
@@ -230,12 +230,10 @@ public class LinearRegressionTest {
 
     @Test
     public void testNewInstance() {
-        LinearRegression lm1 = LinearRegression.newLm().withIntercept(false).withCentering(true).withScaling(true);
+        LinearRegression lm1 = LinearRegression.newLm().withIntercept(false);
         LinearRegression lm2 = lm1.newInstance();
 
         assertEquals(lm1.hasIntercept(), lm2.hasIntercept());
-        assertEquals(lm1.hasCentering(), lm2.hasCentering());
-        assertEquals(lm1.hasScaling(), lm2.hasScaling());
     }
 
     @Test
@@ -250,7 +248,7 @@ public class LinearRegressionTest {
         Frame df = BoundFrame.byVars(x, y1, y2);
 
         LinearRegression lm = LinearRegression.newLm().withIntercept(true).fit(df, "y1,y2");
-        LinearRPrediction pred = lm.predict(df, true);
+        LinearRegResult pred = lm.predict(df, true);
 
         RM betas = lm.allCoefficients();
         RV firstBetas = lm.firstCoefficients();

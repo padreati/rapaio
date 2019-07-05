@@ -123,15 +123,15 @@ public class SplitClassifier extends AbstractClassifier implements DefaultPrinta
     }
 
     @Override
-    public CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
 
-        CPrediction pred = CPrediction.build(this, df, withClasses, withDensities);
+        ClassResult pred = ClassResult.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 
                     Frame f = MappedFrame.byRow(df, spot.row());
-                    CPrediction p = split.classifier.predict(f, withClasses, withDensities);
+                    ClassResult p = split.classifier.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {

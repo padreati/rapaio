@@ -76,7 +76,7 @@ public class CEvaluation {
 
             Classifier cc = c.newInstance();
             cc.fit(train, classColName);
-            CPrediction cp = cc.predict(test);
+            ClassResult cp = cc.predict(test);
 
             Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
             acc.addDouble(conf.accuracy());
@@ -153,7 +153,7 @@ public class CEvaluation {
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
                 c.fit(train, classColName);
-                CPrediction cp = c.predict(test);
+                ClassResult cp = c.predict(test);
                 Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;

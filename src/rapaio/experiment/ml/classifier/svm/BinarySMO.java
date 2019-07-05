@@ -436,8 +436,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
 
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        CPrediction cr = CPrediction.build(this, df, withClasses, withDistributions);
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassResult cr = ClassResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
 

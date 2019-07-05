@@ -144,8 +144,8 @@ public class SmoothRTree extends AbstractRegression implements GBTRtree {
     }
 
     @Override
-    protected RPrediction corePredict(Frame df, boolean withResiduals) {
-        RPrediction prediction = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(Frame df, boolean withResiduals) {
+        RegResult prediction = RegResult.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
             prediction.firstPrediction().setDouble(i, root.predict(df, i, this, 1.0));
         }

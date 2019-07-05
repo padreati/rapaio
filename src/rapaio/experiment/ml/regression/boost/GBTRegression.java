@@ -168,7 +168,7 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
                     lossFunction);
 
             // add next prediction to the predict values
-            RPrediction treePred = tree.predict(df, false);
+            RegResult treePred = tree.predict(df, false);
             VarDouble nextFit = VarDouble.fill(df.rowCount(), 0.0).withName(fitValues.name());
             for (int j = 0; j < df.rowCount(); j++) {
                 nextFit.setDouble(j, fitValues.getDouble(j) + shrinkage * treePred.firstPrediction().getDouble(j));
@@ -190,14 +190,14 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
     }
 
     @Override
-    protected RPrediction corePredict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.build(this, df, withResiduals);
-        RPrediction initPred = initRegression.predict(df, false);
+    protected RegResult corePredict(final Frame df, final boolean withResiduals) {
+        RegResult pred = RegResult.build(this, df, withResiduals);
+        RegResult initPred = initRegression.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstPrediction().setDouble(i, initPred.firstPrediction().getDouble(i));
         }
         for (GBTRtree tree : trees) {
-            RPrediction treePred = tree.predict(df, false);
+            RegResult treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstPrediction().setDouble(i, pred.firstPrediction().getDouble(i) + shrinkage * treePred.firstPrediction().getDouble(i));
             }

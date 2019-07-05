@@ -157,7 +157,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
         Sample sample = sampler().nextSample(df, w);
         hh.fit(sample.df, sample.weights.solidCopy(), targetNames());
 
-        CPrediction fit = hh.predict(df, true, false);
+        ClassResult fit = hh.predict(df, true, false);
 
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -194,10 +194,10 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        CPrediction fit = CPrediction.build(this, df, withClasses, true);
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassResult fit = ClassResult.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
-            CPrediction hp = h.get(i).predict(df, true, false);
+            ClassResult hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().getInt(j);
                 fit.firstDensity().setDouble(j, index, fit.firstDensity().getDouble(j, index) + a.get(i));

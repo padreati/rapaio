@@ -99,8 +99,8 @@ public class L1Regression extends AbstractRegression implements Printable {
     }
 
     @Override
-    public RPrediction corePredict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.build(this, df, withResiduals);
+    public RegResult corePredict(final Frame df, final boolean withResiduals) {
+        RegResult pred = RegResult.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];

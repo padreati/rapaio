@@ -200,7 +200,7 @@ public interface Regression extends Printable, Serializable {
      * @param df input data frame
      * @return regression predict result
      */
-    default RPrediction predict(final Frame df) {
+    default RegResult predict(final Frame df) {
         return predict(df, false);
     }
 
@@ -210,7 +210,7 @@ public interface Regression extends Printable, Serializable {
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    RPrediction predict(Frame df, boolean withResiduals);
+    RegResult predict(Frame df, boolean withResiduals);
 
     /**
      * Gets the configured pool size. Negative values are considered

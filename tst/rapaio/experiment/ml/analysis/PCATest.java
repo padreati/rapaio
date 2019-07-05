@@ -37,7 +37,7 @@ import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.Confusion;
 
@@ -86,10 +86,10 @@ public class PCATest {
         CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(10);
 
         rf1.fit(iris, "class");
-        CPrediction fit1 = rf1.predict(iris);
+        ClassResult fit1 = rf1.predict(iris);
 
         rf2.fit(fit.mapVars("0~2,class"), "class");
-        CPrediction fit2 = rf2.predict(fit.mapVars("0~2,class"));
+        ClassResult fit2 = rf2.predict(fit.mapVars("0~2,class"));
 
         double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();

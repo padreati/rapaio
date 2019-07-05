@@ -59,7 +59,7 @@ public class SimpleRegressionTest {
 
         ConstantRegression r1 = ConstantRegression.with(66).newInstance();
         r1.fit(df, father);
-        RPrediction fit1 = r1.predict(df);
+        RegResult fit1 = r1.predict(df);
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "\n" +
@@ -79,7 +79,7 @@ public class SimpleRegressionTest {
 
         ConstantRegression r2 = ConstantRegression.with(1);
         r2.fit(df, father);
-        RPrediction fit2 = r2.predict(df, true);
+        RegResult fit2 = r2.predict(df, true);
 
         assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstPrediction()));
@@ -117,7 +117,7 @@ public class SimpleRegressionTest {
 
         L1Regression r1 = L1Regression.create();
         r1.fit(df, father);
-        RPrediction fit1 = r1.predict(df);
+        RegResult fit1 = r1.predict(df);
 
         double median = Quantiles.of(df.rvar(father), 0.5).values()[0];
         assertTrue(VarDouble.fill(df.rowCount(), median).withName(father).deepEquals(fit1.firstPrediction()));
@@ -155,7 +155,7 @@ public class SimpleRegressionTest {
                 "Father 67.6868275 \n" +
                 "\n", r1.summary());
 
-        RPrediction fit1 = r1.predict(df, true);
+        RegResult fit1 = r1.predict(df, true);
         assertEquals("Regression predict summary\n" +
                         "=======================\n" +
                         "\n" +
@@ -190,8 +190,8 @@ public class SimpleRegressionTest {
     public void testRandomValueRegression() {
         RandomSource.setSeed(123);
 
-        RPrediction fit1 = RandomValueRegression.create().fit(df, father).predict(df);
-        RPrediction fit2 = RandomValueRegression.create(Normal.of(10, 0.1)).fit(df, father).predict(df);
+        RegResult fit1 = RandomValueRegression.create().fit(df, father).predict(df);
+        RegResult fit2 = RandomValueRegression.create(Normal.of(10, 0.1)).fit(df, father).predict(df);
 
         // unsignificant if test on true distribution
         assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Uniform.of(0, 1)).pValue() > 0.01);

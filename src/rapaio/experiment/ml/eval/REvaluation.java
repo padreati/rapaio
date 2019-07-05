@@ -71,7 +71,7 @@ public class REvaluation {
 
             Regression cc = c.newInstance();
             cc.fit(train, targetVarName);
-            RPrediction cp = cc.predict(test);
+            RegResult cp = cc.predict(test);
 
             error.addDouble(metric.compute(test.rvar(targetVarName), cp.firstPrediction()));
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
@@ -139,7 +139,7 @@ public class REvaluation {
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
                 c.fit(train, classColName);
-                CPrediction cp = c.predict(test);
+                ClassResult cp = c.predict(test);
                 Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;

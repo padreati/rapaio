@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.ClassResult;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -70,7 +70,7 @@ public class OneRuleTest {
 
         oneRule = oneRule.withMinCount(1);
         oneRule.fit(df, "class");
-        CPrediction pred = oneRule.predict(df);
+        ClassResult pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             assertEquals(labels[i], pred.firstClasses().getLabel(i));
@@ -189,7 +189,7 @@ public class OneRuleTest {
         oneRule1.fit(df1, "classes");
 
         oneRule1.printSummary();
-        CPrediction fit1 = oneRule1.predict(df1, true, true);
+        ClassResult fit1 = oneRule1.predict(df1, true, true);
         fit1.printSummary();
 
 
@@ -198,7 +198,7 @@ public class OneRuleTest {
         oneRule2.fit(df2, "class");
 
         oneRule2.printSummary();
-        CPrediction fit2 = oneRule2.predict(df2, true, true);
+        ClassResult fit2 = oneRule2.predict(df2, true, true);
         fit2.printSummary();
 
 

@@ -510,8 +510,8 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        CPrediction prediction = CPrediction.build(this, df, withClasses, withDensities);
+    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassResult prediction = ClassResult.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<Integer, DVector> res = predictPoint(this, root, i, df);
             int index = res._1;

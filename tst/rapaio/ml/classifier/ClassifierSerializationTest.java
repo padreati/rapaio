@@ -71,8 +71,8 @@ public class ClassifierSerializationTest {
 
         T shaddow = (T) JavaIO.restoreFromFile(tmp);
 
-        CPrediction modelFit = model.predict(df);
-        CPrediction shaddowFit = shaddow.predict(df);
+        ClassResult modelFit = model.predict(df);
+        ClassResult shaddowFit = shaddow.predict(df);
 
         modelFit.printSummary();
         assertEquals(modelFit.summary(), shaddowFit.summary());

@@ -185,11 +185,11 @@ public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected CPrediction corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected ClassResult corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         logger.fine("start fitting values...");
 
-        CPrediction pred = CPrediction.build(this, df, withClasses, withDensities);
+        ClassResult pred = ClassResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.empty(false, firstTargetLevels());

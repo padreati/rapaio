@@ -164,8 +164,8 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
     }
 
     @Override
-    protected RPrediction corePredict(Frame df, boolean withResiduals) {
-        RPrediction prediction = RPrediction.build(this, df, withResiduals);
+    protected RegResult corePredict(Frame df, boolean withResiduals) {
+        RegResult prediction = RegResult.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
             double y_true = 0.0;
             NBRTreeNode node = root;

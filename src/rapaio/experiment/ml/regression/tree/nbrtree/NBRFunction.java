@@ -104,7 +104,7 @@ class LinearFunction implements NBRFunction {
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRPrediction pred = lm.withIntercept(true).predict(map, false);
+            LinearRegResult pred = lm.withIntercept(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.testVarName = testVarName;
@@ -150,7 +150,7 @@ class QuadraticFunction implements NBRFunction {
         Frame map = BoundFrame.byVars(df.rvar(testVarName), square, y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRPrediction pred = lm.withIntercept(true).predict(map, false);
+            LinearRegResult pred = lm.withIntercept(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.beta_2 = pred.getBetaHat().get(2, 0);
@@ -187,7 +187,7 @@ class ConstantFunction implements NBRFunction {
 
         Frame map = BoundFrame.byVars(y);
         model.fit(map, weights, y.name());
-        RPrediction pred = model.predict(map, false);
+        RegResult pred = model.predict(map, false);
         this.constant = model.getMeans()[0];
 
         return pred.firstPrediction();
@@ -306,7 +306,7 @@ class SplineFunction implements NBRFunction {
                     throw ex;
                 }
             }
-            LinearRPrediction pred = rlm.predict(bf, false);
+            LinearRegResult pred = rlm.predict(bf, false);
             VarDouble y_hat = pred.firstPrediction();
             double error = loss.computeErrorScore(y, y_hat);
 
