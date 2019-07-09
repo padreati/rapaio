@@ -27,22 +27,15 @@ package rapaio.experiment.ml.analysis;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.datasets.Datasets;
-import rapaio.io.Csv;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.classifier.ClassResult;
-import rapaio.experiment.ml.classifier.ensemble.CForest;
-import rapaio.ml.eval.Confusion;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.experiment.ml.classifier.ensemble.*;
+import rapaio.io.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.eval.*;
 
 /**
  * Principal component analysis decomposition test
@@ -70,7 +63,7 @@ public class PCATest {
     }
 
     @Test
-    public void irisPca() throws IOException, URISyntaxException {
+    public void irisPca() {
         RandomSource.setSeed(123);
         Frame iris = Datasets.loadIrisDataset();
         Frame x = iris.removeVars(VRange.of("class"));
@@ -82,8 +75,8 @@ public class PCATest {
 
         Frame fit = pca.predict(x, 4).bindVars(iris.rvar("class"));
 
-        CForest rf1 = CForest.newRF().withPoolSize(0).withRuns(10);
-        CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(10);
+        CForest rf1 = CForest.newRF().withPoolSize(0).withRuns(2);
+        CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(2);
 
         rf1.fit(iris, "class");
         ClassResult fit1 = rf1.predict(iris);

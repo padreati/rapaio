@@ -27,14 +27,12 @@
 
 package rapaio.ml.common;
 
-import rapaio.core.SamplingTools;
+import rapaio.core.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -48,7 +46,7 @@ public class VarSelector implements Serializable {
     }
 
     public static VarSelector auto() {
-        return new VarSelector(M_ALL);
+        return new VarSelector(M_AUTO);
     }
 
     public static VarSelector fixed(int m) {
@@ -60,24 +58,22 @@ public class VarSelector implements Serializable {
 
     private final int mVars;
     private int mCount = 0;
-    private Set<String> varNames = new HashSet<>();
+    private String[] varNames = new String[0];
 
     private VarSelector(int mVars) {
         this.mVars = mVars;
     }
 
     public VarSelector newInstance() {
-        VarSelector sel = new VarSelector(mVars);
-        sel.varNames.addAll(varNames);
-        return sel;
+        return new VarSelector(mVars).withVarNames(varNames);
     }
 
     public VarSelector withVarNames(final String... varNames) {
-        this.varNames = Arrays.stream(varNames).collect(Collectors.toSet());
+        this.varNames = Arrays.stream(varNames).distinct().toArray(String[]::new);
         if (mVars == M_ALL) {
-            this.mCount = this.varNames.size();
+            this.mCount = this.varNames.length;
         } else if (mVars == M_AUTO) {
-            this.mCount = Math.max((int) Math.sqrt(this.varNames.size()), 1);
+            this.mCount = Math.max((int) Math.sqrt(this.varNames.length), 1);
         } else {
             this.mCount = mVars;
         }
@@ -94,25 +90,13 @@ public class VarSelector implements Serializable {
 
     public String[] nextVarNames() {
         if (mVars == M_ALL) {
-            return varNames.toArray(new String[varNames.size()]);
+            return Arrays.copyOf(varNames, varNames.length);
         }
-        int m = Math.min(mCount, varNames.size());
-        int[] indexes = SamplingTools.sampleWOR(varNames.size(), m);
+        int m = Math.min(mCount, varNames.length);
+        int[] indexes = SamplingTools.sampleWOR(varNames.length, m);
         String[] result = new String[m];
-        String[] arr = varNames.toArray(new String[varNames.size()]);
         for (int i = 0; i < indexes.length; i++) {
-            result[i] = arr[indexes[i]];
-        }
-        return result;
-    }
-
-    public String[] nextAllVarNames() {
-        int m = varNames.size();
-        int[] indexes = SamplingTools.sampleWOR(varNames.size(), m);
-        String[] result = new String[m];
-        String[] arr = varNames.toArray(new String[varNames.size()]);
-        for (int i = 0; i < indexes.length; i++) {
-            result[i] = arr[indexes[i]];
+            result[i] = varNames[indexes[i]];
         }
         return result;
     }
@@ -121,11 +105,11 @@ public class VarSelector implements Serializable {
         return mCount;
     }
 
-    public void removeVarNames(Collection<String> varName) {
-        this.varNames.removeAll(varName);
+    public void removeVarNames(Collection<String> varNames) {
+        withVarNames(Arrays.stream(this.varNames).filter(vn -> !varNames.contains(vn)).distinct().toArray(String[]::new));
     }
 
-    public void addVarNames(Collection<String> varName) {
-        this.varNames.addAll(varName);
+    public void addVarNames(Collection<String> varNames) {
+        withVarNames(Stream.concat(Arrays.stream(this.varNames), varNames.stream()).distinct().toArray(String[]::new));
     }
 }

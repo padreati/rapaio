@@ -87,6 +87,11 @@ nto nominal categories based on quantile intervals
 * WeightedMean, WeightedOnlineStat
 * Pearson product-moment coefficient
 * Spearman's rank correlation coefficient
+* SamplingTool
+    * generates discrete integer samples with/without replacement, weighted/non-weighted
+    * offers utility methods for bootstraps, simple random, stratified sampling
+* RowSampler implementations used in machine learning algorithms: bootstrap, identity, subsampling
+
 
 **Distributions**
 
@@ -153,13 +158,6 @@ If there are no notes it means the feature is considered to be fully implemented
 * DTable
 * Distance Matrix
 
-
-**Sampling**
-
-* SamplingTool
-    * generates discrete integer samples with/without replacement, weighted/non-weighted
-    * offers utility methods for bootstraps, simple random, stratified sampling
-* Samplers used in machine learning algorithms
 
 
 **Evaluation**

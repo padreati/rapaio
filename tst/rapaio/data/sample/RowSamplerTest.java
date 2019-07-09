@@ -48,7 +48,7 @@ public class RowSamplerTest {
     private VarDouble w;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         df = Datasets.loadIrisDataset();
         w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).withName("w");
         Assert.assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);

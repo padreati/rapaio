@@ -356,7 +356,7 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
             return;
         }
 
-        String[] nextVarNames = varSelector.nextAllVarNames();
+        String[] nextVarNames = varSelector.nextVarNames();
         List<CTreeCandidate> candidateList = new ArrayList<>();
         Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
