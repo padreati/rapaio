@@ -144,7 +144,7 @@ public class Capabilities {
         List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
             if (!targetTypes.contains(df.rvar(varName).type())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.rvar(varName).type().name() + " as target type vor var: " + varName);
+                throw new IllegalArgumentException("Algorithm does not allow " + df.rvar(varName).type().name() + " as target type for var: " + varName);
             }
         }
     }

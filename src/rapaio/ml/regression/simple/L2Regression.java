@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.simple;
+package rapaio.ml.regression.simple;
 
 import rapaio.core.stat.*;
 import rapaio.data.*;
@@ -41,7 +41,7 @@ public class L2Regression extends AbstractRegression implements Printable {
 
     private static final long serialVersionUID = -8666168876139028337L;
 
-    public static L2Regression create() {
+    public static L2Regression newL2() {
         return new L2Regression();
     }
 
@@ -52,7 +52,7 @@ public class L2Regression extends AbstractRegression implements Printable {
 
     @Override
     public L2Regression newInstance() {
-        return new L2Regression();
+        return newInstanceDecoration(new L2Regression());
     }
 
     @Override
@@ -62,18 +62,28 @@ public class L2Regression extends AbstractRegression implements Printable {
 
     @Override
     public String fullName() {
-        return name();
+        return name() + "()";
     }
 
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
-                .withTargetCount(1, 1)
+                .withTargetCount(1, 1_000_000)
                 .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.TEXT)
                 .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);
+    }
+
+    @Override
+    public L2Regression fit(Frame df, String... targetVars) {
+        return (L2Regression) super.fit(df, targetVars);
+    }
+
+    @Override
+    public L2Regression fit(Frame df, Var weights, String... targetVarNames) {
+        return (L2Regression) super.fit(df, weights, targetVarNames);
     }
 
     @Override
@@ -104,7 +114,23 @@ public class L2Regression extends AbstractRegression implements Printable {
 
     @Override
     public String toString() {
-        return fullName();
+        if (isFitted()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(fullName());
+            sb.append("; fitted values={");
+            for (int i = 0; i < Math.min(5, targetNames.length); i++) {
+                sb.append(targetName(i)).append(":").append(Format.floatFlex(means[i]));
+                if (i < targetNames.length - 1) {
+                    sb.append(",");
+                }
+            }
+            if (targetNames.length > 5) {
+                sb.append("...");
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        return fullName() + "; not fitted";
     }
 
     @Override
@@ -112,19 +138,18 @@ public class L2Regression extends AbstractRegression implements Printable {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
+
         if (isFitted()) {
             sb.append("Fitted values:\n");
             sb.append("\n");
 
-            TextTable tt = TextTable.empty(1 + targetNames.length, 2);
-            tt.textRight(0, 0, "Target");
-            tt.textRight(0, 1, "Estimate");
-
-            for (int i = 0; i < targetNames().length; i++) {
-                tt.textRight(1 + i, 0, targetName(i));
-                tt.floatFlex(1 + i, 1, means[i]);
+            Var target = VarNominal.empty().withName("Target");
+            Var median = VarDouble.empty().withName("Fitted value");
+            for (int i = 0; i < means.length; i++) {
+                target.addLabel(targetName(i));
+                median.addDouble(means[i]);
             }
-            sb.append(tt.getRawText());
+            sb.append(SolidFrame.byVars(target, median).content());
         }
         sb.append("\n");
         return sb.toString();
@@ -132,7 +157,24 @@ public class L2Regression extends AbstractRegression implements Printable {
 
     @Override
     public String fullContent() {
-        return content();
+        StringBuilder sb = new StringBuilder();
+        sb.append(headerSummary());
+        sb.append("\n");
+
+        if (isFitted()) {
+            sb.append("Fitted values:\n");
+            sb.append("\n");
+
+            Var target = VarNominal.empty().withName("Target");
+            Var median = VarDouble.empty().withName("Fitted value");
+            for (int i = 0; i < means.length; i++) {
+                target.addLabel(targetName(i));
+                median.addDouble(means[i]);
+            }
+            sb.append(SolidFrame.byVars(target, median).fullContent());
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 
     @Override

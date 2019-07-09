@@ -29,12 +29,12 @@ package rapaio.experiment.ml.regression.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.*;
-import rapaio.experiment.ml.regression.simple.*;
 import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
 import rapaio.experiment.ml.regression.boost.gbt.*;
 import rapaio.experiment.ml.regression.loss.*;
+import rapaio.ml.regression.simple.*;
 import rapaio.printer.*;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    private Regression initRegression = L2Regression.create();
+    private Regression initRegression = L2Regression.newL2();
     private GBTRtree regressor = RTree.newCART().withMaxDepth(2).withMinCount(10);
     private GBTRegressionLoss lossFunction = new GBTRegressionLossL2();
     private RegressionLoss regressionLoss = new L2RegressionLoss();

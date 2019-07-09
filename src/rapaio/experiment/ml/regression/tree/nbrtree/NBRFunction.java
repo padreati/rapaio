@@ -31,10 +31,10 @@ import rapaio.core.*;
 import rapaio.data.*;
 import rapaio.data.unique.*;
 import rapaio.experiment.ml.regression.loss.*;
-import rapaio.experiment.ml.regression.simple.*;
 import rapaio.math.linear.*;
 import rapaio.ml.regression.*;
 import rapaio.ml.regression.linear.*;
+import rapaio.ml.regression.simple.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +183,7 @@ class ConstantFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        L2Regression model = L2Regression.create();
+        L2Regression model = L2Regression.newL2();
 
         Frame map = BoundFrame.byVars(y);
         model.fit(map, weights, y.name());

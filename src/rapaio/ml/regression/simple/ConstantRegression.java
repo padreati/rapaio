@@ -54,8 +54,7 @@ public class ConstantRegression extends AbstractRegression implements Printable 
 
     @Override
     public ConstantRegression newInstance() {
-        return super.newInstanceDecoration(new ConstantRegression())
-                .withConstant(constant);
+        return newInstanceDecoration(new ConstantRegression()).withConstant(constant);
     }
 
     @Override
