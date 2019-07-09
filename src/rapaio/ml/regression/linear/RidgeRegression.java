@@ -32,8 +32,6 @@ import rapaio.data.filter.frame.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
 import rapaio.ml.common.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 import java.util.Arrays;
@@ -42,7 +40,7 @@ import java.util.HashMap;
 /**
  * @author VHG6KOR
  */
-public class RidgeRegression extends AbstractRegression implements DefaultPrintable {
+public class RidgeRegression extends BaseLinearRegression {
 
     private static final long serialVersionUID = -6014222985456365210L;
 
@@ -60,7 +58,6 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
                 .withScaling(true);
     }
 
-    private boolean intercept = true;
     private boolean centering = false;
     private boolean scaling = false;
     /*
@@ -72,7 +69,6 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
 
     // learning artifacts
 
-    private RM beta;
     private HashMap<String, Double> inputMean = new HashMap<>();
     private HashMap<String, Double> inputSd = new HashMap<>();
     private HashMap<String, Double> targetMean = new HashMap<>();
@@ -116,21 +112,13 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     }
 
     /**
-     * @return true if the linear model adds an intercept
-     */
-    public boolean hasIntercept() {
-        return intercept;
-    }
-
-    /**
      * Configure the model to introduce an intercept or not.
      *
      * @param intercept if true an intercept variable will be generated, false otherwise
      * @return linear model instance
      */
     public RidgeRegression withIntercept(boolean intercept) {
-        this.intercept = intercept;
-        return this;
+        return (RidgeRegression) super.withIntercept(intercept);
     }
 
     public boolean hasCentering() {
@@ -151,18 +139,6 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
         return this;
     }
 
-    public RV firstCoefficients() {
-        return beta.mapCol(0);
-    }
-
-    public RV getCoefficients(int targetIndex) {
-        return beta.mapCol(targetIndex);
-    }
-
-    public RM allCoefficients() {
-        return beta;
-    }
-
     public double getLambda() {
         return lambda;
     }
@@ -180,14 +156,6 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     @Override
     public RidgeRegression fit(Frame df, Var weights, String... targetVarNames) {
         return (RidgeRegression) super.fit(df, weights, targetVarNames);
-    }
-
-    @Override
-    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
-        if (intercept) {
-            return super.prepareFit(FIntercept.filter().apply(df), weights, targetVarNames);
-        }
-        return super.prepareFit(df, weights, targetVarNames);
     }
 
     @Override
@@ -251,38 +219,31 @@ public class RidgeRegression extends AbstractRegression implements DefaultPrinta
     }
 
     @Override
-    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
-        if (intercept) {
-            return super.preparePredict(FIntercept.filter().apply(df), withResiduals);
-        }
-        return super.preparePredict(df, withResiduals);
-    }
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(headerSummary());
+        sb.append("\n");
 
-    @Override
-    protected RidgeRegResult corePredict(Frame df, boolean withResiduals) {
-        RidgeRegResult rp = new RidgeRegResult(this, df, withResiduals);
-        for (int i = 0; i < targetNames().length; i++) {
-            String target = targetName(i);
-            for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
-                double fit = 0.0;
-                for (int k = 0; k < inputNames().length; k++) {
-                    fit += beta.get(k, i) * df.getDouble(j, inputName(k));
-                }
-                rp.prediction(target).setDouble(j, fit);
+        if (!hasLearned) {
+            return sb.toString();
+        }
+
+        for (int i = 0; i < targetNames.length; i++) {
+            String targetName = targetNames[i];
+            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
+            sb.append("> Coefficients: \n");
+            RV coeff = beta.mapCol(i);
+
+            TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+            tt.textCenter(0, 0, "Name");
+            tt.textCenter(0, 1, "Estimate");
+            for (int j = 0; j < coeff.count(); j++) {
+                tt.textLeft(j + 1, 0, inputNames[j]);
+                tt.floatMedium(j + 1, 1, coeff.get(j));
             }
+            sb.append(tt.getDefaultText());
+            sb.append("\n");
         }
-
-        rp.buildComplete();
-        return rp;
-    }
-
-    @Override
-    public RidgeRegResult predict(Frame df) {
-        return predict(df, false);
-    }
-
-    @Override
-    public RidgeRegResult predict(Frame df, boolean withResiduals) {
-        return (RidgeRegResult) super.predict(df, withResiduals);
+        return sb.toString();
     }
 }

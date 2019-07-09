@@ -39,16 +39,16 @@ import rapaio.printer.format.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
  */
-public class LinearRegResult extends RegResult<LinearRegression> {
+public class LinearRegResult extends RegResult<BaseLinearRegression> {
 
-    protected final LinearRegression lm;
+    protected final BaseLinearRegression lm;
     protected RM beta_hat;
     protected RM beta_std_error;
     protected RM beta_t_value;
     protected RM beta_p_value;
     protected String[][] beta_significance;
 
-    protected LinearRegResult(LinearRegression model, Frame df, boolean withResiduals) {
+    protected LinearRegResult(BaseLinearRegression model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -88,12 +88,11 @@ public class LinearRegResult extends RegResult<LinearRegression> {
         beta_p_value = SolidRM.empty(inputs.length, targets.length);
         beta_significance = new String[inputs.length][targets.length];
 
-        for (int i = 0; i < lm.targetNames().length; i++) {
-            String targetName = lm.targetName(i);
+        if (withResiduals) {
 
-            if (!withResiduals) {
-                RV coeff = beta_hat.mapCol(i);
-            } else {
+            for (int i = 0; i < lm.targetNames().length; i++) {
+
+                String targetName = lm.targetName(i);
                 VarDouble res = residuals.get(targetName);
 
                 int degrees = res.rowCount() - model.inputNames().length;
@@ -192,15 +191,11 @@ public class LinearRegResult extends RegResult<LinearRegression> {
 
 
                 sb.append(String.format("Residual standard error: %s on %d degrees of freedom\n",
-                        Format.floatFlex(Math.sqrt(var)),
-                        degrees));
+                        Format.floatFlex(Math.sqrt(var)), degrees));
                 sb.append(String.format("Multiple R-squared:  %s, Adjusted R-squared:  %s\n",
                         Format.floatFlex(rs), Format.floatFlex(rsa)));
                 sb.append(String.format("F-statistic: %s on %d and %d DF,  p-value: %s\n",
-                        Format.floatFlexShort(fvalue),
-                        fdegree1,
-                        degrees,
-                        Format.pValue(fpvalue)));
+                        Format.floatFlexShort(fvalue), fdegree1, degrees, Format.pValue(fpvalue)));
                 sb.append("\n");
             }
         }

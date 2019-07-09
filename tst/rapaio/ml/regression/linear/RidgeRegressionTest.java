@@ -114,7 +114,7 @@ public class RidgeRegressionTest {
     @Test
     public void testPredictionWithIntercept() {
         RidgeRegression model = RidgeRegression.newRidgeLm(10).fit(df, "Sales");
-        RidgeRegResult result = model.predict(df);
+        LinearRegResult result = model.predict(df);
         RV beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(4, beta_hat.count());
 
@@ -132,7 +132,7 @@ public class RidgeRegressionTest {
     @Test
     public void testPredictionWithOutIntercept() {
         RidgeRegression model = RidgeRegression.newRidgeLm(10).withIntercept(false).fit(df, "Sales");
-        RidgeRegResult result = model.predict(df);
+        LinearRegResult result = model.predict(df);
         RV beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(3, beta_hat.count());
 
@@ -157,5 +157,36 @@ public class RidgeRegressionTest {
 
         assertEquals("RidgeRegression(lambda=1.2,intercept=true,center=true,scaling=true)", model1.fullName());
         assertEquals("RidgeRegression(lambda=3.1415927,intercept=false,center=false,scaling=false)", model2.fullName());
+
+        assertEquals("Regression predict summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: RidgeRegression\n" +
+                "Model instance: RidgeRegression(lambda=1.2,intercept=true,center=true,scaling=true)\n" +
+                "\n" +
+                "> model not trained.\n" +
+                "\n", model1.content());
+
+        assertEquals("Regression predict summary\n" +
+                "=======================\n" +
+                "\n" +
+                "Model class: RidgeRegression\n" +
+                "Model instance: RidgeRegression(lambda=3.1415927,intercept=false,center=false,scaling=false)\n" +
+                "\n" +
+                "> input variables: \n" +
+                "1. TV        double \n" +
+                "2. Radio     double \n" +
+                "3. Newspaper double \n" +
+                "> target variables: \n" +
+                "1. Sales double \n" +
+                "\n" +
+                "Target <<< Sales >>>\n" +
+                "\n" +
+                "> Coefficients: \n" +
+                "  Name    Estimate \n" +
+                "TV        0.053793 \n" +
+                "Radio     0.222213 \n" +
+                "Newspaper 0.016822 \n" +
+                "\n", model2.fit(df, "Sales").summary());
     }
 }

@@ -118,6 +118,21 @@ public class LinearRegressionTest {
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
                         "\n", lmfit.summary());
 
+
+        assertEquals(2, lmfit.getBetaHat().rowCount());
+        assertEquals(1, lmfit.getBetaHat().colCount());
+
+        assertEquals(2, lmfit.getBetaStdError().rowCount());
+        assertEquals(1, lmfit.getBetaStdError().colCount());
+
+        assertEquals(2, lmfit.getBetaTValue().rowCount());
+        assertEquals(1, lmfit.getBetaTValue().colCount());
+
+        assertEquals(2, lmfit.getBetaPValue().rowCount());
+        assertEquals(1, lmfit.getBetaPValue().colCount());
+
+        assertEquals(2, lmfit.getBetaSignificance().length);
+
         LinearRegResult lmfit2 = lm.predict(df, false);
         assertEquals(
                 "Regression predict summary\n" +
