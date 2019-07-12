@@ -55,7 +55,7 @@ public class QRDecomposition implements Serializable {
 
     private QRDecomposition(RM A) {
         // Initialize.
-        QR = A.solidCopy();
+        QR = A.copy();
         Rdiag = SolidRV.empty(QR.colCount());
 
         // Main loop.
@@ -192,7 +192,7 @@ public class QRDecomposition implements Serializable {
         }
 
         // Copy right hand side
-        RM X = B.solidCopy();
+        RM X = B.copy();
 
         // Compute Y = transpose(Q)*B
         for (int k = 0; k < QR.colCount(); k++) {
@@ -219,6 +219,6 @@ public class QRDecomposition implements Serializable {
                 }
             }
         }
-        return X.rangeRows(0, QR.colCount()).rangeCols(0, B.colCount()).solidCopy();
+        return X.rangeRows(0, QR.colCount()).rangeCols(0, B.colCount()).copy();
     }
 }

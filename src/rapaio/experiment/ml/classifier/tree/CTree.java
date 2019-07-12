@@ -528,7 +528,7 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
 
     protected Pair<Integer, DVector> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
         if (node.isLeaf())
-            return Pair.from(node.getBestIndex(), node.getDensity().solidCopy().normalize());
+            return Pair.from(node.getBestIndex(), node.getDensity().copy().normalize());
 
         for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(row, df)) {
@@ -631,7 +631,7 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
         sb.append(Format.floatFlexShort(node.getCounter().sum())).append("/");
         sb.append(Format.floatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
         sb.append(firstTargetLevels().get(node.getBestIndex())).append(" (");
-        DVector d = node.getDensity().solidCopy().normalize();
+        DVector d = node.getDensity().copy().normalize();
         for (int i = 1; i < firstTargetLevels().size(); i++) {
             sb.append(Format.floatFlexShort(d.get(i))).append(" ");
         }

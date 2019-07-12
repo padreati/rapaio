@@ -159,7 +159,7 @@ public class VarBinaryTest {
         assertEquals(0, bin.getDouble(0), 10e-10);
         assertEquals(0, bin.getInt(1));
 
-        VarBinary copy = bin.solidCopy();
+        VarBinary copy = bin.copy();
         assertEquals(0, copy.getInt(0));
         assertEquals(0, copy.getInt(1));
         assertEquals(2, copy.rowCount());

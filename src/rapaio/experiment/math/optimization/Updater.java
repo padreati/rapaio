@@ -50,8 +50,8 @@ class SimpleUpdater implements Updater {
 
     public Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
-        RV brzWeights = weightsOld.solidCopy();
-        brzWeights.plus(gradient.solidCopy().dot(-thisIterStepSize));
+        RV brzWeights = weightsOld.copy();
+        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
         return Pair.from(brzWeights, 0.0);
     }
 }
@@ -78,8 +78,8 @@ class L1Updater implements Updater {
     public Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         // Take gradient step
-        RV brzWeights = weightsOld.solidCopy();
-        brzWeights.plus(gradient.solidCopy().dot(-thisIterStepSize));
+        RV brzWeights = weightsOld.copy();
+        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
         // Apply proximal operator (soft thresholding)
         double shrinkageVal = regParam * thisIterStepSize;
         int i = 0;
@@ -107,9 +107,9 @@ class SquaredL2Updater implements Updater {
         // w' = w - thisIterStepSize * (gradient + regParam * w)
         // w' = (1 - thisIterStepSize * regParam) * w - thisIterStepSize * gradient
         double thisIterStepSize = stepSize / Math.sqrt(iter);
-        RV brzWeights = weightsOld.solidCopy();
-        brzWeights.minus(brzWeights.solidCopy().dot(thisIterStepSize * regParam));
-        brzWeights.plus(gradient.solidCopy().dot(-thisIterStepSize));
+        RV brzWeights = weightsOld.copy();
+        brzWeights.minus(brzWeights.copy().dot(thisIterStepSize * regParam));
+        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
         double norm = brzWeights.norm(2.0);
 
         return Pair.from(brzWeights, 0.5 * regParam * norm * norm);

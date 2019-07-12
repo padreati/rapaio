@@ -108,7 +108,7 @@ public class MappedFrameTest {
 
         assertTrue(df1.deepEquals(df2));
 
-        df2 = df2.solidCopy();
+        df2 = df2.copy();
 
         assertEquals(df1.rowCount(), df2.rowCount());
         assertEquals(df1.varCount(), df2.varCount());

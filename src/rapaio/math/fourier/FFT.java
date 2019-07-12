@@ -131,8 +131,8 @@ public class FFT {
 
     // compute the linear convolution of x and y
     public static Pair<Var, Var> convolve(Pair<Var, Var> x, Pair<Var, Var> y) {
-        Pair<Var, Var> a = Pair.from(x._1.solidCopy(), x._2.solidCopy());
-        Pair<Var, Var> b = Pair.from(y._1.solidCopy(), y._2.solidCopy());
+        Pair<Var, Var> a = Pair.from(x._1.copy(), x._2.copy());
+        Pair<Var, Var> b = Pair.from(y._1.copy(), y._2.copy());
 
         for (int i = 0; i < x._1.rowCount(); i++) {
             a._1.addDouble(0.0);

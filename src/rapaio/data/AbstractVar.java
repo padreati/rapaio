@@ -51,7 +51,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public Var solidCopy() {
+    public Var copy() {
 
         // this implementation is useful for non-solid variables like bounded or mapped
         // all solid implementations have their own version of copy method

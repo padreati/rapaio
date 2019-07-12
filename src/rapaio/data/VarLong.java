@@ -27,8 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.data.accessor.VarLongDataAccessor;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -468,44 +466,14 @@ public class VarLong extends AbstractVar {
         rows = 0;
     }
 
-    public VarLongDataAccessor getDataAccessor() {
-        return new VarLongDataAccessor() {
-
-            @Override
-            public long getMissingValue() {
-                return MISSING_VALUE;
-            }
-
-            @Override
-            public int getRowCount() {
-                return rows;
-            }
-
-            @Override
-            public void setRowCount(int rowCount) {
-                rows = rowCount;
-            }
-
-            @Override
-            public long[] getData() {
-                return data;
-            }
-
-            @Override
-            public void setData(long[] values) {
-                data = values;
-            }
-        };
-    }
-
     @Override
     public Var newInstance(int rows) {
         return VarLong.empty(rows);
     }
 
     @Override
-    public VarLong solidCopy() {
-        return (VarLong) super.solidCopy();
+    public VarLong copy() {
+        return (VarLong) super.copy();
     }
 
     @Override
@@ -516,5 +484,14 @@ public class VarLong extends AbstractVar {
     @Override
     protected int stringPrefix() {
         return 10;
+    }
+
+    public long[] getArray() {
+        return data;
+    }
+
+    public void setArray(long[] values, int rowCount) {
+        data = values;
+        rows = rowCount;
     }
 }

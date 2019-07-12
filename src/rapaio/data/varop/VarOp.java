@@ -25,10 +25,26 @@
  *
  */
 
-package rapaio.data.accessor;
+package rapaio.data.varop;
+
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import rapaio.data.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/18.
+ * Interface which describes additional operations on a variable if they are allowed by
+ * implementation. This keeps clean the Var interface and its implementations, while
+ * allowing fast access to the underlying arrays. Attention must be taken while working
+ * with array methods.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/10/19.
  */
-public interface VarDataAccessor {
+public interface VarOp<V extends Var> {
+
+    V apply(Double2DoubleFunction fun);
+
+    VarDouble capply(Double2DoubleFunction fun);
+
+    V plus(double a);
+
+    V plus(Var x);
 }

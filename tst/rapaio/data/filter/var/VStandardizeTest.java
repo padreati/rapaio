@@ -25,9 +25,9 @@ public class VStandardizeTest {
         double mean = Mean.of(x).value();
         double sd = Variance.of(x).sdValue();
 
-        Var m1 = x.solidCopy().fapply(VStandardize.filter());
-        Var m2 = x.solidCopy().fapply(VStandardize.filter(mean));
-        Var m3 = x.solidCopy().fapply(VStandardize.filter(mean, sd));
+        Var m1 = x.copy().fapply(VStandardize.filter());
+        Var m2 = x.copy().fapply(VStandardize.filter(mean));
+        Var m3 = x.copy().fapply(VStandardize.filter(mean, sd));
 
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
@@ -36,7 +36,7 @@ public class VStandardizeTest {
     @Test
     public void testConstant() {
         VarDouble x = VarDouble.fill(100, 10);
-        Var sd = x.solidCopy().fapply(VStandardize.filter());
+        Var sd = x.copy().fapply(VStandardize.filter());
         assertTrue(x.deepEquals(sd));
     }
 

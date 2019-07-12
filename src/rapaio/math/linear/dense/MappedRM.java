@@ -126,7 +126,7 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public SolidRM solidCopy() {
+    public SolidRM copy() {
         SolidRM copy = SolidRM.empty(rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {

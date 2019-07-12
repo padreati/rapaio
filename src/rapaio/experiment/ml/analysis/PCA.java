@@ -125,8 +125,8 @@ public class PCA implements DefaultPrintable {
         Arrays.sort(rows, (o1, o2) -> -Double.compare(values.get(o1), values.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        values = values.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
-        eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
+        values = values.asMatrix().mapRows(indexes).mapCol(0).copy();
+        eigenVectors = eigenVectors.mapCols(indexes).copy();
     }
 
     public Frame predict(Frame df, int k) {

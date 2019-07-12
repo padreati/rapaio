@@ -342,7 +342,7 @@ public class Join {
         int[] sample = SamplingTools.sampleWOR(id.rowCount(), id.rowCount());
 
         Frame df1 = SolidFrame.byVars(id, x1);
-        Frame df2 = SolidFrame.byVars(id, x2).mapRows(Mapping.wrap(sample)).solidCopy();
+        Frame df2 = SolidFrame.byVars(id, x2).mapRows(Mapping.wrap(sample)).copy();
 
         df1.printFullContent();
         df2.printFullContent();

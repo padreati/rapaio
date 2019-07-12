@@ -58,13 +58,13 @@ public class Time {
         return showRun(null, task);
     }
 
-    public static <T> long measure(String message, Supplier<T> task) {
+    public static long measure(String message, Runnable task) {
         long start = System.currentTimeMillis();
-        T t = task.get();
+        task.run();
         return System.currentTimeMillis()-start;
     }
 
-    public static <T> long measure(Supplier<T> task) {
+    public static long measure(Runnable task) {
         return measure(null, task);
     }
 }

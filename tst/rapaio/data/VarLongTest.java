@@ -219,7 +219,7 @@ public class VarLongTest {
         assertEquals(1, x.getInt(0));
         assertEquals(3, x.getInt(1));
 
-        VarLong y = x.solidCopy();
+        VarLong y = x.copy();
 
         x.clearRows();
 

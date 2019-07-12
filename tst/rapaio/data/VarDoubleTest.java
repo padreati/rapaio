@@ -245,7 +245,7 @@ public class VarDoubleTest {
         assertEquals(1, x.getInt(0));
         assertEquals(3, x.getInt(1));
 
-        VarDouble y = x.solidCopy();
+        VarDouble y = x.copy();
 
         x.clearRows();
 

@@ -171,11 +171,11 @@ public class SmoothRTreeNode {
         Mapping rightMap = Mapping.wrap(rightRows);
 
         leftNode.coreNodeFit(
-                df.mapRows(leftMap).solidCopy(),
+                df.mapRows(leftMap).copy(),
                 leftW,
                 leftY, tree, depth + 1);
         rightNode.coreNodeFit(
-                df.mapRows(rightMap).solidCopy(),
+                df.mapRows(rightMap).copy(),
                 rightW,
                 rightY, tree, depth + 1);
     }

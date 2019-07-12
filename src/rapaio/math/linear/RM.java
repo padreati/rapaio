@@ -312,7 +312,7 @@ public interface RM extends Serializable, DefaultPrintable {
 
     DoubleStream valueStream();
 
-    RM solidCopy();
+    RM copy();
 
     default String summary() {
 

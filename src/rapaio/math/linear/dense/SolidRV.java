@@ -188,7 +188,7 @@ public class SolidRV implements RV {
         return this;
     }
 
-    public SolidRV solidCopy() {
+    public SolidRV copy() {
         SolidRV copy = SolidRV.empty(count());
         System.arraycopy(values, 0, copy.values, 0, count());
         return copy;

@@ -82,7 +82,7 @@ public class LinearRegResult extends RegResult<BaseLinearRegression> {
         String[] inputs = lm.inputNames();
         String[] targets = lm.targetNames();
 
-        beta_hat = lm.allCoefficients().solidCopy();
+        beta_hat = lm.allCoefficients().copy();
         beta_std_error = SolidRM.empty(inputs.length, targets.length);
         beta_t_value = SolidRM.empty(inputs.length, targets.length);
         beta_p_value = SolidRM.empty(inputs.length, targets.length);

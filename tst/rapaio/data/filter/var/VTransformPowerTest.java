@@ -26,7 +26,7 @@ public class VTransformPowerTest {
         RandomSource.setSeed(1);
 
         Var x = Normal.std().sample(1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
-        Var y = x.solidCopy().fapply(VTransformPower.with(0.2));
+        Var y = x.copy().fapply(VTransformPower.with(0.2));
 
         assertEquals(1.459663, Variance.of(x).sdValue(), 1e-6);
         assertEquals(0.5788231, Variance.of(y).sdValue(), 1e-6);
@@ -40,7 +40,7 @@ public class VTransformPowerTest {
         RandomSource.setSeed(1);
 
         Var x = Normal.std().sample(1000).stream().mapToDouble(s -> Math.pow(s.getDouble(), 2)).boxed().collect(VarDouble.collector());
-        Var y = x.solidCopy().fapply(VTransformPower.with(0));
+        Var y = x.copy().fapply(VTransformPower.with(0));
 
         assertEquals(1.459663, Variance.of(x).sdValue(), 1e-6);
         assertEquals(0.6713084463366682, Variance.of(y).sdValue(), 1e-6);

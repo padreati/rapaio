@@ -149,8 +149,8 @@ public class ImageGraphicsTest {
     @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
 
-        Var x = df.rvar(0).solidCopy().withName("x");
-        Var y = df.rvar(1).solidCopy().withName("y");
+        Var x = df.rvar(0).copy().withName("x");
+        Var y = df.rvar(1).copy().withName("y");
 
         Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
         if (show)

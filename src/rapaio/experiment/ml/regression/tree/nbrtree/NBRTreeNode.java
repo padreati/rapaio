@@ -253,13 +253,13 @@ public class NBRTreeNode implements Serializable {
         VarDouble residuals = VarDouble.from(y.rowCount(), row -> originalY.getDouble(row) - pred.getDouble(row)).withName(y.name());
 
         leftNode.coreNodeFit(
-                df.mapRows(leftMap).solidCopy(),
-                weights.mapRows(leftMap).solidCopy(),
-                residuals.mapRows(leftMap).solidCopy(), tree, depth + 1);
+                df.mapRows(leftMap).copy(),
+                weights.mapRows(leftMap).copy(),
+                residuals.mapRows(leftMap).copy(), tree, depth + 1);
         rightNode.coreNodeFit(
-                df.mapRows(rightMap).solidCopy(),
-                weights.mapRows(rightMap).solidCopy(),
-                residuals.mapRows(rightMap).solidCopy(), tree, depth + 1);
+                df.mapRows(rightMap).copy(),
+                weights.mapRows(rightMap).copy(),
+                residuals.mapRows(rightMap).copy(), tree, depth + 1);
     }
 
     private double computeFactor(Var resiual, VarDouble fx) {

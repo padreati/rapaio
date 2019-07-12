@@ -79,12 +79,12 @@ public class NewtonRaphsonMinimizer implements Minimizer {
     @Override
     public void compute() {
         converged = false;
-        sol = x.solidCopy();
+        sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
-            solutions.add(sol.solidCopy());
+            solutions.add(sol.copy());
             RV d1f_x = d1f.apply(sol);
             RM d2f_x = d2f.apply(sol);
-            RV d1f_x_n = d1f_x.solidCopy().dot(-1);
+            RV d1f_x_n = d1f_x.copy().dot(-1);
 
             RV delta_x;
 
@@ -101,7 +101,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             CholeskyDecomposition chol = modifiedCholesky(d2f_x);
             delta_x = chol.solve(d1f_x_n.asMatrix()).mapCol(0);
 
-            double error = d1f_x.solidCopy().dotProd(delta_x);
+            double error = d1f_x.copy().dotProd(delta_x);
             if (pow(error, 2) / 2 < tol) {
                 converged = true;
                 break;
@@ -126,7 +126,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         double sigma = (minac > 0) ? 0 : -minac + beta;
 
         // update matrix
-        RM Ac = A.solidCopy();
+        RM Ac = A.copy();
         for (int i = 0; i < Ac.rowCount(); i++) {
             Ac.set(i, i, A.get(i, i) + sigma);
         }
@@ -141,7 +141,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             // update sigma
             sigma = max(100 * sigma, beta);
             // update matrix
-            RM Acc = Ac.solidCopy();
+            RM Acc = Ac.copy();
             for (int i = 0; i < Acc.rowCount(); i++) {
                 Acc.set(i, i, Ac.get(i, i) + sigma);
             }

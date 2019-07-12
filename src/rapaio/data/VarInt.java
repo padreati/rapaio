@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.data.accessor.*;
 import rapaio.printer.format.*;
 
 import java.io.IOException;
@@ -211,7 +210,7 @@ public final class VarInt extends AbstractVar {
 
             @Override
             public Function<VarInt, VarInt> finisher() {
-                return VarInt::solidCopy;
+                return VarInt::copy;
             }
 
             @Override
@@ -380,37 +379,8 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    public VarInt solidCopy() {
-        return (VarInt) super.solidCopy();
-    }
-
-    public VarIntDataAccessor getDataAccessor() {
-        return new VarIntDataAccessor() {
-            @Override
-            public int getMissingValue() {
-                return MISSING_VALUE;
-            }
-
-            @Override
-            public int getRowCount() {
-                return rows;
-            }
-
-            @Override
-            public void setRowCount(int rowCount) {
-                rows = rowCount;
-            }
-
-            @Override
-            public int[] getData() {
-                return data;
-            }
-
-            @Override
-            public void setData(int[] values) {
-                data = values;
-            }
-        };
+    public VarInt copy() {
+        return (VarInt) super.copy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -442,4 +412,14 @@ public final class VarInt extends AbstractVar {
     void stringPutValue(TextTable tt, int i, int j, int row) {
         tt.textRight(i, j, getLabel(row));
     }
+
+    public int[] array() {
+        return data;
+    }
+
+    public void setArray(int[] values, int rowCount) {
+        data = values;
+        rows = rowCount;
+    }
+
 }

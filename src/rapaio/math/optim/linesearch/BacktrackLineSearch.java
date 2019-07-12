@@ -50,7 +50,7 @@ public class BacktrackLineSearch implements LineSearch {
 
         double alpha = 1;
         while (true) {
-            double f_x_plus_alpha_delta = f.apply(x.solidCopy().plus(delta_f.solidCopy().dot(alpha)));
+            double f_x_plus_alpha_delta = f.apply(x.copy().plus(delta_f.copy().dot(alpha)));
             if (f_x_plus_alpha_delta > fx + c * alpha * m) {
                 alpha *= rho;
                 continue;

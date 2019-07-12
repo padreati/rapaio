@@ -61,7 +61,7 @@ public class VarTextTest {
         VarText copy2 = VarText.copy(largeValues).withName("copy");
         assertEquals("copy", copy2.name());
 
-        VarText copy3 = copy2.solidCopy();
+        VarText copy3 = copy2.copy();
         assertTrue(copy2.deepEquals(copy3));
 
         assertEquals("VarText [name:\"copy\", rowCount:100, values: omt, hyhvnlwuznrcbaqk, iyedusfwdkelqbxete, ovascfqio, maajxky, rnlrytgkbgic, ahcbrqdsxv, hpfqgtmdypsbzxvf, oeygjbumaa, k, ..., ldif, tciudeieeo]", copy2.toString());

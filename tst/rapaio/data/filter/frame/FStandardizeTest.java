@@ -19,8 +19,8 @@ public class FStandardizeTest {
         FStandardize filter = FStandardize.on(VRange.all());
         filter.fit(src);
 
-        Frame std1 = src.solidCopy().fapply(filter);
-        Frame std2 = src.solidCopy().fapply(FStandardize.on(VRange.onlyTypes(VType.DOUBLE)).newInstance());
+        Frame std1 = src.copy().fapply(filter);
+        Frame std2 = src.copy().fapply(FStandardize.on(VRange.onlyTypes(VType.DOUBLE)).newInstance());
 
         assertTrue(std1.deepEquals(std2));
     }

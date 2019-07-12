@@ -82,7 +82,7 @@ public class SamplingToolsTest {
         for (int next : SamplingTools.sampleWOR(TRIALS * 2, TRIALS)) {
             v.addDouble(next);
         }
-        double[] values = v.getDataAccessor().getData();
+        double[] values = v.array();
         DoubleArrays.quickSort(values, 0, v.rowCount());
         for (int i = 1; i < v.rowCount(); i++) {
             assertTrue(values[i] - values[i - 1] >= 1);

@@ -205,7 +205,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         }
         double maxScore = Maximum.of(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
     }
 
     public Frame getGainVIInfo() {
@@ -220,7 +220,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         }
         double maxScore = Maximum.of(score).value();
         Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
     }
 
     public Frame getPermVIInfo() {
@@ -242,7 +242,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
             zscores.addDouble(Math.abs(zscore));
             pvalues.addDouble(pvalue);
         }
-        return SolidFrame.byVars(name, score, sds, zscores, pvalues).fapply(FRefSort.by(zscores.refComparator(false))).solidCopy();
+        return SolidFrame.byVars(name, score, sds, zscores, pvalues).fapply(FRefSort.by(zscores.refComparator(false))).copy();
     }
 
     @Override
@@ -252,7 +252,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         double totalOobError = 0;
         if (oobComp) {
             oobDensities = new HashMap<>();
-            oobTrueClass = df.rvar(firstTargetName()).solidCopy();
+            oobTrueClass = df.rvar(firstTargetName()).copy();
             oobFit = VarNominal.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.empty(false, firstTargetLevels()));

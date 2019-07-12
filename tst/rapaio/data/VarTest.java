@@ -84,26 +84,26 @@ public class VarTest {
     }
 
     @Test
-    public void solidCopyNameTest() {
+    public void copyNameTest() {
         VarDouble num = VarDouble.seq(1, 10, 0.5).withName("num");
-        assertEquals(num.name(), num.solidCopy().name());
-        assertEquals(num.name(), num.mapRows(2, 5).solidCopy().name());
+        assertEquals(num.name(), num.copy().name());
+        assertEquals(num.name(), num.mapRows(2, 5).copy().name());
 
         VarInt idx = VarInt.seq(1, 10).withName("idx");
-        assertEquals(idx.name(), idx.solidCopy().name());
-        assertEquals(idx.name(), idx.mapRows(2, 5).solidCopy().name());
+        assertEquals(idx.name(), idx.copy().name());
+        assertEquals(idx.name(), idx.mapRows(2, 5).copy().name());
 
         VarBinary bin = VarBinary.copy(1, 0, 1, 0, 1).withName("bin");
-        assertEquals(bin.name(), bin.solidCopy().name());
-        assertEquals(bin.name(), bin.mapRows(2, 5).solidCopy().name());
+        assertEquals(bin.name(), bin.copy().name());
+        assertEquals(bin.name(), bin.mapRows(2, 5).copy().name());
 
         VarNominal nom = VarNominal.copy("a", "b", "a", "c", "a").withName("nom");
-        assertEquals(nom.name(), nom.solidCopy().name());
-        assertEquals(nom.name(), nom.mapRows(2, 4).solidCopy().name());
+        assertEquals(nom.name(), nom.copy().name());
+        assertEquals(nom.name(), nom.mapRows(2, 4).copy().name());
 
         VarLong stp = VarLong.seq(1, 10).withName("stamp");
-        assertEquals(stp.name(), stp.solidCopy().name());
-        assertEquals(stp.name(), stp.mapRows(2, 5).solidCopy().name());
+        assertEquals(stp.name(), stp.copy().name());
+        assertEquals(stp.name(), stp.mapRows(2, 5).copy().name());
     }
 
     @Test
@@ -113,15 +113,15 @@ public class VarTest {
         double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
 
         VarDouble vx = VarDouble.wrap(x);
-        Var vlog1px = vx.solidCopy().fapply(VApplyDouble.with(Math::log1p));
+        Var vlog1px = vx.copy().fapply(VApplyDouble.with(Math::log1p));
 
         assertTrue(vx.deepEquals(VarDouble.wrap(x)));
         assertTrue(vlog1px.deepEquals(VarDouble.wrap(log1px)));
 
         VStandardize filter = VStandardize.filter();
         filter.fit(vx);
-        Var fit1 = vx.solidCopy().apply(filter);
-        Var fit2 = vx.solidCopy().fapply(VStandardize.filter());
+        Var fit1 = vx.copy().apply(filter);
+        Var fit2 = vx.copy().fapply(VStandardize.filter());
 
         assertTrue(fit1.deepEquals(fit2));
     }

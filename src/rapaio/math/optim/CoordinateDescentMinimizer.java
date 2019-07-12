@@ -73,9 +73,9 @@ public class CoordinateDescentMinimizer implements Minimizer {
     public void compute() {
 
         converged = false;
-        sol = x.solidCopy();
+        sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
-            solutions.add(sol.solidCopy());
+            solutions.add(sol.copy());
             RV d1f_x = d1f.apply(sol);
             double max = abs(d1f_x.get(0));
             int index = 0;

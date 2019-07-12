@@ -229,7 +229,7 @@ public class DVectorTest {
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
-        DVector dv2 = dv1.solidCopy();
+        DVector dv2 = dv1.copy();
         assertEquals(dv1.toString(), dv2.toString());
     }
 }

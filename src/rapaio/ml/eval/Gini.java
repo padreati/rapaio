@@ -72,7 +72,7 @@ public class Gini implements DefaultPrintable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VRefSort(cmp).fapply(actual).solidCopy();
+        Var sol = new VRefSort(cmp).fapply(actual).copy();
 
         int n = sol.rowCount();
 
@@ -87,11 +87,11 @@ public class Gini implements DefaultPrintable {
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
-        Var sol = new VRefSort(cmp).fapply(actual).solidCopy();
-        Var w = new VRefSort(cmp).fapply(weights).solidCopy();
+        Var sol = new VRefSort(cmp).fapply(actual).copy();
+        Var w = new VRefSort(cmp).fapply(weights).copy();
 
         double wsum = Sum.of(w).value();
-        Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).solidCopy());
+        Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).copy());
         double totalPositive = Sum.of(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
         Var lorentz = new VCumSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 

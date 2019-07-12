@@ -463,11 +463,11 @@ public interface Frame extends Serializable, Printable {
      */
     void setMissing(int row, String varName);
 
-    default SolidFrame solidCopy() {
+    default SolidFrame copy() {
         final String[] names = varNames();
         final Var[] vars = new Var[names.length];
         for (int i = 0; i < names.length; i++) {
-            vars[i] = rvar(names[i]).solidCopy().withName(names[i]);
+            vars[i] = rvar(names[i]).copy().withName(names[i]);
         }
         return SolidFrame.byVars(vars);
     }

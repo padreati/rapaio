@@ -18,8 +18,8 @@ public class VRefSortTest {
         RandomSource.setSeed(1);
         Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = VarDouble.copy(7, 6, 1, 2, 5, 4);
-        Var x3 = x2.solidCopy().fapply(VRefSort.filter());
-        Var x4 = x1.solidCopy().fapply(VRefSort.filter());
+        Var x3 = x2.copy().fapply(VRefSort.filter());
+        Var x4 = x1.copy().fapply(VRefSort.filter());
         for (int i = 0; i < x3.rowCount() - 1; i++) {
             assertTrue(Double.compare(x3.getDouble(i), x3.getDouble(i + 1)) <= 0);
         }

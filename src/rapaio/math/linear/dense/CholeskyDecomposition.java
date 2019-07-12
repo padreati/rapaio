@@ -190,7 +190,7 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        RM X = B.solidCopy();
+        RM X = B.copy();
         int nx = B.colCount();
 
         SubstitutionStrategy sStrategy = new ForwardSubstitution();

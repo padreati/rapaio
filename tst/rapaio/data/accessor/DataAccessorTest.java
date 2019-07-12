@@ -24,16 +24,12 @@ public class DataAccessorTest {
     @Test
     public void testVarDoubleDataAccessor() {
         VarDouble x = VarDouble.from(100, RandomSource::nextDouble);
-        VarDoubleDataAccessor accessor = x.getDataAccessor();
 
-        assertTrue(Double.isNaN(accessor.getMissingValue()));
-
-        double[] data = accessor.getData();
-        for (int i = 0; i < accessor.getRowCount(); i++) {
+        double[] data = x.array();
+        for (int i = 0; i < x.rowCount(); i++) {
             data[i] = 1.;
         }
-        accessor.setData(data);
-        accessor.setRowCount(10);
+        x.setArray(data, 10);
 
         assertEquals(10, x.rowCount());
         for (int i = 0; i < x.rowCount(); i++) {
@@ -44,16 +40,13 @@ public class DataAccessorTest {
     @Test
     public void testVarLongDataAccessor() {
         VarLong x = VarLong.from(100, () -> (long) RandomSource.nextDouble() * 100);
-        VarLongDataAccessor accessor = x.getDataAccessor();
-        assertEquals(Long.MIN_VALUE, accessor.getMissingValue());
 
-        long[] data = accessor.getData();
-        int rows = accessor.getRowCount();
+        long[] data = x.getArray();
+        int rows = x.rowCount();
         for (int i = 0; i < rows; i++) {
             data[i] = 10L;
         }
-        accessor.setData(data);
-        accessor.setRowCount(10);
+        x.setArray(data, 10);
 
         assertEquals(10, x.rowCount());
         for (int i = 0; i < 10; i++) {
@@ -64,16 +57,13 @@ public class DataAccessorTest {
     @Test
     public void testVarIntDataAccessor() {
         VarInt x = VarInt.from(100, row -> (int) RandomSource.nextDouble() * 100);
-        VarIntDataAccessor accessor = x.getDataAccessor();
-        assertEquals(Integer.MIN_VALUE, accessor.getMissingValue());
 
-        int[] data = accessor.getData();
-        int rows = accessor.getRowCount();
+        int[] data = x.array();
+        int rows = x.rowCount();
         for (int i = 0; i < rows; i++) {
             data[i] = 10;
         }
-        accessor.setData(data);
-        accessor.setRowCount(10);
+        x.setArray(data, 10);
 
         assertEquals(10, x.rowCount());
         for (int i = 0; i < 10; i++) {

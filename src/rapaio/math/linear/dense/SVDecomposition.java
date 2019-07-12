@@ -66,7 +66,7 @@ public class SVDecomposition implements java.io.Serializable {
 
         // Derived from LINPACK code.
         // Initialize.
-        RM A = Arg.solidCopy();
+        RM A = Arg.copy();
         rowCount = Arg.rowCount();
         colCount = Arg.colCount();
 

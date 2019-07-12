@@ -171,7 +171,7 @@ public class LUDecomposition implements Serializable, DefaultPrintable {
 
         // Copy right hand side with pivoting
         int nx = B.colCount();
-        RM X = B.mapRows(piv).solidCopy();
+        RM X = B.mapRows(piv).copy();
 
         // Solve L*Y = B(piv,:)
 
@@ -220,7 +220,7 @@ public class LUDecomposition implements Serializable, DefaultPrintable {
             @Override
             BiConsumer<LUDecomposition, RM> method() {
                 return (lu, A) -> {
-                    lu.LU = A.solidCopy();
+                    lu.LU = A.copy();
                     lu.rowCount = A.rowCount();
                     lu.colCount = A.colCount();
                     lu.piv = new int[lu.rowCount];
@@ -294,7 +294,7 @@ public class LUDecomposition implements Serializable, DefaultPrintable {
                 return (lu, A) -> {
 
                     // Initialize.
-                    lu.LU = A.solidCopy();
+                    lu.LU = A.copy();
                     lu.rowCount = A.rowCount();
                     lu.colCount = A.colCount();
                     lu.piv = new int[lu.rowCount];

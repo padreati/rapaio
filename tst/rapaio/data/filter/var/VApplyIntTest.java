@@ -20,7 +20,7 @@ public class VApplyIntTest {
 
         Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
-        Var y = x.solidCopy().fapply(vf);
+        Var y = x.copy().fapply(vf);
         Assert.assertEquals(0, y.getDouble(0), 1e-20);
         Assert.assertEquals(0, y.getDouble(1), 1e-20);
         Assert.assertEquals(1, y.getDouble(2), 1e-20);

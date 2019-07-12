@@ -131,7 +131,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
 
         h = new ArrayList<>();
         a = new ArrayList<>();
-        w = weights.solidCopy();
+        w = weights.copy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         for (int i = 0; i < w.rowCount(); i++) {
@@ -155,7 +155,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
         Classifier hh = weak.newInstance();
 
         Sample sample = sampler().nextSample(df, w);
-        hh.fit(sample.df, sample.weights.solidCopy(), targetNames());
+        hh.fit(sample.df, sample.weights.copy(), targetNames());
 
         ClassResult fit = hh.predict(df, true, false);
 

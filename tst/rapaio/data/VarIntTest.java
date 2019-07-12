@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import rapaio.core.*;
 import rapaio.core.stat.Sum;
-import rapaio.data.accessor.VarIntDataAccessor;
 import rapaio.sys.*;
 
 import java.util.stream.IntStream;
@@ -322,8 +321,8 @@ public class VarIntTest {
 
         VarInt x1 = VarInt.copy(1, 2, 3, 4, 5);
         Var x2 = MappedVar.byRows(x1, 0, 1, 2);
-        Var x3 = x2.solidCopy();
-        Var x4 = x3.solidCopy();
+        Var x3 = x2.copy();
+        Var x4 = x3.copy();
         x4.addDouble(8);
 
         assertEquals(4, x4.rowCount());
@@ -335,15 +334,11 @@ public class VarIntTest {
     @Test
     public void testDataAccessor() {
         VarInt int1 = VarInt.seq(0, 100, 2);
-        VarIntDataAccessor acc = int1.getDataAccessor();
-        assertEquals(Integer.MIN_VALUE, acc.getMissingValue());
-        assertEquals(int1.rowCount(), acc.getRowCount());
         for (int i = 0; i < int1.rowCount(); i++) {
-            assertEquals(int1.getInt(i), acc.getData()[i]);
+            assertEquals(int1.getInt(i), int1.array()[i]);
         }
         int[] values = new int[]{0, 1, Integer.MIN_VALUE, 3, 4};
-        acc.setData(values);
-        acc.setRowCount(values.length);
+        int1.setArray(values, values.length);
 
         assertTrue(VarInt.wrap(values).deepEquals(int1));
     }

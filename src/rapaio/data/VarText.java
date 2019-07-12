@@ -209,7 +209,7 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public VarText solidCopy() {
+    public VarText copy() {
         VarText copy = new VarText(0).withName(name());
         copy.values = new ArrayList<>(values);
         return copy;

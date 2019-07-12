@@ -386,8 +386,8 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    public VarBinary solidCopy() {
-        return (VarBinary) super.solidCopy();
+    public VarBinary copy() {
+        return (VarBinary) super.copy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

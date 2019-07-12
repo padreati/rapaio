@@ -118,17 +118,17 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
             }
             logger.config("started fitting weak learner...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
+        }).collect(toList()).forEach(var -> vars.add(var.copy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy()
+                .map(v -> v.copy()
                         .fapply(VApplyDouble.with(x -> x * x))
                         .withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
 
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
-        vars.add(df.rvar(targets.get(0)).solidCopy());
+        vars.add(df.rvar(targets.get(0)).copy());
 
         return FitSetup.valueOf(SolidFrame.byVars(vars), weights, targetVars);
     }
@@ -152,10 +152,10 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
+        }).collect(toList()).forEach(var -> vars.add(var.copy().withName("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.solidCopy().fapply(VApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
+                .map(v -> v.copy().fapply(VApplyDouble.with(x -> x * x)).withName(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

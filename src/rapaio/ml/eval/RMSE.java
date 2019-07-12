@@ -42,8 +42,8 @@ import rapaio.printer.format.*;
 public class RMSE implements DefaultPrintable {
 
     public static RMSE from(Var actual, Var fit) {
-        return new RMSE(SolidFrame.byVars(actual.solidCopy()),
-                SolidFrame.byVars(fit.solidCopy()));
+        return new RMSE(SolidFrame.byVars(actual.copy()),
+                SolidFrame.byVars(fit.copy()));
     }
 
     public static RMSE from(Frame actual, Frame fit) {

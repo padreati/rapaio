@@ -56,8 +56,8 @@ public class Acf implements DefaultPrintable {
         if (ts.stream().complete().count() != ts.rowCount()) {
             throw new IllegalArgumentException("Acf does not allow missing values.");
         }
-        this.ts = ts.solidCopy();
-        this.lags = lags.solidCopy();
+        this.ts = ts.copy();
+        this.lags = lags.copy();
         this.correlation = VarDouble.fill(lags.rowCount(), 0).withName("correlation");
         this.covariance = VarDouble.fill(lags.rowCount(), 0).withName("covariance");
 

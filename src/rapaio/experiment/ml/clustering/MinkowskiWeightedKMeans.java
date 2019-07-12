@@ -397,7 +397,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
     }
 
     public VarDouble runningErrors() {
-        return errors.solidCopy();
+        return errors.copy();
     }
 
     public double error() {

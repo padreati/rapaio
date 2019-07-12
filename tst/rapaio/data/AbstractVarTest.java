@@ -38,7 +38,7 @@ public class AbstractVarTest {
     public void solidNumericCopyTest() {
 
         Var main = VarDouble.copy(1, 3, 5, 8, 9);
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
 
         assertEquals(main.rowCount(), copy.rowCount());
         assertEquals(main.getDouble(0), copy.getDouble(0), 10e-12);
@@ -55,7 +55,7 @@ public class AbstractVarTest {
         main.addLabel("y");
         main.addLabel("x");
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
         assertEquals(main.rowCount(), copy.rowCount());
         for (int i = 0; i < main.rowCount(); i++) {
             assertEquals(main.getLabel(i), copy.getLabel(i));
@@ -66,7 +66,7 @@ public class AbstractVarTest {
     public void solidIndexCopyTest() {
         Var main = VarInt.wrap(1, 2, 3, 4, 5);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
         assertEquals(main.rowCount(), copy.rowCount());
         for (int i = 0; i < main.rowCount(); i++) {
             assertEquals(main.getInt(i), copy.getInt(i));
@@ -77,7 +77,7 @@ public class AbstractVarTest {
     public void solidStampCopyTest() {
         Var main = VarLong.wrap(1L, 2L, 3L, 4L, 6L);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
         assertEquals(main.rowCount(), copy.rowCount());
         for (int i = 0; i < main.rowCount(); i++) {
             assertEquals(main.getLong(i), copy.getLong(i));
@@ -88,7 +88,7 @@ public class AbstractVarTest {
     public void soliBinaryCopyTest() {
         Var main = VarBinary.copy(1, 0, 0, 1);
         main.addMissing();
-        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
+        Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
         assertEquals(main.rowCount(), copy.rowCount());
         for (int i = 0; i < main.rowCount(); i++) {
             assertEquals(main.getInt(i), copy.getInt(i));

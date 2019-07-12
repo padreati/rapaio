@@ -188,7 +188,7 @@ public class VarNominalTest {
         a.addLabel("x");
         a.addLabel("y");
 
-        VarNominal b = a.solidCopy();
+        VarNominal b = a.copy();
 
         a.addLabel("z");
 

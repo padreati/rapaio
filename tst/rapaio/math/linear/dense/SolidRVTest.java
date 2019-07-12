@@ -107,7 +107,7 @@ public class SolidRVTest {
     @Test
     public void incrementTest() {
         RV x = SolidRV.from(VarDouble.seq(0, 1, 0.01));
-        RV y = x.solidCopy();
+        RV y = x.copy();
         for (int i = 0; i < y.count(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
             y.increment(i, sign * 10);
@@ -134,7 +134,7 @@ public class SolidRVTest {
 
     @Test
     public void scalarPlusTest() {
-        RV y = x.solidCopy().plus(10);
+        RV y = x.copy().plus(10);
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
@@ -143,7 +143,7 @@ public class SolidRVTest {
     @Test
     public void vectorPlusTest() {
         RV z = SolidRV.from(VarDouble.fill(N, 10));
-        RV y = x.solidCopy().plus(z);
+        RV y = x.copy().plus(z);
 
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
@@ -158,7 +158,7 @@ public class SolidRVTest {
 
     @Test
     public void scalarDotTest() {
-        RV y = x.solidCopy().dot(10);
+        RV y = x.copy().dot(10);
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
@@ -166,7 +166,7 @@ public class SolidRVTest {
 
     @Test
     public void scalarMinusTest() {
-        RV y = x.solidCopy().minus(10);
+        RV y = x.copy().minus(10);
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
@@ -175,7 +175,7 @@ public class SolidRVTest {
     @Test
     public void vectorMinusTest() {
         RV z = SolidRV.from(VarDouble.fill(N, 10));
-        RV y = x.solidCopy().minus(z);
+        RV y = x.copy().minus(z);
 
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
@@ -212,7 +212,7 @@ public class SolidRVTest {
 
     @Test
     public void normalizeTest() {
-        RV y = x.solidCopy().normalize(1.5);
+        RV y = x.copy().normalize(1.5);
         double norm = x.norm(1.5);
         for (int i = 0; i < y.count(); i++) {
             assertEquals(x.get(i) / norm, y.get(i), TOL);

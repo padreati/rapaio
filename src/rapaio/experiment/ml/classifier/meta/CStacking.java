@@ -109,13 +109,13 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
                                 weaks.get(i).fit(df, w, targetVars);
                             }
                             logger.fine("started fitting weak learner...");
-                            return weaks.get(i).predict(df).firstDensity().rvar(1).solidCopy()
+                            return weaks.get(i).predict(df).firstDensity().rvar(1).copy()
                                     .withName("V" + i);
                         })
                         .collect(toList());
 
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
-        vars.add(df.rvar(targets.get(0)).solidCopy());
+        vars.add(df.rvar(targets.get(0)).copy());
 
         return FitSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);
     }
@@ -140,7 +140,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
                             .predict(df)
                             .firstDensity()
                             .rvar(1)
-                            .solidCopy()
+                            .copy()
                             .withName("V" + i);
                 }).collect(toList());
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

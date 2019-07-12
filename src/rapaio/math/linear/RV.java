@@ -239,7 +239,7 @@ public interface RV extends Serializable, DefaultPrintable {
      *
      * @return a new solid copy of the vector
      */
-    RV solidCopy();
+    RV copy();
 
     /**
      * A vector is also a matrix, but for implementation

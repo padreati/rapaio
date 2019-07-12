@@ -117,7 +117,7 @@ public class OneRule extends AbstractClassifier implements Printable {
             }
             if (withDensities) {
                 List<String> dict = firstTargetLevels();
-                DVector dv = p._2.solidCopy();
+                DVector dv = p._2.copy();
                 dv.normalize();
                 for (int j = 0; j < dict.size(); j++) {
                     pred.firstDensity().setDouble(i, j, dv.get(j));
@@ -259,7 +259,7 @@ public class OneRule extends AbstractClassifier implements Printable {
                 continue;
             }
             if (last.getTargetClass().equals(rule.getTargetClass())) {
-                DVector dv = last.getDV().solidCopy();
+                DVector dv = last.getDV().copy();
                 dv.plus(rule.getDV(), 1);
                 last = new NumericRule(last.getMinValue(), rule.getMaxValue(), false, last.getTargetIndex(), dv);
             } else {

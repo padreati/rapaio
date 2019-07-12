@@ -33,13 +33,13 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
 
     public RegressionsPerformanceTest() throws IOException {
         RandomSource.setSeed(1234);
-        Frame src = Datasets.loadISLAdvertising().removeVars(VRange.of("ID")).solidCopy();
+        Frame src = Datasets.loadISLAdvertising().removeVars(VRange.of("ID")).copy();
         Mapping mapping_5 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 5_000));
-        df_5k = src.mapRows(mapping_5).solidCopy();
+        df_5k = src.mapRows(mapping_5).copy();
         Mapping mapping_50 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 50_000));
-        df_50k = src.mapRows(mapping_50).solidCopy();
+        df_50k = src.mapRows(mapping_50).copy();
         Mapping mapping_200 = Mapping.wrap(SamplingTools.sampleWR(src.rowCount(), 200_000));
-        df_200k = src.mapRows(mapping_200).solidCopy();
+        df_200k = src.mapRows(mapping_200).copy();
     }
 
     @Before

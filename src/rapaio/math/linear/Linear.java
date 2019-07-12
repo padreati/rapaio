@@ -48,7 +48,7 @@ public final class Linear {
         }
 
         // Copy right hand side.
-        RM X = B.solidCopy();
+        RM X = B.copy();
 
         int n = ref.rowCount();
         int nx = X.colCount();

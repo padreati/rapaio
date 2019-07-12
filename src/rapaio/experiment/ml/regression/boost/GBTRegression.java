@@ -142,7 +142,7 @@ public class GBTRegression extends AbstractRegression implements DefaultPrintabl
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.fit(df, weights, firstTargetName());
-        fitValues = initRegression.predict(df, false).firstPrediction().solidCopy();
+        fitValues = initRegression.predict(df, false).firstPrediction().copy();
 
         for (int i = 1; i <= runs(); i++) {
             Var gradient = lossFunction.gradient(y, fitValues).withName("target");

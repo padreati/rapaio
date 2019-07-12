@@ -54,7 +54,7 @@ public class WeightedOnlineStatTest {
         VarDouble x = VarDouble.from(100, normal::sampleNext);
         VarDouble w = VarDouble.fill(100, 1);
 
-        VarDouble wnorm = w.solidCopy();
+        VarDouble wnorm = w.copy();
         double wsum = Sum.of(w).value();
         for (int i = 0; i < wnorm.rowCount(); i++) {
             wnorm.setDouble(i, wnorm.getDouble(i) / wsum);

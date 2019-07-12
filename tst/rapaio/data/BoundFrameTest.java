@@ -149,8 +149,8 @@ public class BoundFrameTest {
 
         Frame source = Datasets.loadRandom();
 
-        Frame df1 = source.mapRows(Mapping.range(0, 20)).solidCopy();
-        Frame df2 = source.mapRows(Mapping.range(20, 100)).solidCopy();
+        Frame df1 = source.mapRows(Mapping.range(0, 20)).copy();
+        Frame df2 = source.mapRows(Mapping.range(20, 100)).copy();
 
         Frame bound = BoundFrame.byRows(df1, df2);
         assertTrue(bound.deepEquals(source));

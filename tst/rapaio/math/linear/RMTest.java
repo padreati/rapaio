@@ -44,7 +44,7 @@ public class RMTest {
         }
 
         RM A2 = SolidRM.identity(3);
-        RM A3 = A2.solidCopy().plus(A2);
+        RM A3 = A2.copy().plus(A2);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 assertEquals(i == j ? 2 : 0, A3.get(i, j), TOL);
@@ -56,7 +56,7 @@ public class RMTest {
 
 
         RM A5 = SolidRM.identity(10);
-        RM A6 = A5.solidCopy().plus(10).minus(10);
+        RM A6 = A5.copy().plus(10).minus(10);
         assertTrue(A5.isEqual(A6));
     }
 
@@ -113,8 +113,8 @@ public class RMTest {
     public void dotTest() {
 
         RM a1 = SolidRM.random(10, 10);
-        RM a2 = a1.solidCopy().dot(2);
-        RM a3 = a1.solidCopy().plus(a1);
+        RM a2 = a1.copy().dot(2);
+        RM a3 = a1.copy().plus(a1);
 
         assertTrue(a2.isEqual(a3, TOL));
 

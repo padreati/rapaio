@@ -18,7 +18,7 @@ public class FApplyDoubleTest {
     public void testDouble() {
 
         Frame df = FFilterTestUtil.allDoubles(100, 2);
-        Frame sign = df.solidCopy().fapply(FApplyDouble.on(Math::signum, VRange.all()));
+        Frame sign = df.copy().fapply(FApplyDouble.on(Math::signum, VRange.all()));
 
         for (int i = 0; i < df.varCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
@@ -26,7 +26,7 @@ public class FApplyDoubleTest {
             }
         }
 
-        Frame sign2 = df.solidCopy().fapply(FApplyDouble.on(Math::signum, VRange.all()).newInstance());
+        Frame sign2 = df.copy().fapply(FApplyDouble.on(Math::signum, VRange.all()).newInstance());
         assertTrue(sign.deepEquals(sign2));
     }
 }

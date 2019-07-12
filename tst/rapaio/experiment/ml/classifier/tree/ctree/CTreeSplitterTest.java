@@ -54,7 +54,7 @@ public class CTreeSplitterTest {
     @Before
     public void setUp() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
-        df = SolidFrame.byVars(values.solidCopy().withName("x"));
+        df = SolidFrame.byVars(values.copy().withName("x"));
         w = values.fapply(VApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
         c = new CTreeCandidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));

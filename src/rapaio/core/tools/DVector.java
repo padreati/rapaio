@@ -328,7 +328,7 @@ public class DVector implements Printable, Serializable {
      *
      * @return a solid copy of distribution vector
      */
-    public DVector solidCopy() {
+    public DVector copy() {
         DVector d = new DVector(useFirst, levels);
         System.arraycopy(values, 0, d.values, 0, levels.size());
         d.total = total;

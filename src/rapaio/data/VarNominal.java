@@ -162,7 +162,7 @@ public final class VarNominal extends AbstractVar {
 
             @Override
             public BinaryOperator<VarNominal> combiner() {
-                return (left, right) -> (VarNominal) left.bindRows(right).solidCopy();
+                return (left, right) -> (VarNominal) left.bindRows(right).copy();
             }
 
             @Override
@@ -371,8 +371,8 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public VarNominal solidCopy() {
-        return (VarNominal) super.solidCopy();
+    public VarNominal copy() {
+        return (VarNominal) super.copy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

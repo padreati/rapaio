@@ -26,8 +26,8 @@ public class VTransformBoxCoxTest {
         }
         Var x = VarDouble.wrap(values);
 
-        Var bc1 = x.solidCopy().fapply(VTransformBoxCox.with(0));
-        Var bc2 = x.solidCopy().fapply(VTransformBoxCox.with(1.1, 12));
+        Var bc1 = x.copy().fapply(VTransformBoxCox.with(0));
+        Var bc2 = x.copy().fapply(VTransformBoxCox.with(1.1, 12));
 
         assertEquals(1.1, VTransformBoxCox.with(1.1, 2.0).lambda(), TOL);
         assertEquals(2.0, VTransformBoxCox.with(1.1, 2.0).shift(), TOL);

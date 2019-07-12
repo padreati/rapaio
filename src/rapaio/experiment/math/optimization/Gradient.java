@@ -80,7 +80,7 @@ class LeastSquareGradient implements Gradient {
     public Pair<RV, Double> compute(RV data, double label, RV weights) {
         double diff = data.dotProd(weights) - label;
         double loss = diff * diff / 2.0;
-        RV gradient = data.solidCopy();
+        RV gradient = data.copy();
         gradient.dot(diff);
         return Pair.from(gradient, loss);
     }
@@ -88,7 +88,7 @@ class LeastSquareGradient implements Gradient {
     @Override
     public Double compute(RV data, double label, RV weights, RV cumGradient) {
         double diff = data.dotProd(weights) - label;
-        cumGradient.plus(data.solidCopy().dot(diff));
+        cumGradient.plus(data.copy().dot(diff));
         return diff * diff / 2.0;
     }
 }
@@ -216,7 +216,7 @@ class LogisticGradient implements Gradient {
                  */
                 double margin2 = -1.0 * data.dotProd(weights);
                 double multiplier2 = (1.0 / (1.0 + Math.exp(margin2))) - label;
-                cumGradient.plus(data.solidCopy().dot(multiplier2));
+                cumGradient.plus(data.copy().dot(multiplier2));
                 if (label > 0) {
                     // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
                     return MTools.log1pExp(margin2);
@@ -307,7 +307,7 @@ class HingeGradient implements Gradient {
         // Therefore the gradient is -(2y - 1)*x
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            RV gradient = data.solidCopy();
+            RV gradient = data.copy();
             gradient.dot(-labelScaled);
             return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
@@ -323,7 +323,7 @@ class HingeGradient implements Gradient {
 
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            cumGradient.plus(data.solidCopy().dot(-labelScaled));
+            cumGradient.plus(data.copy().dot(-labelScaled));
             return 1.0 - labelScaled * dotProduct;
         }
         return 0.0;

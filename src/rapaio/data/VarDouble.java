@@ -28,9 +28,8 @@
 package rapaio.data;
 
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import rapaio.data.accessor.*;
+import rapaio.data.varop.*;
 import rapaio.printer.format.*;
 
 import java.io.IOException;
@@ -368,6 +367,19 @@ public final class VarDouble extends AbstractVar {
         return rows;
     }
 
+    public boolean isMissingValue(double value) {
+        return !Double.isFinite(value);
+    }
+
+    public double[] array() {
+        return new double[0];
+    }
+
+    public void setArray(double[] values, int rowCount) {
+        data = values;
+        rows = rowCount;
+    }
+
     @Override
     public void addRows(int rowCount) {
         ensureCapacity(rows + rowCount);
@@ -508,40 +520,11 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public VarDouble solidCopy() {
+    public VarDouble copy() {
         VarDouble copy = new VarDouble(0, 0, 0).withName(name());
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;
-    }
-
-    public VarDoubleDataAccessor getDataAccessor() {
-        return new VarDoubleDataAccessor() {
-            @Override
-            public double getMissingValue() {
-                return MISSING_VALUE;
-            }
-
-            @Override
-            public double[] getData() {
-                return data;
-            }
-
-            @Override
-            public void setData(double[] values) {
-                data = values;
-            }
-
-            @Override
-            public int getRowCount() {
-                return rows;
-            }
-
-            @Override
-            public void setRowCount(int rowCount) {
-                rows = rowCount;
-            }
-        };
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -579,19 +562,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public VarDouble updateDouble(Double2DoubleFunction fun) {
-        for (int i = 0; i < data.length; i++) {
-            data[i] = fun.applyAsDouble(data[i]);
-        }
-        return this;
-    }
-
-    @Override
-    public VarDouble cupdateDouble(Double2DoubleFunction fun) {
-        double[] copy = new double[rowCount()];
-        for (int i = 0; i < data.length; i++) {
-            copy[i] = fun.applyAsDouble(data[i]);
-        }
-        return VarDouble.wrap(copy).withName(name());
+    public VarOp<VarDouble> op() {
+        return new VarDoubleOp(this);
     }
 }

@@ -93,7 +93,7 @@ public class CTreeTest {
         tree.printSummary();
 
         ClassResult pred = tree.predict(df, true, true);
-        df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
+        df = df.bindVars(pred.firstClasses().copy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());

@@ -69,9 +69,9 @@ public class GradientDescentMinimizer implements Minimizer {
     @Override
     public void compute() {
         converged = false;
-        sol = x.solidCopy();
+        sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
-            solutions.add(sol.solidCopy());
+            solutions.add(sol.copy());
             RV delta_x = d1f.apply(sol).dot(-1);
             if (abs(delta_x.norm(2)) < tol) {
                 converged = true;

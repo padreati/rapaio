@@ -295,7 +295,7 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
                 last.children().add(child);
 
                 frameMap.put(child.id(), lastDf.mapRows(mappings.get(i)));
-                weightsMap.put(child.id(), lastWeights.mapRows(mappings.get(i)).solidCopy());
+                weightsMap.put(child.id(), lastWeights.mapRows(mappings.get(i)).copy());
 
                 queue.add(child);
             }
