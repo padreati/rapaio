@@ -372,7 +372,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     public double[] array() {
-        return new double[0];
+        return data;
     }
 
     public void setArray(double[] values, int rowCount) {
