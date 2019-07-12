@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.data.varop.*;
 import rapaio.printer.format.*;
 
 import java.util.List;
@@ -236,10 +235,5 @@ public class MappedVar extends AbstractVar {
         } else {
             super.stringPutValue(tt, i, j, row);
         }
-    }
-
-    @Override
-    public VarOp<MappedVar> op() {
-        return new DefaultVarOp<>(this);
     }
 }

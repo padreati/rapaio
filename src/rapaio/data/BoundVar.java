@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.data.varop.*;
 import rapaio.printer.format.*;
 
 import java.util.ArrayList;
@@ -283,10 +282,5 @@ public class BoundVar extends AbstractVar {
         } else {
             super.stringPutValue(tt, i, j, row);
         }
-    }
-
-    @Override
-    public VarOp<BoundVar> op() {
-        return new DefaultVarOp<>(this);
     }
 }

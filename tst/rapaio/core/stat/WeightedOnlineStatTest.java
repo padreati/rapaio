@@ -27,10 +27,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.from(x.rowCount(), row -> unif.sampleNext());
 
         // normalize w
-        double wsum = Sum.of(w).value();
-        for (int i = 0; i < w.rowCount(); i++) {
-            w.setDouble(i, w.getDouble(i) / wsum);
-        }
+        w.mult(1.0 / w.sum());
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.rowCount(); i++) {
@@ -55,10 +52,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.fill(100, 1);
 
         VarDouble wnorm = w.copy();
-        double wsum = Sum.of(w).value();
-        for (int i = 0; i < wnorm.rowCount(); i++) {
-            wnorm.setDouble(i, wnorm.getDouble(i) / wsum);
-        }
+        wnorm.mult(1.0 / wnorm.sum());
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
         WeightedOnlineStat wnstat = WeightedOnlineStat.empty();
@@ -95,7 +89,7 @@ public class WeightedOnlineStatTest {
 
         double wsum = Sum.of(w).value();
         for (int i = 0; i < w.rowCount(); i++) {
-            w.setDouble(i, w.getDouble(i)/wsum);
+            w.setDouble(i, w.getDouble(i) / wsum);
         }
 
         for (int i = 0; i < 20; i++) {

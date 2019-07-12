@@ -27,10 +27,10 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.*;
 import rapaio.data.stream.*;
-import rapaio.data.varop.*;
 import rapaio.printer.*;
 
 import java.io.Serializable;
@@ -310,6 +310,22 @@ public interface Var extends Serializable, Printable {
         return new VSpots(this);
     }
 
+    ///////////////////// BEGIN VARIOUS OPERATIONS ///////////////////////////////////////
+
+    Var apply(Double2DoubleFunction fun);
+
+    VarDouble capply(Double2DoubleFunction fun);
+
+    double sum();
+
+    Var plus(double a);
+
+    Var plus(Var x);
+
+    Var mult(double a);
+
+    ///////////////////// END VARIOUS OPERATIONS /////////////////////////////////////////
+
     /**
      * Fit and apply the given variable filters. The filters received as parameters are applied in
      * the order they appear in the array. Depending on the filter variable instance, it creates or not
@@ -390,7 +406,4 @@ public interface Var extends Serializable, Printable {
         return Summary.getSummary(this);
     }
 
-    default VarOp<? extends Var> op() {
-        return new DefaultVarOp<>(this);
-    }
 }

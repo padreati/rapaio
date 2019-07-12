@@ -27,6 +27,7 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.printer.format.*;
 
 import java.io.IOException;
@@ -49,6 +50,69 @@ public abstract class AbstractVar implements Var {
         this.name = name;
         return this;
     }
+
+    ///////////////////// BEGIN VARIOUS OPERATIONS ///////////////////////////////////////
+
+    @Override
+    public AbstractVar apply(Double2DoubleFunction fun) {
+        for (int i = 0; i < rowCount(); i++) {
+            if (!isMissing(i)) {
+                setDouble(i, fun.applyAsDouble(getDouble(i)));
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public VarDouble capply(Double2DoubleFunction fun) {
+        double[] data = new double[rowCount()];
+        for (int i = 0; i < rowCount(); i++) {
+            if (isMissing(i)) {
+                data[i] = Double.NaN;
+            } else {
+                data[i] = fun.applyAsDouble(getDouble(i));
+            }
+        }
+        return VarDouble.wrap(data).withName(name());
+    }
+
+    @Override
+    public double sum() {
+        double sum = 0.0;
+        for (int i = 0; i < rowCount(); i++) {
+            if (isMissing(i)) {
+                continue;
+            }
+            sum += getDouble(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public AbstractVar plus(double a) {
+        for (int i = 0; i < rowCount(); i++) {
+            setDouble(i, getDouble(i) + a);
+        }
+        return this;
+    }
+
+    @Override
+    public AbstractVar plus(Var x) {
+        for (int i = 0; i < rowCount(); i++) {
+            setDouble(i, getDouble(i) + x.getDouble(i));
+        }
+        return this;
+    }
+
+    @Override
+    public AbstractVar mult(double a) {
+        for (int i = 0; i < rowCount(); i++) {
+            setDouble(i, getDouble(i) * a);
+        }
+        return this;
+    }
+
+    ///////////////////// END VARIOUS OPERATIONS ///////////////////////////////////////
 
     @Override
     public Var copy() {
