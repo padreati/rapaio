@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.*;
 import rapaio.data.stream.*;
@@ -42,7 +41,7 @@ import java.util.Objects;
  *
  * @author Aurelian Tutuianu
  */
-public interface Var extends Serializable, Printable {
+public interface Var extends VarOps, Serializable, Printable {
 
     /**
      * @return name of the variable
@@ -309,22 +308,6 @@ public interface Var extends Serializable, Printable {
     default VSpots stream() {
         return new VSpots(this);
     }
-
-    ///////////////////// BEGIN VARIOUS OPERATIONS ///////////////////////////////////////
-
-    Var apply(Double2DoubleFunction fun);
-
-    VarDouble capply(Double2DoubleFunction fun);
-
-    double sum();
-
-    Var plus(double a);
-
-    Var plus(Var x);
-
-    Var mult(double a);
-
-    ///////////////////// END VARIOUS OPERATIONS /////////////////////////////////////////
 
     /**
      * Fit and apply the given variable filters. The filters received as parameters are applied in
