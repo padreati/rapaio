@@ -62,12 +62,12 @@ public class AdaBoostSAMMETest {
 
         ab.withRunningHook((c, run) -> {
             runs.addDouble(run);
-            errTr.addDouble(new Confusion(tr.rvar(target), ab.predict(tr).classes(target)).error());
-            errTe.addDouble(new Confusion(te.rvar(target), ab.predict(te).classes(target)).error());
+            errTr.addDouble(Confusion.from(tr.rvar(target), ab.predict(tr).classes(target)).error());
+            errTe.addDouble(Confusion.from(te.rvar(target), ab.predict(te).classes(target)).error());
         });
         ab.fit(tr, target);
         ab.printSummary();
 
-        new Confusion(tr.rvar(target), ab.predict(tr).firstClasses()).printSummary();
+        Confusion.from(tr.rvar(target), ab.predict(tr).firstClasses()).printSummary();
     }
 }

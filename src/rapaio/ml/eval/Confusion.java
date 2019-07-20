@@ -67,11 +67,11 @@ public class Confusion implements DefaultPrintable {
     private double acceptedCases = 0;
     private double errorCases = 0;
 
-    public Confusion(Var actual, Var predict) {
+    private Confusion(Var actual, Var predict) {
         this(actual, predict, false);
     }
 
-    public Confusion(Var actual, Var predict, boolean percents) {
+    private Confusion(Var actual, Var predict, boolean percents) {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;

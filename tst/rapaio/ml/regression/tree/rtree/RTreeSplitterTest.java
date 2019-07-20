@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree.rtree;
+package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Before;
 import org.junit.Test;

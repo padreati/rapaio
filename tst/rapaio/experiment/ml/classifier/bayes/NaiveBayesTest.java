@@ -53,7 +53,7 @@ public class NaiveBayesTest {
         nb.fit(df, "class");
         ClassResult pred = nb.predict(df);
 
-        Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -77,7 +77,7 @@ public class NaiveBayesTest {
         nb.fit(df, "class");
         ClassResult pred = nb.predict(df);
 
-        Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -104,7 +104,7 @@ public class NaiveBayesTest {
 
         ClassResult cp = nb.predict(df);
 
-        Confusion cm = new Confusion(df.rvar("classes"), cp.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("classes"), cp.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.89);

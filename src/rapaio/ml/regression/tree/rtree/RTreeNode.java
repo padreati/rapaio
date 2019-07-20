@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree.rtree;
+package rapaio.ml.regression.tree.rtree;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;

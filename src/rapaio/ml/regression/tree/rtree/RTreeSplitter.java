@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree.rtree;
+package rapaio.ml.regression.tree.rtree;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.core.RandomSource;
@@ -192,5 +192,4 @@ final class Util {
         }
         return -1;
     }
-
 }

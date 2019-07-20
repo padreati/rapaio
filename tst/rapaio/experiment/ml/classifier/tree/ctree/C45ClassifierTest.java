@@ -59,7 +59,7 @@ public class C45ClassifierTest {
 
         classifier.printSummary();
 
-        Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
     }
 
@@ -75,7 +75,7 @@ public class C45ClassifierTest {
 
         ClassResult pred = classifier.predict(df);
 
-        Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
     }
 
@@ -90,7 +90,7 @@ public class C45ClassifierTest {
 
         ClassResult pred = classifier.predict(df);
 
-        Confusion cm = new Confusion(df.rvar("class"), pred.firstClasses());
+        Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
     }
 }

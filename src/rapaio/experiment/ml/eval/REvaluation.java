@@ -140,7 +140,7 @@ public class REvaluation {
                 Classifier c = classifiers.get(k).newInstance();
                 c.fit(train, classColName);
                 ClassResult cp = c.predict(test);
-                Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
+                Confusion cm = Confusion.from(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
                 print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.name()));
@@ -186,7 +186,7 @@ public class REvaluation {
 //            System.out.println("predict test cases ...");
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
-            Confusion cm = new Confusion(test.rvar(classColName), classes);
+            Confusion cm = Confusion.from(test.rvar(classColName), classes);
             printer.printSummary(cm);
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));

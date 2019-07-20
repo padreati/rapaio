@@ -84,8 +84,8 @@ public class PCATest {
         rf2.fit(fit.mapVars("0~2,class"), "class");
         ClassResult fit2 = rf2.predict(fit.mapVars("0~2,class"));
 
-        double acc1 = new Confusion(iris.rvar("class"), fit1.firstClasses()).accuracy();
-        double acc2 = new Confusion(iris.rvar("class"), fit2.firstClasses()).accuracy();
+        double acc1 = Confusion.from(iris.rvar("class"), fit1.firstClasses()).accuracy();
+        double acc2 = Confusion.from(iris.rvar("class"), fit2.firstClasses()).accuracy();
 
         Assert.assertTrue(acc1<acc2);
     }

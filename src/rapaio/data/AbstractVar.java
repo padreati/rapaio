@@ -153,7 +153,8 @@ public abstract class AbstractVar implements Var {
                     bin.setInt(i, getInt(i));
                 }
                 return bin;
-            default:
+            case NOMINAL:
+            case TEXT:
                 VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     if (isMissing(i)) {
@@ -163,6 +164,8 @@ public abstract class AbstractVar implements Var {
                     nom.setLabel(i, getLabel(i));
                 }
                 return nom;
+            default:
+                throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }
     }
 

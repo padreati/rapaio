@@ -32,10 +32,9 @@ import rapaio.data.VRange;
 import rapaio.data.filter.frame.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.regression.RegResult;
 import rapaio.experiment.ml.regression.ensemble.RForest;
-import rapaio.experiment.ml.regression.tree.rtree.RTreePurityFunction;
+import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -68,8 +67,10 @@ public class RTreeTest {
                 " > TreeClassifier {  minCount=4,\n" +
                 "  maxDepth=10,\n" +
                 "  maxSize=2147483647,\n" +
-                "  nominalTest=BINARY,\n" +
-                "  numericTest=BINARY,\n" +
+                "  test[binary]=NumericBinary,\n" +
+                "  test[int]=NumericBinary,\n" +
+                "  test[nominal]=NominalBinary,\n" +
+                "  test[double]=NumericBinary,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_SD_GAIN,\n" +
                 "  splitter=REMAINS_TO_RANDOM,\n" +

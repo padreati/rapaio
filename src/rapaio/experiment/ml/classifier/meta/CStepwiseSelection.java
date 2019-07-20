@@ -155,7 +155,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
 
                     Classifier cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
+                    Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
                     if (acc > bestAcc) {
@@ -185,7 +185,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
 
                     Classifier cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
-                    Confusion cm = new Confusion(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
+                    Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
                     double acc = cm.accuracy();
 

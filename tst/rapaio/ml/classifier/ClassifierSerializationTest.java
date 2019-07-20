@@ -79,6 +79,6 @@ public class ClassifierSerializationTest {
 
         varData.addLabel(dataName);
         varModel.addLabel(model.name());
-        varAcc.addDouble(new Confusion(df.rvar(target), modelFit.firstClasses()).accuracy());
+        varAcc.addDouble(Confusion.from(df.rvar(target), modelFit.firstClasses()).accuracy());
     }
 }

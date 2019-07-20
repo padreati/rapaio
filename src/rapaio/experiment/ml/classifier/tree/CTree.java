@@ -38,14 +38,7 @@ import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -61,6 +54,15 @@ import static java.util.stream.Collectors.joining;
 public class CTree extends AbstractClassifier implements DefaultPrintable {
 
     private static final long serialVersionUID = 1203926824359387358L;
+    private static final Map<VType, CTreeTest> DEFAULT_TEST_MAP;
+
+    static {
+        DEFAULT_TEST_MAP = new HashMap<>();
+        DEFAULT_TEST_MAP.put(VType.BINARY, CTreeTest.BinaryBinary);
+        DEFAULT_TEST_MAP.put(VType.INT, CTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.DOUBLE, CTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.NOMINAL, CTreeTest.NominalBinary);
+    }
 
     // parameter default values
 
@@ -69,8 +71,7 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
     private double minGain = -1000;
 
     private VarSelector varSelector = VarSelector.all();
-    private Map<String, CTreeTest> customTestMap = new HashMap<>();
-    private Map<VType, CTreeTest> testMap = new HashMap<>();
+    private SortedMap<VType, CTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
     private CTreePurityFunction function = CTreePurityFunction.InfoGain;
     private CTreeSplitter splitter = CTreeSplitter.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
@@ -84,11 +85,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
     // static builders
 
     public CTree() {
-        testMap.put(VType.BINARY, CTreeTest.BinaryBinary);
-        testMap.put(VType.INT, CTreeTest.NumericBinary);
-        testMap.put(VType.DOUBLE, CTreeTest.NumericBinary);
-        testMap.put(VType.NOMINAL, CTreeTest.NominalBinary);
-        withRuns(0);
     }
 
     public static CTree newID3() {
@@ -146,12 +142,7 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
                 .withFunction(function)
                 .withSplitter(splitter)
                 .withVarSelector(varSelector().newInstance());
-
-        tree.testMap.clear();
-        tree.testMap.putAll(testMap);
-
-        tree.customTestMap.clear();
-        tree.customTestMap.putAll(customTestMap);
+        tree.testMap = new TreeMap<>(testMap);
         return tree;
     }
 
@@ -198,26 +189,17 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
         return this;
     }
 
-    public CTree withTest(VType vType, CTreeTest test) {
-        this.testMap.put(vType, test);
-        return this;
-    }
-
-    public CTree withTest(String varName, CTreeTest test) {
-        this.customTestMap.put(varName, test);
-        return this;
-    }
-
     public Map<VType, CTreeTest> testMap() {
         return testMap;
     }
 
-    public Map<String, CTreeTest> customTestMap() {
-        return customTestMap;
-    }
-
     public CTree withNoTests() {
         this.testMap.clear();
+        return this;
+    }
+
+    public CTree withTest(VType vType, CTreeTest test) {
+        this.testMap.put(vType, test);
         return this;
     }
 
@@ -264,10 +246,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
         sb.append("tests=").append(testMap.entrySet().stream()
                 .map(e -> e.getKey().name() + ":" + e.getValue().name()).collect(joining(","))
         ).append(";");
-        if (!customTestMap.isEmpty())
-            sb.append("customTest=").append(customTestMap.entrySet().stream()
-                    .map(e -> e.getKey() + ":" + e.getValue().name()).collect(joining(","))
-            ).append(";");
         sb.append("func=").append(function.name()).append(";");
         sb.append("split=").append(splitter.name()).append(";");
         sb.append("}");
@@ -371,9 +349,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
                 }
 
                 CTreeTest test = null;
-                if (customTestMap.containsKey(testCol)) {
-                    test = customTestMap.get(testCol);
-                }
                 if (testMap.containsKey(df.type(testCol))) {
                     test = testMap.get(df.type(testCol));
                 }
@@ -402,9 +377,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
                         .filter(testCol -> !testCol.equals(firstTargetName()))
                         .map(testCol -> {
                             CTreeTest test = null;
-                            if (customTestMap.containsKey(testCol)) {
-                                test = customTestMap.get(testCol);
-                            }
                             if (testMap.containsKey(df.type(testCol))) {
                                 test = testMap.get(df.type(testCol));
                             }
@@ -553,8 +525,6 @@ public class CTree extends AbstractClassifier implements DefaultPrintable {
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (customTestMap.containsKey(var.name()))
-                return;
             if (testMap.containsKey(var.type()))
                 return;
             throw new IllegalArgumentException("can't predict ctree with no " +

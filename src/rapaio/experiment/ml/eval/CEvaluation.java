@@ -78,7 +78,7 @@ public class CEvaluation {
             cc.fit(train, classColName);
             ClassResult cp = cc.predict(test);
 
-            Confusion conf = new Confusion(test.rvar(classColName), cp.firstClasses());
+            Confusion conf = Confusion.from(test.rvar(classColName), cp.firstClasses());
             acc.addDouble(conf.accuracy());
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
                     conf.accuracy(),
@@ -154,7 +154,7 @@ public class CEvaluation {
                 Classifier c = classifiers.get(k).newInstance();
                 c.fit(train, classColName);
                 ClassResult cp = c.predict(test);
-                Confusion cm = new Confusion(test.rvar(classColName), cp.firstClasses());
+                Confusion cm = Confusion.from(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
                 print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.name()));
@@ -200,7 +200,7 @@ public class CEvaluation {
 //            System.out.println("predict test cases ...");
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
-            Confusion cm = new Confusion(test.rvar(classColName), classes);
+            Confusion cm = Confusion.from(test.rvar(classColName), classes);
             printer.printSummary(cm);
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
@@ -223,8 +223,8 @@ public class CEvaluation {
                 return;
             }
             r.addInt(run);
-            testAcc.addDouble(new Confusion(test.rvar(targetVar), c.predict(test).firstClasses()).accuracy());
-            trainAcc.addDouble(new Confusion(train.rvar(targetVar), c.predict(train).firstClasses()).accuracy());
+            testAcc.addDouble(Confusion.from(test.rvar(targetVar), c.predict(test).firstClasses()).accuracy());
+            trainAcc.addDouble(Confusion.from(train.rvar(targetVar), c.predict(train).firstClasses()).accuracy());
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(plot()
@@ -236,11 +236,11 @@ public class CEvaluation {
         c.fit(train, targetVar);
 
         WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());
+        Confusion trainConfusion = Confusion.from(train.rvar(targetVar), c.predict(train).firstClasses());
         trainConfusion.printSummary();
         WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.predict(test).firstClasses());
+        Confusion testConfusion = Confusion.from(test.rvar(targetVar), c.predict(test).firstClasses());
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
@@ -284,11 +284,11 @@ public class CEvaluation {
         c.fit(train, targetVar);
 
 //        WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = new Confusion(train.rvar(targetVar), c.predict(train).firstClasses());
+        Confusion trainConfusion = Confusion.from(train.rvar(targetVar), c.predict(train).firstClasses());
         trainConfusion.printSummary();
 //        WS.println();
         WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = new Confusion(test.rvar(targetVar), c.predict(test).firstClasses());
+        Confusion testConfusion = Confusion.from(test.rvar(targetVar), c.predict(test).firstClasses());
         testConfusion.printSummary();
 
 

@@ -31,7 +31,7 @@ import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.Regression;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
 

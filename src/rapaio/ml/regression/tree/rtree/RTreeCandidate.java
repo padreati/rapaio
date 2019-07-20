@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree.rtree;
+package rapaio.ml.regression.tree.rtree;
 
 import rapaio.ml.common.predicate.RowPredicate;
 

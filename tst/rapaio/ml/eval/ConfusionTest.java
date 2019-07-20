@@ -72,10 +72,10 @@ public class ConfusionTest {
         predict.setLabel(10, "mouse");
 
 
-        Confusion cm = new Confusion(actual, predict);
+        Confusion cm = Confusion.from(actual, predict);
         cm.printSummary();
 
-        cm = new Confusion(actual, predict, true);
+        cm = Confusion.from(actual, predict, true);
         cm.printSummary();
     }
 }

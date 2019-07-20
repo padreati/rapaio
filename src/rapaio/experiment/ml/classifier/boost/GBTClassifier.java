@@ -42,7 +42,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.RegResult;
 import rapaio.experiment.ml.regression.loss.KDevianceRegressionLoss;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.*;
 import rapaio.sys.WS;
 

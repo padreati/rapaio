@@ -221,7 +221,7 @@ public class ClassResult implements Printable, DefaultPrintable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
-            sb.append(new Confusion(df.rvar(model.firstTargetName()), firstClasses()).summary());
+            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

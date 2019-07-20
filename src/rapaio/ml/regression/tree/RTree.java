@@ -25,24 +25,29 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree;
+package rapaio.ml.regression.tree;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.stat.*;
 import rapaio.data.*;
+import rapaio.experiment.ml.regression.boost.gbt.*;
+import rapaio.experiment.ml.regression.loss.*;
+import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.common.*;
 import rapaio.ml.common.predicate.*;
 import rapaio.ml.regression.*;
-import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.loss.*;
-import rapaio.experiment.ml.regression.tree.rtree.*;
+import rapaio.ml.regression.tree.rtree.*;
 import rapaio.printer.*;
 import rapaio.util.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,8 +66,10 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     public static RTree newDecisionStump() {
         return new RTree()
                 .withMaxDepth(2)
-                .withNominalTest(RTreeNominalTest.binary())
-                .withNumericTest(RTreeNumericTest.binary())
+                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
+                .withTest(VType.INT, RTreeTest.NumericBinary)
+                .withTest(VType.BINARY, RTreeTest.NumericBinary)
+                .withTest(VType.NOMINAL, RTreeTest.NominalBinary)
                 .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
                 .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
     }
@@ -70,8 +77,10 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     public static RTree newC45() {
         return new RTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withNominalTest(RTreeNominalTest.full())
-                .withNumericTest(RTreeNumericTest.binary())
+                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
+                .withTest(VType.INT, RTreeTest.NumericBinary)
+                .withTest(VType.BINARY, RTreeTest.NumericBinary)
+                .withTest(VType.NOMINAL, RTreeTest.NominalFull)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
                 .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
                 .withMinCount(2);
@@ -80,19 +89,31 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     public static RTree newCART() {
         return new RTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withNominalTest(RTreeNominalTest.binary())
-                .withNumericTest(RTreeNumericTest.binary())
+                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
+                .withTest(VType.INT, RTreeTest.NumericBinary)
+                .withTest(VType.BINARY, RTreeTest.NumericBinary)
+                .withTest(VType.NOMINAL, RTreeTest.NominalBinary)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
                 .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
                 .withMinCount(1);
+    }
+
+    private static final Map<VType, RTreeTest> DEFAULT_TEST_MAP;
+
+    static {
+        DEFAULT_TEST_MAP = new HashMap<>();
+        DEFAULT_TEST_MAP.put(VType.DOUBLE, RTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.INT, RTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.BINARY, RTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.NOMINAL, RTreeTest.NominalFull);
     }
 
     private int minCount = 1;
     private int maxDepth = Integer.MAX_VALUE;
     private int maxSize = Integer.MAX_VALUE;
 
-    private RTreeNominalTest nominalTest = RTreeNominalTest.binary();
-    private RTreeNumericTest numericTest = RTreeNumericTest.binary();
+    private SortedMap<VType, RTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
+
     private RTreePurityFunction function = RTreePurityFunction.WEIGHTED_VAR_GAIN;
     private RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     private RTreePredictor predictor = RTreePredictor.STANDARD;
@@ -108,17 +129,17 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
 
     @Override
     public RTree newInstance() {
-        return newInstanceDecoration(new RTree())
+        RTree newInstance = newInstanceDecoration(new RTree())
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
                 .withMaxSize(maxSize)
-                .withNominalTest(nominalTest)
-                .withNumericTest(numericTest)
                 .withPurityFunction(function)
                 .withSplitter(splitter)
                 .withPredictor(predictor)
                 .withVarSelector(varSelector)
                 .withRegressionLoss(regressionLoss);
+        newInstance.testMap = new TreeMap<>(this.testMap);
+        return newInstance;
     }
 
     @Override
@@ -133,8 +154,10 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         sb.append("  minCount=").append(minCount).append(",\n");
         sb.append("  maxDepth=").append(maxDepth).append(",\n");
         sb.append("  maxSize=").append(maxSize).append(",\n");
-        sb.append("  nominalTest=").append(nominalTest.name()).append(",\n");
-        sb.append("  numericTest=").append(numericTest.name()).append(",\n");
+        for(Map.Entry<VType, RTreeTest> e : testMap.entrySet()) {
+            sb.append("  test[").append(e.getKey().code()).append("]=")
+                    .append(e.getValue().name()).append(",\n");
+        }
         sb.append("  regressionLoss=").append(regressionLoss.name()).append("\n");
         sb.append("  purityFunction=").append(function.name()).append(",\n");
         sb.append("  splitter=").append(splitter.name()).append(",\n");
@@ -185,21 +208,17 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         return this;
     }
 
-    public RTreeNominalTest nominalTest() {
-        return nominalTest;
+    public Map<VType, RTreeTest> testMap() {
+        return testMap;
     }
 
-    public RTree withNominalTest(RTreeNominalTest nominalTest) {
-        this.nominalTest = nominalTest;
+    public RTree withNoTests() {
+        this.testMap.clear();
         return this;
     }
 
-    public RTreeNumericTest numericTest() {
-        return numericTest;
-    }
-
-    public RTree withNumericTest(RTreeNumericTest numericTest) {
-        this.numericTest = numericTest;
+    public RTree withTest(VType vType, RTreeTest test) {
+        this.testMap.put(vType, test);
         return this;
     }
 
@@ -281,7 +300,7 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
             Var lastWeights = weightsMap.get(lastId);
             learnNode(last, lastDf, lastWeights);
 
-            if(last.isLeaf()) {
+            if (last.isLeaf()) {
                 continue;
             }
             // now that we have a best candidate,do the effective split
@@ -322,17 +341,16 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         }
 
         Stream<String> stream = Arrays.stream(varSelector.nextVarNames());
-        if(runs>1) {
+        if (runs > 1) {
             stream = stream.parallel();
         }
 
-        List<RTreeCandidate> candidates = stream.map(testCol -> {
-            if (df.type(testCol).isNumeric()) {
-                return numericTest.computeCandidate(this, df, weights, testCol, firstTargetName(), purityFunction()).orElse(null);
-            } else {
-                return nominalTest.computeCandidate(this, df, weights, testCol, firstTargetName(), purityFunction()).orElse(null);
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        List<RTreeCandidate> candidates = stream
+                .map(testCol -> testMap.get(df.type(testCol))
+                        .computeCandidate(this, df, weights, testCol, firstTargetName(), purityFunction())
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         RTreeCandidate bestCandidate = null;
         for (RTreeCandidate candidate : candidates) {

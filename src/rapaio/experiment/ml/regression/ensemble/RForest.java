@@ -29,9 +29,9 @@ package rapaio.experiment.ml.regression.ensemble;
 
 import rapaio.data.*;
 import rapaio.data.sample.*;
-import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
+import rapaio.ml.regression.tree.*;
 import rapaio.printer.*;
 
 import java.util.ArrayList;

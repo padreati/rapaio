@@ -368,7 +368,7 @@ public final class VarDouble extends AbstractVar {
     }
 
     public boolean isMissingValue(double value) {
-        return !Double.isFinite(value);
+        return Double.isNaN(value);
     }
 
     public double[] array() {
@@ -405,7 +405,7 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return !Double.isFinite(getDouble(row));
+        return Double.isNaN(data[row]);
     }
 
     @Override
@@ -542,9 +542,10 @@ public final class VarDouble extends AbstractVar {
     public double sum() {
         double sum = 0.0;
         for (int i = 0; i < rows; i++) {
-            if (Double.isFinite(data[i])) {
-                sum += data[i];
+            if (Double.isNaN(data[i])) {
+                continue;
             }
+            sum += data[i];
         }
         return sum;
     }

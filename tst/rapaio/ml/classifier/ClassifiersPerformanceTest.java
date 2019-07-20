@@ -42,7 +42,7 @@ import rapaio.experiment.ml.classifier.boost.GBTClassifier;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreeTest;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
 

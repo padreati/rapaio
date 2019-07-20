@@ -7,15 +7,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import rapaio.core.RandomSource;
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.VRange;
-import rapaio.data.sample.RowSampler;
-import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.regression.tree.RTree;
-import rapaio.experiment.ml.regression.tree.rtree.RTreeNumericTest;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.datasets.*;
+import rapaio.ml.regression.tree.*;
+import rapaio.ml.regression.tree.rtree.*;
 
 import java.io.IOException;
 
@@ -52,7 +49,6 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial5k() {
         Regression r = RTree.newCART()
-                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_5k);
@@ -62,7 +58,6 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial50k() {
         Regression r = RTree.newCART()
-                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_50k);
@@ -72,7 +67,6 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial200k() {
         Regression r = RTree.newCART()
-                .withNumericTest(RTreeNumericTest.binary())
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_200k);

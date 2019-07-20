@@ -190,7 +190,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     }
 
     public Confusion getOobInfo() {
-        return new Confusion(oobTrueClass, oobFit);
+        return Confusion.from(oobTrueClass, oobFit);
     }
 
     public Frame getFreqVIInfo() {
@@ -334,7 +334,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
 
         // build accuracy on oob data frame
         ClassResult fit = c.predict(oobFrame);
-        double refScore = new Confusion(
+        double refScore = Confusion.from(
                 oobFrame.rvar(firstTargetName()),
                 fit.firstClasses())
                 .acceptedCases();
@@ -351,7 +351,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
             // compute accuracy on oob shuffled frame
 
             ClassResult pfit = c.predict(oobReduced);
-            double acc = new Confusion(
+            double acc = Confusion.from(
                     oobReduced.rvar(firstTargetName()),
                     pfit.firstClasses()
             ).acceptedCases();
