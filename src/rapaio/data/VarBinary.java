@@ -242,7 +242,7 @@ public final class VarBinary extends AbstractVar {
     @Override
     public int getInt(int row) {
         if (missing.get(row))
-            return Integer.MIN_VALUE;
+            return VarInt.MISSING_VALUE;
         return values.get(row) ? 1 : 0;
     }
 
@@ -280,12 +280,12 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? "?" : (getInt(row) == 0 ? "0" : "1");
+        return isMissing(row) ? VarNominal.MISSING_VALUE : (getInt(row) == 0 ? "0" : "1");
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if ("?".equals(value)) {
+        if (VarNominal.MISSING_VALUE.equals(value)) {
             setMissing(row);
             return;
         }
@@ -303,7 +303,7 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        if ("?".equals(value)) {
+        if (VarNominal.MISSING_VALUE.equals(value)) {
             addMissing();
             return;
         }
@@ -332,7 +332,7 @@ public final class VarBinary extends AbstractVar {
     @Override
     public long getLong(int row) {
         if (isMissing(row)) {
-            return Long.MIN_VALUE;
+            return VarLong.MISSING_VALUE;
         }
         return getInt(row);
     }

@@ -55,61 +55,30 @@ public final class RowComparators implements Serializable {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
-            if (var.isMissing(row1) && var.isMissing(row2)) {
+            boolean missing1 = var.isMissing(row1);
+            boolean missing2 = var.isMissing(row2);
+            if (!missing1 && !missing2) {
+                return sign * var.getLabel(row1).compareTo(var.getLabel(row2));
+            }
+            if (missing1 && missing2) {
                 return 0;
             }
-            if (var.isMissing(row1)) {
-                return -sign;
-            }
-            if (var.isMissing(row2)) {
-                return sign;
-            }
-            return sign * var.getLabel(row1).compareTo(var.getLabel(row2));
+            return missing1 ? -sign : sign;
         };
     }
 
     public static IntComparator doubleComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (row1, row2) -> {
-            double d1 = var.getDouble(row1);
-            double d2 = var.getDouble(row2);
-            if (d1 < d2)
-                return -sign;           // Neither val is NaN, thisVal is smaller
-            if (d1 > d2)
-                return sign;            // Neither val is NaN, thisVal is larger
-
-            // Cannot use doubleToRawLongBits because of possibility of NaNs.
-            long thisBits = Double.doubleToLongBits(d1);
-            long anotherBits = Double.doubleToLongBits(d2);
-
-            return (thisBits == anotherBits ? 0 : // Values are equal
-                    (thisBits < anotherBits ? sign : // (-0.0, 0.0) or (!NaN, NaN)
-                            -sign));                          // (0.0, -0.0) or (NaN, !NaN)
-        };
+        return (i1, i2) -> sign * Double.compare(var.getDouble(i1), var.getDouble(i2));
     }
 
     public static IntComparator integerComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-        return (row1, row2) -> sign * Integer.compare(var.getInt(row1), var.getInt(row2));
+        return (i1, i2) -> sign * Integer.compare(var.getInt(i1), var.getInt(i2));
     }
 
     public static IntComparator longComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-
-        return (row1, row2) -> {
-            if (var.isMissing(row1) && var.isMissing(row2)) {
-                return 0;
-            }
-            if (var.isMissing(row1)) {
-                return -1 * sign;
-            }
-            if (var.isMissing(row2)) {
-                return sign;
-            }
-            if (var.getLong(row1) == var.getLong(row2)) {
-                return 0;
-            }
-            return sign * (var.getLong(row1) < var.getLong(row2) ? -1 : 1);
-        };
+        return (i1, i2) -> sign * (var.getLong(i1) < var.getLong(i2) ? -1 : 1);
     }
 }

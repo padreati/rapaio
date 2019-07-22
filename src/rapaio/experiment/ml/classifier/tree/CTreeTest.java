@@ -128,6 +128,7 @@ public interface CTreeTest extends Tagged, Serializable {
                 }
                 dt.update(row, df.getInt(i, targetNameIndex), weights.getDouble(i));
             }
+            // TODO: Revise the implication of missing records
             int misCount = df.rowCount() - len;
 
             double[] values = new double[df.rowCount()];

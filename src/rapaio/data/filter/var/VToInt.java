@@ -90,7 +90,7 @@ public class VToInt implements VFilter {
                         try {
                             return Integer.parseInt(x);
                         } catch (NumberFormatException ex) {
-                            return Integer.MIN_VALUE;
+                            return VarInt.MISSING_VALUE;
                         }
                     }).apply(var);
                 default:
@@ -111,7 +111,7 @@ public class VToInt implements VFilter {
         public Var apply(Var var) {
             int[] value = new int[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Integer.MIN_VALUE : function.apply(new VSpot(i, var));
+                value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.apply(new VSpot(i, var));
             }
             return VarInt.wrap(value).withName(var.name());
         }
@@ -128,7 +128,7 @@ public class VToInt implements VFilter {
         public Var apply(Var var) {
             int[] value = new int[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Integer.MIN_VALUE : function.applyAsInt(var.getDouble(i));
+                value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.applyAsInt(var.getDouble(i));
             }
             return VarInt.wrap(value).withName(var.name());
         }
@@ -145,7 +145,7 @@ public class VToInt implements VFilter {
         public Var apply(Var var) {
             int[] value = new int[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Integer.MIN_VALUE : function.applyAsInt(var.getInt(i));
+                value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.applyAsInt(var.getInt(i));
             }
             return VarInt.wrap(value).withName(var.name());
         }

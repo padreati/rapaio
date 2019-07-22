@@ -174,7 +174,7 @@ public final class VarInt extends AbstractVar {
     }
 
     private static final long serialVersionUID = -2809318697565282310L;
-    public static final int MISSING_VALUE = Integer.MIN_VALUE;
+    public static final int MISSING_VALUE = Integer.MAX_VALUE;
     private int[] data;
     private int rows;
 

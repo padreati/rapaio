@@ -120,7 +120,7 @@ public class VToDouble implements VFilter {
                         try {
                             return Double.parseDouble(x);
                         } catch (NumberFormatException ex) {
-                            return Double.NaN;
+                            return VarDouble.MISSING_VALUE;
                         }
                     }).apply(var);
                 default:
@@ -141,7 +141,7 @@ public class VToDouble implements VFilter {
         public Var apply(Var var) {
             double[] value = new double[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Double.NaN : function.apply(new VSpot(i, var));
+                value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.apply(new VSpot(i, var));
             }
             return VarDouble.wrap(value).withName(var.name());
         }
@@ -158,7 +158,7 @@ public class VToDouble implements VFilter {
         public Var apply(Var var) {
             double[] value = new double[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Double.NaN : function.applyAsDouble(var.getDouble(i));
+                value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.applyAsDouble(var.getDouble(i));
             }
             return VarDouble.wrap(value).withName(var.name());
         }
@@ -175,7 +175,7 @@ public class VToDouble implements VFilter {
         public Var apply(Var var) {
             double[] value = new double[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? Double.NaN : function.applyAsDouble(var.getInt(i));
+                value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.applyAsDouble(var.getInt(i));
             }
             return VarDouble.wrap(value).withName(var.name());
         }

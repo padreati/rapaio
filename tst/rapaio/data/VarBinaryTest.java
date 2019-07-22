@@ -216,7 +216,7 @@ public class VarBinaryTest {
         assertEquals(1, bin.getInt(0));
         assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
-        assertEquals(Integer.MIN_VALUE, bin.getInt(2));
+        assertEquals(VarInt.MISSING_VALUE, bin.getInt(2));
 
         bin.setInt(0, -1);
         bin.setInt(1, 0);
@@ -248,7 +248,7 @@ public class VarBinaryTest {
         assertEquals(0, bin.getInt(1));
         assertEquals(1, bin.getInt(2));
 
-        assertEquals(Long.MIN_VALUE, bin.getLong(0));
+        assertEquals(VarLong.MISSING_VALUE, bin.getLong(0));
     }
 
     @Test

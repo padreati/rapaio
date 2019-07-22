@@ -45,4 +45,6 @@ public interface VarOps {
     Var plus(Var x);
 
     Var mult(double a);
+
+    int[] sortedCompleteRows(boolean asc);
 }

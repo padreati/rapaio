@@ -253,8 +253,8 @@ public class VarLongTest {
         var.addLabel("+10");
 
         long[] expected = new long[]{
-                Long.MIN_VALUE, 0, -10, 10,
-                Long.MIN_VALUE, 0, -10, 10};
+                VarLong.MISSING_VALUE, 0, -10, 10,
+                VarLong.MISSING_VALUE, 0, -10, 10};
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], var.getLong(i));
         }

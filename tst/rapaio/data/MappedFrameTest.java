@@ -191,10 +191,10 @@ public class MappedFrameTest {
     @Test
     public void testGettersSetters() {
         List<Var> varList = Arrays.asList(
-                VarDouble.wrap(0, Double.NaN, 2, Double.NaN).withName("a"),
-                VarInt.wrap(0, Integer.MIN_VALUE, 2, Integer.MIN_VALUE).withName("b"),
+                VarDouble.wrap(0, VarDouble.MISSING_VALUE, 2, VarDouble.MISSING_VALUE).withName("a"),
+                VarInt.wrap(0, VarInt.MISSING_VALUE, 2, VarInt.MISSING_VALUE).withName("b"),
                 VarNominal.copy("a", "?", "b", "?").withName("c"),
-                VarLong.copy(0, Long.MIN_VALUE, 2, Long.MIN_VALUE).withName("d"),
+                VarLong.copy(0, VarLong.MISSING_VALUE, 2, VarLong.MISSING_VALUE).withName("d"),
                 VarBinary.copy(1, 0, 1, 1).withName("e")
         );
         varList.get(4).setMissing(1);

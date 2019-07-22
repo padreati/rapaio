@@ -259,7 +259,7 @@ public class VarLong extends AbstractVar {
         return stamp;
     }
 
-    public static final long MISSING_VALUE = Long.MIN_VALUE;
+    public static final long MISSING_VALUE = Long.MAX_VALUE;
     private static final long serialVersionUID = -6387573611986137666L;
     private long[] data;
     private int rows;

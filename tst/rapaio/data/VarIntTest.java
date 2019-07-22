@@ -155,7 +155,7 @@ public class VarIntTest {
         assertEquals(0, empty1.rowCount());
         empty1 = VarInt.empty(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(Integer.MIN_VALUE, empty1.getInt(i));
+            assertEquals(VarInt.MISSING_VALUE, empty1.getInt(i));
         }
 
         Var fill1 = VarInt.fill(10, -1);
@@ -212,15 +212,15 @@ public class VarIntTest {
 
     @Test
     public void testLabels() {
-        int[] array = new int[]{1, 2, 3, Integer.MIN_VALUE, 5, 6, Integer.MIN_VALUE};
+        int[] array = new int[]{1, 2, 3, VarInt.MISSING_VALUE, 5, 6, VarInt.MISSING_VALUE};
 
         VarInt int1 = VarInt.empty();
         for (int val : array) {
             int1.addInt(val);
         }
         for (int i = 0; i < int1.rowCount(); i++) {
-            if (array[i] == Integer.MIN_VALUE) {
-                assertEquals("?", int1.getLabel(i));
+            if (array[i] == VarInt.MISSING_VALUE) {
+                assertEquals(VarNominal.MISSING_VALUE, int1.getLabel(i));
             } else {
                 assertEquals(String.valueOf(i + 1), int1.getLabel(i));
             }
@@ -345,7 +345,10 @@ public class VarIntTest {
 
     @Test
     public void testString() {
-        final VarInt x = VarInt.wrap(1, 2, Integer.MIN_VALUE, -10, 0, 100, Integer.MIN_VALUE, 16, 1, 2, 3, 4, 5, 6, 7, 34, 322342, 2424, 24324, 24, 234234, 2423, 4, 234, 23, 4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
+        final VarInt x = VarInt.wrap(1, 2, VarInt.MISSING_VALUE,
+                -10, 0, 100, VarInt.MISSING_VALUE, 16, 1, 2, 3, 4, 5, 6,
+                7, 34, 322342, 2424, 24324, 24, 234234, 2423, 4, 234, 23,
+                4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
         assertEquals("VarInt [name:\"?\", rowCount:38, values: 1, 2, ?, -10, 0, 100, ?, 16, 1, 2, 3, 4, ..., 34, 23]", x.toString());
 
         WS.getPrinter().withTextWidth(100);

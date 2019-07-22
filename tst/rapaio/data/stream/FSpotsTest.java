@@ -129,7 +129,7 @@ public class FSpotsTest {
 
     @Test
     public void testComplete() {
-        Var index = VarInt.from(10, row -> row % 2 == 0 ? Integer.MIN_VALUE : row);
+        Var index = VarInt.from(10, row -> row % 2 == 0 ? VarInt.MISSING_VALUE : row);
         assertEquals(5, index.stream().complete().count());
         assertEquals(5, index.stream().incomplete().count());
     }

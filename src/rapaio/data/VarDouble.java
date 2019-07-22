@@ -82,15 +82,13 @@ public final class VarDouble extends AbstractVar {
      * @return new instance of numeric variable
      */
     public static VarDouble copy(Collection<? extends Number> values) {
-        final VarDouble numeric = new VarDouble(0, 0, Double.NaN);
-        numeric.data = new double[values.size()];
-        numeric.rows = values.size();
+        double[] data = new double[values.size()];
         Iterator<? extends Number> it = values.iterator();
         int pos = 0;
         while (it.hasNext()) {
-            numeric.data[pos++] = it.next().doubleValue();
+            data[pos++] = it.next().doubleValue();
         }
-        return numeric;
+        return VarDouble.wrap(data);
     }
 
     /**
@@ -100,11 +98,11 @@ public final class VarDouble extends AbstractVar {
      * @return new instance of numeric variable
      */
     public static VarDouble copy(int... values) {
-        VarDouble numeric = new VarDouble(values.length, values.length, 0);
+        double[] data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = values[i];
+            data[i] = values[i];
         }
-        return numeric;
+        return VarDouble.wrap(data);
     }
 
     /**
@@ -383,9 +381,7 @@ public final class VarDouble extends AbstractVar {
     @Override
     public void addRows(int rowCount) {
         ensureCapacity(rows + rowCount);
-        for (int i = 0; i < rowCount; i++) {
-            data[rows + i] = MISSING_VALUE;
-        }
+        Arrays.fill(data, rows, rows+rowCount, MISSING_VALUE);
         rows += rowCount;
     }
 
@@ -452,12 +448,12 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public String getLabel(int row) {
-        return isMissing(row) ? "?" : String.valueOf(data[row]);
+        return isMissing(row) ? VarNominal.MISSING_VALUE : String.valueOf(data[row]);
     }
 
     @Override
     public void setLabel(int row, String value) {
-        if ("?".equals(value)) {
+        if (VarNominal.MISSING_VALUE.equals(value)) {
             data[row] = Double.NaN;
             return;
         }
@@ -474,7 +470,7 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        if ("?".equals(value)) {
+        if (VarNominal.MISSING_VALUE.equals(value)) {
             addMissing();
             return;
         }

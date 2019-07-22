@@ -151,7 +151,7 @@ public class VSpotsTest {
 
     @Test
     public void testComplete() {
-        Frame index = SolidFrame.byVars(VarInt.from(10, row -> row%2==0 ? Integer.MIN_VALUE: row));
+        Frame index = SolidFrame.byVars(VarInt.from(10, row -> row%2==0 ? VarInt.MISSING_VALUE: row));
         assertEquals(5, index.stream().complete().count());
         assertEquals(5, index.stream().incomplete().count());
     }

@@ -28,6 +28,8 @@
 package rapaio.data;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.printer.format.*;
 
 import java.io.IOException;
@@ -110,6 +112,20 @@ public abstract class AbstractVar implements Var {
             setDouble(i, getDouble(i) * a);
         }
         return this;
+    }
+
+    @Override
+    public int[] sortedCompleteRows(boolean asc) {
+        int[] rows = new int[rowCount()];
+        int len = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            if(isMissing(i)) {
+                continue;
+            }
+            rows[len++] = i;
+        }
+        IntArrays.quickSort(rows, 0, len, refComparator(asc));
+        return IntArrays.copy(rows, 0, len);
     }
 
     ///////////////////// END VARIOUS OPERATIONS ///////////////////////////////////////
