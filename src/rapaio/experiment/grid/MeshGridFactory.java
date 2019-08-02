@@ -32,15 +32,15 @@ import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.ml.classifier.ClassResult;
-import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.ClassifierModel;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/15.
  */
 public class MeshGridFactory {
 
-    public static MeshGrid1D buildFrom(Classifier c, Frame df, String x1Name, String x2Name, int steps, String labelName) {
+    public static MeshGrid1D buildFrom(ClassifierModel c, Frame df, String x1Name, String x2Name, int steps, String labelName) {
 
         double x1min = Minimum.of(df.rvar(x1Name)).value();
         double x1max = Maximum.of(df.rvar(x1Name)).value();
@@ -61,7 +61,7 @@ public class MeshGridFactory {
                 f2.addDouble(x2.getDouble(j));
             }
         }
-        ClassResult fit = c.predict(SolidFrame.byVars(f1, f2));
+        ClassifierResult fit = c.predict(SolidFrame.byVars(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

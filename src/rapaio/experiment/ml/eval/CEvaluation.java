@@ -55,7 +55,7 @@ import static rapaio.sys.WS.*;
 @Deprecated
 public class CEvaluation {
 
-    public static double cv(Frame df, String classColName, Classifier c, int folds) {
+    public static double cv(Frame df, String classColName, ClassifierModel c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
 
         List<IntList> strata = buildStrata(df, folds, classColName);
@@ -74,9 +74,9 @@ public class CEvaluation {
             Frame train = MappedFrame.byRow(df, trainMapping);
             Frame test = MappedFrame.byRow(df, testMapping);
 
-            Classifier cc = c.newInstance();
+            ClassifierModel cc = c.newInstance();
             cc.fit(train, classColName);
-            ClassResult cp = cc.predict(test);
+            ClassifierResult cp = cc.predict(test);
 
             Confusion conf = Confusion.from(test.rvar(classColName), cp.firstClasses());
             acc.addDouble(conf.accuracy());
@@ -122,10 +122,10 @@ public class CEvaluation {
         return strata;
     }
 
-    public static void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
+    public static void multiCv(Frame df, String classColName, List<ClassifierModel> classifierModels, int folds) {
         print("CrossValidation with " + folds + " folds\n");
         df = df.fapply(FShuffle.filter());
-        double[] tacc = new double[classifiers.size()];
+        double[] tacc = new double[classifierModels.size()];
 
         for (int i = 0; i < folds; i++) {
             IntArrayList trainMapping = new IntArrayList();
@@ -150,10 +150,10 @@ public class CEvaluation {
             Frame train = MappedFrame.byRow(df, trainMapping.toIntArray());
             Frame test = MappedFrame.byRow(df, testMapping.toIntArray());
 
-            for (int k = 0; k < classifiers.size(); k++) {
-                Classifier c = classifiers.get(k).newInstance();
+            for (int k = 0; k < classifierModels.size(); k++) {
+                ClassifierModel c = classifierModels.get(k).newInstance();
                 c.fit(train, classColName);
-                ClassResult cp = c.predict(test);
+                ClassifierResult cp = c.predict(test);
                 Confusion cm = Confusion.from(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
@@ -163,27 +163,27 @@ public class CEvaluation {
 
         }
 
-        for (int k = 0; k < classifiers.size(); k++) {
+        for (int k = 0; k < classifierModels.size(); k++) {
             tacc[k] /= (1. * folds);
-            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifiers.get(k).name()));
+            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifierModels.get(k).name()));
         }
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, ClassifierModel c, int bootstraps) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, ClassifierModel c, int bootstraps) {
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, ClassifierModel c, int bootstraps, double p) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0d);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, p);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, ClassifierModel c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;
@@ -195,7 +195,7 @@ public class CEvaluation {
 //            System.out.println("build test set ...");
             Frame test = df.removeRows(rows);
 //            System.out.println("learn predict set ...");
-            Classifier cc = c.newInstance();
+            ClassifierModel cc = c.newInstance();
             cc.fit(train, weights.mapRows(rows), classColName);
 //            System.out.println("predict test cases ...");
             Var classes = cc.predict(test).firstClasses();
@@ -211,14 +211,13 @@ public class CEvaluation {
         System.out.println(String.format("Average accuracy: %.6f", total / count));
     }
 
-    public static PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
+    public static <M extends ClassifierModel, R extends ClassifierResult<M>> PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, ClassifierModel<M, R> c, int runs, int step) {
 
-        BiConsumer<Classifier, Integer> oldHook = c.runningHook();
+        BiConsumer<M, Integer> oldHook = c.runningHook();
         VarInt r = VarInt.empty().withName("runs");
         VarDouble testAcc = VarDouble.empty().withName("test");
         VarDouble trainAcc = VarDouble.empty().withName("predict");
         c.withRunningHook((cs, run) -> {
-
             if (run % step != 0) {
                 return;
             }
@@ -244,55 +243,6 @@ public class CEvaluation {
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
-    }
-
-    public static PlotRunResult plotRunsRoc(
-            Frame train,
-            Frame test,
-            String targetVar,
-            String label,
-            Classifier cc,
-            int runs,
-            int step,
-            boolean alterClassifier) {
-
-        Classifier c = alterClassifier ? cc : cc.newInstance();
-        BiConsumer<Classifier, Integer> oldHook = c.runningHook();
-        VarInt r = VarInt.empty().withName("runs");
-        VarDouble testAuc = VarDouble.empty().withName("test");
-        VarDouble trainAuc = VarDouble.empty().withName("predict");
-        Pin<Double> prevAuc = new Pin<>(0.0);
-        c.withRunningHook((cs, run) -> {
-
-            if ((run % step != 0) && run != 1) {
-                return;
-            }
-            r.addInt(run);
-            ROC roc = ROC.from(c.predict(test).firstDensity().rvar(label), test.rvar(targetVar), label);
-            WS.draw(rocCurve(roc).title("testAuc: " + Format.floatFlex(roc.auc()) + ", run: " + run));
-            testAuc.addDouble(roc.auc());
-            WS.println("testAuc: " + Format.floatLong(roc.auc()) + ", run: " + run + ", auc gain: " + Format.floatLong(roc.auc()-prevAuc.get()));
-            prevAuc.set(roc.auc());
-//            trainAuc.addValue(new ROC(c.predict(predict).firstDensity().rvar(label), predict.rvar(targetVar), label).auc());
-
-//            WS.draw(plot()
-//                            .lines(r, testAuc, color(1))
-//                            .title("testAuc: " + Format.floatFlex(testAuc.value(testAuc.rowCount() - 1)))
-//            );
-        });
-        c.withRuns(runs);
-        c.fit(train, targetVar);
-
-//        WS.println("Confusion matrix on training data set: ");
-        Confusion trainConfusion = Confusion.from(train.rvar(targetVar), c.predict(train).firstClasses());
-        trainConfusion.printSummary();
-//        WS.println();
-        WS.println("Confusion matrix on test data set: ");
-        Confusion testConfusion = Confusion.from(test.rvar(targetVar), c.predict(test).firstClasses());
-        testConfusion.printSummary();
-
-
-        return new PlotRunResult(r, trainAuc, testAuc, testConfusion, trainConfusion);
     }
 
     public static class PlotRunResult {

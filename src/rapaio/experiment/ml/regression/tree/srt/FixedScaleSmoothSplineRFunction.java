@@ -113,7 +113,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 }
 
                 // fit a linear regression
-                LinearRegression lm = LinearRegression.newLm().withIntercept(false);
+                LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(false);
 //                RidgeRegression lm = RidgeRegression.newRidgeLm(100).withIntercept(false).withCentering(false).withScaling(false);
 
                 features.add(y);
@@ -131,7 +131,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                         throw ex;
                     }
                 }
-                LinearRegResult pred = lm.predict(bf, false);
+                LinearRegressionResult pred = lm.predict(bf, false);
                 VarDouble y_hat = pred.firstPrediction();
                 double error = loss.computeErrorScore(y, y_hat);
 

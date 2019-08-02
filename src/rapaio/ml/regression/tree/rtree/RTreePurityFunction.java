@@ -95,14 +95,14 @@ public interface RTreePurityFunction extends Serializable {
 
         @Override
         public double computeTestValue(RTreeTestPayload p) {
-            double down = 0.0;
             double up = 0.0;
+            double down = 0.0;
             for (int i = 0; i < p.splits; i++) {
-                down += p.splitWeight[i];
                 up += p.splitWeight[i] * Math.sqrt(p.splitVar[i]);
+                down += p.splitWeight[i];
             }
             double result = Math.sqrt(p.totalVar) - up / down;
-            return (down == 0) ? Double.MIN_VALUE : result;
+            return (down == 0) ? 0 : result;
         }
     };
 }

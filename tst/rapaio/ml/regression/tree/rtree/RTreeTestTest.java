@@ -119,7 +119,7 @@ public class RTreeTestTest {
                 RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(c.isPresent());
-        assertEquals("Candidate{score=23.029262133969894, testName='temp', groupNames=[temp <= 69.5, temp > 69.5]}",
+        assertEquals("Candidate{score=32.657653061224444, testName='temp', groupNames=[temp <= 69.5, temp > 69.5]}",
                 c.get().toString());
     }
 

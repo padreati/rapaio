@@ -48,11 +48,13 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
-public class CStepwiseSelection extends AbstractClassifier implements DefaultPrintable {
+public class CStepwiseSelection
+        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult<CStepwiseSelection>>
+        implements DefaultPrintable {
 
     private static final long serialVersionUID = 2642562123626893974L;
-    Classifier best;
-    private Classifier c;
+    ClassifierModel best;
+    private ClassifierModel c;
     private int minVars = 1;
     private int maxVars = 1;
     private String[] startSelection = new String[]{};
@@ -73,7 +75,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
     }
 
     @Override
-    public AbstractClassifier newInstance() {
+    public CStepwiseSelection newInstance() {
         return newInstanceDecoration(new CStepwiseSelection())
                 .withRestartAfter(restartAfter)
                 .withClassifier(c)
@@ -88,7 +90,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
         return c.capabilities();
     }
 
-    public CStepwiseSelection withClassifier(Classifier c) {
+    public CStepwiseSelection withClassifier(ClassifierModel c) {
         this.c = c;
         return this;
     }
@@ -130,7 +132,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
         Frame testFrame = test != null ? test : df;
 
         List<String> bestSelection = new ArrayList<>(selection);
-        Classifier bestClassifier = null;
+        ClassifierModel bestClassifierModel = null;
         double bestAcc = 0.0;
         String forwardNext = null;
         String backwardNext = null;
@@ -153,7 +155,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
                     next.add(test);
                     next.add(firstTargetName());
 
-                    Classifier cNext = c.newInstance();
+                    ClassifierModel cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
                     Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
@@ -162,7 +164,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
 
                         WS.println(Format.floatFlex(acc));
                         bestAcc = acc;
-                        bestClassifier = cNext;
+                        bestClassifierModel = cNext;
                         forwardNext = test;
                         backwardNext = null;
                         found = true;
@@ -183,7 +185,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
                     List<String> next = selection.stream().filter(n -> !test.equals(n)).collect(toList());
                     next.add(firstTargetName());
 
-                    Classifier cNext = c.newInstance();
+                    ClassifierModel cNext = c.newInstance();
                     cNext.fit(df.mapVars(next), firstTargetName());
                     Confusion cm = Confusion.from(testFrame.rvar(firstTargetName()), cNext.predict(testFrame).firstClasses());
 
@@ -192,7 +194,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
                     if (acc > bestAcc) {
                         WS.println(Format.floatFlex(acc));
                         bestAcc = acc;
-                        bestClassifier = cNext;
+                        bestClassifierModel = cNext;
                         forwardNext = null;
                         backwardNext = test;
                         found = true;
@@ -205,7 +207,7 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
             if (!found)
                 break;
 
-            best = bestClassifier;
+            best = bestClassifierModel;
 
             String testNext = (forwardNext == null) ? backwardNext : forwardNext;
             if (forwardNext != null) {
@@ -219,8 +221,8 @@ public class CStepwiseSelection extends AbstractClassifier implements DefaultPri
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        return best.predict(df, withClasses, withDistributions);
+    protected ClassifierResult<CStepwiseSelection> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        return ClassifierResult.copy(this, df, withClasses, withDistributions, best.predict(df, withClasses, withDistributions));
     }
 
 }

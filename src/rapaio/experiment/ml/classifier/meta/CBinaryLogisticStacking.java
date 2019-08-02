@@ -34,9 +34,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VApplyDouble;
 import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.ClassResult;
-import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.*;
 
@@ -52,18 +52,18 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CBinaryLogisticStacking extends AbstractClassifier implements DefaultPrintable {
+public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogisticStacking, ClassifierResult<CBinaryLogisticStacking>> implements DefaultPrintable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 
     private static final Logger logger = Logger.getLogger(CBinaryLogisticStacking.class.getName());
 
-    private List<Classifier> weaks = new ArrayList<>();
+    private List<ClassifierModel> weaks = new ArrayList<>();
     private BinaryLogistic log = new BinaryLogistic();
     private double tol = 1e-5;
     private int maxRuns = 1_000_000;
 
-    public CBinaryLogisticStacking withLearners(Classifier... learners) {
+    public CBinaryLogisticStacking withLearners(ClassifierModel... learners) {
         weaks.clear();
         Collections.addAll(weaks, learners);
         return this;
@@ -80,8 +80,8 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
     }
 
     @Override
-    public Classifier newInstance() {
-        return new CBinaryLogisticStacking();
+    public CBinaryLogisticStacking newInstance() {
+        return newInstanceDecoration(new CBinaryLogisticStacking());
     }
 
     @Override
@@ -162,11 +162,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier implements Defau
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.config("started fitting binary logistic regression.. ");
-        ClassResult fit = log.predict(df);
-
-        logger.config("end predict method call");
-        return fit;
+    protected ClassifierResult<CBinaryLogisticStacking> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        return ClassifierResult.copy(this, df, withClasses, withDistributions, log.predict(df));
     }
 }

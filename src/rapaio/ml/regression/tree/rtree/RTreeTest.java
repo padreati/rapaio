@@ -33,6 +33,7 @@ import rapaio.data.*;
 import rapaio.ml.common.predicate.*;
 import rapaio.ml.regression.tree.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -42,10 +43,10 @@ import java.util.stream.IntStream;
  * variable. The method is universal of variable types, the name of the
  * method describes with which variable representation works to implement
  * the selection of the best candidate.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
-public interface RTreeTest {
+public interface RTreeTest extends Serializable {
 
     /**
      * @return name of the test method
@@ -112,6 +113,8 @@ public interface RTreeTest {
             WeightedOnlineStat so = WeightedOnlineStat.empty();
 
             so.update(df.getDouble(rows[0], targetIndex), weights.getDouble(rows[0]));
+            leftWeight[0] = weights.getDouble(rows[0]);
+            leftVar[0] = 0;
             for (int i = 1; i < rows.length; i++) {
                 so.update(df.getDouble(rows[i], targetIndex), weights.getDouble(rows[i]));
                 leftWeight[i] = weights.getDouble(rows[i]) + leftWeight[i - 1];
@@ -119,6 +122,8 @@ public interface RTreeTest {
             }
             so = WeightedOnlineStat.empty();
             so.update(df.getDouble(rows[rows.length - 1], targetIndex), weights.getDouble(rows[rows.length - 1]));
+            rightWeight[rows.length - 1] = weights.getDouble(rows[rows.length - 1]);
+            rightVar[rows.length - 1] = 0;
             for (int i = rows.length - 2; i >= 0; i--) {
                 so.update(df.getDouble(rows[i], targetIndex), weights.getDouble(rows[i]));
                 rightWeight[i] = weights.getDouble(rows[i]) + rightWeight[i + 1];
@@ -137,9 +142,9 @@ public interface RTreeTest {
                 if (df.getDouble(rows[i], testIndex) == df.getDouble(rows[i + 1], testIndex)) continue;
 
                 p.splitVar[0] = leftVar[i];
-                p.splitVar[1] = rightVar[i];
                 p.splitWeight[0] = leftWeight[i];
-                p.splitWeight[1] = rightWeight[i];
+                p.splitVar[1] = rightVar[i + 1];
+                p.splitWeight[1] = rightWeight[i + 1];
 
                 double value = c.purityFunction().computeTestValue(p);
                 if (value < bestScore) {

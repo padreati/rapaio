@@ -59,10 +59,10 @@ public class RMSETest {
 
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
-        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
         lm.fit(df, targets);
 
-        LinearRegResult fit = lm.predict(df, true);
+        LinearRegressionResult fit = lm.predict(df, true);
         RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.predictionFrame());
 
         for (int i = 0; i < targets.length; i++) {

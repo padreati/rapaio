@@ -99,12 +99,12 @@ class LinearFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
 
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRegResult pred = lm.withIntercept(true).predict(map, false);
+            LinearRegressionResult pred = lm.withIntercept(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.testVarName = testVarName;
@@ -139,7 +139,7 @@ class QuadraticFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegression lm = LinearRegression.newLm().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
 
         if (Unique.of(df.rvar(testVarName), false).uniqueCount() <= 5) {
             return null;
@@ -150,7 +150,7 @@ class QuadraticFunction implements NBRFunction {
         Frame map = BoundFrame.byVars(df.rvar(testVarName), square, y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRegResult pred = lm.withIntercept(true).predict(map, false);
+            LinearRegressionResult pred = lm.withIntercept(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.beta_2 = pred.getBetaHat().get(2, 0);
@@ -183,11 +183,11 @@ class ConstantFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        L2Regression model = L2Regression.newL2();
+        L2RegressionModel model = L2RegressionModel.newL2();
 
         Frame map = BoundFrame.byVars(y);
         model.fit(map, weights, y.name());
-        RegResult pred = model.predict(map, false);
+        RegressionResult pred = model.predict(map, false);
         this.constant = model.getMeans()[0];
 
         return pred.firstPrediction();
@@ -282,7 +282,7 @@ class SplineFunction implements NBRFunction {
             }
 
             // fit a linear regression
-            LinearRegression rlm = LinearRegression.newLm().withIntercept(true);
+            LinearRegressionModel rlm = LinearRegressionModel.newLm().withIntercept(true);
 //            RidgeRegression rlm = RidgeRegression.newRidgeLm(lambda).withIntercept(true);
 
             List<Var> features = new ArrayList<>(testFeatures);
@@ -306,7 +306,7 @@ class SplineFunction implements NBRFunction {
                     throw ex;
                 }
             }
-            LinearRegResult pred = rlm.predict(bf, false);
+            LinearRegressionResult pred = rlm.predict(bf, false);
             VarDouble y_hat = pred.firstPrediction();
             double error = loss.computeErrorScore(y, y_hat);
 

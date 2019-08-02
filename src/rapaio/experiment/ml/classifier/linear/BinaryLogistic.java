@@ -32,8 +32,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VType;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.ClassResult;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.*;
 import rapaio.util.func.SFunction;
@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class BinaryLogistic extends AbstractClassifier implements DefaultPrintable {
+public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult<BinaryLogistic>> implements DefaultPrintable {
 
     private static final long serialVersionUID = 1609956190070125059L;
 
@@ -55,7 +55,7 @@ public class BinaryLogistic extends AbstractClassifier implements DefaultPrintab
 
     @Override
     public BinaryLogistic newInstance() {
-        return new BinaryLogistic()
+        return newInstanceDecoration(new BinaryLogistic())
                 .withMaxRuns(maxRuns)
                 .withTol(tol);
     }
@@ -155,8 +155,8 @@ public class BinaryLogistic extends AbstractClassifier implements DefaultPrintab
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassResult cr = ClassResult.build(this, df, withClasses, withDistributions);
+    protected ClassifierResult<BinaryLogistic> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult<BinaryLogistic> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {

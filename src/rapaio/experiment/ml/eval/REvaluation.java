@@ -50,7 +50,7 @@ import static rapaio.sys.WS.*;
 @Deprecated
 public class REvaluation {
 
-    public static double cv(Frame df, String targetVarName, Regression c, int folds, RMetric metric) {
+    public static double cv(Frame df, String targetVarName, RegressionModel c, int folds, RMetric metric) {
         print("\nCrossValidation with " + folds + " folds for model: "+c.fullName()+"\n");
 
         List<IntList> strata = buildFolds(df, folds);
@@ -69,9 +69,9 @@ public class REvaluation {
             Frame train = MappedFrame.byRow(df, trainMapping);
             Frame test = MappedFrame.byRow(df, testMapping);
 
-            Regression cc = c.newInstance();
+            RegressionModel cc = c.newInstance();
             cc.fit(train, targetVarName);
-            RegResult cp = cc.predict(test);
+            RegressionResult cp = cc.predict(test);
 
             error.addDouble(metric.compute(test.rvar(targetVarName), cp.firstPrediction()));
             print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
@@ -108,10 +108,10 @@ public class REvaluation {
         return foldMap;
     }
 
-    public static void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
+    public static void multiCv(Frame df, String classColName, List<ClassifierModel> classifierModels, int folds) {
         print("CrossValidation with " + folds + " folds\n");
         df = df.fapply(FShuffle.filter());
-        double[] tacc = new double[classifiers.size()];
+        double[] tacc = new double[classifierModels.size()];
 
         for (int i = 0; i < folds; i++) {
             IntArrayList trainMapping = new IntArrayList();
@@ -136,10 +136,10 @@ public class REvaluation {
             Frame train = MappedFrame.byRow(df, trainMapping.toIntArray());
             Frame test = MappedFrame.byRow(df, testMapping.toIntArray());
 
-            for (int k = 0; k < classifiers.size(); k++) {
-                Classifier c = classifiers.get(k).newInstance();
+            for (int k = 0; k < classifierModels.size(); k++) {
+                ClassifierModel c = classifierModels.get(k).newInstance();
                 c.fit(train, classColName);
-                ClassResult cp = c.predict(test);
+                ClassifierResult cp = c.predict(test);
                 Confusion cm = Confusion.from(test.rvar(classColName), cp.firstClasses());
                 double acc = cm.accuracy();
                 tacc[k] += acc;
@@ -149,27 +149,27 @@ public class REvaluation {
 
         }
 
-        for (int k = 0; k < classifiers.size(); k++) {
+        for (int k = 0; k < classifierModels.size(); k++) {
             tacc[k] /= (1. * folds);
-            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifiers.get(k).name()));
+            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifierModels.get(k).name()));
         }
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, ClassifierModel c, int bootstraps) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, ClassifierModel c, int bootstraps) {
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, String classColName, ClassifierModel c, int bootstraps, double p) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0d);
         bootstrapValidation(printer, df, weights, classColName, c, bootstraps, p);
     }
 
-    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Printer printer, Frame df, Var weights, String classColName, ClassifierModel c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;
@@ -181,7 +181,7 @@ public class REvaluation {
 //            System.out.println("build test set ...");
             Frame test = df.removeRows(rows);
 //            System.out.println("learn predict set ...");
-            Classifier cc = c.newInstance();
+            ClassifierModel cc = c.newInstance();
             cc.fit(train, weights.mapRows(rows), classColName);
 //            System.out.println("predict test cases ...");
             Var classes = cc.predict(test).firstClasses();

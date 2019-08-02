@@ -38,7 +38,7 @@ import rapaio.data.Mapping;
 import rapaio.data.VType;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.classifier.boost.GBTClassifier;
+import rapaio.experiment.ml.classifier.boost.GBTClassifierModel;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreeTest;
@@ -81,7 +81,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial5k() {
-        Classifier c = CTree.newCART()
+        ClassifierModel c = CTree.newCART()
                 .withMaxDepth(12)
                 .withMinCount(5)
                 .withSampler(RowSampler.bootstrap(1));
@@ -91,7 +91,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
 //    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial50k() {
-        Classifier c = CTree.newCART()
+        ClassifierModel c = CTree.newCART()
                 .withMaxDepth(12)
                 .withMinCount(5)
                 .withSampler(RowSampler.bootstrap(1));
@@ -101,7 +101,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
 //    @Test
     @BenchmarkOptions(benchmarkRounds = 7, warmupRounds = 2)
     public void performanceCartRuns12Serial200k() {
-        Classifier c = CTree.newCART()
+        ClassifierModel c = CTree.newCART()
                 .withMaxDepth(12)
                 .withMinCount(5)
                 .withSampler(RowSampler.bootstrap(1));
@@ -114,7 +114,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
 
         RandomSource.setSeed(1234);
 
-        Classifier c = CTree.newCART()
+        ClassifierModel c = CTree.newCART()
                 .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
@@ -126,7 +126,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     public void performanceRFCartNumericRandomRuns200Depth12Serial5k() throws Exception {
 
         RandomSource.setSeed(1234);
-        Classifier c = CForest.newRF()
+        ClassifierModel c = CForest.newRF()
                 .withClassifier(CTree.newCART()
                         .withTest(VType.DOUBLE, CTreeTest.NumericRandom)
                         .withMaxDepth(12)
@@ -143,7 +143,7 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
         RandomSource.setSeed(1234);
 
         Frame src = Datasets.loadIrisDataset();
-        Classifier c = CForest.newRF()
+        ClassifierModel c = CForest.newRF()
                 .withClassifier(CTree.newCART()
                         .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
                         .withMaxDepth(12)
@@ -157,14 +157,14 @@ public class ClassifiersPerformanceTest extends AbstractBenchmark {
     @BenchmarkOptions(benchmarkRounds = 5, warmupRounds = 2)
     public void performanceGBTCartRuns200Depth12() throws Exception {
         Frame src = Datasets.loadIrisDataset();
-        Classifier c = GBTClassifier.newGBT()
+        ClassifierModel c = GBTClassifierModel.newGBT()
                 .withSampler(RowSampler.bootstrap(1))
                 .withRTree(RTree.newCART().withMaxDepth(6))
                 .withRuns(10);
         test(c, df_5k);
     }
 
-    private void test(Classifier c, Frame df) {
+    private void test(ClassifierModel c, Frame df) {
         long seed = RandomSource.getRandom().nextLong();
         RandomSource.setSeed(seed);
         try {

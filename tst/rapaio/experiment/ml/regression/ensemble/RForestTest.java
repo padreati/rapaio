@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.regression.Regression;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
@@ -40,9 +40,9 @@ public class RForestTest {
     @Test
     public void buildTest() throws IOException {
 
-        Regression tree = RTree.newCART().withMaxDepth(7);
+        RegressionModel tree = RTree.newCART().withMaxDepth(7);
 
-        Regression rf = RForest.newRF()
+        RegressionModel rf = RForest.newRF()
                 .withRegression(RTree.newCART().withMaxDepth(7).withVarSelector(VarSelector.fixed(2)))
                 .withRuns(1_000);
 

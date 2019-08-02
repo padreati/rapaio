@@ -42,17 +42,18 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-public class RForest extends AbstractRegression implements DefaultPrintable {
+public class RForest extends AbstractRegressionModel<RForest, RegressionResult<RForest>>
+        implements DefaultPrintable {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
     // parameter
 
-    private Regression r = RTree.newC45();
+    private RegressionModel r = RTree.newC45();
 
     // learning artifacts
 
-    private List<Regression> regressors = new ArrayList<>();
+    private List<RegressionModel> regressors = new ArrayList<>();
 
     public static RForest newRF() {
         return new RForest();
@@ -62,7 +63,7 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
     }
 
     @Override
-    public Regression newInstance() {
+    public RForest newInstance() {
         return newInstanceDecoration(new RForest())
                 .withRegression(this.r);
     }
@@ -94,7 +95,7 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
                 .withAllowMissingTargetValues(false);
     }
 
-    public RForest withRegression(Regression r) {
+    public RForest withRegression(RegressionModel r) {
         this.r = r;
         return this;
     }
@@ -103,7 +104,7 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
     protected boolean coreFit(Frame df, Var weights) {
         regressors.clear();
         IntStream.range(0, runs()).forEach(i -> {
-                Regression rnew = r.newInstance();
+                RegressionModel rnew = r.newInstance();
                 Sample sample = sampler().nextSample(df, weights);
                 rnew.fit(sample.df, sample.weights, firstTargetName());
                 regressors.add(rnew);
@@ -114,13 +115,13 @@ public class RForest extends AbstractRegression implements DefaultPrintable {
         return true;
     }
 
-    public List<Regression> getRegressors() {
+    public List<RegressionModel> getRegressors() {
         return regressors;
     }
 
     @Override
-    protected RegResult corePredict(Frame df, boolean withResiduals) {
-        RegResult fit = RegResult.build(this, df, withResiduals);
+    protected RegressionResult<RForest> corePredict(Frame df, boolean withResiduals) {
+        RegressionResult<RForest> fit = RegressionResult.build(this, df, withResiduals);
         List<VarDouble> results = regressors
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction())

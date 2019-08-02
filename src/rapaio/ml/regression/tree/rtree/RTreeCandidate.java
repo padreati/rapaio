@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.
  */
-public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable {
+public class RTreeCandidate implements Serializable {
 
     private static final long serialVersionUID = 6698766675237089849L;
     private final double score;
@@ -72,12 +72,6 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
 
     public String getTestName() {
         return testName;
-    }
-
-    @Override
-    public int compareTo(RTreeCandidate o) {
-        if (o == null) return 1;
-        return -Double.compare(score, o.score);
     }
 
     @Override

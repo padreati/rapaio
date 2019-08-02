@@ -48,7 +48,9 @@ import static rapaio.printer.format.Format.*;
 /**
  * Class for building a binary support vector machine.
  */
-public class BinarySMO extends AbstractClassifier implements Serializable, DefaultPrintable {
+public class BinarySMO
+        extends AbstractClassifierModel<BinarySMO, ClassifierResult<BinarySMO>>
+        implements Serializable, DefaultPrintable {
 
     private static final long serialVersionUID = 1208515184777030598L;
 
@@ -111,7 +113,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
     }
 
     @Override
-    public Classifier newInstance() {
+    public BinarySMO newInstance() {
         return newInstanceDecoration(new BinarySMO())
                 .withKernel(kernel.newInstance())
                 .withC(C)
@@ -169,11 +171,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
     public BinarySMO withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
         return this;
-    }
-
-    @Override
-    public BinarySMO withSampler(RowSampler sampler) {
-        return (BinarySMO) super.withSampler(sampler);
     }
 
     @Override
@@ -436,8 +433,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable, Defau
 
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassResult cr = ClassResult.build(this, df, withClasses, withDistributions);
+    protected ClassifierResult<BinarySMO> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult<BinarySMO> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
 

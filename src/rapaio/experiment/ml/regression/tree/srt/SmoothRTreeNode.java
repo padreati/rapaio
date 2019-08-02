@@ -128,7 +128,7 @@ public class SmoothRTreeNode {
         // check if we found something
 
         // check depth
-        if (depth == tree.getMaxDepth()) {
+        if (depth == tree.getMaxDepth() || bc.get().score < tree.getMinScore()) {
             // this is a final leaf because of depth
             isLeaf = true;
             return;

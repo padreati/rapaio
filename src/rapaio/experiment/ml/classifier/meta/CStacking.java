@@ -46,30 +46,30 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends AbstractClassifier implements DefaultPrintable {
+public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult<CStacking>> implements DefaultPrintable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 
     private static final Logger logger = Logger.getLogger(CStacking.class.getName());
 
-    private List<Classifier> weaks = new ArrayList<>();
-    private Classifier stacker = CForest.newRF();
+    private List<ClassifierModel> weaks = new ArrayList<>();
+    private ClassifierModel stacker = CForest.newRF();
 
-    public CStacking withLearners(Classifier... learners) {
+    public CStacking withLearners(ClassifierModel... learners) {
         weaks.clear();
         Collections.addAll(weaks, learners);
         return this;
     }
 
-    public CStacking withStacker(Classifier stacker) {
+    public CStacking withStacker(ClassifierModel stacker) {
         this.stacker = stacker;
         return this;
     }
 
     @Override
-    public Classifier newInstance() {
+    public CStacking newInstance() {
         return newInstanceDecoration(new CStacking())
-                .withLearners(weaks.stream().map(Classifier::newInstance).toArray(Classifier[]::new))
+                .withLearners(weaks.stream().map(ClassifierModel::newInstance).toArray(ClassifierModel[]::new))
                 .withStacker(stacker.newInstance());
     }
 
@@ -147,11 +147,7 @@ public class CStacking extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.fine("started fitting stacker classifier .. ");
-        ClassResult fit = stacker.predict(df);
-
-        logger.fine("end predict method call");
-        return fit;
+    protected ClassifierResult<CStacking> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        return ClassifierResult.copy(this, df, withClasses, withDistributions, stacker.predict(df));
     }
 }

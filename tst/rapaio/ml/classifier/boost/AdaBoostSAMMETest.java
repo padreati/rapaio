@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.boost.*;
-import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.Confusion;
@@ -46,7 +46,7 @@ public class AdaBoostSAMMETest {
     public void testBuild() throws IOException, URISyntaxException {
 
         WS.setPrinter(new IdeaPrinter());
-        Classifier ab = new AdaBoostSAMME()
+        AdaBoostSAMME ab = new AdaBoostSAMME()
                 .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withVarSelector(VarSelector.fixed(5)))
                 .withRuns(10);
         Frame df = Datasets.loadSpamBase();

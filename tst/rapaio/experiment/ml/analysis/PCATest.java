@@ -79,10 +79,10 @@ public class PCATest {
         CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(2);
 
         rf1.fit(iris, "class");
-        ClassResult fit1 = rf1.predict(iris);
+        ClassifierResult fit1 = rf1.predict(iris);
 
         rf2.fit(fit.mapVars("0~2,class"), "class");
-        ClassResult fit2 = rf2.predict(fit.mapVars("0~2,class"));
+        ClassifierResult fit2 = rf2.predict(fit.mapVars("0~2,class"));
 
         double acc1 = Confusion.from(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = Confusion.from(iris.rvar("class"), fit2.firstClasses()).accuracy();

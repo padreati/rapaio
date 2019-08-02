@@ -37,11 +37,13 @@ import rapaio.ml.regression.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
-public class SmoothRTree extends AbstractRegression implements GBTRtree {
+public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, RegressionResult<SmoothRTree>>
+        implements GBTRtree<SmoothRTree, RegressionResult<SmoothRTree>> {
 
     private static final long serialVersionUID = 5062591010395009141L;
 
     private int minCount = 5;
+    private double minScore = 1e-320;
     private double minWeight = 1e-10;
     private int maxDepth = 3;
     private VarSelector varSelector = VarSelector.all();
@@ -77,6 +79,15 @@ public class SmoothRTree extends AbstractRegression implements GBTRtree {
 
     public SmoothRTree withMinCount(int minCount) {
         this.minCount = minCount;
+        return this;
+    }
+
+    public double getMinScore() {
+        return minScore;
+    }
+
+    public SmoothRTree withMinScore(double minScore) {
+        this.minScore = minScore;
         return this;
     }
 
@@ -126,9 +137,10 @@ public class SmoothRTree extends AbstractRegression implements GBTRtree {
     }
 
     @Override
-    public Regression newInstance() {
+    public SmoothRTree newInstance() {
         return newInstanceDecoration(new SmoothRTree())
                 .withMinCount(getMinCount())
+                .withMinScore(getMinScore())
                 .withMinWeight(getMinWeight())
                 .withMaxDepth(getMaxDepth())
                 .withVarSelector(getVarSelector())
@@ -144,8 +156,8 @@ public class SmoothRTree extends AbstractRegression implements GBTRtree {
     }
 
     @Override
-    protected RegResult corePredict(Frame df, boolean withResiduals) {
-        RegResult prediction = RegResult.build(this, df, withResiduals);
+    protected RegressionResult<SmoothRTree> corePredict(Frame df, boolean withResiduals) {
+        RegressionResult<SmoothRTree> prediction = RegressionResult.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
             prediction.firstPrediction().setDouble(i, root.predict(df, i, this, 1.0));
         }

@@ -28,8 +28,8 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassResult;
-import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.ClassifierModel;
 import rapaio.experiment.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.eval.Confusion;
 
@@ -51,7 +51,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes();
         nb.fit(df, "class");
-        ClassResult pred = nb.predict(df);
+        ClassifierResult pred = nb.predict(df);
 
         Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
@@ -75,7 +75,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
         nb.fit(df, "class");
-        ClassResult pred = nb.predict(df);
+        ClassifierResult pred = nb.predict(df);
 
         Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
@@ -102,7 +102,7 @@ public class NaiveBayesTest {
 
         nb.printSummary();
 
-        ClassResult cp = nb.predict(df);
+        ClassifierResult cp = nb.predict(df);
 
         Confusion cm = Confusion.from(df.rvar("classes"), cp.firstClasses());
         cm.printSummary();
@@ -117,7 +117,7 @@ public class NaiveBayesTest {
 
     @Test
     public void testSummary() throws IOException, URISyntaxException {
-        Classifier nb = new NaiveBayes();
+        ClassifierModel nb = new NaiveBayes();
         assertEquals("NaiveBayes model\n" +
                 "================\n" +
                 "\n" +

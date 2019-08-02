@@ -30,7 +30,7 @@ package rapaio.experiment.ml.classifier.ensemble;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
-import rapaio.ml.classifier.ClassResult;
+import rapaio.ml.classifier.ClassifierResult;
 
 import java.io.Serializable;
 import java.util.List;
@@ -44,8 +44,8 @@ public enum BaggingMode implements Serializable {
 
     VOTING {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassResult> treeFits, VarNominal classes, Frame densities) {
-            treeFits.stream().map(ClassResult::firstClasses).forEach(d -> {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities) {
+            treeFits.stream().map(ClassifierResult::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
                     int best = d.getInt(i);
                     densities.setDouble(i, best, densities.getDouble(i, best) + 1);
@@ -76,13 +76,13 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassResult> treeFits, VarNominal classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setDouble(i, j, 0);
                 }
             }
-            treeFits.stream().map(ClassResult::firstDensity).forEach(d -> {
+            treeFits.stream().map(ClassifierResult::firstDensity).forEach(d -> {
                 for (int i = 0; i < densities.rowCount(); i++) {
                     double t = 0.0;
                     for (int j = 0; j < densities.varCount(); j++) {
@@ -117,7 +117,7 @@ public enum BaggingMode implements Serializable {
         }
     };
 
-    abstract void computeDensity(List<String> dictionary, List<ClassResult> treeFits, VarNominal classes, Frame densities);
+    abstract void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities);
 
     abstract boolean needsClass();
 

@@ -12,7 +12,6 @@ import rapaio.data.*;
 import rapaio.data.sample.*;
 import rapaio.datasets.*;
 import rapaio.ml.regression.tree.*;
-import rapaio.ml.regression.tree.rtree.*;
 
 import java.io.IOException;
 
@@ -48,7 +47,7 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
     @Test
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial5k() {
-        Regression r = RTree.newCART()
+        RegressionModel r = RTree.newCART()
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_5k);
@@ -57,7 +56,7 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
 //    @Test
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial50k() {
-        Regression r = RTree.newCART()
+        RegressionModel r = RTree.newCART()
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_50k);
@@ -66,13 +65,13 @@ public class RegressionsPerformanceTest extends AbstractBenchmark {
 //    @Test
     @BenchmarkOptions(benchmarkRounds = 15, warmupRounds = 10)
     public void performanceRCartDepth12Serial200k() {
-        Regression r = RTree.newCART()
+        RegressionModel r = RTree.newCART()
                 .withMaxDepth(12)
                 .withSampler(RowSampler.bootstrap(1));
         test(r, df_200k);
     }
 
-    private void test(Regression c, Frame df) {
+    private void test(RegressionModel c, Frame df) {
         long seed = RandomSource.getRandom().nextLong();
         RandomSource.setSeed(seed);
         try {

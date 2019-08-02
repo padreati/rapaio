@@ -52,7 +52,9 @@ import static rapaio.printer.format.Format.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
+public class NaiveBayes
+        extends AbstractClassifierModel<NaiveBayes, ClassifierResult<NaiveBayes>>
+        implements DefaultPrintable {
 
     private static final long serialVersionUID = -7602854063045679683L;
     private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());
@@ -185,11 +187,11 @@ public class NaiveBayes extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected ClassifierResult<NaiveBayes> corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         logger.fine("start fitting values...");
 
-        ClassResult pred = ClassResult.build(this, df, withClasses, withDensities);
+        ClassifierResult<NaiveBayes> pred = ClassifierResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.empty(false, firstTargetLevels());

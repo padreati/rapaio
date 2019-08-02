@@ -37,7 +37,8 @@ import rapaio.ml.regression.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
-public class NestedBoostingRTree extends AbstractRegression implements GBTRtree {
+public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingRTree, RegressionResult<NestedBoostingRTree>>
+        implements GBTRtree<NestedBoostingRTree, RegressionResult<NestedBoostingRTree>> {
 
     private static final long serialVersionUID = 1864784340491461993L;
     private int minCount = 5;
@@ -145,7 +146,7 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
     }
 
     @Override
-    public Regression newInstance() {
+    public NestedBoostingRTree newInstance() {
         return newInstanceDecoration(new NestedBoostingRTree())
                 .withMaxDepth(getMaxDepth())
                 .withMinCount(getMinCount())
@@ -164,8 +165,8 @@ public class NestedBoostingRTree extends AbstractRegression implements GBTRtree 
     }
 
     @Override
-    protected RegResult corePredict(Frame df, boolean withResiduals) {
-        RegResult prediction = RegResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
             double y_true = 0.0;
             NBRTreeNode node = root;

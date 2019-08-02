@@ -45,7 +45,7 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifier implements Printable {
+public class OneRule extends AbstractClassifierModel implements Printable {
 
     private static final long serialVersionUID = 6220103690711818091L;
 
@@ -108,8 +108,8 @@ public class OneRule extends AbstractClassifier implements Printable {
     }
 
     @Override
-    protected ClassResult corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        ClassResult pred = ClassResult.build(this, test, withClasses, withDensities);
+    protected ClassifierResult corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
+        ClassifierResult pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {

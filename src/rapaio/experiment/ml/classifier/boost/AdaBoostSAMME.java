@@ -29,6 +29,7 @@ package rapaio.experiment.ml.classifier.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.*;
+import rapaio.experiment.ml.classifier.ensemble.*;
 import rapaio.experiment.ml.classifier.tree.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
@@ -45,21 +46,23 @@ import java.util.function.BiConsumer;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintable {
+public class AdaBoostSAMME
+        extends AbstractClassifierModel<AdaBoostSAMME, ClassifierResult<AdaBoostSAMME>>
+        implements DefaultPrintable {
 
     private static final long serialVersionUID = -9154973036108114765L;
     private static final double delta_error = 10e-10;
 
     // parameters
 
-    private Classifier weak = CTree.newCART().withMaxDepth(6).withMinCount(6);
+    private ClassifierModel weak = CTree.newCART().withMaxDepth(6).withMinCount(6);
     private boolean stopOnError = false;
     private double shrinkage = 1.0;
 
     // model artifacts
 
     private List<Double> a;
-    private List<Classifier> h;
+    private List<ClassifierModel> h;
     private Var w;
     private double k;
 
@@ -105,13 +108,9 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
                 .withAllowMissingTargetValues(false);
     }
 
-    public AdaBoostSAMME withClassifier(Classifier weak) {
+    public AdaBoostSAMME withClassifier(ClassifierModel weak) {
         this.weak = weak;
         return this;
-    }
-
-    public AdaBoostSAMME withSampler(RowSampler sampler) {
-        return (AdaBoostSAMME) super.withSampler(sampler);
     }
 
     public AdaBoostSAMME withStopOnError(boolean stopOnError) {
@@ -152,12 +151,12 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
 
     private boolean learnRound(Frame df) {
 
-        Classifier hh = weak.newInstance();
+        ClassifierModel hh = weak.newInstance();
 
         Sample sample = sampler().nextSample(df, w);
         hh.fit(sample.df, sample.weights.copy(), targetNames());
 
-        ClassResult fit = hh.predict(df, true, false);
+        ClassifierResult fit = hh.predict(df, true, false);
 
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -194,10 +193,10 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassResult fit = ClassResult.build(this, df, withClasses, true);
+    protected ClassifierResult<AdaBoostSAMME> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult<AdaBoostSAMME> fit = ClassifierResult.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
-            ClassResult hp = h.get(i).predict(df, true, false);
+            ClassifierResult hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().getInt(j);
                 fit.firstDensity().setDouble(j, index, fit.firstDensity().getDouble(j, index) + a.get(i));
@@ -223,16 +222,6 @@ public class AdaBoostSAMME extends AbstractClassifier implements DefaultPrintabl
             fit.firstClasses().setInt(i, best);
         }
         return fit;
-    }
-
-    @Override
-    public AdaBoostSAMME withRuns(int runs) {
-        return (AdaBoostSAMME) super.withRuns(runs);
-    }
-
-    @Override
-    public AdaBoostSAMME withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
-        return (AdaBoostSAMME) super.withRunningHook(runningHook);
     }
 
     @Override

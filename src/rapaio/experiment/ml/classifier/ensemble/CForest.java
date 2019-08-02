@@ -59,7 +59,9 @@ import static java.util.stream.Collectors.toSet;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-public class CForest extends AbstractClassifier implements DefaultPrintable {
+public class CForest
+        extends AbstractClassifierModel<CForest, ClassifierResult<CForest>>
+        implements DefaultPrintable {
 
     private static final long serialVersionUID = -145958939373105497L;
 
@@ -68,12 +70,12 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     private boolean gainVIComp = false;
     private boolean permVIComp = false;
 
-    private Classifier c;
+    private ClassifierModel c;
     private BaggingMode baggingMode;
 
     // learning artifacts
     private double oobError = Double.NaN;
-    private List<Classifier> predictors = new ArrayList<>();
+    private List<ClassifierModel> predictors = new ArrayList<>();
     private Map<Integer, DVector> oobDensities;
     private Var oobFit;
     private Var oobTrueClass;
@@ -113,7 +115,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    public Classifier newInstance() {
+    public CForest newInstance() {
         return newInstanceDecoration(new CForest())
                 .withBaggingMode(baggingMode)
                 .withOobComp(oobComp)
@@ -157,7 +159,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         return (CForest) super.withSampler(sampler);
     }
 
-    public CForest withClassifier(Classifier c) {
+    public CForest withClassifier(ClassifierModel c) {
         this.c = c;
         return this;
     }
@@ -181,7 +183,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
                 .withAllowMissingTargetValues(false);
     }
 
-    public List<Classifier> getClassifiers() {
+    public List<ClassifierModel> getClassifiers() {
         return predictors;
     }
 
@@ -271,7 +273,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         if (runPoolSize() == 0) {
             predictors = new ArrayList<>();
             for (int i = 0; i < runs(); i++) {
-                Pair<Classifier, IntList> weak = buildWeakPredictor(df, weights);
+                Pair<ClassifierModel, IntList> weak = buildWeakPredictor(df, weights);
                 predictors.add(weak._1);
                 if (oobComp) {
                     oobCompute(df, weak);
@@ -298,12 +300,12 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
             if (runPoolSize() > 0) {
                 intStream = intStream.parallel();
             }
-            List<Pair<Classifier, IntList>> list = intStream
+            List<Pair<ClassifierModel, IntList>> list = intStream
                     .boxed()
                     .map(s -> buildWeakPredictor(df, weights))
                     .collect(Collectors.toList());
             for (int i = 0; i < list.size(); i++) {
-                Pair<Classifier, IntList> weak = list.get(i);
+                Pair<ClassifierModel, IntList> weak = list.get(i);
                 predictors.add(weak._1);
                 if (oobComp) {
                     oobCompute(df, weak);
@@ -325,15 +327,15 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         return true;
     }
 
-    private void permVICompute(Frame df, Pair<Classifier, IntList> weak) {
-        Classifier c = weak._1;
+    private void permVICompute(Frame df, Pair<ClassifierModel, IntList> weak) {
+        ClassifierModel c = weak._1;
         IntList oobIndexes = weak._2;
 
         // build oob data frame
         Frame oobFrame = df.mapRows(Mapping.wrap(oobIndexes));
 
         // build accuracy on oob data frame
-        ClassResult fit = c.predict(oobFrame);
+        ClassifierResult fit = c.predict(oobFrame);
         double refScore = Confusion.from(
                 oobFrame.rvar(firstTargetName()),
                 fit.firstClasses())
@@ -350,7 +352,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
 
             // compute accuracy on oob shuffled frame
 
-            ClassResult pfit = c.predict(oobReduced);
+            ClassifierResult pfit = c.predict(oobReduced);
             double acc = Confusion.from(
                     oobReduced.rvar(firstTargetName()),
                     pfit.firstClasses()
@@ -363,7 +365,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         }
     }
 
-    private void gainVICompute(Pair<Classifier, IntList> weak) {
+    private void gainVICompute(Pair<ClassifierModel, IntList> weak) {
         CTree weakTree = (CTree) weak._1;
         DVector scores = DVector.empty(false, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
@@ -386,7 +388,7 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         node.getChildren().forEach(child -> collectGainVI(child, dv));
     }
 
-    private void freqVICompute(Pair<Classifier, IntList> weak) {
+    private void freqVICompute(Pair<ClassifierModel, IntList> weak) {
         CTree weakTree = (CTree) weak._1;
         DVector scores = DVector.empty(false, inputNames());
         collectFreqVI(weakTree.getRoot(), scores);
@@ -409,12 +411,12 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         node.getChildren().forEach(child -> collectFreqVI(child, dv));
     }
 
-    private void oobCompute(Frame df, Pair<Classifier, IntList> weak) {
+    private void oobCompute(Frame df, Pair<ClassifierModel, IntList> weak) {
         double totalOobError;
         double totalOobInstances;
         IntList oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
-        ClassResult fit = weak._1.predict(oobTest);
+        ClassifierResult fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().getInt(j);
             oobDensities.get(oobIndexes.getInt(j)).increment(fitIndex, 1.0);
@@ -436,8 +438,8 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
         oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
     }
 
-    private Pair<Classifier, IntList> buildWeakPredictor(Frame df, Var weights) {
-        Classifier weak = c.newInstance();
+    private Pair<ClassifierModel, IntList> buildWeakPredictor(Frame df, Var weights) {
+        ClassifierModel weak = c.newInstance();
 
         Sample sample = sampler().nextSample(df, weights);
 
@@ -454,23 +456,13 @@ public class CForest extends AbstractClassifier implements DefaultPrintable {
     }
 
     @Override
-    protected ClassResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        ClassResult cp = ClassResult.build(this, df, true, true);
-        List<ClassResult> treeFits = predictors.stream().parallel()
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassifierResult cp = ClassifierResult.build(this, df, true, true);
+        List<ClassifierResult> treeFits = predictors.stream().parallel()
                 .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
         baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());
         return cp;
-    }
-
-    @Override
-    public CForest withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
-        return (CForest) super.withRunningHook(runningHook);
-    }
-
-    @Override
-    public CForest withPoolSize(int poolSize) {
-        return (CForest) super.withPoolSize(poolSize);
     }
 
     @Override

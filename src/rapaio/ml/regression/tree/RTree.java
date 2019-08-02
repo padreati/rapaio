@@ -38,6 +38,7 @@ import rapaio.ml.common.predicate.*;
 import rapaio.ml.regression.*;
 import rapaio.ml.regression.tree.rtree.*;
 import rapaio.printer.*;
+import rapaio.printer.format.*;
 import rapaio.util.*;
 
 import java.util.Arrays;
@@ -59,7 +60,8 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegression implements GBTRtree, DefaultPrintable {
+public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree>>
+        implements GBTRtree<RTree, RegressionResult<RTree>>, Printable {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
@@ -104,13 +106,16 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         DEFAULT_TEST_MAP = new HashMap<>();
         DEFAULT_TEST_MAP.put(VType.DOUBLE, RTreeTest.NumericBinary);
         DEFAULT_TEST_MAP.put(VType.INT, RTreeTest.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.LONG, RTreeTest.NumericBinary);
         DEFAULT_TEST_MAP.put(VType.BINARY, RTreeTest.NumericBinary);
         DEFAULT_TEST_MAP.put(VType.NOMINAL, RTreeTest.NominalFull);
+        DEFAULT_TEST_MAP.put(VType.TEXT, RTreeTest.Ignore);
     }
 
     private int minCount = 1;
     private int maxDepth = Integer.MAX_VALUE;
     private int maxSize = Integer.MAX_VALUE;
+    private double minScore = 1e-320;
 
     private SortedMap<VType, RTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
 
@@ -131,6 +136,7 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     public RTree newInstance() {
         RTree newInstance = newInstanceDecoration(new RTree())
                 .withMinCount(minCount)
+                .withMinScore(minScore)
                 .withMaxDepth(maxDepth)
                 .withMaxSize(maxSize)
                 .withPurityFunction(function)
@@ -152,9 +158,10 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         StringBuilder sb = new StringBuilder();
         sb.append("TreeClassifier {");
         sb.append("  minCount=").append(minCount).append(",\n");
+        sb.append("  minScore=").append(Format.floatFlex(minScore)).append(",\n");
         sb.append("  maxDepth=").append(maxDepth).append(",\n");
         sb.append("  maxSize=").append(maxSize).append(",\n");
-        for(Map.Entry<VType, RTreeTest> e : testMap.entrySet()) {
+        for (Map.Entry<VType, RTreeTest> e : testMap.entrySet()) {
             sb.append("  test[").append(e.getKey().code()).append("]=")
                     .append(e.getValue().name()).append(",\n");
         }
@@ -190,6 +197,15 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         return this;
     }
 
+    public double minScore() {
+        return minScore;
+    }
+
+    public RTree withMinScore(double minScore) {
+        this.minScore = minScore;
+        return this;
+    }
+
     public int maxDepth() {
         return maxDepth;
     }
@@ -212,8 +228,8 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
         return testMap;
     }
 
-    public RTree withNoTests() {
-        this.testMap.clear();
+    public RTree withTests(Map<VType, RTreeTest> testMap) {
+        this.testMap = new TreeMap<>(testMap);
         return this;
     }
 
@@ -359,7 +375,9 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
             }
         }
 
-        if (bestCandidate == null || bestCandidate.getGroupNames().isEmpty()) {
+        if (bestCandidate == null
+                || bestCandidate.getGroupNames().isEmpty()
+                || bestCandidate.getScore() <= minScore) {
             return;
         }
         node.setBestCandidate(bestCandidate);
@@ -367,8 +385,8 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     }
 
     @Override
-    protected RegResult corePredict(Frame df, boolean withResiduals) {
-        RegResult pred = RegResult.build(this, df, withResiduals);
+    protected RegressionResult<RTree> corePredict(Frame df, boolean withResiduals) {
+        RegressionResult<RTree> pred = RegressionResult.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);
@@ -381,7 +399,12 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("\n > ").append(fullName()).append("\n");
+        sb.append("\n > ").append(fullName());
+        sb.append("\n model fitted: ").append(hasLearned).append("\n");
+
+        if (!hasLearned) {
+            return sb.toString();
+        }
 
         sb.append("\n");
         sb.append("description:\n");
@@ -389,6 +412,16 @@ public class RTree extends AbstractRegression implements GBTRtree, DefaultPrinta
 
         buildSummary(sb, root, 0);
         return sb.toString();
+    }
+
+    @Override
+    public String content() {
+        return summary();
+    }
+
+    @Override
+    public String fullContent() {
+        return summary();
     }
 
     private void buildSummary(StringBuilder sb, RTreeNode node, int level) {

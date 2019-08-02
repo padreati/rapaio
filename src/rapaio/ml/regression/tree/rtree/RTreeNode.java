@@ -27,12 +27,9 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.data.*;
+import rapaio.experiment.ml.regression.boost.gbt.*;
+import rapaio.ml.common.predicate.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
