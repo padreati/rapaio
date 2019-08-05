@@ -44,7 +44,7 @@ import java.util.function.BiFunction;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface ClassifierModel<M extends ClassifierModel, R extends ClassifierResult<M>> extends Printable, Serializable {
+public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> extends Printable, Serializable {
 
     /**
      * Creates a new classifier instance with the same parameters as the original.

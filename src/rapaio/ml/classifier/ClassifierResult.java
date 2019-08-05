@@ -84,12 +84,13 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable, D
 
         for (String target : model.targetNames()) {
             targetNames.add(target);
-            dictionaries.put(target, model.targetLevels(target));
+            List<String> targetLevels = new ArrayList<>(model.targetLevels(target));
+            dictionaries.put(target, targetLevels);
             if (hasClasses) {
-                classes.put(target, VarNominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
+                classes.put(target, VarNominal.empty(df.rowCount(), targetLevels).withName(target));
             }
             if (hasDensities) {
-                densities.put(target, SolidFrame.matrix(df.rowCount(), model.targetLevels(target)));
+                densities.put(target, SolidFrame.matrix(df.rowCount(), targetLevels));
             }
         }
     }

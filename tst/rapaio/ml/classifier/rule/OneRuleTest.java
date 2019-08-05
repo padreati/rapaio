@@ -89,19 +89,19 @@ public class OneRuleTest {
         pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            assertTrue(labels[i].equals(pred.firstClasses().getLabel(i)));
+            assertEquals(labels[i], pred.firstClasses().getLabel(i));
         }
 
         oneRule.withMinCount(4);
         oneRule.fit(df, "class");
         pred = oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
-            assertTrue(pred.firstClasses().getLabel(i).equals(pred.firstClasses().getLabel(0)));
+            assertEquals(pred.firstClasses().getLabel(i), pred.firstClasses().getLabel(0));
         }
     }
 
     @Test
-    public void testSummary() throws IOException, URISyntaxException {
+    public void testSummary() throws IOException {
         Frame df1 = Datasets.loadIrisDataset();
         OneRule oneRule1 = new OneRule();
         oneRule1.fit(df1, "class");
@@ -118,7 +118,7 @@ public class OneRuleTest {
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
-                "Learned model:\n" +
+                "Model fitted: true\n" +
                 "input vars: \n" +
                 "0. sepal-length : DOUBLE  | \n" +
                 "1.  sepal-width : DOUBLE  | \n" +
@@ -134,15 +134,11 @@ public class OneRuleTest {
                 "> NumericRule {min=4.75, max=Infinity, class=virginica, errors=6, total=55, acc=0.8909091 }\n" +
                 "\n", oneRule1.summary());
 
-        oneRule1.printSummary();
-
         Frame df2 = Datasets.loadMushrooms();
 
         RandomSource.setSeed(1);
         OneRule oneRule2 = new OneRule();
         oneRule2.fit(df2, "classes");
-
-        oneRule2.printSummary();
 
         assertEquals("OneRule model\n" +
                 "================\n" +
@@ -155,7 +151,7 @@ public class OneRuleTest {
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
-                "Learned model:\n" +
+                "Model fitted: true\n" +
                 "input vars: \n" +
                 " 0.                cap-shape : NOMINAL  |  6.             gill-spacing : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
                 " 1.              cap-surface : NOMINAL  |  7.                gill-size : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
@@ -179,10 +175,25 @@ public class OneRuleTest {
                 "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n" +
                 "\n", oneRule2.summary());
+
+        assertEquals(oneRule2.content(), oneRule2.summary());
+        assertEquals(oneRule2.fullContent(), oneRule2.summary());
+
+        assertEquals("OneRule (minCount=6), fitted=true, rule set: RuleSet {var=odor, acc=0.985229}, " +
+                "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +
+                "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
+                "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
+                "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +
+                "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659864}, " +
+                "NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}, " +
+                "NominalRule {value=c, class=p, errors=0, total=192, acc=1}, " +
+                "NominalRule {value=y, class=p, errors=0, total=576, acc=1}, " +
+                "NominalRule {value=s, class=p, errors=0, total=576, acc=1}, " +
+                "NominalRule {value=m, class=p, errors=0, total=36, acc=1}", oneRule2.toString());
     }
 
     @Test
-    public void testFit() throws IOException, URISyntaxException {
+    public void testFit() throws IOException {
 
         Frame df1 = Datasets.loadMushrooms();
         OneRule oneRule1 = new OneRule();

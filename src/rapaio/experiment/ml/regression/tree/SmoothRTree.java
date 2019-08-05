@@ -29,7 +29,7 @@ package rapaio.experiment.ml.regression.tree;
 
 import rapaio.data.*;
 import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.loss.*;
+import rapaio.ml.loss.*;
 import rapaio.experiment.ml.regression.tree.srt.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;

@@ -25,16 +25,27 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree;
+package rapaio.data.ops;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.data.*;
-import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.ml.regression.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/12/19.
  */
-public interface GBTRtree<M extends RegressionModel<M, R>, R extends RegressionResult<M>> extends RegressionModel<M, R> {
+public interface VarOp<T extends Var> {
 
-    void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
+    T apply(Double2DoubleFunction fun);
+
+    VarDouble capply(Double2DoubleFunction fun);
+
+    double sum();
+
+    T plus(double a);
+
+    T plus(Var x);
+
+    T mult(double a);
+
+    int[] sortedCompleteRows(boolean asc);
 }

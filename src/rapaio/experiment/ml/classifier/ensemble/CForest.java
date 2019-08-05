@@ -456,8 +456,8 @@ public class CForest
     }
 
     @Override
-    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        ClassifierResult cp = ClassifierResult.build(this, df, true, true);
+    protected ClassifierResult<CForest> corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassifierResult<CForest> cp = ClassifierResult.build(this, df, true, true);
         List<ClassifierResult> treeFits = predictors.stream().parallel()
                 .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());

@@ -42,7 +42,7 @@ import java.util.function.BiFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public interface RegressionModel<M extends RegressionModel, R extends RegressionResult<M>> extends Printable, Serializable {
+public interface RegressionModel<M extends RegressionModel<M, R>, R extends RegressionResult<M>> extends Printable, Serializable {
     /**
      * Creates a new regression instance with the same parameters as the original.
      * The fitted model and other artifacts are not replicated.

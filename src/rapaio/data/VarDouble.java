@@ -28,8 +28,8 @@
 package rapaio.data;
 
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import rapaio.data.ops.*;
 import rapaio.printer.format.*;
 
 import java.io.IOException;
@@ -502,12 +502,12 @@ public final class VarDouble extends AbstractVar {
 
     @Override
     public void setLong(int row, long value) {
-        data[row] = Double.valueOf(String.valueOf(value));
+        data[row] = Double.parseDouble(String.valueOf(value));
     }
 
     @Override
     public void addLong(long value) {
-        addDouble(Double.valueOf(String.valueOf(value)));
+        addDouble(Double.parseDouble(String.valueOf(value)));
     }
 
     @Override
@@ -515,66 +515,10 @@ public final class VarDouble extends AbstractVar {
         return VarDouble.empty(rows);
     }
 
-    ///////////////////// BEGIN VARIOUS OPERATIONS ///////////////////////////////////////
-
     @Override
-    public VarDouble apply(Double2DoubleFunction fun) {
-        for (int i = 0; i < rows; i++) {
-            data[i] = fun.applyAsDouble(data[i]);
-        }
-        return this;
+    public VarOp<VarDouble> op() {
+        return new DoubleVarOp(this);
     }
-
-    @Override
-    public VarDouble capply(Double2DoubleFunction fun) {
-        double[] copy = new double[rows];
-        for (int i = 0; i < rows; i++) {
-            copy[i] = fun.applyAsDouble(data[i]);
-        }
-        return VarDouble.wrap(copy).withName(name());
-    }
-
-    @Override
-    public double sum() {
-        double sum = 0.0;
-        for (int i = 0; i < rows; i++) {
-            if (Double.isNaN(data[i])) {
-                continue;
-            }
-            sum += data[i];
-        }
-        return sum;
-    }
-
-    @Override
-    public VarDouble plus(double a) {
-        for (int i = 0; i < rows; i++) {
-            data[i] += a;
-        }
-        return this;
-    }
-
-    @Override
-    public VarDouble plus(Var x) {
-        if (x instanceof VarDouble) {
-            VarDouble xd = (VarDouble) x;
-            double[] xdarray = xd.array();
-            for (int i = 0; i < rows; i++) {
-                data[i] += xdarray[i];
-            }
-        }
-        return this;
-    }
-
-    @Override
-    public VarDouble mult(double a) {
-        for (int i = 0; i < rows; i++) {
-            data[i] /= a;
-        }
-        return this;
-    }
-
-    ///////////////////// END VARIOUS OPERATIONS /////////////////////////////////////////
 
     @Override
     public VarDouble copy() {

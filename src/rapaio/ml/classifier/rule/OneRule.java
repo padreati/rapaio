@@ -45,7 +45,8 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifierModel implements Printable {
+public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<OneRule>>
+        implements Printable {
 
     private static final long serialVersionUID = 6220103690711818091L;
 
@@ -108,8 +109,8 @@ public class OneRule extends AbstractClassifierModel implements Printable {
     }
 
     @Override
-    protected ClassifierResult corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        ClassifierResult pred = ClassifierResult.build(this, test, withClasses, withDensities);
+    protected ClassifierResult<OneRule> corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
+        ClassifierResult<OneRule> pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {
@@ -274,7 +275,15 @@ public class OneRule extends AbstractClassifierModel implements Printable {
 
     @Override
     public String toString() {
-        return super.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName()).append(", fitted=").append(hasLearned());
+        if(hasLearned()) {
+            sb.append(", rule set: ").append(bestRuleSet.toString());
+            for(Rule rule : bestRuleSet.getRules()) {
+                sb.append(", ").append(rule.toString());
+            }
+        }
+        return sb.toString();
     }
 
     @Override
@@ -289,10 +298,9 @@ public class OneRule extends AbstractClassifierModel implements Printable {
         sb.append("Capabilities:\n");
         sb.append(capabilities().toString()).append("\n");
 
-        sb.append("Learned model:\n");
+        sb.append("Model fitted: ").append(hasLearned()).append("\n");
 
         if (!hasLearned()) {
-            sb.append("Learning phase not called\n\n");
             return sb.toString();
         }
 
@@ -308,13 +316,12 @@ public class OneRule extends AbstractClassifierModel implements Printable {
 
     @Override
     public String content() {
-        return null;
+        return summary();
     }
 
     @Override
     public String fullContent() {
-        return null;
+        return summary();
     }
-
 }
 

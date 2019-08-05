@@ -27,7 +27,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.from(x.rowCount(), row -> unif.sampleNext());
 
         // normalize w
-        w.mult(1.0 / w.sum());
+        w.op().mult(1.0 / w.op().sum());
 
         WeightedOnlineStat left = WeightedOnlineStat.empty();
         for (int i = 0; i < x.rowCount(); i++) {
@@ -52,7 +52,7 @@ public class WeightedOnlineStatTest {
         VarDouble w = VarDouble.fill(100, 1);
 
         VarDouble wnorm = w.copy();
-        wnorm.mult(1.0 / wnorm.sum());
+        wnorm.op().mult(1.0 / wnorm.op().sum());
 
         WeightedOnlineStat wstat = WeightedOnlineStat.empty();
         WeightedOnlineStat wnstat = WeightedOnlineStat.empty();

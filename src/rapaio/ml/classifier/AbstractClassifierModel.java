@@ -46,7 +46,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class AbstractClassifierModel<M extends ClassifierModel, R extends ClassifierResult<M>>
+public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>>
         implements ClassifierModel<M, R> {
 
     private static final long serialVersionUID = -6866948033065091047L;
@@ -69,7 +69,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     private Map<String, List<String>> targetLevels;
 
     public M newInstanceDecoration(M classifier) {
-        return (M) classifier
+        return classifier
                 .withSampler(sampler)
                 .withPoolSize(poolSize)
                 .withRuns(runs)
@@ -85,7 +85,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     @Override
     public M withSampler(RowSampler sampler) {
         this.sampler = sampler;
-        return (M)this;
+        return (M) this;
     }
 
     @Override
@@ -96,7 +96,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     @Override
     public M withPoolSize(int poolSize) {
         this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
-        return (M)this;
+        return (M) this;
     }
 
     @Override
@@ -107,7 +107,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     @Override
     public M withRuns(int runs) {
         this.runs = runs;
-        return (M)this;
+        return (M) this;
     }
 
     @Override
@@ -118,7 +118,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     @Override
     public M withRunningHook(BiConsumer<M, Integer> runningHook) {
         this.runningHook = runningHook;
-        return (M)this;
+        return (M) this;
     }
 
     public BiFunction<M, Integer, Boolean> stoppingHook() {
@@ -127,7 +127,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
 
     public M withStoppingHook(BiFunction<M, Integer, Boolean> stoppingHook) {
         this.stoppingHook = stoppingHook;
-        return (M)this;
+        return (M) this;
     }
 
     @Override
@@ -169,7 +169,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     public final M fit(Frame df, Var weights, String... targetVars) {
         FitSetup setup = prepareFit(df, weights, targetVars);
         learned = coreFit(setup.df, setup.w);
-        return (M)this;
+        return (M) this;
     }
 
     /**

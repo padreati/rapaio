@@ -28,12 +28,11 @@
 package rapaio.experiment.ml.regression.boost;
 
 import rapaio.data.*;
-import rapaio.data.sample.*;
 import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.common.*;
 import rapaio.ml.regression.*;
 import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.loss.*;
+import rapaio.ml.loss.*;
 import rapaio.ml.regression.simple.*;
 import rapaio.ml.regression.tree.*;
 import rapaio.printer.*;

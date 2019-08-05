@@ -29,6 +29,7 @@ package rapaio.data;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.*;
+import rapaio.data.ops.*;
 import rapaio.data.stream.*;
 import rapaio.printer.*;
 
@@ -41,7 +42,7 @@ import java.util.Objects;
  *
  * @author Aurelian Tutuianu
  */
-public interface Var extends VarOps, Serializable, Printable {
+public interface Var extends Serializable, Printable {
 
     /**
      * @return name of the variable
@@ -358,6 +359,8 @@ public interface Var extends VarOps, Serializable, Printable {
                 return RowComparators.labelComparator(this, asc);
         }
     }
+
+    VarOp<? extends Var> op();
 
     /**
      * Tests if two variables has identical content, it does not matter the implementation.

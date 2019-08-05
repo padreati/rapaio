@@ -30,7 +30,7 @@ package rapaio.experiment.ml.regression.tree.nbrtree;
 import rapaio.core.*;
 import rapaio.data.*;
 import rapaio.data.unique.*;
-import rapaio.experiment.ml.regression.loss.*;
+import rapaio.ml.loss.*;
 import rapaio.math.linear.*;
 import rapaio.ml.regression.*;
 import rapaio.ml.regression.linear.*;

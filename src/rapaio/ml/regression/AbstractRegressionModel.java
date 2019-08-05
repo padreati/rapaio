@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public abstract class AbstractRegressionModel<M extends AbstractRegressionModel, R extends RegressionResult<M>>
+public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult<M>>
         implements RegressionModel<M, R> {
 
     private static final long serialVersionUID = 5544999078321108408L;
@@ -68,7 +68,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel,
     protected VType[] targetTypes;
 
     public M newInstanceDecoration(M regression) {
-        return (M) regression
+        return regression
                 .withSampler(sampler)
                 .withPoolSize(poolSize)
                 .withRuns(runs)

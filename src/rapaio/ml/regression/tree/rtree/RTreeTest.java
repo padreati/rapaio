@@ -103,7 +103,7 @@ public interface RTreeTest extends Serializable {
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
 
-            int[] rows = df.rvar(testIndex).sortedCompleteRows(true);
+            int[] rows = df.rvar(testIndex).op().sortedCompleteRows(true);
 
             double[] leftWeight = new double[rows.length];
             double[] leftVar = new double[rows.length];

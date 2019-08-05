@@ -211,7 +211,8 @@ public class CEvaluation {
         System.out.println(String.format("Average accuracy: %.6f", total / count));
     }
 
-    public static <M extends ClassifierModel, R extends ClassifierResult<M>> PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, ClassifierModel<M, R> c, int runs, int step) {
+    public static <M extends ClassifierModel<M, R>, R extends ClassifierResult<M>>
+    PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, ClassifierModel<M, R> c, int runs, int step) {
 
         BiConsumer<M, Integer> oldHook = c.runningHook();
         VarInt r = VarInt.empty().withName("runs");

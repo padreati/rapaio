@@ -141,6 +141,9 @@ nto nominal categories based on quantile intervals
 * Simple: RandomValueRegressor
 * LinearRegression
 * RidgeRegression
+* Tree: CART (no pruning)
+* Tree: C45 (no pruning)
+* Tree: DecisionStump
 
 
 Experminental Stage Features
@@ -193,9 +196,6 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Regression**
 
-* Tree: CART (no pruning)
-* Tree: C45 (no pruning)
-* Tree: DecisionStump
 * Boost: GBT (Gradient Boosting Tree) Regressor
 * NNet: MultiLayer Perceptron Regressor
 

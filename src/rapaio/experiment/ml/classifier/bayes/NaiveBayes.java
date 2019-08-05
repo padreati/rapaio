@@ -60,27 +60,11 @@ public class NaiveBayes
     private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());
 
     // algorithm parameters
-    public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
-        Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.fromWeights(false, df.rvar(nb.firstTargetName()), weights);
-        dv.normalize();
-        for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
-            priors.put(nb.firstTargetLevels().get(i), dv.get(i));
-        }
-        return priors;
-    });
-    public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
-        Map<String, Double> priors = new HashMap<>();
-        double p = 1.0 / nb.firstTargetLevels().size();
-        for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
-            priors.put(nb.firstTargetLevels().get(i), p);
-        }
-        return priors;
-    });
+
     private double laplaceSmoother = 1;
-    private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
+    private PriorSupplier priorSupplier = PriorSupplier.PRIOR_MLE;
     private Map<String, Double> priors;
-    //private NaiveBayesData data = new NaiveBayesData(new MultinomialPmf(), new GaussianPdf(), new MultinomialPmf());
+
     private NumericData numData = new NumericData(new GaussianPdf());
     private NominalData nomData = new NominalData(new MultinomialPmf());
     private BinaryData binData = new BinaryData(new MultinomialPmf());
@@ -140,7 +124,7 @@ public class NaiveBayes
         return laplaceSmoother;
     }
 
-    public NaiveBayes withPriorSupplier(Tag<PriorSupplier> priorSupplier) {
+    public NaiveBayes withPriorSupplier(PriorSupplier priorSupplier) {
         this.priorSupplier = priorSupplier;
         return this;
     }
@@ -150,7 +134,7 @@ public class NaiveBayes
 
         // build priors
 
-        priors = PRIORS_MLE.get().learnPriors(df, weights, this);
+        priors = priorSupplier.learnPriors(df, weights, this);
 
         // build conditional probabilities
 
@@ -263,7 +247,4 @@ public class NaiveBayes
         return sb.toString();
     }
 
-    interface PriorSupplier extends Serializable {
-        Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb);
-    }
 }

@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.loss.*;
+import rapaio.ml.loss.*;
 import rapaio.experiment.ml.regression.tree.*;
 import rapaio.ml.common.*;
 import rapaio.ml.common.predicate.*;
@@ -344,7 +344,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     private void learnNode(RTreeNode node, Frame df, Var weights) {
 
         node.setLeaf(true);
-        node.setValue(regressionLoss.computeConstantWeightedMinimum(df, firstTargetName(), weights));
+        node.setValue(regressionLoss.computeConstantMinimizer(df, firstTargetName(), weights));
         node.setWeight(Sum.of(weights).value());
 
         if (node.weight() == 0) {

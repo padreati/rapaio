@@ -36,7 +36,7 @@ import rapaio.printer.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/19.
  */
-public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel>
+public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel<M>>
         extends AbstractRegressionModel<M, LinearRegressionResult<M>> implements Printable {
 
     private static final long serialVersionUID = 6171912601688633921L;
@@ -97,7 +97,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     protected LinearRegressionResult<M> corePredict(Frame df, boolean withResiduals) {
-        LinearRegressionResult<M> rp = new LinearRegressionResult(this, df, withResiduals);
+        LinearRegressionResult<M> rp = new LinearRegressionResult<>((M)this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             for (int j = 0; j < rp.prediction(target).rowCount(); j++) {
