@@ -145,6 +145,11 @@ nto nominal categories based on quantile intervals
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 
+**Evaluation: metrics**
+
+* Confusion Matrix
+
+
 
 Experminental Stage Features
 ============================
@@ -161,11 +166,8 @@ If there are no notes it means the feature is considered to be fully implemented
 * DTable
 * Distance Matrix
 
+**Evaluation: metrics**
 
-
-**Evaluation**
-
-* Confusion Matrix
 * Receiver Operator Characteristic - ROC curves and ROC Area
 * Root Mean Square Error
 * Mean Absolute Error

@@ -34,7 +34,7 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.data.filter.frame.*;
 import rapaio.ml.classifier.*;
-import rapaio.ml.eval.*;
+import rapaio.ml.eval.metric.*;
 import rapaio.ml.regression.*;
 import rapaio.printer.*;
 

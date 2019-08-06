@@ -39,7 +39,7 @@ import rapaio.data.sample.*;
 import rapaio.experiment.ml.classifier.tree.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
-import rapaio.ml.eval.*;
+import rapaio.ml.eval.metric.*;
 import rapaio.printer.*;
 import rapaio.util.*;
 
@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

@@ -48,7 +48,7 @@ import rapaio.graphics.plot.plotcomp.Histogram2D;
 import rapaio.graphics.plot.plotcomp.Lines;
 import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.ROCCurve;
-import rapaio.ml.eval.ROC;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.util.func.SFunction;
 
 import java.awt.*;

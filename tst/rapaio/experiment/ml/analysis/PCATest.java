@@ -35,7 +35,7 @@ import rapaio.io.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
 import rapaio.ml.classifier.*;
-import rapaio.ml.eval.*;
+import rapaio.ml.eval.metric.*;
 
 /**
  * Principal component analysis decomposition test

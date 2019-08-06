@@ -30,10 +30,9 @@ import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.boost.*;
-import rapaio.ml.classifier.ClassifierModel;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.eval.Confusion;
+import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 

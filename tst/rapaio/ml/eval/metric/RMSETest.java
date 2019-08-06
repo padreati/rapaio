@@ -1,10 +1,11 @@
-package rapaio.ml.eval;
+package rapaio.ml.eval.metric;
 
 import org.junit.Test;
 import rapaio.core.*;
 import rapaio.core.distributions.*;
 import rapaio.data.*;
 import rapaio.datasets.*;
+import rapaio.ml.eval.metric.*;
 import rapaio.ml.regression.linear.*;
 
 import java.io.IOException;

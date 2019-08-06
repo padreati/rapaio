@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.ml.eval.metric;
 
 import rapaio.data.*;
 import rapaio.data.filter.var.*;

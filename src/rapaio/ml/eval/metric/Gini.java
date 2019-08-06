@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.ml.eval.metric;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.*;

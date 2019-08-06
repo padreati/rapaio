@@ -35,7 +35,7 @@ import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.plotcomp.*;
-import rapaio.ml.eval.ROC;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.util.func.SFunction;
 
 import java.awt.*;

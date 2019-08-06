@@ -32,7 +32,7 @@ import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
-import rapaio.ml.eval.ROC;
+import rapaio.ml.eval.metric.ROC;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

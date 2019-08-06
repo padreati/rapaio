@@ -34,12 +34,10 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.data.filter.frame.*;
 import rapaio.ml.classifier.*;
-import rapaio.ml.eval.*;
+import rapaio.ml.eval.metric.*;
 import rapaio.printer.*;
-import rapaio.printer.format.*;
 import rapaio.printer.idea.*;
 import rapaio.sys.*;
-import rapaio.util.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

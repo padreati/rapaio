@@ -33,7 +33,7 @@ import rapaio.data.filter.frame.FRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.ml.eval.Confusion;
+import rapaio.ml.eval.metric.Confusion;
 
 import java.io.IOException;
 

@@ -201,6 +201,24 @@ public interface RM extends Serializable, DefaultPrintable {
     }
 
     /**
+     * Trace of the matrix, if the matrix is square. The trace of a squared
+     * matrix is the sum of the elemenets from the main diagonal.
+     * Otherwise returns an exception.
+     *
+     * @return
+     */
+    default double trace() {
+        if(rowCount()!=colCount()) {
+            throw new IllegalArgumentException("Matrix is not squared, trace of the matrix is not defined.");
+        }
+        double sum = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            sum += get(i, i);
+        }
+        return sum;
+    }
+
+    /**
      * Matrix rank
      *
      * @return effective numerical rank, obtained from SVD.

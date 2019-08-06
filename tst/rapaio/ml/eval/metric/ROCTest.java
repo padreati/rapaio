@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.ml.eval.metric;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,6 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
+import rapaio.ml.eval.metric.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

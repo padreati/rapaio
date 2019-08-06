@@ -30,7 +30,7 @@ package rapaio.experiment.ml.classifier.meta;
 import rapaio.data.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
-import rapaio.ml.eval.*;
+import rapaio.ml.eval.metric.*;
 import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.sys.*;

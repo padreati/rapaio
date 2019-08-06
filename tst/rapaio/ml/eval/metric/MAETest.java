@@ -1,9 +1,10 @@
-package rapaio.ml.eval;
+package rapaio.ml.eval.metric;
 
 import org.junit.Test;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.ml.eval.metric.*;
 
 import static org.junit.Assert.assertEquals;
 

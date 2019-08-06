@@ -34,6 +34,7 @@ import rapaio.data.stream.*;
 import rapaio.printer.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -193,6 +194,17 @@ public interface Var extends Serializable, Printable {
      * @param value text label to be added at the end of the variable
      */
     void addLabel(String value);
+
+    /**
+     * Adds nominal label values to the last positions of the variables,
+     * updates levels if required. This operation calls repeatedly
+     * {@link #addLabel(String)}.
+     */
+    default void addLabels(Iterable<String> values) {
+        for(String value : values) {
+            addLabel(value);
+        }
+    }
 
     /**
      * Returns the term levels used by the nominal values.
