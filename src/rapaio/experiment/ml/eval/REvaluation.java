@@ -50,64 +50,6 @@ import static rapaio.sys.WS.*;
 @Deprecated
 public class REvaluation {
 
-    public static double cv(Frame df, String targetVarName, RegressionModel c, int folds, RMetric metric) {
-        print("\nCrossValidation with " + folds + " folds for model: "+c.fullName()+"\n");
-
-        List<IntList> strata = buildFolds(df, folds);
-        VarDouble error = VarDouble.empty();
-
-        for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.empty();
-            Mapping testMapping = Mapping.empty();
-            for (int j = 0; j < folds; j++) {
-                if (j == i) {
-                    testMapping.addAll(strata.get(j));
-                } else {
-                    trainMapping.addAll(strata.get(j));
-                }
-            }
-            Frame train = MappedFrame.byRow(df, trainMapping);
-            Frame test = MappedFrame.byRow(df, testMapping);
-
-            RegressionModel cc = c.newInstance();
-            cc.fit(train, targetVarName);
-            RegressionResult cp = cc.predict(test);
-
-            error.addDouble(metric.compute(test.rvar(targetVarName), cp.firstPrediction()));
-            print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
-                    error.getDouble(error.rowCount() - 1),
-                    Mean.of(error).value(),
-                    Variance.of(error).sdValue()));
-        }
-
-        double finalError = Mean.of(error).value();
-        print("==============\n");
-        print(String.format("Mean accuracy:%.6f\n", finalError));
-        print(String.format("SE: %.6f     (Standard error)\n", Variance.of(error).sdValue()));
-        return finalError;
-    }
-
-    private static List<IntList> buildFolds(Frame df, int folds) {
-        IntList shuffle = new IntArrayList();
-        for (int i = 0; i < df.rowCount(); i++) {
-            shuffle.add(i);
-        }
-        Collections.shuffle(shuffle, RandomSource.getRandom());
-        List<IntList> foldMap = new ArrayList<>();
-        for (int i = 0; i < folds; i++) {
-            foldMap.add(new IntArrayList());
-        }
-        int fold = 0;
-        for (int next : shuffle) {
-            foldMap.get(fold).add(next);
-            fold++;
-            if (fold == folds) {
-                fold = 0;
-            }
-        }
-        return foldMap;
-    }
-
     public static void multiCv(Frame df, String classColName, List<ClassifierModel> classifierModels, int folds) {
         print("CrossValidation with " + folds + " folds\n");
         df = df.fapply(FShuffle.filter());

@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.ml.eval.metric;
+package rapaio.experiment.ml.eval.metric;
 
 import rapaio.data.*;
 import rapaio.printer.*;

@@ -4,7 +4,7 @@ import org.junit.Test;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.eval.metric.*;
+import rapaio.experiment.ml.eval.metric.*;
 
 import static org.junit.Assert.assertEquals;
 

@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.ml.eval.metric.*;
+import rapaio.experiment.ml.eval.metric.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
