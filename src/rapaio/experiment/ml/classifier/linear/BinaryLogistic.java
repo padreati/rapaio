@@ -27,19 +27,15 @@
 
 package rapaio.experiment.ml.classifier.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VType;
-import rapaio.experiment.math.optimization.IRLSOptimizer;
-import rapaio.ml.classifier.AbstractClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.common.Capabilities;
+import rapaio.data.*;
+import rapaio.experiment.math.optimization.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
 import rapaio.printer.*;
-import rapaio.util.func.SFunction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -125,8 +121,8 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return logitReg(inst);
     }
 
-    private final SFunction<Var, Double> logitF = this::logitReg;
-    private final SFunction<Var, Double> logitFD = var -> {
+    private final Function<Var, Double> logitF = this::logitReg;
+    private final Function<Var, Double> logitFD = var -> {
         double y = logitReg(var);
         return y * (1 - y);
     };

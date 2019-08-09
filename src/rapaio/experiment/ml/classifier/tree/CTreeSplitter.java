@@ -29,14 +29,10 @@ package rapaio.experiment.ml.classifier.tree;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.util.Pair;
-import rapaio.util.Tagged;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.ml.common.predicate.*;
+import rapaio.util.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +47,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface CTreeSplitter extends Tagged, Serializable {
+public interface CTreeSplitter extends Serializable {
+
+    String name();
 
     /**
      * Splits the initial data set into pairs of frame and weights according with the

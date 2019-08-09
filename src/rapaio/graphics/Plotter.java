@@ -27,31 +27,17 @@
 
 package rapaio.graphics;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.empirical.KFunc;
+import rapaio.core.distributions.*;
+import rapaio.core.distributions.empirical.*;
 import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
+import rapaio.data.*;
+import rapaio.experiment.ml.eval.metric.*;
 import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.BarChart;
-import rapaio.graphics.plot.BoxPlot;
-import rapaio.graphics.plot.GridLayer;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.QQPlot;
-import rapaio.graphics.plot.plotcomp.ABLine;
-import rapaio.graphics.plot.plotcomp.DVLines;
-import rapaio.graphics.plot.plotcomp.DensityLine;
-import rapaio.graphics.plot.plotcomp.FunctionLine;
-import rapaio.graphics.plot.plotcomp.Histogram;
-import rapaio.graphics.plot.plotcomp.Histogram2D;
-import rapaio.graphics.plot.plotcomp.Lines;
-import rapaio.graphics.plot.plotcomp.Points;
-import rapaio.graphics.plot.plotcomp.ROCCurve;
-import rapaio.experiment.ml.eval.metric.ROC;
-import rapaio.util.func.SFunction;
+import rapaio.graphics.plot.*;
+import rapaio.graphics.plot.plotcomp.*;
 
 import java.awt.*;
+import java.util.function.Function;
 
 public final class Plotter {
 
@@ -111,7 +97,7 @@ public final class Plotter {
         return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
     }
 
-    public static Plot funLine(SFunction<Double, Double> f, GOption... opts) {
+    public static Plot funLine(Function<Double, Double> f, GOption... opts) {
         return plot().add(new FunctionLine(f, opts));
     }
 

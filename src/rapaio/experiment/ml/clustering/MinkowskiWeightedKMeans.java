@@ -57,7 +57,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
 
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
-    private Tag<KMeansInitMethod> init = KMeansInitMethod.FORGY;
+    private KMeansInitMethod init = KMeansInitMethod.Forgy;
     private BiConsumer<MinkowskiWeightedKMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;
@@ -89,7 +89,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
         return this;
     }
 
-    public MinkowskiWeightedKMeans withInit(Tag<KMeansInitMethod> init) {
+    public MinkowskiWeightedKMeans withInit(KMeansInitMethod init) {
         this.init = init;
         return this;
     }
@@ -127,7 +127,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
             }
         }
 
-        Frame bestCentroids = init.get().init(df, inputs, k);
+        Frame bestCentroids = init.init(df, inputs, k);
         double bestError = computeError(df, bestCentroids);
 
         if (debug) {
@@ -142,7 +142,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
         }
         if (nstart > 1) {
             for (int i = 1; i < nstart; i++) {
-                Frame nextCentroids = init.get().init(df, inputs, k);
+                Frame nextCentroids = init.init(df, inputs, k);
                 double nextError = computeError(df, nextCentroids);
                 if (nextError < bestError) {
                     bestCentroids = nextCentroids;

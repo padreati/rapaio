@@ -76,7 +76,7 @@ public class CTree
     private SortedMap<VType, CTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
     private CTreePurityFunction function = CTreePurityFunction.InfoGain;
     private CTreeSplitter splitter = CTreeSplitter.Ignored;
-    private Tag<CTreePruning> pruning = CTreePruning.NONE;
+    private CTreePruning pruning = CTreePruning.None;
     private Frame pruningDf = null;
 
     // tree root node
@@ -98,7 +98,7 @@ public class CTree
                 .withTest(VType.NOMINAL, CTreeTest.NominalFull)
                 .withTest(VType.DOUBLE, CTreeTest.Ignore)
                 .withFunction(CTreePurityFunction.InfoGain)
-                .withPruning(CTreePruning.NONE);
+                .withPruning(CTreePruning.None);
     }
 
     public static CTree newC45() {
@@ -205,11 +205,11 @@ public class CTree
         return this;
     }
 
-    public CTree withPruning(Tag<CTreePruning> pruning) {
+    public CTree withPruning(CTreePruning pruning) {
         return withPruning(pruning, null);
     }
 
-    public CTree withPruning(Tag<CTreePruning> pruning, Frame pruningDf) {
+    public CTree withPruning(CTreePruning pruning, Frame pruningDf) {
         this.pruning = pruning;
         this.pruningDf = pruningDf;
         return this;
@@ -318,7 +318,7 @@ public class CTree
             }
         }
 
-        pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
+        pruning.prune(this, (pruningDf == null) ? df : pruningDf, false);
         return true;
     }
 
@@ -420,7 +420,7 @@ public class CTree
     }
 
     public void prune(Frame df, boolean all) {
-        pruning.get().prune(this, df, all);
+        pruning.prune(this, df, all);
     }
 
     /**

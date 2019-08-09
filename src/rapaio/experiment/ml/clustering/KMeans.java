@@ -56,7 +56,7 @@ public class KMeans implements Printable, DefaultPrintable {
     private int k = 2;
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
-    private Tag<KMeansInitMethod> init = KMeansInitMethod.FORGY;
+    private KMeansInitMethod init = KMeansInitMethod.Forgy;
     private Distance distance = Distance.EUCLIDEAN;
     private BiConsumer<KMeans, Integer> runningHook = null;
     private Frame summary;
@@ -88,7 +88,7 @@ public class KMeans implements Printable, DefaultPrintable {
         return this;
     }
 
-    public KMeans withInit(Tag<KMeansInitMethod> init) {
+    public KMeans withInit(KMeansInitMethod init) {
         this.init = init;
         return this;
     }
@@ -118,7 +118,7 @@ public class KMeans implements Printable, DefaultPrintable {
 
         inputs = VRange.of(varNames).parseVarNames(df).toArray(new String[0]);
 
-        Frame bestCentroids = init.get().init(df, inputs, k);
+        Frame bestCentroids = init.init(df, inputs, k);
         double bestError = computeError(df, bestCentroids);
 
         if (debug) {
@@ -133,7 +133,7 @@ public class KMeans implements Printable, DefaultPrintable {
         }
         if (nstart > 1) {
             for (int i = 1; i < nstart; i++) {
-                Frame nextCentroids = init.get().init(df, inputs, k);
+                Frame nextCentroids = init.init(df, inputs, k);
                 double nextError = computeError(df, nextCentroids);
                 if (nextError < bestError) {
                     bestCentroids = nextCentroids;

@@ -29,7 +29,6 @@ package rapaio.ml.common.distance;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
-import rapaio.util.Tag;
 
 import java.io.Serializable;
 
@@ -40,8 +39,21 @@ import java.io.Serializable;
  */
 public interface KMeansInitMethod extends Serializable {
 
+    String name();
+
     Frame init(Frame df, String[] inputs, int k);
 
-    Tag<KMeansInitMethod> FORGY = Tag.valueOf("forgy",
-            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(df.rowCount(), k)).copy());
+    KMeansInitMethod Forgy = new KMeansInitMethod() {
+        private static final long serialVersionUID = -6826959777764888621L;
+
+        @Override
+        public String name() {
+            return "forgy";
+        }
+
+        @Override
+        public Frame init(Frame df, String[] inputs, int k) {
+            return df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(df.rowCount(), k)).copy();
+        }
+    };
 }

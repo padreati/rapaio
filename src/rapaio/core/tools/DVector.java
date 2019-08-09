@@ -379,10 +379,16 @@ public class DVector implements Printable, Serializable {
         TextTable tt = TextTable.empty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
             tt.textRight(0, i, levels.get(i));
-            tt.textRight(1, i, StringUtil.repeat(levels.get(i).length(), '-'));
+            tt.textRight(1, i, repeat(levels.get(i).length(), '-'));
             tt.floatFlex(2, i, values[i]);
         }
         return tt.getDefaultText();
+    }
+
+    private String repeat(int length, char c) {
+        char[] buffer = new char[length];
+        Arrays.fill(buffer, c);
+        return String.valueOf(buffer);
     }
 
     @Override

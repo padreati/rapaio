@@ -27,11 +27,11 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Var;
-import rapaio.util.func.SFunction;
+import rapaio.data.*;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
@@ -39,7 +39,7 @@ import java.util.Arrays;
 public class GOptionColor implements GOption<Color[]> {
 
     private static final long serialVersionUID = 7534853593877383832L;
-    private final SFunction<GOpts, Color[]> function;
+    private final Function<GOpts, Color[]> function;
 
     public GOptionColor(int... index) {
         function = gOpts -> Arrays.stream(index).boxed().map(i -> gOpts.getPalette().getColor(i)).toArray(Color[]::new);

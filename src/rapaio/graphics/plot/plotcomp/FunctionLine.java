@@ -27,17 +27,16 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
-import rapaio.util.func.SFunction;
+import rapaio.data.*;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.*;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.function.Function;
 
-import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -45,9 +44,9 @@ import static rapaio.graphics.Plotter.points;
 public class FunctionLine extends PlotComponent {
 
     private static final long serialVersionUID = 8388944194915495215L;
-    private final SFunction<Double, Double> f;
+    private final Function<Double, Double> f;
 
-    public FunctionLine(SFunction<Double, Double> f, GOption... opts) {
+    public FunctionLine(Function<Double, Double> f, GOption... opts) {
         this.f = f;
         // apply default values for function line
         this.options.bind(points(1024 * 10));

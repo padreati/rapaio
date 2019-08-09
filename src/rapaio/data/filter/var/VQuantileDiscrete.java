@@ -31,13 +31,13 @@ import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.data.filter.*;
 import rapaio.printer.format.*;
-import rapaio.util.func.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Make a numerical variable a nominal one with intervals specified by quantiles.
@@ -70,7 +70,7 @@ public class VQuantileDiscrete implements VFilter {
     private static final long serialVersionUID = -6702714518094848749L;
 
     private List<String> dict = new ArrayList<>();
-    private Map<String, SPredicate<Double>> predicates = new HashMap<>();
+    private Map<String, Predicate<Double>> predicates = new HashMap<>();
     private final double[] qp;
     private double[] qv;
 
@@ -115,7 +115,7 @@ public class VQuantileDiscrete implements VFilter {
                 result.addMissing();
                 continue;
             }
-            for (Map.Entry<String, SPredicate<Double>> e : predicates.entrySet()) {
+            for (Map.Entry<String, Predicate<Double>> e : predicates.entrySet()) {
                 if (e.getValue().test(var.getDouble(i))) {
                     result.addLabel(e.getKey());
                 }

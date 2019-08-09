@@ -27,12 +27,7 @@
 
 package rapaio.io;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VType;
-import rapaio.data.Var;
-import rapaio.data.VarText;
-import rapaio.util.func.SPredicate;
+import rapaio.data.*;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -232,7 +227,7 @@ public class Csv {
         return this;
     }
 
-    public Csv withSkipCols(SPredicate<Integer> p) {
+    public Csv withSkipCols(Predicate<Integer> p) {
         skipCols = p;
         return this;
     }

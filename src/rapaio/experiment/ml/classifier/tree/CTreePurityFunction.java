@@ -27,16 +27,19 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.core.tests.ChiSqIndependence;
-import rapaio.experiment.core.tools.DTable;
-import rapaio.util.Tagged;
+import rapaio.core.tests.*;
+import rapaio.experiment.core.tools.*;
 
 import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface CTreePurityFunction extends Tagged, Serializable {
+public interface CTreePurityFunction extends Serializable {
+
+    String name();
+
+    double compute(DTable dt);
 
     CTreePurityFunction InfoGain = new CTreePurityFunction() {
         private static final long serialVersionUID = 152790997381399918L;
@@ -144,7 +147,5 @@ public interface CTreePurityFunction extends Tagged, Serializable {
             return name();
         }
     };
-
-    double compute(DTable dt);
 
 }

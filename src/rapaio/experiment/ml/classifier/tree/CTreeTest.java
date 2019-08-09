@@ -29,12 +29,10 @@ package rapaio.experiment.ml.classifier.tree;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import rapaio.core.RandomSource;
-import rapaio.experiment.core.tools.DTable;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.util.Tagged;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.experiment.core.tools.*;
+import rapaio.ml.common.predicate.*;
 
 import java.io.Serializable;
 
@@ -43,7 +41,13 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/15.
  */
-public interface CTreeTest extends Tagged, Serializable {
+public interface CTreeTest extends Serializable {
+
+    String name();
+
+    CTreeCandidate computeCandidate(
+            CTree c, Frame df, Var w,
+            String testName, String targetName, CTreePurityFunction function);
 
     CTreeTest Ignore = new CTreeTest() {
 
@@ -271,8 +275,4 @@ public interface CTreeTest extends Tagged, Serializable {
             return best;
         }
     };
-
-    CTreeCandidate computeCandidate(
-            CTree c, Frame df, Var w,
-            String testName, String targetName, CTreePurityFunction function);
 }

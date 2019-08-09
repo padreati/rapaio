@@ -27,20 +27,18 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.experiment.grid.MeshGrid;
-import rapaio.graphics.base.HostFigure;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOption;
+import rapaio.core.distributions.empirical.*;
+import rapaio.data.*;
+import rapaio.experiment.grid.*;
+import rapaio.experiment.ml.eval.metric.*;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.plotcomp.*;
-import rapaio.experiment.ml.eval.metric.ROC;
-import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author tutuianu
@@ -207,7 +205,7 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot funLine(SFunction<Double, Double> f, GOption... opts) {
+    public Plot funLine(Function<Double, Double> f, GOption... opts) {
         add(new FunctionLine(f, opts));
         return this;
     }
