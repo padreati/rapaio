@@ -29,6 +29,10 @@ package rapaio.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Singular;
 import rapaio.core.*;
 import rapaio.core.stat.*;
 import rapaio.data.*;
@@ -48,58 +52,30 @@ import static rapaio.sys.WS.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.
  */
+@Getter
+@Builder
 public class RegressionEvaluation {
 
-    public static RegressionEvaluation instance() {
-        return new RegressionEvaluation();
-    }
-
+    @NonNull
     private Frame df;
-    private String targetVarName;
+
+    @NonNull
+    private String targetName;
+
+    @NonNull
     private RMetric metric;
-    private Map<String, RegressionModel> regressionModels = new HashMap<>();
+
+    @NonNull
+    @Singular
+    private Map<String, RegressionModel> models;
+
+    @Builder.Default
     private boolean debug = true;
-
-    public RegressionEvaluation withFrame(Frame df) {
-        this.df = df;
-        return this;
-    }
-
-    public RegressionEvaluation withTarget(String targetVarName) {
-        this.targetVarName = targetVarName;
-        return this;
-    }
-
-    public RegressionEvaluation withMetric(RMetric metric) {
-        this.metric = metric;
-        return this;
-    }
-
-    public RegressionEvaluation withModel(String modelId, RegressionModel model) {
-        regressionModels.put(modelId, model);
-        return this;
-    }
-
-    public RegressionEvaluation withDebug(boolean debug) {
-        this.debug = debug;
-        return this;
-    }
-
-    private void validate() {
-        Objects.requireNonNull(df, "Data frame was not configured.");
-        Objects.requireNonNull(targetVarName, "Target variable name was not configured.");
-        Objects.requireNonNull(metric, "Regression metric was not provided.");
-        if (regressionModels.isEmpty()) {
-            throw new IllegalStateException("No regression model was provided.");
-        }
-    }
 
     public CVResult cv(int folds) {
 
-        validate();
-
         if (debug)
-            print("\nCrossValidation with " + folds + " folds for models: " + String.join(",", regressionModels.keySet()) + "\n");
+            print("\nCrossValidation with " + folds + " folds for models: " + String.join(",", models.keySet()) + "\n");
 
         List<IntList> strata = buildFolds(df, folds);
         CVResult cvResult = new CVResult(this, folds);
@@ -121,13 +97,13 @@ public class RegressionEvaluation {
 
             // iterate through models
 
-            for (Map.Entry<String, RegressionModel> entry : regressionModels.entrySet()) {
+            for (Map.Entry<String, RegressionModel> entry : models.entrySet()) {
                 String modelId = entry.getKey();
                 RegressionModel model = entry.getValue().newInstance();
-                model.fit(train, targetVarName);
+                model.fit(train, targetName);
                 RegressionResult result = model.predict(test);
 
-                double value = metric.compute(test.rvar(targetVarName), result.firstPrediction());
+                double value = metric.compute(test.rvar(targetName), result.firstPrediction());
                 cvResult.putScore(modelId, i, value);
 
                 if (debug)
@@ -153,12 +129,12 @@ public class RegressionEvaluation {
 
         public CVResult(RegressionEvaluation parent, int folds) {
             this.df = parent.df;
-            this.targetVarName = parent.targetVarName;
+            this.targetVarName = parent.targetName;
             this.metric = parent.metric;
-            this.regressionModels = parent.regressionModels;
+            this.regressionModels = parent.models;
             this.folds = folds;
             this.metricMap = new HashMap<>();
-            for (String modelId : parent.regressionModels.keySet()) {
+            for (String modelId : parent.models.keySet()) {
                 metricMap.put(modelId, VarDouble.empty(folds).withName(modelId));
             }
         }
