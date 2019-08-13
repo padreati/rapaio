@@ -25,20 +25,13 @@
  *
  */
 
-package rapaio.experiment.lombok;
+package rapaio.util.serializable;
 
-import lombok.Builder;
-import lombok.NonNull;
+import java.io.Serializable;
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/19.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
-
-@Builder
-public class LombokClass {
-
-    @NonNull
-    private final String name;
-
-
+public interface SFunction<T, R> extends Function<T, R>, Serializable {
 }

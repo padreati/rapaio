@@ -35,6 +35,7 @@ import rapaio.experiment.ml.eval.metric.*;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.*;
 import rapaio.graphics.plot.plotcomp.*;
+import rapaio.util.serializable.*;
 
 import java.awt.*;
 import java.util.function.Function;
@@ -97,7 +98,7 @@ public final class Plotter {
         return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
     }
 
-    public static Plot funLine(Function<Double, Double> f, GOption... opts) {
+    public static Plot funLine(SFunction<Double, Double> f, GOption... opts) {
         return plot().add(new FunctionLine(f, opts));
     }
 

@@ -31,6 +31,7 @@ import rapaio.data.*;
 import rapaio.graphics.base.*;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.*;
+import rapaio.util.serializable.*;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -44,9 +45,9 @@ import static rapaio.graphics.Plotter.*;
 public class FunctionLine extends PlotComponent {
 
     private static final long serialVersionUID = 8388944194915495215L;
-    private final Function<Double, Double> f;
+    private final SFunction<Double, Double> f;
 
-    public FunctionLine(Function<Double, Double> f, GOption... opts) {
+    public FunctionLine(SFunction<Double, Double> f, GOption... opts) {
         this.f = f;
         // apply default values for function line
         this.options.bind(points(1024 * 10));

@@ -34,8 +34,10 @@ import rapaio.experiment.ml.eval.metric.*;
 import rapaio.graphics.base.*;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.plotcomp.*;
+import rapaio.util.serializable.*;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -205,7 +207,7 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot funLine(Function<Double, Double> f, GOption... opts) {
+    public Plot funLine(SFunction<Double, Double> f, GOption... opts) {
         add(new FunctionLine(f, opts));
         return this;
     }

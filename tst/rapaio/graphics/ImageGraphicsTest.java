@@ -27,32 +27,24 @@ package rapaio.graphics;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Minimum;
-import rapaio.core.stat.Variance;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
 import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.filter.var.VApplyDouble;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
-import rapaio.graphics.plot.BoxPlot;
-import rapaio.graphics.plot.Plot;
-import rapaio.io.JavaIO;
-import rapaio.experiment.ml.eval.metric.ROC;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.datasets.*;
+import rapaio.experiment.ml.eval.metric.*;
+import rapaio.graphics.base.*;
+import rapaio.graphics.plot.*;
+import rapaio.io.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static rapaio.graphics.Plotter.*;
 
@@ -72,7 +64,7 @@ public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
     private static final boolean show = false;
-    private static String root = "/home/ati/work/rapaio/src/test/resources";
+    private static String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
 
@@ -84,7 +76,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testBoxPlot() throws IOException, URISyntaxException {
+    public void testBoxPlot() throws IOException {
 
         Var x = df.rvar(1);
         Var factor = df.rvar("class");
@@ -104,7 +96,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testFunLine() throws IOException, URISyntaxException {
+    public void testFunLine() throws IOException {
 
         Plot plot = funLine(x -> x * x, color(1))
                 .funLine(Math::log1p, color(2))
@@ -147,7 +139,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testHistogram2D() throws IOException, URISyntaxException {
+    public void testHistogram2D() throws IOException {
 
         Var x = df.rvar(0).copy().withName("x");
         Var y = df.rvar(1).copy().withName("y");
@@ -163,7 +155,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testHistogram() throws IOException, URISyntaxException {
+    public void testHistogram() throws IOException {
 
         Var x = df.rvar(0).withName("x");
         Plot plot = hist(x, bins(30));
@@ -177,7 +169,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testGridLayer() throws IOException, URISyntaxException {
+    public void testGridLayer() throws IOException {
 
         Var x = df.rvar(0).withName("x");
         Var y = df.rvar(1).withName("y");
@@ -199,7 +191,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testLines() throws IOException, URISyntaxException {
+    public void testLines() throws IOException {
 
         Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
@@ -219,7 +211,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testPoints() throws IOException, URISyntaxException {
+    public void testPoints() throws IOException {
 
         Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x");
         Var y = df.rvar(1).fapply(VApplyDouble.with(Math::log1p)).withName("y");
@@ -238,7 +230,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testDensity() throws IOException, URISyntaxException {
+    public void testDensity() throws IOException {
 
         Var x = df.rvar(0).mapRows(Mapping.range(200));
         x.printSummary();
@@ -259,7 +251,7 @@ public class ImageGraphicsTest {
     }
 
     @Test
-    public void testRocCurve() throws IOException, URISyntaxException {
+    public void testRocCurve() throws IOException {
 
         ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 2);
         roc.printSummary();
@@ -277,13 +269,12 @@ public class ImageGraphicsTest {
 
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
-            // TODO fix this !!!!
-//            for (int x = 0; x < img1.getWidth(); x++) {
-//                for (int y = 0; y < img1.getHeight(); y++) {
-//                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
-//                        return false;
-//                }
-//            }
+            for (int x = 0; x < img1.getWidth(); x++) {
+                for (int y = 0; y < img1.getHeight(); y++) {
+                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
+                        return false;
+                }
+            }
             return true;
         }
         return false;

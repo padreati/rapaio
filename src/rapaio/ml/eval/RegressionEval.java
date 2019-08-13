@@ -29,14 +29,8 @@ package rapaio.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
 import rapaio.core.*;
-import rapaio.core.stat.*;
 import rapaio.data.*;
-import rapaio.data.filter.frame.*;
 import rapaio.experiment.ml.eval.*;
 import rapaio.ml.regression.*;
 
@@ -52,27 +46,85 @@ import static rapaio.sys.WS.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.
  */
-@Getter
-@Builder
-public class RegressionEvaluation {
+public class RegressionEval {
 
-    @NonNull
-    private Frame df;
+    public static RegressionEval newInstance() {
+        return new RegressionEval();
+    }
 
-    @NonNull
-    private String targetName;
+    Frame df;
+    String targetName;
+    RMetric metric;
+    Map<String, RegressionModel> models = new HashMap<>();
+    boolean debug = true;
 
-    @NonNull
-    private RMetric metric;
+    private RegressionEval() {
+    }
 
-    @NonNull
-    @Singular
-    private Map<String, RegressionModel> models;
+    public RegressionEval withFrame(Frame df) {
+        this.df = df;
+        return this;
+    }
 
-    @Builder.Default
-    private boolean debug = true;
+    public Frame getFrame() {
+        return df;
+    }
+
+    public RegressionEval withTargetName(String targetName) {
+        this.targetName = targetName;
+        return this;
+    }
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public RegressionEval withMetric(RMetric metric) {
+        this.metric = metric;
+        return this;
+    }
+
+    public RMetric getMetric() {
+        return metric;
+    }
+
+    public RegressionEval withModel(String name, RegressionModel model) {
+        models.put(name, model);
+        return this;
+    }
+
+    public Map<String, RegressionModel> getModels() {
+        return models;
+    }
+
+    public RegressionEval withDebug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    private void validate() {
+        Objects.requireNonNull(df);
+        Objects.requireNonNull(targetName);
+        Objects.requireNonNull(metric);
+        Objects.requireNonNull(models);
+        if (models.isEmpty()) {
+            throw new IllegalArgumentException("There must be at least one regression model to be tested.");
+        }
+    }
+
+    private void cvValidate(int folds) {
+        validate();
+        if (folds <= 1) {
+            throw new IllegalArgumentException("Number of folds must be greater than 1.");
+        }
+    }
 
     public CVResult cv(int folds) {
+        cvValidate(folds);
 
         if (debug)
             print("\nCrossValidation with " + folds + " folds for models: " + String.join(",", models.keySet()) + "\n");
@@ -118,64 +170,6 @@ public class RegressionEvaluation {
         return cvResult;
     }
 
-    public static class CVResult {
-        private final Frame df;
-        private final String targetVarName;
-        private final RMetric metric;
-        private final Map<String, RegressionModel> regressionModels;
-        private final int folds;
-
-        private final Map<String, VarDouble> metricMap;
-
-        public CVResult(RegressionEvaluation parent, int folds) {
-            this.df = parent.df;
-            this.targetVarName = parent.targetName;
-            this.metric = parent.metric;
-            this.regressionModels = parent.models;
-            this.folds = folds;
-            this.metricMap = new HashMap<>();
-            for (String modelId : parent.models.keySet()) {
-                metricMap.put(modelId, VarDouble.empty(folds).withName(modelId));
-            }
-        }
-
-        public Map<String, RegressionModel> getRegressionModels() {
-            return regressionModels;
-        }
-
-        public int getFolds() {
-            return folds;
-        }
-
-        public void putScore(String modelId, int fold, double score) {
-            metricMap.get(modelId).setDouble(fold, score);
-        }
-
-        public double getScore(String modelId, int fold) {
-            return metricMap.get(modelId).getDouble(fold);
-        }
-
-        public double getMean(String modelId) {
-            return Mean.of(metricMap.get(modelId)).value();
-        }
-
-        public double getSE(String modelId) {
-            return Variance.of(metricMap.get(modelId)).sdValue();
-        }
-
-        public Frame getSummaryFrame() {
-            Var modelName = VarNominal.empty(0).withName("model");
-            Var meanScore = VarDouble.empty().withName("mean");
-            Var stdScore = VarDouble.empty().withName("se");
-            for (String modelId : metricMap.keySet()) {
-                modelName.addLabel(modelId);
-                meanScore.addDouble(Mean.of(metricMap.get(modelId)).value());
-                stdScore.addDouble(Variance.of(metricMap.get(modelId)).sdValue());
-            }
-            return SolidFrame.byVars(modelName, meanScore, stdScore).fapply(FRefSort.by(meanScore.refComparator()));
-        }
-    }
-
     private List<IntList> buildFolds(Frame df, int folds) {
         IntList shuffle = new IntArrayList();
         for (int i = 0; i < df.rowCount(); i++) {
@@ -196,5 +190,4 @@ public class RegressionEvaluation {
         }
         return foldMap;
     }
-
 }

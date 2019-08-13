@@ -28,6 +28,7 @@
 package rapaio.graphics.opt;
 
 import rapaio.data.*;
+import rapaio.util.serializable.*;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ import java.util.function.Function;
 public class GOptionColor implements GOption<Color[]> {
 
     private static final long serialVersionUID = 7534853593877383832L;
-    private final Function<GOpts, Color[]> function;
+    private final SFunction<GOpts, Color[]> function;
 
     public GOptionColor(int... index) {
         function = gOpts -> Arrays.stream(index).boxed().map(i -> gOpts.getPalette().getColor(i)).toArray(Color[]::new);
