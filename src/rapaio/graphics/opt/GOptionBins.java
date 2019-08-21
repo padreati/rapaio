@@ -32,6 +32,7 @@ package rapaio.graphics.opt;
  */
 public class GOptionBins implements GOption<Integer> {
 
+    private static final long serialVersionUID = 364936549124065257L;
     private final int bins;
 
     public GOptionBins(int bins) {

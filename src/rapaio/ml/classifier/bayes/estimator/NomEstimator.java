@@ -25,26 +25,26 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes.estimator;
+package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.ml.classifier.bayes.*;
 
 import java.io.Serializable;
 
 /**
- * Numerical variable probability estimator
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/19.
  */
-public interface NumericEstimator extends Serializable {
+public interface NomEstimator extends Serializable {
+
+    NomEstimator newInstance();
 
     String name();
 
-    void learn(Frame df, String targetVar, String testVar);
-
-    double cpValue(double testValue, String targetLabel);
-
     String learningInfo();
 
-    NumericEstimator newInstance();
+    void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar);
+
+    double computeProbability(String testLabel, String targetLabel);
+
 }

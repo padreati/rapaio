@@ -78,6 +78,20 @@ public class DefaultVarOp<T extends Var> implements VarOp<T> {
     }
 
     @Override
+    public double avg() {
+        double count = 0.0;
+        double sum = 0.0;
+        for (int i = 0; i < source.rowCount(); i++) {
+            if (source.isMissing(i)) {
+                continue;
+            }
+            sum += source.getDouble(i);
+            count += 1;
+        }
+        return count > 0 ? sum / count : 0.0;
+    }
+
+    @Override
     public T plus(double a) {
         for (int i = 0; i < source.rowCount(); i++) {
             source.setDouble(i, source.getDouble(i) + a);
@@ -106,7 +120,7 @@ public class DefaultVarOp<T extends Var> implements VarOp<T> {
         int[] rows = new int[source.rowCount()];
         int len = 0;
         for (int i = 0; i < source.rowCount(); i++) {
-            if(source.isMissing(i)) {
+            if (source.isMissing(i)) {
                 continue;
             }
             rows[len++] = i;

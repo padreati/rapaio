@@ -25,13 +25,14 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes.estimator;
+package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.ml.classifier.bayes.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class KernelPdf implements NumericEstimator {
+public class KernelPdf implements NumEstimator {
 
     private static final long serialVersionUID = 7974390604811353859L;
 
@@ -48,10 +49,6 @@ public class KernelPdf implements NumericEstimator {
     private double bandwidth = 0;
 
     public KernelPdf() {
-    }
-
-    public KernelPdf(KFunc kfunc) {
-        this.kfunc = kfunc;
     }
 
     public KernelPdf(KFunc kfunc, double bandwidth) {
@@ -65,7 +62,7 @@ public class KernelPdf implements NumericEstimator {
     }
 
     @Override
-    public void learn(Frame df, String targetVar, String testVar) {
+    public void learn(Frame df,String targetVar, String testVar) {
         kde.clear();
         df.levels(targetVar).forEach(
                 classLabel -> {
@@ -79,12 +76,12 @@ public class KernelPdf implements NumericEstimator {
     }
 
     @Override
-    public double cpValue(double testValue, String targetLabel) {
+    public double computeProbability(double testValue, String targetLabel) {
         return kde.get(targetLabel).pdf(testValue);
     }
 
     @Override
-    public NumericEstimator newInstance() {
+    public NumEstimator newInstance() {
         return new KernelPdf(kfunc, bandwidth);
     }
 

@@ -25,11 +25,11 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes.estimator;
+package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.ml.classifier.bayes.NaiveBayes;
+import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,13 +40,12 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
+public class MultinomialPmf implements NomEstimator {
 
     private static final long serialVersionUID = 3019563706421891472L;
     private double[][] density;
     private Map<String, Integer> invTreeTarget;
     private Map<String, Integer> invTreeTest;
-    private double defaultP;
 
     @Override
     public String name() {
@@ -64,8 +63,6 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
         List<String> targetDict = df.levels(targetVar);
         List<String> testDict = df.levels(testVar);
 
-        defaultP = 1.0 / testDict.size();
-
         invTreeTarget = new HashMap<>();
         invTreeTest = new HashMap<>();
 
@@ -77,11 +74,11 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
         }
 
         density = new double[targetDict.size()][testDict.size()];
-            for (int i = 0; i < targetDict.size(); i++) {
-                for (int j = 0; j < testDict.size(); j++) {
-                    density[i][j] = nb.laplaceSmoother();
-                }
+        for (int i = 0; i < targetDict.size(); i++) {
+            for (int j = 0; j < testDict.size(); j++) {
+                density[i][j] = nb.getLaplaceSmoother();
             }
+        }
         df.stream().forEach(s -> density[invTreeTarget.get(df.getLabel(s.row(), targetVar))][invTreeTest.get(df.getLabel(s.row(), testVar))] += weights.getDouble(s.row()));
         for (int i = 0; i < targetDict.size(); i++) {
             double t = 0;
@@ -95,12 +92,12 @@ public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
     }
 
     @Override
-    public double cpValue(String testLabel, String targetLabel) {
+    public double computeProbability(String testLabel, String targetLabel) {
         if (!invTreeTarget.containsKey(targetLabel)) {
-            return defaultP;
+            return 0.0;
         }
         if (!invTreeTest.containsKey(testLabel)) {
-            return defaultP;
+            return 1.0;
         }
         return density[invTreeTarget.get(targetLabel)][invTreeTest.get(testLabel)];
     }

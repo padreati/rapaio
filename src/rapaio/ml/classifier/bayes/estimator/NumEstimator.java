@@ -25,15 +25,26 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes.data;
+package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.ml.classifier.bayes.*;
 
-import java.util.Set;
+import java.io.Serializable;
 
-public abstract class NaiveBayesData {
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/19.
+ */
+public interface NumEstimator extends Serializable {
 
-	public abstract Set<String> keySet();
-	public abstract double calcSumLog(String testCol, Frame df, int i, String firstTargetLevel);
-	
+    NumEstimator newInstance();
+
+    String name();
+
+    String learningInfo();
+
+    void learn(Frame df, String targetVar, String testVar);
+
+    double computeProbability(double value, String targetLabel);
+
 }

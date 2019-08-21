@@ -76,6 +76,20 @@ public class DoubleVarOp implements VarOp<VarDouble> {
     }
 
     @Override
+    public double avg() {
+        double count = 0.0;
+        double sum = 0.0;
+        for (int i = 0; i < rowCount; i++) {
+            if (Double.isNaN(data[i])) {
+                continue;
+            }
+            sum += data[i];
+            count += 1;
+        }
+        return count > 0 ? sum / count : 0.0;
+    }
+
+    @Override
     public VarDouble plus(double a) {
         for (int i = 0; i < rowCount; i++) {
             data[i] += a;

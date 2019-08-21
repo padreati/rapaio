@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes;
+package rapaio.ml.classifier.bayes;
 
 import rapaio.core.tools.*;
 import rapaio.data.*;
@@ -41,7 +41,7 @@ public interface PriorSupplier extends Serializable {
 
     String name();
 
-    Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb);
+    Map<String, Double> learnPriors(Frame df, Var weights, String targetVar);
 
     PriorSupplier PRIOR_MLE = new PriorSupplier() {
         private static final long serialVersionUID = 2590209274166763951L;
@@ -52,12 +52,12 @@ public interface PriorSupplier extends Serializable {
         }
 
         @Override
-        public Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb) {
+        public Map<String, Double> learnPriors(Frame df, Var weights, String targetVar) {
             Map<String, Double> priors = new HashMap<>();
-            DVector dv = DVector.fromWeights(false, df.rvar(nb.firstTargetName()), weights);
+            DVector dv = DVector.fromWeights(false, df.rvar(targetVar), weights);
             dv.normalize();
-            for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
-                priors.put(nb.firstTargetLevels().get(i), dv.get(i));
+            for (int i = 1; i < df.levels(targetVar).size(); i++) {
+                priors.put(df.levels(targetVar).get(i), dv.get(i));
             }
             return priors;
         }
@@ -72,11 +72,12 @@ public interface PriorSupplier extends Serializable {
         }
 
         @Override
-        public Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb) {
+        public Map<String, Double> learnPriors(Frame df, Var weights, String targetVar) {
             Map<String, Double> priors = new HashMap<>();
-            double p = 1.0 / nb.firstTargetLevels().size();
-            for (int i = 1; i < nb.firstTargetLevels().size(); i++) {
-                priors.put(nb.firstTargetLevels().get(i), p);
+            double degrees = df.levels(targetVar).size() - 1;
+            double p = 1.0 / degrees;
+            for (int i = 1; i < df.levels(targetVar).size(); i++) {
+                priors.put(df.levels(targetVar).get(i), p);
             }
             return priors;
         }

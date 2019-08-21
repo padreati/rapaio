@@ -132,6 +132,7 @@ nto nominal categories based on quantile intervals
 **Classification**
 
 * Rule: OneRule
+* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 
 **Regression**
 
@@ -181,7 +182,6 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Classification**
 
-* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 * Linear: BinaryLogistic
 * Decision Trees - CTree: DecisionStump, ID3, C45, CART
   * purity: entropy, infogain, gain ration, gini index

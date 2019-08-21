@@ -90,12 +90,16 @@ public class Datasets {
                 .read(Datasets.class, "spam-base.csv");
     }
 
-    public static Frame loadMushrooms() throws IOException {
-        return Csv.instance()
-                .withSeparatorChar(',')
-                .withHeader(true)
-                .withQuotes(false)
-                .read(Datasets.class, "mushrooms.csv");
+    public static Frame loadMushrooms() {
+        try {
+            return Csv.instance()
+                    .withSeparatorChar(',')
+                    .withHeader(true)
+                    .withQuotes(false)
+                    .read(Datasets.class, "mushrooms.csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public static Frame loadPlay() {

@@ -32,6 +32,7 @@ package rapaio.graphics.opt;
  */
 public class GOptionProb implements GOption<Boolean> {
 
+    private static final long serialVersionUID = -2622006323719065328L;
     private final boolean prob;
 
     public GOptionProb(boolean prob) {

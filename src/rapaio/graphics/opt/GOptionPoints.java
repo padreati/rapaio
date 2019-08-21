@@ -32,6 +32,7 @@ package rapaio.graphics.opt;
  */
 public class GOptionPoints implements GOption<Integer> {
 
+    private static final long serialVersionUID = -4310646137630324226L;
     private final int points;
 
     public GOptionPoints(int points) {

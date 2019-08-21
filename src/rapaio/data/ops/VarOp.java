@@ -41,6 +41,8 @@ public interface VarOp<T extends Var> {
 
     double sum();
 
+    double avg();
+
     T plus(double a);
 
     T plus(Var x);

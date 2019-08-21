@@ -25,13 +25,15 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.bayes.estimator;
+package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.ml.classifier.bayes.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class GaussianPdf implements NumericEstimator {
+public class GaussianPdf implements NumEstimator {
 
     private static final long serialVersionUID = -5974296887792054267L;
 
@@ -74,20 +76,16 @@ public class GaussianPdf implements NumericEstimator {
     }
 
     @Override
-    public double cpValue(double testValue, String targetLabel) {
+    public double computeProbability(double testValue, String targetLabel) {
         Distribution normal = normals.get(targetLabel);
         if (Math.abs(normal.var()) < 1e-20) {
-            if (Math.abs(normal.mean() - testValue) < 1e-20) {
-                return Double.MAX_VALUE;
-            } else {
-                return 0;
-            }
+            return (Math.abs(normal.mean() - testValue) < 1e-20) ? 1.0 : 0.0;
         }
         return normals.get(targetLabel).pdf(testValue);
     }
 
     @Override
-    public NumericEstimator newInstance() {
+    public NumEstimator newInstance() {
         return new GaussianPdf();
     }
 

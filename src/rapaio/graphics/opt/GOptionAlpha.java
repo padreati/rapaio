@@ -32,6 +32,7 @@ package rapaio.graphics.opt;
  */
 public class GOptionAlpha implements GOption<Float> {
 
+    private static final long serialVersionUID = -1727266027662363808L;
     private final float alpha;
 
     public GOptionAlpha(float alpha) {
