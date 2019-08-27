@@ -9,7 +9,7 @@ where there is confusion, where tricks and sims are plotted.*
 2. (Computer science) *Statistics, data mining and machine learning 
 library written in Java.*
 
-### What gap *rapaio* tries to feel?
+### What gap *rapaio* tries to fill?
 
 There are a lot of software stacks out there which provides plenty of 
 nicely crafted tools for statistics, machine learning, data mining or 
