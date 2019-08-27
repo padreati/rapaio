@@ -70,6 +70,8 @@ public class FunctionLine extends PlotComponent {
             y.setDouble(i, f.apply(x.getDouble(i)));
         }
 
+        Composite old = g2d.getComposite();
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
         for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
@@ -82,5 +84,6 @@ public class FunctionLine extends PlotComponent {
 
             }
         }
+        g2d.setComposite(old);
     }
 }

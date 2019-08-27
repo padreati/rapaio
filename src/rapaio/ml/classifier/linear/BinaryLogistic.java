@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.linear;
+package rapaio.ml.classifier.linear;
 
 import rapaio.data.*;
 import rapaio.experiment.math.optimization.*;

@@ -33,7 +33,7 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VApplyDouble;
-import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
+import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.ClassifierModel;

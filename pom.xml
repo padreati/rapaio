@@ -7,6 +7,9 @@
   ~    Copyright 2014 Aurelian Tutuianu
   ~    Copyright 2015 Aurelian Tutuianu
   ~    Copyright 2016 Aurelian Tutuianu
+  ~    Copyright 2017 Aurelian Tutuianu
+  ~    Copyright 2018 Aurelian Tutuianu
+  ~    Copyright 2019 Aurelian Tutuianu
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -30,12 +33,28 @@
     <groupId>rapaio</groupId>
     <artifactId>rapaio</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.0-SNAPSHOT</version>
-    <name>Maven Quick Start Archetype</name>
-    <url>http://maven.apache.org</url>
+    <version>2.0</version>
+
+    <name>Rapaio Library</name>
+    <description>Rapaio Library core files</description>
+    <url>https://github.com/padreati/rapaio</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/padreati/rapaio.git</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -55,6 +74,7 @@
             <version>8.2.3</version>
         </dependency>
     </dependencies>
+
     <build>
         <sourceDirectory>src</sourceDirectory>
         <resources>
