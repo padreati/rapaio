@@ -1,5 +1,5 @@
 
-![rapaio logo](./logo/logo-medium.png) 
+![rapaio logo](./docs/logo/logo-medium.png) 
 
 ### Disambiguation
 
