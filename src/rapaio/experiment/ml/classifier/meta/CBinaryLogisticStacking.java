@@ -33,7 +33,7 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VApplyDouble;
-import rapaio.ml.classifier.linear.BinaryLogistic;
+import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.ClassifierModel;
@@ -136,7 +136,7 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         logger.config("started learning for binary logistic...");
-        log.withTol(tol);
+        log.withTolerance(tol);
         log.withMaxRuns(maxRuns);
         log.fit(df, weights, targetNames());
 

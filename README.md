@@ -41,7 +41,7 @@ the standard Java OOP way of doing things. There are no short methods.
 And the GUI mode. I am a programmer. I want to have the freedom given
 by a programming language, like Java is.
 
-In the end, I would really love to have an environment, a box for with 
+In the end, I would really love to have an environment, a box full with 
 plenty of tools, which can be extended, which allows me to experiment, 
 study and learn. And I want to do all those things in an interactive way, 
 where I would program my ideas. Java community deserves such kind of tool 

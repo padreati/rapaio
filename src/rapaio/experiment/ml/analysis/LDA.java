@@ -104,7 +104,7 @@ public class LDA implements DefaultPrintable {
         mean = SolidRV.empty(xx.colCount());
         sd = SolidRV.empty(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
-            mean.set(i, xx.mapCol(i).mean().value());
+            mean.set(i, xx.mapCol(i).mean());
             sd.set(i, xx.mapCol(i).variance().sdValue());
         }
 
@@ -136,7 +136,7 @@ public class LDA implements DefaultPrintable {
         for (int i = 0; i < targetLevels.size(); i++) {
             classMean[i] = SolidRV.empty(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
-                classMean[i].set(j, x[i].mapCol(j).mean().value());
+                classMean[i].set(j, x[i].mapCol(j).mean());
             }
         }
 

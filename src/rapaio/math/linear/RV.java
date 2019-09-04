@@ -33,6 +33,7 @@ import rapaio.math.linear.dense.*;
 import rapaio.printer.*;
 
 import java.io.Serializable;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 /**
@@ -201,14 +202,21 @@ public interface RV extends Serializable, DefaultPrintable {
      * Computes a sample mean object where the sample values
      * consists of the elements of the vector.
      *
-     * @return sample mean object
+     * @return mean result
      */
-    default Mean mean() {
-        VarDouble values = VarDouble.empty();
+    default double mean() {
+        return asNumericVar().op().avg();
+    }
+
+    default double sum() {
+        return asNumericVar().op().sum();
+    }
+
+    default RV apply(Function<Double, Double> f) {
         for (int i = 0; i < count(); i++) {
-            values.addDouble(get(i));
+            set(i, f.apply(get(i)));
         }
-        return Mean.of(values);
+        return this;
     }
 
     /**

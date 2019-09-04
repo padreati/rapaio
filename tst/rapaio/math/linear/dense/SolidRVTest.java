@@ -206,7 +206,7 @@ public class SolidRVTest {
 
     @Test
     public void meanVarTest() {
-        assertEquals(Mean.of(varx).value(), x.mean().value(), TOL);
+        assertEquals(Mean.of(varx).value(), x.mean(), TOL);
         assertEquals(Variance.of(varx).value(), x.variance().value(), TOL);
     }
 

@@ -83,7 +83,7 @@ public class ISLRNew {
 
             // normalize weight matrix
             RM W = SolidRM.empty(w.count(), w.count());
-            double wsum = w.valueStream().sum();
+            double wsum = w.sum();
             for (int i = 0; i < w.count(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
@@ -96,7 +96,12 @@ public class ISLRNew {
             RM A1 = WA.t().dot(WA);
             RV b1 = WA.t().dot(W).dot(b);
 
-            x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+            try {
+                x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+            } catch(RuntimeException ex) {
+                System.out.println(ex.getMessage());
+                return Pair.from(x, err);
+            }
 
             double ee = x.norm(p);
             err.addDouble(ee);
@@ -204,18 +209,20 @@ public class ISLRNew {
 
     public static void main(String[] args) throws IOException {
 
-        Printer p = new IdeaPrinter();
+        WS.setPrinter(new IdeaPrinter());
 
-        Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of(0));
+        Frame df = Datasets.loasSAheart().removeVars(VRange.of(0)).removeVars("typea,adiposity");
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1).withName("(Intercept)");
+        Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
 
-        VarDouble intercept = VarDouble.fill(df.rowCount(), 1);
-        Frame dfa = SolidFrame.byVars(intercept).bindVars(df.mapVars(VRange.of(0, 1, 2)));
+        dfa.printSummary();
+
         RM A = SolidRM.copy(dfa);
-        RV b = SolidRM.copy(df.mapVars(VRange.of(3))).mapCol(0);
+        RV b = SolidRM.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
 
 
-        double[] pp = new double[]{2.5, 5, 10, 100, 1, 1.5};
-        double[] k = new double[]{1.01, 1.01, 1.01, 1.01, 0.9, 0.9};
+        double[] pp = new double[]{1, 1.5, 2, 2.5, 5, 10, 100};
+        double[] k = new double[]{0.8, 0.8, 0.8, 1.01, 1.1, 1.1, 2.01};
 
         List<Pair<RV, VarDouble>> numVars = new ArrayList<>();
 
@@ -223,30 +230,25 @@ public class ISLRNew {
         for (int i = 0; i < pp.length; i++) {
             double prob = pp[i];
             double h = k[i];
-            Pair<RV, VarDouble> pair = basicISLR(A, b, prob, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
             plot.lines(pair._2);
 
             WS.println("Solution 1 for p=" + Format.floatFlex(prob));
             WS.println("Min :" + Format.floatFlex(A.dot(pair._1).minus(b).norm(prob)));
-            p.printSummary(pair._1);
+            pair._1.printSummary();
             WS.println();
 
 
-            Pair<RV, VarDouble> pair2 = islrH(A, b, prob, h, 10_000, 1e-20);
+            Pair<RV, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
             plot.lines(pair2._2, color(1));
 
             WS.println("Solution 2 for p=" + Format.floatFlex(prob));
             WS.println("Min :" + Format.floatFlex(A.dot(pair2._1).minus(b).norm(prob)));
-            p.printSummary(pair2._1);
+            pair2._1.printSummary();
             WS.println();
 
         }
         WS.draw(plot);
 
-//        LinearRegression lm =
-//                LinearRegression.newLm().withInputFilters(FFAddIntercept.filter());
-//
-//        lm.predict(df, "Sales");
-//        lm.predict(df, true).printSummary();
     }
 }

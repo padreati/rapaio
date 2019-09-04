@@ -25,10 +25,13 @@
  *
  */
 
-package rapaio.ml.classifier.linear;
+package rapaio.experiment.ml.classifier.linear;
 
 import rapaio.data.*;
+import rapaio.datasets.*;
 import rapaio.experiment.math.optimization.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.printer.*;
@@ -47,13 +50,13 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     private VarDouble coef;
 
     private int maxRuns = 1_000_000;
-    private double tol = 1e-5;
+    private double tolerance = 1e-10;
 
     @Override
     public BinaryLogistic newInstance() {
         return newInstanceDecoration(new BinaryLogistic())
                 .withMaxRuns(maxRuns)
-                .withTol(tol);
+                .withTolerance(tolerance);
     }
 
     @Override
@@ -65,7 +68,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("tol=").append(tol).append(", ");
+        sb.append("tol=").append(tolerance).append(", ");
         sb.append("maxRuns=").append(maxRuns).append(", ");
         sb.append("}");
         return sb.toString();
@@ -79,7 +82,11 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                 .withTargetTypes(VType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingInputValues(false)
-                .withAllowMissingTargetValues(true);
+                .withAllowMissingTargetValues(false);
+    }
+
+    public int getMaxRuns() {
+        return maxRuns;
     }
 
     /**
@@ -91,12 +98,16 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return this;
     }
 
+    public double getTolerance() {
+        return tolerance;
+    }
+
     /**
      * Tolerance used to check the solution optimality
-     * (default value 1e-5).
+     * (default value 1e-10).
      */
-    public BinaryLogistic withTol(double tol) {
-        this.tol = tol;
+    public BinaryLogistic withTolerance(double tolerance) {
+        this.tolerance = tolerance;
         return this;
     }
 
@@ -111,21 +122,30 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return logit(z);
     }
 
-    private double regress(Frame df, int row) {
-        if (coef == null)
-            throw new IllegalArgumentException("Model has not been trained");
-        VarDouble inst = VarDouble.empty();
-        for (int i = 0; i < inputNames().length; i++) {
-            inst.addDouble(df.getDouble(row, inputName(i)));
-        }
-        return logitReg(inst);
-    }
-
     private final Function<Var, Double> logitF = this::logitReg;
     private final Function<Var, Double> logitFD = var -> {
         double y = logitReg(var);
         return y * (1 - y);
     };
+
+    private RV computeTarget(Var target) {
+        switch (target.type()) {
+            case BINARY:
+                return SolidRV.from(target);
+            case NOMINAL:
+                if (target.levels().size() != 3) {
+                    // we allow only binary outputs
+                    throw new RuntimeException("Target variable cannot be nominal with more than 2 levels.");
+                }
+                SolidRV result = SolidRV.empty(target.rowCount());
+                for (int i = 0; i < target.rowCount(); i++) {
+                    result.set(i, target.getInt(i) - 1);
+                }
+                return result;
+            default:
+                throw new IllegalArgumentException("Target variable must be nominal or binary.");
+        }
+    }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
@@ -146,8 +166,18 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         df.rvar(firstTargetName()).stream().forEach(s -> targetValues.addDouble(s.getInt() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
-        coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
+        coef = optimizer.optimize(tolerance, maxRuns, logitF, logitFD, coef, inputs, targetValues);
         return true;
+    }
+
+    private double regress(Frame df, int row) {
+        if (coef == null)
+            throw new IllegalArgumentException("Model has not been trained");
+        VarDouble inst = VarDouble.empty();
+        for (int i = 0; i < inputNames().length; i++) {
+            inst.addDouble(df.getDouble(row, inputName(i)));
+        }
+        return logitReg(inst);
     }
 
     @Override
@@ -164,5 +194,19 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
             }
         }
         return cr;
+    }
+
+    public static void main(String[] args) {
+
+        Frame df = Datasets.loasSAheart()
+                .removeVars(0)
+                .removeVars("adiposity,typea");
+
+        df.printSummary();
+
+        BinaryLogistic lr = new BinaryLogistic().withTolerance(1e-20);
+        lr.fit(df, "chd");
+        lr.predict(df).printSummary();
+        lr.coef.printContent();
     }
 }

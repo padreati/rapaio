@@ -96,7 +96,7 @@ public class PCA implements DefaultPrintable {
             mean = SolidRV.empty(x.colCount());
             sd = SolidRV.empty(x.colCount());
             for (int i = 0; i < x.colCount(); i++) {
-                mean.set(i, x.mapCol(i).mean().value());
+                mean.set(i, x.mapCol(i).mean());
                 sd.set(i, x.mapCol(i).variance().sdValue());
             }
             for (int i = 0; i < x.rowCount(); i++) {

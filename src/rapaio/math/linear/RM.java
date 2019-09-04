@@ -262,7 +262,7 @@ public interface RM extends Serializable, DefaultPrintable {
         RM scatter = SolidRM.empty(colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
-            mean[i] = mapCol(i).mean().value();
+            mean[i] = mapCol(i).mean();
         }
         for (int k = 0; k < rowCount(); k++) {
             double[] row = new double[colCount()];

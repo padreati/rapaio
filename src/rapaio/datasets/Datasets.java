@@ -186,4 +186,14 @@ public class Datasets {
                 .withQuotes(true)
                 .read(Datasets.class.getResourceAsStream("covtype.csv"));
     }
+
+    public static Frame loasSAheart() {
+        try {
+            return Csv.instance()
+                    .withTypes(VType.NOMINAL, "famhist","chd")
+                    .read(Datasets.class.getResourceAsStream("SAheart.csv"));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
 }
