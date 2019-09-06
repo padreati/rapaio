@@ -44,7 +44,7 @@ import java.util.function.Function;
  * returns it's specific missing values: "?", Double.NaN, Integer.MIN_VALUE, Long.MIN_VALUE.
  * 0 and 1 are the only possible two non missing values.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarBinary extends AbstractVar {
 
@@ -143,6 +143,9 @@ public final class VarBinary extends AbstractVar {
 
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
+     * @param rows number of rows
+     * @param fillMissing fill value for missing bit set
+     * @param fillValue fill value for data bit set
      */
     private VarBinary(final int rows, final int fillMissing, final int fillValue) {
         this.rows = rows;

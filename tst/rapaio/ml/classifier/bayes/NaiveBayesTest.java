@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
 public class NaiveBayesTest {
 

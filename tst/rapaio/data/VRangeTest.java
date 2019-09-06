@@ -30,7 +30,7 @@ import java.util.Arrays;
 
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class VRangeTest {
 

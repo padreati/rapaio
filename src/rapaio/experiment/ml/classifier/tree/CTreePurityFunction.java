@@ -33,7 +33,7 @@ import rapaio.experiment.core.tools.*;
 import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public interface CTreePurityFunction extends Serializable {
 

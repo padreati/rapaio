@@ -46,7 +46,7 @@ import static rapaio.printer.format.Format.*;
  * Naive Bayes Classifier.
  * <p>
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class NaiveBayes
         extends AbstractClassifierModel<NaiveBayes, ClassifierResult<NaiveBayes>>

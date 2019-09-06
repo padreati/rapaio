@@ -34,7 +34,7 @@ import java.io.Serializable;
  * The score is computed based on variance. The total initial variance is
  * given in payload, and also variances and weights for each split.
  *
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreePurityFunction extends Serializable {
 

@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.*;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarBinaryTest {
 

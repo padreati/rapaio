@@ -61,7 +61,7 @@ import java.util.stream.Collector;
  * <p>
  * Additionally the nominal variable is limited to 32767 levels, including missing label index.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class VarNominal extends AbstractVar {
 

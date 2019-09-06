@@ -42,7 +42,7 @@ import java.util.function.BiFunction;
  * Interface for all classification model algorithms.
  * A classifier is able to classify multiple target columns, if implementation allows that.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> extends Printable, Serializable {
 

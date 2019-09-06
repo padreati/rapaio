@@ -40,7 +40,7 @@ import java.util.function.BiFunction;
 /**
  * Interface implemented by all regression algorithms
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 public interface RegressionModel<M extends RegressionModel<M, R>, R extends RegressionResult<M>> extends Printable, Serializable {
     /**

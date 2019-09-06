@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * <p>
  * In case there is already a column called intercept, nothing will happen.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class FIntercept extends AbstractFF {
 

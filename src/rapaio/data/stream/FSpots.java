@@ -51,7 +51,7 @@ import java.util.stream.StreamSupport;
 /**
  * Stream of frame spots.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class FSpots implements Stream<FSpot>, Serializable {
 

@@ -30,7 +30,7 @@ package rapaio.experiment.ml.regression.nnet;
 import rapaio.core.RandomSource;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
 public enum TFunction {

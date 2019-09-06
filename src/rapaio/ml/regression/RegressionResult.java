@@ -42,7 +42,7 @@ import static java.util.Collections.nCopies;
 /**
  * Result of a regression prediction.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 public class RegressionResult<M extends RegressionModel> implements DefaultPrintable {
     protected final M model;

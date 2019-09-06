@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult<M>>
         implements RegressionModel<M, R> {

@@ -36,7 +36,7 @@ import java.util.Objects;
 /**
  * Frame spot is a reference to an observation from a frame and usually is used in context of streams
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class FSpot implements Serializable {
 

@@ -46,7 +46,7 @@ import java.util.stream.LongStream;
 import static org.junit.Assert.*;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class VSpotsTest {
 

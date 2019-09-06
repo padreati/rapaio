@@ -32,7 +32,7 @@ import rapaio.core.RandomSource;
 /**
  * Bernoulli distribution
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Bernoulli implements Distribution {
 

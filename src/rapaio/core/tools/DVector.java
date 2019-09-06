@@ -47,7 +47,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Vector tool class to facilitate various operations on nominal variables regarding frequencies.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class DVector implements Printable, Serializable {
 

@@ -44,7 +44,7 @@ import java.util.stream.IntStream;
 /**
  * Abstract base class for all classifier implementations.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>>
         implements ClassifierModel<M, R> {

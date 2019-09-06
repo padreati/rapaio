@@ -58,7 +58,7 @@ import static rapaio.printer.format.Format.*;
 /**
  * Implements a regression decision tree.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
 public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree>>
         implements GBTRtree<RTree, RegressionResult<RTree>>, Printable {

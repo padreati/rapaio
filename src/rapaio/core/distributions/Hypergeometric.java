@@ -33,7 +33,7 @@ import java.util.Arrays;
  * Hypergeometric distribution
  * <p>
  * Created by andrei on 13.11.2015.
- * Improved by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Improved by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Hypergeometric implements Distribution {
 

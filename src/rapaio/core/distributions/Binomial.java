@@ -37,7 +37,7 @@ import static rapaio.math.MTools.*;
  * It models the number of successes from n trials, where all trials
  * are independent Bernoulli random variables with parameter p.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Binomial implements Distribution {
 

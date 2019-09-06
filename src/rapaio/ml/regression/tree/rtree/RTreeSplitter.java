@@ -48,7 +48,7 @@ import java.util.List;
  * with any rule of the candidate, than this components decides where to be
  * assigned those instances.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreeSplitter extends Serializable {
 

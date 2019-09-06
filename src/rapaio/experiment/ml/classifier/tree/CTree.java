@@ -49,7 +49,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * Tree classifier.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class CTree
         extends AbstractClassifierModel<CTree, ClassifierResult<CTree>>

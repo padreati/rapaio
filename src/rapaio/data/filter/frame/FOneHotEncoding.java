@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * The given columns will be placed grouped, in the place of
  * the given nominal column.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class FOneHotEncoding extends AbstractFF {
 

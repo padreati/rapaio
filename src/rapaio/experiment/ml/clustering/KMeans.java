@@ -49,7 +49,7 @@ import java.util.stream.IntStream;
 /**
  * KMeans clustering algorithm
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KMeans implements Printable, DefaultPrintable {
 

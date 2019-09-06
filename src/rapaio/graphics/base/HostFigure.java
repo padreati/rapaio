@@ -33,7 +33,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class HostFigure extends BaseFigure {
 

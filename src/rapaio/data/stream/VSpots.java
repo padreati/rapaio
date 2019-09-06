@@ -49,7 +49,7 @@ import java.util.stream.StreamSupport;
  * Stream of variable spots which enrich the standard java streams with some specific
  * operations.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VSpots implements Stream<VSpot>, Serializable {
 
