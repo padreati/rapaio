@@ -38,9 +38,12 @@ public enum ColorPalette implements Serializable {
     STANDARD(new StandardColorPalette()),
     GRAY(new GrayColorPalette()),
     HUE(new HueColorPalette()),
-    RED_BLUE_GRADIENT(new RedBlueGradient());
+    RED_BLUE_GRADIENT(new RedBlueGradient()),
+    RGB_GRADIENT(new RedGreenBluePalette()),
+    HUE_BLUE_RED(new HueBlueRed());
     //
     private final Mapping palette;
+    private int size;
 
     ColorPalette(Mapping palette) {
         this.palette = palette;
@@ -50,9 +53,15 @@ public enum ColorPalette implements Serializable {
         return palette.getColor(index);
     }
 
+    public int getSize() {
+        return palette.getSize();
+    }
+
     public interface Mapping extends Serializable {
 
         Color getColor(int index);
+
+        int getSize();
     }
 }
 
@@ -102,6 +111,11 @@ class StandardColorPalette implements ColorPalette.Mapping {
         }
         return colors[index];
     }
+
+    @Override
+    public int getSize() {
+        return 256;
+    }
 }
 
 class GrayColorPalette implements ColorPalette.Mapping {
@@ -113,6 +127,11 @@ class GrayColorPalette implements ColorPalette.Mapping {
         index %= 256;
         return new Color(index, index, index);
     }
+
+    @Override
+    public int getSize() {
+        return 256;
+    }
 }
 
 class HueColorPalette implements ColorPalette.Mapping {
@@ -122,6 +141,29 @@ class HueColorPalette implements ColorPalette.Mapping {
     @Override
     public Color getColor(int index) {
         return new Color(Color.HSBtoRGB((float) (index / 360.0), 1f, 1f));
+    }
+
+    @Override
+    public int getSize() {
+        return 360;
+    }
+}
+
+class HueBlueRed implements ColorPalette.Mapping {
+
+    private static final long serialVersionUID = -1363705251691599652L;
+
+    @Override
+    public Color getColor(int index) {
+        if(index==0) {
+            return Color.LIGHT_GRAY;
+        }
+        return new Color(Color.HSBtoRGB((float) ((250. - index) / 360.), 1f, 1f));
+    }
+
+    @Override
+    public int getSize() {
+        return 250;
     }
 }
 
@@ -139,5 +181,28 @@ class RedBlueGradient implements ColorPalette.Mapping {
         int b = (int) (start.getBlue() * pp + end.getBlue() * (1 - pp));
         int a = (int) (start.getAlpha() * pp + end.getAlpha() * (1 - pp));
         return new Color(r, g, b, a);
+    }
+
+    @Override
+    public int getSize() {
+        return 360;
+    }
+}
+
+class RedGreenBluePalette implements ColorPalette.Mapping {
+
+    private static final long serialVersionUID = 7373521590860220143L;
+
+    @Override
+    public Color getColor(int index) {
+        if (index < 256) {
+            return new Color(255 - index, index, 0);
+        }
+        return new Color(0, 510 - index, index - 255);
+    }
+
+    @Override
+    public int getSize() {
+        return 510;
     }
 }

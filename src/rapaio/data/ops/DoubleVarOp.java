@@ -112,7 +112,7 @@ public class DoubleVarOp implements VarOp<VarDouble> {
     @Override
     public VarDouble mult(double a) {
         for (int i = 0; i < rowCount; i++) {
-            data[i] /= a;
+            data[i] *= a;
         }
         return source;
     }

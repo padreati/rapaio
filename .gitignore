@@ -6,3 +6,5 @@
 /bin/
 /lib/
 /rapaio.iml
+mvnsettings.xml
+.gitignore
