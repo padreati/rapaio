@@ -54,6 +54,7 @@ public class Histogram2D extends PlotComponent {
         this.y = y;
         this.options.bind(opts);
         this.options.setBins(new GOptionBins(10));
+        options.bind(opts);
     }
 
     @Override

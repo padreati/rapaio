@@ -9,6 +9,11 @@ where there is confusion, where tricks and sims are plotted.*
 2. (Computer science) *Statistics, data mining and machine learning 
 library written in Java.*
 
+### Try it online
+ 
+[![Launch rapaio with IJava binder jupyter](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
+[![Launch rapaio with IJava binder jupyter lab](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
+
 ### What gap *rapaio* tries to fill?
 
 There are a lot of software stacks out there which provides plenty of 
