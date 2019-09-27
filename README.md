@@ -1,5 +1,11 @@
 
-![rapaio logo](./docs/logo/logo-medium.png) 
+<table style="border: 0">
+<tr><td>
+
+![rapaio logo](./docs/logo/logo-small.png)
+
+</td>
+<td>
 
 ### Disambiguation
 
@@ -9,10 +15,31 @@ where there is confusion, where tricks and sims are plotted.*
 2. (Computer science) *Statistics, data mining and machine learning 
 library written in Java.*
 
-### Try it online
+</td>
+</tr>
+</table>
+
+<table style="border: 0">
+<tr><td>
+
+###### Try it online:
  
 [![Launch rapaio with IJava binder jupyter](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
 [![Launch rapaio with IJava binder jupyter lab](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
+
+</td>
+<td>
+
+###### Build status:
+
+[![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
+[![codecov.io](https://codecov.io/github/padreati/rapaio/coverage.svg?branch=master)](https://codecov.io/github/padreati/rapaio?branch=master)
+
+
+</td>
+</tr>
+</table>
+
 
 ### What gap *rapaio* tries to fill?
 
@@ -63,10 +90,4 @@ The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aurelia
 
 
 Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
-
-### Build status
-
-[![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
-[![codecov.io](https://codecov.io/github/padreati/rapaio/coverage.svg?branch=master)](https://codecov.io/github/padreati/rapaio?branch=master)
-![codecov.io](https://codecov.io/github/padreati/rapaio/branch.svg?branch=master)
 
