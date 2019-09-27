@@ -2,7 +2,7 @@
 <table style="border: none">
 <tr><td>
 
-![rapaio logo](./docs/logo/logo-small.png)
+![rapaio logo](./docs/logo/logo-medium.png)
 
 </td>
 <td>

@@ -30,6 +30,8 @@ package rapaio.io;
 import rapaio.data.*;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -279,6 +281,18 @@ public class Csv {
             return read(new FileInputStream(fileName));
         } catch (IOException e) {
             throw new RuntimeException("error at reading file", e);
+        }
+    }
+
+    public Frame readUrl(String url) {
+        try {
+            URL urlObject = new URL(url);
+            InputStream is = urlObject.openStream();
+            Frame df = read(is);
+            is.close();
+            return df;
+        } catch (IOException e) {
+            throw new RuntimeException("cannot read file from url", e);
         }
     }
 
