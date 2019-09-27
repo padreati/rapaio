@@ -1,5 +1,5 @@
 
-<table style="border: 0">
+<table style="border: none">
 <tr><td>
 
 ![rapaio logo](./docs/logo/logo-small.png)
@@ -19,7 +19,7 @@ library written in Java.*
 </tr>
 </table>
 
-<table style="border: 0">
+<table style="border: none">
 <tr><td>
 
 ###### Try it online:
@@ -39,6 +39,19 @@ library written in Java.*
 </td>
 </tr>
 </table>
+
+### Documentation
+
+**Rapaio Manual** is now published in this repository in the form of IPython notebooks format. Please inspect the notebooks folder 
+of this repository.
+
+The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
+
+### Acknowledgements
+
+
+Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
+<br/>Many thanks to SpencerPark for the java kernel he realized [IJava jupyter kernel](https://github.com/SpencerPark/IJava).
 
 
 ### What gap *rapaio* tries to fill?
@@ -79,15 +92,4 @@ study and learn. And I want to do all those things in an interactive way,
 where I would program my ideas. Java community deserves such kind of tool 
 and this library aims to fill the gap.
 
-### Documentation
-
-**Rapaio Manual** is now published in this repository in the form of IPython notebooks format. Please inspect the notebooks folder 
-of this repository.
-
-The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
-
-### Acknowledgements
-
-
-Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
 
