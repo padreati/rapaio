@@ -42,10 +42,12 @@ library written in Java.*
 
 ### Documentation
 
-**Rapaio Manual** is now published in this repository in the form of IPython notebooks format. Please inspect the notebooks folder 
-of this repository.
+**Rapaio Tutorials** is now published in the form of IPython notebooks format. 
+Please inspect the tutorials folder of 
+[rapaio-notebooks repository](https://github.com/padreati/rapaio-notebooks). 
 
-The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
+There is also a [Tutorial on Kaggle's Titanic Competition
+](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
 ### Acknowledgements
 
