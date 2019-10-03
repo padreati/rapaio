@@ -60,8 +60,8 @@ public class StandardPrinter extends AbstractPrinter {
             writer = new PrintWriter(System.out);
         }
 
-        withTextWidth(190);
-        withGraphicShape(1280, 800);
+        withTextWidth(100);
+        withGraphicShape(1200, 600);
     }
 
     @Override
