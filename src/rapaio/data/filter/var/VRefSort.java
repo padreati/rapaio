@@ -40,7 +40,7 @@ import rapaio.data.filter.VFilter;
  */
 public class VRefSort implements VFilter {
 
-    public static VRefSort filter(IntComparator... rowComparators) {
+    public static VRefSort from(IntComparator... rowComparators) {
         return new VRefSort(rowComparators);
     }
 

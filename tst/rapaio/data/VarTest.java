@@ -129,25 +129,25 @@ public class VarTest {
     @Test
     public void testRefComparator() {
         Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
-        varDouble = varDouble.fapply(VRefSort.filter(varDouble.refComparator()));
+        varDouble = varDouble.fapply(VRefSort.from(varDouble.refComparator()));
         for (int i = 1; i < varDouble.rowCount(); i++) {
             assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
         }
 
         Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
-        varLong = varLong.fapply(VRefSort.filter(varLong.refComparator()));
+        varLong = varLong.fapply(VRefSort.from(varLong.refComparator()));
         for (int i = 1; i < varLong.rowCount(); i++) {
             assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
         }
 
         Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
-        varInt = varInt.fapply(VRefSort.filter(varInt.refComparator()));
+        varInt = varInt.fapply(VRefSort.from(varInt.refComparator()));
         for (int i = 1; i < varInt.rowCount(); i++) {
             assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
         }
 
         Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
-        varNominal = varNominal.fapply(VRefSort.filter(varNominal.refComparator()));
+        varNominal = varNominal.fapply(VRefSort.from(varNominal.refComparator()));
         for (int i = 1; i < varNominal.rowCount(); i++) {
             assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);
         }

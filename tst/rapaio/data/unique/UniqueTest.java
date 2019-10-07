@@ -37,7 +37,7 @@ public class UniqueTest {
         VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
         VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
 
-        Var secondSorted = unsortedIds.fapply(VRefSort.filter(unsortedIds.refComparator()));
+        Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
         assertFalse(unsortedIds.deepEquals(secondSorted));
         assertTrue(sortedIds.deepEquals(secondSorted));
@@ -53,7 +53,7 @@ public class UniqueTest {
         VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
         VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
 
-        Var secondSorted = unsortedIds.fapply(VRefSort.filter(unsortedIds.refComparator()));
+        Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
         assertFalse(unsortedIds.deepEquals(secondSorted));
         assertTrue(sortedIds.deepEquals(secondSorted));
@@ -75,7 +75,7 @@ public class UniqueTest {
         VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
         VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
 
-        Var secondSorted = unsortedIds.fapply(VRefSort.filter(unsortedIds.refComparator()));
+        Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
         assertFalse(unsortedIds.deepEquals(secondSorted));
         assertTrue(sortedIds.deepEquals(secondSorted));
@@ -101,7 +101,7 @@ public class UniqueTest {
         VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
         VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
 
-        Var secondSorted = unsortedIds.fapply(VRefSort.filter(unsortedIds.refComparator()));
+        Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
         assertFalse(unsortedIds.deepEquals(secondSorted));
         assertTrue(sortedIds.deepEquals(secondSorted));
