@@ -113,10 +113,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
                 List<Var> vars = new ArrayList<>();
                 // collect vars from group
                 for (String name : groups.get(group)) {
-                    try {
-                        vars.add(bound.rvar(name));
-                    } catch (Throwable ignored) {
-                    }
+                    vars.add(bound.rvar(name));
                 }
                 // normalize each row
                 for (int row = 0; row < bound.rowCount(); row++) {

@@ -112,11 +112,11 @@ public class Lines extends PlotComponent {
  */
 class Clip {
 
-    private final int INSIDE = 0; // 0000
-    private final int LEFT = 1;   // 0001
-    private final int RIGHT = 2;  // 0010
-    private final int BOTTOM = 4; // 0100
-    private final int TOP = 8;    // 1000
+    private static final int INSIDE = 0; // 0000
+    private static final int LEFT = 1;   // 0001
+    private static final int RIGHT = 2;  // 0010
+    private static final int BOTTOM = 4; // 0100
+    private static final int TOP = 8;    // 1000
 
     private final double xmin;
     private final double ymin;

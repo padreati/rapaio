@@ -401,7 +401,7 @@ public class CTree
                 m -= next.size();
             }
         }
-        Collections.sort(candidateList);
+        candidateList.sort((o1, o2) -> -(Double.compare(o1.getScore(), o2.getScore())));
         if (candidateList.isEmpty() || candidateList.get(0).getGroupPredicates().isEmpty()) {
             return;
         }

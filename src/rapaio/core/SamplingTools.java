@@ -45,6 +45,9 @@ import static rapaio.core.RandomSource.nextDouble;
  */
 public final class SamplingTools {
 
+    private SamplingTools() {
+    }
+
     /**
      * Discrete sampling with repetition.
      * Nothing special, just using the uniform discrete sampler offered by the system.

@@ -34,8 +34,6 @@ import rapaio.printer.*;
 import rapaio.printer.format.*;
 
 import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static rapaio.printer.format.Format.*;
 
@@ -44,11 +42,13 @@ import static rapaio.printer.format.Format.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Confusion implements Printable {
+public final class Confusion implements Printable {
 
     public static Confusion from(Var actual, Var predict) {
         return new Confusion(actual, predict);
     }
+
+    private static final String TEXT_AC_PR = "Ac\\Pr";
 
     private final Var actual;
     private final Var predict;
@@ -77,21 +77,17 @@ public class Confusion implements Printable {
     private double errorCases = 0;
 
     private Confusion(Var actual, Var predict) {
-        this(actual, predict, false);
-    }
-
-    private Confusion(Var actual, Var predict, boolean percents) {
-        validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
         this.factors = actual.levels();
         this.cmFrequency = SolidRM.empty(factors.size() - 1, factors.size() - 1);
         this.cmProbability = SolidRM.empty(factors.size() - 1, factors.size() - 1);
         this.binary = actual.levels().size() == 3;
+        validate();
         compute();
     }
 
-    private void validate(Var actual, Var predict) {
+    private void validate() {
         if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("Actual values variable must be nominal.");
         }
@@ -174,33 +170,7 @@ public class Confusion implements Printable {
         sb.append(" - Frequency table\n");
 
         TextTable tt = TextTable.empty(factors.size() + 3, factors.size() + 3);
-        tt.textCenter(0, 0, "Ac\\Pr");
-
-        for (int i = 0; i < factors.size() - 1; i++) {
-            tt.textRight(i + 2, 0, factors.get(i + 1));
-            tt.textCenter(i + 2, 1, "|");
-            tt.textCenter(i + 2, factors.size() + 1, "|");
-            tt.textRight(0, i + 2, factors.get(i + 1));
-            tt.textRight(1, i + 2, line(factors.get(i + 1).length()));
-            tt.textRight(factors.size() + 1, i + 2, line(factors.get(i + 1).length()));
-        }
-        tt.textRight(factors.size() + 2, 0, "total");
-        tt.textRight(0, factors.size() + 2, "total");
-
-        tt.textCenter(1, 0, line("Ac\\Pr".length()));
-        tt.textCenter(factors.size() + 1, 0, line("Ac\\Pr".length()));
-        tt.textCenter(1, factors.size() + 2, line("Ac\\Pr".length()));
-        tt.textCenter(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()));
-
-        tt.textCenter(0, 1, "|");
-        tt.textCenter(1, 1, "|");
-        tt.textCenter(factors.size() + 1, 1, "|");
-        tt.textCenter(factors.size() + 2, 1, "|");
-
-        tt.textCenter(0, factors.size() + 1, "|");
-        tt.textCenter(1, factors.size() + 1, "|");
-        tt.textCenter(factors.size() + 1, factors.size() + 1, "|");
-        tt.textCenter(factors.size() + 2, factors.size() + 1, "|");
+        setupTable(tt);
 
         double[] rowTotals = new double[factors.size() - 1];
         double[] colTotals = new double[factors.size() - 1];
@@ -224,33 +194,7 @@ public class Confusion implements Printable {
 
         sb.append(" - Probability table\n");
         tt = TextTable.empty(factors.size() + 3, factors.size() + 3);
-        tt.textCenter(0, 0, "Ac\\Pr");
-
-        for (int i = 0; i < factors.size() - 1; i++) {
-            tt.textRight(i + 2, 0, factors.get(i + 1));
-            tt.textCenter(i + 2, 1, "|");
-            tt.textCenter(i + 2, factors.size() + 1, "|");
-            tt.textRight(0, i + 2, factors.get(i + 1));
-            tt.textRight(1, i + 2, line(factors.get(i + 1).length()));
-            tt.textRight(factors.size() + 1, i + 2, line(factors.get(i + 1).length()));
-        }
-        tt.textRight(factors.size() + 2, 0, "total");
-        tt.textRight(0, factors.size() + 2, "total");
-
-        tt.textCenter(1, 0, line("Ac\\Pr".length()));
-        tt.textCenter(factors.size() + 1, 0, line("Ac\\Pr".length()));
-        tt.textCenter(1, factors.size() + 2, line("Ac\\Pr".length()));
-        tt.textCenter(factors.size() + 1, factors.size() + 2, line("Ac\\Pr".length()));
-
-        tt.textCenter(0, 1, "|");
-        tt.textCenter(1, 1, "|");
-        tt.textCenter(factors.size() + 1, 1, "|");
-        tt.textCenter(factors.size() + 2, 1, "|");
-
-        tt.textCenter(0, factors.size() + 1, "|");
-        tt.textCenter(1, factors.size() + 1, "|");
-        tt.textCenter(factors.size() + 1, factors.size() + 1, "|");
-        tt.textCenter(factors.size() + 2, factors.size() + 1, "|");
+        setupTable(tt);
 
         for (int i = 0; i < factors.size() - 1; i++) {
             for (int j = 0; j < factors.size() - 1; j++) {
@@ -265,6 +209,36 @@ public class Confusion implements Printable {
         sb.append(tt.getRawText());
 
         sb.append("\n");
+    }
+
+    private void setupTable(TextTable tt) {
+        tt.textCenter(0, 0, TEXT_AC_PR);
+
+        for (int i = 0; i < factors.size() - 1; i++) {
+            tt.textRight(i + 2, 0, factors.get(i + 1));
+            tt.textCenter(i + 2, 1, "|");
+            tt.textCenter(i + 2, factors.size() + 1, "|");
+            tt.textRight(0, i + 2, factors.get(i + 1));
+            tt.textRight(1, i + 2, line(factors.get(i + 1).length()));
+            tt.textRight(factors.size() + 1, i + 2, line(factors.get(i + 1).length()));
+        }
+        tt.textRight(factors.size() + 2, 0, "total");
+        tt.textRight(0, factors.size() + 2, "total");
+
+        tt.textCenter(1, 0, line(TEXT_AC_PR.length()));
+        tt.textCenter(factors.size() + 1, 0, line(TEXT_AC_PR.length()));
+        tt.textCenter(1, factors.size() + 2, line(TEXT_AC_PR.length()));
+        tt.textCenter(factors.size() + 1, factors.size() + 2, line(TEXT_AC_PR.length()));
+
+        tt.textCenter(0, 1, "|");
+        tt.textCenter(1, 1, "|");
+        tt.textCenter(factors.size() + 1, 1, "|");
+        tt.textCenter(factors.size() + 2, 1, "|");
+
+        tt.textCenter(0, factors.size() + 1, "|");
+        tt.textCenter(1, factors.size() + 1, "|");
+        tt.textCenter(factors.size() + 1, factors.size() + 1, "|");
+        tt.textCenter(factors.size() + 2, factors.size() + 1, "|");
     }
 
     private void addDetails(StringBuilder sb) {

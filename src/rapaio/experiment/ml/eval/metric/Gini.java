@@ -115,10 +115,10 @@ public class Gini implements DefaultPrintable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("> Gini" + (weighted ? " (Weighted):\n" : ":\n"));
+        sb.append("> Gini").append(weighted ? " (Weighted):\n" : ":\n");
         sb.append("\n");
-        sb.append("gini coefficient: " + Format.floatFlex(gini) + "\n");
-        sb.append("normalized gini coefficient: " + Format.floatFlex(normalizedGini) + "\n");
+        sb.append("gini coefficient: ").append(Format.floatFlex(gini)).append("\n");
+        sb.append("normalized gini coefficient: ").append(Format.floatFlex(normalizedGini)).append("\n");
         sb.append("\n");
 
         return sb.toString();

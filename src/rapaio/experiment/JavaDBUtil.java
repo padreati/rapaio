@@ -115,56 +115,57 @@ public class JavaDBUtil {
     }
 
     public Frame getFrame(String query) throws SQLException {
-        Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        ResultSet rs = stmt.executeQuery(query);
+        try (Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            ResultSet rs = stmt.executeQuery(query);
 
-        ResultSetMetaData md = rs.getMetaData();
-        List<String> colNames = new ArrayList<>();
-        List<List<Object>> lists = new ArrayList<>();
-        for (int i = 0; i < md.getColumnCount(); i++) {
-            colNames.add(md.getColumnLabel(i + 1));
-            lists.add(new ArrayList<>());
-        }
-        while (rs.next()) {
+            ResultSetMetaData md = rs.getMetaData();
+            List<String> colNames = new ArrayList<>();
+            List<List<Object>> lists = new ArrayList<>();
+            for (int i = 0; i < md.getColumnCount(); i++) {
+                colNames.add(md.getColumnLabel(i + 1));
+                lists.add(new ArrayList<>());
+            }
+            while (rs.next()) {
+                for (int i = 0; i < md.getColumnCount(); i++) {
+                    String sqlTypeName = md.getColumnTypeName(i + 1);
+                    switch (sqlTypeName) {
+                        case "DOUBLE":
+                        case "INTEGER":
+                            lists.get(i).add(rs.getDouble(i + 1));
+                            break;
+                        default:
+                            lists.get(i).add(rs.getString(i + 1));
+                    }
+                }
+            }
+            List<Var> vars = new ArrayList<>();
             for (int i = 0; i < md.getColumnCount(); i++) {
                 String sqlTypeName = md.getColumnTypeName(i + 1);
                 switch (sqlTypeName) {
                     case "DOUBLE":
                     case "INTEGER":
-                        lists.get(i).add(rs.getDouble(i + 1));
+                        VarDouble v1 = VarDouble.empty(lists.get(i).size());
+                        for (int j = 0; j < lists.get(i).size(); j++) {
+                            v1.setDouble(j, (Double) lists.get(i).get(j));
+                        }
+                        vars.add(v1);
                         break;
                     default:
-                        lists.get(i).add(rs.getString(i + 1));
+                        ArrayList<String> dict = new ArrayList<>();
+                        for (int j = 0; j < lists.get(i).size(); j++) {
+                            dict.add((String) lists.get(i).get(j));
+                        }
+                        VarNominal v2 = VarNominal.empty(lists.get(i).size(), dict);
+                        for (int j = 0; j < lists.get(i).size(); j++) {
+                            v2.setLabel(j, (String) lists.get(i).get(j));
+                        }
+                        vars.add(v2);
                 }
             }
-        }
-        List<Var> vars = new ArrayList<>();
-        for (int i = 0; i < md.getColumnCount(); i++) {
-            String sqlTypeName = md.getColumnTypeName(i + 1);
-            switch (sqlTypeName) {
-                case "DOUBLE":
-                case "INTEGER":
-                    VarDouble v1 = VarDouble.empty(lists.get(i).size());
-                    for (int j = 0; j < lists.get(i).size(); j++) {
-                        v1.setDouble(j, (Double) lists.get(i).get(j));
-                    }
-                    vars.add(v1);
-                    break;
-                default:
-                    ArrayList<String> dict = new ArrayList<>();
-                    for (int j = 0; j < lists.get(i).size(); j++) {
-                        dict.add((String) lists.get(i).get(j));
-                    }
-                    VarNominal v2 = VarNominal.empty(lists.get(i).size(), dict);
-                    for (int j = 0; j < lists.get(i).size(); j++) {
-                        v2.setLabel(j, (String) lists.get(i).get(j));
-                    }
-                    vars.add(v2);
+            for (int i = 0; i < vars.size(); i++) {
+                vars.get(i).withName(colNames.get(i));
             }
+            return SolidFrame.byVars(lists.get(0).size(), vars);
         }
-        for (int i = 0; i < vars.size(); i++) {
-            vars.get(i).withName(colNames.get(i));
-        }
-        return SolidFrame.byVars(lists.get(0).size(), vars);
     }
 }

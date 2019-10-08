@@ -32,6 +32,8 @@ import rapaio.experiment.ml.classifier.svm.kernel.cache.KernelCache;
 import rapaio.experiment.ml.classifier.svm.kernel.cache.MapKernelCache;
 import rapaio.experiment.ml.classifier.svm.kernel.cache.SolidKernelCache;
 
+import java.util.Arrays;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
@@ -44,7 +46,7 @@ public abstract class AbstractKernel implements Kernel {
 
     @Override
     public void buildKernel(String[] varNames, Frame df) {
-        this.varNames = varNames;
+        this.varNames = Arrays.copyOf(varNames, varNames.length);
         if (df.rowCount() <= 10_000) {
             cache = new SolidKernelCache(df);
         } else {

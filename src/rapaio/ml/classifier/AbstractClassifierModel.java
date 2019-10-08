@@ -250,7 +250,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
             FitSetup setup = new FitSetup();
             setup.df = df;
             setup.w = w;
-            setup.targetVars = targetVars;
+            setup.targetVars = Arrays.copyOf(targetVars, targetVars.length);
             return setup;
         }
     }

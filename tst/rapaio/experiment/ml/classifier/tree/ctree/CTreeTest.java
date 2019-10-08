@@ -35,7 +35,7 @@ import rapaio.ml.common.predicate.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -68,7 +68,7 @@ public class CTreeTest {
     }
 
     @Test
-    public void testBuilderID3() throws IOException, URISyntaxException {
+    public void testBuilderID3() {
         Frame df = Datasets.loadMushrooms();
         df = FRetainTypes.on(VType.NOMINAL).fapply(df);
         df.printSummary();
@@ -80,13 +80,13 @@ public class CTreeTest {
         candidate.addGroup(RowPredicate.numLessEqual("test", 0));
         candidate.addGroup(RowPredicate.numGreater("test", 0));
 
-        assertEquals(1, candidate.compareTo(new CTreeCandidate(2, "test")));
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(0.5, "test")));
+        assertTrue(candidate.getScore() < new CTreeCandidate(2, "test").getScore());
+        assertTrue(candidate.getScore() > new CTreeCandidate(-2, "test").getScore());
+        assertTrue(candidate.getScore() > new CTreeCandidate(0.5, "test").getScore());
     }
 
     @Test
-    public void testPredictorStandard() throws IOException, URISyntaxException {
+    public void testPredictorStandard() {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
         tree.fit(df, "class");
@@ -107,6 +107,4 @@ public class CTreeTest {
         match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
-
-
 }

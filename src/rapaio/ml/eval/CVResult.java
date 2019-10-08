@@ -95,10 +95,10 @@ public class CVResult {
         Var modelName = VarNominal.empty(0).withName("model");
         Var meanScore = VarDouble.empty().withName("mean");
         Var stdScore = VarDouble.empty().withName("se");
-        for (String modelId : metricMap.keySet()) {
-            modelName.addLabel(modelId);
-            meanScore.addDouble(Mean.of(metricMap.get(modelId)).value());
-            stdScore.addDouble(Variance.of(metricMap.get(modelId)).sdValue());
+        for (Map.Entry<String, VarDouble> e : metricMap.entrySet()) {
+            modelName.addLabel(e.getKey());
+            meanScore.addDouble(Mean.of(e.getValue()).value());
+            stdScore.addDouble(Variance.of(e.getValue()).sdValue());
         }
         return SolidFrame.byVars(modelName, meanScore, stdScore).fapply(FRefSort.by(meanScore.refComparator()));
     }

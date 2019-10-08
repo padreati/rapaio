@@ -44,8 +44,12 @@ public final class RandomSource implements Serializable {
 
     private static Random rand = new Random();
 
+    private RandomSource() {
+    }
+
     /**
      * Set seed of random number generator
+     *
      * @param seed seed
      */
     public static void setSeed(long seed) {

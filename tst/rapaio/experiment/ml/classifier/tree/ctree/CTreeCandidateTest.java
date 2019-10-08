@@ -30,7 +30,6 @@ public class CTreeCandidateTest {
 
         CTreeCandidate b = new CTreeCandidate(0.2, "t2");
 
-        assertEquals(1, c.compareTo(b));
-        assertEquals(-1, b.compareTo(c));
+        assertTrue(c.getScore() < b.getScore());
     }
 }
