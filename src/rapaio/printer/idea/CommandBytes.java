@@ -28,6 +28,7 @@
 package rapaio.printer.idea;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -49,7 +50,7 @@ public class CommandBytes implements Serializable {
 
     private CommandBytes(Type type, byte[] bytes) {
         this.type = type;
-        this.bytes = bytes;
+        this.bytes = bytes != null ? Arrays.copyOf(bytes, bytes.length) : new byte[0];
     }
 
     public static CommandBytes newDraw(byte[] bytes) {

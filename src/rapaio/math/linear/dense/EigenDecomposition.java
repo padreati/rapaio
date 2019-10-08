@@ -52,10 +52,10 @@ public class EigenDecomposition implements Serializable {
 
     private static final long serialVersionUID = 5064091847331016868L;
 
-     // Row and column dimension (square matrix).
+    // Row and column dimension (square matrix).
     private int dimension;
 
-     // Arrays for internal storage of eigenvalues.
+    // Arrays for internal storage of eigenvalues.
     private double[] eigenValues1, eigenValues2;
 
     // Array for internal storage of eigenvectors.
@@ -102,10 +102,10 @@ public class EigenDecomposition implements Serializable {
         }
     }
 
-	private boolean isSymmetric(RM a) {
-		
-		boolean returnValue = true;
-		for (int row = 0; (row < dimension) & returnValue; row++) {
+    private boolean isSymmetric(RM a) {
+
+        boolean returnValue = true;
+        for (int row = 0; (row < dimension) & returnValue; row++) {
             for (int col = 0; (col < dimension); col++) {
                 if (!(a.get(col, row) == a.get(row, col))) {
                     returnValue = false;
@@ -113,8 +113,8 @@ public class EigenDecomposition implements Serializable {
                 }
             }
         }
-		return returnValue;
-	}
+        return returnValue;
+    }
 
     // Symmetric Householder reduction to tridiagonal form.
 
@@ -242,8 +242,8 @@ public class EigenDecomposition implements Serializable {
         //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         //  Fortran subroutine in EISPACK.
 
-        for (int i = 1; i < dimension; i++) {
-            eigenValues2[i - 1] = eigenValues2[i];
+        if (dimension - 1 >= 0) {
+            System.arraycopy(eigenValues2, 1, eigenValues2, 0, dimension - 1);
         }
         eigenValues2[dimension - 1] = 0.0;
 
@@ -613,33 +613,33 @@ public class EigenDecomposition implements Serializable {
 
                 // Wilkinson's original ad hoc shift
 
-                
-                switch(iter) {
-                case 10:
-                	exshift += x;
-                    for (int i = low; i <= n; i++) {
-                        nonSymHessenbergForm[i][i] -= x;
-                    }
-                    s = Math.abs(nonSymHessenbergForm[n][n - 1]) + Math.abs(nonSymHessenbergForm[n - 1][n - 2]);
-                    x = y = 0.75 * s;
-                    w = -0.4375 * s * s;
-                    break;
-                case 30:
-                	s = (y - x) / 2.0;
-                    s = s * s + w;
-                    if (s > 0) {
-                        s = Math.sqrt(s);
-                        if (y < x) {
-                            s = -s;
-                        }
-                        s = x - w / ((y - x) / 2.0 + s);
+
+                switch (iter) {
+                    case 10:
+                        exshift += x;
                         for (int i = low; i <= n; i++) {
-                            nonSymHessenbergForm[i][i] -= s;
+                            nonSymHessenbergForm[i][i] -= x;
                         }
-                        exshift += s;
-                        x = y = w = 0.964;
-                    }
-                	
+                        s = Math.abs(nonSymHessenbergForm[n][n - 1]) + Math.abs(nonSymHessenbergForm[n - 1][n - 2]);
+                        x = y = 0.75 * s;
+                        w = -0.4375 * s * s;
+                        break;
+                    case 30:
+                        s = (y - x) / 2.0;
+                        s = s * s + w;
+                        if (s > 0) {
+                            s = Math.sqrt(s);
+                            if (y < x) {
+                                s = -s;
+                            }
+                            s = x - w / ((y - x) / 2.0 + s);
+                            for (int i = low; i <= n; i++) {
+                                nonSymHessenbergForm[i][i] -= s;
+                            }
+                            exshift += s;
+                            x = y = w = 0.964;
+                        }
+
                 }
 
                 // MATLAB's new ad hoc shift
@@ -923,7 +923,7 @@ public class EigenDecomposition implements Serializable {
     /**
      * Return the real parts of the eigenvalues
      *
-     * @return real(diag(D))
+     * @return real(diag ( D))
      */
     public double[] getRealEigenvalues() {
         return eigenValues1;
@@ -932,7 +932,7 @@ public class EigenDecomposition implements Serializable {
     /**
      * Return the imaginary parts of the eigenvalues
      *
-     * @return imag(diag(D))
+     * @return imag(diag ( D))
      */
     public double[] getImagEigenvalues() {
         return eigenValues2;

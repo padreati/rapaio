@@ -155,7 +155,7 @@ public class SVDecomposition implements java.io.Serializable {
     private void generateV(double[] e) {
         // If required, generate V.
         for (int k = colCount - 1; k >= 0; k--) {
-            if ((k < nrt) & (e[k] != 0.0)) {
+            if ((k < nrt) && (Math.abs(e[k]) > 0.0)) {
                 for (int j = k + 1; j < minCount; j++) {
                     double t = 0;
                     for (int i = k + 1; i < colCount; i++) {
@@ -199,7 +199,7 @@ public class SVDecomposition implements java.io.Serializable {
                 s[k] = -s[k];
             }
             for (int j = k + 1; j < colCount; j++) {
-                if ((k < nct) & (s[k] != 0.0)) {
+                if ((k < nct) && (Math.abs(s[k]) > 0.0)) {
 
                     // Apply the transformation.
                     double t = 0;
@@ -243,7 +243,7 @@ public class SVDecomposition implements java.io.Serializable {
                     e[k + 1] += 1.0;
                 }
                 e[k] = -e[k];
-                if ((k + 1 < rowCount) & (e[k] != 0.0)) {
+                if ((k + 1 < rowCount) && (Math.abs(e[k]) > 0.0)) {
 
                     // Apply the transformation.
                     for (int i = k + 1; i < rowCount; i++) {
@@ -537,7 +537,7 @@ public class SVDecomposition implements java.io.Serializable {
      * as argmax ||Ax||/||x||.
      * <p>
      * See more details here: https://en.wikipedia.org/wiki/Operator_norm
-     *
+     * <p>
      * The value of the operator norm is equal with the first and biggest singular value.
      * For details, see: https://en.wikipedia.org/wiki/Min-max_theorem#Min-max_principle_for_singular_values
      *
@@ -549,7 +549,7 @@ public class SVDecomposition implements java.io.Serializable {
 
     /**
      * Two norm condition number.
-     *
+     * <p>
      * See: https://en.wikipedia.org/wiki/Condition_number
      *
      * @return max(S)/min(S)

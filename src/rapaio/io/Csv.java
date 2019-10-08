@@ -602,7 +602,7 @@ public class Csv {
                             text.addLabel(value);
                         }
                         return;
-                    } catch (Throwable th) {
+                    } catch (IllegalArgumentException th) {
                         // if it's the last default type, than nothing else could be done
                         if (var.type() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
                             throw new IllegalArgumentException(
@@ -644,7 +644,7 @@ public class Csv {
 
                 try {
                     var.addLabel(value);
-                } catch (Throwable th) {
+                } catch (IllegalArgumentException th) {
                     throw new IllegalArgumentException(
                             String.format("Could not parse value %s in type %s for variable with name: %s. Error: %s",
                                     value, var.type(), var.name(), th.getMessage()));

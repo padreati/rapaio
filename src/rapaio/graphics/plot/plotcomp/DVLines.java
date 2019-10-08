@@ -66,8 +66,6 @@ public class DVLines extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
 
-        Range range = parent.getRange();
-
         double x1 = parent.xScale(indexes.getDouble(0));
         double y1 = parent.yScale(0);
         double x2 = parent.xScale(indexes.getDouble(indexes.rowCount()-1));

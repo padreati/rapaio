@@ -49,7 +49,6 @@ public class Time {
     public static <T> T showRun(String message, Supplier<T> task) {
         long start = System.currentTimeMillis();
         T t = task.get();
-        long stop = System.currentTimeMillis();
         System.out.println(message != null ? message + ": " : "" + Duration.of(System.currentTimeMillis() - start, ChronoUnit.MILLIS).toString());
         return t;
     }

@@ -781,11 +781,10 @@ public class MTools {
         double ret;
         if (z < 15.0) {
             double z2 = 2.0 * z;
-            if (Math.floor(z2) == z2) {
-                ret = EXACT_STIRLING_ERRORS[(int) z2];
+            if (Math.abs(Math.floor(z2) - z2) > 0) {
+                ret = lnGamma(z + 1.0) - (z + 0.5) * Math.log(z) + z - HALF_LOG_2_PI;
             } else {
-                ret = lnGamma(z + 1.0) - (z + 0.5) * Math.log(z) +
-                        z - HALF_LOG_2_PI;
+                ret = EXACT_STIRLING_ERRORS[(int) z2];
             }
         } else {
             double z2 = z * z;
@@ -825,7 +824,7 @@ public class MTools {
             double ej = 2.0 * x * v;
             v *= v;
             int j = 1;
-            while (s1 != s) {
+            while (Math.abs(s1 - s) > 0) {
                 s = s1;
                 ej *= v;
                 s1 = s + ej / ((j * 2) + 1);

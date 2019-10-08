@@ -77,7 +77,7 @@ public class BoxPlot extends HostFigure {
     }
 
     public BoxPlot(Var[] vars, GOption... opts) {
-        this.vars = vars;
+        this.vars = Arrays.copyOf(vars, vars.length);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
@@ -129,7 +129,7 @@ public class BoxPlot extends HostFigure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        double xSpotWidth = getViewport().width / vars.length;
+        double xSpotWidth = 1.0 * getViewport().width / vars.length;
 
         for (int i = 0; i < vars.length; i++) {
             bottomMarkersPos.add(i * xSpotWidth + xSpotWidth / 2);

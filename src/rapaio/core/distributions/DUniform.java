@@ -99,7 +99,7 @@ public class DUniform implements Distribution {
         }
         double v = a + p * n;
         int vi = (int) v;
-        if (vi == v)
+        if (Math.abs(v - Math.floor(v)) > 0)
             return vi - 1;
         return vi;
     }

@@ -354,7 +354,6 @@ public class TextTable {
     }
 
     private String computeSplitText(int consoleWidth) {
-        int headerColLen = Arrays.stream(finalLen).limit(headerCols).sum();
 
         StringBuilder sb = new StringBuilder();
 

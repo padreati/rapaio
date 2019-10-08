@@ -31,6 +31,7 @@ import rapaio.math.*;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,8 +48,8 @@ public class XWilkinson {
     public static final double DEEFAULT_EPS = 1e-10;
 
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
-        this.w = w;
-        this.Q = Q;
+        this.w = Arrays.copyOf(w, w.length);
+        this.Q = Arrays.copyOf(Q, Q.length);
         this.base = base;
         this.eps = eps;
     }

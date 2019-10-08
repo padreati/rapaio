@@ -27,15 +27,19 @@
 
 package rapaio.graphics.opt;
 
+import java.util.Arrays;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
 public class GOptionLabels implements GOption<String[]> {
 
+    private static final long serialVersionUID = -2973335521011797183L;
+
     private final String[] labels;
 
     public GOptionLabels(String[] labels) {
-        this.labels = labels;
+        this.labels = Arrays.copyOf(labels, labels.length);
     }
 
     @Override

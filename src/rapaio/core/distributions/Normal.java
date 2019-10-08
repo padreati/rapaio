@@ -155,7 +155,7 @@ public class Normal implements Distribution {
          * densities for some z score
          */
         double s = x, t = 0, b = x, q = x * x, i = 1;
-        while (s != t) {
+        while (Math.abs(s - t) > 0) {
             s = (t = s) + (b *= q / (i += 2));
         }
         if (s == Double.NEGATIVE_INFINITY) {

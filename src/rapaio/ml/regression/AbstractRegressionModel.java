@@ -206,7 +206,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
             FitSetup setup = new FitSetup();
             setup.df = df;
             setup.w = w;
-            setup.targetVars = targetVars;
+            setup.targetVars = targetVars == null ? null : Arrays.copyOf(targetVars, targetVars.length);
             return setup;
         }
 

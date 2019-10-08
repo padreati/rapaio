@@ -113,42 +113,7 @@ public final class IntervalMapping implements Mapping {
 
     @Override
     public IntListIterator iterator() {
-        return onList ? listMapping.iterator() : new IntListIterator() {
-
-            int s = start;
-
-            @Override
-            public boolean hasPrevious() {
-                return s > start;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return s < end;
-            }
-
-            @Override
-            public int nextIndex() {
-                return s - start;
-            }
-
-            @Override
-            public int previousIndex() {
-                return s - start - 1;
-            }
-
-            @Override
-            public int previousInt() {
-                s--;
-                return s;
-            }
-
-            @Override
-            public int nextInt() {
-                s++;
-                return s-1;
-            }
-        };
+        return onList ? listMapping.iterator() : new MyIntListIterator(start, end);
     }
 
     @Override
@@ -183,5 +148,49 @@ class IntervalIntList extends AbstractIntList {
     @Override
     public int size() {
         return end - start;
+    }
+}
+
+class MyIntListIterator implements IntListIterator {
+    private final int start;
+    private final int end;
+    private int s;
+
+    public MyIntListIterator(int start, int end) {
+        this.start = start;
+        this.end = end;
+        s = start;
+    }
+
+    @Override
+    public boolean hasPrevious() {
+        return s > start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return s < end;
+    }
+
+    @Override
+    public int nextIndex() {
+        return s - start;
+    }
+
+    @Override
+    public int previousIndex() {
+        return s - start - 1;
+    }
+
+    @Override
+    public int previousInt() {
+        s--;
+        return s;
+    }
+
+    @Override
+    public int nextInt() {
+        s++;
+        return s - 1;
     }
 }

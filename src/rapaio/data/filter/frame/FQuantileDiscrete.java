@@ -33,6 +33,7 @@ import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VQuantileDiscrete;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class FQuantileDiscrete extends AbstractFF {
 
     private FQuantileDiscrete(double[] p, VRange vRange) {
         super(vRange);
-        this.p = p;
+        this.p = Arrays.copyOf(p, p.length);
     }
 
     @Override

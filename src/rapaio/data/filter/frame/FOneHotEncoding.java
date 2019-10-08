@@ -100,9 +100,6 @@ public class FOneHotEncoding extends AbstractFF {
             return df;
         }
 
-        // build a set for fast search
-        Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
-
         // list of variables with encoding
         List<Var> vars = new ArrayList<>();
 

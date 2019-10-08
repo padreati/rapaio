@@ -197,7 +197,7 @@ public class BoundFrame extends AbstractFrame {
     private BoundFrame(int rowCount, List<Var> vars, String[] names, Object2IntMap<String> indexes) {
         this.rowCount = rowCount;
         this.vars = vars;
-        this.names = names;
+        this.names = Arrays.copyOf(names, names.length);
         this.indexes = indexes;
     }
 
