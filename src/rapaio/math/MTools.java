@@ -824,7 +824,7 @@ public class MTools {
             double ej = 2.0 * x * v;
             v *= v;
             int j = 1;
-            while (Math.abs(s1 - s) > 0) {
+            while (Double.isNaN(s) || Math.abs(s1-s) >= 1e-100) {
                 s = s1;
                 ej *= v;
                 s1 = s + ej / ((j * 2) + 1);

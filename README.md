@@ -22,7 +22,7 @@ library written in Java.*
 <table style="border: none">
 <tr><td>
 
-###### Try it online:
+###### Try it online
  
 [![Launch rapaio with IJava binder jupyter](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
 [![Launch rapaio with IJava binder jupyter lab](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
@@ -30,11 +30,11 @@ library written in Java.*
 </td>
 <td>
 
-###### Build status:
+###### Build status
 
 [![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
 [![codecov.io](https://codecov.io/github/padreati/rapaio/coverage.svg?branch=master)](https://codecov.io/github/padreati/rapaio?branch=master)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c478ddddea484a39a7225a3fd98b3d80)](https://www.codacy.com/manual/padreati/rapaio?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=padreati/rapaio&amp;utm_campaign=Badge_Grade)
 
 </td>
 </tr>
