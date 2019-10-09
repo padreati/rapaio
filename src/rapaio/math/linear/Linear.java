@@ -27,7 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.*;
 
 /**
  * Linear algebra tool bag class.
@@ -36,6 +36,9 @@ import rapaio.math.linear.dense.SolidRM;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
 public final class Linear {
+
+    private Linear() {
+    }
 
     public static RM chol2inv(RM R) {
         return chol2inv(R, SolidRM.identity(R.rowCount()));
@@ -54,23 +57,23 @@ public final class Linear {
         int nx = X.colCount();
         double[][] L = new double[n][n];
         for (int i = 0; i < n; i++) {
-        	for (int j = 0; j < n; j++) {
-        		L[i][j] = ref.get(i, j);
-        	}
+            for (int j = 0; j < n; j++) {
+                L[i][j] = ref.get(i, j);
+            }
         }
-        
+
         SubstitutionStrategy sStrategy = new ForwardSubstitution();
         X = sStrategy.getSubstitution(n, nx, X, L);
-        
+
         sStrategy = new BackwardSubstitution();
         X = sStrategy.getSubstitution(n, nx, X, L);
-        
+
         return X;
     }
 
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
 
-    	EigenDecompStrategy eigenDecompStrategy = new EigenDecompStatistics();
+        EigenDecompStrategy eigenDecompStrategy = new EigenDecompStatistics();
 
         return eigenDecompStrategy.getEigenDecomp(s, maxRuns, tol);
     }
@@ -87,8 +90,8 @@ public final class Linear {
         return U.dot(lambda).dot(U.t());
     }
 
-    @SuppressWarnings("unused") 
-	private static boolean inTolerance(RM s, double tol) {
+    @SuppressWarnings("unused")
+    private static boolean inTolerance(RM s, double tol) {
         for (int i = 0; i < s.rowCount(); i++) {
             for (int j = i + 1; j < s.colCount(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)

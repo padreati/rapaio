@@ -198,8 +198,6 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
             for (int i = 0; i < pos; i++) {
                 hist.increment(df.getInt(sort.getInt(i), firstTargetName()), weights.getDouble(sort.getInt(i)));
             }
-            List<Integer> best = new ArrayList<>();
-            double max = Double.MIN_VALUE;
             int next = hist.findBestIndex();
             set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, next, hist));
         }

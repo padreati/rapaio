@@ -40,6 +40,9 @@ import java.io.OutputStream;
  */
 public class ImageUtility {
 
+    private ImageUtility() {
+    }
+
     public static BufferedImage buildImage(Figure figure, int width, int height) {
         return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }

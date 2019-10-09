@@ -239,13 +239,6 @@ public class RegressionResult<M extends RegressionModel> implements DefaultPrint
 
             String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).summary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
-            int pos = 0;
-            for (String line : list) {
-                pos++;
-                if (line.trim().isEmpty()) {
-                    break;
-                }
-            }
             sb.append(list.stream().collect(Collectors.joining("\n", "", "\n")));
 
             double max = Math.max(Math.max(tss.get(target), ess.get(target)), rss.get(target));

@@ -207,7 +207,7 @@ public class Gamma implements Distribution {
          **********************************************************************/
         double a = alpha;
         double beta1 = 1 / beta;
-        double aa = -1.0, aaa = -1.0, b = 0.0, c = 0.0, d = 0.0, e, r, s = 0.0, si = 0.0, ss = 0.0;
+        double aaa = -1.0, b = 0.0, c = 0.0, d = 0.0, e, r, s = 0.0, si = 0.0, ss = 0.0;
         double q0 = 0.0;
         double q1 = 0.0416666664;
         double q2 = 0.0208333723;

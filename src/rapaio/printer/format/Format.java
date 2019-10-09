@@ -58,6 +58,9 @@ public class Format {
         formatDecFlexShort.setMinimumIntegerDigits(1);
     }
 
+    private Format() {
+    }
+
     public static String floatShort(double value) {
         return formatDecShort.format(value);
     }

@@ -40,7 +40,11 @@ import static rapaio.sys.WS.*;
  * @author tutuianu
  */
 public class Summary {
+
     private static TypeStrategy typeStrategy;
+
+    private Summary() {
+    }
 
     @Deprecated
     public static String getSummary(Frame df) {

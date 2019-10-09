@@ -88,7 +88,6 @@ final class StandardPchPalette implements Mapping {
 
         // 3 is a cross
         pchs.add((g2d, x, y, sz) -> {
-            Color fill = g2d.getColor();
             g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
             g2d.fill(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
             g2d.draw(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));

@@ -36,6 +36,9 @@ import java.util.function.Supplier;
  */
 public class Time {
 
+    private Time() {
+    }
+
     public static void showRun(String message, Runnable task) {
         long start = System.currentTimeMillis();
         task.run();
@@ -60,7 +63,7 @@ public class Time {
     public static long measure(String message, Runnable task) {
         long start = System.currentTimeMillis();
         task.run();
-        return System.currentTimeMillis()-start;
+        return System.currentTimeMillis() - start;
     }
 
     public static long measure(Runnable task) {

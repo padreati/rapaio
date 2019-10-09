@@ -64,6 +64,9 @@ public class WS {
         }
     }
 
+    private WS() {
+    }
+
     public static Printer getPrinter() {
         return printer;
     }

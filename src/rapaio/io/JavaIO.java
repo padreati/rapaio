@@ -37,7 +37,10 @@ import java.io.ObjectOutputStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class JavaIO {
+public final class JavaIO {
+
+    private JavaIO() {
+    }
 
     public static Object restoreFromFile(String file) throws IOException, ClassNotFoundException {
         return restoreFromFile(new File(file));

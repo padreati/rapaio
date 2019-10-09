@@ -45,9 +45,6 @@ public class StandardPrinter extends AbstractPrinter {
 
     private final Reader reader;
     private final PrintWriter writer;
-    private int textWidth;
-    private int graphicWidth;
-    private int graphicHeight;
 
     public StandardPrinter() {
 

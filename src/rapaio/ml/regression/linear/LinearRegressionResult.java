@@ -99,11 +99,12 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
                 RV coeff = beta_hat.mapCol(i);
-                double rsa = (rs * (res.rowCount() - 1) - coeff.count() + 1) / degrees;
 
+                /*
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
+                 */
 
                 RM X = SolidRM.copy(df.mapVars(model.inputNames()));
                 RM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidRM.identity(X.colCount()));

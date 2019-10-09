@@ -38,6 +38,8 @@ import rapaio.ml.common.predicate.RowPredicate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Regression Tree Splitter. At learning time for each node, multiple
@@ -159,7 +161,7 @@ public interface RTreeSplitter extends Serializable {
             List<Mapping> mapList = Util.createMapList(df.rowCount(), groupPredicates);
             for (int row = 0; row < df.rowCount(); row++) {
                 int group = Util.getMatchedPredicate(df, row, groupPredicates);
-                if(group!=-1) {
+                if (group != -1) {
                     mapList.get(group).add(row);
                 } else {
                     int next = RandomSource.nextInt(groupPredicates.size());
@@ -175,12 +177,12 @@ public interface RTreeSplitter extends Serializable {
 Regular splitting performs a split for each candidate rule and keep the missing rows into a separate list.
  */
 final class Util {
+
+    private Util() {
+    }
+
     public static List<Mapping> createMapList(int capacity, List<RowPredicate> groupPredicates) {
-        List<Mapping> mapList = new ArrayList<>();
-        for (RowPredicate predicate : groupPredicates) {
-            mapList.add(new ListMapping());
-        }
-        return mapList;
+        return IntStream.range(0, groupPredicates.size()).boxed().map(i -> new ListMapping()).collect(Collectors.toList());
     }
 
     public static int getMatchedPredicate(Frame df, int row, List<RowPredicate> predicates) {
