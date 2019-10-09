@@ -85,6 +85,10 @@ public class WS {
         printer.println();
     }
 
+    public static void println(double value) {
+        printer.println(value);
+    }
+
     public static void println(String message) {
         printer.print(message);
         printer.println();

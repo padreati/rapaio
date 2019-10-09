@@ -27,6 +27,10 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.data.stream.*;
+import rapaio.sys.*;
 
 import java.util.List;
 
@@ -58,7 +62,7 @@ public class MappedVarTest {
         Var mapSeq = MappedVar.byRows(seq, 1, 2, 3);
         assertEquals(3, mapSeq.rowCount());
         for (int i = 0; i < mapSeq.rowCount(); i++) {
-            assertEquals(i+1, mapSeq.getInt(i));
+            assertEquals(i + 1, mapSeq.getInt(i));
         }
     }
 
@@ -210,5 +214,50 @@ public class MappedVarTest {
     @Test
     public void testToString() {
         assertEquals("MappedVar[type=int, name:?, rowCount:3]", VarInt.seq(10).mapRows(1, 2, 3).toString());
+    }
+
+    @Test
+    public void testPrinting() {
+        int[] mapping = new int[] {1, 3, 6, 9};
+
+        VarDouble vDouble = VarDouble.from(10, row -> (row+1) % 3 == 0 ? 1. : row);
+        Var mapped = vDouble.mapRows(mapping);
+        assertEquals("MappedVar(type=double) [name:\"?\", rowCount:4]\n" +
+                "row value \n" +
+                "[0]   1   \n" +
+                "[1]   3   \n" +
+                "[2]   6   \n" +
+                "[3]   9   \n", mapped.content());
+
+        assertEquals("MappedVar(type=double) [name:\"?\", rowCount:4]\n" +
+                "row value \n" +
+                "[0]   1   \n" +
+                "[1]   3   \n" +
+                "[2]   6   \n" +
+                "[3]   9   \n", mapped.fullContent());
+
+        assertEquals("> printSummary(var: ?)\n" +
+                "name: ?\n" +
+                "type: DOUBLE\n" +
+                "rows: 4, complete: 4, missing: 0\n" +
+                "   Min. : 1.000\n" +
+                "1st Qu. : 2.500\n" +
+                " Median : 4.500\n" +
+                "   Mean : 4.750\n" +
+                "2nd Qu. : 6.750\n" +
+                "   Max. : 9.000\n", mapped.summary());
+
+        assertEquals("MappedVar[type=double, name:?, rowCount:4]", mapped.toString());
+    }
+
+    @Test
+    public void filteredTests() {
+
+        RandomSource.setSeed(123);
+        Normal normal = Normal.std();
+        VarDouble h = VarDouble.from(10, normal::sampleNext);
+        h.printFullContent();
+
+        int[] mapping = h.stream().filter(s -> s.getDouble() > 0).mapToInt(VSpot::row).toArray();
     }
 }

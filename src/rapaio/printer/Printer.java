@@ -55,6 +55,11 @@ public interface Printer {
         println();
     }
 
+    default void println(double value) {
+        print(String.valueOf(value));
+        println();
+    }
+
     void draw(Figure figure, int width, int height);
 
     default void draw(Figure figure) {

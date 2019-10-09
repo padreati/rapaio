@@ -30,6 +30,7 @@ package rapaio.data;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -40,15 +41,7 @@ public final class RowComparators implements Serializable {
     private static final long serialVersionUID = -3396667513004042385L;
 
     public static IntComparator from(final IntComparator... comparators) {
-        return (row1, row2) -> {
-            for (Comparator<Integer> comparator : comparators) {
-                int comp = comparator.compare(row1, row2);
-                if (comp != 0) {
-                    return comp;
-                }
-            }
-            return 0;
-        };
+        return new AggregateComparator(comparators);
     }
 
     public static IntComparator labelComparator(final Var var, final boolean asc) {
@@ -80,5 +73,26 @@ public final class RowComparators implements Serializable {
     public static IntComparator longComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (i1, i2) -> sign * (var.getLong(i1) < var.getLong(i2) ? -1 : 1);
+    }
+}
+
+class AggregateComparator implements IntComparator {
+
+    private final IntComparator[] comparators;
+
+    public AggregateComparator(IntComparator[] comparators) {
+        this.comparators = Arrays.copyOf(comparators, comparators.length);
+    }
+
+
+    @Override
+    public int compare(int row1, int row2) {
+        for (Comparator<Integer> comparator : comparators) {
+            int comp = comparator.compare(row1, row2);
+            if (comp != 0) {
+                return comp;
+            }
+        }
+        return 0;
     }
 }

@@ -122,7 +122,7 @@ public class DoubleVarOp implements VarOp<VarDouble> {
         int[] rows = new int[rowCount];
         int len = 0;
         for (int i = 0; i < rowCount; i++) {
-            if(source.isMissing(i)) {
+            if (source.isMissing(i)) {
                 continue;
             }
             rows[len++] = i;

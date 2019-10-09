@@ -231,9 +231,9 @@ public class MappedVar extends AbstractVar {
     @Override
     void stringPutValue(TextTable tt, int i, int j, int row) {
         if (source instanceof AbstractVar) {
-            ((AbstractVar) source).stringPutValue(tt, i, j, row);
+            ((AbstractVar) source).stringPutValue(tt, i, j, mapping.get(row));
         } else {
-            super.stringPutValue(tt, i, j, row);
+            super.stringPutValue(tt, i, j, mapping.get(row));
         }
     }
 }
