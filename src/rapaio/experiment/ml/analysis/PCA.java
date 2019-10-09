@@ -27,10 +27,18 @@
 
 package rapaio.experiment.ml.analysis;
 
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.math.linear.EigenPair;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.Arrays;
 import java.util.HashSet;

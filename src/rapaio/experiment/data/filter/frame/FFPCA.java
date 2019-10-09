@@ -27,10 +27,12 @@
 
 package rapaio.experiment.data.filter.frame;
 
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.experiment.ml.analysis.*;
-import rapaio.math.linear.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.filter.frame.AbstractFF;
+import rapaio.experiment.ml.analysis.PCA;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.function.BiFunction;
 

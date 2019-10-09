@@ -25,9 +25,13 @@
 package rapaio.math.linear.dense;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.math.linear.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.datasets.Datasets;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

@@ -27,10 +27,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.core.distributions.ChiSquare;
+import rapaio.core.tools.DVector;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 
 /**
  * Pearson Chi Square goodness of predict test.

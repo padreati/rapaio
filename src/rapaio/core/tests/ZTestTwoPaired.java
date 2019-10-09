@@ -27,11 +27,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Two paired sample z test for testing mean of differences

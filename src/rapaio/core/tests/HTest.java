@@ -27,7 +27,7 @@
 
 package rapaio.core.tests;
 
-import rapaio.printer.*;
+import rapaio.printer.Printable;
 
 /**
  * Interface for a hypothesis test

@@ -3,11 +3,13 @@ package rapaio.data.filter.var;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.correlation.*;
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 

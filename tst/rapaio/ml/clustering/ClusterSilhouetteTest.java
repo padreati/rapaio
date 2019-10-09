@@ -1,8 +1,10 @@
 package rapaio.ml.clustering;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.experiment.ml.clustering.*;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.experiment.ml.clustering.ClusterSilhouette;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.

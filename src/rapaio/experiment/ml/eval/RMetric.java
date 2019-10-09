@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.eval;
 
-import rapaio.data.*;
-import rapaio.math.*;
+import rapaio.data.Var;
+import rapaio.math.MTools;
 
 /**
  * Regression metric used by REvaluation to do regression model selection.

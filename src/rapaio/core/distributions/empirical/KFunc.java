@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions.empirical;
 
-import rapaio.printer.*;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 

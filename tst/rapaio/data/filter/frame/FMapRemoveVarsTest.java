@@ -27,8 +27,13 @@ package rapaio.data.filter.frame;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.FFilter;
 
 import static org.junit.Assert.assertTrue;
 

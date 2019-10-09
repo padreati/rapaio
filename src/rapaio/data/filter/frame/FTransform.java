@@ -27,8 +27,9 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.filter.FFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/1/19.

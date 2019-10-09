@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.

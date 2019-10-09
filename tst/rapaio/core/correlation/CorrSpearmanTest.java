@@ -28,13 +28,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.experiment.ml.clustering.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 

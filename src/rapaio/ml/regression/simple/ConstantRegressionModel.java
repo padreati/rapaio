@@ -27,13 +27,16 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.data.*;
-import rapaio.ml.common.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Printable;
+import rapaio.printer.format.TextTable;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

@@ -27,7 +27,7 @@
 
 package rapaio.math.functions;
 
-import rapaio.math.linear.*;
+import rapaio.math.linear.RV;
 
 import java.util.function.BiFunction;
 

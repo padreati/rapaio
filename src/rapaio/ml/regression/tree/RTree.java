@@ -28,18 +28,29 @@
 package rapaio.ml.regression.tree;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.tree.*;
-import rapaio.ml.common.*;
-import rapaio.ml.common.predicate.*;
-import rapaio.ml.loss.*;
-import rapaio.ml.regression.*;
-import rapaio.ml.regression.tree.rtree.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.util.*;
+import rapaio.core.stat.Sum;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.experiment.ml.regression.tree.GBTRtree;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.VarSelector;
+import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.ml.loss.L2RegressionLoss;
+import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.regression.tree.rtree.RTreeCandidate;
+import rapaio.ml.regression.tree.rtree.RTreeNode;
+import rapaio.ml.regression.tree.rtree.RTreePredictor;
+import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
+import rapaio.ml.regression.tree.rtree.RTreeSplitter;
+import rapaio.ml.regression.tree.rtree.RTreeTest;
+import rapaio.printer.Printable;
+import rapaio.printer.format.Format;
+import rapaio.util.DoublePair;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +64,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Implements a regression decision tree.

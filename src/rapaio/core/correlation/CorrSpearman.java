@@ -27,9 +27,14 @@
 
 package rapaio.core.correlation;
 
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.experiment.ml.clustering.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.RowComparators;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.filter.var.VRefSort;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;

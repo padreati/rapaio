@@ -27,7 +27,8 @@
 
 package rapaio.printer.standard;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 
 public class NominalTypeStrategy implements TypeStrategy {
 

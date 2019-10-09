@@ -1,9 +1,11 @@
 package rapaio.experiment.ml.classifier.tree.ctree;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.ml.common.predicate.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import static org.junit.Assert.*;
 

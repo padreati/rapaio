@@ -4,10 +4,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.DUniform;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.var.VRefSort;
 
 import static org.junit.Assert.*;
 

@@ -27,8 +27,8 @@
 
 package rapaio.experiment.io.json;
 
-import rapaio.experiment.io.json.stream.*;
-import rapaio.experiment.io.json.tree.*;
+import rapaio.experiment.io.json.stream.JsonSpliterator;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.io.File;
 import java.io.FileFilter;

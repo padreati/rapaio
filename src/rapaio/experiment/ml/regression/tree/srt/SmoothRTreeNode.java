@@ -29,10 +29,13 @@ package rapaio.experiment.ml.regression.tree.srt;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.*;
-import rapaio.experiment.ml.regression.tree.*;
-import rapaio.ml.common.*;
-import rapaio.util.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.experiment.ml.regression.tree.SmoothRTree;
+import rapaio.ml.common.VarSelector;
+import rapaio.util.Pin;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.

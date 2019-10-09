@@ -27,11 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.experiment.core.tools.*;
-import rapaio.math.linear.*;
-import rapaio.printer.format.*;
+import rapaio.core.distributions.ChiSquare;
+import rapaio.data.Var;
+import rapaio.experiment.core.tools.DTable;
+import rapaio.math.linear.RM;
+import rapaio.printer.format.Format;
 
 import java.util.ArrayList;
 import java.util.Arrays;

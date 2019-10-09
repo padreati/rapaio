@@ -2,10 +2,13 @@ package rapaio.printer.format;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 

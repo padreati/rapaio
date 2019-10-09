@@ -31,19 +31,24 @@ package rapaio.experiment.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.experiment.ml.classifier.svm.kernel.*;
-import rapaio.math.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.sample.Sample;
+import rapaio.experiment.ml.classifier.svm.kernel.Kernel;
+import rapaio.experiment.ml.classifier.svm.kernel.PolyKernel;
+import rapaio.math.MTools;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.DefaultPrintable;
 
 import java.io.Serializable;
 import java.util.BitSet;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Class for building a binary support vector machine.

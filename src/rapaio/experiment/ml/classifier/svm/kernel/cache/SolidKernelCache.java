@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel.cache;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.

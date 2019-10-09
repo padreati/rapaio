@@ -27,8 +27,9 @@ package rapaio.core.distributions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.*;
-import rapaio.io.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.io.Csv;
 
 import java.io.IOException;
 

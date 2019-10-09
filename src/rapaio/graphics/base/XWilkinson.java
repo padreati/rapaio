@@ -27,7 +27,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.math.*;
+import rapaio.math.MTools;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

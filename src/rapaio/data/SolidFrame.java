@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import rapaio.math.linear.*;
+import rapaio.math.linear.RM;
 
 import java.util.ArrayList;
 import java.util.Arrays;

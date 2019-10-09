@@ -27,12 +27,18 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.ml.common.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Printable;
+import rapaio.printer.format.Format;
 
 /**
  * Simple regression which predicts with the median value of the target columns.

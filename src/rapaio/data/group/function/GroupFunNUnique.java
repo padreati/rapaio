@@ -28,9 +28,12 @@
 package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.*;
-import rapaio.data.group.*;
-import rapaio.data.unique.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.group.Group;
+import rapaio.data.unique.Unique;
 
 import java.util.List;
 

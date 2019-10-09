@@ -27,7 +27,11 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
 
 import java.util.ArrayList;
 import java.util.HashMap;

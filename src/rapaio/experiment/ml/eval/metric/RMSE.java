@@ -27,9 +27,13 @@
 
 package rapaio.experiment.ml.eval.metric;
 
-import rapaio.data.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 
 /**
  * Regression evaluation tool which enables one to compute

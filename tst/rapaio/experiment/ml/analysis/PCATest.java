@@ -27,15 +27,19 @@ package rapaio.experiment.ml.analysis;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.classifier.ensemble.*;
-import rapaio.io.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.eval.metric.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.classifier.ensemble.CForest;
+import rapaio.io.Csv;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.eval.metric.Confusion;
 
 /**
  * Principal component analysis decomposition test

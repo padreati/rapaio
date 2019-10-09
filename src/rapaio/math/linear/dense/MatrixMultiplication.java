@@ -28,7 +28,8 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.*;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.stream.IntStream;
 

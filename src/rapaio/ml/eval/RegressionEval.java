@@ -29,10 +29,13 @@ package rapaio.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.experiment.ml.eval.*;
-import rapaio.ml.regression.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.experiment.ml.eval.RMetric;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static rapaio.sys.WS.*;
+import static rapaio.sys.WS.print;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.

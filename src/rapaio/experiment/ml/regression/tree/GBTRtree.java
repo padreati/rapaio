@@ -27,9 +27,11 @@
 
 package rapaio.experiment.ml.regression.tree;
 
-import rapaio.data.*;
-import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.ml.regression.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.

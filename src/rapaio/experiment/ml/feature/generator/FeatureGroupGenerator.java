@@ -27,7 +27,9 @@
 
 package rapaio.experiment.ml.feature.generator;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
 
 import java.util.List;
 

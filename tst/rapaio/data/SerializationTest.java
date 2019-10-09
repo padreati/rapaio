@@ -26,10 +26,10 @@ package rapaio.data;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.datasets.*;
-import rapaio.io.*;
-import rapaio.printer.format.*;
-import rapaio.sys.*;
+import rapaio.datasets.Datasets;
+import rapaio.io.JavaIO;
+import rapaio.printer.format.Format;
+import rapaio.sys.WS;
 
 import java.io.File;
 import java.io.IOException;

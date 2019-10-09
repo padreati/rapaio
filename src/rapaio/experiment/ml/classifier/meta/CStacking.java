@@ -27,11 +27,17 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import rapaio.data.*;
-import rapaio.experiment.ml.classifier.ensemble.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.experiment.ml.classifier.ensemble.CForest;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -27,7 +27,11 @@
 
 package rapaio.io;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -27,11 +27,15 @@
 
 package rapaio.experiment.selection;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.util.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.Format;
+import rapaio.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;

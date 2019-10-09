@@ -27,7 +27,7 @@
 
 package rapaio.data.group.function;
 
-import rapaio.data.group.*;
+import rapaio.data.group.GroupFun;
 
 import java.util.List;
 

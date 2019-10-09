@@ -27,8 +27,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.*;
-import rapaio.printer.format.*;
+import rapaio.math.MTools;
+import rapaio.printer.format.Format;
 
 /**
  * Discrete probability distribution which expresses the probability of a

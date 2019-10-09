@@ -27,7 +27,9 @@
 
 package rapaio.data.sample;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
 /**
  * Identity sampling means the sample is identical with the original set of data

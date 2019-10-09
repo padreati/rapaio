@@ -7,11 +7,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.datasets.*;
-import rapaio.ml.regression.tree.*;
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.VRange;
+import rapaio.data.sample.RowSampler;
+import rapaio.datasets.Datasets;
+import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
 

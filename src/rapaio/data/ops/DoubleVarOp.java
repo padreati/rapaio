@@ -29,7 +29,8 @@ package rapaio.data.ops;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import rapaio.data.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.

@@ -28,16 +28,20 @@
 package rapaio.experiment.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.eval.metric.*;
-import rapaio.printer.*;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.frame.FShuffle;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.eval.metric.Confusion;
+import rapaio.printer.Printer;
 
 import java.util.List;
 
-import static rapaio.sys.WS.*;
+import static rapaio.sys.WS.print;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -27,8 +27,8 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.*;
-import rapaio.printer.*;
+import rapaio.math.linear.RM;
+import rapaio.printer.DefaultPrintable;
 
 import java.io.Serializable;
 import java.util.Arrays;

@@ -28,7 +28,19 @@
 package rapaio.experiment.data;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import rapaio.data.*;
+import rapaio.data.AbstractFrame;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
 
 import java.util.List;
 

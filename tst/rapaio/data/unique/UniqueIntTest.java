@@ -4,9 +4,10 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.sys.WS;
 
 import java.util.Arrays;
 

@@ -2,9 +2,12 @@ package rapaio.ml.classifier.bayes;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.core.distributions.Normal;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
 
 import java.util.ArrayList;
 import java.util.Arrays;

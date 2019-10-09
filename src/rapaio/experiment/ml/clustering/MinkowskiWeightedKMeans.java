@@ -27,16 +27,24 @@
 
 package rapaio.experiment.ml.clustering;
 
-import rapaio.core.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.common.distance.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.sys.*;
-import rapaio.util.*;
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.filter.frame.FRefSort;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.ml.common.distance.KMeansInitMethod;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
+import rapaio.printer.format.Format;
+import rapaio.sys.WS;
+import rapaio.util.Pair;
 
 import java.util.Arrays;
 import java.util.HashMap;

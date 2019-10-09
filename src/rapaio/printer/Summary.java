@@ -27,12 +27,17 @@
 
 package rapaio.printer;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.printer.format.*;
-import rapaio.printer.standard.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.printer.format.TextTable;
+import rapaio.printer.standard.BinaryTypeStrategy;
+import rapaio.printer.standard.NominalTypeStrategy;
+import rapaio.printer.standard.NumericTypeStrategy;
+import rapaio.printer.standard.TypeStrategy;
 
-import static rapaio.sys.WS.*;
+import static rapaio.sys.WS.getPrinter;
 
 /**
  * TODO: this class should not exist anymore, the code should be placed at each proper class

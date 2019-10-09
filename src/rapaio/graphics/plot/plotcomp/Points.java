@@ -27,10 +27,12 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
+import rapaio.data.Var;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.PchPalette;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 

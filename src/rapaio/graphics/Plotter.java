@@ -27,15 +27,40 @@
 
 package rapaio.graphics;
 
-import rapaio.core.distributions.*;
-import rapaio.core.distributions.empirical.*;
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
-import rapaio.data.*;
-import rapaio.experiment.ml.eval.metric.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
-import rapaio.graphics.plot.plotcomp.*;
-import rapaio.util.serializable.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.experiment.ml.eval.metric.ROC;
+import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionAlpha;
+import rapaio.graphics.opt.GOptionBins;
+import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionLabels;
+import rapaio.graphics.opt.GOptionLwd;
+import rapaio.graphics.opt.GOptionPalette;
+import rapaio.graphics.opt.GOptionPch;
+import rapaio.graphics.opt.GOptionPoints;
+import rapaio.graphics.opt.GOptionProb;
+import rapaio.graphics.opt.GOptionSz;
+import rapaio.graphics.plot.BarChart;
+import rapaio.graphics.plot.BoxPlot;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.QQPlot;
+import rapaio.graphics.plot.plotcomp.ABLine;
+import rapaio.graphics.plot.plotcomp.DVLines;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.graphics.plot.plotcomp.Histogram;
+import rapaio.graphics.plot.plotcomp.Histogram2D;
+import rapaio.graphics.plot.plotcomp.Lines;
+import rapaio.graphics.plot.plotcomp.Points;
+import rapaio.graphics.plot.plotcomp.ROCCurve;
+import rapaio.util.serializable.SFunction;
 
 import java.awt.*;
 

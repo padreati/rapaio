@@ -27,8 +27,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.*;
-import rapaio.util.serializable.*;
+import rapaio.data.Var;
+import rapaio.util.serializable.SFunction;
 
 import java.awt.*;
 import java.util.Arrays;

@@ -27,8 +27,9 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.HashMap;

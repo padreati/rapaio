@@ -2,9 +2,9 @@ package rapaio.ml.regression.linear;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.math.linear.*;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.math.linear.RV;
 
 import java.io.IOException;
 

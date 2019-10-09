@@ -27,11 +27,16 @@
 
 package rapaio.experiment.ml.regression.tree.srt;
 
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.ml.loss.*;
-import rapaio.ml.regression.linear.*;
+import rapaio.core.SamplingTools;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.RV;
+import rapaio.ml.loss.L2RegressionLoss;
+import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.regression.linear.LinearRegressionResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -27,12 +27,12 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.experiment.ml.clustering.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
-import rapaio.math.*;
-import rapaio.printer.format.*;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.plot.PlotComponent;
+import rapaio.math.MTools;
+import rapaio.printer.format.Format;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

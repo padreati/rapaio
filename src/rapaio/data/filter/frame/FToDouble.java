@@ -27,8 +27,11 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.filter.var.VToDouble;
 
 import java.util.Arrays;
 import java.util.Set;

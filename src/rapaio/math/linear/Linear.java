@@ -27,7 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.*;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
  * Linear algebra tool bag class.

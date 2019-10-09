@@ -27,8 +27,10 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.*;
-import rapaio.math.linear.*;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.RV;
 
 import java.util.Arrays;
 import java.util.Objects;

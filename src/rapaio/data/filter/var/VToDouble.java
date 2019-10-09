@@ -29,9 +29,10 @@ package rapaio.data.filter.var;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
-import rapaio.data.*;
-import rapaio.data.filter.*;
-import rapaio.data.stream.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.VFilter;
+import rapaio.data.stream.VSpot;
 
 import java.util.function.Function;
 

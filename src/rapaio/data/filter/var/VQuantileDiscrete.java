@@ -27,10 +27,11 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Var;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.VFilter;
+import rapaio.printer.format.Format;
 
 import java.util.ArrayList;
 import java.util.Arrays;

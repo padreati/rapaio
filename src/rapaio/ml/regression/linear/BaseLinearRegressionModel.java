@@ -27,11 +27,13 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.math.linear.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.filter.frame.FIntercept;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.printer.Printable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/19.

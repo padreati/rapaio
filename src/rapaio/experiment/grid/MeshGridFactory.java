@@ -27,9 +27,13 @@
 
 package rapaio.experiment.grid;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.ml.classifier.*;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/12/15.

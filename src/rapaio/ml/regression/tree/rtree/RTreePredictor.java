@@ -27,9 +27,11 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.util.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.WeightedMean;
+import rapaio.data.Frame;
+import rapaio.data.VarDouble;
+import rapaio.util.DoublePair;
 
 import java.io.Serializable;
 

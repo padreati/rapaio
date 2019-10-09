@@ -27,9 +27,16 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
+import rapaio.graphics.base.HostFigure;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -39,7 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

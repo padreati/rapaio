@@ -27,12 +27,12 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.*;
-import rapaio.printer.*;
+import rapaio.data.Var;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 
 /**

@@ -2,12 +2,13 @@ package rapaio.ml.regression.simple;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.core.tests.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.ml.regression.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Uniform;
+import rapaio.core.tests.KSTestOneSample;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.ml.regression.RegressionResult;
 
 import static org.junit.Assert.*;
 

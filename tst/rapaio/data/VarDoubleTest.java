@@ -29,9 +29,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Arrays;

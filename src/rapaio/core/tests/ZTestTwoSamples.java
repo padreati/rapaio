@@ -27,11 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.data.Var;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Two sample z test: tests the difference between two sample means

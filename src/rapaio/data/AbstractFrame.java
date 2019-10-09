@@ -27,9 +27,9 @@
 
 package rapaio.data;
 
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.sys.*;
+import rapaio.printer.Summary;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import java.util.List;
 

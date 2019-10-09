@@ -27,14 +27,27 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.distributions.empirical.*;
-import rapaio.data.*;
-import rapaio.experiment.grid.*;
-import rapaio.experiment.ml.eval.metric.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.plotcomp.*;
-import rapaio.util.serializable.*;
+import rapaio.core.distributions.empirical.KFunc;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.experiment.grid.MeshGrid;
+import rapaio.experiment.ml.eval.metric.ROC;
+import rapaio.graphics.base.HostFigure;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.plotcomp.ABLine;
+import rapaio.graphics.plot.plotcomp.DVLines;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.graphics.plot.plotcomp.Histogram;
+import rapaio.graphics.plot.plotcomp.Histogram2D;
+import rapaio.graphics.plot.plotcomp.Legend;
+import rapaio.graphics.plot.plotcomp.Lines;
+import rapaio.graphics.plot.plotcomp.MeshContour;
+import rapaio.graphics.plot.plotcomp.Points;
+import rapaio.graphics.plot.plotcomp.ROCCurve;
+import rapaio.graphics.plot.plotcomp.Segment2D;
+import rapaio.util.serializable.SFunction;
 
 import java.awt.*;
 import java.util.LinkedList;

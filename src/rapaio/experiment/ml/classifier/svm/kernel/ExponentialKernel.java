@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.printer.format.Format;
 
 /**
  * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out. It is also a radial basis function kernel.

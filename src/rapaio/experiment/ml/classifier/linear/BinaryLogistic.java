@@ -27,14 +27,18 @@
 
 package rapaio.experiment.ml.classifier.linear;
 
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.experiment.math.optimization.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.math.optimization.IRLSOptimizer;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.List;

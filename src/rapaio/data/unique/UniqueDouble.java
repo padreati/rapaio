@@ -35,8 +35,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.data.Var;
+import rapaio.printer.format.Format;
 
 import java.io.Serializable;
 

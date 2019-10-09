@@ -27,11 +27,13 @@
 
 package rapaio.experiment.mc;
 
-import rapaio.core.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.DefaultPrintable;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Arrays;

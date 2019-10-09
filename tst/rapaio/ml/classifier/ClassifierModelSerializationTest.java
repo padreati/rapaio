@@ -25,14 +25,18 @@
 package rapaio.ml.classifier;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.io.*;
-import rapaio.ml.classifier.bayes.*;
-import rapaio.ml.classifier.bayes.estimator.*;
-import rapaio.ml.classifier.rule.*;
-import rapaio.ml.eval.metric.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.io.JavaIO;
+import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.ml.classifier.bayes.estimator.KernelPdf;
+import rapaio.ml.classifier.rule.OneRule;
+import rapaio.ml.eval.metric.Confusion;
 
 import java.io.File;
 import java.io.IOException;

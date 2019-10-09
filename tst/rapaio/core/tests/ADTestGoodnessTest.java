@@ -1,7 +1,7 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 

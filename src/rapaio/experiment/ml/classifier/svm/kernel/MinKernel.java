@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel

@@ -27,10 +27,10 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
+import rapaio.core.stat.Variance;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.printer.DefaultPrintable;
 
 import java.io.Serializable;
 import java.util.function.Function;

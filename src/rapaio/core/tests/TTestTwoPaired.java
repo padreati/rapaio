@@ -27,11 +27,13 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.distributions.StudentT;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * t test two paired samples for mean of differences

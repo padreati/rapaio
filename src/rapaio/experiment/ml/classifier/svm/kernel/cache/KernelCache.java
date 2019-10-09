@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel.cache;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 import java.io.Serializable;
 

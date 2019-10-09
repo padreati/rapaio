@@ -26,10 +26,11 @@ package rapaio.data.filter.frame;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.correlation.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
+import rapaio.core.RandomSource;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

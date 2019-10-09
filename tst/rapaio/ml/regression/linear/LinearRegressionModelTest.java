@@ -25,11 +25,15 @@
 package rapaio.ml.regression.linear;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.math.linear.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.io.IOException;
 

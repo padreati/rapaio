@@ -1,8 +1,8 @@
 package rapaio.experiment.ml.eval;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.*;
 

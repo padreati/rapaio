@@ -2,11 +2,13 @@ package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.datasets.*;
-import rapaio.ml.regression.tree.*;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.var.VRefSort;
+import rapaio.datasets.Datasets;
+import rapaio.ml.regression.tree.RTree;
 
 import java.util.Optional;
 

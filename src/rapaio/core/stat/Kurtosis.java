@@ -27,10 +27,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.data.*;
-import rapaio.printer.*;
+import rapaio.data.Var;
+import rapaio.printer.Printable;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Computes sample kurtosis. Formulas for sample kurtosis are taken from wikipedia page

@@ -31,14 +31,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.classifier.boost.*;
-import rapaio.experiment.ml.classifier.ensemble.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.ml.regression.tree.*;
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.VType;
+import rapaio.data.sample.RowSampler;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.classifier.boost.GBTClassifierModel;
+import rapaio.experiment.ml.classifier.ensemble.CForest;
+import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.experiment.ml.classifier.tree.CTreeTest;
+import rapaio.ml.regression.tree.RTree;
 
 import java.io.IOException;
 

@@ -1,7 +1,7 @@
 package rapaio.graphics.base;
 
 import org.junit.Test;
-import rapaio.sys.*;
+import rapaio.sys.WS;
 
 import java.time.LocalTime;
 import java.util.Locale;

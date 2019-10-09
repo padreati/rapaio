@@ -27,14 +27,18 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.math.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.core.distributions.StudentT;
+import rapaio.data.Frame;
+import rapaio.data.VarDouble;
+import rapaio.math.MTools;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Summary;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.

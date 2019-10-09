@@ -28,7 +28,11 @@
 package rapaio.experiment.ml.feature.generator;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import rapaio.data.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;

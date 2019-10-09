@@ -31,9 +31,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import rapaio.data.filter.*;
-import rapaio.data.stream.*;
-import rapaio.printer.*;
+import rapaio.data.filter.FFilter;
+import rapaio.data.stream.FSpot;
+import rapaio.data.stream.FSpots;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.Arrays;

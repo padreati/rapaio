@@ -28,10 +28,12 @@
 package rapaio.ml.regression.tree.rtree;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.mapping.*;
-import rapaio.ml.common.predicate.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.mapping.ListMapping;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.List;

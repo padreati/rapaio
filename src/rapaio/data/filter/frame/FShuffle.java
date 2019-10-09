@@ -28,9 +28,11 @@
 package rapaio.data.filter.frame;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.VRange;
+import rapaio.data.filter.FFilter;
 
 import java.util.stream.IntStream;
 

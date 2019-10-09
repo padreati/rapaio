@@ -27,10 +27,10 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
-import rapaio.math.*;
+import rapaio.data.Frame;
+import rapaio.math.MTools;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels

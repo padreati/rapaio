@@ -27,7 +27,7 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 import java.io.Serializable;
 import java.util.List;

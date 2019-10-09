@@ -27,12 +27,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.printer.format.*;
+import rapaio.core.distributions.Distribution;
+import rapaio.data.Var;
+import rapaio.data.filter.var.VSort;
+import rapaio.printer.format.Format;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
 * One-sample KS (Kolmogorov-Smirnoff) test.

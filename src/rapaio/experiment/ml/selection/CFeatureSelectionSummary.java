@@ -27,11 +27,12 @@
 
 package rapaio.experiment.ml.selection;
 
-import rapaio.core.correlation.*;
-import rapaio.data.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.util.*;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
+import rapaio.data.Frame;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.Format;
+import rapaio.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

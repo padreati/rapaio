@@ -27,7 +27,9 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.*;
+import rapaio.graphics.base.Figure;
+import rapaio.graphics.base.HostFigure;
+import rapaio.graphics.base.Range;
 
 import java.awt.*;
 import java.io.Serializable;

@@ -27,11 +27,12 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
+import rapaio.data.Var;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

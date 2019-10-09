@@ -26,10 +26,13 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
+import rapaio.core.distributions.Uniform;
+import rapaio.data.Frame;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

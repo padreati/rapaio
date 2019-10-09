@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.data.*;
-import rapaio.util.*;
+import rapaio.data.Frame;
+import rapaio.util.ValuePair;
 
 import java.io.Serializable;
 import java.util.ArrayList;

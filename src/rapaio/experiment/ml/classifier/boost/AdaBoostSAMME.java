@@ -27,12 +27,16 @@
 
 package rapaio.experiment.ml.classifier.boost;
 
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.sample.Sample;
+import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.List;

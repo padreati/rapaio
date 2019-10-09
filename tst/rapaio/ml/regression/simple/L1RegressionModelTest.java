@@ -2,9 +2,12 @@ package rapaio.ml.regression.simple;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.ml.regression.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.ml.regression.RegressionResult;
 
 import java.io.IOException;
 

@@ -27,9 +27,9 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.stream.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.stream.VSpot;
 
 import java.util.List;
 

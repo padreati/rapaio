@@ -3,10 +3,10 @@ package rapaio.data.unique;
 import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.stream.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.data.VarNominal;
+import rapaio.data.stream.VSpot;
+import rapaio.sys.WS;
 
 import java.util.Arrays;
 

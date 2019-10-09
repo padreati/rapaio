@@ -27,10 +27,15 @@
 
 package rapaio.experiment.ml.classifier.linear.impl;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
+import rapaio.core.distributions.Bernoulli;
+import rapaio.core.distributions.Uniform;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.

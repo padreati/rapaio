@@ -27,9 +27,9 @@
 
 package rapaio.core.tests;
 
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.printer.format.*;
+import rapaio.data.Var;
+import rapaio.data.filter.var.VSort;
+import rapaio.printer.format.Format;
 
 /**
  * Two-samples K-S test

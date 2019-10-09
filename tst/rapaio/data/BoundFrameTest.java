@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.datasets.*;
+import rapaio.core.RandomSource;
+import rapaio.datasets.Datasets;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;

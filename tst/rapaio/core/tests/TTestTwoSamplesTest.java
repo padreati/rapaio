@@ -25,9 +25,11 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 

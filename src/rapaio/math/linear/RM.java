@@ -27,13 +27,18 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.math.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.sys.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.VarDouble;
+import rapaio.math.MTools;
+import rapaio.math.linear.dense.MappedRM;
+import rapaio.math.linear.dense.MatrixMultiplication;
+import rapaio.math.linear.dense.SVDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.Format;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.Arrays;

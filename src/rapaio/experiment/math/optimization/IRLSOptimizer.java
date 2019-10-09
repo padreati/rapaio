@@ -27,10 +27,14 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.format.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.LUDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.format.Format;
 
 import java.util.List;
 import java.util.function.Function;

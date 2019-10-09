@@ -1,10 +1,14 @@
 package rapaio.ml.common.predicate;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.data.stream.*;
-import rapaio.math.*;
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.stream.FSpot;
+import rapaio.math.MTools;
 
 import static org.junit.Assert.assertEquals;
 

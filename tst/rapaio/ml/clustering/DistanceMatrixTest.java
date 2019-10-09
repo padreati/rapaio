@@ -2,11 +2,11 @@ package rapaio.ml.clustering;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.experiment.ml.clustering.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.assertEquals;
 

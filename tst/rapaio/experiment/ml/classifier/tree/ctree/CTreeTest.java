@@ -25,12 +25,15 @@
 package rapaio.experiment.ml.classifier.tree.ctree;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.common.predicate.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.filter.frame.FRetainTypes;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
+import rapaio.experiment.ml.classifier.tree.CTreeNode;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

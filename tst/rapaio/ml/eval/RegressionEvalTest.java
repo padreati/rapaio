@@ -2,12 +2,13 @@ package rapaio.ml.eval;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.eval.*;
-import rapaio.experiment.ml.regression.ensemble.*;
-import rapaio.ml.regression.linear.*;
+import rapaio.data.Frame;
+import rapaio.data.sample.RowSampler;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.eval.RMetric;
+import rapaio.experiment.ml.regression.ensemble.RForest;
+import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.regression.linear.RidgeRegressionModel;
 
 import java.io.IOException;
 

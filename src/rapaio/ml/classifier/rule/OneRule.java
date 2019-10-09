@@ -27,15 +27,23 @@
 
 package rapaio.ml.classifier.rule;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.classifier.rule.onerule.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
-import rapaio.util.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.RowComparators;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.data.filter.var.VRefSort;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.rule.onerule.NominalRule;
+import rapaio.ml.classifier.rule.onerule.NumericRule;
+import rapaio.ml.classifier.rule.onerule.Rule;
+import rapaio.ml.classifier.rule.onerule.RuleSet;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printable;
+import rapaio.printer.format.Format;
+import rapaio.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

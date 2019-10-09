@@ -26,11 +26,12 @@ package rapaio.math.fourier;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.sys.*;
-import rapaio.util.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.sys.WS;
+import rapaio.util.Pair;
 
 public class FFTTest {
 

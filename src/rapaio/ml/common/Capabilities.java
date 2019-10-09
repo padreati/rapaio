@@ -27,7 +27,10 @@
 
 package rapaio.ml.common;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 import java.util.Collections;

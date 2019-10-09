@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.core.tests.*;
-import rapaio.experiment.core.tools.*;
+import rapaio.core.tests.ChiSqIndependence;
+import rapaio.experiment.core.tools.DTable;
 
 import java.io.Serializable;
 

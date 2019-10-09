@@ -2,8 +2,13 @@ package rapaio.experiment.data.join;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.frame.FRefSort;
 
 import static org.junit.Assert.*;
 

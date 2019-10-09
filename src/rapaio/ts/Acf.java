@@ -27,10 +27,13 @@
 
 package rapaio.ts;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.TextTable;
 
 /**
  * Sample AutoCorrelation Function

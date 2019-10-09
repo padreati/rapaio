@@ -27,10 +27,11 @@
 
 package rapaio.experiment.ml.regression.boost.gbt;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.

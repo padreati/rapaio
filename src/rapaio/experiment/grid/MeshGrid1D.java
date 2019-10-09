@@ -27,8 +27,9 @@
 
 package rapaio.experiment.grid;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;

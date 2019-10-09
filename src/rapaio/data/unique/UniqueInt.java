@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import rapaio.data.*;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 

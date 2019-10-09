@@ -28,8 +28,10 @@
 package rapaio.printer.format;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import rapaio.data.*;
-import rapaio.sys.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Arrays;

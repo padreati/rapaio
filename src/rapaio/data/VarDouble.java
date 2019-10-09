@@ -29,8 +29,9 @@ package rapaio.data;
 
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import rapaio.data.ops.*;
-import rapaio.printer.format.*;
+import rapaio.data.ops.DoubleVarOp;
+import rapaio.data.ops.VarOp;
+import rapaio.printer.format.TextTable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -27,11 +27,16 @@
 
 package rapaio.experiment;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.data.stream.*;
-import rapaio.io.*;
-import rapaio.sys.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarNominal;
+import rapaio.data.stream.VSpot;
+import rapaio.io.Csv;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.ArrayList;

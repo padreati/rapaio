@@ -27,8 +27,11 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.filter.var.VQuantileDiscrete;
 
 import java.util.Arrays;
 import java.util.HashMap;

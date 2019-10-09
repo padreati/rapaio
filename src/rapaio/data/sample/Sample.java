@@ -27,7 +27,9 @@
 
 package rapaio.data.sample;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
 /**
  * A sample taken from a data set, eventually from a corresponding set of weights.

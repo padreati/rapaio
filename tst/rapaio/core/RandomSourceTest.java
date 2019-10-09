@@ -26,7 +26,8 @@ package rapaio.core;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/1/16.

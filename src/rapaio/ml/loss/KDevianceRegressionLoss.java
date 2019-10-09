@@ -27,7 +27,9 @@
 
 package rapaio.ml.loss;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 /**
  * No weighting implemented for now.

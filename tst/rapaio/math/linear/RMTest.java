@@ -25,7 +25,7 @@
 package rapaio.math.linear;
 
 import org.junit.Test;
-import rapaio.math.linear.dense.*;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.*;
 

@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.*;
-import rapaio.io.*;
+import rapaio.data.Frame;
+import rapaio.io.Csv;
 
 import static org.junit.Assert.*;
 

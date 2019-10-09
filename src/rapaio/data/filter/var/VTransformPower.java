@@ -27,10 +27,10 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.GeometricMean;
+import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
+import rapaio.printer.format.Format;
 
 /**
  * Filter to create monotonic power transformations

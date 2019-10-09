@@ -27,12 +27,20 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.stat.*;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.*;
-import rapaio.data.stream.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.stream.VSpot;
+import rapaio.graphics.base.HostFigure;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionPch;
+import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.PchPalette;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

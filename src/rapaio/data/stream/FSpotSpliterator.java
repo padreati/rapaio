@@ -27,7 +27,7 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 import java.util.Spliterators;
 import java.util.function.Consumer;

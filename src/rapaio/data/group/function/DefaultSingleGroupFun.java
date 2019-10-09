@@ -30,8 +30,11 @@ package rapaio.data.group.function;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
-import rapaio.data.*;
-import rapaio.data.group.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.group.Group;
 
 import java.util.ArrayList;
 import java.util.List;

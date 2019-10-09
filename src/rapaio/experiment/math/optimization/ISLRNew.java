@@ -27,15 +27,21 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.graphics.plot.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.format.*;
-import rapaio.printer.idea.*;
-import rapaio.sys.*;
-import rapaio.util.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.plot.Plot;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
+import rapaio.printer.format.Format;
+import rapaio.printer.idea.IdeaPrinter;
+import rapaio.sys.WS;
+import rapaio.util.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;

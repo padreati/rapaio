@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import rapaio.printer.format.*;
+import rapaio.printer.format.TextTable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

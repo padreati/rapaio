@@ -27,8 +27,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.*;
-import rapaio.printer.format.*;
+import rapaio.math.MTools;
+import rapaio.printer.format.Format;
 
 import static rapaio.math.MTools.*;
 

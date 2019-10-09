@@ -27,9 +27,12 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.*;
-import rapaio.ml.eval.metric.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarNominal;
+import rapaio.ml.eval.metric.Confusion;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.Arrays;

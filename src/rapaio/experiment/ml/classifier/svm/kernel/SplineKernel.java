@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
 
 /**
  * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).

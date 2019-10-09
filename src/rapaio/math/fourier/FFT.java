@@ -28,8 +28,9 @@
 
 package rapaio.math.fourier;
 
-import rapaio.data.*;
-import rapaio.util.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.util.Pair;
 
 /**
  * Fast Fourier Transform

@@ -27,15 +27,16 @@
 
 package rapaio.ml.eval.metric;
 
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.data.Var;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.printer.Printable;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 
 import java.util.List;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Confusion matrix utility.

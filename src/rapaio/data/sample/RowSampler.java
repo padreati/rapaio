@@ -27,7 +27,8 @@
 
 package rapaio.data.sample;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 

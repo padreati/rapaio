@@ -27,7 +27,7 @@
 
 package rapaio.ml.common;
 
-import rapaio.core.*;
+import rapaio.core.SamplingTools;
 
 import java.io.Serializable;
 import java.util.Arrays;

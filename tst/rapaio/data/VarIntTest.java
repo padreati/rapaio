@@ -27,9 +27,9 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
-import rapaio.core.stat.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Sum;
+import rapaio.sys.WS;
 
 import java.util.stream.IntStream;
 

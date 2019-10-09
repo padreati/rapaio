@@ -25,8 +25,9 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 

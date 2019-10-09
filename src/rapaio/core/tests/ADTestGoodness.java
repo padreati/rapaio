@@ -27,10 +27,12 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.var.VRefSort;
 
 import static java.lang.Math.*;
 import static rapaio.printer.format.Format.*;

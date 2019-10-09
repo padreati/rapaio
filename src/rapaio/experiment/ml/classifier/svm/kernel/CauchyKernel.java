@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.printer.format.Format;
 
 /**
  * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).

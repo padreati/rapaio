@@ -25,9 +25,9 @@
 package rapaio.ml.clustering;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.clustering.*;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.clustering.KMeans;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

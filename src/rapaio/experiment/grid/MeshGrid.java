@@ -27,7 +27,7 @@
 
 package rapaio.experiment.grid;
 
-import rapaio.data.*;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 

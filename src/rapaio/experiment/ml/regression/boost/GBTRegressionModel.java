@@ -27,20 +27,30 @@
 
 package rapaio.experiment.ml.regression.boost;
 
-import rapaio.data.*;
-import rapaio.experiment.ml.regression.boost.gbt.*;
-import rapaio.experiment.ml.regression.tree.*;
-import rapaio.ml.common.*;
-import rapaio.ml.loss.*;
-import rapaio.ml.regression.*;
-import rapaio.ml.regression.simple.*;
-import rapaio.ml.regression.tree.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLossL2;
+import rapaio.experiment.ml.regression.tree.GBTRtree;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.loss.L2RegressionLoss;
+import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.regression.simple.L2RegressionModel;
+import rapaio.ml.regression.tree.RTree;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Gradient Boosting Tree

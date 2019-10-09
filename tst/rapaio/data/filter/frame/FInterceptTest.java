@@ -25,7 +25,9 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertEquals;
 

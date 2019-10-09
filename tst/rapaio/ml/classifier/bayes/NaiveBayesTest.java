@@ -26,11 +26,17 @@ package rapaio.ml.classifier.bayes;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.ml.classifier.bayes.estimator.*;
-import rapaio.ml.eval.metric.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.ml.classifier.bayes.estimator.KernelPdf;
+import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
+import rapaio.ml.eval.metric.Confusion;
 
 import static org.junit.Assert.assertEquals;
 

@@ -27,11 +27,15 @@
 
 package rapaio.ml.regression.linear;
 
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.common.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.format.TextTable;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

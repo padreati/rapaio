@@ -26,11 +26,15 @@ package rapaio.experiment.ml.classifier.tree.ctree;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.experiment.ml.classifier.tree.*;
-import rapaio.ml.common.predicate.*;
-import rapaio.util.*;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.var.VApplyDouble;
+import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
+import rapaio.experiment.ml.classifier.tree.CTreeSplitter;
+import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.util.Pair;
 
 import java.util.List;
 

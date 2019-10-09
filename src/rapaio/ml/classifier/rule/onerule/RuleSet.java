@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Set of rules for one rule algorithm, one rule algorithm builds all possible rule sets and

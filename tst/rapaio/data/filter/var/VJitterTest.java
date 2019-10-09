@@ -1,10 +1,12 @@
 package rapaio.data.filter.var;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.ChiSquare;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
 
 import static org.junit.Assert.assertTrue;
 

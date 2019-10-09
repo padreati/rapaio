@@ -31,8 +31,14 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import rapaio.core.*;
-import rapaio.data.*;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 
 import java.util.ArrayList;
 import java.util.Arrays;

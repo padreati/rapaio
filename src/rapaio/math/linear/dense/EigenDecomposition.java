@@ -27,7 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.*;
+import rapaio.math.linear.RM;
 
 import java.io.Serializable;
 

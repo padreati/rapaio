@@ -27,7 +27,11 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.*;
+import rapaio.experiment.io.json.tree.JsonArray;
+import rapaio.experiment.io.json.tree.JsonNumber;
+import rapaio.experiment.io.json.tree.JsonObject;
+import rapaio.experiment.io.json.tree.JsonString;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.io.DataInputStream;
 import java.io.IOException;

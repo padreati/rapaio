@@ -27,10 +27,13 @@
 
 package rapaio.ml.regression;
 
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.sample.RowSampler;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.function.BiConsumer;

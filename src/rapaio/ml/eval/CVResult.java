@@ -27,10 +27,15 @@
 
 package rapaio.ml.eval;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.ml.regression.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.data.filter.frame.FRefSort;
+import rapaio.ml.regression.RegressionModel;
 
 import java.util.HashMap;
 import java.util.Map;

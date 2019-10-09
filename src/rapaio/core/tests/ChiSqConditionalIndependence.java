@@ -27,9 +27,11 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.core.distributions.ChiSquare;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.printer.format.Format;
 
 import java.util.List;
 

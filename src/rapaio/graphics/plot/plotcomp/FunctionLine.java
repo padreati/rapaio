@@ -27,16 +27,17 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.*;
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
-import rapaio.util.serializable.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.PlotComponent;
+import rapaio.util.serializable.SFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

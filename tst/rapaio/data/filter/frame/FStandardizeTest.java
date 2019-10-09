@@ -1,7 +1,9 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
 
 import static org.junit.Assert.assertTrue;
 

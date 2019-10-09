@@ -27,9 +27,9 @@ package rapaio.data;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.filter.frame.*;
-import rapaio.io.*;
+import rapaio.core.RandomSource;
+import rapaio.data.filter.frame.FRefSort;
+import rapaio.io.Csv;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

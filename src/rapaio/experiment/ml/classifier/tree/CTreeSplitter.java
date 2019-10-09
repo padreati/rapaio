@@ -29,10 +29,13 @@ package rapaio.experiment.ml.classifier.tree;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.ml.common.predicate.*;
-import rapaio.util.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.util.Pair;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -27,9 +27,10 @@
 
 package rapaio.sys;
 
-import rapaio.graphics.base.*;
-import rapaio.printer.*;
-import rapaio.printer.standard.*;
+import rapaio.graphics.base.Figure;
+import rapaio.graphics.base.ImageUtility;
+import rapaio.printer.Printer;
+import rapaio.printer.standard.StandardPrinter;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

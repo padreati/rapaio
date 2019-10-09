@@ -27,15 +27,19 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.ml.common.*;
-import rapaio.ml.regression.*;
-import rapaio.printer.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.Arrays;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

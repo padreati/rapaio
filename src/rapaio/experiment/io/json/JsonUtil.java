@@ -27,10 +27,11 @@
 
 package rapaio.experiment.io.json;
 
-import rapaio.experiment.io.json.stream.*;
-import rapaio.experiment.io.json.tree.*;
-import rapaio.experiment.util.stream.*;
-import rapaio.util.*;
+import rapaio.experiment.io.json.stream.JsonInputFlat;
+import rapaio.experiment.io.json.stream.LzJsonOutput;
+import rapaio.experiment.io.json.tree.JsonValue;
+import rapaio.experiment.util.stream.StreamUtil;
+import rapaio.util.Pin;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

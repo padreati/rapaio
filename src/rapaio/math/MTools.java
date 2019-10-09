@@ -27,7 +27,7 @@
 
 package rapaio.math;
 
-import rapaio.core.distributions.*;
+import rapaio.core.distributions.Normal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

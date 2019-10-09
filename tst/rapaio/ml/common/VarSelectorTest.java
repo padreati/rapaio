@@ -26,11 +26,14 @@ package rapaio.ml.common;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.tests.*;
-import rapaio.data.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
+import rapaio.core.RandomSource;
+import rapaio.core.tests.ChiSqGoodnessOfFit;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 
 import java.util.Collections;
 import java.util.HashMap;

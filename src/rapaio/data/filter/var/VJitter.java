@@ -27,9 +27,10 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 /**
  * Applies a random noise from a given distribution to a numeric vector.

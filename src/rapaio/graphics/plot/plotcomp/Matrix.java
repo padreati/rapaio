@@ -27,10 +27,10 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.graphics.base.*;
-import rapaio.graphics.opt.*;
-import rapaio.graphics.plot.*;
-import rapaio.math.linear.*;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.PlotComponent;
+import rapaio.math.linear.RM;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

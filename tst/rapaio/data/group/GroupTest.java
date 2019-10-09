@@ -3,10 +3,11 @@ package rapaio.data.group;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.datasets.Datasets;
+import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.data.group.Group.*;

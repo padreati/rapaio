@@ -28,8 +28,8 @@
 package rapaio.data.unique;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.*;
-import rapaio.printer.*;
+import rapaio.data.Var;
+import rapaio.printer.Printable;
 
 /**
  * Interface which exposes information about unique values in a variable.

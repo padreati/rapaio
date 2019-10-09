@@ -27,7 +27,7 @@
 
 package rapaio.data.group;
 
-import rapaio.data.*;
+import rapaio.data.Var;
 
 import java.util.List;
 

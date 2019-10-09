@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.printer.format.Format;
 
 /**
  * The Power kernel is also known as the (unrectified) triangular kernel.

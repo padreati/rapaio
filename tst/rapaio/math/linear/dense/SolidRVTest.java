@@ -26,10 +26,13 @@ package rapaio.math.linear.dense;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.distributions.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.math.linear.*;
+import rapaio.core.distributions.Normal;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.math.linear.RV;
 
 import java.util.Arrays;
 

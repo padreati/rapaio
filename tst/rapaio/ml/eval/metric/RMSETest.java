@@ -1,12 +1,16 @@
 package rapaio.ml.eval.metric;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.distributions.*;
-import rapaio.data.*;
-import rapaio.datasets.*;
-import rapaio.experiment.ml.eval.metric.*;
-import rapaio.ml.regression.linear.*;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
+import rapaio.data.VType;
+import rapaio.data.VarDouble;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.eval.metric.RMSE;
+import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.regression.linear.LinearRegressionResult;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

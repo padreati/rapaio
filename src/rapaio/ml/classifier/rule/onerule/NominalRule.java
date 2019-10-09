@@ -27,9 +27,9 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.*;
+import rapaio.core.tools.DVector;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Rule from one rule based algorithm for nominal variables

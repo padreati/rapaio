@@ -27,9 +27,11 @@
 
 package rapaio.ml.regression;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.printer.*;
+import rapaio.core.stat.Mean;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarDouble;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.Arrays;
 import java.util.HashMap;

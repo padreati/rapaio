@@ -2,8 +2,9 @@ package rapaio.data.filter.frame;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.*;
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 import static org.junit.Assert.*;
 

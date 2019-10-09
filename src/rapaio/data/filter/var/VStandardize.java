@@ -27,10 +27,11 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
+import rapaio.printer.format.Format;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.

@@ -27,12 +27,18 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.classifier.bayes.estimator.*;
-import rapaio.ml.common.*;
-import rapaio.printer.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
+import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
+import rapaio.ml.classifier.bayes.estimator.NomEstimator;
+import rapaio.ml.classifier.bayes.estimator.NumEstimator;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -40,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Naive Bayes Classifier.

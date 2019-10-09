@@ -27,11 +27,15 @@
 
 package rapaio.math.optim;
 
-import rapaio.data.*;
-import rapaio.math.functions.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.math.optim.linesearch.*;
+import rapaio.data.VarDouble;
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
+import rapaio.math.functions.RHessian;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.CholeskyDecomposition;
+import rapaio.math.optim.linesearch.BacktrackLineSearch;
+import rapaio.math.optim.linesearch.LineSearch;
 
 import java.util.ArrayList;
 import java.util.List;

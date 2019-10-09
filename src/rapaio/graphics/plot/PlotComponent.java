@@ -27,7 +27,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.*;
+import rapaio.graphics.base.BaseFigure;
 
 import java.awt.*;
 

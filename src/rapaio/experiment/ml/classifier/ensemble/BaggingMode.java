@@ -27,9 +27,10 @@
 
 package rapaio.experiment.ml.classifier.ensemble;
 
-import rapaio.core.tools.*;
-import rapaio.data.*;
-import rapaio.ml.classifier.*;
+import rapaio.core.tools.DVector;
+import rapaio.data.Frame;
+import rapaio.data.VarNominal;
+import rapaio.ml.classifier.ClassifierResult;
 
 import java.io.Serializable;
 import java.util.List;

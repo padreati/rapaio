@@ -27,7 +27,7 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import rapaio.ml.common.predicate.*;
+import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;

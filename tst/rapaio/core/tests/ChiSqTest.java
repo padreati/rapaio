@@ -25,8 +25,10 @@
 package rapaio.core.tests;
 
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.math.linear.dense.*;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarNominal;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.assertEquals;
 

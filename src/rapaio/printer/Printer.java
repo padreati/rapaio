@@ -27,7 +27,7 @@
 
 package rapaio.printer;
 
-import rapaio.graphics.base.*;
+import rapaio.graphics.base.Figure;
 
 /**
  * Interface for the printing system.

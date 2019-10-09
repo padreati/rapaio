@@ -27,8 +27,9 @@
 
 package rapaio.experiment.ml.clustering;
 
-import rapaio.data.*;
-import rapaio.printer.*;
+import rapaio.data.Var;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -27,11 +27,12 @@
 
 package rapaio.core.tools;
 
-import rapaio.core.*;
-import rapaio.data.*;
-import rapaio.math.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.core.RandomSource;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.math.MTools;
+import rapaio.printer.Printable;
+import rapaio.printer.format.TextTable;
 
 import java.io.Serializable;
 import java.util.Arrays;

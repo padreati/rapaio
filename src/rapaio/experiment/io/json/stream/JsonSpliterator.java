@@ -27,7 +27,7 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.tree.*;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.io.BufferedInputStream;
 import java.io.File;

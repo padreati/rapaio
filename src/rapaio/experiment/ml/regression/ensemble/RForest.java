@@ -27,12 +27,17 @@
 
 package rapaio.experiment.ml.regression.ensemble;
 
-import rapaio.data.*;
-import rapaio.data.sample.*;
-import rapaio.ml.common.*;
-import rapaio.ml.regression.*;
-import rapaio.ml.regression.tree.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.sample.Sample;
+import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.regression.tree.RTree;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.List;

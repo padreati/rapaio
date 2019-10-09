@@ -27,9 +27,12 @@
 
 package rapaio.experiment.core.tools;
 
-import rapaio.data.*;
-import rapaio.printer.*;
-import rapaio.printer.format.*;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.printer.DefaultPrintable;
+import rapaio.printer.format.TextTable;
 
 import java.io.Serializable;
 import java.util.Arrays;

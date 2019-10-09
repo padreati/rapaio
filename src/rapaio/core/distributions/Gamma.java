@@ -27,11 +27,11 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.*;
-import rapaio.math.*;
-import rapaio.printer.format.*;
+import rapaio.core.RandomSource;
+import rapaio.math.MTools;
+import rapaio.printer.format.Format;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Gamma distribution;

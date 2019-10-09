@@ -25,8 +25,11 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.data.filter.var.*;
+import rapaio.core.RandomSource;
+import rapaio.data.filter.var.VApplyDouble;
+import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.var.VSort;
+import rapaio.data.filter.var.VStandardize;
 
 import java.util.ArrayList;
 import java.util.Arrays;

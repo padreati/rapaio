@@ -27,8 +27,8 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.*;
-import rapaio.data.filter.*;
+import rapaio.data.Var;
+import rapaio.data.filter.VFilter;
 
 import java.util.function.Function;
 

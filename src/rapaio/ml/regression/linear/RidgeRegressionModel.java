@@ -26,13 +26,19 @@
  */
 package rapaio.ml.regression.linear;
 
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.math.linear.*;
-import rapaio.math.linear.dense.*;
-import rapaio.ml.common.*;
-import rapaio.printer.format.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.VType;
+import rapaio.data.Var;
+import rapaio.data.filter.frame.FIntercept;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.common.Capabilities;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -30,10 +30,14 @@ package rapaio.experiment.ml.classifier.meta;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.*;
-import rapaio.data.stream.*;
-import rapaio.ml.classifier.*;
-import rapaio.printer.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Var;
+import rapaio.data.stream.FSpot;
+import rapaio.ml.classifier.AbstractClassifierModel;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.printer.DefaultPrintable;
 
 import java.util.ArrayList;
 import java.util.List;

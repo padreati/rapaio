@@ -26,10 +26,17 @@ package rapaio.data.stream;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.util.*;
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Sum;
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.VarLong;
+import rapaio.data.VarNominal;
+import rapaio.util.Pair;
 
 import java.util.Comparator;
 import java.util.stream.DoubleStream;

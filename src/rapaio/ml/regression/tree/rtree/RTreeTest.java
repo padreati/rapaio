@@ -27,11 +27,12 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import rapaio.core.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.ml.common.predicate.*;
-import rapaio.ml.regression.tree.*;
+import rapaio.core.RandomSource;
+import rapaio.core.stat.WeightedOnlineStat;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.ml.regression.tree.RTree;
 
 import java.io.Serializable;
 import java.util.List;

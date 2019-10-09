@@ -29,15 +29,23 @@ package rapaio.experiment.ml.eval;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.*;
-import rapaio.core.stat.*;
-import rapaio.data.*;
-import rapaio.data.filter.frame.*;
-import rapaio.ml.classifier.*;
-import rapaio.ml.eval.metric.*;
-import rapaio.printer.*;
-import rapaio.printer.idea.*;
-import rapaio.sys.*;
+import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.data.filter.frame.FShuffle;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.eval.metric.Confusion;
+import rapaio.printer.Printer;
+import rapaio.printer.idea.IdeaPrinter;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +53,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.WS.*;
+import static rapaio.sys.WS.print;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -27,10 +27,12 @@
 
 package rapaio.data.sample;
 
-import rapaio.core.*;
-import rapaio.data.*;
+import rapaio.core.SamplingTools;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.format.Format.floatFlex;
 
 /**
  * Implements bootstrap row sampling (sampling with replacement)

@@ -27,7 +27,7 @@
 
 package rapaio.math.optim;
 
-import rapaio.math.linear.*;
+import rapaio.math.linear.RV;
 
 import java.util.List;
 

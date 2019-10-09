@@ -26,10 +26,11 @@ package rapaio.ml.regression.simple;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.*;
-import rapaio.data.filter.var.*;
-import rapaio.datasets.*;
-import rapaio.ml.regression.*;
+import rapaio.data.Frame;
+import rapaio.data.VarDouble;
+import rapaio.data.filter.var.VToDouble;
+import rapaio.datasets.Datasets;
+import rapaio.ml.regression.RegressionResult;
 
 import static org.junit.Assert.*;
 

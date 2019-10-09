@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.*;
+import rapaio.core.RandomSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
