@@ -80,7 +80,7 @@ public class VarDoubleTest {
         VarDouble copy = VarDouble.copy(sourceIntArray);
         assertEquals(100, copy.rowCount());
         for (int i = 0; i < 100; i++) {
-            assertEquals((double) sourceIntArray[i], copy.getDouble(i), TOL);
+            assertEquals(sourceIntArray[i], copy.getDouble(i), TOL);
         }
         assertTrue(copy.deepEquals(VarDouble.copy(sourceIntList)));
         assertTrue(copy.deepEquals(VarDouble.copy(copy)));
@@ -364,5 +364,11 @@ public class VarDoubleTest {
                 " [31]  0.6283116  [65]  0.1505781  [99] -0.8355704 [133]  1.0627032 [167] -1.1645925 \n" +
                 " [32]     ?       [66] -0.2627364 [100]     ?      [134]  0.5067461 [168]     ?      \n" +
                 " [33] -0.0846767  [67]  0.1594684 [101] -0.228796  [135] -1.4055612 [169] -1.7678708 \n", x.fullContent());
+    }
+
+    @Test
+    public void testSequence() {
+        assertTrue(VarDouble.seq(0, 0.9, 0.3).deepEquals(VarDouble.from(4, r -> r * 0.3)));
+        assertTrue(VarDouble.seq(-1, 1, 0.25).deepEquals(VarDouble.from(9, r -> r * 0.25 - 1)));
     }
 }
