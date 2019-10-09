@@ -37,7 +37,7 @@ import rapaio.printer.format.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
-public class Acf implements DefaultPrintable {
+public final class Acf implements DefaultPrintable {
 
     private final Var ts;
     private final VarInt lags;

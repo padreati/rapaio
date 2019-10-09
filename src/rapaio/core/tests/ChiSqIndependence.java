@@ -45,7 +45,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/31/17.
  */
-public class ChiSqIndependence implements HTest {
+public final class ChiSqIndependence implements HTest {
 
     /**
      * Tests the independence of unpaired observations from two variables.

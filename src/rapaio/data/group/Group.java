@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -157,17 +156,11 @@ public class Group implements Printable {
     // list of primary key variable names
     private final List<String> pkNamesList;
 
-    // set of primary key variable names
-    private final Set<String> pkVarNamesSet;
-
     // other than pk var names from source frame
     private final List<String> featureNamesList;
 
     // collection of unique structures for each primary key variable
     private final List<Unique> groupByUniques;
-
-    // tree which handles the pk values hierarchy
-    private IndexNode root;
 
     // maps rows to group ids
     private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
@@ -181,7 +174,7 @@ public class Group implements Printable {
     private Group(Frame df, List<String> groupVarNames) {
         this.df = df;
         this.pkNamesList = groupVarNames;
-        this.pkVarNamesSet = new HashSet<>(pkNamesList);
+        HashSet<String> pkVarNamesSet = new HashSet<>(pkNamesList);
         this.groupByUniques = this.pkNamesList.stream().map(varName -> Unique.of(df.rvar(varName), true)).collect(Collectors.toList());
         this.featureNamesList = new ArrayList<>();
         for (String varName : df.varNames()) {
@@ -190,7 +183,7 @@ public class Group implements Printable {
             }
             featureNamesList.add(varName);
         }
-        root = new IndexNode(null, "", "", -1, -1);
+        IndexNode root = new IndexNode(null, "", "", -1, -1);
 
         //populate rows
         int groupId = 0;

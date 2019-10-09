@@ -39,7 +39,7 @@ import static rapaio.math.MTools.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Binomial implements Distribution {
+public final class Binomial implements Distribution {
 
     public static Binomial of(double p, int n) {
         return new Binomial(p, n);
@@ -129,18 +129,18 @@ public class Binomial implements Distribution {
         p *= 1 - 64 * DBL_EPSILON;
 
         double[] zp = new double[]{z};
-        if (n < 1e5) return do_search(y, zp, p, n, pr, 1);
+        if (n < 1e5) return doSearch(y, zp, p, n, pr, 1);
         /* Otherwise be a bit cleverer in the search */
         double incr = floor(n * 0.001), oldincr;
         do {
             oldincr = incr;
-            y = do_search(y, zp, p, n, pr, incr);
+            y = doSearch(y, zp, p, n, pr, incr);
             incr = Math.max(1, floor(incr / 100));
         } while (oldincr > 1 && incr > n * 1e-20);
         return y;
     }
 
-    private static double do_search(double y, double[] z, double p, int n, double pr, double incr) {
+    private static double doSearch(double y, double[] z, double p, int n, double pr, double incr) {
         if (z[0] >= p) {
             /* search to the left */
             while (true) {

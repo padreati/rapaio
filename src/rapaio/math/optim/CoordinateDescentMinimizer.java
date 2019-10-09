@@ -76,24 +76,24 @@ public class CoordinateDescentMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            RV d1f_x = d1f.apply(sol);
-            double max = abs(d1f_x.get(0));
+            RV d1fx = d1f.apply(sol);
+            double max = abs(d1fx.get(0));
             int index = 0;
-            for (int j = 1; j < d1f_x.count(); j++) {
-                if (abs(d1f_x.get(j)) > max) {
-                    max = abs(d1f_x.get(j));
+            for (int j = 1; j < d1fx.count(); j++) {
+                if (abs(d1fx.get(j)) > max) {
+                    max = abs(d1fx.get(j));
                     index = j;
                 }
             }
-            RV delta_x = SolidRV.fill(d1f_x.count(), 0);
-            delta_x.set(index, -signum(d1f_x.get(index)));
+            RV deltaX = SolidRV.fill(d1fx.count(), 0);
+            deltaX.set(index, -signum(d1fx.get(index)));
 
-            if (abs(delta_x.norm(2)) < tol) {
+            if (abs(deltaX.norm(2)) < tol) {
                 converged = true;
                 break;
             }
-            double t = lineSearch.find(f, d1f, x, delta_x);
-            sol.plus(delta_x.dot(t));
+            double t = lineSearch.find(f, d1f, x, deltaX);
+            sol.plus(deltaX.dot(t));
         }
     }
 

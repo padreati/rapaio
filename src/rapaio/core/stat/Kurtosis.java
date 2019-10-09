@@ -90,7 +90,7 @@ public class Kurtosis implements Printable {
         return b2;
     }
 
-    public double G2() {
+    public double bigG2() {
         return G2;
     }
 

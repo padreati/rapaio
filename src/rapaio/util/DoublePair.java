@@ -33,12 +33,12 @@ import static rapaio.printer.format.Format.*;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
  */
 public class DoublePair {
-    public double _1;
-    public double _2;
+    public double p1;
+    public double p2;
 
-    protected DoublePair(double _1, double _2) {
-        this._1 = _1;
-        this._2 = _2;
+    protected DoublePair(double p1, double p2) {
+        this.p1 = p1;
+        this.p2 = p2;
     }
 
     public static DoublePair from(double u, double v) {
@@ -47,17 +47,17 @@ public class DoublePair {
 
     @Override
     public String toString() {
-        return "Pair{" + floatFlex(_1) + ", " + floatFlex(_2) + "}";
+        return "Pair{" + floatFlex(p1) + ", " + floatFlex(p2) + "}";
     }
 
 
-    public void update(double _1, double _2) {
-        this._1 = _1;
-        this._2 = _2;
+    public void update(double p1, double p2) {
+        this.p1 = p1;
+        this.p2 = p2;
     }
 
     public void update(DoublePair p) {
-        this._1 = p._1;
-        this._2 = p._2;
+        this.p1 = p.p1;
+        this.p2 = p.p2;
     }
 }

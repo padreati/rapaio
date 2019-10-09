@@ -390,7 +390,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);
-            pred.prediction(firstTargetName()).setDouble(i, result._1);
+            pred.prediction(firstTargetName()).setDouble(i, result.p1);
         }
         pred.buildComplete();
         return pred;

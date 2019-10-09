@@ -29,7 +29,7 @@ public class SkewnessTest {
         assertEquals(0.493673230307975, sk.value(), TOL);
         assertEquals(0.493673230307975, sk.b1(), TOL);
         assertEquals(0.6899293135253384, sk.g1(), TOL);
-        assertEquals(1.0284858964749477, sk.G1(), TOL);
+        assertEquals(1.0284858964749477, sk.bigG1(), TOL);
 
         assertEquals("> skewness[?]\n" +
                 "total rows: 5 (complete: 5, missing: 0)\n" +

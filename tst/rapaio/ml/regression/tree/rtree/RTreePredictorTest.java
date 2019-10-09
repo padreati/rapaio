@@ -88,31 +88,31 @@ public class RTreePredictorTest {
         right.children().add(right_right);
 
         DoublePair fit_0 = pred.predict(0, getFrame(0), root);
-        assertEquals(0, fit_0._1, TOL);
-        assertEquals(1, fit_0._2, TOL);
+        assertEquals(0, fit_0.p1, TOL);
+        assertEquals(1, fit_0.p2, TOL);
 
         DoublePair fit_7 = pred.predict(0, getFrame(7), root);
-        assertEquals(1, fit_7._1, TOL);
-        assertEquals(2, fit_7._2, TOL);
+        assertEquals(1, fit_7.p1, TOL);
+        assertEquals(2, fit_7.p2, TOL);
 
         DoublePair fit_11 = pred.predict(0, getFrame(11), root);
-        assertEquals(2, fit_11._1, TOL);
-        assertEquals(3, fit_11._2, TOL);
+        assertEquals(2, fit_11.p1, TOL);
+        assertEquals(3, fit_11.p2, TOL);
 
         DoublePair fit_20 = pred.predict(0, getFrame(20), root);
-        assertEquals(3, fit_20._1, TOL);
-        assertEquals(4, fit_20._2, TOL);
+        assertEquals(3, fit_20.p1, TOL);
+        assertEquals(4, fit_20.p2, TOL);
 
 
         // missing
 
         DoublePair fit_na = pred.predict(0, getFrame(Double.NaN), left);
-        assertEquals((0.0 * 1.0 + 1.0 * 2.0) / 3.0, fit_na._1, TOL);
-        assertEquals((1.0 + 2.0) / 2.0, fit_na._2, TOL);
+        assertEquals((0.0 * 1.0 + 1.0 * 2.0) / 3.0, fit_na.p1, TOL);
+        assertEquals((1.0 + 2.0) / 2.0, fit_na.p2, TOL);
 
         DoublePair fit_na_root = pred.predict(0, getFrame(Double.NaN), root);
-        assertEquals((0.0 * 1.0 + 1.0 * 2.0 + 2.0 * 3.0 + 3.0 * 4.0) / (1.0 + 2.0 + 3.0 + 4.0), fit_na_root._1, TOL);
-        assertEquals((1.0 + 2.0 + 3.0 + 4.0) / 4.0, fit_na_root._2, TOL);
+        assertEquals((0.0 * 1.0 + 1.0 * 2.0 + 2.0 * 3.0 + 3.0 * 4.0) / (1.0 + 2.0 + 3.0 + 4.0), fit_na_root.p1, TOL);
+        assertEquals((1.0 + 2.0 + 3.0 + 4.0) / 4.0, fit_na_root.p2, TOL);
 
 
     }

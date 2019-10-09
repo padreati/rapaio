@@ -56,7 +56,7 @@ public class CholeskyDecomposition implements Serializable {
     /**
      * Array for internal storage of decomposition.
      */
-    private final double[][] L;
+    private final double[][] l;
 
     /**
      * Row and column dimension (square matrix).
@@ -78,20 +78,20 @@ public class CholeskyDecomposition implements Serializable {
 
         // Initialize.
         n = A.rowCount();
-        L = new double[n][n];
+        l = new double[n][n];
         isspd = (A.colCount() == n);
 
         // Main loop.
         for (int j = 0; j < n; j++) {
-            double[] Lrowj = L[j];
+            double[] Lrowj = l[j];
             double d = 0.0;
             for (int k = 0; k < j; k++) {
-                double[] Lrowk = L[k];
+                double[] Lrowk = l[k];
                 double s = 0.0;
                 for (int i = 0; i < k; i++) {
                     s += Lrowk[i] * Lrowj[i];
                 }
-                Lrowj[k] = s = (A.get(j, k) - s) / L[k][k];
+                Lrowj[k] = s = (A.get(j, k) - s) / l[k][k];
                 d = d + s * s;
                 if (A.get(k, j) != A.get(j, k)) {
                     isspd = false;
@@ -100,9 +100,9 @@ public class CholeskyDecomposition implements Serializable {
             d = A.get(j, j) - d;
             if (d <= 0.0)
                 isspd = false;
-            L[j][j] = Math.sqrt(Math.max(d, 0.0));
+            l[j][j] = Math.sqrt(Math.max(d, 0.0));
             for (int k = j + 1; k < n; k++) {
-                L[j][k] = 0.0;
+                l[j][k] = 0.0;
             }
         }
     }
@@ -169,7 +169,7 @@ public class CholeskyDecomposition implements Serializable {
      * @return L triangular factor
      */
     public RM getL() {
-        return SolidRM.wrap(L);
+        return SolidRM.wrap(l);
     }
 
     /**
@@ -190,17 +190,17 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        RM X = B.copy();
+        RM x = B.copy();
         int nx = B.colCount();
 
         SubstitutionStrategy sStrategy = new ForwardSubstitution();
         
-        X = sStrategy.getSubstitution(n, nx, X, L);
+        x = sStrategy.getSubstitution(n, nx, x, l);
 
         sStrategy = new BackwardSubstitution();
         
-        X = sStrategy.getSubstitution(n, nx, X, L);
+        x = sStrategy.getSubstitution(n, nx, x, l);
         
-        return X;
+        return x;
     }
 }

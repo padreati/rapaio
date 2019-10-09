@@ -89,8 +89,8 @@ public interface RTreePredictor extends Serializable {
             VarDouble weights = VarDouble.empty();
             for (RTreeNode child : node.children()) {
                 DoublePair prediction = predict(row, df, child);
-                values.addDouble(prediction._1);
-                weights.addDouble(prediction._2);
+                values.addDouble(prediction.p1);
+                weights.addDouble(prediction.p2);
             }
             return DoublePair.from(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
         }

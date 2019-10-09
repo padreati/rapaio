@@ -51,7 +51,7 @@ public class FIntercept extends AbstractFF {
     }
 
     private static final long serialVersionUID = -7268280264499694765L;
-    public static String INTERCEPT = "(Intercept)";
+    public static final String INTERCEPT = "(Intercept)";
 
     private FIntercept() {
         super(VRange.all());

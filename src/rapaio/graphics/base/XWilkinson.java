@@ -49,7 +49,7 @@ public class XWilkinson {
 
     private XWilkinson(double[] Q, double base, double[] w, double eps) {
         this.w = Arrays.copyOf(w, w.length);
-        this.Q = Arrays.copyOf(Q, Q.length);
+        this.q = Arrays.copyOf(Q, Q.length);
         this.base = base;
         this.eps = eps;
     }
@@ -119,7 +119,7 @@ public class XWilkinson {
     }
 
     // Initial step sizes which we use as seed of generator
-    private final double[] Q;
+    private final double[] q;
 
     // Number base used to calculate logarithms
     private final double base;
@@ -132,16 +132,16 @@ public class XWilkinson {
     }
 
     private double simplicity(int i, int j, double min, double max, double step) {
-        if (Q.length > 1) {
-            return 1 - (double) i / (Q.length - 1) - j + v(min, max, step);
+        if (q.length > 1) {
+            return 1 - (double) i / (q.length - 1) - j + v(min, max, step);
         } else {
             return 1 - j + v(min, max, step);
         }
     }
 
-    private double simplicity_max(int i, int j) {
-        if (Q.length > 1) {
-            return 1 - (double) i / (Q.length - 1) - j + 1.0;
+    private double simplicityMax(int i, int j) {
+        if (q.length > 1) {
+            return 1 - (double) i / (q.length - 1) - j + 1.0;
         } else {
             return 1 - j + 1.0;
         }
@@ -154,7 +154,7 @@ public class XWilkinson {
         return 1 - 0.5 * ((a * a + b * b) / (c * c));
     }
 
-    private double coverage_max(double dmin, double dmax, double span) {
+    private double coverageMax(double dmin, double dmax, double span) {
         double range = dmax - dmin;
         if (span > range) {
             double half = (span - range) / 2;
@@ -187,7 +187,7 @@ public class XWilkinson {
         return 2 - Math.max(r / rt, rt / r);
     }
 
-    private double density_max(int k, int m) {
+    private double densityMax(int k, int m) {
         // return 2-(k-1)/(m-1); (paper is wrong)
         return (k >= m) ? 2 - (k - 1) / (m - 1) : 1;
     }
@@ -271,16 +271,16 @@ public class XWilkinson {
 
         main_loop:
         while (j < Integer.MAX_VALUE) {
-            for (int _i = 0; _i < Q.length; _i++) {
+            for (int _i = 0; _i < q.length; _i++) {
                 int i = _i + 1;
-                double q = Q[_i];
-                sm = simplicity_max(i, j);
+                double q = this.q[_i];
+                sm = simplicityMax(i, j);
                 if (w(sm, 1, 1, 1) < bestScore) {
                     break main_loop;
                 }
                 int k = 2;
                 while (k < Integer.MAX_VALUE) {
-                    dm = density_max(k, m);
+                    dm = densityMax(k, m);
                     if (w(sm, 1, dm, 1) < bestScore) {
                         break;
                     }
@@ -288,7 +288,7 @@ public class XWilkinson {
                     int z = (int) Math.ceil(MTools.logBase(delta, base));
                     while (z < Integer.MAX_VALUE) {
                         double step = z == -1 ? j * q : j * q * Math.pow(base, z);
-                        cm = coverage_max(dmin, dmax, step * (k - 1));
+                        cm = coverageMax(dmin, dmax, step * (k - 1));
                         if (w(sm, cm, dm, 1) < bestScore) {
                             break;
                         }

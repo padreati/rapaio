@@ -60,8 +60,7 @@ public class WS {
                     "java.util.logging.ConsoleHandler.filter    =\n" +
                     "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
                     "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 

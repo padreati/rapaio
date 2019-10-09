@@ -33,11 +33,15 @@ import rapaio.printer.standard.StandardPrinter;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class IdeaPrinter extends StandardPrinter {
+
+    private static final Logger logger = Logger.getLogger(IdeaPrinter.class.getName());
+
     public static final int DEFAULT_PORT = 56339;
 
     @Override
@@ -65,7 +69,7 @@ public class IdeaPrinter extends StandardPrinter {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
             new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.info(ex.getMessage());
         }
     }
 }

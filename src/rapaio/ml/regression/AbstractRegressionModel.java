@@ -49,7 +49,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     private static final long serialVersionUID = 5544999078321108408L;
 
-    public BiFunction<M, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;
+    public final BiFunction<M, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;
 
     // parameters
 

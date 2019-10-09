@@ -49,19 +49,19 @@ public abstract class AbstractFrame implements Frame {
         sb.append(this.getClass().getName()).append("(");
         sb.append("rowCount=").append(rowCount()).append(", ");
         sb.append("varCount=").append(varCount()).append(")\n");
-        int max_len = 20;
-        int last_len = 4;
+        int maxLen = 20;
+        int lastLen = 4;
         List<Var> varList = varList();
-        if (varCount() <= max_len) {
+        if (varCount() <= maxLen) {
             for (Var v : varList) {
                 sb.append(v.toString()).append("\n");
             }
         } else {
-            for (int i = 0; i < max_len - last_len; i++) {
+            for (int i = 0; i < maxLen - lastLen; i++) {
                 sb.append(varList.get(i).toString()).append("\n");
             }
             sb.append("....\n");
-            for (int i = varCount() - last_len; i < varCount(); i++) {
+            for (int i = varCount() - lastLen; i < varCount(); i++) {
                 sb.append(varList.get(i).toString());
             }
         }

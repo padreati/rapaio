@@ -30,7 +30,7 @@ public class KurtosisTest {
         assertEquals(-1.7174503726358747, kt.value(), TOL);
         assertEquals(-0.9960162072435548, kt.g2(), TOL);
         assertEquals(-1.7174503726358747, kt.b2(), TOL);
-        assertEquals(0.007967585512890452, kt.G2(), TOL);
+        assertEquals(0.007967585512890452, kt.bigG2(), TOL);
 
         assertEquals("> kurtosis[?]\n" +
                 "total rows: 5 (complete: 5, missing: 0)\n" +

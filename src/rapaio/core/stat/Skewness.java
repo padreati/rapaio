@@ -49,7 +49,7 @@ public class Skewness implements Printable {
 
     private final double g1;
     private final double b1;
-    private final double G1;
+    private final double bigG1;
     private final int rows;
     private final int complete;
     private final String varName;
@@ -76,7 +76,7 @@ public class Skewness implements Printable {
         complete = (int) n;
 
         g1 = m3 / Math.pow(m2, 1.5);
-        G1 = g1 * Math.sqrt(n * (n - 1)) / (n - 2);
+        bigG1 = g1 * Math.sqrt(n * (n - 1)) / (n - 2);
         b1 = g1 * Math.pow((n - 1) / n, 1.5);
     }
 
@@ -92,13 +92,13 @@ public class Skewness implements Printable {
         return g1;
     }
 
-    public double G1() {
-        return G1;
+    public double bigG1() {
+        return bigG1;
     }
 
     @Override
     public String toString() {
-        return "skewness[" + varName + "] = g1: " + floatFlex(g1) + ", b1: " + floatFlex(b1) + ", G1: " + floatFlex(G1);
+        return "skewness[" + varName + "] = g1: " + floatFlex(g1) + ", b1: " + floatFlex(b1) + ", G1: " + floatFlex(bigG1);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class Skewness implements Printable {
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "skewness (g1): " + floatFlex(g1) + "\n" +
                 "skewness (b1): " + floatFlex(b1) + "\n" +
-                "skewness (G1): " + floatFlex(G1) + "\n";
+                "skewness (G1): " + floatFlex(bigG1) + "\n";
     }
 
     @Override

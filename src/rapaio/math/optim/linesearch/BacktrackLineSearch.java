@@ -40,8 +40,8 @@ public class BacktrackLineSearch implements LineSearch {
         return new BacktrackLineSearch();
     }
 
-    private final double rho = 0.1; // in 0-0.5
-    private final double c = 0.9;
+    private static final double rho = 0.1; // in 0-0.5
+    private static final double c = 0.9;
 
     @Override
     public double find(RFunction f, RDerivative d1f, RV x, RV delta_f) {
@@ -50,8 +50,8 @@ public class BacktrackLineSearch implements LineSearch {
 
         double alpha = 1;
         while (true) {
-            double f_x_plus_alpha_delta = f.apply(x.copy().plus(delta_f.copy().dot(alpha)));
-            if (f_x_plus_alpha_delta > fx + c * alpha * m) {
+            double fxPlusAlphaDelta = f.apply(x.copy().plus(delta_f.copy().dot(alpha)));
+            if (fxPlusAlphaDelta > fx + c * alpha * m) {
                 alpha *= rho;
                 continue;
             }

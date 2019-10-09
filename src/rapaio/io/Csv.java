@@ -416,18 +416,14 @@ public class Csv {
                     inQuotas = true;
                     continue;
                 }
-                if (inQuotas && ch == escapeChar) {
-                    if (end < line.length() && line.charAt(end) == '\"') {
-                        end++;
-                        continue;
-                    }
+                if (inQuotas && ch == escapeChar && end < line.length() && line.charAt(end) == '\"') {
+                    end++;
+                    continue;
                 }
                 if (inQuotas && ch == '"') {
-                    if (escapeChar == '\"') {
-                        if (end < line.length() && line.charAt(end) == '\"') {
-                            end++;
-                            continue;
-                        }
+                    if (escapeChar == '\"' && end < line.length() && line.charAt(end) == '\"') {
+                        end++;
+                        continue;
                     }
                     inQuotas = false;
                     continue;

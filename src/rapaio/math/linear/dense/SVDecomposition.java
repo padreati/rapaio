@@ -53,13 +53,13 @@ public class SVDecomposition implements java.io.Serializable {
         return new SVDecomposition(A);
     }
 
-    private double[][] U, V;
+    private double[][] u, v;
     private double[] s;
     private final int rowCount, colCount;
     private int p, pp;
     private final int nct, nrt;
-    private final boolean wantu = true;
-    private final boolean wantv = true;
+    private static final boolean wantu = true;
+    private static final boolean wantv = true;
     private final int minCount;
 
     private SVDecomposition(RM Arg) {
@@ -76,8 +76,8 @@ public class SVDecomposition implements java.io.Serializable {
 
         minCount = Math.min(rowCount, colCount);
         s = new double[Math.min(rowCount + 1, colCount)];
-        U = new double[rowCount][minCount];
-        V = new double[colCount][colCount];
+        u = new double[rowCount][minCount];
+        v = new double[colCount][colCount];
         double[] e = new double[colCount];
         double[] work = new double[rowCount];
         boolean wantu = true;
@@ -120,34 +120,34 @@ public class SVDecomposition implements java.io.Serializable {
         // If required, generate U.
         for (int j = nct; j < minCount; j++) {
             for (int i = 0; i < rowCount; i++) {
-                U[i][j] = 0.0;
+                u[i][j] = 0.0;
             }
-            U[j][j] = 1.0;
+            u[j][j] = 1.0;
         }
         for (int k = nct - 1; k >= 0; k--) {
             if (s[k] != 0.0) {
                 for (int j = k + 1; j < minCount; j++) {
                     double t = 0;
                     for (int i = k; i < rowCount; i++) {
-                        t += U[i][k] * U[i][j];
+                        t += u[i][k] * u[i][j];
                     }
-                    t = -t / U[k][k];
+                    t = -t / u[k][k];
                     for (int i = k; i < rowCount; i++) {
-                        U[i][j] += t * U[i][k];
+                        u[i][j] += t * u[i][k];
                     }
                 }
                 for (int i = k; i < rowCount; i++) {
-                    U[i][k] = -U[i][k];
+                    u[i][k] = -u[i][k];
                 }
-                U[k][k] = 1.0 + U[k][k];
+                u[k][k] = 1.0 + u[k][k];
                 for (int i = 0; i < k - 1; i++) {
-                    U[i][k] = 0.0;
+                    u[i][k] = 0.0;
                 }
             } else {
                 for (int i = 0; i < rowCount; i++) {
-                    U[i][k] = 0.0;
+                    u[i][k] = 0.0;
                 }
-                U[k][k] = 1.0;
+                u[k][k] = 1.0;
             }
         }
     }
@@ -159,18 +159,18 @@ public class SVDecomposition implements java.io.Serializable {
                 for (int j = k + 1; j < minCount; j++) {
                     double t = 0;
                     for (int i = k + 1; i < colCount; i++) {
-                        t += V[i][k] * V[i][j];
+                        t += v[i][k] * v[i][j];
                     }
-                    t = -t / V[k + 1][k];
+                    t = -t / v[k + 1][k];
                     for (int i = k + 1; i < colCount; i++) {
-                        V[i][j] += t * V[i][k];
+                        v[i][j] += t * v[i][k];
                     }
                 }
             }
             for (int i = 0; i < colCount; i++) {
-                V[i][k] = 0.0;
+                v[i][k] = 0.0;
             }
-            V[k][k] = 1.0;
+            v[k][k] = 1.0;
         }
     }
 
@@ -221,7 +221,7 @@ public class SVDecomposition implements java.io.Serializable {
                 // Place the transformation in U for subsequent back
                 // multiplication.
                 for (int i = k; i < rowCount; i++) {
-                    U[i][k] = A.get(i, k);
+                    u[i][k] = A.get(i, k);
                 }
             }
             if (k < nrt) {
@@ -266,7 +266,7 @@ public class SVDecomposition implements java.io.Serializable {
                     // Place the transformation in RV for subsequent
                     // back multiplication.
                     for (int i = k + 1; i < colCount; i++) {
-                        V[i][k] = e[i];
+                        v[i][k] = e[i];
                     }
                 }
             }
@@ -368,9 +368,9 @@ public class SVDecomposition implements java.io.Serializable {
             }
             if (wantv) {
                 for (int i = 0; i < colCount; i++) {
-                    t = cs * V[i][j] + sn * V[i][p - 1];
-                    V[i][p - 1] = -sn * V[i][j] + cs * V[i][p - 1];
-                    V[i][j] = t;
+                    t = cs * v[i][j] + sn * v[i][p - 1];
+                    v[i][p - 1] = -sn * v[i][j] + cs * v[i][p - 1];
+                    v[i][j] = t;
                 }
             }
         }
@@ -388,9 +388,9 @@ public class SVDecomposition implements java.io.Serializable {
             e[j] = cs * e[j];
             if (wantu) {
                 for (int i = 0; i < rowCount; i++) {
-                    t = cs * U[i][j] + sn * U[i][k - 1];
-                    U[i][k - 1] = -sn * U[i][j] + cs * U[i][k - 1];
-                    U[i][j] = t;
+                    t = cs * u[i][j] + sn * u[i][k - 1];
+                    u[i][k - 1] = -sn * u[i][j] + cs * u[i][k - 1];
+                    u[i][j] = t;
                 }
             }
         }
@@ -434,9 +434,9 @@ public class SVDecomposition implements java.io.Serializable {
             s[j + 1] = cs * s[j + 1];
             if (wantv) {
                 for (int i = 0; i < colCount; i++) {
-                    t = cs * V[i][j] + sn * V[i][j + 1];
-                    V[i][j + 1] = -sn * V[i][j] + cs * V[i][j + 1];
-                    V[i][j] = t;
+                    t = cs * v[i][j] + sn * v[i][j + 1];
+                    v[i][j + 1] = -sn * v[i][j] + cs * v[i][j + 1];
+                    v[i][j] = t;
                 }
             }
             t = hypot(f, g);
@@ -449,9 +449,9 @@ public class SVDecomposition implements java.io.Serializable {
             e[j + 1] = cs * e[j + 1];
             if (wantu && (j < rowCount - 1)) {
                 for (int i = 0; i < rowCount; i++) {
-                    t = cs * U[i][j] + sn * U[i][j + 1];
-                    U[i][j + 1] = -sn * U[i][j] + cs * U[i][j + 1];
-                    U[i][j] = t;
+                    t = cs * u[i][j] + sn * u[i][j + 1];
+                    u[i][j + 1] = -sn * u[i][j] + cs * u[i][j + 1];
+                    u[i][j] = t;
                 }
             }
         }
@@ -464,7 +464,7 @@ public class SVDecomposition implements java.io.Serializable {
             s[k] = (s[k] < 0.0 ? -s[k] : 0.0);
             if (wantv) {
                 for (int i = 0; i <= pp; i++) {
-                    V[i][k] = -V[i][k];
+                    v[i][k] = -v[i][k];
                 }
             }
         }
@@ -479,16 +479,16 @@ public class SVDecomposition implements java.io.Serializable {
             s[k + 1] = t;
             if (wantv && (k < colCount - 1)) {
                 for (int i = 0; i < colCount; i++) {
-                    t = V[i][k + 1];
-                    V[i][k + 1] = V[i][k];
-                    V[i][k] = t;
+                    t = v[i][k + 1];
+                    v[i][k + 1] = v[i][k];
+                    v[i][k] = t;
                 }
             }
             if (wantu && (k < rowCount - 1)) {
                 for (int i = 0; i < rowCount; i++) {
-                    t = U[i][k + 1];
-                    U[i][k + 1] = U[i][k];
-                    U[i][k] = t;
+                    t = u[i][k + 1];
+                    u[i][k + 1] = u[i][k];
+                    u[i][k] = t;
                 }
             }
             k++;
@@ -498,7 +498,7 @@ public class SVDecomposition implements java.io.Serializable {
     }
 
     public RM getU() {
-        return SolidRM.copy(U, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
+        return SolidRM.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
     }
 
     /**
@@ -507,7 +507,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return RV
      */
     public RM getV() {
-        return SolidRM.copy(V);
+        return SolidRM.copy(v);
     }
 
     /**
