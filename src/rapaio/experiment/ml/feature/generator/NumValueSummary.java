@@ -27,13 +27,8 @@
 
 package rapaio.experiment.ml.feature.generator;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Sum;
-import rapaio.core.stat.Variance;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

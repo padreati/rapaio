@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
+import rapaio.core.*;
 
 /**
  * Bernoulli distribution

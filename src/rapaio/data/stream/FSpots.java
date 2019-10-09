@@ -29,9 +29,7 @@ package rapaio.data.stream;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
+import rapaio.data.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;

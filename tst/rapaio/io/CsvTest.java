@@ -29,10 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.Frame;
-import rapaio.data.VType;
-import rapaio.data.Var;
-import rapaio.datasets.Datasets;
+import rapaio.data.*;
+import rapaio.datasets.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

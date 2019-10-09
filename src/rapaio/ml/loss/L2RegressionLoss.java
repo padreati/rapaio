@@ -27,12 +27,8 @@
 
 package rapaio.ml.loss;
 
-import rapaio.core.stat.WeightedMean;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-
-import java.util.Objects;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.

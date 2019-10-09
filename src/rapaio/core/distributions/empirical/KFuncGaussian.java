@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions.empirical;
 
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.*;
 
 /**
  * GaussianPdf kernel function

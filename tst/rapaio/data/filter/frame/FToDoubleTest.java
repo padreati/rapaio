@@ -26,12 +26,8 @@ package rapaio.data.filter.frame;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarNominal;
-import rapaio.data.filter.var.VToDouble;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
 
 import java.util.ArrayList;
 

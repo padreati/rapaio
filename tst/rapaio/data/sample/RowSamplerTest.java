@@ -27,13 +27,12 @@ package rapaio.data.sample;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Mean;
-import rapaio.core.tests.ChiSqGoodnessOfFit;
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.VarDouble;
-import rapaio.datasets.Datasets;
+import rapaio.core.*;
+import rapaio.core.stat.*;
+import rapaio.core.tests.*;
+import rapaio.core.tools.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
 
 import java.util.stream.DoubleStream;
 

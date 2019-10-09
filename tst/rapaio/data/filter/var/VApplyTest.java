@@ -26,10 +26,8 @@ package rapaio.data.filter.var;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
-import rapaio.data.filter.VFilter;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 public class VApplyTest {
 

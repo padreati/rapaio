@@ -27,9 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.EigenDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.*;
 
 public class EigenDecompStatistics extends EigenDecompStrategy{
 

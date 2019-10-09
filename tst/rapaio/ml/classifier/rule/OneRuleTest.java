@@ -25,17 +25,12 @@
 package rapaio.ml.classifier.rule;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
-import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassifierResult;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.ml.classifier.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.*;
 

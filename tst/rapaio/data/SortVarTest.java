@@ -25,9 +25,8 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.data.filter.var.VSort;
-import rapaio.io.Csv;
+import rapaio.data.filter.var.*;
+import rapaio.io.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

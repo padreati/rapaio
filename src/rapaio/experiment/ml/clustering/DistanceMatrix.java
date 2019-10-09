@@ -27,8 +27,8 @@
 
 package rapaio.experiment.ml.clustering;
 
-import rapaio.data.Frame;
-import rapaio.ml.common.distance.Distance;
+import rapaio.data.*;
+import rapaio.ml.common.distance.*;
 
 import java.io.Serializable;
 import java.util.stream.IntStream;

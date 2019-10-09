@@ -27,9 +27,8 @@ package rapaio.core.distributions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.io.Csv;
+import rapaio.data.*;
+import rapaio.io.*;
 
 import static org.junit.Assert.assertEquals;
 

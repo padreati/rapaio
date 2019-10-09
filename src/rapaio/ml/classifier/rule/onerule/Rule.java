@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.*;
 
 import java.io.Serializable;
 

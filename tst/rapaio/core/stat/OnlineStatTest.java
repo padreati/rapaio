@@ -26,11 +26,9 @@ package rapaio.core.stat;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
 
 import static org.junit.Assert.assertEquals;
 

@@ -2,15 +2,12 @@ package rapaio.data.filter.frame;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
+import rapaio.core.*;
+import rapaio.data.*;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/18.

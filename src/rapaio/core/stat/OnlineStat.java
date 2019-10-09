@@ -27,7 +27,7 @@
 
 package rapaio.core.stat;
 
-import rapaio.math.MTools;
+import rapaio.math.*;
 
 /**
  * Class which implements core online statistics. This class does not hold

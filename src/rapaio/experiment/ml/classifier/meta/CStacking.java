@@ -28,8 +28,8 @@
 package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
-import rapaio.ml.classifier.*;
 import rapaio.experiment.ml.classifier.ensemble.*;
+import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
 import rapaio.printer.*;
 

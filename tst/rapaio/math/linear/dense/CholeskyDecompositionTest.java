@@ -25,8 +25,8 @@
 package rapaio.math.linear.dense;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.math.linear.RM;
+import rapaio.core.*;
+import rapaio.math.linear.*;
 
 import static org.junit.Assert.*;
 

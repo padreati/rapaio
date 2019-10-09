@@ -27,10 +27,8 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.

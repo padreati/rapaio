@@ -27,8 +27,7 @@
 
 package rapaio.printer.standard;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
+import rapaio.data.*;
 
 public class BinaryTypeStrategy implements TypeStrategy {
 

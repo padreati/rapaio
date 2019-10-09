@@ -26,17 +26,13 @@ package rapaio.experiment.ml.classifier.svm;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FStandardize;
-import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.eval.CEvaluation;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.datasets.*;
 import rapaio.experiment.ml.classifier.svm.kernel.*;
-import rapaio.sys.WS;
+import rapaio.experiment.ml.eval.*;
+import rapaio.sys.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

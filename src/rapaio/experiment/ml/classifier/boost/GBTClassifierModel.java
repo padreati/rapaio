@@ -27,22 +27,17 @@
 
 package rapaio.experiment.ml.classifier.boost;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
-import rapaio.data.Var;
-import rapaio.data.sample.Sample;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.classifier.AbstractClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.common.Capabilities;
-import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.loss.KDevianceRegressionLoss;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.data.*;
+import rapaio.data.sample.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.common.*;
+import rapaio.ml.loss.*;
+import rapaio.ml.regression.*;
+import rapaio.ml.regression.tree.*;
 import rapaio.printer.*;
-import rapaio.sys.WS;
+import rapaio.sys.*;
 
 import java.util.ArrayList;
 import java.util.List;

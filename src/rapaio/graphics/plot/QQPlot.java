@@ -27,12 +27,11 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VSort;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.plotcomp.Points;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.plotcomp.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

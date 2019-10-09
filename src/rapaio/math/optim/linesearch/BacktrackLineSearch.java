@@ -27,9 +27,8 @@
 
 package rapaio.math.optim.linesearch;
 
-import rapaio.math.functions.RDerivative;
-import rapaio.math.functions.RFunction;
-import rapaio.math.linear.RV;
+import rapaio.math.functions.*;
+import rapaio.math.linear.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

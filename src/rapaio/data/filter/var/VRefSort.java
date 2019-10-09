@@ -30,10 +30,8 @@ package rapaio.data.filter.var;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import rapaio.data.Mapping;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
-import rapaio.data.filter.VFilter;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.

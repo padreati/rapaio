@@ -27,10 +27,8 @@
 
 package rapaio.printer.standard;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Frame;
-import rapaio.data.Var;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
 public class NumericTypeStrategy implements TypeStrategy {
 	public void getVarSummary(Frame df, Var v,String[][] first, String[][] second, int th ){

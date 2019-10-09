@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
-import rapaio.data.Mapping;
+import rapaio.data.*;
 
 import java.util.stream.IntStream;
 

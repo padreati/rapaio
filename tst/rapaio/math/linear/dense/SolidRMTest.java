@@ -25,19 +25,14 @@
 package rapaio.math.linear.dense;
 
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VType;
-import rapaio.datasets.Datasets;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.math.linear.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class SolidRMTest {
 

@@ -30,12 +30,9 @@ package rapaio.data.filter.frame;
 import rapaio.data.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Replaces specified columns in VRange with numeric one hot

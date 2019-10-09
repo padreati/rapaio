@@ -27,7 +27,7 @@
 
 package rapaio.printer.idea;
 
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.base.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

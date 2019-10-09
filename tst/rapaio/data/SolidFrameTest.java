@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

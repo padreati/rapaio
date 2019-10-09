@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel.cache;
 
-import rapaio.data.Frame;
+import rapaio.data.*;
 
 import java.util.HashMap;
 import java.util.Map;

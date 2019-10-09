@@ -27,7 +27,7 @@
 
 package rapaio.experiment.core.tools;
 
-import static rapaio.math.MTools.log2;
+import static rapaio.math.MTools.*;
 
 public class ConcreteRowIntrinsicInfo extends AbstractDTableFunction {
 

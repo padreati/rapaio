@@ -27,8 +27,8 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.Var;
-import rapaio.data.filter.VFilter;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.

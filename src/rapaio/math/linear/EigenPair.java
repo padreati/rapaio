@@ -27,7 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.

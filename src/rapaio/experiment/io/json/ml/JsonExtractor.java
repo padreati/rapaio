@@ -27,10 +27,8 @@
 
 package rapaio.experiment.io.json.ml;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.experiment.io.json.tree.JsonValue;
+import rapaio.data.*;
+import rapaio.experiment.io.json.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;

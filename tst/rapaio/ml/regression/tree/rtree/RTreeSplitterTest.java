@@ -26,13 +26,9 @@ package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.distributions.Uniform;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.ml.common.predicate.*;
 
 import java.util.List;
 

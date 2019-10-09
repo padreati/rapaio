@@ -31,14 +31,13 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static rapaio.core.RandomSource.nextDouble;
+import static rapaio.core.RandomSource.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

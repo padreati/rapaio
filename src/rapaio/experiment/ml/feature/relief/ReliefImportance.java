@@ -28,10 +28,7 @@
 package rapaio.experiment.ml.feature.relief;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.

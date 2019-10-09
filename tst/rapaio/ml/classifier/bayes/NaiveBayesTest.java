@@ -26,13 +26,13 @@ package rapaio.ml.classifier.bayes;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
+import rapaio.core.*;
 import rapaio.core.distributions.*;
 import rapaio.data.*;
 import rapaio.ml.classifier.bayes.estimator.*;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.metric.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 /**

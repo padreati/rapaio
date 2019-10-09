@@ -32,7 +32,6 @@ import rapaio.data.*;
 import rapaio.math.*;
 import rapaio.printer.*;
 import rapaio.printer.format.*;
-import rapaio.util.*;
 
 import java.io.Serializable;
 import java.util.Arrays;

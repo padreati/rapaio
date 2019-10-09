@@ -3,10 +3,9 @@ package rapaio.data.filter.var;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.RandomSource;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.VFilter;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 import static org.junit.Assert.*;
 

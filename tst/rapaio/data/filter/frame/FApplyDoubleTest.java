@@ -1,11 +1,9 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.

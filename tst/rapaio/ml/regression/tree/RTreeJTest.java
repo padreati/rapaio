@@ -33,8 +33,8 @@ import rapaio.data.sample.*;
 import rapaio.datasets.*;
 import rapaio.experiment.ml.eval.metric.*;
 import rapaio.experiment.ml.regression.ensemble.*;
-import rapaio.ml.loss.*;
 import rapaio.ml.common.*;
+import rapaio.ml.loss.*;
 import rapaio.ml.regression.*;
 import rapaio.ml.regression.tree.rtree.*;
 

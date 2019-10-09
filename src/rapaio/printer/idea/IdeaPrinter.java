@@ -27,9 +27,9 @@
 
 package rapaio.printer.idea;
 
-import rapaio.graphics.base.Figure;
-import rapaio.printer.Printer;
-import rapaio.printer.standard.StandardPrinter;
+import rapaio.graphics.base.*;
+import rapaio.printer.*;
+import rapaio.printer.standard.*;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -29,8 +29,8 @@ package rapaio.experiment.ml.regression.tree.srt;
 
 import rapaio.core.*;
 import rapaio.data.*;
-import rapaio.ml.loss.*;
 import rapaio.math.linear.*;
+import rapaio.ml.loss.*;
 import rapaio.ml.regression.linear.*;
 
 import java.util.ArrayList;

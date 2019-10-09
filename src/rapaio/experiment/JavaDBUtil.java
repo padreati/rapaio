@@ -27,11 +27,7 @@
 
 package rapaio.experiment;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.data.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

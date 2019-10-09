@@ -1,7 +1,7 @@
 package rapaio.data.filter.frame;
 
 import org.junit.Test;
-import rapaio.data.Frame;
+import rapaio.data.*;
 
 import static org.junit.Assert.assertTrue;
 

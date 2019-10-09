@@ -27,8 +27,8 @@
 
 package rapaio.math.functions;
 
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
 
 import java.util.function.Function;
 

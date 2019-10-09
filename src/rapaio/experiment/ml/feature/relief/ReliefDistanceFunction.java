@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.feature.relief;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.

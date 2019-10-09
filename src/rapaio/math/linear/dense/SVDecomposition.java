@@ -27,7 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.*;
 
 import static java.lang.StrictMath.hypot;
 

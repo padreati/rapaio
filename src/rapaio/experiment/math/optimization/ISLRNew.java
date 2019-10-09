@@ -32,7 +32,6 @@ import rapaio.datasets.*;
 import rapaio.graphics.plot.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
-import rapaio.printer.*;
 import rapaio.printer.format.*;
 import rapaio.printer.idea.*;
 import rapaio.sys.*;

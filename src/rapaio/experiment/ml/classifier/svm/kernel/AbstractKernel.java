@@ -27,10 +27,8 @@
 
 package rapaio.experiment.ml.classifier.svm.kernel;
 
-import rapaio.data.Frame;
-import rapaio.experiment.ml.classifier.svm.kernel.cache.KernelCache;
-import rapaio.experiment.ml.classifier.svm.kernel.cache.MapKernelCache;
-import rapaio.experiment.ml.classifier.svm.kernel.cache.SolidKernelCache;
+import rapaio.data.*;
+import rapaio.experiment.ml.classifier.svm.kernel.cache.*;
 
 import java.util.Arrays;
 

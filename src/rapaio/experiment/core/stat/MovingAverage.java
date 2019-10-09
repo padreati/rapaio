@@ -27,8 +27,7 @@
 
 package rapaio.experiment.core.stat;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.data.*;
 
 public class MovingAverage {
 

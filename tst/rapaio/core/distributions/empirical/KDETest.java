@@ -26,14 +26,12 @@ package rapaio.core.distributions.empirical;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Mean;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class KDETest {
 

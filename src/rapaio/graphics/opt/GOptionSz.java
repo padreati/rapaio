@@ -27,8 +27,7 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.

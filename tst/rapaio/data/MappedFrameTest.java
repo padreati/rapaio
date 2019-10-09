@@ -27,8 +27,8 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.filter.frame.FRefSort;
-import rapaio.datasets.Datasets;
+import rapaio.data.filter.frame.*;
+import rapaio.datasets.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

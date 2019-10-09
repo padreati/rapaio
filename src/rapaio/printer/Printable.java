@@ -27,7 +27,7 @@
 
 package rapaio.printer;
 
-import rapaio.sys.WS;
+import rapaio.sys.*;
 
 /**
  * Interface implemented by all objects which outputs information about themselves

@@ -29,7 +29,6 @@ package rapaio.experiment.ml.classifier.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.*;
-import rapaio.experiment.ml.classifier.ensemble.*;
 import rapaio.experiment.ml.classifier.tree.*;
 import rapaio.ml.classifier.*;
 import rapaio.ml.common.*;
@@ -37,7 +36,6 @@ import rapaio.printer.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * AdaBoost SAMME classifier is the classical version of AdaBoost which has

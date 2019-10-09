@@ -25,10 +25,8 @@
 package rapaio.ml.regression.tree.rtree;
 
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-import rapaio.util.DoublePair;
+import rapaio.data.*;
+import rapaio.util.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

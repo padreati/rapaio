@@ -26,14 +26,13 @@ package rapaio.experiment.ml.classifier.tree.ctree;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.experiment.core.tools.DTable;
-import rapaio.data.Frame;
-import rapaio.data.VType;
-import rapaio.data.filter.frame.FRetainTypes;
-import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.datasets.*;
+import rapaio.experiment.core.tools.*;
+import rapaio.experiment.ml.classifier.tree.*;
+import rapaio.ml.classifier.*;
+import rapaio.ml.eval.metric.*;
 
 import java.io.IOException;
 

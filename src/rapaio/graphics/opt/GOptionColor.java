@@ -32,7 +32,6 @@ import rapaio.util.serializable.*;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.

@@ -1,30 +1,18 @@
 package rapaio.math.optim;
 
 import org.junit.Test;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.math.functions.R1Derivative;
-import rapaio.math.functions.R1Function;
-import rapaio.math.functions.R1Hessian;
-import rapaio.math.functions.R2Derivative;
-import rapaio.math.functions.R2Function;
-import rapaio.math.functions.R2Hessian;
-import rapaio.math.functions.RDerivative;
-import rapaio.math.functions.RFunction;
-import rapaio.math.functions.RHessian;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
+import rapaio.data.*;
+import rapaio.math.functions.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.*;
-import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.

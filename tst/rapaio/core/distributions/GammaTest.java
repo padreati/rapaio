@@ -29,15 +29,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.RandomSource;
-import rapaio.core.tests.KSTestOneSample;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.io.Csv;
+import rapaio.core.*;
+import rapaio.core.tests.*;
+import rapaio.data.*;
+import rapaio.io.*;
 
 import static org.junit.Assert.*;
-import static rapaio.math.MTools.sqrt;
+import static rapaio.math.MTools.*;
 
 public class GammaTest {
 

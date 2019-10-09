@@ -27,9 +27,8 @@
 
 package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.data.*;
+import rapaio.ml.classifier.bayes.*;
 
 import java.util.HashMap;
 import java.util.List;

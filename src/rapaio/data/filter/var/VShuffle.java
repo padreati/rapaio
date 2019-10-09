@@ -28,10 +28,9 @@
 package rapaio.data.filter.var;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import rapaio.core.RandomSource;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.filter.VFilter;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 /**
  * Filter which shuffles observations from a given variable. The new variable is

@@ -25,13 +25,12 @@
 package rapaio.experiment.ml.regression.ensemble;
 
 import org.junit.Test;
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.datasets.Datasets;
-import rapaio.ml.common.VarSelector;
-import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
+import rapaio.ml.common.*;
+import rapaio.ml.regression.*;
+import rapaio.ml.regression.tree.*;
 
 import java.io.IOException;
 

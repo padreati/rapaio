@@ -27,8 +27,7 @@ package rapaio.core.tools;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.data.*;
 
 import java.util.Arrays;
 import java.util.List;

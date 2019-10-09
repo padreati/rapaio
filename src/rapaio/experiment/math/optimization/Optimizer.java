@@ -27,9 +27,8 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.RV;
+import rapaio.data.*;
+import rapaio.math.linear.*;
 
 import java.util.List;
 import java.util.function.BiFunction;

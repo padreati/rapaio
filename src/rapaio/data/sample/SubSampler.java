@@ -27,12 +27,10 @@
 
 package rapaio.data.sample;
 
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
+import rapaio.core.*;
+import rapaio.data.*;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.*;
 
 /**
  * Sample obtaind by subsampling, which is a sample without replacement

@@ -27,12 +27,8 @@
 
 package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.core.distributions.empirical.KFuncGaussian;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.ml.classifier.bayes.*;
+import rapaio.core.distributions.empirical.*;
+import rapaio.data.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

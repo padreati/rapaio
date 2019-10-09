@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.regression.nnet;
 
-import rapaio.core.RandomSource;
+import rapaio.core.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

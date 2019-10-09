@@ -27,20 +27,17 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Var;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 
-import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Plot component which allows one to add a histogram to a plot.

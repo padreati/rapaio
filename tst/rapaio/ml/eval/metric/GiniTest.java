@@ -25,9 +25,9 @@
 package rapaio.ml.eval.metric;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.data.VarDouble;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
 import rapaio.experiment.ml.eval.metric.*;
 
 import static org.junit.Assert.assertEquals;

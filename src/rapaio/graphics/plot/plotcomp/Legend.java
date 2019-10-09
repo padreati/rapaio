@@ -27,10 +27,9 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

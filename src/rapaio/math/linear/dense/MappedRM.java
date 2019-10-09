@@ -27,9 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.printer.*;
+import rapaio.math.linear.*;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;

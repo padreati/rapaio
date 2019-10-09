@@ -28,8 +28,8 @@ import org.junit.Test;
 import rapaio.data.*;
 import rapaio.data.filter.frame.*;
 import rapaio.datasets.*;
-import rapaio.ml.classifier.*;
 import rapaio.experiment.ml.classifier.tree.*;
+import rapaio.ml.classifier.*;
 import rapaio.ml.common.predicate.*;
 
 import java.io.IOException;

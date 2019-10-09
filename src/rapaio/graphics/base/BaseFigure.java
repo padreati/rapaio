@@ -27,7 +27,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.*;
 
 public abstract class BaseFigure implements Figure {
 

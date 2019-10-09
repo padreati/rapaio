@@ -1,10 +1,8 @@
 package rapaio.data.filter.var;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.core.*;
+import rapaio.data.*;
 
 import static org.junit.Assert.assertTrue;
 

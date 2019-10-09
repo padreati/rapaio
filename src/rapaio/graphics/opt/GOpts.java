@@ -27,9 +27,7 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
+import rapaio.data.*;
 
 import java.awt.*;
 import java.io.Serializable;

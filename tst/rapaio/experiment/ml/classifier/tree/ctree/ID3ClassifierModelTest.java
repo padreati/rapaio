@@ -27,14 +27,12 @@ package rapaio.experiment.ml.classifier.tree.ctree;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.experiment.core.tools.DTable;
-import rapaio.data.Frame;
-import rapaio.data.VType;
-import rapaio.data.filter.frame.FRetainTypes;
-import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.experiment.ml.classifier.tree.CTreePurityFunction;
+import rapaio.data.*;
+import rapaio.data.filter.frame.*;
+import rapaio.datasets.*;
+import rapaio.experiment.core.tools.*;
 import rapaio.experiment.ml.classifier.tree.CTreeTest;
+import rapaio.experiment.ml.classifier.tree.*;
 
 import java.io.IOException;
 

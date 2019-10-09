@@ -27,9 +27,8 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.filter.FFilter;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 import java.util.function.Function;
 

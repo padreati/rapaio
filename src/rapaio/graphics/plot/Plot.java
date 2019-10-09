@@ -37,10 +37,8 @@ import rapaio.graphics.plot.plotcomp.*;
 import rapaio.util.serializable.*;
 
 import java.awt.*;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author tutuianu

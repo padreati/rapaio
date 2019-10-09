@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.frame;
 
-import rapaio.data.Frame;
+import rapaio.data.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/16/18.

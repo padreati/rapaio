@@ -25,7 +25,7 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.core.stat.Mean;
+import rapaio.core.stat.*;
 
 import static org.junit.Assert.assertEquals;
 

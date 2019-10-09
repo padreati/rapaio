@@ -27,10 +27,8 @@
 
 package rapaio.experiment.io.json.stream;
 
-import rapaio.experiment.io.json.stream.impl.IntEncoding;
-import rapaio.experiment.io.json.tree.JsonBool;
-import rapaio.experiment.io.json.tree.JsonNull;
-import rapaio.experiment.io.json.tree.JsonValue;
+import rapaio.experiment.io.json.stream.impl.*;
+import rapaio.experiment.io.json.tree.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/7/15.

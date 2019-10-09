@@ -27,8 +27,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.RandomSource;
-import rapaio.data.VarDouble;
+import rapaio.core.*;
+import rapaio.data.*;
 
 import java.io.Serializable;
 

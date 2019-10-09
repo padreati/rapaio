@@ -27,7 +27,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.*;
 
 import java.awt.*;
 import java.util.ArrayList;

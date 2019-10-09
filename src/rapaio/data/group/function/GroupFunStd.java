@@ -28,7 +28,7 @@
 package rapaio.data.group.function;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.stat.OnlineStat;
+import rapaio.core.stat.*;
 import rapaio.data.*;
 import rapaio.data.group.*;
 

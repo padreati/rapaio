@@ -25,16 +25,15 @@
 package rapaio.ml.classifier.boost;
 
 import org.junit.Test;
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.VarDouble;
-import rapaio.datasets.Datasets;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
 import rapaio.experiment.ml.classifier.boost.*;
-import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.ml.common.VarSelector;
-import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
+import rapaio.experiment.ml.classifier.tree.*;
+import rapaio.ml.common.*;
+import rapaio.ml.eval.metric.*;
+import rapaio.printer.idea.*;
+import rapaio.sys.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

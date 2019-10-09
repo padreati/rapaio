@@ -2,12 +2,10 @@ package rapaio.data.accessor;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.VarDouble;
-import rapaio.data.VarInt;
-import rapaio.data.VarLong;
+import rapaio.core.*;
+import rapaio.data.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/18.

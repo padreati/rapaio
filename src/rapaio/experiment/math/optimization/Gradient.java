@@ -27,10 +27,10 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.math.MTools;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
-import rapaio.util.Pair;
+import rapaio.math.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
+import rapaio.util.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.

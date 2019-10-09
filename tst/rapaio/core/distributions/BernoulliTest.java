@@ -27,9 +27,9 @@ package rapaio.core.distributions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.RandomSource;
-import rapaio.core.stat.Sum;
-import rapaio.data.Var;
+import rapaio.core.*;
+import rapaio.core.stat.*;
+import rapaio.data.*;
 
 import static org.junit.Assert.*;
 

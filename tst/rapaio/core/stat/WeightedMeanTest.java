@@ -25,8 +25,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
+import rapaio.data.*;
 
 import static org.junit.Assert.*;
 

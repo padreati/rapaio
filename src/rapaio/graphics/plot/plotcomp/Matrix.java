@@ -27,8 +27,6 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.data.*;
-import rapaio.experiment.grid.*;
 import rapaio.graphics.base.*;
 import rapaio.graphics.opt.*;
 import rapaio.graphics.plot.*;
@@ -38,7 +36,6 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.

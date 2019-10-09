@@ -29,12 +29,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.core.tests.ChiSqGoodnessOfFit;
-import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-import rapaio.data.VarNominal;
+import rapaio.core.tests.*;
+import rapaio.core.tools.*;
+import rapaio.data.*;
 
 import java.util.Arrays;
 

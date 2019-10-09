@@ -27,8 +27,7 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
+import rapaio.data.*;
 
 /**
  * Filter to map vars from a data frame.

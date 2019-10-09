@@ -27,9 +27,9 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.stat.GeometricMean;
-import rapaio.data.Var;
-import rapaio.data.filter.VFilter;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 import rapaio.printer.format.*;
 
 /**

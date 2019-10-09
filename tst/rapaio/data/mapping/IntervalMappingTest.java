@@ -3,7 +3,7 @@ package rapaio.data.mapping;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import org.junit.Test;
-import rapaio.data.Mapping;
+import rapaio.data.*;
 
 import java.util.stream.IntStream;
 

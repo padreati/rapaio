@@ -25,7 +25,7 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.datasets.Datasets;
+import rapaio.datasets.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

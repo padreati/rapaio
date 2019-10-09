@@ -28,9 +28,7 @@
 package rapaio.data.stream;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
+import rapaio.data.*;
 
 import java.io.Serializable;
 import java.util.Comparator;

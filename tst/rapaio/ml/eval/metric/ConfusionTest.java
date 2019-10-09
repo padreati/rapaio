@@ -24,13 +24,10 @@
 
 package rapaio.ml.eval.metric;
 
-import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.VarNominal;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.math.linear.*;
 import rapaio.math.linear.dense.*;
-import rapaio.ml.eval.metric.*;
 
 import java.util.Arrays;
 

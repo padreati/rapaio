@@ -27,9 +27,8 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.filter.var.VTransformBoxCox;
+import rapaio.data.*;
+import rapaio.data.filter.var.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.

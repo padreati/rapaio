@@ -27,12 +27,9 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.core.distributions.Normal;
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.math.linear.*;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;

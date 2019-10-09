@@ -27,9 +27,9 @@
 
 package rapaio.printer.standard;
 
-import rapaio.graphics.base.Figure;
-import rapaio.printer.AbstractPrinter;
-import rapaio.printer.local.FigurePanel;
+import rapaio.graphics.base.*;
+import rapaio.printer.*;
+import rapaio.printer.local.*;
 
 import javax.swing.*;
 import java.awt.*;

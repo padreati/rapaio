@@ -25,11 +25,10 @@
 package rapaio.math.linear.dense;
 
 import org.junit.Test;
-import rapaio.core.RandomSource;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.util.Time;
+import rapaio.core.*;
+import rapaio.data.*;
+import rapaio.math.linear.*;
+import rapaio.util.*;
 
 import static org.junit.Assert.*;
 

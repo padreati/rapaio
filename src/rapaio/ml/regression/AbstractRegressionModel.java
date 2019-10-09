@@ -29,7 +29,6 @@ package rapaio.ml.regression;
 
 import rapaio.data.*;
 import rapaio.data.sample.*;
-import rapaio.math.linear.*;
 import rapaio.printer.format.*;
 
 import java.util.Arrays;

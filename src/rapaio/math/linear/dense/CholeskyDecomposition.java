@@ -28,10 +28,7 @@
 package rapaio.math.linear.dense;
 
 
-import rapaio.math.linear.BackwardSubstitution;
-import rapaio.math.linear.ForwardSubstitution;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.SubstitutionStrategy;
+import rapaio.math.linear.*;
 
 import java.io.Serializable;
 

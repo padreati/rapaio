@@ -26,11 +26,9 @@ package rapaio.ml.eval.metric;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.stat.Mean;
-import rapaio.data.Frame;
-import rapaio.data.VarNominal;
-import rapaio.data.Var;
-import rapaio.datasets.Datasets;
+import rapaio.core.stat.*;
+import rapaio.data.*;
+import rapaio.datasets.*;
 import rapaio.experiment.ml.eval.metric.*;
 
 import java.io.IOException;

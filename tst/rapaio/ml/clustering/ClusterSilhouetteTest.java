@@ -1,8 +1,7 @@
 package rapaio.ml.clustering;
 
 import org.junit.Test;
-import rapaio.data.VarInt;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.experiment.ml.clustering.*;
 
 /**

@@ -28,7 +28,7 @@
 package rapaio.experiment.core;
 
 import static java.lang.Math.*;
-import static rapaio.sys.WS.printf;
+import static rapaio.sys.WS.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/9/17.

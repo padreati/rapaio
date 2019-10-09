@@ -27,8 +27,8 @@
 
 package rapaio.ml.common.distance;
 
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
+import rapaio.core.*;
+import rapaio.data.*;
 
 import java.io.Serializable;
 

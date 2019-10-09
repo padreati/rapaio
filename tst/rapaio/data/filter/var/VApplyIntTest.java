@@ -2,9 +2,8 @@ package rapaio.data.filter.var;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.VFilter;
+import rapaio.data.*;
+import rapaio.data.filter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.

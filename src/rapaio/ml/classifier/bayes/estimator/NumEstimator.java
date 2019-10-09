@@ -28,7 +28,6 @@
 package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.data.*;
-import rapaio.ml.classifier.bayes.*;
 
 import java.io.Serializable;
 

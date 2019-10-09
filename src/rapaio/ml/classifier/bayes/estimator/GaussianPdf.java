@@ -27,13 +27,10 @@
 
 package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.OnlineStat;
+import rapaio.core.distributions.*;
+import rapaio.core.stat.*;
 import rapaio.data.*;
-import rapaio.ml.classifier.bayes.*;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

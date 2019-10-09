@@ -27,15 +27,11 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.core.SamplingTools;
-import rapaio.core.distributions.Normal;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.core.*;
+import rapaio.core.distributions.*;
+import rapaio.data.*;
+import rapaio.math.linear.*;
+import rapaio.math.linear.dense.*;
 
 import java.util.stream.IntStream;
 

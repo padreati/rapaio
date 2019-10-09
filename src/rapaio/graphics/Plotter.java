@@ -38,7 +38,6 @@ import rapaio.graphics.plot.plotcomp.*;
 import rapaio.util.serializable.*;
 
 import java.awt.*;
-import java.util.function.Function;
 
 public final class Plotter {
 

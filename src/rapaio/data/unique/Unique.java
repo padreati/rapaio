@@ -28,7 +28,7 @@
 package rapaio.data.unique;
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.printer.*;
 
 /**

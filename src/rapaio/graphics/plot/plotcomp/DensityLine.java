@@ -27,15 +27,12 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.core.distributions.empirical.KFuncGaussian;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
-import rapaio.util.Pin;
+import rapaio.core.distributions.empirical.*;
+import rapaio.data.*;
+import rapaio.graphics.base.*;
+import rapaio.graphics.opt.*;
+import rapaio.graphics.plot.*;
+import rapaio.util.*;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
