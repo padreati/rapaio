@@ -183,8 +183,8 @@ public class CsvTest {
 
         // test no skip
         Frame full = Csv.instance().read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(5, full.varCount());
-        Assert.assertArrayEquals(allVarNames.toArray(), full.varNames());
+        assertEquals(5, full.varCount());
+        assertArrayEquals(allVarNames.toArray(), full.varNames());
 
         // test skip first 10 rows
 
@@ -193,14 +193,14 @@ public class CsvTest {
         Frame r3 = Csv.instance().withRows(IntStream.range(10, 150).toArray()).read(Datasets.class, "iris-r.csv");
         Frame r4 = Csv.instance().withRows(row -> row >= 10).read(Datasets.class, "iris-r.csv");
 
-        Assert.assertTrue(r1.deepEquals(r2));
-        Assert.assertTrue(r1.deepEquals(r3));
-        Assert.assertTrue(r1.deepEquals(r4));
+        assertTrue(r1.deepEquals(r2));
+        assertTrue(r1.deepEquals(r3));
+        assertTrue(r1.deepEquals(r4));
 
         // test skip row % 2 == 0 and between 50 and 100
 
         Frame r5 = Csv.instance().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(25, r5.rowCount());
+        assertEquals(25, r5.rowCount());
         assertEquals("?", r5.rvar("class").levels().get(0));
         assertEquals("virginica", r5.rvar("class").levels().get(1));
 
@@ -211,16 +211,16 @@ public class CsvTest {
         Frame v3 = Csv.instance().withCols(1, 3, 4).read(Datasets.class, "iris-r.csv");
         Frame v4 = Csv.instance().withCols(row -> (row != 0) && (row != 2)).read(Datasets.class, "iris-r.csv");
 
-        Assert.assertEquals(3, v1.varCount());
-        Assert.assertTrue(v1.deepEquals(v2));
-        Assert.assertTrue(v1.deepEquals(v3));
-        Assert.assertTrue(v1.deepEquals(v4));
+        assertEquals(3, v1.varCount());
+        assertTrue(v1.deepEquals(v2));
+        assertTrue(v1.deepEquals(v3));
+        assertTrue(v1.deepEquals(v4));
 
         // test mixed
 
         Frame m1 = Csv.instance().withRows(row -> row >= 20 && row < 30).withCols(col -> col >= 2).read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(10, m1.rowCount());
-        Assert.assertEquals(3, m1.varCount());
+        assertEquals(10, m1.rowCount());
+        assertEquals(3, m1.varCount());
     }
 
     @Test
@@ -232,26 +232,26 @@ public class CsvTest {
         t1.printSummary();
 
         VType[] types = new VType[]{VType.NOMINAL, VType.DOUBLE, VType.DOUBLE, VType.NOMINAL, VType.NOMINAL};
-        Assert.assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
+        assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
 
         Frame t2 = Csv.instance().withTemplate(t1).read(Datasets.class, "iris-r.csv");
-        Assert.assertTrue(t1.deepEquals(t2));
+        assertTrue(t1.deepEquals(t2));
     }
 
     @Test
     public void testNAValues() throws IOException {
         // no NA values
         Frame na1 = Csv.instance().read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(150, na1.stream().complete().count());
+        assertEquals(150, na1.stream().complete().count());
 
         // non existent NA values
         Frame na2 = Csv.instance().withNAValues("", "xxxx").read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(150, na2.stream().complete().count());
+        assertEquals(150, na2.stream().complete().count());
 
         Frame na3 = Csv.instance().withNAValues("virginica").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(100, na3.stream().complete().count());
+        assertEquals(100, na3.stream().complete().count());
 
         Frame na4 = Csv.instance().withNAValues("virginica", "5").withTypes(VType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
-        Assert.assertEquals(89, na4.stream().complete().count());
+        assertEquals(89, na4.stream().complete().count());
     }
 }

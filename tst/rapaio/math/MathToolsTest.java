@@ -58,16 +58,4 @@ public class MathToolsTest {
         assertEquals(-1.537159819202354, logBinomial(3, 10, 0.4), tol);
         assertEquals(0.5, beta(1, 2), tol);
     }
-
-
-
-    @Test
-    public void combinationsTest() {
-
-        double x = MTools.combinations(10, 5);
-        WS.printf("%f", x);
-
-
-    }
-
 }

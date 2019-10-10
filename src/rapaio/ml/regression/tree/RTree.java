@@ -169,7 +169,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
         StringBuilder sb = new StringBuilder();
         sb.append("TreeClassifier {");
         sb.append("  minCount=").append(minCount).append(",\n");
-        sb.append("  minScore=").append(Format.floatFlex(minScore)).append(",\n");
+        sb.append("  minScore=").append(floatFlex(minScore)).append(",\n");
         sb.append("  maxDepth=").append(maxDepth).append(",\n");
         sb.append("  maxSize=").append(maxSize).append(",\n");
         for (Map.Entry<VType, RTreeTest> e : testMap.entrySet()) {

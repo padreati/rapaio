@@ -57,7 +57,7 @@ public class FJitterTest {
         Frame df1 = a.copy().fapply(FJitter.on(VRange.onlyTypes(VType.DOUBLE)));
 
         assertTrue(a.removeVars(VRange.of("0~1")).deepEquals(df1.removeVars(VRange.of("0~1"))));
-        Assert.assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
+        assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));
 
         FFilter filter = FJitter.on(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         filter.fit(a.removeVars(VRange.of("num1")));
@@ -65,7 +65,7 @@ public class FJitterTest {
         Frame df2 = filter.apply(a.copy());
 
         assertTrue(a.removeVars(VRange.of("num2")).deepEquals(df2.removeVars(VRange.of("num2"))));
-        Assert.assertFalse(a.mapVars("num2").deepEquals(df2.mapVars("num2")));
+        assertFalse(a.mapVars("num2").deepEquals(df2.mapVars("num2")));
     }
 
     @Test

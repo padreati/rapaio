@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/4/14.
@@ -45,19 +45,19 @@ public class DUniformTest {
     public void testOtherFeatures() {
         DUniform du = DUniform.of(1, 6);
 
-        Assert.assertTrue(du.discrete());
-        Assert.assertEquals(1, du.a(), TOL);
-        Assert.assertEquals(6, du.b(), TOL);
-        Assert.assertEquals(3.5, du.mean(), TOL);
-        Assert.assertEquals(1, du.min(), TOL);
-        Assert.assertEquals(6, du.max(), TOL);
-        Assert.assertEquals(Double.NaN, du.mode(), TOL);
-        Assert.assertEquals(2.9166666666666665, du.var(), TOL);
-        Assert.assertEquals(0, du.skewness(), TOL);
-        Assert.assertEquals(-1.2685714285714285, du.kurtosis(), TOL);
-        Assert.assertEquals(1.791759469228055, du.entropy(), TOL);
+        assertTrue(du.discrete());
+        assertEquals(1, du.a(), TOL);
+        assertEquals(6, du.b(), TOL);
+        assertEquals(3.5, du.mean(), TOL);
+        assertEquals(1, du.min(), TOL);
+        assertEquals(6, du.max(), TOL);
+        assertEquals(Double.NaN, du.mode(), TOL);
+        assertEquals(2.9166666666666665, du.var(), TOL);
+        assertEquals(0, du.skewness(), TOL);
+        assertEquals(-1.2685714285714285, du.kurtosis(), TOL);
+        assertEquals(1.791759469228055, du.entropy(), TOL);
 
-        Assert.assertEquals(8, DUniform.of(8, 8).quantile(0.7), TOL);
+        assertEquals(8, DUniform.of(8, 8).quantile(0.7), TOL);
     }
 
     @Test
