@@ -167,7 +167,7 @@ public final class VarBinary extends AbstractVar {
         return (VarBinary) super.withName(name);
     }
 
-    void increaseCapacity(int minCapacity) {
+    private void increaseCapacity(int minCapacity) {
         if (minCapacity <= values.size()) {
             return;
         }

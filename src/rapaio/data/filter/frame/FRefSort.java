@@ -40,7 +40,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FRefSort extends AbstractFF {
+public final class FRefSort extends AbstractFF {
 
     public static FRefSort by(IntComparator...comparators) {
         return new FRefSort(comparators);

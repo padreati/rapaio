@@ -66,6 +66,10 @@ public class GradientDescentMinimizer implements Minimizer {
         this.maxIt = maxIt;
     }
 
+    public VarDouble getErrors() {
+        return errors;
+    }
+
     @Override
     public void compute() {
         converged = false;

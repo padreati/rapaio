@@ -27,6 +27,8 @@
 
 package rapaio.util;
 
+import rapaio.sys.WS;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
@@ -42,7 +44,7 @@ public class Time {
     public static void showRun(String message, Runnable task) {
         long start = System.currentTimeMillis();
         task.run();
-        System.out.println(message != null ? message + ": " : "" + Duration.of(System.currentTimeMillis() - start, ChronoUnit.MILLIS).toString());
+        WS.println(message != null ? message + ": " : "" + Duration.of(System.currentTimeMillis() - start, ChronoUnit.MILLIS).toString());
     }
 
     public static void showRun(Runnable task) {
@@ -52,7 +54,7 @@ public class Time {
     public static <T> T showRun(String message, Supplier<T> task) {
         long start = System.currentTimeMillis();
         T t = task.get();
-        System.out.println(message != null ? message + ": " : "" + Duration.of(System.currentTimeMillis() - start, ChronoUnit.MILLIS).toString());
+        WS.println(message != null ? message + ": " : "" + Duration.of(System.currentTimeMillis() - start, ChronoUnit.MILLIS).toString());
         return t;
     }
 

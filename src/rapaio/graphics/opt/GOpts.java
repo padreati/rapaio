@@ -60,18 +60,18 @@ public class GOpts implements Serializable {
         defaults.labels = new GOptionLabels(new String[]{""});
     }
 
-    GOpts parent;
+    private GOpts parent;
 
-    GOptionPalette palette;
-    GOptionColor color;
-    GOptionLwd lwd;
-    GOptionSz sz;
-    GOptionPch pch;
-    GOptionAlpha alpha;
-    GOptionBins bins;
-    GOptionProb prob;
-    GOptionPoints points;
-    GOptionLabels labels;
+    private GOptionPalette palette;
+    private GOptionColor color;
+    private GOptionLwd lwd;
+    private GOptionSz sz;
+    private GOptionPch pch;
+    private GOptionAlpha alpha;
+    private GOptionBins bins;
+    private GOptionProb prob;
+    private GOptionPoints points;
+    private GOptionLabels labels;
 
     public GOpts bind(GOption... options) {
         Arrays.stream(options).forEach(o -> o.bind(this));

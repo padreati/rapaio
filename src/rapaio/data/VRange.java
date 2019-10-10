@@ -95,9 +95,9 @@ public interface VRange {
 
 class VRangeByName implements VRange {
 
-    static final String DELIMITER = ",";
-    static final String RANGE = "~";
-    static final String ALL = "all";
+    public static final String DELIMITER = ",";
+    public static final String RANGE = "~";
+    public static final String ALL = "all";
     private final String rawColumnRange;
 
     /**
@@ -114,7 +114,7 @@ class VRangeByName implements VRange {
             if (i > 0) {
                 sb.append(",");
             }
-            sb.append(String.valueOf(indexes[i]));
+            sb.append(indexes[i]);
         }
         this.rawColumnRange = sb.toString();
     }

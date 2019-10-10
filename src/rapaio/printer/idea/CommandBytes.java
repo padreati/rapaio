@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CommandBytes implements Serializable {
+public final class CommandBytes implements Serializable {
 
     private static final long serialVersionUID = -2188530209904804396L;
 

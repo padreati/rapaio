@@ -76,6 +76,10 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         this.maxIt = maxIt;
     }
 
+    public VarDouble getErrors() {
+        return errors;
+    }
+
     @Override
     public void compute() {
         converged = false;

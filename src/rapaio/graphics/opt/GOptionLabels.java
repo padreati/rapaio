@@ -44,11 +44,11 @@ public class GOptionLabels implements GOption<String[]> {
 
     @Override
     public void bind(GOpts opts) {
-
+        opts.setLabels(this);
     }
 
     @Override
     public String[] apply(GOpts opts) {
-        return new String[0];
+        return Arrays.copyOf(labels, labels.length);
     }
 }

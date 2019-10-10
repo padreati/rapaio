@@ -196,7 +196,7 @@ public class XWilkinson {
         return 1; // Maybe later more...
     }
 
-    public class Labels {
+    public static class Labels {
 
         private double min, max, step, score;
 

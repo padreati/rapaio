@@ -173,7 +173,7 @@ public class Group implements Printable {
     private final List<String> featureNamesList;
 
     // collection of unique structures for each primary key variable
-    private final List<Unique> groupByUniques;
+//    private final List<Unique> groupByUniques;
 
     // maps rows to group ids
     private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
@@ -188,7 +188,8 @@ public class Group implements Printable {
         this.df = df;
         this.pkNamesList = groupVarNames;
         HashSet<String> pkVarNamesSet = new HashSet<>(pkNamesList);
-        this.groupByUniques = this.pkNamesList.stream().map(varName -> Unique.of(df.rvar(varName), true)).collect(Collectors.toList());
+        List<Unique> groupByUniques =
+                this.pkNamesList.stream().map(varName -> Unique.of(df.rvar(varName), true)).collect(Collectors.toList());
         this.featureNamesList = new ArrayList<>();
         for (String varName : df.varNames()) {
             if (pkVarNamesSet.contains(varName)) {

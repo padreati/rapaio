@@ -38,7 +38,7 @@ import static rapaio.math.MTools.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class StudentT implements Distribution {
+public final class StudentT implements Distribution {
 
     public static StudentT of(double df) {
         return new StudentT(df, 0, 1);

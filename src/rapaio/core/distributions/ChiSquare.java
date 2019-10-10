@@ -38,7 +38,7 @@ import static rapaio.math.MTools.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
  */
-public class ChiSquare implements Distribution {
+public final class ChiSquare implements Distribution {
 
     public static ChiSquare of(double df) {
         return new ChiSquare(df);

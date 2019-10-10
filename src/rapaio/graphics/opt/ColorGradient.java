@@ -85,12 +85,14 @@ public interface ColorGradient {
             boolean reverse = from > to;
             colors = new Color[p.length];
             for (int i = 0; i < p.length; i++) {
-                if (!reverse)
+                if (!reverse) {
                     colors[i] = new Color(Color.HSBtoRGB(
                             (float) ((from + p[i] * Math.abs(to - from)) / 360.0), 1f, 1f));
-                else
+                }
+                else {
                     colors[i] = new Color(Color.HSBtoRGB(
                             (float) ((from - p[i] * Math.abs(to - from)) / 360.0), 1f, 1f));
+                }
             }
         }
 

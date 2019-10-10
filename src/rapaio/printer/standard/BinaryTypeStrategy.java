@@ -44,10 +44,12 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(j)) {
                 missing++;
             } else {
-                if (v.getInt(j) == 1)
+                if (v.getInt(j) == 1) {
                     ones++;
-                else
+                }
+                else {
                     zeros++;
+                }
             }
         }
         second[th][0] = String.valueOf(zeros);
@@ -68,10 +70,12 @@ public class BinaryTypeStrategy implements TypeStrategy {
             if (v.isMissing(i)) {
                 missing++;
             } else {
-                if (v.getInt(i) == 1)
+                if (v.getInt(i) == 1) {
                     ones++;
-                else
+                }
+                else {
                     zeros++;
+                }
             }
         }
         second[0] = String.valueOf(zeros);

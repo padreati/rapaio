@@ -49,7 +49,6 @@ import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 import rapaio.ml.regression.tree.rtree.RTreeTest;
 import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
 import rapaio.util.DoublePair;
 
 import java.util.Arrays;

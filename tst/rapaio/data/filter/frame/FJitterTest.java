@@ -24,7 +24,6 @@
 
 package rapaio.data.filter.frame;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;

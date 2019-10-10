@@ -62,6 +62,10 @@ public class CoordinateDescentMinimizer implements Minimizer {
     private VarDouble errors;
     private boolean converged = false;
 
+    public VarDouble getErrors() {
+        return errors;
+    }
+
     public CoordinateDescentMinimizer(RV x, RFunction f, RDerivative d1f, int maxInt) {
         this.x = x;
         this.f = f;

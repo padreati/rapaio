@@ -61,11 +61,11 @@ public class ADTestGoodness implements HTest {
     private double sigmaHat;
 
     // statistics
-    double a2;
-    double a2star;
+    private double a2;
+    private double a2star;
 
-    double pValue;
-    double pValueStar;
+    private double pValue;
+    private double pValueStar;
 
     private ADTestGoodness(Var x, double mu, double sigma) {
         Var xx = x.stream().complete().toMappedVar().copy();
@@ -119,13 +119,16 @@ public class ADTestGoodness implements HTest {
      * From: ad.test.pvalue.r of ADGofTest
      */
     private double pvalue(double x, int n) {
-        if (x < 2)
+        if (x < 2) {
             x = exp(-1.2337141 / x) / sqrt(x) * (2.00012 + (.247105 - (.0649821 - (.0347962 - (.011672 - .00168691 * x) * x) * x) * x) * x);
-        else
+        }
+        else {
             x = exp(-exp(1.0776 - (2.30695 - (.43424 - (.082433 - (.008056 - .0003146 * x) * x) * x) * x) * x));
+        }
 
-        if (x > 0.8)
+        if (x > 0.8) {
             return (x + (-130.2137 + (745.2337 - (1705.091 - (1950.646 - (1116.360 - 255.7844 * x) * x) * x) * x) * x) / n);
+        }
 
         double z = -0.01265 + 0.1757 / n;
 
