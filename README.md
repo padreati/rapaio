@@ -19,14 +19,14 @@ library written in Java.*
 <table style="border: none">
 <tr><td>
 
-###### Try it online
+##### Try it online
  
 [![Launch rapaio with IJava binder jupyter](images/launch-binder.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master) 
 [![Launch rapaio with IJava binder jupyter lab](images/launch-binder-lab.svg)](https://mybinder.org/v2/gh/padreati/rapaio-notebooks/master?urlpath=lab)
 </td>
 <td>
 
-###### Build status
+##### Build status
 
 [![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
 [![codecov.io](https://codecov.io/github/padreati/rapaio/coverage.svg?branch=master)](https://codecov.io/github/padreati/rapaio?branch=master)
@@ -35,7 +35,7 @@ library written in Java.*
 </tr>
 </table>
 
-###### Installation
+##### Installation
 
 Library can be used through maven. Last published release on maven central is 2.0.0.
 
@@ -59,7 +59,7 @@ The last option to use the library is do download the release files from this re
 also the rapaio-studio plugin, which was developed as a companion for folks who like to use the IDE. The plugin has also a github 
 [repository](https://github.com/padreati/rapaio-studio).  
 
-###### Documentation
+##### Documentation
 
 **Rapaio Tutorials** is now published in the form of IPython notebooks format. 
 Please inspect the tutorials folder of 
@@ -68,7 +68,7 @@ Please inspect the tutorials folder of
 There is also a [Tutorial on Kaggle's Titanic Competition
 ](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
-###### What gap *rapaio* tries to fill?
+##### What gap *rapaio* tries to fill?
 
 There are a lot of software stacks out there which provides plenty of 
 nicely crafted tools for statistics, machine learning, data mining or 
@@ -85,7 +85,7 @@ study and learn. And I want to do all those things in an interactive way,
 where I would program my ideas. Java community deserves such kind of tool 
 and this library aims to fill the gap.
 
-###### Acknowledgements
+##### Acknowledgements
 
 Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
 Many thanks to SpencerPark for the java kernel he realized [IJava jupyter kernel](https://github.com/SpencerPark/IJava).
