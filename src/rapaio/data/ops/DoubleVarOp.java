@@ -41,7 +41,7 @@ import rapaio.data.filter.var.VRefSort;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
-public class DoubleVarOp implements VarOp<VarDouble> {
+public final class DoubleVarOp implements VarOp<VarDouble> {
 
     private final VarDouble source;
     private final int rowCount;
@@ -262,25 +262,13 @@ public class DoubleVarOp implements VarOp<VarDouble> {
         return IntArrays.copy(rows, 0, len);
     }
 
-    private int getCompleteRows() {
-        int count = 0;
-        for (int i = 0; i < rowCount; i++) {
-            if (!source.isMissing(i)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     @Override
     public int[] sortedRows(boolean asc) {
-        DoubleComparator comparator = getComparator(asc);
-        int len = rowCount;
-        int[] rows = new int[len];
+        int[] rows = new int[rowCount];
         for (int i = 0; i < rowCount; i++) {
             rows[i] = i;
         }
-        DoubleArrays.quickSortIndirect(rows, source.array(), 0, len);
+        DoubleArrays.quickSortIndirect(rows, data);
         if (!asc) {
             IntArrays.reverse(rows);
         }

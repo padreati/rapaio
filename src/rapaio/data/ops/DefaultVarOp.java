@@ -28,7 +28,6 @@
 package rapaio.data.ops;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
@@ -38,7 +37,7 @@ import rapaio.data.filter.var.VRefSort;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
-public class DefaultVarOp<T extends Var> implements VarOp<T> {
+public final class DefaultVarOp<T extends Var> implements VarOp<T> {
 
     private final T source;
 
