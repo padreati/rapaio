@@ -28,9 +28,12 @@
 package rapaio.data.ops;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.filter.var.VRefSort;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
@@ -109,10 +112,64 @@ public class DefaultVarOp<T extends Var> implements VarOp<T> {
     }
 
     @Override
+    public T minus(double a) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, source.getDouble(i) - a);
+        }
+        return source;
+    }
+
+    @Override
+    public T minus(Var x) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, source.getDouble(i) - x.getDouble(i));
+        }
+        return source;
+    }
+
+    @Override
     public T mult(double a) {
         for (int i = 0; i < source.rowCount(); i++) {
             source.setDouble(i, source.getDouble(i) * a);
         }
+        return source;
+    }
+
+    @Override
+    public T mult(Var x) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, source.getDouble(i) * x.getDouble(i));
+        }
+        return source;
+
+    }
+
+    @Override
+    public T divide(double a) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, source.getDouble(i) / a);
+        }
+        return source;
+    }
+
+    @Override
+    public T divide(Var x) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, source.getDouble(i) / x.getDouble(i));
+        }
+        return source;
+
+    }
+
+    @Override
+    public T sort(IntComparator comparator) {
+        source.fapply(VRefSort.from(comparator));
+        return source;
+    }
+
+    @Override
+    public T sort(boolean asc) {
+        source.fapply(VRefSort.from(source.refComparator(asc)));
         return source;
     }
 
@@ -128,6 +185,17 @@ public class DefaultVarOp<T extends Var> implements VarOp<T> {
         }
         IntArrays.quickSort(rows, 0, len, source.refComparator(asc));
         return IntArrays.copy(rows, 0, len);
+    }
+
+    @Override
+    public int[] sortedRows(boolean asc) {
+        int[] rows = new int[source.rowCount()];
+        int len = 0;
+        for (int i = 0; i < source.rowCount(); i++) {
+            rows[len++] = i;
+        }
+        IntArrays.quickSort(rows, 0, len, source.refComparator(asc));
+        return rows;
     }
 
 }

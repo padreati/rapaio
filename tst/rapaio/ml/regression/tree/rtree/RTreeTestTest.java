@@ -1,9 +1,11 @@
 package rapaio.ml.regression.tree.rtree;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
+import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VRefSort;
@@ -103,26 +105,15 @@ public class RTreeTestTest {
         Var test = df.rvar(NUM_TEST).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var weights = w.fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
 
-        double variance = Variance.of(target).value();
-        for(int i=1; i<test.rowCount()-2; i++) {
-            double value = test.getDouble(i);
-
-            Var left = target.stream().filter(s -> test.getDouble(s.row()) <= value).toMappedVar();
-            Var right = target.stream().filter(s -> test.getDouble(s.row()) > value).toMappedVar();
-
-            double varLeft = Variance.of(left).value();
-            double varRight = Variance.of(right).value();
-
-            System.out.println(value + "  => " + varLeft + " | " + varRight + "    -> "
-                    + (variance - varLeft*left.rowCount()/test.rowCount() - varRight*right.rowCount()/test.rowCount()));
-        }
-
         Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
                 RTreePurityFunction.WEIGHTED_VAR_GAIN);
 
         assertTrue(c.isPresent());
-        assertEquals("Candidate{score=32.657653061224444, testName='temp', groupNames=[temp <= 69.5, temp > 69.5]}",
-                c.get().toString());
+        assertEquals(32.657653061224515, c.get().getScore(), 1e-12);
+        assertEquals("temp", c.get().getTestName());
+        assertEquals(2, c.get().getGroupNames().size());
+        assertEquals("temp <= 69.5", c.get().getGroupNames().get(0));
+        assertEquals("temp > 69.5", c.get().getGroupNames().get(1));
     }
 
 }

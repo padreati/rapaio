@@ -274,7 +274,7 @@ public final class VarInt extends AbstractVar {
     @Override
     public double getDouble(int row) {
         if (isMissing(row))
-            return Double.NaN;
+            return VarDouble.MISSING_VALUE;
         return getInt(row);
     }
 

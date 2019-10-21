@@ -28,6 +28,7 @@
 package rapaio.data.ops;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
@@ -48,7 +49,35 @@ public interface VarOp<T extends Var> {
 
     T plus(Var x);
 
+    T minus(double a);
+
+    T minus(Var x);
+
     T mult(double a);
 
+    T mult(Var x);
+
+    T divide(double a);
+
+    T divide(Var x);
+
+    T sort(IntComparator comparator);
+
+    default T sort() {
+        return sort(true);
+    }
+
+    T sort(boolean asc);
+
+    default int[] sortedCompleteRows() {
+        return sortedCompleteRows(true);
+    }
+
     int[] sortedCompleteRows(boolean asc);
+
+    default int[] sortedRows() {
+        return sortedRows(true);
+    }
+
+    int[] sortedRows(boolean asc);
 }

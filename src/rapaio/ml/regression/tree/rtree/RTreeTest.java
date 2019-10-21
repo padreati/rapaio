@@ -121,6 +121,7 @@ public interface RTreeTest extends Serializable {
                 leftWeight[i] = weights.getDouble(rows[i]) + leftWeight[i - 1];
                 leftVar[i] = so.variance();
             }
+
             so = WeightedOnlineStat.empty();
             so.update(df.getDouble(rows[rows.length - 1], targetIndex), weights.getDouble(rows[rows.length - 1]));
             rightWeight[rows.length - 1] = weights.getDouble(rows[rows.length - 1]);
