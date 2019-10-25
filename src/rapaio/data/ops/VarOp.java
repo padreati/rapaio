@@ -37,47 +37,164 @@ import rapaio.data.VarDouble;
  */
 public interface VarOp<T extends Var> {
 
+    /**
+     * Update values through a double to double function.
+     * The update is realized in place.
+     *
+     * @param fun transformation function
+     * @return reference to the original variable
+     */
     T apply(Double2DoubleFunction fun);
 
+    /**
+     * Creates a VarDouble copy with transformed values.
+     *
+     * @param fun transformation function
+     * @return new variable with transformed values
+     */
     VarDouble capply(Double2DoubleFunction fun);
 
+    /**
+     * Computes the sum of non missing values.
+     *
+     * @return sum of non missing values
+     */
     double sum();
 
+    /**
+     * Computes the average of non missing values.
+     * The counted values are only the non missing ones.
+     *
+     * @return average of non missing values
+     */
     double avg();
 
+    /**
+     * Adds a constant to all values from the variable.
+     *
+     * @param a constant values to be added
+     * @return reference to the original variable
+     */
     T plus(double a);
 
+    /**
+     * Adds elementwise a variable to the original variable in place
+     *
+     * @param x variable with values to be added to original
+     * @return reference to the original variable
+     */
     T plus(Var x);
 
+    /**
+     * Substract a constant value from all values from the variable.
+     *
+     * @param a constant value to be substracted
+     * @return reference to the original variable
+     */
     T minus(double a);
 
+    /**
+     * Substract elementwise a variable from the original variable.
+     * Operation is realized in place.
+     *
+     * @param x variable to be substracted from original
+     * @return reference to the original variable
+     */
     T minus(Var x);
 
+    /**
+     * Multiply all values of the original variables with a constant value.
+     *
+     * @param a constant multiplier
+     * @return reference to the original variable
+     */
     T mult(double a);
 
+    /**
+     * Multiply elementwise a variable with the original variable.
+     * Operation is realized in place.
+     *
+     * @param x variable to be multiplied with original
+     * @return reference to the original variable
+     */
     T mult(Var x);
 
+    /**
+     * Divide all values from the original variable with a constant value.
+     *
+     * @param a a constant value divider
+     * @return reference to the original variable.
+     */
     T divide(double a);
 
+    /**
+     * Divide elementwise the original variable with values from given variable.
+     *
+     * @param x divider variable
+     * @return reference to the original variable
+     */
     T divide(Var x);
 
+    /**
+     * Sort in place values of the original variable using a row comparator.
+     *
+     * @param comparator row comparator
+     * @return reference to the original variable
+     */
     T sort(IntComparator comparator);
 
+    /**
+     * Sort in place values of the original variable using a natural value comparator.
+     * The ordering is ascending.
+     *
+     * @return reference to the original variable
+     */
     default T sort() {
         return sort(true);
     }
 
+    /**
+     * Sort in place values of the original variable using a natural value comparator.
+     * The oridering is given as parameter.
+     *
+     * @param asc if true the ordering is ascending, descending otherwise
+     * @return reference to the original variable
+     */
     T sort(boolean asc);
 
+    /**
+     * Computes the row array of the sorted non missing values in ascending order.
+     *
+     * @return an array with row numbers
+     */
     default int[] sortedCompleteRows() {
         return sortedCompleteRows(true);
     }
 
+    /**
+     * Computes the row array of the sorted non missing values with ordering
+     * given as parameter.
+     *
+     * @param asc if true the ordering is ascending, descending otherwise
+     * @return an array with row numbers
+     */
     int[] sortedCompleteRows(boolean asc);
 
+    /**
+     * Computes the row array of the sorted values with ascending ordering
+     *
+     * @return an array with row numbers
+     */
     default int[] sortedRows() {
         return sortedRows(true);
     }
 
+    /**
+     * Computes the row array of the sorted values with ordering given
+     * as parameter.
+     *
+     * @param asc if true the ordering is ascending, descending otherwise
+     * @return an array with row numbers
+     */
     int[] sortedRows(boolean asc);
 }
