@@ -87,5 +87,8 @@ and this library aims to fill the gap.
 
 ### Acknowledgements
 
-Many thanks to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
-Many thanks to SpencerPark for the java kernel he realized [IJava jupyter kernel](https://github.com/SpencerPark/IJava).
+Many thanks to [![JetBrains](images/jetbrains-variant-3_logos/jetbrains-variant-3.svg)](https://www.jetbrains.com/?from=rapaio) 
+who provided open source licenses for their brilliant IDE 
+[![a](images/intellij-idea_logos/logo.svg)](https://www.jetbrains.com/?from=rapaio)
+ 
+Many thanks to [SpencerPark](https://github.com/SpencerPark) for the java kernel he realized [IJava jupyter kernel](https://github.com/SpencerPark/IJava).
