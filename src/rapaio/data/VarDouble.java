@@ -545,17 +545,17 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "VarDouble";
     }
 
     @Override
-    protected int stringPrefix() {
-        return 10;
+    protected int elementsInToString() {
+        return 12;
     }
 
     @Override
-    void stringPutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
         if (isMissing(row)) {
             tt.textCenter(i, j, "?");
         } else {

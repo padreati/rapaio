@@ -399,17 +399,17 @@ public final class VarInt extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "VarInt";
     }
 
     @Override
-    protected int stringPrefix() {
-        return 12;
+    protected int elementsInToString() {
+        return 14;
     }
 
     @Override
-    void stringPutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
         tt.textRight(i, j, getLabel(row));
     }
 

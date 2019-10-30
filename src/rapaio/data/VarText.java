@@ -216,12 +216,12 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "VarText";
     }
 
     @Override
-    protected int stringPrefix() {
-        return 10;
+    protected int elementsInToString() {
+        return 12;
     }
 }

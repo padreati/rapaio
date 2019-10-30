@@ -263,24 +263,24 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "BoundVar(type=" + vars.get(0).type().code() + ")";
     }
 
     @Override
-    protected int stringPrefix() {
+    protected int elementsInToString() {
         if (vars.get(0) instanceof AbstractVar) {
-            return ((AbstractVar) vars.get(0)).stringPrefix();
+            return ((AbstractVar) vars.get(0)).elementsInToString();
         }
         return 10;
     }
 
     @Override
-    void stringPutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
         if (vars.get(0) instanceof AbstractVar) {
-            ((AbstractVar) vars.get(0)).stringPutValue(tt, i, j, row);
+            ((AbstractVar) vars.get(0)).textTablePutValue(tt, i, j, row);
         } else {
-            super.stringPutValue(tt, i, j, row);
+            super.textTablePutValue(tt, i, j, row);
         }
     }
 }

@@ -414,12 +414,12 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "VarBinary";
     }
 
     @Override
-    protected int stringPrefix() {
-        return 16;
+    protected int elementsInToString() {
+        return 18;
     }
 }

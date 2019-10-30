@@ -216,24 +216,24 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "MappedVar(type=" + source.type().code() + ")";
     }
 
     @Override
-    protected int stringPrefix() {
+    protected int elementsInToString() {
         if (source instanceof AbstractVar) {
-            return ((AbstractVar) source).stringPrefix();
+            return ((AbstractVar) source).elementsInToString();
         }
-        return 10;
+        return 12;
     }
 
     @Override
-    void stringPutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
         if (source instanceof AbstractVar) {
-            ((AbstractVar) source).stringPutValue(tt, i, j, mapping.get(row));
+            ((AbstractVar) source).textTablePutValue(tt, i, j, mapping.get(row));
         } else {
-            super.stringPutValue(tt, i, j, mapping.get(row));
+            super.textTablePutValue(tt, i, j, mapping.get(row));
         }
     }
 }

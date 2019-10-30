@@ -102,6 +102,15 @@ public enum VType {
         }
     },
     /**
+     * Instant values
+     */
+    INSTANT(false, false, false, "instant") {
+        @Override
+        public Var newInstance(int rows) {
+            return VarInstant.empty(rows);
+        }
+    },
+    /**
      * Variable type used only to store text.
      */
     TEXT(false, false, false, "text") {

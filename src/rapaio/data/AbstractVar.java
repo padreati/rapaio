@@ -120,11 +120,11 @@ public abstract class AbstractVar implements Var {
         name = in.readUTF();
     }
 
-    abstract String stringClassName();
+    protected abstract String classNameInToString();
 
-    abstract int stringPrefix();
+    protected abstract int elementsInToString();
 
-    void stringPutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
         tt.textCenter(i, j, getLabel(row));
     }
 
@@ -132,11 +132,11 @@ public abstract class AbstractVar implements Var {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(stringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount());
+        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount());
         sb.append(", values: ");
 
-        int prefix = stringPrefix();
-        if (rowCount() <= prefix + 2) {
+        int elements = elementsInToString();
+        if (rowCount() <= elements) {
             for (int i = 0; i < rowCount(); i++) {
                 sb.append(getLabel(i));
                 if (i < rowCount() - 1) {
@@ -144,7 +144,7 @@ public abstract class AbstractVar implements Var {
                 }
             }
         } else {
-            for (int i = 0; i < prefix; i++) {
+            for (int i = 0; i < elements - 2; i++) {
                 sb.append(getLabel(i)).append(", ");
             }
             sb.append("..., ");
@@ -159,7 +159,7 @@ public abstract class AbstractVar implements Var {
     @Override
     public String content() {
         StringBuilder sb = new StringBuilder();
-        sb.append(stringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
 
         if (rowCount() > 100) {
             TextTable tt = TextTable.empty(102, 2, 1, 1);
@@ -168,13 +168,13 @@ public abstract class AbstractVar implements Var {
 
             for (int i = 0; i < 80; i++) {
                 tt.intRow(i + 1, 0, i);
-                stringPutValue(tt, i + 1, 1, i);
+                textTablePutValue(tt, i + 1, 1, i);
             }
             tt.textCenter(80, 0, "...");
             tt.textCenter(80, 1, "...");
             for (int i = rowCount() - 20; i < rowCount(); i++) {
                 tt.intRow(i + 101 - rowCount(), 0, i);
-                stringPutValue(tt, i + 101 - rowCount(), 1, i);
+                textTablePutValue(tt, i + 101 - rowCount(), 1, i);
             }
             sb.append(tt.getDefaultText());
         } else {
@@ -189,7 +189,7 @@ public abstract class AbstractVar implements Var {
         tt.textCenter(0, 1, "value");
         for (int i = 0; i < rowCount(); i++) {
             tt.intRow(i + 1, 0, i);
-            stringPutValue(tt, i + 1, 1, i);
+            textTablePutValue(tt, i + 1, 1, i);
         }
         sb.append(tt.getDefaultText());
     }
@@ -197,7 +197,7 @@ public abstract class AbstractVar implements Var {
     @Override
     public String fullContent() {
         StringBuilder sb = new StringBuilder();
-        sb.append(stringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
         fullTable(sb);
         return sb.toString();
     }

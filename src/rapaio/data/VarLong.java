@@ -477,13 +477,13 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    protected String stringClassName() {
+    protected String classNameInToString() {
         return "VarLong";
     }
 
     @Override
-    protected int stringPrefix() {
-        return 10;
+    protected int elementsInToString() {
+        return 12;
     }
 
     public long[] getArray() {
