@@ -27,8 +27,6 @@
 
 package rapaio.experiment.ml.regression.tree.srt;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -142,8 +140,8 @@ public class SmoothRTreeNode {
 
         // and perform the split and call learning further on
 
-        IntList leftRows = new IntArrayList();
-        IntList rightRows = new IntArrayList();
+        Mapping leftRows = Mapping.empty();
+        Mapping rightRows = Mapping.empty();
 
         Var yHat = VarDouble.empty().withName(y.name());
         Var leftW = VarDouble.empty();
@@ -170,15 +168,12 @@ public class SmoothRTreeNode {
         leftNode = new SmoothRTreeNode(this);
         rightNode = new SmoothRTreeNode(this);
 
-        Mapping leftMap = Mapping.wrap(leftRows);
-        Mapping rightMap = Mapping.wrap(rightRows);
-
         leftNode.coreNodeFit(
-                df.mapRows(leftMap).copy(),
+                df.mapRows(leftRows).copy(),
                 leftW,
                 leftY, tree, depth + 1);
         rightNode.coreNodeFit(
-                df.mapRows(rightMap).copy(),
+                df.mapRows(rightRows).copy(),
                 rightW,
                 rightY, tree, depth + 1);
     }

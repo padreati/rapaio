@@ -27,10 +27,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import rapaio.data.filter.FFilter;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
@@ -41,6 +37,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -226,11 +223,12 @@ public interface Frame extends Serializable, Printable {
      * Builds a new frame only with rows not specified in mapping.
      */
     default Frame removeRows(Mapping mapping) {
-        IntSet remove = new IntOpenHashSet(mapping.toList());
-        IntList map = new IntArrayList(Math.min(0, rowCount() - remove.size()));
+        Set<Integer> remove = mapping.stream().boxed().collect(Collectors.toSet());
+        int[] map = new int[Math.max(0, rowCount() - remove.size())];
+        int pos = 0;
         for (int i = 0; i < rowCount(); i++) {
             if (!remove.contains(i)) {
-                map.add(i);
+                map[pos++] = i;
             }
         }
         return mapRows(Mapping.wrap(map));

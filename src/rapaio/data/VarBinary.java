@@ -143,9 +143,10 @@ public final class VarBinary extends AbstractVar {
 
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
-     * @param rows number of rows
+     *
+     * @param rows        number of rows
      * @param fillMissing fill value for missing bit set
-     * @param fillValue fill value for data bit set
+     * @param fillValue   fill value for data bit set
      */
     private VarBinary(final int rows, final int fillMissing, final int fillValue) {
         this.rows = rows;

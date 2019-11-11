@@ -27,11 +27,9 @@
 
 package rapaio.experiment.ml.classifier.meta;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifierModel;
@@ -96,11 +94,11 @@ public class SplitClassifierModel
             throw new IllegalArgumentException("No splits defined");
         }
 
-        List<IntList> maps = new ArrayList<>();
+        List<Mapping> maps = new ArrayList<>();
         for (int i = 0; i < splits.size(); i++) {
-            maps.add(new IntArrayList());
+            maps.add(Mapping.empty());
         }
-        IntList ignored = new IntArrayList();
+        Mapping ignored = Mapping.empty();
         df.stream().forEach(s -> {
             for (int i = 0; i < splits.size(); i++) {
                 if (splits.get(i).predicate.test(s)) {
@@ -117,8 +115,8 @@ public class SplitClassifierModel
             throw new IllegalArgumentException("there are uncovered cases by splits, learning failed");
         }
 
-        List<Frame> frames = maps.stream().map(IntCollection::toIntArray).map(df::mapRows).collect(Collectors.toList());
-        List<Var> weightList = maps.stream().map(IntCollection::toIntArray).map(weights::mapRows).collect(Collectors.toList());
+        List<Frame> frames = maps.stream().map(df::mapRows).collect(Collectors.toList());
+        List<Var> weightList = maps.stream().map(weights::mapRows).collect(Collectors.toList());
 
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);

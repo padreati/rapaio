@@ -77,7 +77,7 @@ public class MappedFrame extends AbstractFrame {
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
             this.source = mappedFrame.source;
-            this.mapping = Mapping.copy(mapping.toList(), mappedFrame.mapping::get);
+            this.mapping = Mapping.from(mapping, mappedFrame.mapping::get);
         } else {
             this.source = df;
             this.mapping = mapping;

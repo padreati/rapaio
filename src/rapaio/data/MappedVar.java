@@ -74,9 +74,10 @@ public class MappedVar extends AbstractVar {
     private MappedVar(Var var, Mapping mapping) {
         withName(var.name());
         if (var instanceof MappedVar) {
-            Mapping srcMap = ((MappedVar) var).getMapping();
-            this.mapping = Mapping.copy(mapping.toList(), srcMap::get);
-            this.source = ((MappedVar) var).source;
+            MappedVar src = (MappedVar) var;
+            Mapping srcMap = src.getMapping();
+            this.mapping = Mapping.from(mapping, srcMap::get);
+            this.source = src.source;
         } else {
             this.mapping = mapping;
             this.source = var;

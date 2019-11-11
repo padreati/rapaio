@@ -27,10 +27,10 @@
 
 package rapaio.printer.format;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -196,22 +196,22 @@ public class TextTable {
             right[row][col] = null;
         } else {
             // anchor
-            IntArrayList indexes = new IntArrayList();
+            VarInt indexes = VarInt.empty();
             for (int i = 0; i < value.length(); i++) {
                 if (value.charAt(i) == anchor) {
-                    indexes.add(i);
+                    indexes.addInt(i);
                 }
             }
             // by default if no anchor is found we take mid
             int mid = (int) Math.ceil(value.length() / 2.);
-            if (!indexes.isEmpty()) {
+            if (indexes.rowCount() != 0) {
                 if (align < 0) {
                     mid = indexes.getInt(0);
                 } else {
                     if (align > 0) {
-                        mid = indexes.getInt(indexes.size() - 1);
+                        mid = indexes.getInt(indexes.rowCount() - 1);
                     } else {
-                        mid = indexes.getInt(indexes.size() / 2);
+                        mid = indexes.getInt(indexes.rowCount() / 2);
                     }
                 }
             }
@@ -375,6 +375,7 @@ public class TextTable {
                     selectedColumns.add(lastCol);
                     currentLen += finalLen[lastCol];
                     lastCol++;
+                    continue;
                 }
                 break;
             }

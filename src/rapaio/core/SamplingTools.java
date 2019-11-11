@@ -27,12 +27,10 @@
 
 package rapaio.core;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -206,7 +204,7 @@ public final class SamplingTools {
 
             // min replaced with the new selected value
             double tw = Math.pow(k[heap[1]], freq[pos]);
-            double r2 = RandomSource.   nextDouble() * (1. - tw) + tw;
+            double r2 = RandomSource.nextDouble() * (1. - tw) + tw;
             double ki = Math.pow(r2, 1 / freq[pos]);
 
             k[heap[1]] = ki;
@@ -320,39 +318,35 @@ public final class SamplingTools {
 
     public static Frame[] randomSampleStratifiedSplit(Frame df, String strataName, double... freq) {
         normalize(freq);
-        List<IntList> groups = new ArrayList<>();
+        List<Mapping> groups = new ArrayList<>();
         for (int i = 0; i < df.levels(strataName).size(); i++) {
-            groups.add(new IntArrayList());
+            groups.add(Mapping.empty());
         }
-        int varIndex = df.varIndex(strataName);
-        for (int i = 0; i < df.rowCount(); i++) {
-            groups.get(df.getInt(i, varIndex)).add(i);
-        }
+        df.rvar(strataName).stream().forEach(s -> groups.get(s.getInt()).add(s.row()));
 
-        IntList[] maps = new IntList[freq.length];
+        Mapping[] maps = new Mapping[freq.length];
         for (int i = 0; i < freq.length; i++) {
-            maps[i] = new IntArrayList();
+            maps[i] = Mapping.empty();
         }
 
-        for (IntList group : groups) {
-            IntLists.shuffle(group, RandomSource.getRandom());
-            int start = 0;
-            for (int i = 0; i < freq.length; i++) {
-                if (i == freq.length - 1) {
-                    maps[i].addAll(group.subList(start, group.size()));
-                    break;
+        int mapPos = 0;
+        for (Mapping group : groups) {
+            group.shuffle();
+            IntIterator it = group.iterator();
+            while (it.hasNext()) {
+                maps[mapPos++].add(it.nextInt());
+                if (mapPos == freq.length) {
+                    mapPos = 0;
                 }
-                maps[i].addAll(group.subList(start, start + (int) (group.size() * freq[i])));
-                start += (int) (group.size() * freq[i]);
             }
         }
         for (int i = 0; i < freq.length; i++) {
-            IntLists.shuffle(maps[i], RandomSource.getRandom());
+            maps[i].shuffle();
         }
 
         Frame[] list = new Frame[freq.length];
         for (int i = 0; i < freq.length; i++) {
-            list[i] = df.mapRows(Mapping.wrap(maps[i]));
+            list[i] = df.mapRows(maps[i]);
         }
         return list;
     }

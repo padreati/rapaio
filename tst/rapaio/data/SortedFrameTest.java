@@ -24,7 +24,7 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
+import rapaio.util.collection.IntComparator;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;

@@ -30,8 +30,6 @@ import org.junit.rules.ExpectedException;
 import rapaio.data.filter.frame.FRefSort;
 import rapaio.datasets.Datasets;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,7 +46,7 @@ public class MappedFrameTest {
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void colsSortedTest() throws IOException, URISyntaxException {
+    public void colsSortedTest() {
         Frame orig = Datasets.loadIrisDataset();
         Frame sort = FRefSort.by(RowComparators.doubleComparator(orig.rvar(1), true)).fapply(orig);
         sort = FRefSort.by(RowComparators.doubleComparator(orig.rvar(2), true)).fapply(sort);

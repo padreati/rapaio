@@ -24,8 +24,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,12 +47,12 @@ public class MappingTest {
         Mapping empty1 = Mapping.empty();
         assertEquals(0, empty1.size());
 
-        IntList wrap1 = IntArrayList.wrap(new int[]{1, 3, 5, 7});
+        VarInt wrap1 = VarInt.wrap(1, 3, 5, 7);
 
         testMap(Mapping.wrap(1, 3, 5, 7), 1, 3, 5, 7);
         testMap(Mapping.wrap(wrap1), 1, 3, 5, 7);
         testMap(Mapping.copy(wrap1), 1, 3, 5, 7);
-        testMap(Mapping.copy(wrap1, x -> x + 1), 2, 4, 6, 8);
+        testMap(Mapping.from(wrap1, x -> x + 1), 2, 4, 6, 8);
 
         testMap(Mapping.range(5), 0, 1, 2, 3, 4);
         testMap(Mapping.range(2, 5), 2, 3, 4);

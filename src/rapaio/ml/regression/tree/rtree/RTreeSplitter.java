@@ -27,12 +27,11 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.mapping.ListMapping;
+import rapaio.data.mapping.ArrayMapping;
 import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
@@ -110,7 +109,7 @@ public interface RTreeSplitter extends Serializable {
         public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
             List<Mapping> mapList = Util.createMapList(df.rowCount(), groupPredicates);
             double[] w = new double[mapList.size()];
-            IntArrayList missing = new IntArrayList();
+            Mapping missing = Mapping.empty();
             for (int row = 0; row < df.rowCount(); row++) {
                 int group = Util.getMatchedPredicate(df, row, groupPredicates);
                 if (group != -1) {
@@ -137,7 +136,7 @@ public interface RTreeSplitter extends Serializable {
                 indexW = i;
             }
             if (indexW != -1) {
-                mapList.get(indexW).addAll(missing);
+                mapList.get(indexW).addAll(missing.iterator());
             }
             return mapList;
         }
@@ -181,7 +180,7 @@ final class Util {
     }
 
     public static List<Mapping> createMapList(int capacity, List<RowPredicate> groupPredicates) {
-        return IntStream.range(0, groupPredicates.size()).boxed().map(i -> new ListMapping()).collect(Collectors.toList());
+        return IntStream.range(0, groupPredicates.size()).boxed().map(i -> new ArrayMapping()).collect(Collectors.toList());
     }
 
     public static int getMatchedPredicate(Frame df, int row, List<RowPredicate> predicates) {

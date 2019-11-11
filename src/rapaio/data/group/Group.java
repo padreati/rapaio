@@ -555,8 +555,8 @@ public class Group implements Printable {
             for (int sortedGroupId : sortedGroupIds) {
                 rows.add(groupIndex.get(sortedGroupId).getRows().getInt(0));
             }
-            Frame result = df.mapRows(Mapping.wrap(rows)).mapVars(group.getGroupByNameList()).copy();
-            result = result.bindVars(aggregateDf.mapRows(Mapping.wrap(sortedGroupIds))).copy();
+            Frame result = df.mapRows(Mapping.wrap(rows.toIntArray())).mapVars(group.getGroupByNameList()).copy();
+            result = result.bindVars(aggregateDf.mapRows(Mapping.wrap(sortedGroupIds.toIntArray()))).copy();
             if (unstackLevel <= 0) {
                 return result;
             }
@@ -609,7 +609,7 @@ public class Group implements Printable {
             }
 
             // make unstack frame
-            Frame unstackedDf = result.mapRows(Mapping.wrap(originalGroupRows));
+            Frame unstackedDf = result.mapRows(Mapping.wrap(originalGroupRows.toIntArray()));
             if (groupNames.size() > 0) {
                 unstackedDf = unstackedDf.mapVars(groupNames);
             }

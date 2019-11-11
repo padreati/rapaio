@@ -160,65 +160,60 @@ public class GroupTest {
         Group group2 = Group.from(iris, VRange.of("class", "petal-width"));
         Group.Aggregate agg2 = group2.aggregate(count("sepal-width"));
 
-        assertEquals("      class    petal-width_0.1_sepal-width_count \n" +
-                "[0]     setosa                                 7 \n" +
-                "[1] versicolor                                 ? \n" +
-                "[2]  virginica                                 ? \n" +
+        assertEquals("      class    petal-width_0.1_sepal-width_count petal-width_0.2_sepal-width_count \n" +
+                "[0]     setosa                                 7                                 5 \n" +
+                "[1] versicolor                                 ?                                 ? \n" +
+                "[2]  virginica                                 ?                                 ? \n" +
                 "\n" +
-                "    petal-width_0.2_sepal-width_count petal-width_0.3_sepal-width_count \n" +
-                "[0]                                 5                                 7 \n" +
+                "    petal-width_0.3_sepal-width_count petal-width_0.4_sepal-width_count \n" +
+                "[0]                                 7                                29 \n" +
                 "[1]                                 ?                                 ? \n" +
                 "[2]                                 ?                                 ? \n" +
                 "\n" +
-                "    petal-width_0.4_sepal-width_count petal-width_0.5_sepal-width_count \n" +
-                "[0]                                29                                 1 \n" +
+                "    petal-width_0.5_sepal-width_count petal-width_0.6_sepal-width_count \n" +
+                "[0]                                 1                                 1 \n" +
                 "[1]                                 ?                                 ? \n" +
                 "[2]                                 ?                                 ? \n" +
                 "\n" +
-                "    petal-width_0.6_sepal-width_count petal-width_1.0_sepal-width_count \n" +
-                "[0]                                 1                                 ? \n" +
-                "[1]                                 ?                                 7 \n" +
+                "    petal-width_1.0_sepal-width_count petal-width_1.1_sepal-width_count \n" +
+                "[0]                                 ?                                 ? \n" +
+                "[1]                                 7                                10 \n" +
                 "[2]                                 ?                                 ? \n" +
                 "\n" +
-                "    petal-width_1.1_sepal-width_count petal-width_1.2_sepal-width_count \n" +
+                "    petal-width_1.2_sepal-width_count petal-width_1.3_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
-                "[1]                                10                                 1 \n" +
+                "[1]                                 1                                 5 \n" +
                 "[2]                                 ?                                 ? \n" +
                 "\n" +
-                "    petal-width_1.3_sepal-width_count petal-width_1.4_sepal-width_count \n" +
+                "    petal-width_1.4_sepal-width_count petal-width_1.5_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
-                "[1]                                 5                                 7 \n" +
-                "[2]                                 ?                                 3 \n" +
+                "[1]                                 7                                 3 \n" +
+                "[2]                                 3                                 8 \n" +
                 "\n" +
-                "    petal-width_1.5_sepal-width_count petal-width_1.6_sepal-width_count \n" +
+                "    petal-width_1.6_sepal-width_count petal-width_1.7_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
-                "[1]                                 3                                13 \n" +
-                "[2]                                 8                                 3 \n" +
+                "[1]                                13                                 1 \n" +
+                "[2]                                 3                                 5 \n" +
                 "\n" +
-                "    petal-width_1.7_sepal-width_count petal-width_1.8_sepal-width_count \n" +
+                "    petal-width_1.8_sepal-width_count petal-width_1.9_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
-                "[1]                                 1                                 3 \n" +
-                "[2]                                 5                                 1 \n" +
+                "[1]                                 3                                 ? \n" +
+                "[2]                                 1                                 2 \n" +
                 "\n" +
-                "    petal-width_1.9_sepal-width_count petal-width_2.0_sepal-width_count \n" +
-                "[0]                                 ?                                 ? \n" +
-                "[1]                                 ?                                 ? \n" +
-                "[2]                                 2                                 6 \n" +
-                "\n" +
-                "    petal-width_2.1_sepal-width_count petal-width_2.2_sepal-width_count \n" +
+                "    petal-width_2.0_sepal-width_count petal-width_2.1_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
                 "[1]                                 ?                                 ? \n" +
-                "[2]                                 1                                11 \n" +
+                "[2]                                 6                                 1 \n" +
                 "\n" +
-                "    petal-width_2.3_sepal-width_count petal-width_2.4_sepal-width_count \n" +
+                "    petal-width_2.2_sepal-width_count petal-width_2.3_sepal-width_count \n" +
                 "[0]                                 ?                                 ? \n" +
                 "[1]                                 ?                                 ? \n" +
-                "[2]                                 3                                 6 \n" +
+                "[2]                                11                                 3 \n" +
                 "\n" +
-                "    petal-width_2.5_sepal-width_count \n" +
-                "[0]                                 ? \n" +
-                "[1]                                 ? \n" +
-                "[2]                                 1 \n" +
+                "    petal-width_2.4_sepal-width_count petal-width_2.5_sepal-width_count \n" +
+                "[0]                                 ?                                 ? \n" +
+                "[1]                                 ?                                 ? \n" +
+                "[2]                                 6                                 1 \n" +
                 "\n", agg2.toFrame(1).content());
     }
 
@@ -233,41 +228,13 @@ public class GroupTest {
                 "[0] noplay    0.6428571     \n" +
                 "[1]   play    0.3571429     \n", group.aggregate(count(1, "outlook")).toFrame().content());
 
-        assertEquals("    class  temp_sum \n" +
-                "[0] noplay   657    \n" +
-                "[1]   play   373    \n" +
+        assertEquals("    class  temp_sum temp_sum_N1 temp_mean temp_mean_N1 windy_nunique windy_nunique_N1 temp_min temp_min_N1 \n" +
+                "[0] noplay   657     0.6378641    73       0.4945799               2       0.5           64     0.496124   \n" +
+                "[1]   play   373     0.3621359    74.6     0.5054201               2       0.5           65     0.503876   \n" +
                 "\n" +
-                "    temp_sum_N1 temp_mean \n" +
-                "[0]  0.6378641    73      \n" +
-                "[1]  0.3621359    74.6    \n" +
-                "\n" +
-                "    temp_mean_N1 windy_nunique \n" +
-                "[0]  0.4945799               2 \n" +
-                "[1]  0.5054201               2 \n" +
-                "\n" +
-                "    windy_nunique_N1 temp_min \n" +
-                "[0]       0.5           64    \n" +
-                "[1]       0.5           65    \n" +
-                "\n" +
-                "    temp_min_N1 temp_max \n" +
-                "[0]  0.496124      83    \n" +
-                "[1]  0.503876      85    \n" +
-                "\n" +
-                "    temp_max_N1 temp_skewness \n" +
-                "[0]  0.4940476    0.3294078   \n" +
-                "[1]  0.5059524    0.1894857   \n" +
-                "\n" +
-                "    temp_skewness_N1 temp_std  \n" +
-                "[0]    0.6348274     5.8118653 \n" +
-                "[1]    0.3651726     7.059745  \n" +
-                "\n" +
-                "    temp_std_N1 temp_kurtosis \n" +
-                "[0]  0.4515259   -0.8914041   \n" +
-                "[1]  0.5484741   -1.2885832   \n" +
-                "\n" +
-                "    temp_kurtosis_N1 \n" +
-                "[0]    0.4089033     \n" +
-                "[1]    0.5910967     \n" +
+                "    temp_max temp_max_N1 temp_skewness temp_skewness_N1 temp_std  temp_std_N1 temp_kurtosis temp_kurtosis_N1 \n" +
+                "[0]    83     0.4940476    0.3294078      0.6348274     5.8118653  0.4515259   -0.8914041      0.4089033     \n" +
+                "[1]    85     0.5059524    0.1894857      0.3651726     7.059745   0.5484741   -1.2885832      0.5910967     \n" +
                 "\n", group.aggregate(
                 sum("temp"), sum(1, "temp"), mean("temp"), mean(1, "temp"), nunique("windy"), nunique(1, "windy"),
                 min("temp"), min(1, "temp"), max("temp"), max(1, "temp"),skewness("temp"), skewness(1, "temp"),

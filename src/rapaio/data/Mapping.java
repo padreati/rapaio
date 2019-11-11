@@ -27,17 +27,13 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
+import rapaio.data.mapping.ArrayMapping;
 import rapaio.data.mapping.IntervalMapping;
-import rapaio.data.mapping.ListMapping;
+import rapaio.util.collection.IntIterator;
+import rapaio.util.function.IntIntFunction;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -66,29 +62,44 @@ public interface Mapping extends Serializable {
      * @return an empty mapping
      */
     static Mapping empty() {
-        return new ListMapping();
-    }
-
-    /**
-     * Builds a mapping having the mapped values specified as parameter,
-     * the list of values being used as reference inside mapping.
-     *
-     * @param mapping list of mapped values
-     * @return new mapping which wraps the given list of indexed values
-     */
-    static Mapping wrap(IntList mapping) {
-        return new ListMapping(mapping, false);
+        return new ArrayMapping();
     }
 
     /**
      * Builds a mapping having the mapped values given as an array of indexed values,
      * a copy of the values is used.
      *
-     * @param mapping array of mapped values
+     * @param array array of values
      * @return new mapping which is build on a copy of the array of values
      */
-    static Mapping wrap(int... mapping) {
-        return new ListMapping(mapping);
+    static Mapping wrap(int... array) {
+        return new ArrayMapping(array, 0, array.length);
+    }
+
+    static Mapping wrap(VarInt var) {
+        return new ArrayMapping(var.elements(), 0, var.rowCount());
+    }
+
+    /**
+     * Builds a copy mapping.
+     *
+     * @param mapping list of mapped values
+     * @return new mapping which wraps the given list of indexed values
+     */
+    static Mapping copy(Mapping mapping, int start, int end) {
+        return new ArrayMapping(mapping.elements(), start, end);
+    }
+
+    static Mapping copy(VarInt var) {
+        return copy(var, 0, var.rowCount());
+    }
+
+    static Mapping copy(VarInt var, int start, int end) {
+        return new ArrayMapping(var.elements(), start, end);
+    }
+
+    static Mapping from(VarInt var, IntIntFunction fun) {
+        return new ArrayMapping(var.elements(), 0, var.rowCount(), fun);
     }
 
     /**
@@ -98,19 +109,8 @@ public interface Mapping extends Serializable {
      * @param mapping list of mapped values
      * @return new mapping which is build on a copy of the list of values
      */
-    static Mapping copy(IntList mapping) {
-        return new ListMapping(mapping, false);
-    }
-
-    /**
-     * Builds a mapping having the mapped values given as a list of indexed values,
-     * a copy of the list of values is used.
-     *
-     * @param mapping list of mapped values
-     * @return new mapping which is build on a copy of the list of values
-     */
-    static Mapping copy(IntList mapping, Int2IntFunction fun) {
-        return new ListMapping(mapping, fun);
+    static Mapping from(Mapping mapping, IntIntFunction fun) {
+        return new ArrayMapping(mapping.elements(), 0, mapping.size(), fun);
     }
 
     static Mapping range(int end) {
@@ -135,7 +135,7 @@ public interface Mapping extends Serializable {
     int get(int pos);
 
     /**
-     * Adds at the end of mapping a mapped index
+     * Adds at the end of mapping a row index
      *
      * @param row mapped index
      */
@@ -146,7 +146,7 @@ public interface Mapping extends Serializable {
      *
      * @param rows collection of row numbers to be added to the mapping
      */
-    void addAll(IntCollection rows);
+    void addAll(IntIterator rows);
 
     /**
      * Removes the element from the given position.
@@ -160,39 +160,61 @@ public interface Mapping extends Serializable {
      *
      * @param positions collection with positions which will be removed
      */
-    void removeAll(IntCollection positions);
+    void removeAll(IntIterator positions);
 
     /**
      * Removes all elements from mapping
      */
     void clear();
 
-    IntListIterator iterator();
+    IntIterator iterator();
 
-    IntList toList();
+    /**
+     * Creates an iterator of row elements starting from a given
+     * position (inclusive) to a given position (exclusive).
+     *
+     * @param start start position inclusive
+     * @param end   end position exclusive
+     * @return iterator of int values
+     */
+    IntIterator iterator(int start, int end);
 
-    static Collector<Integer, IntList, Mapping> collector() {
-        return new Collector<Integer, IntList, Mapping>() {
+    /**
+     * Raw array of elements. The length of the array might be longer than
+     * the size of mapping. If the underlying implementation does not
+     * use an array, a new array is created.
+     *
+     * @return int array of values
+     */
+    int[] elements();
+
+    void shuffle();
+
+    static Collector<Integer, VarInt, Mapping> collector() {
+        return new Collector<Integer, VarInt, Mapping>() {
             @Override
-            public Supplier<IntList> supplier() {
-                return IntArrayList::new;
+            public Supplier<VarInt> supplier() {
+                return VarInt::empty;
             }
 
             @Override
-            public BiConsumer<IntList, Integer> accumulator() {
-                return List::add;
+            public BiConsumer<VarInt, Integer> accumulator() {
+                return VarInt::addInt;
             }
 
             @Override
-            public BinaryOperator<IntList> combiner() {
+            public BinaryOperator<VarInt> combiner() {
                 return (list1, list2) -> {
-                    list1.addAll(list2);
+                    IntIterator it = list2.iterator();
+                    while (it.hasNext()) {
+                        list1.addInt(it.nextInt());
+                    }
                     return list1;
                 };
             }
 
             @Override
-            public Function<IntList, Mapping> finisher() {
+            public Function<VarInt, Mapping> finisher() {
                 return Mapping::wrap;
             }
 

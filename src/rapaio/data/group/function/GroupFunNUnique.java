@@ -60,7 +60,7 @@ public class GroupFunNUnique extends DefaultSingleGroupFun {
                 break;
             }
         }
-        Unique unique = Unique.of(df.rvar(varIndex).mapRows(Mapping.wrap(rows)), false);
+        Unique unique = Unique.of(df.rvar(varIndex).mapRows(Mapping.wrap(rows.toIntArray())), false);
         aggregate.setInt(aggregateRow, unique.uniqueCount() - offset);
     }
 }

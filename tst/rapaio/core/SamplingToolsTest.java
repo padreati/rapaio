@@ -189,6 +189,7 @@ public class SamplingToolsTest {
         double[] p = new double[3];
         Arrays.fill(p, 1./3);
         Frame[] strata = SamplingTools.randomSampleStratifiedSplit(df, "strata", p);
+
         for (Frame st : strata) {
             ChiSqGoodnessOfFit test = ChiSqGoodnessOfFit.from(st.rvar("strata"), VarDouble.wrap(p));
             assertTrue(test.pValue() >= 0.9);

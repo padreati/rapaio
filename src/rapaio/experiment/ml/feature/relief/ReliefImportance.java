@@ -27,11 +27,11 @@
 
 package rapaio.experiment.ml.feature.relief;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
@@ -56,11 +56,8 @@ public class ReliefImportance {
     }
 
     public Frame orderedFrame() {
-        int[] rows = new int[names.length];
-        for (int i = 0; i < rows.length; i++) {
-            rows[i] = i;
-        }
-        IntArrays.quickSort(rows, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
+        int[] rows = IntArrays.seq(0, names.length);
+        IntArrays.quickSort(rows, 0, names.length, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
         VarDouble weightVar = VarDouble.empty().withName("weights");
         VarNominal nameVar = VarNominal.empty().withName("names");

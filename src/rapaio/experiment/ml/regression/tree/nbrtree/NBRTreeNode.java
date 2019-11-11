@@ -27,9 +27,6 @@
 
 package rapaio.experiment.ml.regression.tree.nbrtree;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.stat.Variance;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
@@ -38,6 +35,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.NestedBoostingRTree;
 import rapaio.ml.common.VarSelector;
+import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -232,8 +230,8 @@ public class NBRTreeNode implements Serializable {
         // and perform the split and call learning further on
 
 
-        IntList leftRows = new IntArrayList();
-        IntList rightRows = new IntArrayList();
+        Mapping leftRows = Mapping.empty();
+        Mapping rightRows = Mapping.empty();
 
         int testNameIndex = df.varIndex(splitVarName);
         double sd = Variance.of(df.rvar(testNameIndex)).sdValue();
@@ -250,20 +248,17 @@ public class NBRTreeNode implements Serializable {
         leftNode = new NBRTreeNode(-1, this);
         rightNode = new NBRTreeNode(-1, this);
 
-        Mapping leftMap = Mapping.wrap(leftRows);
-        Mapping rightMap = Mapping.wrap(rightRows);
-
         Var pred = prediction;
         VarDouble residuals = VarDouble.from(y.rowCount(), row -> originalY.getDouble(row) - pred.getDouble(row)).withName(y.name());
 
         leftNode.coreNodeFit(
-                df.mapRows(leftMap).copy(),
-                weights.mapRows(leftMap).copy(),
-                residuals.mapRows(leftMap).copy(), tree, depth + 1);
+                df.mapRows(leftRows).copy(),
+                weights.mapRows(leftRows).copy(),
+                residuals.mapRows(leftRows).copy(), tree, depth + 1);
         rightNode.coreNodeFit(
-                df.mapRows(rightMap).copy(),
-                weights.mapRows(rightMap).copy(),
-                residuals.mapRows(rightMap).copy(), tree, depth + 1);
+                df.mapRows(rightRows).copy(),
+                weights.mapRows(rightRows).copy(),
+                residuals.mapRows(rightRows).copy(), tree, depth + 1);
     }
 
     private double computeFactor(Var resiual, VarDouble fx) {

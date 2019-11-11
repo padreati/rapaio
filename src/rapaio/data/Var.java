@@ -27,12 +27,12 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
 import rapaio.data.ops.VarOp;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
+import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
 import java.util.List;

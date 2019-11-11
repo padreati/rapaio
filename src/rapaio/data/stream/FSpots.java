@@ -27,8 +27,6 @@
 
 package rapaio.data.stream;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -288,6 +286,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     /**
      * Filters the stream leaving in the stream only the spots which contains no missing values on any of the variables
+     *
      * @return list of complete (non-missing) frame spots
      */
     public FSpots complete() {
@@ -296,6 +295,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     /**
      * Filters the stream leaving in the stream only the spots which contains missing values on any of the variables
+     *
      * @return list of incomplete (missing) frame spots
      */
     public FSpots incomplete() {
@@ -304,6 +304,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     /**
      * Collects the elements of the stream into a list of spots
+     *
      * @return list of collected spots
      */
     public List<FSpot> collectFSpotList() {
@@ -314,6 +315,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     /**
      * Map spots into row numbers and collect them into a list
+     *
      * @return lit of collected row numbers
      */
     public List<Integer> collectRowList() {
@@ -324,16 +326,18 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     /**
      * Map spots into row numbers and collect the into a mapping
+     *
      * @return mapping of collected row numbers
      */
     public Mapping collectMapping() {
-        final IntList m = new IntArrayList();
+        final Mapping m = Mapping.empty();
         forEach(s -> m.add(s.row()));
-        return Mapping.wrap(m);
+        return m;
     }
 
     /**
      * Builds a mapped frame from stream spots
+     *
      * @return mapped frame with spots from the stream
      */
     public Frame toMappedFrame() {

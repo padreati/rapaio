@@ -58,12 +58,12 @@ public class DataAccessorTest {
     public void testVarIntDataAccessor() {
         VarInt x = VarInt.from(100, row -> (int) RandomSource.nextDouble() * 100);
 
-        int[] data = x.array();
+        int[] data = x.elements();
         int rows = x.rowCount();
         for (int i = 0; i < rows; i++) {
             data[i] = 10;
         }
-        x.setArray(data, 10);
+        x.setElements(data, 10);
 
         assertEquals(10, x.rowCount());
         for (int i = 0; i < 10; i++) {

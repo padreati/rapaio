@@ -27,20 +27,21 @@
 
 package rapaio.experiment.ml.classifier.svm.frame;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.data.Frame;
+import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
+import rapaio.util.collection.IntIterator;
+
+import java.util.HashMap;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/16/18.
  */
 public class SparseRowValues implements RowValues {
 
-    private final DoubleArrayList values = new DoubleArrayList();
-    private final IntArrayList indexes = new IntArrayList();
-    final Int2IntOpenHashMap reverseMap = new Int2IntOpenHashMap();
+    private final VarDouble values = VarDouble.empty();
+    private final VarInt indexes = VarInt.empty();
+    final HashMap<Integer, Integer> reverseMap = new HashMap<>();
 
     public SparseRowValues(Frame df, int row, String[] inputVarNames) {
         int pos = 0;
@@ -52,8 +53,8 @@ public class SparseRowValues implements RowValues {
             if (value == 0) {
                 continue;
             }
-            values.add(value);
-            indexes.add(pos);
+            values.addDouble(value);
+            indexes.addInt(pos);
             reverseMap.put(i, pos);
             pos++;
         }

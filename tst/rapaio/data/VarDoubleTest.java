@@ -24,7 +24,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -96,7 +95,6 @@ public class VarDoubleTest {
         }
         assertTrue(dcopy.deepEquals(VarDouble.copy(dcopy)));
         assertTrue(dcopy.deepEquals(VarDouble.wrap(sourceDoubleArray)));
-        assertTrue(dcopy.deepEquals(VarDouble.wrap(new DoubleArrayList(sourceDoubleArray))));
         assertTrue(dcopy.deepEquals(VarDouble.from(100, dcopy::getDouble)));
 
         Iterator<Double> it = sourceDoubleList.iterator();

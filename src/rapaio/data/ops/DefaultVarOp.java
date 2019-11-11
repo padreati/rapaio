@@ -27,12 +27,14 @@
 
 package rapaio.data.ops;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VRefSort;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntComparator;
+import rapaio.util.function.DoubleDoubleFunction;
+
+import java.util.Arrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
@@ -46,23 +48,23 @@ public final class DefaultVarOp<T extends Var> implements VarOp<T> {
     }
 
     @Override
-    public T apply(Double2DoubleFunction fun) {
+    public T apply(DoubleDoubleFunction fun) {
         for (int i = 0; i < source.rowCount(); i++) {
             if (!source.isMissing(i)) {
-                source.setDouble(i, fun.applyAsDouble(source.getDouble(i)));
+                source.setDouble(i, fun.applyDouble(source.getDouble(i)));
             }
         }
         return source;
     }
 
     @Override
-    public VarDouble capply(Double2DoubleFunction fun) {
+    public VarDouble capply(DoubleDoubleFunction fun) {
         double[] data = new double[source.rowCount()];
         for (int i = 0; i < source.rowCount(); i++) {
             if (source.isMissing(i)) {
                 data[i] = Double.NaN;
             } else {
-                data[i] = fun.applyAsDouble(source.getDouble(i));
+                data[i] = fun.applyDouble(source.getDouble(i));
             }
         }
         return VarDouble.wrap(data).withName(source.name());
@@ -183,7 +185,7 @@ public final class DefaultVarOp<T extends Var> implements VarOp<T> {
             rows[len++] = i;
         }
         IntArrays.quickSort(rows, 0, len, source.refComparator(asc));
-        return IntArrays.copy(rows, 0, len);
+        return Arrays.copyOf(rows, len);
     }
 
     @Override

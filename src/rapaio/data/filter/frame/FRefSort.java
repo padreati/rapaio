@@ -27,22 +27,20 @@
 
 package rapaio.data.filter.frame;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.VRange;
-
-import java.util.stream.IntStream;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntComparator;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public final class FRefSort extends AbstractFF {
 
-    public static FRefSort by(IntComparator...comparators) {
+    public static FRefSort by(IntComparator... comparators) {
         return new FRefSort(comparators);
     }
 
@@ -65,8 +63,8 @@ public final class FRefSort extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        int[] rowArray = IntStream.range(0, df.rowCount()).toArray();
-        IntArrays.quickSort(rowArray, aggregateComparator);
+        int[] rowArray = IntArrays.seq(0, df.rowCount());
+        IntArrays.quickSort(rowArray, 0, df.rowCount(), aggregateComparator);
         return MappedFrame.byRow(df, Mapping.wrap(rowArray));
     }
 }

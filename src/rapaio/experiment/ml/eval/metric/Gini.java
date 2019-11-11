@@ -27,7 +27,6 @@
 
 package rapaio.experiment.ml.eval.metric;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.Sum;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
@@ -37,6 +36,7 @@ import rapaio.data.filter.var.VCumSum;
 import rapaio.data.filter.var.VRefSort;
 import rapaio.printer.DefaultPrintable;
 import rapaio.printer.format.Format;
+import rapaio.util.collection.IntComparator;
 
 /**
  * This evaluation tool computes Gini and Normalized Gini Coefficients

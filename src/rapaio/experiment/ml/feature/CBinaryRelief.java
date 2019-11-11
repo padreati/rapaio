@@ -27,9 +27,6 @@
 
 package rapaio.experiment.ml.feature;
 
-import it.unimi.dsi.fastutil.doubles.Double2ObjectAVLTreeMap;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
@@ -40,6 +37,7 @@ import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 import java.util.List;
@@ -140,9 +138,6 @@ public class CBinaryRelief {
         }
 
         weights = new double[inputNames.size()];
-
-        Double2ObjectAVLTreeMap<IntList> minK = new Double2ObjectAVLTreeMap<>();
-        Double2ObjectAVLTreeMap<IntList> maxK = new Double2ObjectAVLTreeMap<>();
 
         for (int run = 0; run < runs; run++) {
 

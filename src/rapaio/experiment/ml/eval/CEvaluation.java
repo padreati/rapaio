@@ -64,7 +64,7 @@ public class CEvaluation {
     public static double cv(Frame df, String classColName, ClassifierModel c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
 
-        List<IntList> strata = buildStrata(df, folds, classColName);
+        List<Mapping> strata = buildStrata(df, folds, classColName);
         VarDouble acc = VarDouble.empty();
 
         for (int i = 0; i < folds; i++) {
@@ -72,9 +72,9 @@ public class CEvaluation {
             Mapping testMapping = Mapping.empty();
             for (int j = 0; j < folds; j++) {
                 if (j == i) {
-                    testMapping.addAll(strata.get(j));
+                    testMapping.addAll(strata.get(j).iterator());
                 } else {
-                    trainMapping.addAll(strata.get(j));
+                    trainMapping.addAll(strata.get(j).iterator());
                 }
             }
             Frame train = MappedFrame.byRow(df, trainMapping);
@@ -99,7 +99,7 @@ public class CEvaluation {
         return correct;
     }
 
-    private static List<IntList> buildStrata(Frame df, int folds, String classColName) {
+    private static List<Mapping> buildStrata(Frame df, int folds, String classColName) {
         List<String> dict = df.rvar(classColName).levels();
         List<IntList> rows = new ArrayList<>();
         for (int i = 0; i < dict.size(); i++) {
@@ -113,9 +113,9 @@ public class CEvaluation {
             Collections.shuffle(rows.get(i), RandomSource.getRandom());
             shuffle.addAll(rows.get(i));
         }
-        List<IntList> strata = new ArrayList<>();
+        List<Mapping> strata = new ArrayList<>();
         for (int i = 0; i < folds; i++) {
-            strata.add(new IntArrayList());
+            strata.add(Mapping.empty());
         }
         int fold = 0;
         for (int next : shuffle) {
@@ -134,8 +134,8 @@ public class CEvaluation {
         double[] tacc = new double[classifierModels.size()];
 
         for (int i = 0; i < folds; i++) {
-            IntArrayList trainMapping = new IntArrayList();
-            IntArrayList testMapping = new IntArrayList();
+            Mapping trainMapping = Mapping.empty();
+            Mapping testMapping = Mapping.empty();
             if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -153,8 +153,8 @@ public class CEvaluation {
                     }
                 }
             }
-            Frame train = MappedFrame.byRow(df, trainMapping.toIntArray());
-            Frame test = MappedFrame.byRow(df, testMapping.toIntArray());
+            Frame train = MappedFrame.byRow(df, trainMapping);
+            Frame test = MappedFrame.byRow(df, testMapping);
 
             for (int k = 0; k < classifierModels.size(); k++) {
                 ClassifierModel c = classifierModels.get(k).newInstance();

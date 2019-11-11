@@ -28,7 +28,6 @@
 package rapaio.data;
 
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import rapaio.data.ops.DoubleVarOp;
 import rapaio.data.ops.VarOp;
 import rapaio.printer.format.TextTable;
@@ -147,20 +146,6 @@ public final class VarDouble extends AbstractVar {
         VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
-        return numeric;
-    }
-
-    /**
-     * Builds a double variable as a wrapper around the array of double values
-     * from a DoubleArrayList variable.
-     *
-     * @param values double array list of doubles
-     * @return new instance of numeric values
-     */
-    public static VarDouble wrap(DoubleArrayList values) {
-        VarDouble numeric = new VarDouble(0, 0, 0);
-        numeric.data = values.elements();
-        numeric.rows = values.size();
         return numeric;
     }
 
@@ -382,7 +367,7 @@ public final class VarDouble extends AbstractVar {
     @Override
     public void addRows(int rowCount) {
         ensureCapacity(rows + rowCount);
-        Arrays.fill(data, rows, rows+rowCount, MISSING_VALUE);
+        Arrays.fill(data, rows, rows + rowCount, MISSING_VALUE);
         rows += rowCount;
     }
 

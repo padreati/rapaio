@@ -27,7 +27,11 @@
 
 package rapaio.data;
 
+import rapaio.core.RandomSource;
 import rapaio.printer.format.TextTable;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntIterator;
+import rapaio.util.function.IntIntFunction;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -35,12 +39,14 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.IntStream;
 
 /**
  * Builds a numeric variable which stores values as 32-bit integers. There are two general usage scenarios:
@@ -165,10 +171,10 @@ public final class VarInt extends AbstractVar {
      * @param supplier integer value supplier
      * @return new integer variable
      */
-    public static VarInt from(int rows, Function<Integer, Integer> supplier) {
+    public static VarInt from(int rows, IntIntFunction supplier) {
         VarInt index = new VarInt(rows, rows, 0);
         for (int i = 0; i < index.data.length; i++) {
-            index.data[i] = supplier.apply(i);
+            index.data[i] = supplier.applyInt(i);
         }
         return index;
     }
@@ -245,6 +251,14 @@ public final class VarInt extends AbstractVar {
         return rows;
     }
 
+    public void rowCount(int rowCount) {
+        if (rowCount <= rows) {
+            rows = rowCount;
+        } else {
+            addRows(rowCount - rows);
+        }
+    }
+
     @Override
     public void addRows(int rowCount) {
         ensureCapacityInternal(this.rows + rowCount + 1);
@@ -269,6 +283,18 @@ public final class VarInt extends AbstractVar {
         ensureCapacityInternal(rows + 1);
         data[rows] = value;
         rows++;
+    }
+
+    public IntIterator iterator() {
+        return new VarIntIterator(this);
+    }
+
+    public IntIterator iterator(int start, int end) {
+        return new VarIntIterator(this, start, end);
+    }
+
+    public IntStream intStream() {
+        return Arrays.stream(data, 0, rows);
     }
 
     @Override
@@ -334,12 +360,12 @@ public final class VarInt extends AbstractVar {
 
     @Override
     public void setLong(int row, long value) {
-        setInt(row, Integer.valueOf(String.valueOf(value)));
+        setInt(row, Integer.parseInt(String.valueOf(value)));
     }
 
     @Override
     public void addLong(long value) {
-        addInt(Integer.valueOf(String.valueOf(value)));
+        addInt(Integer.parseInt(String.valueOf(value)));
     }
 
     @Override
@@ -383,6 +409,15 @@ public final class VarInt extends AbstractVar {
         return (VarInt) super.copy();
     }
 
+    public VarInt shuffle() {
+        return shuffle(0, rows);
+    }
+
+    public VarInt shuffle(int start, int end) {
+        IntArrays.shuffle(data, start, end, RandomSource.getRandom());
+        return this;
+    }
+
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(rowCount());
         for (int i = 0; i < rowCount(); i++) {
@@ -413,13 +448,44 @@ public final class VarInt extends AbstractVar {
         tt.textRight(i, j, getLabel(row));
     }
 
-    public int[] array() {
+    public int[] elements() {
         return data;
     }
 
-    public void setArray(int[] values, int rowCount) {
+    public void setElements(int[] values, int rowCount) {
         data = values;
         rows = rowCount;
     }
 
+    private static final class VarIntIterator implements IntIterator {
+
+        private int pos;
+        private final int start;
+        private final int end;
+        private final VarInt parent;
+
+        public VarIntIterator(VarInt parent) {
+            this(parent, 0, parent.rows);
+        }
+
+        public VarIntIterator(VarInt parent, int start, int end) {
+            this.parent = parent;
+            this.start = start;
+            this.end = end;
+            pos = start;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return pos < end;
+        }
+
+        @Override
+        public int nextInt() {
+            if(!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return parent.data[pos++];
+        }
+    }
 }

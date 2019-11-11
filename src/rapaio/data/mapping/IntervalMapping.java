@@ -27,12 +27,11 @@
 
 package rapaio.data.mapping;
 
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntIterator;
 
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 /**
@@ -45,7 +44,7 @@ public final class IntervalMapping implements Mapping {
     private final int start;
     private final int end;
     private boolean onList = false;
-    private ListMapping listMapping;
+    private ArrayMapping listMapping;
 
     public IntervalMapping(int start, int end) {
         this.start = start;
@@ -70,16 +69,16 @@ public final class IntervalMapping implements Mapping {
     public void add(int row) {
         if (!onList) {
             onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+            listMapping = new ArrayMapping(start, end);
         }
         listMapping.add(row);
     }
 
     @Override
-    public void addAll(IntCollection rows) {
+    public void addAll(IntIterator rows) {
         if (!onList) {
             onList = true;
-            listMapping = new ListMapping(start, end);
+            listMapping = new ArrayMapping(start, end);
         }
         listMapping.addAll(rows);
     }
@@ -88,16 +87,16 @@ public final class IntervalMapping implements Mapping {
     public void remove(int pos) {
         if (!onList) {
             onList = true;
-            listMapping = new ListMapping(start, end);
+            listMapping = new ArrayMapping(start, end);
         }
         listMapping.remove(pos);
     }
 
     @Override
-    public void removeAll(IntCollection positions) {
+    public void removeAll(IntIterator positions) {
         if (!onList) {
             onList = true;
-            listMapping = new ListMapping(start, end);
+            listMapping = new ArrayMapping(start, end);
         }
         listMapping.removeAll(positions);
     }
@@ -106,52 +105,40 @@ public final class IntervalMapping implements Mapping {
     public void clear() {
         if (!onList) {
             onList = true;
-            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+            listMapping = new ArrayMapping(0, 0);
         }
         listMapping.clear();
     }
 
     @Override
-    public IntListIterator iterator() {
+    public IntIterator iterator() {
         return onList ? listMapping.iterator() : new MyIntListIterator(start, end);
+    }
+
+    @Override
+    public IntIterator iterator(int start, int end) {
+        return onList ? listMapping.iterator(start, end) : new MyIntListIterator(this.start + start, this.start + end);
+    }
+
+    @Override
+    public int[] elements() {
+        return IntArrays.seq(start, end);
+    }
+
+    @Override
+    public void shuffle() {
+        onList = true;
+        listMapping = new ArrayMapping(start, end);
+        listMapping.shuffle();
     }
 
     @Override
     public IntStream stream() {
         return onList ? listMapping.stream() : IntStream.range(start, end);
     }
-
-    @Override
-    public IntList toList() {
-        if (onList) {
-            return listMapping.toList();
-        }
-        return new IntervalIntList(start, end);
-    }
 }
 
-class IntervalIntList extends AbstractIntList {
-
-    private final int start;
-    private final int end;
-
-    IntervalIntList(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
-
-    @Override
-    public int getInt(int i) {
-        return i + start;
-    }
-
-    @Override
-    public int size() {
-        return end - start;
-    }
-}
-
-class MyIntListIterator implements IntListIterator {
+class MyIntListIterator implements IntIterator {
     private final int start;
     private final int end;
     private int s;
@@ -163,34 +150,15 @@ class MyIntListIterator implements IntListIterator {
     }
 
     @Override
-    public boolean hasPrevious() {
-        return s > start;
-    }
-
-    @Override
     public boolean hasNext() {
         return s < end;
     }
 
     @Override
-    public int nextIndex() {
-        return s - start;
-    }
-
-    @Override
-    public int previousIndex() {
-        return s - start - 1;
-    }
-
-    @Override
-    public int previousInt() {
-        s--;
-        return s;
-    }
-
-    @Override
     public int nextInt() {
-        s++;
-        return s - 1;
+        if (s >= end) {
+            throw new NoSuchElementException();
+        }
+        return s++;
     }
 }

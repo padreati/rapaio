@@ -335,10 +335,10 @@ public class VarIntTest {
     public void testDataAccessor() {
         VarInt int1 = VarInt.seq(0, 100, 2);
         for (int i = 0; i < int1.rowCount(); i++) {
-            assertEquals(int1.getInt(i), int1.array()[i]);
+            assertEquals(int1.getInt(i), int1.elements()[i]);
         }
         int[] values = new int[]{0, 1, Integer.MIN_VALUE, 3, 4};
-        int1.setArray(values, values.length);
+        int1.setElements(values, values.length);
 
         assertTrue(VarInt.wrap(values).deepEquals(int1));
     }

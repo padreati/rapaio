@@ -27,16 +27,15 @@
 
 package rapaio.data.ops;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
-import it.unimi.dsi.fastutil.doubles.DoubleComparators;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.var.VRefSort;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleComparator;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntComparator;
+import rapaio.util.function.DoubleDoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
@@ -54,18 +53,18 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     }
 
     @Override
-    public VarDouble apply(Double2DoubleFunction fun) {
+    public VarDouble apply(DoubleDoubleFunction fun) {
         for (int i = 0; i < rowCount; i++) {
-            data[i] = fun.applyAsDouble(data[i]);
+            data[i] = fun.applyDouble(data[i]);
         }
         return source;
     }
 
     @Override
-    public VarDouble capply(Double2DoubleFunction fun) {
+    public VarDouble capply(DoubleDoubleFunction fun) {
         double[] copy = new double[rowCount];
         for (int i = 0; i < rowCount; i++) {
-            copy[i] = fun.applyAsDouble(data[i]);
+            copy[i] = fun.applyDouble(data[i]);
         }
         return VarDouble.wrap(copy).withName(source.name());
     }
@@ -114,7 +113,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
             }
         } else if (x instanceof VarInt) {
             VarInt xi = (VarInt) x;
-            int[] xiarray = xi.array();
+            int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
                     data[i] = Double.NaN;
@@ -148,7 +147,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
             }
         } else if (x instanceof VarInt) {
             VarInt xi = (VarInt) x;
-            int[] xiarray = xi.array();
+            int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
                     data[i] = Double.NaN;
@@ -182,7 +181,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
             }
         } else if (x instanceof VarInt) {
             VarInt xi = (VarInt) x;
-            int[] xiarray = xi.array();
+            int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
                     data[i] = Double.NaN;
@@ -216,7 +215,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
             }
         } else if (x instanceof VarInt) {
             VarInt xi = (VarInt) x;
-            int[] xiarray = xi.array();
+            int[] xiarray = xi.elements();
             for (int i = 0; i < rowCount; i++) {
                 if (xiarray[i] == VarInt.MISSING_VALUE) {
                     data[i] = Double.NaN;
@@ -268,7 +267,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
         for (int i = 0; i < rowCount; i++) {
             rows[i] = i;
         }
-        DoubleArrays.quickSortIndirect(rows, data);
+        DoubleArrays.quickSortIndirect(rows, data, 0, rowCount);
         if (!asc) {
             IntArrays.reverse(rows);
         }
@@ -276,6 +275,6 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     }
 
     private DoubleComparator getComparator(boolean asc) {
-        return asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR;
+        return asc ? DoubleComparator.NATURAL_COMPARATOR : DoubleComparator.REVERSE_COMPARATOR;
     }
 }

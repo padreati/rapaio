@@ -27,8 +27,6 @@
 
 package rapaio.ml.eval;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
@@ -36,9 +34,9 @@ import rapaio.data.Mapping;
 import rapaio.experiment.ml.eval.RMetric;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.util.collection.IntArrays;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +130,7 @@ public class RegressionEval {
         if (debug)
             print("\nCrossValidation with " + folds + " folds for models: " + String.join(",", models.keySet()) + "\n");
 
-        List<IntList> strata = buildFolds(df, folds);
+        List<Mapping> strata = buildFolds(df, folds);
         CVResult cvResult = new CVResult(this, folds);
 
         for (int i = 0; i < folds; i++) {
@@ -142,9 +140,9 @@ public class RegressionEval {
             Mapping testMapping = Mapping.empty();
             for (int j = 0; j < folds; j++) {
                 if (j == i) {
-                    testMapping.addAll(strata.get(j));
+                    testMapping.addAll(strata.get(j).iterator());
                 } else {
-                    trainMapping.addAll(strata.get(j));
+                    trainMapping.addAll(strata.get(j).iterator());
                 }
             }
             Frame train = MappedFrame.byRow(df, trainMapping).copy();
@@ -173,15 +171,12 @@ public class RegressionEval {
         return cvResult;
     }
 
-    private List<IntList> buildFolds(Frame df, int folds) {
-        IntList shuffle = new IntArrayList();
-        for (int i = 0; i < df.rowCount(); i++) {
-            shuffle.add(i);
-        }
-        Collections.shuffle(shuffle, RandomSource.getRandom());
-        List<IntList> foldMap = new ArrayList<>();
+    private List<Mapping> buildFolds(Frame df, int folds) {
+        int[] shuffle = IntArrays.seq(0, df.rowCount());
+        IntArrays.shuffle(shuffle, RandomSource.getRandom());
+        List<Mapping> foldMap = new ArrayList<>();
         for (int i = 0; i < folds; i++) {
-            foldMap.add(new IntArrayList());
+            foldMap.add(Mapping.empty());
         }
         int currentFold = 0;
         for (int row : shuffle) {

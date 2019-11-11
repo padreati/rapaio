@@ -27,10 +27,10 @@
 
 package rapaio.data.stream;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -347,7 +347,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public MappedVar toMappedVar() {
         int[] rows = stream.mapToInt(VSpot::row).toArray();
-        return MappedVar.byRows(source, Mapping.wrap(IntArrayList.wrap(rows)));
+        return MappedVar.byRows(source, Mapping.wrap(VarInt.wrap(rows)));
     }
 }
 
