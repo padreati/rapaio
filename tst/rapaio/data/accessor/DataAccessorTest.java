@@ -25,11 +25,11 @@ public class DataAccessorTest {
     public void testVarDoubleDataAccessor() {
         VarDouble x = VarDouble.from(100, RandomSource::nextDouble);
 
-        double[] data = x.array();
+        double[] data = x.elements();
         for (int i = 0; i < x.rowCount(); i++) {
             data[i] = 1.;
         }
-        x.setArray(data, 10);
+        x.setElements(data, 10);
 
         assertEquals(10, x.rowCount());
         for (int i = 0; i < x.rowCount(); i++) {

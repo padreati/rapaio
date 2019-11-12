@@ -7,6 +7,10 @@ import java.util.Comparator;
  */
 public interface IntComparator extends Comparator<Integer> {
 
+    IntComparator NATURAL_COMPARATOR = Integer::compare;
+
+    IntComparator REVERSE_COMPARATOR = (i1, i2) -> -Integer.compare(i1, i2);
+
     @Override
     @Deprecated
     default int compare(Integer o1, Integer o2) {

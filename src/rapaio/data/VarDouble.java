@@ -355,11 +355,11 @@ public final class VarDouble extends AbstractVar {
         return Double.isNaN(value);
     }
 
-    public double[] array() {
+    public double[] elements() {
         return data;
     }
 
-    public void setArray(double[] values, int rowCount) {
+    public void setElements(double[] values, int rowCount) {
         data = values;
         rows = rowCount;
     }

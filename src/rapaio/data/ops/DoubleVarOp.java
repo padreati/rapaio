@@ -49,7 +49,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public DoubleVarOp(VarDouble source) {
         this.source = source;
         this.rowCount = source.rowCount();
-        this.data = source.array();
+        this.data = source.elements();
     }
 
     @Override
@@ -107,7 +107,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public VarDouble plus(Var x) {
         if (x instanceof VarDouble) {
             VarDouble xd = (VarDouble) x;
-            double[] xdarray = xd.array();
+            double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] += xdarray[i];
             }
@@ -141,7 +141,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public VarDouble minus(Var x) {
         if (x instanceof VarDouble) {
             VarDouble xd = (VarDouble) x;
-            double[] xdarray = xd.array();
+            double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] -= xdarray[i];
             }
@@ -175,7 +175,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public VarDouble mult(Var x) {
         if (x instanceof VarDouble) {
             VarDouble xd = (VarDouble) x;
-            double[] xdarray = xd.array();
+            double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] *= xdarray[i];
             }
@@ -209,7 +209,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public VarDouble divide(Var x) {
         if (x instanceof VarDouble) {
             VarDouble xd = (VarDouble) x;
-            double[] xdarray = xd.array();
+            double[] xdarray = xd.elements();
             for (int i = 0; i < rowCount; i++) {
                 data[i] /= xdarray[i];
             }
@@ -240,7 +240,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     @Override
     public VarDouble sort(boolean asc) {
         DoubleComparator comparator = getComparator(asc);
-        DoubleArrays.quickSort(source.array(), 0, source.rowCount(), comparator);
+        DoubleArrays.quickSort(source.elements(), 0, source.rowCount(), comparator);
         return source;
     }
 
