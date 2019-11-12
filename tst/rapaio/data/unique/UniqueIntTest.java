@@ -1,13 +1,12 @@
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.sys.WS;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 
@@ -36,12 +35,12 @@ public class UniqueIntTest {
         UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds.size(); i++) {
+        VarInt valueSortedIds = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds.rowCount(); i++) {
             assertEquals(0, Double.compare(values[i], unique.uniqueValue(valueSortedIds.getInt(i))));
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
             assertEquals(0, Double.compare(values[i], unique.uniqueValue(valueSortedIds2.getInt(i))));
         }
 
@@ -62,26 +61,26 @@ public class UniqueIntTest {
             values[i] = sample[RandomSource.nextInt(sample.length)];
         }
         VarInt x = VarInt.copy(values);
-        IntArrays.quickSort(values, Integer::compare);
+        IntArrays.quickSort(values, 0, N, Integer::compare);
 
         UniqueInt unique = UniqueInt.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        int[] sortedValues = valueSortedIds.stream().map(unique::uniqueValue).mapToInt(v -> v).toArray();
+        VarInt valueSortedIds = unique.valueSortedIds();
+        int[] sortedValues = valueSortedIds.intStream().map(unique::uniqueValue).toArray();
         for (int i = 0; i < sample.length; i++) {
-            assertEquals(sortedValues[i], (int) unique.uniqueValue(valueSortedIds.getInt(i)));
+            assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds.getInt(i)));
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
-            assertEquals(sortedValues[i], (int) unique.uniqueValue(valueSortedIds2.getInt(i)));
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
+            assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds2.getInt(i)));
         }
 
-        int[] counts = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts.length; i++) {
             assertTrue(counts[i - 1] <= counts[i]);
         }
-        int[] counts2 = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts2 = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts2.length; i++) {
             assertTrue(counts2[i - 1] <= counts2[i]);
         }
@@ -97,7 +96,7 @@ public class UniqueIntTest {
         final int N = 200;
         VarInt x1 = VarInt.from(N, row -> sample[RandomSource.nextInt(sample.length)]);
         int[] values1 = x1.stream().mapToInt().toArray();
-        IntArrays.quickSort(values1);
+        Arrays.sort(values1);
         UniqueInt ui1 = UniqueInt.of(x1, true);
 
         assertEquals("UniqueInt{count=43, values=[?:6,1:3,2:2,3:5,4:6,5:6,6:4,7:5,8:3,9:1,..]}", ui1.toString());
@@ -124,7 +123,7 @@ public class UniqueIntTest {
 
         VarInt x2 = VarInt.from(N, row -> sample[RandomSource.nextInt(5)]);
         int[] values2 = x2.stream().mapToInt().toArray();
-        IntArrays.quickSort(values2);
+        Arrays.sort(values2);
         UniqueInt ui2 = UniqueInt.of(x2, true);
 
         assertEquals("UniqueInt{count=5, values=[1:43,2:50,3:50,4:31,5:26]}", ui2.toString());

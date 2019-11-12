@@ -27,16 +27,16 @@
 
 package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.data.group.Group;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -55,16 +55,16 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
 
     public abstract Var buildVar(Group group, String varName);
 
-    public abstract void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows);
+    public abstract void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows);
 
     @Override
     public List<Var> compute(Group group) {
         List<Var> result = new ArrayList<>();
-        IntList ids = group.getSortedGroupIds();
+        VarInt ids = group.getSortedGroupIds();
         for (String varName : varNames) {
             Var aggregate = buildVar(group, varName);
             int index = group.getFrame().varIndex(varName);
-            for (int i = 0; i < ids.size(); i++) {
+            for (int i = 0; i < ids.rowCount(); i++) {
                 int groupId = ids.getInt(i);
                 updateSingle(aggregate, i, group.getFrame(), index, group.getRowsForGroupId(groupId));
             }
@@ -84,17 +84,17 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
     private Var normalize(Group group, Var agg) {
         int count = group.getGroupCount();
 
-        Int2ObjectOpenHashMap<Group.IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
+        HashMap<Integer, Group.IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
 
-        Int2ObjectOpenHashMap<Group.IndexNode> reducedGroup = new Int2ObjectOpenHashMap<>();
-        Object2DoubleOpenHashMap<Group.IndexNode> sum = new Object2DoubleOpenHashMap<>();
+        HashMap<Integer, Group.IndexNode> reducedGroup = new HashMap<>();
+        HashMap<Group.IndexNode, Double> sum = new HashMap<>();
         for (int i = 0; i < count; i++) {
             Group.IndexNode node = groupIndex.get(i);
             for (int j = 0; j < normalizeLevel; j++) {
                 node = node.getParent();
             }
             reducedGroup.put(i, node);
-            sum.put(node, 0);
+            sum.put(node, 0d);
         }
 
         // accumulate at higher group
@@ -105,7 +105,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             Group.IndexNode node = reducedGroup.get(i);
-            double oldSum = sum.getDouble(node);
+            double oldSum = sum.get(node);
             sum.put(node, oldSum + value);
         }
 
@@ -118,7 +118,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             Group.IndexNode node = reducedGroup.get(i);
-            double groupSum = sum.getDouble(node);
+            double groupSum = sum.get(node);
             if (Double.isNaN(groupSum) || Double.isInfinite(groupSum) || groupSum == 0) {
                 continue;
             }

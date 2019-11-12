@@ -27,10 +27,6 @@
 
 package rapaio.experiment.data.join;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -42,6 +38,7 @@ import rapaio.data.VarInt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -113,11 +110,11 @@ public class Join {
     private final Type type;
 
     // artifacts
-    private final Object2IntOpenHashMap<String> idMap;
-    private final Int2ObjectOpenHashMap<IntList> leftIdToRows;
-    private final Int2ObjectOpenHashMap<IntList> rightIdToRows;
-    private final Int2ObjectOpenHashMap<String> leftRowToId;
-    private final Int2ObjectOpenHashMap<String> rightRowToId;
+    private final HashMap<String, Integer> idMap;
+    private final HashMap<Integer, Mapping> leftIdToRows;
+    private final HashMap<Integer, Mapping> rightIdToRows;
+    private final HashMap<Integer, String> leftRowToId;
+    private final HashMap<Integer, String> rightRowToId;
 
 
     private Join(Frame dfLeft, Frame dfRight, VRange leftKeys, VRange rightKeys, Type type) {
@@ -129,11 +126,11 @@ public class Join {
         this.rightRemainVarNames = rightKeys.parseInverseVarNames(dfRight);
         this.type = type;
 
-        this.idMap = new Object2IntOpenHashMap<>();
-        this.leftIdToRows = new Int2ObjectOpenHashMap<>();
-        this.rightIdToRows = new Int2ObjectOpenHashMap<>();
-        this.leftRowToId = new Int2ObjectOpenHashMap<>();
-        this.rightRowToId = new Int2ObjectOpenHashMap<>();
+        this.idMap = new HashMap<>();
+        this.leftIdToRows = new HashMap<>();
+        this.rightIdToRows = new HashMap<>();
+        this.leftRowToId = new HashMap<>();
+        this.rightRowToId = new HashMap<>();
     }
 
     private Frame join() {
@@ -171,8 +168,8 @@ public class Join {
         }
 
         for (int id = 0; id < idMap.size(); id++) {
-            IntList leftRows = leftIdToRows.get(id);
-            IntList rightRows = rightIdToRows.get(id);
+            Mapping leftRows = leftIdToRows.get(id);
+            Mapping rightRows = rightIdToRows.get(id);
 
             if (leftRows == null || leftRows.isEmpty()) {
                 continue;
@@ -226,8 +223,8 @@ public class Join {
         }
 
         for (int id = 0; id < idMap.size(); id++) {
-            IntList leftRows = leftIdToRows.get(id);
-            IntList rightRows = rightIdToRows.get(id);
+            Mapping leftRows = leftIdToRows.get(id);
+            Mapping rightRows = rightIdToRows.get(id);
 
             if (rightRows == null || rightRows.isEmpty()) {
                 continue;
@@ -264,7 +261,7 @@ public class Join {
         return SolidFrame.byVars(allVars);
     }
 
-    private void appendValues(Frame src, String varName, IntList rows, Var dst) {
+    private void appendValues(Frame src, String varName, Mapping rows, Var dst) {
         int varIndex = src.varIndex(varName);
         for (int row : rows) {
             appendValue(src, varIndex, row, dst);
@@ -302,7 +299,8 @@ public class Join {
         }
     }
 
-    private void process(Object2IntOpenHashMap<String> idMap, Int2ObjectOpenHashMap<IntList> idToRows, Int2ObjectOpenHashMap<String> rowToId, Frame df, List<String> varNames) {
+    private void process(HashMap<String, Integer> idMap,
+                         HashMap<Integer, Mapping> idToRows, HashMap<Integer, String> rowToId, Frame df, List<String> varNames) {
         for (int i = 0; i < df.rowCount(); i++) {
             StringBuilder sb = new StringBuilder();
             for (int k = 0; k < varNames.size(); k++) {
@@ -310,8 +308,8 @@ public class Join {
             }
             String key = sb.toString();
             idMap.putIfAbsent(key, idMap.size());
-            int id = idMap.getInt(key);
-            idToRows.putIfAbsent(id, new IntArrayList());
+            int id = idMap.get(key);
+            idToRows.putIfAbsent(id, Mapping.empty());
             idToRows.get(id).add(i);
             rowToId.put(i, key);
         }

@@ -27,7 +27,6 @@
 
 package rapaio.experiment.data;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.AbstractFrame;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -42,6 +41,7 @@ import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -62,7 +62,7 @@ public class JoinFrame extends AbstractFrame {
     private final int[] leftRows;
     private final int[] rightRows;
 
-    private final Object2IntOpenHashMap<String> varIndexTree;
+    private final HashMap<String, Integer> varIndexTree;
 
     /**
      * Builds a join data frame from given parameters
@@ -82,7 +82,7 @@ public class JoinFrame extends AbstractFrame {
         this.leftRows = leftRows;
         this.rightRows = rightRows;
 
-        varIndexTree = new Object2IntOpenHashMap<>();
+        varIndexTree = new HashMap<>();
         for (int i = 0; i < varNames.length; i++) {
             varIndexTree.put(varNames[i], i);
         }
@@ -110,7 +110,7 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
-        return varIndexTree.getInt(name);
+        return varIndexTree.get(name);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public Var rvar(String name) {
-        int pos = varIndexTree.getInt(name);
+        int pos = varIndexTree.get(name);
         Mapping mapping = Mapping.wrap(side[pos] ? leftRows : rightRows);
         return MappedVar.byRows(side[pos]
                 ? leftDf.rvar(name).mapRows(mapping)
@@ -133,7 +133,7 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public VType type(String name) {
-        return side[varIndexTree.getInt(name)] ? leftDf.type(name) : rightDf.type(name);
+        return side[varIndexTree.get(name)] ? leftDf.type(name) : rightDf.type(name);
     }
 
     @Override
@@ -187,10 +187,10 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public double getDouble(int row, String varName) {
-        if (isMissingRow(row, side[varIndexTree.getInt(varName)])) {
+        if (isMissingRow(row, side[varIndexTree.get(varName)])) {
             return VarDouble.MISSING_VALUE;
         }
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.getDouble(row, varName)
                 : rightDf.getDouble(row, varName);
     }
@@ -217,10 +217,10 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public int getInt(int row, String varName) {
-        if (isMissingRow(row, side[varIndexTree.getInt(varName)])) {
+        if (isMissingRow(row, side[varIndexTree.get(varName)])) {
             return VarInt.MISSING_VALUE;
         }
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.getInt(row, varName)
                 : rightDf.getInt(row, varName);
     }
@@ -247,10 +247,10 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public long getLong(int row, String varName) {
-        if (isMissingRow(row, side[varIndexTree.getInt(varName)])) {
+        if (isMissingRow(row, side[varIndexTree.get(varName)])) {
             return VarLong.MISSING_VALUE;
         }
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.getLong(row, varName)
                 : rightDf.getLong(row, varName);
     }
@@ -277,10 +277,10 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public String getLabel(int row, String varName) {
-        if (isMissingRow(row, side[varIndexTree.getInt(varName)])) {
+        if (isMissingRow(row, side[varIndexTree.get(varName)])) {
             return VarNominal.MISSING_VALUE;
         }
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.getLabel(row, varName)
                 : rightDf.getLabel(row, varName);
     }
@@ -297,7 +297,7 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public List<String> levels(String varName) {
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.levels(varName) : rightDf.levels(varName);
     }
 
@@ -313,10 +313,10 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public boolean isMissing(int row, String varName) {
-        if(isMissingRow(row, side[varIndexTree.getInt(varName)])) {
+        if(isMissingRow(row, side[varIndexTree.get(varName)])) {
             return true;
         }
-        return side[varIndexTree.getInt(varName)]
+        return side[varIndexTree.get(varName)]
                 ? leftDf.isMissing(row, varName)
                 : rightDf.isMissing(row, varName);
     }

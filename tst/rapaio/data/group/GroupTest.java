@@ -6,6 +6,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.sys.WS;
 

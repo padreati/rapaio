@@ -27,12 +27,14 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.data.Mapping;
+import rapaio.data.VarInt;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.util.collection.IntArrays;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.
@@ -40,9 +42,9 @@ import rapaio.printer.format.TextTable;
 public abstract class AbstractUnique implements Unique {
 
     protected final boolean sorted;
-    protected Int2ObjectOpenHashMap<IntList> rowLists;
-    protected IntArrayList countSortedIds;
-    protected IntArrayList valueSortedIds;
+    protected HashMap<Integer, Mapping> rowLists;
+    protected VarInt countSortedIds;
+    protected VarInt valueSortedIds;
     protected int[] idsByRow;
 
     public AbstractUnique(boolean sorted) {
@@ -56,15 +58,15 @@ public abstract class AbstractUnique implements Unique {
 
     protected void updateIdsByRow(int len) {
         idsByRow = new int[len];
-        for (Int2ObjectOpenHashMap.Entry<IntList> e : rowLists.int2ObjectEntrySet()) {
+        for (Map.Entry<Integer, Mapping> e : rowLists.entrySet()) {
             for (int row : e.getValue()) {
-                idsByRow[row] = e.getIntKey();
+                idsByRow[row] = e.getKey();
             }
         }
     }
 
     @Override
-    public IntList countSortedIds() {
+    public VarInt countSortedIds() {
         if (countSortedIds == null) {
             int[] counts = new int[uniqueCount()];
             int[] ids2 = new int[uniqueCount()];
@@ -72,8 +74,8 @@ public abstract class AbstractUnique implements Unique {
                 counts[i] = rowLists.get(i).size();
                 ids2[i] = i;
             }
-            IntArrays.quickSort(ids2, (i, j) -> Integer.compare(counts[i], counts[j]));
-            countSortedIds = new IntArrayList(ids2);
+            IntArrays.quickSort(ids2, 0, uniqueCount(), (i, j) -> Integer.compare(counts[i], counts[j]));
+            countSortedIds = VarInt.wrap(ids2);
         }
         return countSortedIds;
     }
@@ -116,7 +118,7 @@ public abstract class AbstractUnique implements Unique {
         if (max > 40) {
             max = 40;
         }
-        double total = rowLists.int2ObjectEntrySet().stream().mapToDouble(e -> e.getValue().size()).sum();
+        double total = rowLists.values().stream().mapToDouble(Mapping::size).sum();
         if (uniqueCount() > max) {
             TextTable tt = TextTable.empty(max + 1, 3, 1, 0);
             tt.textCenter(0, 0, "Value");
@@ -147,7 +149,7 @@ public abstract class AbstractUnique implements Unique {
         tt.textCenter(0, 1, "Count");
         tt.textCenter(0, 2, "Percentage");
 
-        double total = rowLists.int2ObjectEntrySet().stream().mapToDouble(e -> e.getValue().size()).sum();
+        double total = rowLists.values().stream().mapToDouble(Mapping::size).sum();
         for (int i = 0; i < uniqueCount(); i++) {
             tt.textRight(i + 1, 0, stringUniqueValue(i));
             tt.textRight(i + 1, 1, Integer.toString(rowList(i).size()));

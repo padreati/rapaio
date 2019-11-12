@@ -27,7 +27,6 @@
 
 package rapaio.experiment.ml.feature.generator;
 
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
@@ -49,7 +48,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
     boolean normalize;
     private List<String> labelKeys = new ArrayList<>();
     private HashMap<String, List<String>> groups = new HashMap<>();
-    private HashMap<String, Object2DoubleOpenHashMap<Key>> counts = new HashMap<>();
+    private HashMap<String, HashMap<Key, Double>> counts = new HashMap<>();
 
     protected NomLabelCount(VRange range, boolean normalize) {
         super(range);
@@ -72,16 +71,16 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
                 labelKeys.add(labelKey);
                 groups.get(var.name()).add(labelKey);
                 if (!counts.containsKey(labelKey)) {
-                    counts.put(labelKey, new Object2DoubleOpenHashMap<>());
+                    counts.put(labelKey, new HashMap<>());
                 }
             }
             for (int row = 0; row < var.rowCount(); row++) {
                 String labelKey = var.name() + "_" + var.getLabel(row);
                 Key key = Key.from(row, source, keys);
                 if (!counts.get(labelKey).containsKey(key)) {
-                    counts.get(labelKey).put(key, 0);
+                    counts.get(labelKey).put(key, 0d);
                 }
-                counts.get(labelKey).put(key, counts.get(labelKey).getDouble(key) + 1);
+                counts.get(labelKey).put(key, counts.get(labelKey).get(key) + 1);
             }
         }
     }
@@ -93,7 +92,7 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
             VarDouble index = VarDouble.empty().withName(labelKey);
             for (int row = 0; row < df.rowCount(); row++) {
                 Key key = Key.from(row, df, keys);
-                index.addDouble(counts.get(labelKey).getOrDefault(key, 0));
+                index.addDouble(counts.get(labelKey).getOrDefault(key, 0d));
             }
             boolean empty = true;
             for (int i = 0; i < index.rowCount(); i++) {

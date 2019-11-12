@@ -27,17 +27,13 @@
 
 package rapaio.data.group;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
 import rapaio.data.group.function.GroupFunMax;
@@ -53,6 +49,7 @@ import rapaio.printer.format.TextTable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
@@ -176,13 +173,13 @@ public class Group implements Printable {
 //    private final List<Unique> groupByUniques;
 
     // maps rows to group ids
-    private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
+    private final HashMap<Integer, Integer> rowToGroupId = new HashMap<>();
 
     // map group ids to indexes from the last level of the tree
-    private final Int2ObjectOpenHashMap<IndexNode> groupIdToLastLevelIndex = new Int2ObjectOpenHashMap<>();
+    private final HashMap<Integer, IndexNode> groupIdToLastLevelIndex = new HashMap<>();
 
     // sorted group ids
-    private final IntList sortedGroupIds = new IntArrayList();
+    private VarInt sortedGroupIds = VarInt.empty();
 
     private Group(Frame df, List<String> groupVarNames) {
         this.df = df;
@@ -234,9 +231,9 @@ public class Group implements Printable {
         List<int[]> groupUniqueIds = new ArrayList<>();
         for (int i = 0; i < getGroupCount(); i++) {
             groupUniqueIds.add(groupIdToLastLevelIndex.get(i).getLevelIds(new int[pkNamesList.size() + 1]));
-            sortedGroupIds.add(i);
+            sortedGroupIds.addInt(i);
         }
-        sortedGroupIds.sort((i1, i2) -> {
+        sortedGroupIds = (VarInt) sortedGroupIds.op().sort((i1, i2) -> {
             int[] gui1 = groupUniqueIds.get(i1);
             int[] gui2 = groupUniqueIds.get(i2);
             for (int i = 0; i < gui1.length; i++) {
@@ -263,7 +260,7 @@ public class Group implements Printable {
         return featureNamesList;
     }
 
-    public Int2ObjectOpenHashMap<IndexNode> getGroupIdToLastLevelIndex() {
+    public HashMap<Integer, IndexNode> getGroupIdToLastLevelIndex() {
         return groupIdToLastLevelIndex;
     }
 
@@ -278,7 +275,7 @@ public class Group implements Printable {
      * @param groupId group identifier
      * @return list of rows from that group
      */
-    public IntList getRowsForGroupId(int groupId) {
+    public Mapping getRowsForGroupId(int groupId) {
         return groupIdToLastLevelIndex.get(groupId).rows;
     }
 
@@ -292,7 +289,7 @@ public class Group implements Printable {
     /**
      * @return list of sorted group ids
      */
-    public IntList getSortedGroupIds() {
+    public VarInt getSortedGroupIds() {
         return sortedGroupIds;
     }
 
@@ -320,10 +317,10 @@ public class Group implements Printable {
         private final List<IndexNode> children = new ArrayList<>();
 
         // index from level id to children position index
-        private final Int2IntOpenHashMap positions = new Int2IntOpenHashMap();
+        private final HashMap<Integer, Integer> positions = new HashMap<>();
 
         // rows assigned to this group
-        private final IntList rows = new IntArrayList();
+        private final Mapping rows = Mapping.empty();
 
         public IndexNode(IndexNode parent, String levelName,
                          String levelValue, int levelId, int groupId) {
@@ -342,7 +339,7 @@ public class Group implements Printable {
             return groupId;
         }
 
-        public IntList getRows() {
+        public Mapping getRows() {
             return rows;
         }
 
@@ -425,13 +422,13 @@ public class Group implements Printable {
             tt.intRow(i + 1, 0, df.rowCount() - 40 + i);
         }
         // populate rows
-        IntList rows = new IntArrayList();
+        Mapping rows = Mapping.empty();
         for (int groupId : sortedGroupIds) {
-            rows.addAll(groupIdToLastLevelIndex.get(groupId).rows);
+            rows.addAll(groupIdToLastLevelIndex.get(groupId).rows.iterator());
         }
 
         for (int i = 0; i < 30; i++) {
-            int r = rows.getInt(i);
+            int r = rows.get(i);
             fillRowData(tt, i, r);
         }
         IndexNode _node = groupIdToLastLevelIndex.get(0);
@@ -443,7 +440,7 @@ public class Group implements Printable {
             tt.textLeft(31, j + _groupValues.size() + 2, "...");
         }
         for (int i = 31; i < 40; i++) {
-            int r = rows.getInt(df.rowCount() - 40 + i);
+            int r = rows.get(df.rowCount() - 40 + i);
             fillRowData(tt, i, r);
         }
         sb.append(tt.getDefaultText());
@@ -549,14 +546,14 @@ public class Group implements Printable {
 
         public Frame toFrame(int unstackLevel) {
             Frame df = group.getFrame();
-            IntList rows = new IntArrayList();
-            IntList sortedGroupIds = group.getSortedGroupIds();
-            Int2ObjectOpenHashMap<IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
+            Mapping rows = Mapping.empty();
+            VarInt sortedGroupIds = group.getSortedGroupIds();
+            HashMap<Integer, IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
             for (int sortedGroupId : sortedGroupIds) {
-                rows.add(groupIndex.get(sortedGroupId).getRows().getInt(0));
+                rows.add(groupIndex.get(sortedGroupId).getRows().get(0));
             }
-            Frame result = df.mapRows(Mapping.wrap(rows.toIntArray())).mapVars(group.getGroupByNameList()).copy();
-            result = result.bindVars(aggregateDf.mapRows(Mapping.wrap(sortedGroupIds.toIntArray()))).copy();
+            Frame result = df.mapRows(rows).mapVars(group.getGroupByNameList()).copy();
+            result = result.bindVars(aggregateDf.mapRows(Mapping.wrap(sortedGroupIds))).copy();
             if (unstackLevel <= 0) {
                 return result;
             }
@@ -572,12 +569,12 @@ public class Group implements Printable {
 
             // make unique groups and unstacked ids
 
-            Object2IntOpenHashMap<String> groupIdMap = new Object2IntOpenHashMap<>();
+            HashMap<String, Integer> groupIdMap = new HashMap<>();
             TreeSet<String> unstackIds = new TreeSet<>();
-            IntList originalGroupRows = new IntArrayList();
+            Mapping originalGroupRows = Mapping.empty();
 
-            Int2IntOpenHashMap rowToGroupRow = new Int2IntOpenHashMap();
-            Int2ObjectOpenHashMap<String> rowToUnstackId = new Int2ObjectOpenHashMap<>();
+            HashMap<Integer, Integer> rowToGroupRow = new HashMap<>();
+            HashMap<Integer, String> rowToUnstackId = new HashMap<>();
 
             for (int i = 0; i < result.rowCount(); i++) {
                 StringBuilder sb = new StringBuilder();
@@ -598,18 +595,18 @@ public class Group implements Printable {
                     originalGroupRows.add(i);
                 }
                 unstackIds.add(unstackId);
-                rowToGroupRow.put(i, groupIdMap.getInt(groupId));
+                rowToGroupRow.put(i, groupIdMap.get(groupId));
                 rowToUnstackId.put(i, unstackId);
             }
 
             // build index for unstackIds
-            Object2IntOpenHashMap<String> unstackIdPos = new Object2IntOpenHashMap<>();
+            HashMap<String, Integer> unstackIdPos = new HashMap<>();
             for (String unstackId : unstackIds) {
                 unstackIdPos.put(unstackId, unstackIdPos.size());
             }
 
             // make unstack frame
-            Frame unstackedDf = result.mapRows(Mapping.wrap(originalGroupRows.toIntArray()));
+            Frame unstackedDf = result.mapRows(originalGroupRows);
             if (groupNames.size() > 0) {
                 unstackedDf = unstackedDf.mapVars(groupNames);
             }
@@ -633,7 +630,7 @@ public class Group implements Printable {
                 VType aggregateType = result.rvar(aggregateVarName).type();
                 int aggregateVarIndex = result.varIndex(aggregateVarName);
                 for (int i = 0; i < result.rowCount(); i++) {
-                    int varIndex = unstackIdPos.getInt(rowToUnstackId.get(i));
+                    int varIndex = unstackIdPos.get(rowToUnstackId.get(i));
                     int rowIndex = rowToGroupRow.get(i);
                     if (result.isMissing(i, aggregateVarIndex)) {
                         unstacked.setMissing(rowIndex, varIndex);
@@ -700,18 +697,18 @@ public class Group implements Printable {
             StringBuilder sb = new StringBuilder();
             sb.append(summary());
 
-            IntList sortedGroupIds = group.getSortedGroupIds();
-            IntList selectedGroupIds = new IntArrayList();
+            VarInt sortedGroupIds = group.getSortedGroupIds();
+            VarInt selectedGroupIds = VarInt.empty();
             boolean full = false;
             if (headRows + tailRows > aggregateDf.rowCount()) {
-                selectedGroupIds.addAll(sortedGroupIds);
+                selectedGroupIds.addAllInt(sortedGroupIds.iterator());
                 full = true;
             } else {
-                selectedGroupIds.addAll(sortedGroupIds.subList(0, headRows));
-                selectedGroupIds.addAll(sortedGroupIds.subList(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
+                selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
+                selectedGroupIds.addAllInt(sortedGroupIds.iterator(sortedGroupIds.rowCount() - tailRows, sortedGroupIds.rowCount()));
             }
 
-            TextTable tt = TextTable.empty(selectedGroupIds.size() + 1,
+            TextTable tt = TextTable.empty(selectedGroupIds.rowCount() + 1,
                     group.getGroupByNameList().size() + aggregateDf.varCount() + 1, 1, group.getGroupByNameList().size() + 1);
 
             // group header
@@ -724,7 +721,7 @@ public class Group implements Printable {
             }
             // row numbers
             if (full) {
-                for (int i = 0; i < selectedGroupIds.size(); i++) {
+                for (int i = 0; i < selectedGroupIds.rowCount(); i++) {
                     tt.textRight(i + 1, 0, String.format("[%d]", i));
                 }
             } else {

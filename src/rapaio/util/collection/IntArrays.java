@@ -72,7 +72,7 @@ public final class IntArrays {
     public static int[] from(int[] source, int start, int end, IntIntFunction fun) {
         int[] data = new int[end - start];
         for (int i = start; i < end; i++) {
-            data[i - start] = fun.applyInt(source[i]);
+            data[i - start] = fun.applyAsInt(source[i]);
         }
         return data;
     }

@@ -27,13 +27,13 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.core.tools.DTable;
 import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
 
@@ -141,7 +141,7 @@ public interface CTreeTest extends Serializable {
                 values[i] = df.getDouble(i, testNameIndex);
             }
             IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);
-            IntArrays.quickSort(rows, comparator);
+            IntArrays.quickSort(rows, 0, len, comparator);
 
             CTreeCandidate best = null;
             double bestScore = 0.0;

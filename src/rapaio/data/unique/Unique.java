@@ -27,8 +27,9 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.IntList;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
 import rapaio.printer.Printable;
 
 /**
@@ -97,18 +98,18 @@ public interface Unique extends Printable {
     /**
      * @return a list of unique group ids ordered increasing by count of values with the same unique value
      */
-    IntList countSortedIds();
+    VarInt countSortedIds();
 
     /**
      * @return a list of unique group ids ordered increasing by the unique value
      */
-    IntList valueSortedIds();
+    VarInt valueSortedIds();
 
     /**
      * @param id unique group id
      * @return list of row ids for the given unique group id
      */
-    IntList rowList(int id);
+    Mapping rowList(int id);
 
     /**
      * @param row row number from the original frame

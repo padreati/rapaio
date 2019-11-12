@@ -27,9 +27,9 @@
 
 package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.group.Group;
@@ -51,7 +51,7 @@ public class GroupFunSkewness extends DefaultSingleGroupFun {
     }
 
     @Override
-    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
         OnlineStat os = OnlineStat.empty();
         for (int row : rows) {
             if (df.isMissing(row, varIndex)) {

@@ -1,11 +1,8 @@
 package rapaio.ml.regression.tree.rtree;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.MappedVar;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.var.VRefSort;

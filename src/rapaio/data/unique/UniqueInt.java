@@ -27,15 +27,13 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.util.collection.IntArrays;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Unique value feature for integer values.
@@ -48,32 +46,33 @@ public class UniqueInt extends AbstractUnique {
         return new UniqueInt(var, sorted);
     }
 
-    private IntArrayList values;
+    private VarInt values;
 
     private UniqueInt(Var var, boolean sorted) {
         super(sorted);
-        IntOpenHashSet keySet = new IntOpenHashSet();
+        HashSet<Integer> keySet = new HashSet<>();
         for (int i = 0; i < var.rowCount(); i++) {
-            int key = var.getInt(i);
-            if (!keySet.contains(key)) {
-                keySet.add(key);
-            }
+            keySet.add(var.getInt(i));
         }
-        int[] elements = keySet.toIntArray();
+        int[] elements = new int[keySet.size()];
+        int pos = 0;
+        for (int value : keySet) {
+            elements[pos++] = value;
+        }
         if (sorted) {
-            IntArrays.quickSort(elements, new UniqueIntComparator());
+            IntArrays.quickSort(elements, 0, elements.length, Integer::compare);
         }
-        Int2IntOpenHashMap uniqueKeys = new Int2IntOpenHashMap();
-        values = new IntArrayList(elements);
+        HashMap<Integer, Integer> uniqueKeys = new HashMap<>();
+        values = VarInt.wrap(elements);
         for (int i = 0; i < elements.length; i++) {
             uniqueKeys.put(elements[i], i);
         }
-        rowLists = new Int2ObjectOpenHashMap<>();
+        rowLists = new HashMap<>();
         for (int i = 0; i < var.rowCount(); i++) {
             int key = var.getInt(i);
             int id = uniqueKeys.get(key);
             if (!rowLists.containsKey(id)) {
-                rowLists.put(id, new IntArrayList());
+                rowLists.put(id, Mapping.empty());
             }
             rowLists.get(id).add(i);
         }
@@ -82,29 +81,28 @@ public class UniqueInt extends AbstractUnique {
 
     @Override
     public int uniqueCount() {
-        return values.size();
+        return values.rowCount();
     }
 
     @Override
-    public IntList valueSortedIds() {
+    public VarInt valueSortedIds() {
         if (valueSortedIds == null) {
             int[] ids = new int[uniqueCount()];
             for (int i = 0; i < ids.length; i++) {
                 ids[i] = i;
             }
             if (sorted) {
-                valueSortedIds = new IntArrayList(ids);
+                valueSortedIds = VarInt.wrap(ids);
             } else {
-                UniqueIntComparator cmp = new UniqueIntComparator();
-                IntArrays.quickSort(ids, (i, j) -> cmp.compare(values.getInt(i), values.getInt(j)));
+                IntArrays.quickSort(ids, 0, uniqueCount(), (i, j) -> Integer.compare(values.getInt(i), values.getInt(j)));
             }
-            valueSortedIds = new IntArrayList(ids);
+            valueSortedIds = VarInt.wrap(ids);
         }
         return valueSortedIds;
     }
 
     @Override
-    public IntList rowList(int id) {
+    public Mapping rowList(int id) {
         return rowLists.get(id);
     }
 
@@ -120,16 +118,5 @@ public class UniqueInt extends AbstractUnique {
     @Override
     protected String stringUniqueValue(int i) {
         return values.getInt(i) == Integer.MIN_VALUE ? "?" : Integer.toString(values.getInt(i));
-    }
-}
-
-@SuppressWarnings("ComparatorMethodParameterNotUsed")
-class UniqueIntComparator implements it.unimi.dsi.fastutil.ints.IntComparator, Serializable {
-
-    private static final long serialVersionUID = 1347615489598406390L;
-
-    @Override
-    public int compare(int v1, int v2) {
-        return (v1 < v2) ? -1 : 1;
     }
 }

@@ -39,8 +39,8 @@ public class UniqueTest {
         assertTrue(sorted.isSorted());
         assertFalse(unsorted.isSorted());
 
-        VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
-        VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
+        VarInt unsortedIds = unsorted.valueSortedIds();
+        VarInt sortedIds = sorted.valueSortedIds();
 
         Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
@@ -50,13 +50,13 @@ public class UniqueTest {
 
     @Test
     public void testSortedUnsortedInt() {
-        Var x = VarInt.from(100, row -> RandomSource.nextInt(10));
+        VarInt x = VarInt.from(100, row -> RandomSource.nextInt(10000));
 
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
 
-        VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
-        VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
+        VarInt unsortedIds = unsorted.valueSortedIds();
+        VarInt sortedIds = sorted.valueSortedIds();
 
         Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
@@ -77,8 +77,8 @@ public class UniqueTest {
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
 
-        VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
-        VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
+        VarInt unsortedIds = unsorted.valueSortedIds();
+        VarInt sortedIds = sorted.valueSortedIds();
 
         Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 
@@ -103,8 +103,8 @@ public class UniqueTest {
         Unique unsorted = Unique.of(x, false);
         Unique sorted = Unique.of(x, true);
 
-        VarInt unsortedIds = VarInt.copy(unsorted.valueSortedIds().toIntArray());
-        VarInt sortedIds = VarInt.copy(sorted.valueSortedIds().toIntArray());
+        VarInt unsortedIds = unsorted.valueSortedIds();
+        VarInt sortedIds = sorted.valueSortedIds();
 
         Var secondSorted = unsortedIds.fapply(VRefSort.from(unsortedIds.refComparator()));
 

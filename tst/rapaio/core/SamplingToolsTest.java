@@ -24,7 +24,6 @@
 
 package rapaio.core;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.util.collection.DoubleArrays;
 
 import java.util.Arrays;
 
@@ -83,7 +83,7 @@ public class SamplingToolsTest {
             v.addDouble(next);
         }
         double[] values = v.array();
-        DoubleArrays.quickSort(values, 0, v.rowCount());
+        DoubleArrays.quickSort(values, 0, v.rowCount(), Double::compare);
         for (int i = 1; i < v.rowCount(); i++) {
             assertTrue(values[i] - values[i - 1] >= 1);
         }

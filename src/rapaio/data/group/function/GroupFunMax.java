@@ -27,8 +27,8 @@
 
 package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.group.Group;
 
@@ -49,7 +49,7 @@ public class GroupFunMax extends DefaultSingleGroupFun {
     }
 
     @Override
-    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
         switch (aggregate.type()) {
             case DOUBLE:
                 double max1 = Double.NaN;

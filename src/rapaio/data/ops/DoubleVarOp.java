@@ -55,7 +55,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     @Override
     public VarDouble apply(DoubleDoubleFunction fun) {
         for (int i = 0; i < rowCount; i++) {
-            data[i] = fun.applyDouble(data[i]);
+            data[i] = fun.applyAsDouble(data[i]);
         }
         return source;
     }
@@ -64,7 +64,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     public VarDouble capply(DoubleDoubleFunction fun) {
         double[] copy = new double[rowCount];
         for (int i = 0; i < rowCount; i++) {
-            copy[i] = fun.applyDouble(data[i]);
+            copy[i] = fun.applyAsDouble(data[i]);
         }
         return VarDouble.wrap(copy).withName(source.name());
     }

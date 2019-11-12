@@ -1,12 +1,12 @@
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
+import rapaio.data.VarInt;
 import rapaio.sys.WS;
+import rapaio.util.collection.DoubleArrays;
 
 import java.util.Arrays;
 
@@ -37,12 +37,12 @@ public class UniqueDoubleTest {
         UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds.size(); i++) {
+        VarInt valueSortedIds = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds.rowCount(); i++) {
             assertEquals(0, Double.compare(values[i], unique.uniqueValue(valueSortedIds.getInt(i))));
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
             assertEquals(0, Double.compare(values[i], unique.uniqueValue(valueSortedIds2.getInt(i))));
         }
 
@@ -63,7 +63,7 @@ public class UniqueDoubleTest {
             values[i] = sample[RandomSource.nextInt(sample.length)];
         }
         VarDouble x = VarDouble.copy(values);
-        DoubleArrays.quickSort(values, (u, v) -> {
+        DoubleArrays.quickSort(values, 0, N, (u, v) -> {
             int cmp = Double.compare(u, v);
             if (cmp == 0) {
                 return 0;
@@ -76,21 +76,21 @@ public class UniqueDoubleTest {
         UniqueDouble unique = UniqueDouble.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        double[] sortedValues = valueSortedIds.stream().map(unique::uniqueValue).mapToDouble(v -> v).toArray();
+        VarInt valueSortedIds = unique.valueSortedIds();
+        double[] sortedValues = valueSortedIds.intStream().mapToDouble(unique::uniqueValue).toArray();
         for (int i = 0; i < sample.length; i++) {
             assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds.getInt(i)), TOL);
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
             assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds2.getInt(i)), TOL);
         }
 
-        int[] counts = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts.length; i++) {
             assertTrue(counts[i - 1] <= counts[i]);
         }
-        int[] counts2 = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts2 = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts2.length; i++) {
             assertTrue(counts2[i - 1] <= counts2[i]);
         }
@@ -104,9 +104,9 @@ public class UniqueDoubleTest {
         double[] sample = new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, Double.NaN};
         final int N = 200;
-        VarDouble x1 = VarDouble.from(N, row -> sample[RandomSource.nextInt(sample.length)]/3.3);
+        VarDouble x1 = VarDouble.from(N, row -> sample[RandomSource.nextInt(sample.length)] / 3.3);
         double[] values1 = x1.stream().mapToDouble().toArray();
-        DoubleArrays.quickSort(values1);
+        Arrays.sort(values1);
         UniqueDouble ui1 = UniqueDouble.of(x1, true);
 
         assertEquals("UniqueDouble{count=43, values=[?:6,0.3030303:3,0.6060606:2,0.9090909:5,1.2121212:6,1.5151515:6,1.8181818:4,2.1212121:5,2.4242424:3,2.7272727:1,..]}",
@@ -125,9 +125,9 @@ public class UniqueDoubleTest {
                 "  3.030303     6      0.030  6.3636364     3      0.015  9.6969697     4      0.020 \n", ui1.fullContent());
         assertEquals(ui1.toString(), ui1.summary());
 
-        VarDouble x2 = VarDouble.from(N, row -> sample[RandomSource.nextInt(5)]/3.3);
+        VarDouble x2 = VarDouble.from(N, row -> sample[RandomSource.nextInt(5)] / 3.3);
         double[] values2 = x2.stream().mapToDouble().toArray();
-        DoubleArrays.quickSort(values2);
+        Arrays.sort(values2);
         UniqueDouble ui2 = UniqueDouble.of(x2, true);
 
         assertEquals("UniqueDouble{count=5, values=[0.3030303:43,0.6060606:50,0.9090909:50,1.2121212:31,1.5151515:26]}", ui2.toString());

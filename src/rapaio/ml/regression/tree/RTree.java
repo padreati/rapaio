@@ -27,7 +27,6 @@
 
 package rapaio.ml.regression.tree;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -304,8 +303,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
 
         int id = 1;
 
-        Int2ObjectOpenHashMap<Frame> frameMap = new Int2ObjectOpenHashMap<>();
-        Int2ObjectOpenHashMap<Var> weightsMap = new Int2ObjectOpenHashMap<>();
+        HashMap<Integer, Frame> frameMap = new HashMap<>();
+        HashMap<Integer, Var> weightsMap = new HashMap<>();
 
         this.varSelector.withVarNames(inputNames());
         root = new RTreeNode(id++, null, "root", (row, frame) -> true, 1);

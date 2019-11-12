@@ -11,8 +11,8 @@ public interface DoubleDoubleFunction extends Function<Double, Double>, Serializ
     @Override
     @Deprecated
     default Double apply(Double value) {
-        return applyDouble(value);
+        return applyAsDouble(value);
     }
 
-    double applyDouble(double value);
+    double applyAsDouble(double value);
 }

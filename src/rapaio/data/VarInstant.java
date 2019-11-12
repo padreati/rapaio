@@ -1,8 +1,8 @@
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.longs.LongArrayList;
 import rapaio.data.format.InstantFormatter;
 import rapaio.data.format.InstantParser;
+import rapaio.util.collection.LongArrays;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -27,14 +27,15 @@ public class VarInstant extends AbstractVar {
     private static final String STRING_CLASS_NAME = "VarInstant";
     private static final long MISSING_VALUE_LONG = MISSING_VALUE.toEpochMilli();
 
-    private LongArrayList data;
+    private int rows;
+    private long[] data;
     private InstantParser parser = InstantParser.ISO;
     private InstantFormatter formatter = InstantFormatter.ISO;
 
     private VarInstant(int rows) {
-        long[] internalArray = new long[rows];
-        Arrays.fill(internalArray, MISSING_VALUE_LONG);
-        data = LongArrayList.wrap(internalArray);
+        this.rows = rows;
+        this.data = new long[rows];
+        Arrays.fill(data, MISSING_VALUE_LONG);
     }
 
     @Override
@@ -54,57 +55,63 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public int rowCount() {
-        return data.size();
+        return rows;
     }
 
     @Override
     public void addRows(int rowCount) {
-        int oldSize = data.size();
-        data.size(oldSize + rowCount);
-        for (int i = oldSize; i < oldSize + rowCount; i++) {
-            data.set(i, MISSING_VALUE_LONG);
+        if (!LongArrays.checkCapacity(data, rows + rowCount)) {
+            data = LongArrays.ensureCapacity(data, rows + rowCount);
         }
+        LongArrays.fill(data, rows, rows + rowCount, MISSING_VALUE_LONG);
+        rows += rowCount;
     }
 
     @Override
     public void removeRow(int row) {
-        data.removeLong(row);
+        LongArrays.delete(data, rows, row);
     }
 
     @Override
     public void clearRows() {
-        data.clear();
+        data = new long[0];
+        rows = 0;
     }
 
     @Override
     public double getDouble(int row) {
-        throw new OperationNotAvailableException();
+        return data[row];
     }
 
     @Override
     public void setDouble(int row, double value) {
-        throw new OperationNotAvailableException();
+        data[row] = (long) value;
     }
 
     @Override
     public void addDouble(double value) {
-        throw new OperationNotAvailableException();
+        if (!LongArrays.checkCapacity(data, rows + 1)) {
+            data = LongArrays.ensureCapacity(data, rows + 1);
+        }
+        data[rows++] = (long) value;
     }
 
     @Override
     public int getInt(int row) {
-        throw new OperationNotAvailableException();
-
+        return (int) data[row];
     }
 
     @Override
     public void setInt(int row, int value) {
-        throw new OperationNotAvailableException();
+        data[row] = value;
     }
 
     @Override
     public void addInt(int value) {
-        throw new OperationNotAvailableException();
+        if (!LongArrays.checkCapacity(data, rows + 1)) {
+            data = LongArrays.ensureCapacity(data, rows + 1);
+        }
+        data[rows++] = value;
     }
 
     @Override
@@ -112,7 +119,7 @@ public class VarInstant extends AbstractVar {
         if (isMissing(row)) {
             return VarNominal.MISSING_VALUE;
         }
-        return formatter.format(Instant.ofEpochMilli(data.getLong(row)));
+        return formatter.format(Instant.ofEpochMilli(data[row]));
     }
 
     @Override
@@ -121,7 +128,7 @@ public class VarInstant extends AbstractVar {
             setMissing(row);
             return;
         }
-        data.set(row, parser.parse(value).toEpochMilli());
+        setLong(row, parser.parse(value).toEpochMilli());
     }
 
     @Override
@@ -129,7 +136,7 @@ public class VarInstant extends AbstractVar {
         if (VarNominal.MISSING_VALUE.equals(value)) {
             addMissing();
         } else {
-            data.add(parser.parse(value).toEpochMilli());
+            addLong(parser.parse(value).toEpochMilli());
         }
     }
 
@@ -148,7 +155,7 @@ public class VarInstant extends AbstractVar {
         if (isMissing(row)) {
             return VarLong.MISSING_VALUE;
         }
-        return data.getLong(row);
+        return data[row];
     }
 
     @Override
@@ -156,32 +163,34 @@ public class VarInstant extends AbstractVar {
         if (VarLong.MISSING_VALUE == value) {
             setMissing(row);
         } else {
-            data.set(row, value);
+            data[row] = value;
         }
     }
 
     @Override
     public void addLong(long value) {
-        if (VarLong.MISSING_VALUE == value) {
-            addMissing();
-        } else {
-            data.add(value);
+        if (!LongArrays.checkCapacity(data, rows + 1)) {
+            data = LongArrays.ensureCapacity(data, rows + 1);
         }
+        data[rows++] = value;
     }
 
     @Override
     public boolean isMissing(int row) {
-        return MISSING_VALUE_LONG == data.getLong(row);
+        return MISSING_VALUE_LONG == data[row];
     }
 
     @Override
     public void setMissing(int row) {
-        data.set(row, MISSING_VALUE_LONG);
+        data[row] = MISSING_VALUE_LONG;
     }
 
     @Override
     public void addMissing() {
-        data.add(MISSING_VALUE_LONG);
+        if (!LongArrays.checkCapacity(data, rows + 1)) {
+            data = LongArrays.ensureCapacity(data, rows + 1);
+        }
+        data[rows++] = MISSING_VALUE_LONG;
     }
 
     @Override

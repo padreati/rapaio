@@ -27,9 +27,8 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -64,7 +63,7 @@ public class MappedFrame extends AbstractFrame {
     private final Frame source;
     private final Mapping mapping;
     private final String[] names;
-    private final Object2IntOpenHashMap<String> colReverse;
+    private final HashMap<String, Integer> colReverse;
     private final int[] colIndexes;
 
     private MappedFrame(Frame df, Mapping mapping) {
@@ -86,7 +85,7 @@ public class MappedFrame extends AbstractFrame {
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);
         }
-        this.colReverse = new Object2IntOpenHashMap<>();
+        this.colReverse = new HashMap<>();
         this.colIndexes = new int[columns.size()];
         for (int i = 0; i < names.length; i++) {
             colIndexes[i] = source.varIndex(names[i]);
@@ -119,7 +118,7 @@ public class MappedFrame extends AbstractFrame {
         if (!colReverse.containsKey(name)) {
             throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
         }
-        return colReverse.getInt(name);
+        return colReverse.get(name);
     }
 
     @Override

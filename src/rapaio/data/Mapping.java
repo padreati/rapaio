@@ -54,7 +54,7 @@ import java.util.stream.IntStream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Mapping extends Serializable {
+public interface Mapping extends Iterable<Integer>, Serializable {
 
     // static builders
 
@@ -125,6 +125,10 @@ public interface Mapping extends Serializable {
      * @return the size of mapping
      */
     int size();
+
+    default boolean isEmpty() {
+        return size() == 0;
+    }
 
     /**
      * Gets mapped index for given position

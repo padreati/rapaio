@@ -27,10 +27,10 @@
 
 package rapaio.experiment.ml.eval;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.frame.FShuffle;
@@ -55,8 +55,8 @@ public class REvaluation {
         double[] tacc = new double[classifierModels.size()];
 
         for (int i = 0; i < folds; i++) {
-            IntArrayList trainMapping = new IntArrayList();
-            IntArrayList testMapping = new IntArrayList();
+            Mapping trainMapping = Mapping.empty();
+            Mapping testMapping = Mapping.empty();
             if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -74,8 +74,8 @@ public class REvaluation {
                     }
                 }
             }
-            Frame train = MappedFrame.byRow(df, trainMapping.toIntArray());
-            Frame test = MappedFrame.byRow(df, testMapping.toIntArray());
+            Frame train = MappedFrame.byRow(df, trainMapping);
+            Frame test = MappedFrame.byRow(df, testMapping);
 
             for (int k = 0; k < classifierModels.size(); k++) {
                 ClassifierModel c = classifierModels.get(k).newInstance();

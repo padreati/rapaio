@@ -51,7 +51,7 @@ public final class DefaultVarOp<T extends Var> implements VarOp<T> {
     public T apply(DoubleDoubleFunction fun) {
         for (int i = 0; i < source.rowCount(); i++) {
             if (!source.isMissing(i)) {
-                source.setDouble(i, fun.applyDouble(source.getDouble(i)));
+                source.setDouble(i, fun.applyAsDouble(source.getDouble(i)));
             }
         }
         return source;
@@ -64,7 +64,7 @@ public final class DefaultVarOp<T extends Var> implements VarOp<T> {
             if (source.isMissing(i)) {
                 data[i] = Double.NaN;
             } else {
-                data[i] = fun.applyDouble(source.getDouble(i));
+                data[i] = fun.applyAsDouble(source.getDouble(i));
             }
         }
         return VarDouble.wrap(data).withName(source.name());
@@ -164,14 +164,12 @@ public final class DefaultVarOp<T extends Var> implements VarOp<T> {
 
     @Override
     public T sort(IntComparator comparator) {
-        source.fapply(VRefSort.from(comparator));
-        return source;
+        return (T) source.fapply(VRefSort.from(comparator)).copy();
     }
 
     @Override
     public T sort(boolean asc) {
-        source.fapply(VRefSort.from(source.refComparator(asc)));
-        return source;
+        return (T) source.fapply(VRefSort.from(source.refComparator(asc))).copy();
     }
 
     @Override

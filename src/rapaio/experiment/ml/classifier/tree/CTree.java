@@ -27,8 +27,6 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -295,8 +293,8 @@ public class CTree
         idGenerator.set(0);
         root = new CTreeNode(idGenerator.get(), null, "root", RowPredicate.all(), 0);
 
-        Int2ObjectOpenHashMap<Frame> frameCache = new Int2ObjectOpenHashMap<>();
-        Int2ObjectOpenHashMap<Var> weightCache = new Int2ObjectOpenHashMap<>();
+        HashMap<Integer, Frame> frameCache = new HashMap<>();
+        HashMap<Integer, Var> weightCache = new HashMap<>();
 
         Queue<CTreeNode> queue = new ConcurrentLinkedQueue<>();
         queue.add(root);
@@ -443,7 +441,7 @@ public class CTree
      * Predict node indexes with one hot encoding, one var for each node
      */
     public Frame predictNodeIndexOHE(Frame df, String varPrefix) {
-        Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
+        HashMap<Integer, Integer> indexMap = new HashMap<>();
         buildIndexMap(root, indexMap);
 
         List<Var> varList = new ArrayList<>();
@@ -460,7 +458,7 @@ public class CTree
      * Predict node indexes with one hot encoding, one var for each node
      */
     public Frame predictNodeIndex(Frame df, boolean normalized, String varPrefix) {
-        Int2IntOpenHashMap indexMap = new Int2IntOpenHashMap();
+        HashMap<Integer, Integer> indexMap = new HashMap<>();
         buildIndexMap(root, indexMap);
 
         Var index = VarDouble.empty(df.rowCount()).withName(varPrefix + "index");
@@ -490,7 +488,7 @@ public class CTree
         return predictPointNodeIndex(maxChild, df, row);
     }
 
-    private void buildIndexMap(CTreeNode node, Int2IntOpenHashMap indexMap) {
+    private void buildIndexMap(CTreeNode node, HashMap<Integer, Integer> indexMap) {
         if (node.isLeaf()) {
             indexMap.put(node.getId(), indexMap.size());
         }

@@ -27,13 +27,12 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,7 +49,7 @@ public class BoundFrame extends AbstractFrame {
      * @return new frame bound frame by binding variables
      */
     public static BoundFrame byVars(Frame... dfs) {
-        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
+        Map<String, Integer> indexes = new HashMap<>();
         List<Var> vars = new ArrayList<>();
         if (dfs.length == 0) {
             return new BoundFrame(0, vars, new String[]{}, indexes);
@@ -84,7 +83,7 @@ public class BoundFrame extends AbstractFrame {
      * @return new frame bound frame by binding variables
      */
     public static BoundFrame byVars(List<Var> varList) {
-        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
+        Map<String, Integer> indexes = new HashMap<>();
         List<Var> vars = new ArrayList<>();
         if (varList.isEmpty()) {
             return new BoundFrame(0, vars, new String[]{}, indexes);
@@ -130,7 +129,7 @@ public class BoundFrame extends AbstractFrame {
      * @return new bound frame obtained by concatenating rows
      */
     public static BoundFrame byRows(Frame... dfs) {
-        Object2IntMap<String> indexes = new Object2IntOpenHashMap<>();
+        Map<String, Integer> indexes = new HashMap<>();
         List<Var> vars = new ArrayList<>();
         if (dfs.length == 0) {
             return new BoundFrame(0, vars, new String[]{}, indexes);
@@ -192,9 +191,9 @@ public class BoundFrame extends AbstractFrame {
     private final int rowCount;
     private final List<Var> vars;
     private final String[] names;
-    private final Object2IntMap<String> indexes;
+    private final Map<String, Integer> indexes;
 
-    private BoundFrame(int rowCount, List<Var> vars, String[] names, Object2IntMap<String> indexes) {
+    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
         this.rowCount = rowCount;
         this.vars = vars;
         this.names = Arrays.copyOf(names, names.length);
@@ -223,7 +222,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
-        return indexes.getInt(name);
+        return indexes.get(name);
     }
 
     @Override
@@ -236,12 +235,12 @@ public class BoundFrame extends AbstractFrame {
         if (!indexes.containsKey(name)) {
             throw new IllegalArgumentException("Variable with name: " + name + " does not exists.");
         }
-        return vars.get(indexes.getInt(name));
+        return vars.get(indexes.get(name));
     }
 
     @Override
     public VType type(String varName) {
-        return vars.get(indexes.getInt(varName)).type();
+        return vars.get(indexes.get(varName)).type();
     }
 
     @Override
@@ -259,7 +258,7 @@ public class BoundFrame extends AbstractFrame {
         List<String> parseVarNames = range.parseVarNames(this);
         String[] selectedNamed = new String[parseVarNames.size()];
         List<Var> selectedVars = new ArrayList<>();
-        Object2IntMap<String> selectedIndexes = new Object2IntOpenHashMap<>();
+        Map<String, Integer> selectedIndexes = new HashMap<>();
         for (int i = 0; i < parseVarNames.size(); i++) {
             selectedNamed[i] = parseVarNames.get(i);
             selectedVars.add(rvar(parseVarNames.get(i)));

@@ -27,8 +27,8 @@
 
 package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.group.Group;
@@ -50,7 +50,7 @@ public class GroupFunCount extends DefaultSingleGroupFun {
     }
 
     @Override
-    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
         int count = 0;
         for (int row : rows) {
             if (!df.isMissing(row, varIndex)) {

@@ -27,7 +27,6 @@
 
 package rapaio.data.group.function;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -52,7 +51,7 @@ public class GroupFunNUnique extends DefaultSingleGroupFun {
     }
 
     @Override
-    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, IntList rows) {
+    public void updateSingle(Var aggregate, int aggregateRow, Frame df, int varIndex, Mapping rows) {
         int offset = 0;
         for (int row : rows) {
             if (df.isMissing(row, varIndex)) {
@@ -60,7 +59,7 @@ public class GroupFunNUnique extends DefaultSingleGroupFun {
                 break;
             }
         }
-        Unique unique = Unique.of(df.rvar(varIndex).mapRows(Mapping.wrap(rows.toIntArray())), false);
+        Unique unique = Unique.of(df.rvar(varIndex).mapRows(rows), false);
         aggregate.setInt(aggregateRow, unique.uniqueCount() - offset);
     }
 }

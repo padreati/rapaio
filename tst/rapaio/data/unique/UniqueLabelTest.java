@@ -1,9 +1,9 @@
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
+import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.stream.VSpot;
 import rapaio.sys.WS;
@@ -41,12 +41,12 @@ public class UniqueLabelTest {
         UniqueLabel unique = UniqueLabel.of(x, false);
         assertEquals(N, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds.size(); i++) {
+        VarInt valueSortedIds = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds.rowCount(); i++) {
             assertEquals(values[i], unique.uniqueValue(valueSortedIds.getInt(i)));
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
             assertEquals(values[i], unique.uniqueValue(valueSortedIds2.getInt(i)));
         }
 
@@ -78,21 +78,21 @@ public class UniqueLabelTest {
         UniqueInt unique = UniqueInt.of(x, false);
         assertEquals(sample.length, unique.uniqueCount());
 
-        IntList valueSortedIds = unique.valueSortedIds();
-        int[] sortedValues = valueSortedIds.stream().map(unique::uniqueValue).mapToInt(v -> v).toArray();
+        VarInt valueSortedIds = unique.valueSortedIds();
+        int[] sortedValues = valueSortedIds.intStream().map(unique::uniqueValue).toArray();
         for (int i = 0; i < sample.length; i++) {
-            assertEquals(sortedValues[i], (int) unique.uniqueValue(valueSortedIds.getInt(i)));
+            assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds.getInt(i)));
         }
-        IntList valueSortedIds2 = unique.valueSortedIds();
-        for (int i = 0; i < valueSortedIds2.size(); i++) {
-            assertEquals(sortedValues[i], (int) unique.uniqueValue(valueSortedIds2.getInt(i)));
+        VarInt valueSortedIds2 = unique.valueSortedIds();
+        for (int i = 0; i < valueSortedIds2.rowCount(); i++) {
+            assertEquals(sortedValues[i], unique.uniqueValue(valueSortedIds2.getInt(i)));
         }
 
-        int[] counts = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts.length; i++) {
             assertTrue(counts[i - 1] <= counts[i]);
         }
-        int[] counts2 = unique.countSortedIds().stream().mapToInt(id -> unique.rowList(id).size()).toArray();
+        int[] counts2 = unique.countSortedIds().intStream().map(id -> unique.rowList(id).size()).toArray();
         for (int i = 1; i < counts2.length; i++) {
             assertTrue(counts2[i - 1] <= counts2[i]);
         }

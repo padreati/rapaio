@@ -27,16 +27,15 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -62,15 +61,15 @@ public class UniqueLabel extends AbstractUnique {
         if(sorted) {
             values.sort(new UniqueLabelComparator());
         }
-        Object2IntOpenHashMap<String> uniqueKeys = new Object2IntOpenHashMap<>();
+        HashMap<String, Integer> uniqueKeys = new HashMap<>();
         for (int i = 0; i < values.size(); i++) {
             uniqueKeys.put(values.get(i), i);
         }
-        rowLists = new Int2ObjectOpenHashMap<>();
+        rowLists = new HashMap<>();
         for (int i = 0; i < var.rowCount(); i++) {
-            int id = uniqueKeys.getInt(var.getLabel(i));
+            int id = uniqueKeys.get(var.getLabel(i));
             if (!rowLists.containsKey(id)) {
-                rowLists.put(id, new IntArrayList());
+                rowLists.put(id, Mapping.empty());
             }
             rowLists.get(id).add(i);
         }
@@ -83,25 +82,25 @@ public class UniqueLabel extends AbstractUnique {
     }
 
     @Override
-    public IntList valueSortedIds() {
+    public VarInt valueSortedIds() {
         if (valueSortedIds == null) {
             int[] ids = new int[uniqueCount()];
             for (int i = 0; i < ids.length; i++) {
                 ids[i] = i;
             }
             if (sorted) {
-                valueSortedIds = new IntArrayList(ids);
+                valueSortedIds = VarInt.wrap(ids);
             } else {
                 UniqueLabelComparator cmp = new UniqueLabelComparator();
-                IntArrays.quickSort(ids, (i, j) -> cmp.compare(values.get(i), values.get(j)));
+                IntArrays.quickSort(ids, 0, ids.length, (i, j) -> cmp.compare(values.get(i), values.get(j)));
             }
-            valueSortedIds = new IntArrayList(ids);
+            valueSortedIds = VarInt.wrap(ids);
         }
         return valueSortedIds;
     }
 
     @Override
-    public IntList rowList(int id) {
+    public Mapping rowList(int id) {
         return rowLists.get(id);
     }
 

@@ -57,7 +57,7 @@ import java.util.stream.IntStream;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class VarInt extends AbstractVar {
+public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
     /**
      * Builds an empty integer variable of size 0
@@ -174,7 +174,7 @@ public final class VarInt extends AbstractVar {
     public static VarInt from(int rows, IntIntFunction supplier) {
         VarInt index = new VarInt(rows, rows, 0);
         for (int i = 0; i < index.data.length; i++) {
-            index.data[i] = supplier.applyInt(i);
+            index.data[i] = supplier.applyAsInt(i);
         }
         return index;
     }
@@ -283,6 +283,12 @@ public final class VarInt extends AbstractVar {
         ensureCapacityInternal(rows + 1);
         data[rows] = value;
         rows++;
+    }
+
+    public void addAllInt(IntIterator it) {
+        while(it.hasNext()) {
+            addInt(it.nextInt());
+        }
     }
 
     public IntIterator iterator() {

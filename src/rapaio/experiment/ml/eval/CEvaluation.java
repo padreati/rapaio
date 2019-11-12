@@ -27,9 +27,6 @@
 
 package rapaio.experiment.ml.eval;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -48,7 +45,6 @@ import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -101,17 +97,17 @@ public class CEvaluation {
 
     private static List<Mapping> buildStrata(Frame df, int folds, String classColName) {
         List<String> dict = df.rvar(classColName).levels();
-        List<IntList> rows = new ArrayList<>();
+        List<Mapping> rows = new ArrayList<>();
         for (int i = 0; i < dict.size(); i++) {
-            rows.add(new IntArrayList());
+            rows.add(Mapping.empty());
         }
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.getInt(i, classColName)).add(i);
         }
-        IntList shuffle = new IntArrayList();
+        Mapping shuffle = Mapping.empty();
         for (int i = 0; i < dict.size(); i++) {
-            Collections.shuffle(rows.get(i), RandomSource.getRandom());
-            shuffle.addAll(rows.get(i));
+            rows.get(i).shuffle();
+            shuffle.addAll(rows.get(i).iterator());
         }
         List<Mapping> strata = new ArrayList<>();
         for (int i = 0; i < folds; i++) {

@@ -27,12 +27,12 @@
 
 package rapaio.data.filter.var;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
+import rapaio.util.function.DoubleDoubleFunction;
+import rapaio.util.function.IntDoubleFunction;
 
 import java.util.function.Function;
 
@@ -67,7 +67,7 @@ public class VToDouble implements VFilter {
      *
      * @return new instance of double variable with transformed values
      */
-    public static VToDouble byValue(Double2DoubleFunction fun) {
+    public static VToDouble byValue(DoubleDoubleFunction fun) {
         return new VToDouble(new TransformDouble(fun));
     }
 
@@ -77,7 +77,7 @@ public class VToDouble implements VFilter {
      *
      * @return new instance of double variable with transformed values
      */
-    public static VToDouble byInt(Int2DoubleFunction fun) {
+    public static VToDouble byInt(IntDoubleFunction fun) {
         return new VToDouble(new TransformInt(fun));
     }
 
@@ -148,9 +148,9 @@ public class VToDouble implements VFilter {
     }
 
     static class TransformDouble implements Function<Var, Var> {
-        private final Double2DoubleFunction function;
+        private final DoubleDoubleFunction function;
 
-        TransformDouble(Double2DoubleFunction function) {
+        TransformDouble(DoubleDoubleFunction function) {
             this.function = function;
         }
 
@@ -165,9 +165,9 @@ public class VToDouble implements VFilter {
     }
 
     static class TransformInt implements Function<Var, Var> {
-        private final Int2DoubleFunction function;
+        private final IntDoubleFunction function;
 
-        TransformInt(Int2DoubleFunction function) {
+        TransformInt(IntDoubleFunction function) {
             this.function = function;
         }
 
