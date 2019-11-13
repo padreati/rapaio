@@ -44,7 +44,7 @@ public class FFillNaDouble extends AbstractFF {
         return new FFillNaDouble(fill, vRange);
     }
 
-    public static FFillNaDouble on(double fill, String...varNames) {
+    public static FFillNaDouble on(double fill, String... varNames) {
         return new FFillNaDouble(fill, VRange.of(varNames));
     }
 

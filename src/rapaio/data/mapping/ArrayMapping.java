@@ -56,12 +56,12 @@ public final class ArrayMapping implements Mapping {
     }
 
     public ArrayMapping(int start, int end) {
-        this.data = IntArrays.seq(start, end);
+        this.data = IntArrays.newSeq(start, end);
         this.size = end - start;
     }
 
     public ArrayMapping(int[] array, int start, int end, IntIntFunction fun) {
-        this.data = IntArrays.from(array, start, end, fun);
+        this.data = IntArrays.newFrom(array, start, end, fun);
         this.size = end - start;
     }
 

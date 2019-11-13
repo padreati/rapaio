@@ -118,7 +118,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
         DEFAULT_TEST_MAP.put(VType.LONG, RTreeTest.NumericBinary);
         DEFAULT_TEST_MAP.put(VType.BINARY, RTreeTest.NumericBinary);
         DEFAULT_TEST_MAP.put(VType.NOMINAL, RTreeTest.NominalFull);
-        DEFAULT_TEST_MAP.put(VType.TEXT, RTreeTest.Ignore);
+        DEFAULT_TEST_MAP.put(VType.STRING, RTreeTest.Ignore);
     }
 
     private int minCount = 1;

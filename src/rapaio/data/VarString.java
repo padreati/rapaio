@@ -36,36 +36,36 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class VarText extends AbstractVar {
+public class VarString extends AbstractVar {
 
-    public static VarText empty() {
-        return new VarText(0);
+    public static VarString empty() {
+        return new VarString(0);
     }
 
-    public static VarText empty(int rows) {
-        return new VarText(rows);
+    public static VarString empty(int rows) {
+        return new VarString(rows);
     }
 
-    public static VarText copy(String... values) {
-        VarText text = new VarText(0);
+    public static VarString copy(String... values) {
+        VarString text = new VarString(0);
         text.values = Arrays.stream(values).collect(Collectors.toList());
         return text;
     }
 
-    public static VarText copy(List<String> values) {
-        VarText text = new VarText(0);
+    public static VarString copy(List<String> values) {
+        VarString text = new VarString(0);
         text.values = new ArrayList<>(values);
         return text;
     }
 
-    public static VarText wrap(List<String> values) {
-        VarText text = new VarText(0);
+    public static VarString wrap(List<String> values) {
+        VarString text = new VarString(0);
         text.values = values;
         return text;
     }
 
-    public static VarText from(int rows, Supplier<String> supplier) {
-        VarText text = new VarText(rows);
+    public static VarString from(int rows, Supplier<String> supplier) {
+        VarString text = new VarString(rows);
         for (int i = 0; i < rows; i++) {
             text.values.set(i, supplier.get());
         }
@@ -75,7 +75,7 @@ public class VarText extends AbstractVar {
     private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values;
 
-    private VarText(int rows) {
+    private VarString(int rows) {
         values = new ArrayList<>(rows);
         for (int i = 0; i < rows; i++) {
             values.add(null);
@@ -83,13 +83,13 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public VarText withName(String name) {
-        return (VarText) super.withName(name);
+    public VarString withName(String name) {
+        return (VarString) super.withName(name);
     }
 
     @Override
     public VType type() {
-        return VType.TEXT;
+        return VType.STRING;
     }
 
     @Override
@@ -114,38 +114,34 @@ public class VarText extends AbstractVar {
         values.clear();
     }
 
-    private IllegalStateException notImplemented() {
-        return new IllegalStateException("This operation is not available for text variables");
-    }
-
     @Override
     public double getDouble(int row) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void setDouble(int row, double value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void addDouble(double value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public int getInt(int row) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void setInt(int row, int value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void addInt(int value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -165,27 +161,27 @@ public class VarText extends AbstractVar {
 
     @Override
     public List<String> levels() {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void setLevels(String[] dict) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public long getLong(int row) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void setLong(int row, long value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void addLong(long value) {
-        throw notImplemented();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -204,15 +200,40 @@ public class VarText extends AbstractVar {
     }
 
     @Override
-    public VarText newInstance(int rows) {
-        return VarText.empty(rows);
+    public VarString newInstance(int rows) {
+        return VarString.empty(rows);
     }
 
     @Override
-    public VarText copy() {
-        VarText copy = new VarText(0).withName(name());
+    public VarString copy() {
+        VarString copy = new VarString(0).withName(name());
         copy.values = new ArrayList<>(values);
         return copy;
+    }
+
+    @Override
+    public boolean deepEquals(Var var) {
+        if (var.type() != VType.STRING) {
+            return false;
+        }
+        if (var.rowCount() != values.size()) {
+            return false;
+        }
+        for (int i = 0; i < values.size(); i++) {
+            String val1 = values.get(i);
+            String val2 = var.getLabel(i);
+
+            if (val1 == null && val2 != null) {
+                return false;
+            }
+            if (val1 != null && val2 == null) {
+                return false;
+            }
+            if ((val1 != null) && val1.compareTo(val2) != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

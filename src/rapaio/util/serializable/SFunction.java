@@ -33,5 +33,6 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
-public interface SFunction<T, R> extends Function<T, R>, Serializable {
+@FunctionalInterface
+public interface SFunction<T, R> extends java.util.function.Function<T, R>, Serializable {
 }

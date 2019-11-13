@@ -56,7 +56,7 @@ public class VRefSort implements VFilter {
 
     @Override
     public Var apply(Var var) {
-        int[] rows = IntArrays.seq(0, var.rowCount());
+        int[] rows = IntArrays.newSeq(0, var.rowCount());
         IntArrays.quickSort(rows, 0, var.rowCount(), aggregateComparator == null ? var.refComparator() : aggregateComparator);
         return var.mapRows(Mapping.wrap(rows));
     }

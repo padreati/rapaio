@@ -10,12 +10,6 @@ import java.util.stream.IntStream;
 /**
  * A class providing static methods and objects that do useful things with
  * type-specific arrays of ints.
- *
- * <p>
- * In particular, the {@code forceCapacity()}, {@code ensureCapacity()},
- * {@code grow()}, {@code trim()} and {@code setLength()} methods allow to
- * handle arrays much like array lists. This can be very useful when efficiency
- * (or syntactic simplicity) reasons make array lists unsuitable.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
  */
@@ -35,7 +29,7 @@ public final class IntArrays {
      * @param value value to fill the array with
      * @return filled array
      */
-    public static int[] fill(int size, int value) {
+    public static int[] newFill(int size, int value) {
         int[] data = new int[size];
         if (value != 0) {
             Arrays.fill(data, value);
@@ -51,7 +45,7 @@ public final class IntArrays {
      * @param end   sequence ending value (exclusive)
      * @return array with sequence values
      */
-    public static int[] seq(int start, int end) {
+    public static int[] newSeq(int start, int end) {
         int[] data = new int[end - start];
         for (int i = 0; i < end - start; i++) {
             data[i] = start + i;
@@ -69,7 +63,7 @@ public final class IntArrays {
      * @param fun    transforming function
      * @return transformed values array
      */
-    public static int[] from(int[] source, int start, int end, IntIntFunction fun) {
+    public static int[] newFrom(int[] source, int start, int end, IntIntFunction fun) {
         int[] data = new int[end - start];
         for (int i = start; i < end; i++) {
             data[i - start] = fun.applyAsInt(source[i]);
@@ -77,14 +71,14 @@ public final class IntArrays {
         return data;
     }
 
-    public static int[] copy(int[] array, int start, int end) {
-        int[] data = new int[end-start];
-        System.arraycopy(array, start, data, 0, end-start);
+    public static int[] newCopy(int[] array, int start, int end) {
+        int[] data = new int[end - start];
+        System.arraycopy(array, start, data, 0, end - start);
         return data;
     }
 
-    public static boolean checkCapacity(int[] array, int pos) {
-        return pos < array.length;
+    public static boolean checkCapacity(int[] array, int size) {
+        return size < array.length;
     }
 
     /**
@@ -94,14 +88,14 @@ public final class IntArrays {
      * original size.
      *
      * @param array initial array
-     * @param pos   position for insert
-     * @return adjusted capacity array
+     * @param size  size of the array which must be ensured
+     * @return adjusted capacity array if modified, old instance if not
      */
-    public static int[] ensureCapacity(int[] array, int pos) {
-        if (pos < array.length) {
+    public static int[] ensureCapacity(int[] array, int size) {
+        if (size < array.length) {
             return array;
         }
-        int[] data = new int[Math.max(pos + 1, array.length + (array.length >> 1))];
+        int[] data = new int[Math.max(size, array.length + (array.length >> 1))];
         System.arraycopy(array, 0, data, 0, array.length);
         return data;
     }
@@ -194,11 +188,10 @@ public final class IntArrays {
             swap(x, b++, c--);
         }
         // Swap partition elements back to middle
-        int s;
-        s = Math.min(a - from, b - a);
-        swap(x, from, b - s, s);
+        int s = Math.min(a - from, b - a);
+        swapSeq(x, from, b - s, s);
         s = Math.min(d - c, to - d - 1);
-        swap(x, b, to - s, s);
+        swapSeq(x, b, to - s, s);
         // Recursively sort non-partition-elements
         if ((s = b - a) > 1)
             quickSort(x, from, from + s, comp);
@@ -222,9 +215,11 @@ public final class IntArrays {
      * @param n the number of elements to exchange starting at {@code a} and
      *          {@code b}.
      */
-    public static void swap(final int[] x, int a, int b, final int n) {
+    public static void swapSeq(final int[] x, int a, int b, final int n) {
         for (int i = 0; i < n; i++, a++, b++) {
-            swap(x, a, b);
+            final int t = x[a];
+            x[a] = x[b];
+            x[b] = t;
         }
     }
 
@@ -240,126 +235,6 @@ public final class IntArrays {
         x[a] = x[b];
         x[b] = t;
     }
-
-    /**
-     * Searches a range of the specified array for the specified value using the
-     * binary search algorithm. The range must be sorted prior to making this call.
-     * If it is not sorted, the results are undefined. If the range contains
-     * multiple elements with the specified value, there is no guarantee which one
-     * will be found.
-     *
-     * @param a    the array to be searched.
-     * @param from the index of the first element (inclusive) to be searched.
-     * @param to   the index of the last element (exclusive) to be searched.
-     * @param key  the value to be searched for.
-     * @return index of the search key, if it is contained in the array; otherwise,
-     * {@code (-(<i>insertion point</i>) - 1)}. The <i>insertion point</i>
-     * is defined as the the point at which the value would be inserted into
-     * the array: the index of the first element greater than the key, or
-     * the length of the array, if all elements in the array are less than
-     * the specified key. Note that this guarantees that the return value
-     * will be &ge; 0 if and only if the key is found.
-     * @see java.util.Arrays
-     */
-
-    public static int binarySearch(final int[] a, int from, int to, final int key) {
-        int midVal;
-        to--;
-        while (from <= to) {
-            final int mid = (from + to) >>> 1;
-            midVal = a[mid];
-            if (midVal < key)
-                from = mid + 1;
-            else if (midVal > key)
-                to = mid - 1;
-            else
-                return mid;
-        }
-        return -(from + 1);
-    }
-
-    /**
-     * Searches an array for the specified value using the binary search algorithm.
-     * The range must be sorted prior to making this call. If it is not sorted, the
-     * results are undefined. If the range contains multiple elements with the
-     * specified value, there is no guarantee which one will be found.
-     *
-     * @param a   the array to be searched.
-     * @param key the value to be searched for.
-     * @return index of the search key, if it is contained in the array; otherwise,
-     * {@code (-(<i>insertion point</i>) - 1)}. The <i>insertion point</i>
-     * is defined as the the point at which the value would be inserted into
-     * the array: the index of the first element greater than the key, or
-     * the length of the array, if all elements in the array are less than
-     * the specified key. Note that this guarantees that the return value
-     * will be &ge; 0 if and only if the key is found.
-     * @see java.util.Arrays
-     */
-    public static int binarySearch(final int[] a, final int key) {
-        return binarySearch(a, 0, a.length, key);
-    }
-
-    /**
-     * Searches a range of the specified array for the specified value using the
-     * binary search algorithm and a specified comparator. The range must be sorted
-     * following the comparator prior to making this call. If it is not sorted, the
-     * results are undefined. If the range contains multiple elements with the
-     * specified value, there is no guarantee which one will be found.
-     *
-     * @param a    the array to be searched.
-     * @param from the index of the first element (inclusive) to be searched.
-     * @param to   the index of the last element (exclusive) to be searched.
-     * @param key  the value to be searched for.
-     * @param c    a comparator.
-     * @return index of the search key, if it is contained in the array; otherwise,
-     * {@code (-(<i>insertion point</i>) - 1)}. The <i>insertion point</i>
-     * is defined as the the point at which the value would be inserted into
-     * the array: the index of the first element greater than the key, or
-     * the length of the array, if all elements in the array are less than
-     * the specified key. Note that this guarantees that the return value
-     * will be &ge; 0 if and only if the key is found.
-     * @see java.util.Arrays
-     */
-    public static int binarySearch(final int[] a, int from, int to, final int key, final IntComparator c) {
-        int midVal;
-        to--;
-        while (from <= to) {
-            final int mid = (from + to) >>> 1;
-            midVal = a[mid];
-            final int cmp = c.compareInt(midVal, key);
-            if (cmp < 0)
-                from = mid + 1;
-            else if (cmp > 0)
-                to = mid - 1;
-            else
-                return mid; // key found
-        }
-        return -(from + 1);
-    }
-
-    /**
-     * Searches an array for the specified value using the binary search algorithm
-     * and a specified comparator. The range must be sorted following the comparator
-     * prior to making this call. If it is not sorted, the results are undefined. If
-     * the range contains multiple elements with the specified value, there is no
-     * guarantee which one will be found.
-     *
-     * @param a   the array to be searched.
-     * @param key the value to be searched for.
-     * @param c   a comparator.
-     * @return index of the search key, if it is contained in the array; otherwise,
-     * {@code (-(<i>insertion point</i>) - 1)}. The <i>insertion point</i>
-     * is defined as the the point at which the value would be inserted into
-     * the array: the index of the first element greater than the key, or
-     * the length of the array, if all elements in the array are less than
-     * the specified key. Note that this guarantees that the return value
-     * will be &ge; 0 if and only if the key is found.
-     * @see java.util.Arrays
-     */
-    public static int binarySearch(final int[] a, final int key, final IntComparator c) {
-        return binarySearch(a, 0, a.length, key, c);
-    }
-
 
     /**
      * Shuffles the specified array fragment using the specified pseudorandom number generator.

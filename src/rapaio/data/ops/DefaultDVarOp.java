@@ -39,11 +39,11 @@ import java.util.Arrays;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
-public final class DefaultVarOp<T extends Var> implements VarOp<T> {
+public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     private final T source;
 
-    public DefaultVarOp(T source) {
+    public DefaultDVarOp(T source) {
         this.source = source;
     }
 

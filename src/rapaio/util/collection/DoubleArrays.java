@@ -4,11 +4,51 @@ package rapaio.util.collection;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
-public class DoubleArrays {
+public final class DoubleArrays {
+
+    private DoubleArrays() {
+    }
+
+    public static boolean checkCapacity(double[] array, int size) {
+        return size < array.length;
+    }
+
+    /**
+     * Check if the array size is enough to store an element at given {@param pos}.
+     * If it is enough capacity it returns the same array. If it is not enough,
+     * a new array copy is created with an increasing factor of 1.5 of the
+     * original size.
+     *
+     * @param array initial array
+     * @param size  size of the array which must be ensured
+     * @return adjusted capacity array if modified, old instance if not
+     */
+    public static double[] ensureCapacity(double[] array, int size) {
+        if (size < array.length) {
+            return array;
+        }
+        double[] data = new double[Math.max(size, array.length + (array.length >> 1))];
+        System.arraycopy(array, 0, data, 0, array.length);
+        return data;
+    }
+
+    /**
+     * Delete element from given position by copying subsequent elements one position ahead.
+     *
+     * @param array source array of elements
+     * @param size  the length of the array with known values
+     * @param pos   position of the element to be removed
+     * @return same int array
+     */
+    public static double[] delete(double[] array, int size, int pos) {
+        if (size - pos > 0) {
+            System.arraycopy(array, pos + 1, array, pos, size - pos - 1);
+        }
+        return array;
+    }
+
     private static final int QUICKSORT_NO_REC = 16;
-    private static final int PARALLEL_QUICKSORT_NO_FORK = 8192;
     private static final int QUICKSORT_MEDIAN_OF_9 = 128;
-    private static final int MERGESORT_NO_REC = 16;
 
     /**
      * Swaps two elements of an anrray.
@@ -55,21 +95,6 @@ public class DoubleArrays {
                 a[i] = a[m];
                 a[m] = u;
             }
-        }
-    }
-
-    private static void insertionSort(final double[] a, final int from, final int to, final DoubleComparator comp) {
-        for (int i = from; ++i < to; ) {
-            double t = a[i];
-            int j = i;
-            for (double u = a[j - 1]; comp.compare(t, u) < 0; u = a[--j - 1]) {
-                a[j] = u;
-                if (from == j - 1) {
-                    --j;
-                    break;
-                }
-            }
-            a[j] = t;
         }
     }
 
@@ -207,9 +232,9 @@ public class DoubleArrays {
         // Swap partition elements back to middle
         int s;
         s = Math.min(a - from, b - a);
-        IntArrays.swap(perm, from, b - s, s);
+        IntArrays.swapSeq(perm, from, b - s, s);
         s = Math.min(d - c, to - d - 1);
-        IntArrays.swap(perm, b, to - s, s);
+        IntArrays.swapSeq(perm, b, to - s, s);
         // Recursively sort non-partition-elements
         if ((s = b - a) > 1)
             quickSortIndirect(perm, x, from, from + s);

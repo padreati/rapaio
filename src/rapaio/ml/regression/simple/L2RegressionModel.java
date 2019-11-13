@@ -76,7 +76,7 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1_000_000)
-                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.TEXT)
+                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING)
                 .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);

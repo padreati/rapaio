@@ -28,8 +28,8 @@
 package rapaio.data;
 
 
-import rapaio.data.ops.DoubleVarOp;
-import rapaio.data.ops.VarOp;
+import rapaio.data.ops.DoubleDVarOp;
+import rapaio.data.ops.DVarOp;
 import rapaio.printer.format.TextTable;
 
 import java.io.IOException;
@@ -295,7 +295,7 @@ public final class VarDouble extends AbstractVar {
 
     public static Collector<Double, VarDouble, VarDouble> collector() {
 
-        return new Collector<Double, VarDouble, VarDouble>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarDouble> supplier() {
                 return VarDouble::empty;
@@ -502,8 +502,8 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    public VarOp<VarDouble> op() {
-        return new DoubleVarOp(this);
+    public DVarOp<VarDouble> op() {
+        return new DoubleDVarOp(this);
     }
 
     @Override

@@ -53,11 +53,11 @@ import java.util.Map;
  */
 public class FOneHotEncoding extends AbstractFF {
 
-    public static FOneHotEncoding on(String ... varNames) {
+    public static FOneHotEncoding on(String... varNames) {
         return new FOneHotEncoding(VRange.of(varNames), false, true);
     }
 
-    public static FOneHotEncoding on(boolean lessOne, boolean useNa, String ... varNames) {
+    public static FOneHotEncoding on(boolean lessOne, boolean useNa, String... varNames) {
         return new FOneHotEncoding(VRange.of(varNames), lessOne, useNa);
     }
 
@@ -97,7 +97,7 @@ public class FOneHotEncoding extends AbstractFF {
     }
 
     public Frame apply(Frame df) {
-        if(varNames==null || varNames.length==0) {
+        if (varNames == null || varNames.length == 0) {
             return df;
         }
 
@@ -107,14 +107,14 @@ public class FOneHotEncoding extends AbstractFF {
         for (String varName : df.varNames()) {
 
             // if the variable has been learned
-            if (levels.keySet().contains(varName)) {
+            if (levels.containsKey(varName)) {
 
                 // get the learned dictionary
                 List<String> dict = levels.get(varName);
-                if(!useNa) {
+                if (!useNa) {
                     dict = dict.subList(1, dict.size());
                 }
-                if(lessOne) {
+                if (lessOne) {
                     dict = dict.subList(1, dict.size());
                 }
 

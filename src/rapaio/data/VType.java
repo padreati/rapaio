@@ -27,6 +27,8 @@
 
 package rapaio.data;
 
+import rapaio.util.serializable.SFunction;
+
 /**
  * Represents the type of variable.
  * <p>
@@ -58,116 +60,85 @@ public enum VType {
      * Numeric values stored on 1 bit, encodes also
      * boolean values. Possible values are 0,1 or true,false.
      */
-    BINARY(true, false, true, "binary") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarBinary.empty(rows);
-        }
-    },
+    BINARY("binary", VarBinary::empty),
     /**
      * Integer values on 32 bits
      */
-    INT(true, false, false, "int") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarInt.empty(rows);
-        }
-    },
+    INT("int", VarInt::empty),
     /**
      * Unordered categories: has label representation and
      * also positive integer representation.
      */
-    NOMINAL(false, true, false, "nominal") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarNominal.empty(rows);
-        }
-    },
+    NOMINAL("nominal", VarNominal::empty),
     /**
      * Numeric values stored in double precision
      */
-    DOUBLE(true, false, false, "double") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarDouble.empty(rows);
-        }
-    },
+    DOUBLE("double", VarDouble::empty),
     /**
      * Long integer values.
      */
-    LONG(false, false, false, "long") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarLong.empty(rows);
-        }
-    },
+    LONG("long", VarLong::empty),
     /**
      * Instant values
      */
-    INSTANT(false, false, false, "instant") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarInstant.empty(rows);
-        }
-    },
+    TIME("time", VarTime::empty),
     /**
      * Variable type used only to store text.
      */
-    TEXT(false, false, false, "text") {
-        @Override
-        public Var newInstance(int rows) {
-            return VarText.empty(rows);
-        }
-    };
+    STRING("string", VarString::empty);
 
-    private final boolean numeric;
-    private final boolean nominal;
-    private final boolean binary;
     private final String code;
+    private SFunction<Integer, ? extends Var> newInstanceFunction;
 
-    VType(boolean numeric, boolean nominal, boolean binary, String code) {
-        this.numeric = numeric;
-        this.nominal = nominal;
-        this.binary = binary;
+    VType(String code, SFunction<Integer, ? extends Var> newInstanceFunction) {
         this.code = code;
-    }
-
-    /**
-     * @return true if the variable type allows numerical manipulations.
-     */
-    public boolean isNumeric() {
-        return numeric;
-    }
-
-    /**
-     * @return true if the variable represents a categorical variable
-     */
-    public boolean isNominal() {
-        return nominal;
-    }
-
-    public boolean isBinary() {
-        return binary;
+        this.newInstanceFunction = newInstanceFunction;
     }
 
     public String code() {
         return code;
     }
 
-    /**
-     * Builds a new empty instance of the given type
-     *
-     * @return new empty instance
-     */
-    public Var newInstance() {
-        return newInstance(0);
+    public boolean isNumeric() {
+        return isNumeric(this);
+    }
+
+    public boolean isNominal() {
+        return isNominal(this);
+    }
+
+    public boolean isBinary() {
+        return isBinary(this);
     }
 
     /**
-     * Builds a new empty instance of given size
+     * Builds a new empty empty variable of the given type
+     *
+     * @return new empty variable of the given type
+     */
+    public Var newInstance() {
+        return newInstanceFunction.apply(0);
+    }
+
+    /**
+     * Builds a new empty instance of given type and size
      *
      * @param rows size of the new variable
      * @return new empty instance of given size
      */
-    public abstract Var newInstance(int rows);
+    public Var newInstance(int rows) {
+        return newInstanceFunction.apply(rows);
+    }
+
+    public static boolean isBinary(VType type) {
+        return type == BINARY;
+    }
+
+    public static boolean isNumeric(VType type) {
+        return type == DOUBLE || type == INT || type == BINARY;
+    }
+
+    public static boolean isNominal(VType type) {
+        return type == NOMINAL;
+    }
 }

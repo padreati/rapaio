@@ -145,78 +145,67 @@ public class BoundVarTest {
         z.setMissing(1);
         assertTrue(z.isMissing(1));
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         x.addMissing();
     }
 
     @Test
     public void testInvalidAddDouble() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addDouble(1.0);
     }
 
     @Test
     public void testInvalidAddInt() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addInt(1);
     }
 
     @Test
     public void testInvalidAddLong() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addLong(1);
     }
 
     @Test
     public void testInvalidAddLabel() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addLabel("1");
     }
 
     @Test
     public void testInvalidAddBoolean() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addInt(1);
     }
 
     @Test
     public void testInvalidAddMissing() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addMissing();
     }
 
     @Test
     public void testInvalidAddRows() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).addRows(1);
     }
 
     @Test
     public void testInvalidRemoveRow() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).removeRow(1);
     }
 
     @Test
     public void testInvalidAddClear() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).clearRows();
     }
 
     @Test
     public void testInvalidSetLevelk() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("This operation is not available for bound variable");
+        expectedException.expect(OperationNotAvailableException.class);
         BoundVar.from(a, b, c).setLevels(new String[]{});
     }
 

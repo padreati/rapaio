@@ -195,7 +195,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     public static Collector<? super Integer, VarInt, VarInt> collector() {
-        return new Collector<Integer, VarInt, VarInt>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarInt> supplier() {
                 return VarInt::empty;
@@ -286,7 +286,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     public void addAllInt(IntIterator it) {
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             addInt(it.nextInt());
         }
     }
@@ -488,7 +488,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
 
         @Override
         public int nextInt() {
-            if(!hasNext()) {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
             return parent.data[pos++];

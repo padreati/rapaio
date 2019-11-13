@@ -63,7 +63,7 @@ public final class FRefSort extends AbstractFF {
 
     @Override
     public Frame apply(Frame df) {
-        int[] rowArray = IntArrays.seq(0, df.rowCount());
+        int[] rowArray = IntArrays.newSeq(0, df.rowCount());
         IntArrays.quickSort(rowArray, 0, df.rowCount(), aggregateComparator);
         return MappedFrame.byRow(df, Mapping.wrap(rowArray));
     }

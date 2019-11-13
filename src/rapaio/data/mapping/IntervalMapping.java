@@ -122,7 +122,7 @@ public final class IntervalMapping implements Mapping {
 
     @Override
     public int[] elements() {
-        return IntArrays.seq(start, end);
+        return IntArrays.newSeq(start, end);
     }
 
     @Override

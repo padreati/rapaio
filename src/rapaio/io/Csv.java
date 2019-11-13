@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.VarText;
+import rapaio.data.VarString;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -72,7 +72,7 @@ public class Csv {
         return new Csv();
     }
 
-    private static VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+    private static VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
 
     private boolean trimSpaces = true;
     private boolean header = true;
@@ -81,7 +81,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>(Arrays.asList("?", "", " ", "na", "N/A", "NaN"));
-    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.STRING};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;
@@ -534,7 +534,7 @@ public class Csv {
                         writer.append("?");
                         continue;
                     }
-                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VType.TEXT)) {
+                    if (df.rvar(j).type().isNominal() || df.rvar(j).type().equals(VType.STRING)) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(format.format(df.getDouble(i, j)));
@@ -568,7 +568,7 @@ public class Csv {
 
         private final VType type;
         private Var var;
-        private VarText text;
+        private VarString text;
 
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
@@ -577,7 +577,7 @@ public class Csv {
             this.parent = parent;
             this.type = null;
             this.var = parent.defaultTypes[0].newInstance(rows);
-            this.text = VarText.empty();
+            this.text = VarString.empty();
         }
 
         public VarSlot(Csv parent, VType vType, int rows) {

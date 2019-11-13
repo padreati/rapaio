@@ -190,7 +190,7 @@ public class Datasets {
     public static Frame loasSAheart() {
         try {
             return Csv.instance()
-                    .withTypes(VType.NOMINAL, "famhist","chd")
+                    .withTypes(VType.NOMINAL, "famhist", "chd")
                     .read(Datasets.class.getResourceAsStream("SAheart.csv"));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());

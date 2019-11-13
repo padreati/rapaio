@@ -7,9 +7,9 @@ import java.util.Comparator;
  */
 public interface IntComparator extends Comparator<Integer> {
 
-    IntComparator NATURAL_COMPARATOR = Integer::compare;
+    IntComparator ASC_COMPARATOR = Integer::compare;
 
-    IntComparator REVERSE_COMPARATOR = (i1, i2) -> -Integer.compare(i1, i2);
+    IntComparator DESC_COMPARATOR = (x, y) -> Integer.compare(y, x);
 
     @Override
     @Deprecated

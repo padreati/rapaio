@@ -28,6 +28,7 @@
 package rapaio.data.filter.var;
 
 import rapaio.core.stat.Quantiles;
+import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VFilter;

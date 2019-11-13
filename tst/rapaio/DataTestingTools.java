@@ -1,12 +1,10 @@
 package rapaio;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.Bernoulli;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.unique.Unique;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/19.

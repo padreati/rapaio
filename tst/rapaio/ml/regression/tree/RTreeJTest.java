@@ -84,7 +84,7 @@ public class RTreeJTest {
                 .withTest(VType.LONG, RTreeTest.Ignore)
                 .withTest(VType.DOUBLE, RTreeTest.Ignore)
                 .withTest(VType.NOMINAL, RTreeTest.Ignore)
-                .withTest(VType.TEXT, RTreeTest.Ignore)
+                .withTest(VType.STRING, RTreeTest.Ignore)
                 .withRegressionLoss(new L2RegressionLoss())
                 .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
                 .withSplitter(RTreeSplitter.REMAINS_IGNORED)
@@ -124,7 +124,7 @@ public class RTreeJTest {
                 "  test[nominal]=Ignore,\n" +
                 "  test[double]=Ignore,\n" +
                 "  test[long]=Ignore,\n" +
-                "  test[text]=Ignore,\n" +
+                "  test[string]=Ignore,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
                 "  splitter=REMAINS_IGNORED,\n" +
@@ -150,7 +150,7 @@ public class RTreeJTest {
                 "  test[nominal]=NominalBinary,\n" +
                 "  test[double]=NumericBinary,\n" +
                 "  test[long]=NumericBinary,\n" +
-                "  test[text]=Ignore,\n" +
+                "  test[string]=Ignore,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
                 "  splitter=REMAINS_TO_MAJORITY,\n" +
@@ -170,7 +170,7 @@ public class RTreeJTest {
                 "  test[nominal]=NominalFull,\n" +
                 "  test[double]=NumericBinary,\n" +
                 "  test[long]=NumericBinary,\n" +
-                "  test[text]=Ignore,\n" +
+                "  test[string]=Ignore,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
                 "  splitter=REMAINS_TO_RANDOM,\n" +
@@ -190,7 +190,7 @@ public class RTreeJTest {
                 "  test[nominal]=NominalBinary,\n" +
                 "  test[double]=NumericBinary,\n" +
                 "  test[long]=NumericBinary,\n" +
-                "  test[text]=Ignore,\n" +
+                "  test[string]=Ignore,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
                 "  splitter=REMAINS_TO_RANDOM,\n" +
@@ -225,7 +225,7 @@ public class RTreeJTest {
                 "  test[nominal]=NominalBinary,\n" +
                 "  test[double]=NumericBinary,\n" +
                 "  test[long]=NumericBinary,\n" +
-                "  test[text]=Ignore,\n" +
+                "  test[string]=Ignore,\n" +
                 "  regressionLoss=L2\n" +
                 "  purityFunction=WEIGHTED_SD_GAIN,\n" +
                 "  splitter=REMAINS_TO_RANDOM,\n" +

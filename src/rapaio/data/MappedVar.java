@@ -119,7 +119,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addDouble(double value) {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override

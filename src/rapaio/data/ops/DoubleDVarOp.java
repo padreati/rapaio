@@ -40,13 +40,13 @@ import rapaio.util.function.DoubleDoubleFunction;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
-public final class DoubleVarOp implements VarOp<VarDouble> {
+public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     private final VarDouble source;
     private final int rowCount;
     private final double[] data;
 
-    public DoubleVarOp(VarDouble source) {
+    public DoubleDVarOp(VarDouble source) {
         this.source = source;
         this.rowCount = source.rowCount();
         this.data = source.elements();
@@ -258,7 +258,7 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
         if (!asc) {
             IntArrays.reverse(rows, 0, len);
         }
-        return IntArrays.copy(rows, 0, len);
+        return IntArrays.newCopy(rows, 0, len);
     }
 
     @Override
@@ -275,6 +275,6 @@ public final class DoubleVarOp implements VarOp<VarDouble> {
     }
 
     private DoubleComparator getComparator(boolean asc) {
-        return asc ? DoubleComparator.NATURAL_COMPARATOR : DoubleComparator.REVERSE_COMPARATOR;
+        return asc ? DoubleComparator.ASC_COMPARATOR : DoubleComparator.DESC_COMPARATOR;
     }
 }

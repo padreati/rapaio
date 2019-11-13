@@ -24,7 +24,7 @@ public interface DoubleComparator extends Comparator<Double>, Serializable {
 
     int compareDouble(double o1, double o2);
 
-    DoubleComparator NATURAL_COMPARATOR = Double::compare;
+    DoubleComparator ASC_COMPARATOR = Double::compare;
 
-    DoubleComparator REVERSE_COMPARATOR = (o1, o2) -> -Double.compare(o1, o2);
+    DoubleComparator DESC_COMPARATOR = (x, y) -> -Double.compare(x, y);
 }

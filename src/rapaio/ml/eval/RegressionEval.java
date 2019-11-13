@@ -172,7 +172,7 @@ public class RegressionEval {
     }
 
     private List<Mapping> buildFolds(Frame df, int folds) {
-        int[] shuffle = IntArrays.seq(0, df.rowCount());
+        int[] shuffle = IntArrays.newSeq(0, df.rowCount());
         IntArrays.shuffle(shuffle, RandomSource.getRandom());
         List<Mapping> foldMap = new ArrayList<>();
         for (int i = 0; i < folds; i++) {

@@ -35,7 +35,7 @@ import rapaio.util.function.DoubleDoubleFunction;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/12/19.
  */
-public interface VarOp<T extends Var> {
+public interface DVarOp<T extends Var> {
 
     /**
      * Update values through a double to double function.

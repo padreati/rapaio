@@ -27,8 +27,8 @@
 
 package rapaio.data;
 
-import rapaio.data.ops.DefaultVarOp;
-import rapaio.data.ops.VarOp;
+import rapaio.data.ops.DefaultDVarOp;
+import rapaio.data.ops.DVarOp;
 import rapaio.printer.format.TextTable;
 
 import java.io.IOException;
@@ -92,7 +92,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return bin;
             case NOMINAL:
-            case TEXT:
+            case STRING:
                 VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     if (isMissing(i)) {
@@ -108,8 +108,8 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public VarOp<? extends AbstractVar> op() {
-        return new DefaultVarOp<>(this);
+    public DVarOp<? extends AbstractVar> op() {
+        return new DefaultDVarOp<>(this);
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

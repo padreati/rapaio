@@ -84,7 +84,6 @@ class AggregateComparator implements IntComparator {
         this.comparators = Arrays.copyOf(comparators, comparators.length);
     }
 
-
     @Override
     public int compareInt(int row1, int row2) {
         for (Comparator<Integer> comparator : comparators) {

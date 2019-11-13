@@ -142,23 +142,19 @@ public class BoundVar extends AbstractVar {
         }
     }
 
-    private IllegalArgumentException unavailableException() {
-        return new IllegalArgumentException("This operation is not available for bound variable");
-    }
-
     @Override
     public void addRows(int rowCount) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void removeRow(int row) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void clearRows() {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -175,7 +171,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addDouble(double value) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -192,7 +188,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -209,7 +205,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -219,7 +215,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void setLevels(String[] dict) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -236,7 +232,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addLong(long value) {
-        throw unavailableException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -254,7 +250,7 @@ public class BoundVar extends AbstractVar {
 
     @Override
     public void addMissing() {
-        throw new IllegalArgumentException("This operation is not available for bound variable");
+        throw new OperationNotAvailableException();
     }
 
     @Override

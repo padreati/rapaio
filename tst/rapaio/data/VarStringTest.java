@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
  */
-public class VarTextTest {
+public class VarStringTest {
 
     private String[] largeValues;
     private String[] shortValues = new String[]{"Ana", "are", "mere"};
@@ -39,29 +39,29 @@ public class VarTextTest {
     @Test
     public void testBuilders() {
 
-        VarText empty1 = VarText.empty();
+        VarString empty1 = VarString.empty();
         assertEquals(0, empty1.rowCount());
 
-        VarText empty2 = VarText.empty(10);
+        VarString empty2 = VarString.empty(10);
         assertEquals(10, empty2.rowCount());
         for (int i = 0; i < 10; i++) {
             assertNull(empty2.getLabel(i));
         }
 
-        VarText empty3 = empty2.newInstance(empty2.rowCount());
+        VarString empty3 = empty2.newInstance(empty2.rowCount());
         assertTrue(empty2.deepEquals(empty3));
 
-        VarText copy1 = VarText.copy(largeValues);
-        assertTrue(copy1.deepEquals(VarText.copy(Arrays.asList(largeValues))));
-        assertTrue(copy1.deepEquals(VarText.wrap(Arrays.asList(largeValues))));
+        VarString copy1 = VarString.copy(largeValues);
+        assertTrue(copy1.deepEquals(VarString.copy(Arrays.asList(largeValues))));
+        assertTrue(copy1.deepEquals(VarString.wrap(Arrays.asList(largeValues))));
 
         Iterator<String> it = Arrays.asList(largeValues).iterator();
-        assertTrue(copy1.deepEquals(VarText.from(largeValues.length, it::next)));
+        assertTrue(copy1.deepEquals(VarString.from(largeValues.length, it::next)));
 
-        VarText copy2 = VarText.copy(largeValues).withName("copy");
+        VarString copy2 = VarString.copy(largeValues).withName("copy");
         assertEquals("copy", copy2.name());
 
-        VarText copy3 = copy2.copy();
+        VarString copy3 = copy2.copy();
         assertTrue(copy2.deepEquals(copy3));
 
         assertEquals("VarText [name:\"copy\", rowCount:100, values: omt, hyhvnlwuznrcbaqk, iyedusfwdkelqbxete, ovascfqio, maajxky, rnlrytgkbgic, ahcbrqdsxv, hpfqgtmdypsbzxvf, oeygjbumaa, k, ..., ldif, tciudeieeo]", copy2.toString());
@@ -69,7 +69,7 @@ public class VarTextTest {
 
     @Test
     public void testAddRemoveClear() {
-        VarText text = VarText.copy(shortValues);
+        VarString text = VarString.copy(shortValues);
         text.addRows(3);
 
         assertEquals(6, text.rowCount());
@@ -90,84 +90,73 @@ public class VarTextTest {
 
     @Test
     public void testGetDouble() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).getDouble(0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).getDouble(0);
     }
 
     @Test
     public void testSetDouble() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).setDouble(0, 0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).setDouble(0, 0);
     }
 
     @Test
     public void testAddDouble() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).addDouble(10.f);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).addDouble(10.f);
     }
 
     @Test
     public void testGetInt() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).getInt(0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).getInt(0);
     }
 
     @Test
     public void testSetInt() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).setInt(0, 0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).setInt(0, 0);
     }
 
     @Test
     public void testAddInt() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).addInt(10);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).addInt(10);
     }
 
     @Test
     public void testGetLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).getLong(0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).getLong(0);
     }
 
     @Test
     public void testSetLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).setLong(0, 0);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).setLong(0, 0);
     }
 
     @Test
     public void testAddLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).addLong(10);
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).addLong(10);
     }
 
     @Test
     public void testSetLevels() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).setLevels(new String[]{});
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).setLevels(new String[]{});
     }
 
     @Test
     public void testLevels() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for text variables");
-        VarText.empty(1).levels();
+        expectedException.expect(OperationNotAvailableException.class);
+        VarString.empty(1).levels();
     }
 
     @Test
     public void testAddSetLevel() {
-        VarText x = VarText.copy("Ana");
+        VarString x = VarString.copy("Ana");
         x.setLabel(0, "Maria");
         x.addLabel("John");
 
@@ -178,7 +167,7 @@ public class VarTextTest {
 
     @Test
     public void testMissingOperations() {
-        VarText x = VarText.empty(1);
+        VarString x = VarString.empty(1);
         assertEquals(1, x.rowCount());
         assertNull(x.getLabel(0));
 

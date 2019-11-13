@@ -42,9 +42,10 @@ public final class LongArrays {
      * @param pos   position of the element to be removed
      * @return same int array
      */
-    public static void delete(long[] array, int size, int pos) {
+    public static long[] delete(long[] array, int size, int pos) {
         if (size - pos > 0) {
             System.arraycopy(array, pos + 1, array, pos, size - pos - 1);
         }
+        return array;
     }
 }

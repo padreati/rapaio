@@ -28,7 +28,7 @@
 package rapaio.data;
 
 import rapaio.data.filter.VFilter;
-import rapaio.data.ops.VarOp;
+import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
@@ -81,7 +81,7 @@ public interface Var extends Serializable, Printable {
     }
 
     /**
-     * Builds a new frame only with rows specified in mapping.
+     * Builds a new variable only with rows specified in mapping.
      *
      * @param mapping a list of rows from a frame
      * @return new frame with selected rows
@@ -123,6 +123,52 @@ public interface Var extends Serializable, Printable {
     void clearRows();
 
     /**
+     * Returns integer value for the observation specified by {@param row}
+     *
+     * @param row position of the observation
+     * @return integer value
+     */
+    int getInt(int row);
+
+    /**
+     * Adds an integer value to the last position of the variable
+     *
+     * @param value value to be added at the end of the variable
+     */
+    void addInt(int value);
+
+    /**
+     * Set integer value for the observation specified by {@param row}.
+     *
+     * @param row   position of the observation
+     * @param value integer value for the observation
+     */
+    void setInt(int row, int value);
+
+    /**
+     * Gets long value.
+     *
+     * @param row position of the observation
+     * @return long value
+     */
+    long getLong(int row);
+
+    /**
+     * Set long value
+     *
+     * @param row   position of the observation
+     * @param value long value to be set
+     */
+    void setLong(int row, long value);
+
+    /**
+     * Adds a long value
+     *
+     * @param value long value to be added
+     */
+    void addLong(long value);
+
+    /**
      * Returns numeric double value for the observation specified by row.
      * <p>
      * Returns valid values for numerical var types, otherwise the method
@@ -134,14 +180,6 @@ public interface Var extends Serializable, Printable {
     double getDouble(int row);
 
     /**
-     * Set double value for the observation specified by {@param row} to the given {@param value}.
-     *
-     * @param row   position of the observation
-     * @param value numeric double value from position {@param row}
-     */
-    void setDouble(int row, double value);
-
-    /**
      * Adds a new double value to the last position of the variable.
      *
      * @param value value to be added variable
@@ -149,27 +187,12 @@ public interface Var extends Serializable, Printable {
     void addDouble(double value);
 
     /**
-     * Returns integer value for the observation specified by {@param row}
-     *
-     * @param row position of the observation
-     * @return integer value
-     */
-    int getInt(int row);
-
-    /**
-     * Set integer value for the observation specified by {@param row}.
+     * Set double value for the observation specified by {@param row} to the given {@param value}.
      *
      * @param row   position of the observation
-     * @param value integer value for the observation
+     * @param value numeric double value from position {@param row}
      */
-    void setInt(int row, int value);
-
-    /**
-     * Adds an integer value to the last position of the variable
-     *
-     * @param value value to be added at the end of the variable
-     */
-    void addInt(int value);
+    void setDouble(int row, double value);
 
     /**
      * Returns nominal label for the observation specified by {@param row}.
@@ -201,7 +224,7 @@ public interface Var extends Serializable, Printable {
      * {@link #addLabel(String)}.
      */
     default void addLabels(Iterable<String> values) {
-        for(String value : values) {
+        for (String value : values) {
             addLabel(value);
         }
     }
@@ -252,29 +275,6 @@ public interface Var extends Serializable, Printable {
     default void setLevels(List<String> dict) {
         setLevels(dict.toArray(new String[0]));
     }
-
-    /**
-     * Gets long value.
-     *
-     * @param row position of the observation
-     * @return long value
-     */
-    long getLong(int row);
-
-    /**
-     * Set long value
-     *
-     * @param row   position of the observation
-     * @param value long value to be set
-     */
-    void setLong(int row, long value);
-
-    /**
-     * Adds a long value
-     *
-     * @param value long value to be added
-     */
-    void addLong(long value);
 
     /**
      * Returns true if the value for the observation specified by {@param row} is missing, not available.
@@ -372,7 +372,7 @@ public interface Var extends Serializable, Printable {
         }
     }
 
-    VarOp<? extends Var> op();
+    DVarOp<? extends Var> op();
 
     /**
      * Tests if two variables has identical content, it does not matter the implementation.
@@ -387,14 +387,24 @@ public interface Var extends Serializable, Printable {
             return false;
         if (type() != var.type())
             return false;
-        for (int i = 0; i < rowCount(); i++) {
-            if (var.type().isNumeric()) {
-                if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-14)
-                    return false;
-            } else {
-                if (!Objects.equals(getLabel(i), var.getLabel(i)))
-                    return false;
-            }
+
+        switch (type()) {
+            case DOUBLE:
+            case INT:
+            case BINARY:
+            case LONG:
+                for (int i = 0; i < rowCount(); i++) {
+                    if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-100) {
+                        return false;
+                    }
+                }
+                break;
+            default:
+                for (int i = 0; i < rowCount(); i++) {
+                    if (!Objects.equals(getLabel(i), var.getLabel(i))) {
+                        return false;
+                    }
+                }
         }
         return true;
     }

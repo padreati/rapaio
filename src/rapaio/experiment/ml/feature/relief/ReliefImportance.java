@@ -56,7 +56,7 @@ public class ReliefImportance {
     }
 
     public Frame orderedFrame() {
-        int[] rows = IntArrays.seq(0, names.length);
+        int[] rows = IntArrays.newSeq(0, names.length);
         IntArrays.quickSort(rows, 0, names.length, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
         VarDouble weightVar = VarDouble.empty().withName("weights");

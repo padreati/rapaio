@@ -34,7 +34,7 @@
     <artifactId>rapaio</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.0</version>
 
     <name>Rapaio Library</name>
     <description>Rapaio Library core files</description>
@@ -146,7 +146,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <source>8</source>
+                    <source>11</source>
                     <show>private</show>
                     <additionalOptions>-Xdoclint:none</additionalOptions>
                     <additionalJOption>-Xdoclint:none</additionalJOption>

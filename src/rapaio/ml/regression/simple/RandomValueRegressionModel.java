@@ -83,7 +83,7 @@ public class RandomValueRegressionModel
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1)
-                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.TEXT)
+                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING)
                 .withTargetTypes(VType.DOUBLE)
                 .withAllowMissingInputValues(true)
                 .withAllowMissingTargetValues(true);

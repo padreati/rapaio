@@ -2,14 +2,12 @@ package rapaio.data.ops;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.*;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.unique.Unique;
 
 import static org.junit.Assert.*;
 import static rapaio.DataTestingTools.*;
@@ -17,7 +15,7 @@ import static rapaio.DataTestingTools.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/11/19.
  */
-public class VarOpTest {
+public class DVarOpTest {
 
     private static final double TOLERANCE = 1e-12;
     private Normal normal = Normal.std();

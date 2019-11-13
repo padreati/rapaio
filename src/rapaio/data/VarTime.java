@@ -15,10 +15,10 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
-public class VarInstant extends AbstractVar {
+public class VarTime extends AbstractVar {
 
-    public static VarInstant empty(int rows) {
-        return new VarInstant(rows);
+    public static VarTime empty(int rows) {
+        return new VarTime(rows);
     }
 
     public static final Instant MISSING_VALUE = Instant.EPOCH;
@@ -32,7 +32,7 @@ public class VarInstant extends AbstractVar {
     private InstantParser parser = InstantParser.ISO;
     private InstantFormatter formatter = InstantFormatter.ISO;
 
-    private VarInstant(int rows) {
+    private VarTime(int rows) {
         this.rows = rows;
         this.data = new long[rows];
         Arrays.fill(data, MISSING_VALUE_LONG);
@@ -50,7 +50,7 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public VType type() {
-        return VType.INSTANT;
+        return VType.TIME;
     }
 
     @Override
@@ -195,6 +195,6 @@ public class VarInstant extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return new VarInstant(rows);
+        return new VarTime(rows);
     }
 }

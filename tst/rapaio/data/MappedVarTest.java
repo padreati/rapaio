@@ -83,8 +83,7 @@ public class MappedVarTest {
 
     @Test
     public void testInvalidAddDouble() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
+        expectedException.expect(OperationNotAvailableException.class);
         VarDouble.scalar(1).mapRows(0).addDouble(0);
     }
 

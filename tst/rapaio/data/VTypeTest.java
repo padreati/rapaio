@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class VTypeTest {
 
     private VType[] types = new VType[]{
-            VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.TEXT};
+            VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
 
     @Test
     public void testNewInstance() {
@@ -20,14 +20,14 @@ public class VTypeTest {
         VarInt varInt = VarInt.empty();
         VarBinary varBinary = VarBinary.empty();
         VarNominal varNominal = VarNominal.empty();
-        VarText varText = VarText.empty();
+        VarString varString = VarString.empty();
 
         assertTrue(varDouble.deepEquals(varDouble.type().newInstance()));
         assertTrue(varLong.deepEquals(varLong.type().newInstance()));
         assertTrue(varInt.deepEquals(varInt.type().newInstance()));
         assertTrue(varBinary.deepEquals(varBinary.type().newInstance()));
         assertTrue(varNominal.deepEquals(varNominal.type().newInstance()));
-        assertTrue(varText.deepEquals(varText.type().newInstance()));
+        assertTrue(varString.deepEquals(varString.type().newInstance()));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class VTypeTest {
         boolean[] numeric = new boolean[] {true, true, false, true, false, false};
         boolean[] binary = new boolean[] {true, false, false, false, false, false};
         boolean[] nominal = new boolean[]{false, false, false, false, true, false};
-        String[] code = new String[]{"binary", "int", "long", "double", "nominal", "text"};
+        String[] code = new String[]{"binary", "int", "long", "double", "nominal", "string"};
 
         for (int i = 0; i < types.length; i++) {
             assertEquals(numeric[i], types[i].isNumeric());

@@ -85,7 +85,7 @@ public class VToInt implements VFilter {
                 case BINARY:
                     return new VToInt.TransformInt(x -> x).apply(var);
                 case NOMINAL:
-                case TEXT:
+                case STRING:
                     return new VToInt.TransformLabel(x -> {
                         try {
                             return Integer.parseInt(x);

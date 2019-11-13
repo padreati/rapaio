@@ -147,7 +147,7 @@ public final class VarNominal extends AbstractVar {
 
     public static Collector<String, VarNominal, VarNominal> collector() {
 
-        return new Collector<String, VarNominal, VarNominal>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarNominal> supplier() {
                 return VarNominal::empty;
@@ -229,7 +229,7 @@ public final class VarNominal extends AbstractVar {
 
     @Override
     public void setInt(int row, int value) {
-        if (value > 128) {
+        if (value > 128 || value < 0) {
             throw new IllegalArgumentException("Invalid value for nominal index.");
         }
         data[row] = (short) value;
