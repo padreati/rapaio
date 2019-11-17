@@ -2,6 +2,8 @@ package rapaio.util.collection;
 
 
 /**
+ * Utility class to handle the manipulation of arrays of double 64 floating values.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public final class DoubleArrays {
@@ -9,8 +11,15 @@ public final class DoubleArrays {
     private DoubleArrays() {
     }
 
+    /**
+     * Verifies if the size of the array is at least as large as desired size.
+     *
+     * @param array input array
+     * @param size desired size
+     * @return true if the length of the array is greater or equal than desired size
+     */
     public static boolean checkCapacity(double[] array, int size) {
-        return size < array.length;
+        return size <= array.length;
     }
 
     /**
