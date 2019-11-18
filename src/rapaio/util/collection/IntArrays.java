@@ -18,9 +18,6 @@ public final class IntArrays {
     private IntArrays() {
     }
 
-    private static final int QUICKSORT_NO_REC = 16;
-    private static final int QUICKSORT_MEDIAN_OF_9 = 128;
-
     /**
      * Creates a new array filled with given value. If the filled value is 0,
      * the a fill is avoided since the initialization is done with 0.
@@ -78,7 +75,7 @@ public final class IntArrays {
     }
 
     public static boolean checkCapacity(int[] array, int size) {
-        return size < array.length;
+        return size <= array.length;
     }
 
     /**
@@ -114,6 +111,9 @@ public final class IntArrays {
         }
         return array;
     }
+
+    private static final int QUICKSORT_NO_REC = 16;
+    private static final int QUICKSORT_MEDIAN_OF_9 = 128;
 
     private static void selectionSort(final int[] a, final int from, final int to, final IntComparator comp) {
         for (int i = from; i < to - 1; i++) {
