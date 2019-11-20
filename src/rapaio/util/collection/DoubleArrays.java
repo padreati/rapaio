@@ -2,13 +2,11 @@ package rapaio.util.collection;
 
 
 import rapaio.util.function.DoubleDoubleFunction;
-import rapaio.util.function.IntIntFunction;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 /**
  * Utility class to handle the manipulation of arrays of double 64 floating values.
@@ -130,7 +128,7 @@ public final class DoubleArrays {
      * @param a a position in {@code x}.
      * @param b another position in {@code x}.
      */
-    public static void swap(final double x[], final int a, final int b) {
+    public static void swap(final double[] x, final int a, final int b) {
         final double t = x[a];
         x[a] = x[b];
         x[b] = t;
@@ -150,7 +148,7 @@ public final class DoubleArrays {
             swap(x, a, b);
     }
 
-    private static int med3(final double x[], final int a, final int b, final int c, DoubleComparator comp) {
+    private static int med3(final double[] x, final int a, final int b, final int c, DoubleComparator comp) {
         final int ab = comp.compare(x[a], x[b]);
         final int ac = comp.compare(x[a], x[c]);
         final int bc = comp.compare(x[b], x[c]);
@@ -315,7 +313,7 @@ public final class DoubleArrays {
             quickSortIndirect(perm, x, to - s, to);
     }
 
-    private static int med3Indirect(final int perm[], final double x[], final int a, final int b, final int c) {
+    private static int med3Indirect(final int[] perm, final double[] x, final int a, final int b, final int c) {
         final double aa = x[perm[a]];
         final double bb = x[perm[b]];
         final double cc = x[perm[c]];

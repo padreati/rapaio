@@ -199,7 +199,7 @@ public final class IntArrays {
             quickSort(x, to - s, to, comp);
     }
 
-    private static int med3(final int x[], final int a, final int b, final int c, IntComparator comp) {
+    private static int med3(final int[] x, final int a, final int b, final int c, IntComparator comp) {
         final int ab = comp.compareInt(x[a], x[b]);
         final int ac = comp.compareInt(x[a], x[c]);
         final int bc = comp.compareInt(x[b], x[c]);
@@ -230,7 +230,7 @@ public final class IntArrays {
      * @param a a position in {@code x}.
      * @param b another position in {@code x}.
      */
-    public static void swap(final int x[], final int a, final int b) {
+    public static void swap(final int[] x, final int a, final int b) {
         final int t = x[a];
         x[a] = x[b];
         x[b] = t;
