@@ -4,10 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.VarInt;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 

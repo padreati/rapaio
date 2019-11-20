@@ -1,9 +1,18 @@
 package rapaio.util.collection;
 
 
+import rapaio.util.function.DoubleDoubleFunction;
+import rapaio.util.function.IntIntFunction;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Random;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+
 /**
  * Utility class to handle the manipulation of arrays of double 64 floating values.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public final class DoubleArrays {
@@ -12,10 +21,65 @@ public final class DoubleArrays {
     }
 
     /**
+     * Creates a double array filled with a given value
+     *
+     * @param size      size of the array
+     * @param fillValue value to fill the array
+     * @return new array instance
+     */
+    public static double[] newFill(int size, double fillValue) {
+        double[] array = new double[size];
+        if (fillValue != 0) {
+            Arrays.fill(array, fillValue);
+        }
+        return array;
+    }
+
+    /**
+     * Creates a new array filled with a sequence of values starting from
+     * {@param start} (inclusive) and ending with {@param end} (exclusive)
+     *
+     * @param start sequence starting value (inclusive)
+     * @param end   sequence ending value (exclusive)
+     * @return array with sequence values
+     */
+    public static double[] newSeq(int start, int end) {
+        double[] data = new double[end - start];
+        for (int i = 0; i < end - start; i++) {
+            data[i] = start + i;
+        }
+        return data;
+    }
+
+    /**
+     * Builds a new double array with values from the given chunk transformed
+     * with a function.
+     *
+     * @param source source array
+     * @param start  starting position from source array (inclusive)
+     * @param end    ending position from source array (exclusive)
+     * @param fun    transforming function
+     * @return transformed values array
+     */
+    public static double[] newFrom(double[] source, int start, int end, DoubleDoubleFunction fun) {
+        double[] data = new double[end - start];
+        for (int i = start; i < end; i++) {
+            data[i - start] = fun.applyAsDouble(source[i]);
+        }
+        return data;
+    }
+
+    public static double[] newCopy(double[] array, int start, int end) {
+        double[] data = new double[end - start];
+        System.arraycopy(array, start, data, 0, end - start);
+        return data;
+    }
+
+    /**
      * Verifies if the size of the array is at least as large as desired size.
      *
      * @param array input array
-     * @param size desired size
+     * @param size  desired size
      * @return true if the length of the array is greater or equal than desired size
      */
     public static boolean checkCapacity(double[] array, int size) {
@@ -276,4 +340,88 @@ public final class DoubleArrays {
         }
     }
 
+    /**
+     * Shuffles the specified array fragment using the specified pseudorandom number generator.
+     *
+     * @param a      the array to be shuffled.
+     * @param from   first element inclusive
+     * @param to     last element exclusive
+     * @param random a pseudorandom number generator.
+     */
+    public static void shuffle(final double[] a, final int from, final int to, final Random random) {
+        for (int i = to - from; i-- != 0; ) {
+            final int p = random.nextInt(i + 1);
+            final double t = a[from + i];
+            a[from + i] = a[from + p];
+            a[from + p] = t;
+        }
+    }
+
+    /**
+     * Shuffles the specified array using the specified pseudorandom number generator.
+     *
+     * @param a      the array to be shuffled.
+     * @param random a pseudorandom number generator.
+     */
+    public static void shuffle(final double[] a, final Random random) {
+        for (int i = a.length; i-- != 0; ) {
+            final int p = random.nextInt(i + 1);
+            final double t = a[i];
+            a[i] = a[p];
+            a[p] = t;
+        }
+    }
+
+    /**
+     * Reverses the order of the elements in the specified array.
+     *
+     * @param a the array to be reversed.
+     */
+    public static void reverse(final double[] a) {
+        final int length = a.length;
+        for (int i = length / 2; i-- != 0; ) {
+            final double t = a[length - i - 1];
+            a[length - i - 1] = a[i];
+            a[i] = t;
+        }
+    }
+
+    /**
+     * Reverses the order of the elements in the specified array fragment.
+     *
+     * @param a    the array to be reversed.
+     * @param from the index of the first element (inclusive) to be reversed.
+     * @param to   the index of the last element (exclusive) to be reversed.
+     */
+    public static void reverse(final double[] a, final int from, final int to) {
+        final int length = to - from;
+        for (int i = length / 2; i-- != 0; ) {
+            final double t = a[from + length - i - 1];
+            a[from + length - i - 1] = a[from + i];
+            a[from + i] = t;
+        }
+    }
+
+    public static DoubleStream stream(double[] array, int start, int end) {
+        return Arrays.stream(array, start, end);
+    }
+
+    public static DoubleIterator iterator(double[] array, int start, int end) {
+        return new DoubleIterator() {
+            private int pos = start;
+
+            @Override
+            public boolean hasNext() {
+                return pos < end;
+            }
+
+            @Override
+            public double nextDouble() {
+                if (pos >= end) {
+                    throw new NoSuchElementException();
+                }
+                return array[pos++];
+            }
+        };
+    }
 }
