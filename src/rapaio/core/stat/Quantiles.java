@@ -146,7 +146,7 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
@@ -158,13 +158,13 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 
     public enum Type {

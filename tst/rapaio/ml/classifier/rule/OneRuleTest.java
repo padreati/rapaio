@@ -131,7 +131,7 @@ public class OneRuleTest {
                 "> NumericRule {min=-Infinity, max=2.45, class=setosa, errors=0, total=50, acc=1 }\n" +
                 "> NumericRule {min=2.45, max=4.75, class=versicolor, errors=1, total=45, acc=0.9777778 }\n" +
                 "> NumericRule {min=4.75, max=Infinity, class=virginica, errors=6, total=55, acc=0.8909091 }\n" +
-                "\n", oneRule1.summary());
+                "\n", oneRule1.toSummary());
 
         Frame df2 = Datasets.loadMushrooms();
 
@@ -178,10 +178,10 @@ public class OneRuleTest {
                 "> NominalRule {value=y, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n" +
-                "\n", oneRule2.summary());
+                "\n", oneRule2.toSummary());
 
-        assertEquals(oneRule2.content(), oneRule2.summary());
-        assertEquals(oneRule2.fullContent(), oneRule2.summary());
+        assertEquals(oneRule2.toContent(), oneRule2.toSummary());
+        assertEquals(oneRule2.toFullContent(), oneRule2.toSummary());
 
         assertEquals("OneRule (minCount=6), fitted=true, rule set: RuleSet {var=odor, acc=0.985229}, " +
                 "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +

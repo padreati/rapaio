@@ -32,7 +32,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FStandardize;
+import rapaio.data.filter.FStandardize;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.svm.kernel.CauchyKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.ChiSquareKernel;
@@ -191,6 +191,6 @@ public class BinarySMOTest {
         }
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");
-        String out = SolidFrame.byVars(name, score).fullContent();
+        String out = SolidFrame.byVars(name, score).toFullContent();
     }
 }

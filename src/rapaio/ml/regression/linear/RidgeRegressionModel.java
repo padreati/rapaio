@@ -31,7 +31,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.filter.frame.FIntercept;
+import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
@@ -225,7 +225,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");

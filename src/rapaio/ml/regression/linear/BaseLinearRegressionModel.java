@@ -29,7 +29,7 @@ package rapaio.ml.regression.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.frame.FIntercept;
+import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.ml.regression.AbstractRegressionModel;
@@ -142,13 +142,13 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 
 }

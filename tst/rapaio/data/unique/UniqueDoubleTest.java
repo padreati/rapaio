@@ -122,8 +122,8 @@ public class UniqueDoubleTest {
                 " 2.1212121     5      0.025  5.4545455     3      0.015  8.7878788     3      0.015 12.1212121     3      0.015 \n" +
                 " 2.4242424     3      0.015  5.7575758     5      0.025  9.0909091     5      0.025 12.4242424     7      0.035 \n" +
                 " 2.7272727     1      0.005  6.0606061    11      0.055  9.3939394     4      0.020 12.7272727     3      0.015 \n" +
-                "  3.030303     6      0.030  6.3636364     3      0.015  9.6969697     4      0.020 \n", ui1.fullContent());
-        assertEquals(ui1.toString(), ui1.summary());
+                "  3.030303     6      0.030  6.3636364     3      0.015  9.6969697     4      0.020 \n", ui1.toFullContent());
+        assertEquals(ui1.toString(), ui1.toSummary());
 
         VarDouble x2 = VarDouble.from(N, row -> sample[RandomSource.nextInt(5)] / 3.3);
         double[] values2 = x2.stream().mapToDouble().toArray();
@@ -134,7 +134,7 @@ public class UniqueDoubleTest {
         assertEquals("  Value   Count Percentage   Value   Count Percentage \n" +
                 "0.3030303    43      0.215 1.2121212    31      0.155 \n" +
                 "0.6060606    50      0.250 1.5151515    26      0.130 \n" +
-                "0.9090909    50      0.250 \n", ui2.fullContent());
-        assertEquals(ui2.toString(), ui2.summary());
+                "0.9090909    50      0.250 \n", ui2.toFullContent());
+        assertEquals(ui2.toString(), ui2.toSummary());
     }
 }

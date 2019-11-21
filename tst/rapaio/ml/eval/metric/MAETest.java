@@ -44,6 +44,6 @@ public class MAETest {
                 "x | y 50.5 \n" +
                 "\n" +
                 "Total mae: 50.5\n" +
-                "\n", mae1.summary());
+                "\n", mae1.toSummary());
     }
 }

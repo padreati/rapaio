@@ -88,7 +88,7 @@ public final class Confusion implements Printable {
         compute();
     }
 
-    private void validate() {
+    private final void validate() {
         if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("Actual values variable must be nominal.");
         }
@@ -108,7 +108,7 @@ public final class Confusion implements Printable {
         }
     }
 
-    private void compute() {
+    private final void compute() {
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.getInt(i) != 0 && predict.getInt(i) != 0) {
                 completeCases++;
@@ -148,7 +148,7 @@ public final class Confusion implements Printable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         addConfusionMatrix(sb);
         addDetails(sb);
@@ -156,13 +156,13 @@ public final class Confusion implements Printable {
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
@@ -394,7 +394,7 @@ public final class Confusion implements Printable {
      * G score or Fowlkes–Mallows index: the geometric mean of precision and recall,
      * while the F1 score is the harmonic mean.
      *
-     * @return  G score
+     * @return G score
      */
     public double gScore() {
         return g;

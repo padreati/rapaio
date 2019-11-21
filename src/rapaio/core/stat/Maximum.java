@@ -74,19 +74,19 @@ public class Maximum implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> maximum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "maximum: " + floatFlex(value) + "\n";
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 }

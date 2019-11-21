@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
 
@@ -43,7 +43,7 @@ import rapaio.printer.format.TextTable;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class RMSE implements DefaultPrintable {
+public class RMSE implements Printable {
 
     public static RMSE from(Var actual, Var fit) {
         return new RMSE(SolidFrame.byVars(actual.copy()),
@@ -112,7 +112,7 @@ public class RMSE implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> Root Mean Squared Error (RMSE):\n");
         sb.append("\n");

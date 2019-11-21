@@ -86,7 +86,7 @@ public class KernelPdf implements NumEstimator {
 
     @Override
     public String learningInfo() {
-        return name() + "{ " + kfunc.summary() + " }";
+        return name() + "{ " + kfunc.toSummary() + " }";
     }
 
 }

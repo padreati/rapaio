@@ -101,19 +101,19 @@ public class GeometricMean implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> geometricMean[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ", negative values: " + negativeCount + ")\n" +
                 "mean: " + floatFlex(value) + "\n";
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

@@ -33,7 +33,7 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.frame.FShuffle;
+import rapaio.data.filter.FShuffle;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.eval.metric.Confusion;

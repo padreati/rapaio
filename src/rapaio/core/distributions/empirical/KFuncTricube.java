@@ -58,11 +58,11 @@ public class KFuncTricube implements KFunc {
 
     @Override
     public String toString() {
-        return content();
+        return toContent();
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "KFuncTricube";
     }
 }

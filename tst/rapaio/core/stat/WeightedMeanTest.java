@@ -60,7 +60,7 @@ public class WeightedMeanTest {
         assertEquals("> weightedMean[x]\n" +
                         "total rows: 10 (complete: 10, missing: 0)\n" +
                         "weightedMean: 5.6666667\n",
-                WeightedMean.of(values, weights).summary());
+                WeightedMean.of(values, weights).toSummary());
     }
 
     @Test

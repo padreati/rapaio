@@ -75,7 +75,7 @@ public class ClassifierModelSerializationTest {
         ClassifierResult shaddowFit = shaddow.predict(df);
 
         modelFit.printSummary();
-        assertEquals(modelFit.summary(), shaddowFit.summary());
+        assertEquals(modelFit.toSummary(), shaddowFit.toSummary());
 
         varData.addLabel(dataName);
         varModel.addLabel(model.name());

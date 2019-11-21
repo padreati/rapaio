@@ -33,37 +33,17 @@ import rapaio.printer.Printer;
 import rapaio.printer.standard.StandardPrinter;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.logging.LogManager;
 
 /**
- * WS tool.
+ * Working session tool. This class contains a printer instance and can be used as a single
+ * pointer
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class WS {
 
-    private static final LogManager logManager = LogManager.getLogManager();
     private static Printer printer = new StandardPrinter();
-
-    static {
-        try {
-            logManager.readConfiguration(new ByteArrayInputStream(("\n" +
-                    "handlers = java.util.logging.ConsoleHandler\n" +
-                    "config   =\n" +
-                    "\n" +
-                    "\"logger\".handlers           =\n" +
-                    "\"logger\".useParentHandlers  =\n" +
-                    ".level              = ALL\n" +
-                    "\n" +
-                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
-                    "java.util.logging.ConsoleHandler.filter    =\n" +
-                    "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
-                    "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
-        } catch (IOException ignored) {
-        }
-    }
 
     private WS() {
     }

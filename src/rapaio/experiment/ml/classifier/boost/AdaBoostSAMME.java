@@ -36,7 +36,7 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class AdaBoostSAMME
         extends AbstractClassifierModel<AdaBoostSAMME, ClassifierResult<AdaBoostSAMME>>
-        implements DefaultPrintable {
+        implements Printable {
 
     private static final long serialVersionUID = -9154973036108114765L;
     private static final double delta_error = 10e-10;
@@ -227,7 +227,7 @@ public class AdaBoostSAMME
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 

@@ -35,7 +35,7 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.metric.RMSE;
@@ -298,7 +298,7 @@ public class RTreeJTest {
                 "|   |   |   |   |   |TV <= 276.8  16.6833333 (6)  *\n" +
                 "|   |   |   |   |   |TV > 276.8  20.6923077 (13) \n" +
                 "|   |   |   |   |   |   |TV <= 286.8  19.8142857 (7)  *\n" +
-                "|   |   |   |   |   |   |TV > 286.8  21.7166667 (6)  *\n", tree.summary());
+                "|   |   |   |   |   |   |TV > 286.8  21.7166667 (6)  *\n", tree.toSummary());
     }
 
     @Test

@@ -30,7 +30,7 @@ package rapaio.graphics.plot;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VSort;
+import rapaio.data.filter.VSort;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.plotcomp.Points;
 

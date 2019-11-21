@@ -102,7 +102,7 @@ public class ChiSqTest {
                 "   R1 22.3508772 26.6491228   49  \n" +
                 "   R2 29.6491228 35.3508772   65  \n" +
                 "total 52         62          114  \n" +
-                "\n", test1.summary());
+                "\n", test1.toSummary());
 
         ChiSqIndependence test2 = ChiSqIndependence.from(SolidRM.copy(2, 2, 38, 11, 14, 51), false);
         assertEquals("> ChiSqIndependence\n" +
@@ -122,7 +122,7 @@ public class ChiSqTest {
                 "   R1 22.3508772 26.6491228   49  \n" +
                 "   R2 29.6491228 35.3508772   65  \n" +
                 "total 52         62          114  \n" +
-                "\n", test2.summary());
+                "\n", test2.toSummary());
     }
 
     @Test

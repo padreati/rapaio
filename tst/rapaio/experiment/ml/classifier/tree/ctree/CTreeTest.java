@@ -27,7 +27,7 @@ package rapaio.experiment.ml.classifier.tree.ctree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
-import rapaio.data.filter.frame.FRetainTypes;
+import rapaio.data.filter.FRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;

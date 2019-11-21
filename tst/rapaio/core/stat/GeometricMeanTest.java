@@ -27,7 +27,7 @@ public class GeometricMeanTest {
 
         assertEquals("> geometricMean[?]\n" +
                 "total rows: 4 (complete: 4, missing: 0, negative values: 0)\n" +
-                "mean: 2\n", mean.summary());
+                "mean: 2\n", mean.toSummary());
         assertEquals(4, GeometricMean.of(VarDouble.wrap(2, 4, 8)).value(), TOL);
         assertEquals(Double.NaN, GeometricMean.of(VarDouble.wrap(Double.NaN)).value(), TOL);
         assertFalse(GeometricMean.of(VarDouble.wrap(-1)).isDefined());

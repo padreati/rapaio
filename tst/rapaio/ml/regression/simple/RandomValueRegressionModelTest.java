@@ -53,7 +53,7 @@ public class RandomValueRegressionModelTest {
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
                 "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
-                "> model not trained.\n", model.content());
+                "> model not trained.\n", model.toContent());
 
         model = model.fit(df, "Son");
         assertEquals("RandomValueRegression(distribution:Uniform(a=0,b=1))", model.toString());
@@ -66,7 +66,7 @@ public class RandomValueRegressionModelTest {
                 "1. Father double \n" +
                 "> target variables: \n" +
                 "1. Son double \n" +
-                "Model is trained.\n", model.content());
+                "Model is trained.\n", model.toContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
@@ -76,7 +76,7 @@ public class RandomValueRegressionModelTest {
                 "1. Father double \n" +
                 "> target variables: \n" +
                 "1. Son double \n" +
-                "Model is trained.\n", model.fullContent());
+                "Model is trained.\n", model.toFullContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
@@ -86,6 +86,6 @@ public class RandomValueRegressionModelTest {
                 "1. Father double \n" +
                 "> target variables: \n" +
                 "1. Son double \n" +
-                "Model is trained.\n", model.summary());
+                "Model is trained.\n", model.toSummary());
     }
 }

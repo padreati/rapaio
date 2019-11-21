@@ -87,7 +87,7 @@ public class CorrPearsonTest {
         assertEquals(0.021769705986371478, cp.singleValue(), TOL);
         assertEquals("pearson[x, y] = [[1,0.0217697],[0.0217697,1]]", cp.toString());
         assertEquals("> pearson[x, y] - Pearson product-moment correlation coefficient\n" +
-                "0.0217697\n", cp.content());
+                "0.0217697\n", cp.toContent());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class CorrPearsonTest {
                 "       1.x       2.y       3.z    \n" +
                 "1.x 1         0.8356446 0.7997143 \n" +
                 "2.y 0.8356446 1         0.9938073 \n" +
-                "3.z 0.7997143 0.9938073 1         \n", cp.content());
+                "3.z 0.7997143 0.9938073 1         \n", cp.toContent());
     }
 
     @Test
@@ -147,12 +147,12 @@ public class CorrPearsonTest {
 
         assertEquals("pearson[?, ?] = [[1,?],[?,1]]", CorrPearson.of(x, x).toString());
         assertEquals("> pearson[?, ?] - Pearson product-moment correlation coefficient\n" +
-                "?\n", CorrPearson.of(x, x).summary());
+                "?\n", CorrPearson.of(x, x).toSummary());
 
         assertEquals("> pearson[[?, ?, ?]] - Pearson product-moment correlation coefficient\n" +
                 "    1.? 2.? 3.? \n" +
                 "1.?  1  NaN NaN \n" +
                 "2.? NaN  1  NaN \n" +
-                "3.? NaN NaN  1  \n", CorrPearson.of(x, x, x).summary());
+                "3.? NaN NaN  1  \n", CorrPearson.of(x, x, x).toSummary());
     }
 }

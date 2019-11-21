@@ -38,7 +38,7 @@ import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult<BinaryLogistic>> implements DefaultPrintable {
+public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult<BinaryLogistic>> implements Printable {
 
     private static final long serialVersionUID = 1609956190070125059L;
 

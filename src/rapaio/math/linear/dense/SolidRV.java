@@ -201,8 +201,8 @@ public class SolidRV implements RV {
         return Arrays.stream(values);
     }
 
-    public String summary() {
-        return SolidFrame.byVars(VarDouble.wrap(values)).fullContent();
+    public String toSummary() {
+        return SolidFrame.byVars(VarDouble.wrap(values)).toFullContent();
     }
 
     @Override

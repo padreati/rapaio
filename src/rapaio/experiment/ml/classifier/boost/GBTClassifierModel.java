@@ -41,7 +41,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceRegressionLoss;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import java.util.List;
  */
 public class GBTClassifierModel
         extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult<GBTClassifierModel>>
-        implements DefaultPrintable {
+        implements Printable {
 
     private static final long serialVersionUID = -2979235364091072967L;
 

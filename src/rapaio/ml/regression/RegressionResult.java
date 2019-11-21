@@ -31,7 +31,7 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ import static java.util.Collections.nCopies;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RegressionResult<M extends RegressionModel> implements DefaultPrintable {
+public class RegressionResult<M extends RegressionModel> implements Printable {
     protected final M model;
     protected final Frame df;
     protected final boolean withResiduals;
@@ -228,7 +228,7 @@ public class RegressionResult<M extends RegressionModel> implements DefaultPrint
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(model.headerSummary());
@@ -239,7 +239,7 @@ public class RegressionResult<M extends RegressionModel> implements DefaultPrint
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "="))).append('\n');
 
-            String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).summary();
+            String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).toSummary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
             sb.append(list.stream().collect(Collectors.joining("\n", "", "\n")));
 

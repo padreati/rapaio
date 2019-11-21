@@ -130,7 +130,7 @@ public class TTestTwoSamplesTest {
 
         TTestTwoSamples t2 = TTestTwoSamples.welchTest(x, y, 0, 0.05, HTest.Alternative.TWO_TAILS);
 
-        assertEquals(t1.summary(), t2.summary());
+        assertEquals(t1.toSummary(), t2.toSummary());
     }
 
 }

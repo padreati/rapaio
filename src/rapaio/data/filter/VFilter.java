@@ -87,14 +87,4 @@ public interface VFilter extends Serializable, Printable {
         fit(var);
         return apply(var);
     }
-
-    @Override
-    default String fullContent() {
-        return content();
-    }
-
-    @Override
-    default String summary() {
-        return content();
-    }
 }

@@ -32,9 +32,9 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.var.VCumSum;
-import rapaio.data.filter.var.VRefSort;
-import rapaio.printer.DefaultPrintable;
+import rapaio.data.filter.VCumSum;
+import rapaio.data.filter.VRefSort;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.util.collection.IntComparator;
 
@@ -44,7 +44,7 @@ import rapaio.util.collection.IntComparator;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
-public class Gini implements DefaultPrintable {
+public class Gini implements Printable {
 
     public static Gini from(Var actual, Var fit) {
         return new Gini(actual, fit, null);
@@ -116,7 +116,7 @@ public class Gini implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("> Gini").append(weighted ? " (Weighted):\n" : ":\n");

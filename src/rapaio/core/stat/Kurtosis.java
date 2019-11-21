@@ -100,7 +100,7 @@ public class Kurtosis implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> kurtosis[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "kurtosis (g2): " + floatFlex(g2) + "\n" +
@@ -109,12 +109,12 @@ public class Kurtosis implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

@@ -61,7 +61,7 @@ public class LinearRegressionModelTest {
                         "Model class: LinearRegression\n" +
                         "Model instance: LinearRegression(intercept=true)\n" +
                         "> model not trained.\n" +
-                        "\n", lm.summary());
+                        "\n", lm.toSummary());
         assertEquals("LinearRegression(intercept=true), not fitted.",
                 lm.toString());
         lm.fit(df, "Radio");
@@ -85,7 +85,7 @@ public class LinearRegressionModelTest {
                         "   Name     Estimate  \n" +
                         "(Intercept) 21.870319 \n" +
                         "TV           0.009478 \n" +
-                        "\n", lm.summary());
+                        "\n", lm.toSummary());
 
         LinearRegressionResult lmfit = lm.predict(df, true);
         assertEquals(
@@ -116,7 +116,7 @@ public class LinearRegressionModelTest {
                         "Residual standard error: 14.861881 on 198 degrees of freedom\n" +
                         "Multiple R-squared:  0.003004, Adjusted R-squared:  -0.0020313\n" +
                         "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
-                        "\n", lmfit.summary());
+                        "\n", lmfit.toSummary());
 
 
         assertEquals(2, lmfit.getBetaHat().rowCount());
@@ -152,7 +152,7 @@ public class LinearRegressionModelTest {
                         "   Name      Estimate  \n" +
                         "(Intercept) 21.8703186 \n" +
                         "TV           0.0094781 \n",
-                lmfit2.summary());
+                lmfit2.toSummary());
 
     }
 
@@ -212,10 +212,10 @@ public class LinearRegressionModelTest {
                 "Residual standard error: 13.9454627 on 197 degrees of freedom\n" +
                 "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +
                 "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.000002\n" +
-                "\n", lm.predict(df, true).summary());
+                "\n", lm.predict(df, true).toSummary());
 
-        assertEquals(lm.content(), lm.summary());
-        assertEquals(lm.fullContent(), lm.summary());
+        assertEquals(lm.toContent(), lm.toSummary());
+        assertEquals(lm.toFullContent(), lm.toSummary());
     }
 
     @Test

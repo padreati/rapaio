@@ -30,7 +30,7 @@ package rapaio.data.ops;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.VRefSort;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.DoubleComparator;
 import rapaio.util.collection.IntArrays;

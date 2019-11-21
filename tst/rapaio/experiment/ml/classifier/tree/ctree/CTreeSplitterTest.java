@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VApplyDouble;
+import rapaio.data.filter.VApplyDouble;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
 import rapaio.experiment.ml.classifier.tree.CTreeSplitter;
 import rapaio.ml.common.predicate.RowPredicate;

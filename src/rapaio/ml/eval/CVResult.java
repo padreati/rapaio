@@ -34,7 +34,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 import rapaio.ml.regression.RegressionModel;
 
 import java.util.HashMap;

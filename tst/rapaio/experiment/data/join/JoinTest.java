@@ -8,7 +8,7 @@ import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 
 import static org.junit.Assert.*;
 

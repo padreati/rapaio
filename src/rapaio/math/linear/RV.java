@@ -30,7 +30,7 @@ package rapaio.math.linear;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.SolidRM;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RV extends Serializable, DefaultPrintable {
+public interface RV extends Serializable, Printable {
 
     /**
      * Gets value from zero-based position index

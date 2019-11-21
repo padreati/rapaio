@@ -35,9 +35,9 @@ import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.DefaultPrintable;
-import rapaio.printer.format.Format;
+import rapaio.printer.Printable;
 import rapaio.sys.WS;
+import rapaio.printer.format.Format;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,8 +53,7 @@ import static java.util.stream.Collectors.toList;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
-        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult<CStepwiseSelection>>
-        implements DefaultPrintable {
+        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult<CStepwiseSelection>> implements Printable {
 
     private static final long serialVersionUID = 2642562123626893974L;
     ClassifierModel best;

@@ -114,7 +114,7 @@ public class Variance implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("> variance[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
@@ -125,12 +125,12 @@ public class Variance implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

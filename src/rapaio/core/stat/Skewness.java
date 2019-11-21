@@ -102,7 +102,7 @@ public class Skewness implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> skewness[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "skewness (g1): " + floatFlex(g1) + "\n" +
@@ -111,12 +111,12 @@ public class Skewness implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

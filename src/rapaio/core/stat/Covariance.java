@@ -93,7 +93,7 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> cov[" + varName1 + "," + varName2 + "]\n" +
                 "total rows: " + (completeCount + missingCount) +
                 " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
@@ -101,12 +101,12 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

@@ -40,7 +40,7 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
@@ -65,9 +65,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CTree
-        extends AbstractClassifierModel<CTree, ClassifierResult<CTree>>
-        implements DefaultPrintable {
+public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree>> implements Printable {
 
     private static final long serialVersionUID = 1203926824359387358L;
     private static final Map<VType, CTreeTest> DEFAULT_TEST_MAP;
@@ -562,7 +560,7 @@ public class CTree
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");

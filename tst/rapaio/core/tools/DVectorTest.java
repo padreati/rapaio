@@ -79,7 +79,7 @@ public class DVectorTest {
 
         assertEquals("? a b c \n" +
                 "- - - - \n" +
-                "0 1 1 1 \n", DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).summary());
+                "0 1 1 1 \n", DVector.fromCounts(true, VarNominal.copy("a", "b", "c")).toSummary());
     }
 
     @Test

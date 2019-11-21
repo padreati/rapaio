@@ -27,7 +27,7 @@ public class MeanTest {
 
         assertEquals("> mean[?]\n" +
                 "total rows: 100 (complete: 50, missing: 50)\n" +
-                "mean: 50\n", mean.summary());
+                "mean: 50\n", mean.toSummary());
 
         assertEquals(Double.NaN, Mean.of(VarDouble.wrap(Double.NaN)).value(), TOL);
 

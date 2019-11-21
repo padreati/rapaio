@@ -104,7 +104,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("solution: ").append(sol.summary()).append("\n");
+        sb.append("solution: ").append(sol.toSummary()).append("\n");
         return sb.toString();
     }
 

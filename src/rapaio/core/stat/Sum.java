@@ -101,7 +101,7 @@ public class Sum implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return String.format("> sum[%s]\n" +
                         "total rows: %d (complete: %d, missing: %d)\n" +
                         "sum: %s\n",
@@ -110,12 +110,12 @@ public class Sum implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

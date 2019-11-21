@@ -59,12 +59,12 @@ public interface HTest extends Printable {
     double ciLow();
 
     @Override
-    default String content() {
-        return summary();
+    default String toContent() {
+        return toSummary();
     }
 
     @Override
-    default String fullContent() {
-        return summary();
+    default String toFullContent() {
+        return toSummary();
     }
 }

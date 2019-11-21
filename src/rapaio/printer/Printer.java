@@ -30,30 +30,71 @@ package rapaio.printer;
 import rapaio.graphics.base.Figure;
 
 /**
- * Interface for the printing system.
+ * Interface for the printing system. The printing system is the device responsible with
+ * printing text and graphics to console or other devices for information purposes.
+ * <p>
+ * The text printing facility uses a text width property for wrapping text output.
+ * <p>
+ * The graphical printing facility uses graphic shape (width and height) as default values
+ * for graphical output.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface Printer {
 
+    /**
+     * Configures text width for text output wrapping
+     *
+     * @param chars number of characters per line, after which a
+     *              line should be split
+     * @return printer instance
+     */
     Printer withTextWidth(int chars);
 
-    int textWidth();
-
+    /**
+     * Configures default graphic image shape (width and height)
+     * @param width image width
+     * @param height image height
+     * @return printer instance
+     */
     Printer withGraphicShape(int width, int height);
 
+    /**
+     * @return configured value for text width
+     */
+    int textWidth();
+
+    /**
+     * @return configured value for graphical image width
+     */
     int graphicWidth();
 
+    /**
+     * @return configured value for graphical image height
+     */
     int graphicHeight();
 
+    /**
+     * Print a message to text output
+     *
+     * @param message message to be printed
+     */
     void print(String message);
 
+    /**
+     * Print a new line.
+     */
     void println();
 
+    /**
+     * Print a message and append a new line after the message.
+     * @param message message to be printed
+     */
     default void println(String message) {
         print(message);
         println();
     }
+
 
     default void println(double value) {
         print(String.valueOf(value));
@@ -71,14 +112,14 @@ public interface Printer {
     }
 
     default void printSummary(Printable printable) {
-        println(printable.summary());
+        println(printable.toSummary());
     }
 
     default void printContent(Printable printable) {
-        println(printable.content());
+        println(printable.toContent());
     }
 
     default void printFullContent(Printable printable) {
-        println(printable.fullContent());
+        println(printable.toFullContent());
     }
 }

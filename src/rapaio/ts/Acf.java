@@ -32,7 +32,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
 /**
@@ -40,7 +40,7 @@ import rapaio.printer.format.TextTable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
  */
-public final class Acf implements DefaultPrintable {
+public final class Acf implements Printable {
 
     private final Var ts;
     private final VarInt lags;
@@ -90,7 +90,7 @@ public final class Acf implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Acf summary\n");
         sb.append("===========\n");

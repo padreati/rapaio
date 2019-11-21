@@ -40,7 +40,7 @@ public class VarianceTest {
         assertEquals("> variance[?]\n" +
                 "total rows: 100 (complete: 85, missing: 15)\n" +
                 "variance: 0.0894799\n" +
-                "sd: 0.2991319\n", var.summary());
+                "sd: 0.2991319\n", var.toSummary());
     }
 
     @Test

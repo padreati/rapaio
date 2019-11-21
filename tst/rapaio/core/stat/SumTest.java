@@ -34,6 +34,6 @@ public class SumTest {
 
         assertEquals("> sum[?]\n" +
                 "total rows: 100 (complete: 85, missing: 15)\n" +
-                "sum: 42.3307915\n", sum.summary());
+                "sum: 42.3307915\n", sum.toSummary());
     }
 }

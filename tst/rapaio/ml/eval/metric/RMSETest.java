@@ -43,7 +43,7 @@ public class RMSETest {
                 "\n" +
                 "Total RMSE: 1\n" +
                 "Total MSE: 1\n" +
-                "\n", rmse1.summary());
+                "\n", rmse1.toSummary());
 
         assertEquals("> Root Mean Squared Error (RMSE):\n" +
                 "\n" +
@@ -52,7 +52,7 @@ public class RMSETest {
                 "\n" +
                 "Total RMSE: 2\n" +
                 "Total MSE: 4\n" +
-                "\n", rmse2.summary());
+                "\n", rmse2.toSummary());
     }
 
     @Test

@@ -35,6 +35,6 @@ public class SkewnessTest {
                 "total rows: 5 (complete: 5, missing: 0)\n" +
                 "skewness (g1): 0.6899293\n" +
                 "skewness (b1): 0.4936732\n" +
-                "skewness (G1): 1.0284859\n", sk.summary());
+                "skewness (G1): 1.0284859\n", sk.toSummary());
     }
 }

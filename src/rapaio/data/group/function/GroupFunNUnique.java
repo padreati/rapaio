@@ -32,7 +32,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.group.Group;
-import rapaio.data.unique.Unique;
+import rapaio.data.Unique;
 
 import java.util.List;
 

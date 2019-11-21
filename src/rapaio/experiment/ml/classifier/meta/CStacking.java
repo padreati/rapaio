@@ -37,7 +37,7 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +52,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult<CStacking>> implements DefaultPrintable {
+public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult<CStacking>> implements Printable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 

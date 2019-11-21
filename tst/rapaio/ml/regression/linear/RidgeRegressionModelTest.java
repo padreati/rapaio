@@ -163,7 +163,7 @@ public class RidgeRegressionModelTest {
                 "Model class: RidgeRegression\n" +
                 "Model instance: RidgeRegression(lambda=1.2,intercept=true,center=true,scaling=true)\n" +
                 "> model not trained.\n" +
-                "\n", model1.content());
+                "\n", model1.toContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -184,6 +184,6 @@ public class RidgeRegressionModelTest {
                 "TV        0.053793 \n" +
                 "Radio     0.222213 \n" +
                 "Newspaper 0.016822 \n" +
-                "\n", model2.fit(df, "Sales").summary());
+                "\n", model2.fit(df, "Sales").toSummary());
     }
 }

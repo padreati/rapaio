@@ -202,7 +202,7 @@ public class ZTestOneSample implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.zTestOneSample\n");

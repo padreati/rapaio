@@ -406,7 +406,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName());
         sb.append("\n model fitted: ").append(hasLearned).append("\n");
@@ -424,13 +424,13 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 
     private void buildSummary(StringBuilder sb, RTreeNode node, int level) {

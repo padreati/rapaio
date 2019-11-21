@@ -108,7 +108,7 @@ public class UniqueIntTest {
                 "    4     6      0.030    12     4      0.020    20    11      0.055    28     8      0.040    39     4      0.020 \n" +
                 "    5     6      0.030    13     4      0.020    21     3      0.015    29     3      0.015    40     3      0.015 \n" +
                 "    6     4      0.020    14     8      0.040    22     5      0.025  ...   ...                41     7      0.035 \n" +
-                "    7     5      0.025    15     4      0.020    23     5      0.025    34     3      0.015    42     3      0.015 \n", ui1.content());
+                "    7     5      0.025    15     4      0.020    23     5      0.025    34     3      0.015    42     3      0.015 \n", ui1.toContent());
         assertEquals("Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage Value Count Percentage \n" +
                 "    ?     6      0.030     9     1      0.005    18     3      0.015    27     8      0.040    36     7      0.035 \n" +
                 "    1     3      0.015    10     6      0.030    19     5      0.025    28     8      0.040    37     3      0.015 \n" +
@@ -118,8 +118,8 @@ public class UniqueIntTest {
                 "    5     6      0.030    14     8      0.040    23     5      0.025    32     4      0.020    41     7      0.035 \n" +
                 "    6     4      0.020    15     4      0.020    24     2      0.010    33     5      0.025    42     3      0.015 \n" +
                 "    7     5      0.025    16     7      0.035    25     3      0.015    34     3      0.015 \n" +
-                "    8     3      0.015    17     4      0.020    26     5      0.025    35     6      0.030 \n", ui1.fullContent());
-        assertEquals(ui1.toString(), ui1.summary());
+                "    8     3      0.015    17     4      0.020    26     5      0.025    35     6      0.030 \n", ui1.toFullContent());
+        assertEquals(ui1.toString(), ui1.toSummary());
 
         VarInt x2 = VarInt.from(N, row -> sample[RandomSource.nextInt(5)]);
         int[] values2 = x2.stream().mapToInt().toArray();
@@ -130,11 +130,11 @@ public class UniqueIntTest {
         assertEquals("Value Count Percentage Value Count Percentage \n" +
                 "    1    43      0.215     4    31      0.155 \n" +
                 "    2    50      0.250     5    26      0.130 \n" +
-                "    3    50      0.250 \n", ui2.content());
+                "    3    50      0.250 \n", ui2.toContent());
         assertEquals("Value Count Percentage Value Count Percentage \n" +
                 "    1    43      0.215     4    31      0.155 \n" +
                 "    2    50      0.250     5    26      0.130 \n" +
-                "    3    50      0.250 \n", ui2.fullContent());
-        assertEquals(ui2.toString(), ui2.summary());
+                "    3    50      0.250 \n", ui2.toFullContent());
+        assertEquals(ui2.toString(), ui2.toSummary());
     }
 }

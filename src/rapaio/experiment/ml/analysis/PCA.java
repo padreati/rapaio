@@ -38,7 +38,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/15.
  */
-public class PCA implements DefaultPrintable {
+public class PCA implements Printable {
 
     private static final Logger logger = Logger.getLogger(PCA.class.getName());
 
@@ -167,15 +167,15 @@ public class PCA implements DefaultPrintable {
         inputNames = df.varStream().map(Var::name).toArray(String[]::new);
     }
 
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(values.summary()).append("\n");
+        sb.append(values.toSummary()).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.summary()).append("\n");
+        sb.append(eigenVectors.toSummary()).append("\n");
 
         return sb.toString();
     }

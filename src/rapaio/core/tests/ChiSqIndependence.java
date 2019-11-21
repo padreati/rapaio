@@ -146,7 +146,7 @@ public final class ChiSqIndependence implements HTest {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqIndependence\n");
         sb.append("\n");
@@ -160,10 +160,10 @@ public final class ChiSqIndependence implements HTest {
         sb.append("\n");
 
         sb.append("Observed data:\n");
-        sb.append(dt.summary()).append("\n");
+        sb.append(dt.toSummary()).append("\n");
 
         sb.append("Expected data:\n");
-        sb.append(expected.summary()).append("\n");
+        sb.append(expected.toSummary()).append("\n");
         return sb.toString();
 
     }

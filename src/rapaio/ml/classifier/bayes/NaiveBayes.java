@@ -217,7 +217,7 @@ public class NaiveBayes
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("NaiveBayes model\n");
         sb.append("================\n\n");
@@ -253,13 +253,13 @@ public class NaiveBayes
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 
     @Override

@@ -31,7 +31,6 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.DefaultPrintable;
 import rapaio.printer.Printable;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ClassifierResult<M extends ClassifierModel> implements Printable, DefaultPrintable {
+public class ClassifierResult<M extends ClassifierModel> implements Printable {
 
     private final M model;
     private final Frame df;
@@ -114,7 +113,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable, D
      * @return target variable names
      */
     public String[] targetNames() {
-        return targetNames.toArray(new String[targetNames.size()]);
+        return targetNames.toArray(new String[0]);
     }
 
     /**
@@ -214,7 +213,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable, D
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");
@@ -234,7 +233,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable, D
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
-            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).summary());
+            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).toSummary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

@@ -36,14 +36,13 @@ import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.common.distance.KMeansInitMethod;
-import rapaio.printer.DefaultPrintable;
 import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
 import rapaio.sys.WS;
+import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
 import java.util.Arrays;
@@ -58,7 +57,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/17.
  */
-public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
+public class MinkowskiWeightedKMeans implements Printable {
 
     private int k = 2;
     private double p = 2;
@@ -446,7 +445,7 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("MinkowskiWeightedKMeans clustering model\n");
@@ -475,11 +474,11 @@ public class MinkowskiWeightedKMeans implements Printable, DefaultPrintable {
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).fullContent());
+            sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).toFullContent());
             sb.append("\n");
             sb.append("Cluster weights:\n");
             Frame w = SolidFrame.byVars(VarInt.seq(k).withName("ID")).bindVars(weights);
-            sb.append(w.fullContent());
+            sb.append(w.toFullContent());
             sb.append("\n");
         }
 

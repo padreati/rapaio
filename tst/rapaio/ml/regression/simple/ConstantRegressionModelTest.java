@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VToDouble;
+import rapaio.data.filter.VToDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RegressionResult;
 
@@ -70,7 +70,7 @@ public class ConstantRegressionModelTest {
                 "\n" +
                 "Target Estimate \n" +
                 "Father    66    \n" +
-                "\n", r1.summary());
+                "\n", r1.toSummary());
 
         ConstantRegressionModel r2 = ConstantRegressionModel.with(1);
         r2.fit(df, father);
@@ -87,8 +87,8 @@ public class ConstantRegressionModelTest {
                 .deepEquals(fit2.firstResidual()));
 
         assertEquals("ConstantRegression{constant=66}", r1.toString());
-        assertEquals("ConstantRegression{constant=66}", r1.content());
-        assertEquals("ConstantRegression{constant=66}", r1.fullContent());
+        assertEquals("ConstantRegression{constant=66}", r1.toContent());
+        assertEquals("ConstantRegression{constant=66}", r1.toFullContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: ConstantRegression\n" +
@@ -103,6 +103,6 @@ public class ConstantRegressionModelTest {
                 "\n" +
                 "Target Estimate \n" +
                 "Father    66    \n" +
-                "\n", r1.summary());
+                "\n", r1.toSummary());
     }
 }

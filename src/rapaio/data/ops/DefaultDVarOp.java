@@ -29,7 +29,7 @@ package rapaio.data.ops;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.VRefSort;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntComparator;
 import rapaio.util.function.DoubleDoubleFunction;

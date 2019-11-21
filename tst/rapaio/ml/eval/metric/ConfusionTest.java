@@ -123,9 +123,9 @@ public class ConfusionTest {
                 "MCC: 0.1666667         (Matthew correlation coefficient)\n" +
                 "Pre: 0.6666667         (Precision)\n" +
                 "Rec: 0.5         (Recall)\n" +
-                "G:   0.5773503         (G-measure)\n", cm.summary());
-        assertEquals(cm.content(), cm.summary());
-        assertEquals(cm.fullContent(), cm.summary());
+                "G:   0.5773503         (G-measure)\n", cm.toSummary());
+        assertEquals(cm.toContent(), cm.toSummary());
+        assertEquals(cm.toFullContent(), cm.toSummary());
         assertEquals("ConfusionMatrix(levels:?,a,b)", cm.toString());
     }
 }

@@ -375,7 +375,7 @@ public class DVector implements Printable, Serializable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         TextTable tt = TextTable.empty(3, levels.size());
         for (int i = start; i < levels.size(); i++) {
             tt.textRight(0, i, levels.get(i));
@@ -392,12 +392,12 @@ public class DVector implements Printable, Serializable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

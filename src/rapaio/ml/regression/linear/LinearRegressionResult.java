@@ -134,7 +134,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(lm.headerSummary());
         sb.append("\n");

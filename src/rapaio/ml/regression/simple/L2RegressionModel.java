@@ -130,7 +130,7 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -145,14 +145,14 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(means[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).content());
+            sb.append(SolidFrame.byVars(target, median).toContent());
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -167,14 +167,14 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(means[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).fullContent());
+            sb.append(SolidFrame.byVars(target, median).toFullContent());
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

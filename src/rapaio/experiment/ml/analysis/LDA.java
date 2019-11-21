@@ -41,7 +41,7 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/5/15.
  */
-public class LDA implements DefaultPrintable {
+public class LDA implements Printable {
     private static final Logger logger = Logger.getLogger(LDA.class.getName());
 
     private double tol = 1e-24;
@@ -235,7 +235,7 @@ public class LDA implements DefaultPrintable {
     }
 
     @Override
-	public String summary() {
+	public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
@@ -253,10 +253,10 @@ public class LDA implements DefaultPrintable {
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(eval.fullContent()).append("\n");
+        sb.append(eval.toFullContent()).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.summary()).append("\n");
+        sb.append(eigenVectors.toSummary()).append("\n");
 
         return sb.toString();
     }

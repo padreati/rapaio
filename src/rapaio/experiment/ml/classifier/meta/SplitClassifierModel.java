@@ -35,7 +35,7 @@ import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +47,7 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 public class SplitClassifierModel
-        extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult<SplitClassifierModel>>
-        implements DefaultPrintable {
+        extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult<SplitClassifierModel>> implements Printable {
 
     private static final long serialVersionUID = 3332377951136731541L;
 

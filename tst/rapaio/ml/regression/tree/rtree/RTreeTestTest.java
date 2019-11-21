@@ -5,7 +5,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.VRefSort;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.tree.RTree;
 

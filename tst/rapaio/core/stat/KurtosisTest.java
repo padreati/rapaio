@@ -36,6 +36,6 @@ public class KurtosisTest {
                 "total rows: 5 (complete: 5, missing: 0)\n" +
                 "kurtosis (g2): -0.9960162\n" +
                 "kurtosis (b2): -1.7174504\n" +
-                "kurtosis (G2): 0.0079676\n", kt.summary());
+                "kurtosis (G2): 0.0079676\n", kt.toSummary());
     }
 }

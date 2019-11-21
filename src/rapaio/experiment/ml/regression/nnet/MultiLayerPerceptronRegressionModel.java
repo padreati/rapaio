@@ -35,7 +35,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 
@@ -45,7 +45,7 @@ import static rapaio.printer.format.Format.floatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel implements DefaultPrintable {
+public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel implements Printable {
 
     private final int[] layerSizes;
     private final NetNode[][] net;
@@ -260,7 +260,7 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

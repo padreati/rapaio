@@ -32,7 +32,7 @@ import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class MarkovChain implements DefaultPrintable {
+public class MarkovChain implements Printable {
 
     private List<String> states;
     private Map<String, Integer> revert;
@@ -184,7 +184,7 @@ public class MarkovChain implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
 
         RandomSource.setSeed(1);
 
@@ -206,10 +206,10 @@ public class MarkovChain implements DefaultPrintable {
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");
-        sb.append(p.summary());
+        sb.append(p.toSummary());
 
         sb.append("Matrix: \n");
-        sb.append(m.summary());
+        sb.append(m.toSummary());
 
         return sb.toString();
     }

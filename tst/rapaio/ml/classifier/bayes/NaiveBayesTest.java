@@ -138,7 +138,7 @@ public class NaiveBayesTest {
                 "\n" +
                 "Learned model:\n" +
                 "Learning phase not called\n" +
-                "\n", nb.summary());
+                "\n", nb.toSummary());
 
         nb.fit(dfGood, "target");
 
@@ -167,7 +167,7 @@ public class NaiveBayesTest {
                 "numerical estimators:\n" +
                 "> num1 : GaussianPdf {A~Normal(mu=0.0614354, sd=1.0404937), B~Normal(mu=9.8896993, sd=1.1051043)}\n" +
                 "nominal estimators:\n" +
-                "> nom1 : MultinomialPmf\n", nb.summary());
+                "> nom1 : MultinomialPmf\n", nb.toSummary());
 
         nb.withNumEstimator(new KernelPdf()).fit(dfGood, "target");
         assertEquals("NaiveBayes model\n" +
@@ -195,11 +195,11 @@ public class NaiveBayesTest {
                 "numerical estimators:\n" +
                 "> num1 : EmpiricKDE{ KFuncGaussian }\n" +
                 "nominal estimators:\n" +
-                "> nom1 : MultinomialPmf\n", nb.summary());
+                "> nom1 : MultinomialPmf\n", nb.toSummary());
 
         assertEquals("NaiveBayes(numEstimator=EmpiricKDE, nomEstimator=MultinomialPmf)", nb.fullName());
-        assertEquals(nb.content(), nb.summary());
-        assertEquals(nb.fullContent(), nb.summary());
+        assertEquals(nb.toContent(), nb.toSummary());
+        assertEquals(nb.toFullContent(), nb.toSummary());
     }
 
 }

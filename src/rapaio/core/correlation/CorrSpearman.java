@@ -33,7 +33,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.VRefSort;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
 
 import java.util.Arrays;

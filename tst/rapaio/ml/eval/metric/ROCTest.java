@@ -68,7 +68,7 @@ public class ROCTest {
                         "4.3       , 1         , 1         , 0.3333333 \n" +
                         "\n" +
                         "AUC: 0.8871\n",
-                roc.summary());
+                roc.toSummary());
 
         Assert.assertEquals(0.8871, roc.auc(), 1e-20);
 
@@ -96,7 +96,7 @@ public class ROCTest {
                         "4.3       , 1         , 1         , 0.3333333 \n" +
                         "\n" +
                         "AUC: 0.4445\n",
-                ROC.from(score, clazz, pred).summary());
+                ROC.from(score, clazz, pred).toSummary());
 
     }
 }

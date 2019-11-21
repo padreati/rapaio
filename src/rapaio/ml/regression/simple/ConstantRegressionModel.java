@@ -112,17 +112,17 @@ public class ConstantRegressionModel
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return fullName();
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         return fullName();
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");

@@ -142,18 +142,18 @@ public class DTableTest {
         Assert.assertEquals("              x         y         z     total \n" +
                 "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +
                 "    b 0.4444444 0.7307692 0.6666667 1.8418803 \n" +
-                "total 1         1         1         3         \n", dt2.normalizeOnCols().summary());
+                "total 1         1         1         3         \n", dt2.normalizeOnCols().toSummary());
 
         dt2.withTotalSummary(false);
 
         Assert.assertEquals("          x         y         z \n" +
                 "a 0.1612903 0.1129032 0.0967742 \n" +
-                "b 0.1290323 0.3064516 0.1935484 \n", dt2.normalizeOverall().summary());
+                "b 0.1290323 0.3064516 0.1935484 \n", dt2.normalizeOverall().toSummary());
         Assert.assertEquals("          x         y         z \n" +
                 "a 0.4347826 0.3043478 0.2608696 \n" +
-                "b 0.2051282 0.4871795 0.3076923 \n", dt2.normalizeOnRows().summary());
+                "b 0.2051282 0.4871795 0.3076923 \n", dt2.normalizeOnRows().toSummary());
         Assert.assertEquals("          x         y         z \n" +
                 "a 0.5555556 0.2692308 0.3333333 \n" +
-                "b 0.4444444 0.7307692 0.6666667 \n", dt2.normalizeOnCols().summary());
+                "b 0.4444444 0.7307692 0.6666667 \n", dt2.normalizeOnCols().toSummary());
     }
 }

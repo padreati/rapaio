@@ -33,7 +33,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/23/15.
  */
-public class Apriori implements DefaultPrintable {
+public class Apriori implements Printable {
 
     private Frame inputDf;
     private BiPredicate<Integer, DVector> filter;
@@ -188,7 +188,7 @@ public class Apriori implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
 
         StringBuilder sb = new StringBuilder();
         // print a list of rules

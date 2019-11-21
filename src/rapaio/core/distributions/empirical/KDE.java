@@ -29,7 +29,7 @@ package rapaio.core.distributions.empirical;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VSort;
+import rapaio.data.filter.VSort;
 
 import java.io.Serializable;
 import java.util.Arrays;

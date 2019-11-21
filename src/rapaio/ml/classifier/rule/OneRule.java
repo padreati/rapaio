@@ -33,7 +33,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.data.filter.var.VRefSort;
+import rapaio.data.filter.VRefSort;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.rule.onerule.NominalRule;
@@ -293,7 +293,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("OneRule model\n");
         sb.append("================\n\n");
@@ -321,13 +321,13 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 }
 

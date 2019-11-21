@@ -63,14 +63,14 @@ public class KDETest {
 
     @Test
     public void testNames() {
-        assertEquals("KFuncGaussian", new KFuncGaussian().summary());
-        assertEquals("KFuncBiWeight", new KFuncBiWeight().summary());
-        assertEquals("KFuncCosine", new KFuncCosine().summary());
-        assertEquals("KFuncEpanechnikov", new KFuncEpanechnikov().summary());
-        assertEquals("KFuncTriangular", new KFuncTriangular().summary());
-        assertEquals("KFuncTricube", new KFuncTricube().summary());
-        assertEquals("KFuncTriweight", new KFuncTriweight().summary());
-        assertEquals("KFuncUniform", new KFuncUniform().summary());
+        assertEquals("KFuncGaussian", new KFuncGaussian().toSummary());
+        assertEquals("KFuncBiWeight", new KFuncBiWeight().toSummary());
+        assertEquals("KFuncCosine", new KFuncCosine().toSummary());
+        assertEquals("KFuncEpanechnikov", new KFuncEpanechnikov().toSummary());
+        assertEquals("KFuncTriangular", new KFuncTriangular().toSummary());
+        assertEquals("KFuncTricube", new KFuncTricube().toSummary());
+        assertEquals("KFuncTriweight", new KFuncTriweight().toSummary());
+        assertEquals("KFuncUniform", new KFuncUniform().toSummary());
     }
 
     private void test(KFunc fun) {
@@ -88,7 +88,7 @@ public class KDETest {
         assertEquals(0, new KFuncTriweight().pdf(10, 1, 2), TOL);
         assertEquals(0, new KFuncUniform().pdf(10, 1, 2), TOL);
 
-        assertEquals("KFuncGaussian", KDE.of(VarDouble.wrap(1, 2, 3, 4)).kernel().summary());
+        assertEquals("KFuncGaussian", KDE.of(VarDouble.wrap(1, 2, 3, 4)).kernel().toSummary());
         assertEquals(1.037094286807564, KDE.of(VarDouble.wrap(1, 2, 3, 4)).bandwidth(), TOL);
     }
 
@@ -96,9 +96,9 @@ public class KDETest {
     public void testBuilders() {
         VarDouble sample = VarDouble.from(100, Normal.std()::sampleNext);
 
-        assertEquals("KFuncGaussian", KDE.of(sample).kernel().summary());
-        assertEquals("KFuncGaussian", KDE.of(sample, 10).kernel().summary());
-        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian()).kernel().summary());
-        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian(), 10).kernel().summary());
+        assertEquals("KFuncGaussian", KDE.of(sample).kernel().toSummary());
+        assertEquals("KFuncGaussian", KDE.of(sample, 10).kernel().toSummary());
+        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian()).kernel().toSummary());
+        assertEquals("KFuncGaussian", KDE.of(sample, new KFuncGaussian(), 10).kernel().toSummary());
     }
 }

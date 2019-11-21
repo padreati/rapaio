@@ -157,7 +157,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
 
@@ -195,7 +195,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
         fullTable(sb);

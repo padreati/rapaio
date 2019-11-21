@@ -37,7 +37,7 @@ import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ import java.util.stream.IntStream;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
 public class RForest extends AbstractRegressionModel<RForest, RegressionResult<RForest>>
-        implements DefaultPrintable {
+        implements Printable {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
@@ -144,7 +144,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult<R
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

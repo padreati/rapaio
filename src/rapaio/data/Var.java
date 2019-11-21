@@ -410,7 +410,7 @@ public interface Var extends Serializable, Printable {
     }
 
     @Override
-    default String summary() {
+    default String toSummary() {
         return Summary.getSummary(this);
     }
 

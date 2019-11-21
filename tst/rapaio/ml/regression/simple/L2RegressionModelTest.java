@@ -59,7 +59,7 @@ public class L2RegressionModelTest {
                 "\n" +
                 "    Target Fitted value \n" +
                 "[0]  Sales   14.0225    \n" +
-                "\n", model.fit(df, "Sales").content());
+                "\n", model.fit(df, "Sales").toContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -78,7 +78,7 @@ public class L2RegressionModelTest {
                 "\n" +
                 "    Target Fitted value \n" +
                 "[0]  Sales   14.0225    \n" +
-                "\n", model.fit(df, "Sales").fullContent());
+                "\n", model.fit(df, "Sales").toFullContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -97,7 +97,7 @@ public class L2RegressionModelTest {
                 "\n" +
                 "    Target Fitted value \n" +
                 "[0]  Sales   14.0225    \n" +
-                "\n", model.fit(df, "Sales").summary());
+                "\n", model.fit(df, "Sales").toSummary());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -146,7 +146,7 @@ public class L2RegressionModelTest {
                 " [3]     x4      15       [9]    x10      15      [21]    x22      15      \n" +
                 " [4]     x5      15            ...       ...      \n" +
                 " [5]     x6      15      [17]    x18      15      \n" +
-                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").content());
+                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").toContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
@@ -194,7 +194,7 @@ public class L2RegressionModelTest {
                 " [3]     x4      15       [9]    x10      15      [15]    x16      15      [21]    x22      15      \n" +
                 " [4]     x5      15      [10]    x11      15      [16]    x17      15      \n" +
                 " [5]     x6      15      [11]    x12      15      [17]    x18      15      \n" +
-                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").fullContent());
+                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").toFullContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -243,7 +243,7 @@ public class L2RegressionModelTest {
                 " [3]     x4      15       [9]    x10      15      [21]    x22      15      \n" +
                 " [4]     x5      15            ...       ...      \n" +
                 " [5]     x6      15      [17]    x18      15      \n" +
-                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").summary());
+                "\n", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22").toSummary());
     }
 
     @Test

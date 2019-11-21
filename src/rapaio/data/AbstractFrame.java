@@ -69,17 +69,17 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return selection(10, 5);
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         return selection(rowCount(), 0);
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         return Summary.getSummary(this);
     }
 

@@ -28,7 +28,7 @@ import rapaio.util.collection.IntComparator;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 import rapaio.io.Csv;
 
 import java.io.IOException;

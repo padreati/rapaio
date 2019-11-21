@@ -202,12 +202,12 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         return null;
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         nodeContent(sb, root, 0);
         return sb.toString();
@@ -228,7 +228,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         return null;
     }
 

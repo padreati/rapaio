@@ -43,19 +43,18 @@ import rapaio.math.MTools;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.BitSet;
 
 import static rapaio.printer.format.Format.floatFlex;
 
+
 /**
  * Class for building a binary support vector machine.
  */
-public class BinarySMO
-        extends AbstractClassifierModel<BinarySMO, ClassifierResult<BinarySMO>>
-        implements Serializable, DefaultPrintable {
+public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResult<BinarySMO>> implements Serializable, Printable {
 
     private static final long serialVersionUID = 1208515184777030598L;
 
@@ -204,7 +203,7 @@ public class BinarySMO
         this.sparseWeights = new double[counter];
         this.sparseIndices = new int[counter];
         System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
-        System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter); 
+        System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
     }
     @Override
     protected boolean coreFit(Frame df, Var weights) {
@@ -425,7 +424,7 @@ public class BinarySMO
             // We don't need to store the class values either
             target = null;
 
-            convertWeightVector(); 
+            convertWeightVector();
 
             // Clean out weight vector
             linear_weights = null;
@@ -825,7 +824,7 @@ public class BinarySMO
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         int printed = 0;
 

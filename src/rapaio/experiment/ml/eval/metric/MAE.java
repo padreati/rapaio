@@ -30,7 +30,7 @@ package rapaio.experiment.ml.eval.metric;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
 
@@ -42,7 +42,7 @@ import rapaio.printer.format.TextTable;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MAE implements DefaultPrintable {
+public class MAE implements Printable {
 
     public static MAE from(Var actual, Var fit) {
         return new MAE(BoundFrame.byVars(actual), BoundFrame.byVars(fit));
@@ -97,7 +97,7 @@ public class MAE implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("> MAE (Mean Absolute Error):\n");
         sb.append("\n");

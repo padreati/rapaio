@@ -31,7 +31,7 @@ import rapaio.core.stat.Maximum;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
 /**
@@ -39,7 +39,7 @@ import rapaio.printer.format.TextTable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/17.
  */
-public class Pacf implements DefaultPrintable {
+public class Pacf implements Printable {
 
     public static Pacf from(Var ts, int maxLag) {
         return new Pacf(ts, VarInt.seq(1, maxLag));
@@ -96,7 +96,7 @@ public class Pacf implements DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Pacf summary\n");
         sb.append("===========\n");

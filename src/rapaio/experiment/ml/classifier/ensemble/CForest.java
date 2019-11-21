@@ -42,8 +42,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.frame.FRefSort;
-import rapaio.data.filter.var.VShuffle;
+import rapaio.data.filter.FRefSort;
+import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
 import rapaio.experiment.ml.classifier.tree.CTree;
@@ -54,7 +54,7 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class CForest
         extends AbstractClassifierModel<CForest, ClassifierResult<CForest>>
-        implements DefaultPrintable {
+        implements Printable {
 
     private static final long serialVersionUID = -145958939373105497L;
 
@@ -470,7 +470,7 @@ public class CForest
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest model\n");
         sb.append("================\n\n");

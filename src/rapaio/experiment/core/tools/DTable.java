@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
 import java.io.Serializable;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public final class DTable implements DefaultPrintable, Serializable {
+public final class DTable implements Printable, Serializable {
 
     public static final List<String> NUMERIC_DEFAULT_LABELS = Arrays.asList("?", "less-equals", "greater");
     private static final long serialVersionUID = 4359080329548577980L;
@@ -441,7 +441,7 @@ public final class DTable implements DefaultPrintable, Serializable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
 
         if (totalSummary) {
             TextTable tt = TextTable.empty(rowLevels.size() - start + 2, colLevels.size() - start + 2, 1, 0);

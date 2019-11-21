@@ -34,6 +34,6 @@ public class MaximumTest {
 
         assertEquals("> maximum[?]\n" +
                 "total rows: 100 (complete: 85, missing: 15)\n" +
-                "maximum: 0.9908989\n", maximum.summary());
+                "maximum: 0.9908989\n", maximum.toSummary());
     }
 }

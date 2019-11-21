@@ -28,6 +28,7 @@
 package rapaio.data.unique;
 
 import rapaio.data.Mapping;
+import rapaio.data.Unique;
 import rapaio.data.VarInt;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
@@ -113,7 +114,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         int max = uniqueCount();
         if (max > 40) {
             max = 40;
@@ -139,11 +140,11 @@ public abstract class AbstractUnique implements Unique {
             }
             return tt.getDefaultText();
         }
-        return fullContent();
+        return toFullContent();
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         TextTable tt = TextTable.empty(uniqueCount() + 1, 3, 1, 0);
         tt.textCenter(0, 0, "Value");
         tt.textCenter(0, 1, "Count");
@@ -159,7 +160,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         return toString();
     }
 }

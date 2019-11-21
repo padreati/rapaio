@@ -25,7 +25,6 @@
 package rapaio.math;
 
 import org.junit.Test;
-import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.math.MTools.*;

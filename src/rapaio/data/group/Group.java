@@ -43,7 +43,7 @@ import rapaio.data.group.function.GroupFunNUnique;
 import rapaio.data.group.function.GroupFunSkewness;
 import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
-import rapaio.data.unique.Unique;
+import rapaio.data.Unique;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
@@ -393,9 +393,9 @@ public class Group implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         if (df.rowCount() < 40) {
-            return fullContent();
+            return toFullContent();
         }
         StringBuilder sb = new StringBuilder();
 
@@ -461,7 +461,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("group by: ").append(String.join(", ", pkNamesList)).append("\n");
@@ -506,8 +506,8 @@ public class Group implements Printable {
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 
     /**
@@ -670,7 +670,7 @@ public class Group implements Printable {
         }
 
         @Override
-        public String summary() {
+        public String toSummary() {
             StringBuilder sb = new StringBuilder();
 
             sb.append("group by: ");
@@ -695,7 +695,7 @@ public class Group implements Printable {
 
         private String selectedContent(int headRows, int tailRows) {
             StringBuilder sb = new StringBuilder();
-            sb.append(summary());
+            sb.append(toSummary());
 
             VarInt sortedGroupIds = group.getSortedGroupIds();
             VarInt selectedGroupIds = VarInt.empty();
@@ -756,12 +756,12 @@ public class Group implements Printable {
         }
 
         @Override
-        public String content() {
+        public String toContent() {
             return selectedContent(30, 10);
         }
 
         @Override
-        public String fullContent() {
+        public String toFullContent() {
             return selectedContent(group.getGroupCount(), 0);
         }
     }

@@ -117,7 +117,7 @@ public class SolidRMTest {
         RM copy5 = SolidRM.copy(m, 1, 3, 1, 4);
         assertEquals("       |      0|     1|     2|\n" +
                 "     0 |  6.000  7.000  8.000\n" +
-                "     1 | 10.000 11.000 12.000\n", copy5.summary());
+                "     1 | 10.000 11.000 12.000\n", copy5.toSummary());
     }
 
     @Test

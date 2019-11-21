@@ -173,12 +173,12 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         return null;
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         nodeContent(sb, root, 0);
         return sb.toString();
@@ -197,7 +197,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    public String fullContent() {
+    public String toFullContent() {
         return null;
     }
 

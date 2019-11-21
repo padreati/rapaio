@@ -45,7 +45,7 @@ import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2RegressionModel;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ import static rapaio.printer.format.Format.floatFlex;
  */
 @Deprecated
 public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionModel, RegressionResult<GBTRegressionModel>>
-        implements DefaultPrintable {
+        implements Printable {
 
     private static final long serialVersionUID = 4559540258922653130L;
 
@@ -210,7 +210,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

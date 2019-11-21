@@ -30,7 +30,7 @@ package rapaio.experiment.ml.selection;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
-import rapaio.printer.DefaultPrintable;
+import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
@@ -42,7 +42,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/22/15.
  */
-public class CFeatureSelectionSummary implements DefaultPrintable {
+public class CFeatureSelectionSummary implements Printable {
 
     private final String targetVar;
     private final Frame df;
@@ -96,7 +96,7 @@ public class CFeatureSelectionSummary implements DefaultPrintable {
 
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("CFeatureSelection summary\n");

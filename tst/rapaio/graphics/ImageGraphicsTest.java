@@ -37,7 +37,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VApplyDouble;
+import rapaio.data.filter.VApplyDouble;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.metric.ROC;
 import rapaio.graphics.base.Figure;

@@ -172,13 +172,13 @@ public class CorrSpearmanTest {
         Var x3 = VarDouble.seq(99);
 
         assertEquals("> spearman[?, ?] - Spearman's rank correlation coefficient\n" +
-                "0.2875008\n", CorrSpearman.of(x1, x2).fullContent());
+                "0.2875008\n", CorrSpearman.of(x1, x2).toFullContent());
 
         assertEquals("> spearman[[?, ?, ?]] - Spearman's rank correlation coefficient\n" +
                 "       1.?       2.?       3.?    \n" +
                 "1.? 1         0.2875008 0.0649745 \n" +
                 "2.? 0.2875008 1         0.2294869 \n" +
-                "3.? 0.0649745 0.2294869 1         \n", CorrSpearman.of(x1, x2, x3).summary());
+                "3.? 0.0649745 0.2294869 1         \n", CorrSpearman.of(x1, x2, x3).toSummary());
     }
 
     @Test
@@ -219,6 +219,6 @@ public class CorrSpearmanTest {
                 "8.Var_8   -0.0858206 \n" +
                 "9.Var_9   -0.129961  \n" +
                 "10.Var_10  1         \n" +
-                "\n", cs.content());
+                "\n", cs.toContent());
     }
 }

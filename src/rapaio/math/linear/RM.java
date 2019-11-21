@@ -36,9 +36,9 @@ import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
-import rapaio.printer.DefaultPrintable;
-import rapaio.printer.format.Format;
+import rapaio.printer.Printable;
 import rapaio.sys.WS;
+import rapaio.printer.format.Format;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RM extends Serializable, DefaultPrintable {
+public interface RM extends Serializable, Printable {
 
     /**
      * @return number of rows
@@ -337,7 +337,7 @@ public interface RM extends Serializable, DefaultPrintable {
 
     RM copy();
 
-    default String summary() {
+    default String toSummary() {
 
         StringBuilder sb = new StringBuilder();
 

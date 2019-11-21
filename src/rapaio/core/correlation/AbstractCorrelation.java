@@ -106,17 +106,17 @@ public abstract class AbstractCorrelation implements Correlation {
     }
 
     @Override
-    public String content() {
-        return summary();
+    public String toContent() {
+        return toSummary();
     }
 
     @Override
-    public String fullContent() {
-        return summary();
+    public String toFullContent() {
+        return toSummary();
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
         StringBuilder sb = new StringBuilder();
         if (d.names().length == 2) {
             summaryTwo(sb);

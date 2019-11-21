@@ -121,7 +121,7 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         return "> mean[" + varName + "]\n" +
                 "total rows: " + floatFlex(completeCount + missingCount) +
                 " (complete: " + floatFlex(completeCount) +
@@ -130,12 +130,12 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

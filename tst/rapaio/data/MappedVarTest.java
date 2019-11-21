@@ -225,14 +225,14 @@ public class MappedVarTest {
                 "[0]   1   \n" +
                 "[1]   3   \n" +
                 "[2]   6   \n" +
-                "[3]   9   \n", mapped.content());
+                "[3]   9   \n", mapped.toContent());
 
         assertEquals("MappedVar(type=double) [name:\"?\", rowCount:4]\n" +
                 "row value \n" +
                 "[0]   1   \n" +
                 "[1]   3   \n" +
                 "[2]   6   \n" +
-                "[3]   9   \n", mapped.fullContent());
+                "[3]   9   \n", mapped.toFullContent());
 
         assertEquals("> printSummary(var: ?)\n" +
                 "name: ?\n" +
@@ -243,7 +243,7 @@ public class MappedVarTest {
                 " Median : 4.500\n" +
                 "   Mean : 4.750\n" +
                 "2nd Qu. : 6.750\n" +
-                "   Max. : 9.000\n", mapped.summary());
+                "   Max. : 9.000\n", mapped.toSummary());
 
         assertEquals("MappedVar[type=double, name:?, rowCount:4]", mapped.toString());
     }

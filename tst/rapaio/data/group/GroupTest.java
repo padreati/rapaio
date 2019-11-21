@@ -6,7 +6,6 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.sys.WS;
 
@@ -51,7 +50,7 @@ public class GroupTest {
                 " [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false \n" +
                 " [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false \n" +
                 " [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true \n" +
-                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n", group1.content());
+                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n", group1.toContent());
         assertEquals("group by: class, outlook\n" +
                 "group count: 5\n" +
                 "\n" +
@@ -62,7 +61,7 @@ public class GroupTest {
                 " [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false \n" +
                 " [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false \n" +
                 " [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true \n" +
-                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n", group1.fullContent());
+                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n", group1.toFullContent());
         assertEquals("group by: class, outlook\n" +
                 "group count: 5\n" +
                 "\n" +
@@ -73,7 +72,7 @@ public class GroupTest {
                 " [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false \n" +
                 " [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false \n" +
                 " [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true \n" +
-                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n",group1.summary());
+                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n",group1.toSummary());
 
         assertEquals("temp,humidity,windy", String.join(",", group1.getFeatureNameList()));
 
@@ -121,7 +120,7 @@ public class GroupTest {
                 "[146] virginica 146  ->      6.3          2.5         5            1.9     \n" +
                 "[147] virginica 147  ->      6.5          3           5.2          2       \n" +
                 "[148] virginica 148  ->      6.2          3.4         5.4          2.3     \n" +
-                "[149] virginica 149  ->      5.9          3           5.1          1.8     \n", group2.content());
+                "[149] virginica 149  ->      5.9          3           5.1          1.8     \n", group2.toContent());
     }
 
     @Test
@@ -138,7 +137,7 @@ public class GroupTest {
                 "[0]     setosa                50 \n" +
                 "[1] versicolor                50 \n" +
                 "[2]  virginica                50 \n" +
-                "\n", agg1.content());
+                "\n", agg1.toContent());
         assertEquals("group by: class\n" +
                 "group count: 3\n" +
                 "group by functions: GroupByFunction{name=count,varNames=[petal-width]}\n" +
@@ -147,16 +146,16 @@ public class GroupTest {
                 "[0]     setosa                50 \n" +
                 "[1] versicolor                50 \n" +
                 "[2]  virginica                50 \n" +
-                "\n", agg1.fullContent());
+                "\n", agg1.toFullContent());
         assertEquals("group by: class\n" +
                 "group count: 3\n" +
                 "group by functions: GroupByFunction{name=count,varNames=[petal-width]}\n" +
-                "\n", agg1.summary());
+                "\n", agg1.toSummary());
 
         assertEquals("      class    petal-width_count \n" +
                 "[0]     setosa                50 \n" +
                 "[1] versicolor                50 \n" +
-                "[2]  virginica                50 \n", agg1.toFrame().content());
+                "[2]  virginica                50 \n", agg1.toFrame().toContent());
 
         Group group2 = Group.from(iris, VRange.of("class", "petal-width"));
         Group.Aggregate agg2 = group2.aggregate(count("sepal-width"));
@@ -215,7 +214,7 @@ public class GroupTest {
                 "[0]                                 ?                                 ? \n" +
                 "[1]                                 ?                                 ? \n" +
                 "[2]                                 6                                 1 \n" +
-                "\n", agg2.toFrame(1).content());
+                "\n", agg2.toFrame(1).toContent());
     }
 
     @Test
@@ -224,10 +223,10 @@ public class GroupTest {
         Group group = Group.from(play, "class");
         assertEquals("    class  outlook_count \n" +
                 "[0] noplay             9 \n" +
-                "[1]   play             5 \n", group.aggregate(count("outlook")).toFrame().content());
+                "[1]   play             5 \n", group.aggregate(count("outlook")).toFrame().toContent());
         assertEquals("    class  outlook_count_N1 \n" +
                 "[0] noplay    0.6428571     \n" +
-                "[1]   play    0.3571429     \n", group.aggregate(count(1, "outlook")).toFrame().content());
+                "[1]   play    0.3571429     \n", group.aggregate(count(1, "outlook")).toFrame().toContent());
 
         assertEquals("    class  temp_sum temp_sum_N1 temp_mean temp_mean_N1 windy_nunique windy_nunique_N1 temp_min temp_min_N1 \n" +
                 "[0] noplay   657     0.6378641    73       0.4945799               2       0.5           64     0.496124   \n" +
@@ -240,6 +239,6 @@ public class GroupTest {
                 sum("temp"), sum(1, "temp"), mean("temp"), mean(1, "temp"), nunique("windy"), nunique(1, "windy"),
                 min("temp"), min(1, "temp"), max("temp"), max(1, "temp"),skewness("temp"), skewness(1, "temp"),
                 std("temp"), std(1, "temp"), kurtosis("temp"), kurtosis(1, "temp")
-                ).toFrame().content());
+                ).toFrame().toContent());
     }
 }

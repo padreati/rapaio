@@ -114,7 +114,7 @@ public class RandomValueRegressionModel
     }
 
     @Override
-    public String content() {
+    public String toContent() {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         if (isFitted()) {
@@ -124,12 +124,12 @@ public class RandomValueRegressionModel
     }
 
     @Override
-    public String fullContent() {
-        return content();
+    public String toFullContent() {
+        return toContent();
     }
 
     @Override
-    public String summary() {
-        return content();
+    public String toSummary() {
+        return toContent();
     }
 }

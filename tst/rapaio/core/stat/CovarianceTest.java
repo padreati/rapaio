@@ -44,7 +44,7 @@ public class CovarianceTest {
 
         assertEquals("> cov[?,?]\n" +
                 "total rows: 100 (complete: 85, missing: 15)\n" +
-                "covariance: -0.0050385\n", cov.summary());
+                "covariance: -0.0050385\n", cov.toSummary());
     }
 
     @Test

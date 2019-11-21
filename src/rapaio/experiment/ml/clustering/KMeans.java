@@ -36,13 +36,12 @@ import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.frame.FRefSort;
+import rapaio.data.filter.FRefSort;
 import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.KMeansInitMethod;
-import rapaio.printer.DefaultPrintable;
 import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
 import rapaio.sys.WS;
+import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
 import java.util.Arrays;
@@ -59,7 +58,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KMeans implements Printable, DefaultPrintable {
+public class KMeans implements Printable {
 
     private int k = 2;
     private int nstart = 1;
@@ -386,7 +385,7 @@ public class KMeans implements Printable, DefaultPrintable {
     }
 
     @Override
-    public String summary() {
+    public String toSummary() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("KMeans clustering model\n");
@@ -415,7 +414,7 @@ public class KMeans implements Printable, DefaultPrintable {
 
             sb.append("Per cluster: \n");
             Frame sorted = summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false)));
-            sb.append(sorted.fullContent());
+            sb.append(sorted.toFullContent());
         }
 
         return sb.toString();

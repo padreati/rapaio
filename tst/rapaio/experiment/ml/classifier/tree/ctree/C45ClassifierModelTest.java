@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
-import rapaio.data.filter.frame.FRetainTypes;
+import rapaio.data.filter.FRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.core.tools.DTable;
 import rapaio.experiment.ml.classifier.tree.CTree;
