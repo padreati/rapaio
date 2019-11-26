@@ -460,13 +460,13 @@ public final class DTable implements Printable, Serializable {
             }
             double total = Arrays.stream(rowTotals).skip(start).sum();
             tt.floatFlex(rowLevels.size() - start + 1, colLevels.size() - start + 1, total);
-            return tt.getDefaultText();
+            return tt.getDynamicText();
         } else {
             TextTable tt = TextTable.empty(rowLevels.size() - start + 1, colLevels.size() - start + 1, 1, 0);
 
             putLevels(tt);
             putValues(tt);
-            return tt.getDefaultText();
+            return tt.getDynamicText();
         }
     }
 

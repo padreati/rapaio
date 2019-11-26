@@ -85,15 +85,13 @@ study and learn. And I want to do all those things in an interactive way,
 where I would program my ideas. Java community deserves such kind of tool 
 and this library aims to fill the gap.
 
-
-
 ## Features provided
 
 Currently the code can be classified in two categories of code maturity:
 
-* __Definitive__ - This category includes all the code which has a stable API and it was covered carefully with tests, 
+* *Definitive* - This category includes all the code which has a stable API and it was covered carefully with tests, 
 usually with a percentage over 90%
-* __Experimental__ - All the code found under the package `rapaio.experimental`. This includes drafts and untested code, 
+* *Experimental* - All the code found under the package `rapaio.experimental`. This includes drafts and untested code, 
 which can be used, but production tools cannot rely on this code. Usually, when code migrates outside the experimental 
 package, API can change and sometimes even the philosophy behind the implementation.
 

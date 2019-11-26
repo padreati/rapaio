@@ -149,6 +149,6 @@ public abstract class AbstractCorrelation implements Correlation {
                 }
             }
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
     }
 }

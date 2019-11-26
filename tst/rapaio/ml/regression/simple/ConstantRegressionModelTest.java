@@ -62,9 +62,9 @@ public class ConstantRegressionModelTest {
                 "Model instance: ConstantRegression{constant=66}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. Son double \n" +
+                "1. Son dbl \n" +
                 "> target variables: \n" +
-                "1. Father double \n" +
+                "1. Father dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -95,9 +95,9 @@ public class ConstantRegressionModelTest {
                 "Model instance: ConstantRegression{constant=66}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. Son double \n" +
+                "1. Son dbl \n" +
                 "> target variables: \n" +
-                "1. Father double \n" +
+                "1. Father dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +

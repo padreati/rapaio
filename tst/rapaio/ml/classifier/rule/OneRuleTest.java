@@ -152,17 +152,14 @@ public class OneRuleTest {
                 "\n" +
                 "Model fitted: true\n" +
                 "input vars: \n" +
-                " 0.                cap-shape : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | \n" +
-                " 1.              cap-surface : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | \n" +
-                " 2.                cap-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | \n" +
-                " 3.                  bruises : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | \n" +
-                " 4.                     odor : NOMINAL  | 15.                veil-type : NOMINAL  | \n" +
-                " 5.          gill-attachment : NOMINAL  | 16.               veil-color : NOMINAL  | \n" +
-                " 6.             gill-spacing : NOMINAL  | 17.              ring-number : NOMINAL  | \n" +
-                " 7.                gill-size : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
-                " 8.               gill-color : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
-                " 9.              stalk-shape : NOMINAL  | 20.               population : NOMINAL  | \n" +
-                "10.               stalk-root : NOMINAL  | 21.                  habitat : NOMINAL  | \n" +
+                " 0.                cap-shape : NOMINAL  |  8.               gill-color : NOMINAL  | 16.               veil-color : NOMINAL  | \n" +
+                " 1.              cap-surface : NOMINAL  |  9.              stalk-shape : NOMINAL  | 17.              ring-number : NOMINAL  | \n" +
+                " 2.                cap-color : NOMINAL  | 10.               stalk-root : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
+                " 3.                  bruises : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
+                " 4.                     odor : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 20.               population : NOMINAL  | \n" +
+                " 5.          gill-attachment : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 21.                  habitat : NOMINAL  | \n" +
+                " 6.             gill-spacing : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | \n" +
+                " 7.                gill-size : NOMINAL  | 15.                veil-type : NOMINAL  | \n" +
                 "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +

@@ -27,6 +27,10 @@
 
 package rapaio.data;
 
+import rapaio.data.unique.UniqueLabel;
+import rapaio.printer.format.TextTable;
+import rapaio.util.serializable.SFunction;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,6 +72,14 @@ public class VarString extends AbstractVar {
         VarString text = new VarString(rows);
         for (int i = 0; i < rows; i++) {
             text.values.set(i, supplier.get());
+        }
+        return text;
+    }
+
+    public static VarString from(int rows, SFunction<Integer, String> function) {
+        VarString text = new VarString(rows);
+        for (int i = 0; i < rows; i++) {
+            text.values.set(i, function.apply(i));
         }
         return text;
     }

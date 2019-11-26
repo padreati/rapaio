@@ -60,7 +60,7 @@ public enum VType {
      * Numeric values stored on 1 bit, encodes also
      * boolean values. Possible values are 0,1 or true,false.
      */
-    BINARY("binary", VarBinary::empty),
+    BINARY("bin", VarBinary::empty),
     /**
      * Integer values on 32 bits
      */
@@ -69,11 +69,11 @@ public enum VType {
      * Unordered categories: has label representation and
      * also positive integer representation.
      */
-    NOMINAL("nominal", VarNominal::empty),
+    NOMINAL("nom", VarNominal::empty),
     /**
      * Numeric values stored in double precision
      */
-    DOUBLE("double", VarDouble::empty),
+    DOUBLE("dbl", VarDouble::empty),
     /**
      * Long integer values.
      */
@@ -85,7 +85,7 @@ public enum VType {
     /**
      * Variable type used only to store text.
      */
-    STRING("string", VarString::empty);
+    STRING("str", VarString::empty);
 
     private final String code;
     private SFunction<Integer, ? extends Var> newInstanceFunction;

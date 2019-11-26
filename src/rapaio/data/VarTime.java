@@ -7,6 +7,7 @@ import rapaio.util.collection.LongArrays;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Variable which contains time instants truncated to milliseconds.
@@ -19,6 +20,14 @@ public class VarTime extends AbstractVar {
 
     public static VarTime empty(int rows) {
         return new VarTime(rows);
+    }
+
+    public static VarTime from(int rows, Function<Integer, Long> fun) {
+        VarTime time = VarTime.empty(rows);
+        for (int i = 0; i < rows; i++) {
+            time.setLong(i, fun.apply(i));
+        }
+        return time;
     }
 
     public static final Instant MISSING_VALUE = Instant.EPOCH;

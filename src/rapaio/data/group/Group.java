@@ -443,7 +443,7 @@ public class Group implements Printable {
             int r = rows.get(df.rowCount() - 40 + i);
             fillRowData(tt, i, r);
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         return sb.toString();
     }
 
@@ -501,7 +501,7 @@ public class Group implements Printable {
                 pos++;
             }
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         return sb.toString();
     }
 
@@ -751,7 +751,7 @@ public class Group implements Printable {
                 }
                 pos++;
             }
-            sb.append(tt.getDefaultText()).append("\n");
+            sb.append(tt.getDynamicText()).append("\n");
             return sb.toString();
         }
 

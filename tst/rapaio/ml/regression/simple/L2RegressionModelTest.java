@@ -48,12 +48,12 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nominal \n" +
-                "2. TV        double  \n" +
-                "3. Radio     double  \n" +
-                "4. Newspaper double  \n" +
+                "1. ID        nom \n" +
+                "2. TV        dbl \n" +
+                "3. Radio     dbl \n" +
+                "4. Newspaper dbl \n" +
                 "> target variables: \n" +
-                "1. Sales double \n" +
+                "1. Sales dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -67,12 +67,12 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nominal \n" +
-                "2. TV        double  \n" +
-                "3. Radio     double  \n" +
-                "4. Newspaper double  \n" +
+                "1. ID        nom \n" +
+                "2. TV        dbl \n" +
+                "3. Radio     dbl \n" +
+                "4. Newspaper dbl \n" +
                 "> target variables: \n" +
-                "1. Sales double \n" +
+                "1. Sales dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -86,12 +86,12 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nominal \n" +
-                "2. TV        double  \n" +
-                "3. Radio     double  \n" +
-                "4. Newspaper double  \n" +
+                "1. ID        nom \n" +
+                "2. TV        dbl \n" +
+                "3. Radio     dbl \n" +
+                "4. Newspaper dbl \n" +
                 "> target variables: \n" +
-                "1. Sales double \n" +
+                "1. Sales dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -105,37 +105,37 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. x23 double \n" +
-                "2. x24 double \n" +
-                "3. x25 double \n" +
-                "4. x26 double \n" +
-                "5. x27 double \n" +
-                "6. x28 double \n" +
-                "7. x29 double \n" +
-                "8. x30 double \n" +
+                "1. x23 dbl \n" +
+                "2. x24 dbl \n" +
+                "3. x25 dbl \n" +
+                "4. x26 dbl \n" +
+                "5. x27 dbl \n" +
+                "6. x28 dbl \n" +
+                "7. x29 dbl \n" +
+                "8. x30 dbl \n" +
                 "> target variables: \n" +
-                " 1. x1  double \n" +
-                " 2. x2  double \n" +
-                " 3. x3  double \n" +
-                " 4. x4  double \n" +
-                " 5. x5  double \n" +
-                " 6. x6  double \n" +
-                " 7. x7  double \n" +
-                " 8. x8  double \n" +
-                " 9. x9  double \n" +
-                "10. x10 double \n" +
-                "11. x11 double \n" +
-                "12. x12 double \n" +
-                "13. x13 double \n" +
-                "14. x14 double \n" +
-                "15. x15 double \n" +
-                "16. x16 double \n" +
-                "17. x17 double \n" +
-                "18. x18 double \n" +
-                "19. x19 double \n" +
-                "20. x20 double \n" +
-                "21. x21 double \n" +
-                "22. x22 double \n" +
+                " 1. x1  dbl \n" +
+                " 2. x2  dbl \n" +
+                " 3. x3  dbl \n" +
+                " 4. x4  dbl \n" +
+                " 5. x5  dbl \n" +
+                " 6. x6  dbl \n" +
+                " 7. x7  dbl \n" +
+                " 8. x8  dbl \n" +
+                " 9. x9  dbl \n" +
+                "10. x10 dbl \n" +
+                "11. x11 dbl \n" +
+                "12. x12 dbl \n" +
+                "13. x13 dbl \n" +
+                "14. x14 dbl \n" +
+                "15. x15 dbl \n" +
+                "16. x16 dbl \n" +
+                "17. x17 dbl \n" +
+                "18. x18 dbl \n" +
+                "19. x19 dbl \n" +
+                "20. x20 dbl \n" +
+                "21. x21 dbl \n" +
+                "22. x22 dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -153,37 +153,37 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. x23 double \n" +
-                "2. x24 double \n" +
-                "3. x25 double \n" +
-                "4. x26 double \n" +
-                "5. x27 double \n" +
-                "6. x28 double \n" +
-                "7. x29 double \n" +
-                "8. x30 double \n" +
+                "1. x23 dbl \n" +
+                "2. x24 dbl \n" +
+                "3. x25 dbl \n" +
+                "4. x26 dbl \n" +
+                "5. x27 dbl \n" +
+                "6. x28 dbl \n" +
+                "7. x29 dbl \n" +
+                "8. x30 dbl \n" +
                 "> target variables: \n" +
-                " 1. x1  double \n" +
-                " 2. x2  double \n" +
-                " 3. x3  double \n" +
-                " 4. x4  double \n" +
-                " 5. x5  double \n" +
-                " 6. x6  double \n" +
-                " 7. x7  double \n" +
-                " 8. x8  double \n" +
-                " 9. x9  double \n" +
-                "10. x10 double \n" +
-                "11. x11 double \n" +
-                "12. x12 double \n" +
-                "13. x13 double \n" +
-                "14. x14 double \n" +
-                "15. x15 double \n" +
-                "16. x16 double \n" +
-                "17. x17 double \n" +
-                "18. x18 double \n" +
-                "19. x19 double \n" +
-                "20. x20 double \n" +
-                "21. x21 double \n" +
-                "22. x22 double \n" +
+                " 1. x1  dbl \n" +
+                " 2. x2  dbl \n" +
+                " 3. x3  dbl \n" +
+                " 4. x4  dbl \n" +
+                " 5. x5  dbl \n" +
+                " 6. x6  dbl \n" +
+                " 7. x7  dbl \n" +
+                " 8. x8  dbl \n" +
+                " 9. x9  dbl \n" +
+                "10. x10 dbl \n" +
+                "11. x11 dbl \n" +
+                "12. x12 dbl \n" +
+                "13. x13 dbl \n" +
+                "14. x14 dbl \n" +
+                "15. x15 dbl \n" +
+                "16. x16 dbl \n" +
+                "17. x17 dbl \n" +
+                "18. x18 dbl \n" +
+                "19. x19 dbl \n" +
+                "20. x20 dbl \n" +
+                "21. x21 dbl \n" +
+                "22. x22 dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +
@@ -202,37 +202,37 @@ public class L2RegressionModelTest {
                 "Model instance: L2Regression()\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. x23 double \n" +
-                "2. x24 double \n" +
-                "3. x25 double \n" +
-                "4. x26 double \n" +
-                "5. x27 double \n" +
-                "6. x28 double \n" +
-                "7. x29 double \n" +
-                "8. x30 double \n" +
+                "1. x23 dbl \n" +
+                "2. x24 dbl \n" +
+                "3. x25 dbl \n" +
+                "4. x26 dbl \n" +
+                "5. x27 dbl \n" +
+                "6. x28 dbl \n" +
+                "7. x29 dbl \n" +
+                "8. x30 dbl \n" +
                 "> target variables: \n" +
-                " 1. x1  double \n" +
-                " 2. x2  double \n" +
-                " 3. x3  double \n" +
-                " 4. x4  double \n" +
-                " 5. x5  double \n" +
-                " 6. x6  double \n" +
-                " 7. x7  double \n" +
-                " 8. x8  double \n" +
-                " 9. x9  double \n" +
-                "10. x10 double \n" +
-                "11. x11 double \n" +
-                "12. x12 double \n" +
-                "13. x13 double \n" +
-                "14. x14 double \n" +
-                "15. x15 double \n" +
-                "16. x16 double \n" +
-                "17. x17 double \n" +
-                "18. x18 double \n" +
-                "19. x19 double \n" +
-                "20. x20 double \n" +
-                "21. x21 double \n" +
-                "22. x22 double \n" +
+                " 1. x1  dbl \n" +
+                " 2. x2  dbl \n" +
+                " 3. x3  dbl \n" +
+                " 4. x4  dbl \n" +
+                " 5. x5  dbl \n" +
+                " 6. x6  dbl \n" +
+                " 7. x7  dbl \n" +
+                " 8. x8  dbl \n" +
+                " 9. x9  dbl \n" +
+                "10. x10 dbl \n" +
+                "11. x11 dbl \n" +
+                "12. x12 dbl \n" +
+                "13. x13 dbl \n" +
+                "14. x14 dbl \n" +
+                "15. x15 dbl \n" +
+                "16. x16 dbl \n" +
+                "17. x17 dbl \n" +
+                "18. x18 dbl \n" +
+                "19. x19 dbl \n" +
+                "20. x20 dbl \n" +
+                "21. x21 dbl \n" +
+                "22. x22 dbl \n" +
                 "\n" +
                 "Fitted values:\n" +
                 "\n" +

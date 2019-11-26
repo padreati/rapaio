@@ -212,11 +212,6 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String toString() {
-        return "MappedVar[type=" + source.type().code() + ", name:" + name() + ", rowCount:" + mapping.size() + ']';
-    }
-
-    @Override
     protected String classNameInToString() {
         return "MappedVar(type=" + source.type().code() + ")";
     }
@@ -236,5 +231,10 @@ public class MappedVar extends AbstractVar {
         } else {
             super.textTablePutValue(tt, i, j, mapping.get(row));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MappedVar[type=" + source.type().code() + ", name:" + name() + ", rowCount:" + mapping.size() + ']';
     }
 }

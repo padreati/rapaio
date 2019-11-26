@@ -111,7 +111,7 @@ public class MAE implements Printable {
             tt.textRight(i + 1, 0, actual.varName(i) + " | " + fit.varName(i));
             tt.floatFlex(i + 1, 1, mae[i]);
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         sb.append("\n");
         sb.append("Total mae: " + Format.floatFlex(totalMae) + "\n");
         sb.append("\n");

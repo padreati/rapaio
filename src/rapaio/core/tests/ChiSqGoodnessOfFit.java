@@ -187,7 +187,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             tt.floatFlex(4, i + 1, p.getDouble(i));
         }
 
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         sb.append("\n");
 
         return sb.toString();

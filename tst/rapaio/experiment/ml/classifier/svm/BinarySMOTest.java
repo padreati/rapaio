@@ -131,7 +131,7 @@ public class BinarySMOTest {
     }
 
     @Test
-    public void testLinear() throws IOException, URISyntaxException {
+    public void testLinear() throws IOException {
 
         Frame df = Datasets.loadSonar();
         df.copy().fapply(FStandardize.on(VRange.all())).printSummary();

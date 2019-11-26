@@ -139,7 +139,7 @@ public class ConstantRegressionModel
                 tt.textRight(1 + i, 0, targetName(i));
                 tt.floatFlex(1 + i, 1, constant);
             }
-            sb.append(tt.getDefaultText());
+            sb.append(tt.getDynamicText());
         }
         sb.append("\n");
         return sb.toString();

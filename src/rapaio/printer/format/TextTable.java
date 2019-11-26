@@ -38,14 +38,56 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Helper tool to build text in tabular format.
+ * <p>
+ * A text table has rows an columns. First rows and columns could be header columns. Header rows or columns are like
+ * regular rows or columns with the observation that they are replicated on splitting tables for printing.
+ * <p>
+ * Each cell can have an alignment which could be one of the following:
+ * <ul>
+ *     <li>left aligned with no anchor: text is left aligned</li>
+ *     <li>right aligned with no anchor: text is right aligned</li>
+ *     <li>center aligned with no anchor: text is centered</li>
+ *     <li>anchored: text is aligned to the first occurrence of the anchor character, if the anchor character
+ *     is not found then text is centered</li>
+ * </ul>
+ * <p>
+ * Text tables can be split, merged or raw output, depending on parameters at rendering.
+ * <ul>
+ *     <li>raw text does not consider the text width of the printer and outputs the table text
+ *     as it is, in the tabular data format</li>
+ *     <li>dynamic text eventually splits the table to accomodate the printer console text width, thus,
+ *     if the total width of the columns are less than printer text width, than tries to split split rows
+ *     in chunks and concatenate them at left, until no space is left, alternatively, if the total columns
+ *     width are greater than printer text width, it will split table into column groups and display them
+ *     sequentially, repeating headers</li>
+ * </ul>
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/18.
  */
 public class TextTable {
 
+    /**
+     * Builds a text table with given rows and columns and no headers
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @return text table instance
+     */
     public static TextTable empty(int rows, int cols) {
         return new TextTable(rows, cols, 0, 0);
     }
 
+    /**
+     * Builds a text table with given number of rows and columns from which
+     * some of rows and columns are headers.
+     *
+     * @param rows       number of rows
+     * @param cols       number of columns
+     * @param headerRows number of header rows from total number of rows
+     * @param headerCols number of header columns from total number of columns
+     * @return text table instance
+     */
     public static TextTable empty(int rows, int cols, int headerRows, int headerCols) {
         return new TextTable(rows, cols, headerRows, headerCols);
     }
@@ -172,7 +214,7 @@ public class TextTable {
     }
 
     void set(int row, int col, String value, int align) {
-        set(row, col, value, align, '\0');
+        set(row, col, value, align, NO_ANCHOR);
     }
 
     void set(int row, int col, String value, int align, char anchor) {
@@ -328,7 +370,7 @@ public class TextTable {
         return getText(-1);
     }
 
-    public String getDefaultText() {
+    public String getDynamicText() {
         return getText(WS.getPrinter().textWidth());
     }
 
@@ -338,10 +380,7 @@ public class TextTable {
         if (consoleWidth == -1 || consoleWidth == totalColLen) {
             return computeRawText();
         }
-        if (totalColLen > consoleWidth) {
-            return computeSplitText(consoleWidth);
-        }
-        return computeMergeText(consoleWidth);
+        return totalColLen > consoleWidth ? computeSplitText(consoleWidth) : computeMergeText(consoleWidth);
     }
 
     private String computeRawText() {
@@ -395,15 +434,15 @@ public class TextTable {
     private String computeMergeText(int consoleWidth) {
         StringBuilder sb = new StringBuilder();
 
-        int totoalColLen = Arrays.stream(finalLen).sum();
+        int toalColLen = Arrays.stream(finalLen).sum();
         int nonHeaderRows = rows - headerRows;
 
         int sets = 1;
-        int currentLen = totoalColLen;
+        int currentLen = toalColLen;
 
         while (true) {
             int newSets = sets + 1;
-            int newCurrentLen = currentLen + totoalColLen;
+            int newCurrentLen = currentLen + toalColLen;
             int newNonHeaderRows = (int) Math.ceil(((double) (rows - headerRows)) / newSets);
             if (newNonHeaderRows > newSets && newCurrentLen <= consoleWidth) {
                 sets = newSets;
@@ -415,9 +454,7 @@ public class TextTable {
         }
 
         String[] rows = new String[headerRows + nonHeaderRows];
-        for (int i = 0; i < rows.length; i++) {
-            rows[i] = "";
-        }
+        Arrays.fill(rows, "");
 
         for (int s = 0; s < sets; s++) {
             for (int i = 0; i < headerRows; i++) {

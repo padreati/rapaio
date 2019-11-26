@@ -138,7 +138,7 @@ public abstract class AbstractUnique implements Unique {
                 tt.textRight(i + 1, 1, Integer.toString(rowList(uniqueCount() - 40 + i).size()));
                 tt.textRight(i + 1, 2, Format.floatShort(rowList(uniqueCount() - 40 + i).size() / total));
             }
-            return tt.getDefaultText();
+            return tt.getDynamicText();
         }
         return toFullContent();
     }
@@ -156,7 +156,7 @@ public abstract class AbstractUnique implements Unique {
             tt.textRight(i + 1, 1, Integer.toString(rowList(i).size()));
             tt.textRight(i + 1, 2, Format.floatShort(rowList(i).size() / total));
         }
-        return tt.getDefaultText();
+        return tt.getDynamicText();
     }
 
     @Override

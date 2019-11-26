@@ -28,7 +28,9 @@
 package rapaio.ml.regression.linear;
 
 import rapaio.core.distributions.StudentT;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.MTools;
 import rapaio.math.linear.RM;
@@ -36,7 +38,6 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Summary;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
 
@@ -169,7 +170,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
 
                 sb.append("> Residuals: \n");
-                sb.append(Summary.getHorizontalSummary5(res));
+                sb.append(getHorizontalSummary5(res));
                 sb.append("\n");
 
                 sb.append("> Coefficients: \n");
@@ -207,4 +208,15 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
         return sb.toString();
     }
 
+    private String getHorizontalSummary5(Var var) {
+        TextTable tt1 = TextTable.empty(2, 5, 1, 0);
+
+        String[] headers1 = new String[]{"Min", "1Q", "Median", "3Q", "Max"};
+        double[] values1 = Quantiles.of(var, 0, 0.25, 0.5, 0.75, 1).values();
+        for (int i = 0; i < 5; i++) {
+            tt1.textRight(0, i, headers1[i]);
+            tt1.floatFlex(1, i, values1[i]);
+        }
+        return tt1.getDynamicText();
+    }
 }

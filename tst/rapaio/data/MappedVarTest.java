@@ -220,32 +220,33 @@ public class MappedVarTest {
 
         VarDouble vDouble = VarDouble.from(10, row -> (row+1) % 3 == 0 ? 1. : row);
         Var mapped = vDouble.mapRows(mapping);
-        assertEquals("MappedVar(type=double) [name:\"?\", rowCount:4]\n" +
+        assertEquals("MappedVar(type=dbl) [name:\"?\", rowCount:4]\n" +
                 "row value \n" +
                 "[0]   1   \n" +
                 "[1]   3   \n" +
                 "[2]   6   \n" +
                 "[3]   9   \n", mapped.toContent());
 
-        assertEquals("MappedVar(type=double) [name:\"?\", rowCount:4]\n" +
+        assertEquals("MappedVar(type=dbl) [name:\"?\", rowCount:4]\n" +
                 "row value \n" +
                 "[0]   1   \n" +
                 "[1]   3   \n" +
                 "[2]   6   \n" +
                 "[3]   9   \n", mapped.toFullContent());
 
-        assertEquals("> printSummary(var: ?)\n" +
-                "name: ?\n" +
-                "type: DOUBLE\n" +
+        assertEquals("> summary(name: ?, type: DOUBLE)\n" +
                 "rows: 4, complete: 4, missing: 0\n" +
-                "   Min. : 1.000\n" +
-                "1st Qu. : 2.500\n" +
-                " Median : 4.500\n" +
-                "   Mean : 4.750\n" +
-                "2nd Qu. : 6.750\n" +
-                "   Max. : 9.000\n", mapped.toSummary());
+                "        ? [dbl]    \n" +
+                "   Min. : 1.000000 \n" +
+                "1st Qu. : 2.500000 \n" +
+                " Median : 4.500000 \n" +
+                "   Mean : 4.750000 \n" +
+                "2nd Qu. : 6.750000 \n" +
+                "   Max. : 9.000000 \n" +
+                "                   \n" +
+                "\n", mapped.toSummary());
 
-        assertEquals("MappedVar[type=double, name:?, rowCount:4]", mapped.toString());
+        assertEquals("MappedVar[type=dbl, name:?, rowCount:4]", mapped.toString());
     }
 
     @Test

@@ -63,9 +63,9 @@ public class RandomValueRegressionModelTest {
                 "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. Father double \n" +
+                "1. Father dbl \n" +
                 "> target variables: \n" +
-                "1. Son double \n" +
+                "1. Son dbl \n" +
                 "Model is trained.\n", model.toContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -73,9 +73,9 @@ public class RandomValueRegressionModelTest {
                 "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. Father double \n" +
+                "1. Father dbl \n" +
                 "> target variables: \n" +
-                "1. Son double \n" +
+                "1. Son dbl \n" +
                 "Model is trained.\n", model.toFullContent());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
@@ -83,9 +83,9 @@ public class RandomValueRegressionModelTest {
                 "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. Father double \n" +
+                "1. Father dbl \n" +
                 "> target variables: \n" +
-                "1. Son double \n" +
+                "1. Son dbl \n" +
                 "Model is trained.\n", model.toSummary());
     }
 }

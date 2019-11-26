@@ -382,7 +382,7 @@ public class DVector implements Printable, Serializable {
             tt.textRight(1, i, repeat(levels.get(i).length(), '-'));
             tt.floatFlex(2, i, values[i]);
         }
-        return tt.getDefaultText();
+        return tt.getDynamicText();
     }
 
     private String repeat(int length, char c) {

@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.printer.Summary;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -80,7 +79,42 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public String toSummary() {
-        return Summary.getSummary(this);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Frame Summary\n");
+        sb.append("=============\n");
+
+        sb.append("* rowCount: ").append(rowCount()).append("\n");
+        sb.append("* complete: ").append(stream().complete().count()).append("/").append(rowCount()).append("\n");
+        sb.append("* varCount: ").append(varCount()).append("\n");
+        sb.append("* varNames: \n");
+
+        TextTable tt = TextTable.empty(varCount(), 5);
+        for (int i = 0; i < varCount(); i++) {
+            tt.textRight(i, 0, i + ".");
+            tt.textRight(i, 1, rvar(i).name());
+            tt.textLeft(i, 2, ":");
+            tt.textLeft(i, 3, rvar(i).type().code());
+            tt.textRight(i, 4, "|");
+        }
+        sb.append("\n").append(tt.getDynamicText()).append("\n");
+
+        sb.append("* summary: \n");
+
+        tt = TextTable.empty(8, 2 * varCount());
+
+        for (int i = 0; i < varCount(); i++) {
+            tt.textRight(0, i * 2, " " + rvar(i).name());
+            tt.textLeft(0, i * 2 + 1, "[" + rvar(i).type().code() + "]");
+
+            if (rvar(i) instanceof AbstractVar) {
+
+                ((AbstractVar) rvar(i)).fillSummary(tt, i * 2, i * 2 + 1);
+            }
+        }
+        sb.append(tt.getDynamicText()).append("\n");
+        return sb.toString();
     }
 
     public String head() {
@@ -145,7 +179,6 @@ public abstract class AbstractFrame implements Frame {
                 }
             }
         }
-        return tt.getDefaultText();
+        return tt.getDynamicText();
     }
-
 }

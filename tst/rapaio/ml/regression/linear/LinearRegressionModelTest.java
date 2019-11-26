@@ -74,10 +74,10 @@ public class LinearRegressionModelTest {
                         "Model instance: LinearRegression(intercept=true)\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
-                        "1. (Intercept) double \n" +
-                        "2. TV          double \n" +
+                        "1. (Intercept) dbl \n" +
+                        "2. TV          dbl \n" +
                         "> target variables: \n" +
-                        "1. Radio double \n" +
+                        "1. Radio dbl \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -95,10 +95,10 @@ public class LinearRegressionModelTest {
                         "Model instance: LinearRegression(intercept=true)\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
-                        "1. (Intercept) double \n" +
-                        "2. TV          double \n" +
+                        "1. (Intercept) dbl \n" +
+                        "2. TV          dbl \n" +
                         "> target variables: \n" +
-                        "1. Radio double \n" +
+                        "1. Radio dbl \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -141,10 +141,10 @@ public class LinearRegressionModelTest {
                         "Model instance: LinearRegression(intercept=true)\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
-                        "1. (Intercept) double \n" +
-                        "2. TV          double \n" +
+                        "1. (Intercept) dbl \n" +
+                        "2. TV          dbl \n" +
                         "> target variables: \n" +
-                        "1. Radio double \n" +
+                        "1. Radio dbl \n" +
                         "\n" +
                         "Target <<< Radio >>>\n" +
                         "\n" +
@@ -170,12 +170,12 @@ public class LinearRegressionModelTest {
                 "Model instance: LinearRegression(intercept=true)\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. (Intercept) double \n" +
-                "2. TV          double \n" +
-                "3. Newspaper   double \n" +
+                "1. (Intercept) dbl \n" +
+                "2. TV          dbl \n" +
+                "3. Newspaper   dbl \n" +
                 "> target variables: \n" +
-                "1. Sales double \n" +
-                "2. Radio double \n" +
+                "1. Sales dbl \n" +
+                "2. Radio dbl \n" +
                 "\n" +
                 "Target <<< Sales >>>\n" +
                 "\n" +

@@ -233,7 +233,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
             tt.textLeft(i, 3, inputTypes[i].name());
             tt.textRight(i, 4, " |");
         }
-        sb.append(tt.getDefaultText()).append("\n");
+        sb.append(tt.getDynamicText()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")

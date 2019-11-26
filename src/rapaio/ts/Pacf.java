@@ -109,7 +109,7 @@ public class Pacf implements Printable {
             tt.textRight(i + 1, 0, lags.getLabel(i));
             tt.floatFlex(i + 1, 1, pacf.getDouble(i));
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         sb.append("\n");
         return sb.toString();
     }

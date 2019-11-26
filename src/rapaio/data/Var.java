@@ -31,7 +31,6 @@ import rapaio.data.filter.VFilter;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
-import rapaio.printer.Summary;
 import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
@@ -410,8 +409,5 @@ public interface Var extends Serializable, Printable {
     }
 
     @Override
-    default String toSummary() {
-        return Summary.getSummary(this);
-    }
-
+    String toSummary();
 }

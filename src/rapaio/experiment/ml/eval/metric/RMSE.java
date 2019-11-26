@@ -128,7 +128,7 @@ public class RMSE implements Printable {
             tt.textRight(i + 1, 1, Format.floatFlex(rmse.getDouble(i)));
             tt.textRight(i + 1, 2, Format.floatFlex(mse.getDouble(i)));
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         sb.append("\n");
 
         sb.append("Total RMSE: ").append(Format.floatFlex(totalRmse)).append("\n");

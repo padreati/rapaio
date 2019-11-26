@@ -247,7 +247,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
                 tt.textLeft(j + 1, 0, inputNames[j]);
                 tt.floatMedium(j + 1, 1, coeff.get(j));
             }
-            sb.append(tt.getDefaultText());
+            sb.append(tt.getDynamicText());
             sb.append("\n");
         }
         return sb.toString();

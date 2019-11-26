@@ -105,7 +105,7 @@ public final class Acf implements Printable {
             tt.floatFlex(i + 1, 1, correlation.getDouble(i));
             tt.floatFlex(i + 1, 2, covariance.getDouble(i));
         }
-        sb.append(tt.getDefaultText());
+        sb.append(tt.getDynamicText());
         sb.append("\n");
         return sb.toString();
     }

@@ -27,6 +27,9 @@
 
 package rapaio.data;
 
+import rapaio.data.unique.UniqueLabel;
+import rapaio.printer.format.TextTable;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

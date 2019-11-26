@@ -171,11 +171,11 @@ public class RidgeRegressionModelTest {
                 "Model instance: RidgeRegression(lambda=3.1415927,intercept=false,center=false,scaling=false)\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. TV        double \n" +
-                "2. Radio     double \n" +
-                "3. Newspaper double \n" +
+                "1. TV        dbl \n" +
+                "2. Radio     dbl \n" +
+                "3. Newspaper dbl \n" +
                 "> target variables: \n" +
-                "1. Sales double \n" +
+                "1. Sales dbl \n" +
                 "\n" +
                 "Target <<< Sales >>>\n" +
                 "\n" +
