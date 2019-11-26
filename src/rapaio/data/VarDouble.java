@@ -28,8 +28,8 @@
 package rapaio.data;
 
 
-import rapaio.data.ops.DoubleDVarOp;
 import rapaio.data.ops.DVarOp;
+import rapaio.data.ops.DoubleDVarOp;
 import rapaio.printer.format.TextTable;
 
 import java.io.IOException;

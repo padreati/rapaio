@@ -27,8 +27,6 @@
 
 package rapaio.data;
 
-import rapaio.data.unique.UniqueLabel;
-import rapaio.printer.format.TextTable;
 import rapaio.util.serializable.SFunction;
 
 import java.util.ArrayList;
