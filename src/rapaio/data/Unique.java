@@ -59,6 +59,10 @@ import rapaio.printer.Printable;
  */
 public interface Unique extends Printable {
 
+    static Unique of(Var var) {
+        return Unique.of(var, false);
+    }
+
     static Unique of(Var var, boolean sorted) {
         switch (var.type()) {
             case DOUBLE:
@@ -73,12 +77,24 @@ public interface Unique extends Printable {
         }
     }
 
+    static UniqueDouble ofDouble(Var var) {
+        return UniqueDouble.of(var, false);
+    }
+
     static UniqueDouble ofDouble(Var var, boolean sorted) {
         return UniqueDouble.of(var, sorted);
     }
 
+    static UniqueInt ofInt(Var var) {
+        return UniqueInt.of(var, false);
+    }
+
     static UniqueInt ofInt(Var var, boolean sorted) {
         return UniqueInt.of(var, sorted);
+    }
+
+    static UniqueLabel ofLabel(Var var) {
+        return UniqueLabel.of(var, false);
     }
 
     static UniqueLabel ofLabel(Var var, boolean sorted) {

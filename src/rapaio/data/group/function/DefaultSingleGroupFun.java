@@ -33,7 +33,7 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.group.Group;
+import rapaio.data.Group;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
             int index = group.getFrame().varIndex(varName);
             for (int i = 0; i < ids.rowCount(); i++) {
                 int groupId = ids.getInt(i);
-                updateSingle(aggregate, i, group.getFrame(), index, group.getRowsForGroupId(groupId));
+                updateSingle(aggregate, groupId, group.getFrame(), index, group.getRowsForGroupId(groupId));
             }
             if (normalizeLevel < 0) {
                 result.add(aggregate);

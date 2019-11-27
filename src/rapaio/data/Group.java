@@ -25,15 +25,9 @@
  *
  */
 
-package rapaio.data.group;
+package rapaio.data;
 
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.SolidFrame;
-import rapaio.data.VRange;
-import rapaio.data.VType;
-import rapaio.data.Var;
-import rapaio.data.VarInt;
+import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
 import rapaio.data.group.function.GroupFunMax;
@@ -43,7 +37,6 @@ import rapaio.data.group.function.GroupFunNUnique;
 import rapaio.data.group.function.GroupFunSkewness;
 import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
-import rapaio.data.Unique;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
@@ -168,9 +161,6 @@ public class Group implements Printable {
 
     // other than pk var names from source frame
     private final List<String> featureNamesList;
-
-    // collection of unique structures for each primary key variable
-//    private final List<Unique> groupByUniques;
 
     // maps rows to group ids
     private final HashMap<Integer, Integer> rowToGroupId = new HashMap<>();
