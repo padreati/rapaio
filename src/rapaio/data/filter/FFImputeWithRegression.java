@@ -11,6 +11,10 @@ import rapaio.ml.regression.RegressionResult;
  */
 public class FFImputeWithRegression extends AbstractFF {
 
+    public static FFImputeWithRegression of(RegressionModel model, VRange inputVars, String targetName) {
+        return new FFImputeWithRegression(model, inputVars, targetName);
+    }
+
     private static final long serialVersionUID = 7428989420235407246L;
 
     private final RegressionModel model;
@@ -40,7 +44,7 @@ public class FFImputeWithRegression extends AbstractFF {
     }
 
     @Override
-    public FFilter newInstance() {
-        return new FFImputeWithRegression(model.newInstance(), VRange.of(varNames), targetName);
+    public FFImputeWithRegression newInstance() {
+        return new FFImputeWithRegression(model.newInstance(), vRange, targetName);
     }
 }
