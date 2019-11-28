@@ -29,8 +29,8 @@ package rapaio.data;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
-import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.ops.DVarOp;
+import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.unique.UniqueLabel;
 import rapaio.printer.format.TextTable;
 import rapaio.util.collection.IntArrays;

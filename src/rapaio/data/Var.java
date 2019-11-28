@@ -29,6 +29,7 @@ package rapaio.data;
 
 import rapaio.data.filter.VFilter;
 import rapaio.data.ops.DVarOp;
+import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
 import rapaio.util.collection.IntComparator;
@@ -36,6 +37,9 @@ import rapaio.util.collection.IntComparator;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntConsumer;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -319,6 +323,24 @@ public interface Var extends Serializable, Printable {
      */
     default VSpots stream() {
         return new VSpots(this);
+    }
+
+    default void forEachSpot(Consumer<VSpot> consumer) {
+        for (int i = 0; i < rowCount(); i++) {
+            consumer.accept(new VSpot(i, this));
+        }
+    }
+
+    default void forEachInt(IntConsumer consumer) {
+        for (int i = 0; i < rowCount(); i++) {
+            consumer.accept(getInt(i));
+        }
+    }
+
+    default void forEachDouble(DoubleConsumer consumer) {
+        for (int i = 0; i < rowCount(); i++) {
+            consumer.accept(getDouble(i));
+        }
     }
 
     /**

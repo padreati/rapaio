@@ -112,12 +112,12 @@ public final class IntervalMapping implements Mapping {
 
     @Override
     public IntIterator iterator() {
-        return onList ? listMapping.iterator() : new MyIntListIterator(start, end);
+        return onList ? listMapping.iterator() : new IntervalIterator(start, end);
     }
 
     @Override
     public IntIterator iterator(int start, int end) {
-        return onList ? listMapping.iterator(start, end) : new MyIntListIterator(this.start + start, this.start + end);
+        return onList ? listMapping.iterator(start, end) : new IntervalIterator(this.start + start, this.start + end);
     }
 
     @Override
@@ -136,29 +136,29 @@ public final class IntervalMapping implements Mapping {
     public IntStream stream() {
         return onList ? listMapping.stream() : IntStream.range(start, end);
     }
-}
 
-class MyIntListIterator implements IntIterator {
-    private final int start;
-    private final int end;
-    private int s;
+    static class IntervalIterator implements IntIterator {
+        private final int start;
+        private final int end;
+        private int s;
 
-    public MyIntListIterator(int start, int end) {
-        this.start = start;
-        this.end = end;
-        s = start;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return s < end;
-    }
-
-    @Override
-    public int nextInt() {
-        if (s >= end) {
-            throw new NoSuchElementException();
+        public IntervalIterator(int start, int end) {
+            this.start = start;
+            this.end = end;
+            s = start;
         }
-        return s++;
+
+        @Override
+        public boolean hasNext() {
+            return s < end;
+        }
+
+        @Override
+        public int nextInt() {
+            if (s >= end) {
+                throw new NoSuchElementException();
+            }
+            return s++;
+        }
     }
 }
