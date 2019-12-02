@@ -31,9 +31,6 @@ public class FFImputeWithClassifierTest {
         VarNominal x = VarNominal.from(100, row -> xd[RandomSource.nextInt(xd.length)]).withName("x");
         VarNominal y = VarNominal.from(100, row -> yd[RandomSource.nextInt(yd.length)]).withName("y");
 
-        double xm = Mean.of(x).value();
-        double ym = Mean.of(y).value();
-
         var model = new OneRule();
 
         FFImputeWithClassifier xfilter = FFImputeWithClassifier.of(model, VRange.of("x,y"), "x").newInstance();
