@@ -1,9 +1,9 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/18.
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 public class FRefSortTest {
 
     @Test
-    public void testRefSort() {
+    void testRefSort() {
 
         Frame src = FFilterTestUtil.allDoubleNominal(10, 2, 2);
 

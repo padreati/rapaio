@@ -24,9 +24,8 @@
 
 package rapaio.graphics;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
@@ -53,6 +52,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -75,15 +75,15 @@ public class ImageGraphicsTest {
 
     private Frame df;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         RandomSource.setSeed(1234);
         WS.setPrinter(new IdeaPrinter());
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
     }
 
     @Test
-    public void testBoxPlot() throws IOException {
+    void testBoxPlot() throws IOException {
 
         Var x = df.rvar(1);
         Var factor = df.rvar("class");
@@ -99,11 +99,11 @@ public class ImageGraphicsTest {
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("boxplot-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testFunLine() throws IOException {
+    void testFunLine() throws IOException {
 
         Plot plot = funLine(x -> x * x, color(1))
                 .funLine(Math::log1p, color(2))
@@ -114,18 +114,18 @@ public class ImageGraphicsTest {
 
         JavaIO.storeToFile(plot, "/tmp/tmp.ser");
 
-        if(show)
+        if (show)
             WS.draw(plot);
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/funLine-test.png");
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("funLine-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testQQPlot() throws IOException {
+    void testQQPlot() throws IOException {
 
         final int N = 100;
         Var x = df.rvar(2);
@@ -142,11 +142,11 @@ public class ImageGraphicsTest {
                     root + "/rapaio/graphics/qqplot-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("qqplot-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testHistogram2D() throws IOException {
+    void testHistogram2D() throws IOException {
 
         Var x = df.rvar(0).copy().withName("x");
         Var y = df.rvar(1).copy().withName("y");
@@ -158,11 +158,11 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist2d-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist2d-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testHistogram() throws IOException {
+    void testHistogram() throws IOException {
 
         Var x = df.rvar(0).withName("x");
         Plot plot = hist(x, bins(30));
@@ -172,11 +172,11 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testGridLayer() throws IOException {
+    void testGridLayer() throws IOException {
 
         Var x = df.rvar(0).withName("x");
         Var y = df.rvar(1).withName("y");
@@ -194,11 +194,11 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(fig, 400, 400, root + "/rapaio/graphics/grid-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("grid-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testLines() throws IOException {
+    void testLines() throws IOException {
 
         Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
@@ -214,11 +214,11 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(fig, 300, 200, root + "/rapaio/graphics/lines-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 300, 200);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("lines-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testPoints() throws IOException {
+    void testPoints() throws IOException {
 
         Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x");
         Var y = df.rvar(1).fapply(VApplyDouble.with(Math::log1p)).withName("y");
@@ -233,11 +233,11 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/points-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("points-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testDensity() throws IOException {
+    void testDensity() throws IOException {
 
         Var x = df.rvar(0).mapRows(Mapping.range(200));
         x.printSummary();
@@ -254,36 +254,33 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/density-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("density-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     @Test
-    public void testRocCurve() throws IOException {
+    void testRocCurve() throws IOException {
 
         ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 2);
         roc.printSummary();
 
         Figure fig = rocCurve(roc);
 
-        if(show)
+        if (show)
             WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/roc-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("roc-test.png"));
-        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
-        if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
-//            for (int x = 0; x < img1.getWidth(); x++) {
-//                for (int y = 0; y < img1.getHeight(); y++) {
-//                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
-//                        return false;
-//                }
-//            }
-            return true;
-        }
-        return false;
+        //            for (int x = 0; x < img1.getWidth(); x++) {
+        //                for (int y = 0; y < img1.getHeight(); y++) {
+        //                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
+        //                        return false;
+        //                }
+        //            }
+        return img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight();
     }
 }

@@ -1,6 +1,6 @@
 package rapaio.ml.eval.metric;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -10,12 +10,8 @@ import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.metric.RMSE;
 import rapaio.ml.regression.linear.LinearRegressionModel;
-import rapaio.ml.regression.linear.LinearRegressionResult;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/17.
@@ -25,7 +21,7 @@ public class RMSETest {
     private static final double TOL = 1e-15;
 
     @Test
-    public void basicTest() {
+    void basicTest() {
 
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
@@ -56,7 +52,7 @@ public class RMSETest {
     }
 
     @Test
-    public void irisTest() throws IOException, URISyntaxException {
+    void irisTest() {
 
         Frame df = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
 
@@ -67,11 +63,11 @@ public class RMSETest {
         LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
         lm.fit(df, targets);
 
-        LinearRegressionResult fit = lm.predict(df, true);
+        var fit = lm.predict(df, true);
         RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.predictionFrame());
 
         for (int i = 0; i < targets.length; i++) {
-            assertEquals(fit.rss(targets[i])/df.rowCount(), rmse.mse().getDouble(i), TOL);
+            assertEquals(fit.rss(targets[i]) / df.rowCount(), rmse.mse().getDouble(i), TOL);
             assertEquals(rmse.totalRmse(), Math.sqrt(rmse.totalMse()), TOL);
         }
     }

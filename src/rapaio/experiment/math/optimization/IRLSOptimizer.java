@@ -29,11 +29,11 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.LUDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.LUDecomposition;
+import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.printer.format.Format;
 
 import java.util.List;
@@ -69,41 +69,40 @@ public class IRLSOptimizer {
      * @param iterationLimit the maximum number of iteration steps to allow
      * @param f              the function to optimize
      * @param fd             the derivative of the function to optimize
-     * @param vars           contains the initial estimate of the minima. The length should be equal to the number of variables being solved for. This value may be altered.
-     * @param inputs         a list of input data point values to learn from
-     * @param outputs        a vector containing the true values for each data point in <tt>inputs</tt>
+     * @param w              contains the initial estimate of the minima. The length should be equal to the number of variables being solved for. This value may be altered.
+     * @param xs             a list of input data point values to learn from
+     * @param y              a vector containing the true values for each data point in <tt>inputs</tt>
      * @return the compute value for the optimization.
      */
-    public VarDouble optimize(double eps, int iterationLimit, Function<Var, Double> f,
-                              Function<Var, Double> fd, VarDouble vars, List<Var> inputs, VarDouble outputs) {
+    public VarDouble optimize(double eps, int iterationLimit,
+                              Function<Var, Double> f, Function<Var, Double> fd,
+                              VarDouble w, List<Var> xs, VarDouble y) {
 
-        hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
-        coef = SolidRM.empty(inputs.size(), vars.rowCount());
-        for (int i = 0; i < inputs.size(); i++) {
-            Var x_i = inputs.get(i);
+        hessian = SolidRM.empty(w.rowCount(), w.rowCount());
+        coef = SolidRM.empty(xs.size(), w.rowCount());
+        for (int i = 0; i < xs.size(); i++) {
+            Var x_i = xs.get(i);
             coef.set(i, 0, 1.0);
-            for (int j = 1; j < vars.rowCount(); j++)
+            for (int j = 1; j < w.rowCount(); j++)
                 coef.set(i, j, x_i.getDouble(j - 1));
         }
 
-        derivatives = SolidRV.empty(inputs.size());
-        err = SolidRV.empty(outputs.rowCount());
-        grad = SolidRM.empty(vars.rowCount(), 1);
+        derivatives = SolidRV.empty(xs.size());
+        err = SolidRV.empty(y.rowCount());
+        grad = SolidRM.empty(w.rowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
-            maxChange = iterationStep(f, fd, vars, inputs, outputs);
+            maxChange = iterationStep(f, fd, w, xs, y);
             logger.finer("IRLS maxChange: " + Format.floatFlex(maxChange));
         }
-        return vars;
+        return w;
     }
 
-    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, VarDouble vars, List<Var> inputs, VarDouble outputs) {
-        for (int i = 0; i < inputs.size(); i++) {
-            Var x_i = inputs.get(i);
-            double y = f.apply(x_i);
-            double error = y - outputs.getDouble(i);
-            err.set(i, error);
+    private double iterationStep(Function<Var, Double> f, Function<Var, Double> fd, VarDouble w, List<Var> xs, VarDouble y) {
+        for (int i = 0; i < xs.size(); i++) {
+            Var x_i = xs.get(i);
+            err.set(i, f.apply(x_i) - y.getDouble(i));
             derivatives.set(i, fd.apply(x_i));
         }
 
@@ -121,7 +120,7 @@ public class IRLSOptimizer {
             grad.set(j, 0, gradTmp);
         }
 
-        LUDecomposition lu = LUDecomposition.from(hessian);
+        LUDecomposition lu = LUDecomposition.from(hessian.copy());
 
         //We sent a clone of the hessian b/c we make incremental updates every iteration
         if (Math.abs(lu.det()) < 1e-14) {
@@ -130,13 +129,14 @@ public class IRLSOptimizer {
         }
         RV delta = lu.solve(grad).mapCol(0);
 
-        for (int i = 0; i < vars.rowCount(); i++)
-            vars.setDouble(i, vars.getDouble(i) - delta.get(i));
+        w.op().minus(delta.asNumericVar());
 
         double max = Math.abs(delta.get(0));
+        double min = Math.abs(delta.get(0));
         for (int i = 1; i < delta.count(); i++) {
             max = Math.max(max, Math.abs(delta.get(i)));
+            min = Math.min(min, Math.abs(delta.get(i)));
         }
-        return max;
+        return max - min;
     }
 }

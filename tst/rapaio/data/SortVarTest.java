@@ -24,16 +24,16 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.data.filter.VRefSort;
 import rapaio.data.filter.VSort;
 import rapaio.io.Csv;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.data.RowComparators.*;
 
 /**
@@ -42,7 +42,7 @@ import static rapaio.data.RowComparators.*;
 public class SortVarTest {
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         Var v = VarInt.empty();
         Var sorted = new VRefSort(integerComparator(v, true)).fapply(v);
         assertTrue(sorted.type().isNumeric());
@@ -60,7 +60,7 @@ public class SortVarTest {
     }
 
     @Test
-    public void testSortIndex() {
+    void testSortIndex() {
         Var index = VarInt.seq(10, 10, -1);
         index.setMissing(2);
         index.setMissing(5);
@@ -84,7 +84,7 @@ public class SortVarTest {
     }
 
     @Test
-    public void testSortNumeric() {
+    void testSortNumeric() {
         Var numeric = VarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
@@ -105,7 +105,7 @@ public class SortVarTest {
     }
 
     @Test
-    public void testSortNominal() {
+    void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
         Var nominal = VarNominal.empty(10, dict);
 
@@ -134,7 +134,7 @@ public class SortVarTest {
     }
 
     @Test
-    public void testGetterSetter() throws IOException, URISyntaxException {
+    void testGetterSetter() throws IOException {
 
         Frame df = Csv.instance()
                 .withQuotes(false)
@@ -199,7 +199,7 @@ public class SortVarTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
         Var v = VarInt.seq(1, 10);
         v = new VRefSort(integerComparator(v, true)).fapply(v);
         for (int i = 0; i < 10; i += 3) {

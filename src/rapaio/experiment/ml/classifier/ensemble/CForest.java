@@ -32,7 +32,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
@@ -89,7 +89,7 @@ public class CForest
     // learning artifacts
     private double oobError = Double.NaN;
     private List<ClassifierModel> predictors = new ArrayList<>();
-    private Map<Integer, DVector> oobDensities;
+    private Map<Integer, DensityVector> oobDensities;
     private Var oobFit;
     private Var oobTrueClass;
     private Map<String, List<Double>> freqVIMap = new HashMap<>();
@@ -261,7 +261,7 @@ public class CForest
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobFit = VarNominal.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
-                oobDensities.put(i, DVector.empty(false, firstTargetLevels()));
+                oobDensities.put(i, DensityVector.empty(false, firstTargetLevels()));
             }
         }
         if (freqVIComp && c instanceof CTree) {
@@ -371,7 +371,7 @@ public class CForest
 
     private void gainVICompute(Pair<ClassifierModel, VarInt> weak) {
         CTree weakTree = (CTree) weak._1;
-        DVector scores = DVector.empty(false, inputNames());
+        DensityVector scores = DensityVector.empty(false, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
@@ -383,7 +383,7 @@ public class CForest
         }
     }
 
-    private void collectGainVI(CTreeNode node, DVector dv) {
+    private void collectGainVI(CTreeNode node, DensityVector dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();
@@ -394,7 +394,7 @@ public class CForest
 
     private void freqVICompute(Pair<ClassifierModel, VarInt> weak) {
         CTree weakTree = (CTree) weak._1;
-        DVector scores = DVector.empty(false, inputNames());
+        DensityVector scores = DensityVector.empty(false, inputNames());
         collectFreqVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
@@ -406,7 +406,7 @@ public class CForest
         }
     }
 
-    private void collectFreqVI(CTreeNode node, DVector dv) {
+    private void collectFreqVI(CTreeNode node, DensityVector dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();
@@ -428,7 +428,7 @@ public class CForest
         oobFit.clearRows();
         totalOobError = 0.0;
         totalOobInstances = 0.0;
-        for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
+        for (Map.Entry<Integer, DensityVector> e : oobDensities.entrySet()) {
             if (e.getValue().sum() > 0) {
                 int bestIndex = e.getValue().findBestIndex();
                 String bestLevel = firstTargetLevels().get(bestIndex);

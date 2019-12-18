@@ -1,17 +1,16 @@
 package rapaio.ml.regression.simple;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.RegressionResult;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
@@ -22,8 +21,8 @@ public class L1RegressionModelTest {
     private Frame df;
     private Frame bigDf;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         df = Datasets.loadISLAdvertising();
         Var[] vars = new Var[30];
         for (int i = 0; i < vars.length; i++) {
@@ -33,7 +32,7 @@ public class L1RegressionModelTest {
     }
 
     @Test
-    public void testNaming() {
+    void testNaming() {
         L1RegressionModel model = L1RegressionModel.newL1();
         assertEquals("L1Regression", model.name());
         assertEquals("L1Regression()", model.fullName());
@@ -247,9 +246,9 @@ public class L1RegressionModelTest {
     }
 
     @Test
-    public void testPrediction() {
+    void testPrediction() {
         L1RegressionModel model = L1RegressionModel.newL1().newInstance().fit(df, "Sales");
-        RegressionResult result = model.predict(df);
+        var result = model.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(model.getMedians()[0], result.firstPrediction().getDouble(i), TOL);
         }

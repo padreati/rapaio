@@ -24,7 +24,7 @@
 
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -34,10 +34,8 @@ import rapaio.data.VType;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FFilter;
-import rapaio.data.filter.FJitter;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
@@ -45,7 +43,7 @@ import static org.junit.Assert.*;
 public class FJitterTest {
 
     @Test
-    public void testSmoke() {
+    void testSmoke() {
 
         Frame a = SolidFrame.byVars(
                 VarDouble.fill(100, 0).withName("num1"),
@@ -69,7 +67,7 @@ public class FJitterTest {
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).withName("x"));
 
         RandomSource.setSeed(111);

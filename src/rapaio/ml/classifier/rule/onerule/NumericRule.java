@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -43,7 +43,7 @@ public class NumericRule extends Rule {
     private final double maxValue;
     private final boolean missingValue;
 
-    public NumericRule(double minValue, double maxValue, boolean missingValue, int targetIndex, DVector dv) {
+    public NumericRule(double minValue, double maxValue, boolean missingValue, int targetIndex, DensityVector dv) {
         super(targetIndex, dv);
         this.minValue = minValue;
         this.maxValue = maxValue;

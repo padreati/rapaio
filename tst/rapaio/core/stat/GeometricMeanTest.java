@@ -1,11 +1,12 @@
 package rapaio.core.stat;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/18.
@@ -14,13 +15,13 @@ public class GeometricMeanTest {
 
     private static final double TOL = 1e-12;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         VarDouble x = VarDouble.wrap(2, 2, 2, 2);
         GeometricMean mean = GeometricMean.of(x);
         assertEquals(2, mean.value(), TOL);

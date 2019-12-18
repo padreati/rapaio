@@ -1,7 +1,7 @@
 package rapaio.data.filter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
@@ -9,7 +9,7 @@ import rapaio.data.VType;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/18.
@@ -18,13 +18,13 @@ public class FOneHotEncodingTest {
 
     private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Frame df = FFilterTestUtil.allDoubleNominal(100, 2, 2);
 
         Frame f1 = df.fapply(FOneHotEncoding.on(VRange.onlyTypes(VType.DOUBLE)));
@@ -35,7 +35,7 @@ public class FOneHotEncodingTest {
     }
 
     @Test
-    public void testNominal() {
+    void testNominal() {
         Frame df = FFilterTestUtil.allDoubleNominal(100, 2, 2).mapVars(VRange.of(2));
 
         List<String> levels = df.rvar(0).levels();
@@ -56,10 +56,10 @@ public class FOneHotEncodingTest {
         }
 
         Frame f2 = df.fapply(FOneHotEncoding.on(true, false, VRange.all()).newInstance());
-        assertEquals(levels.size()-2, f2.varCount());
+        assertEquals(levels.size() - 2, f2.varCount());
 
         for (int i = 2; i < levels.size(); i++) {
-            assertTrue(f2.varName(i-2).contains(levels.get(i)));
+            assertTrue(f2.varName(i - 2).contains(levels.get(i)));
         }
     }
 }

@@ -24,12 +24,12 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -38,7 +38,7 @@ public class ZTestOneSampleTest {
     private static double TOL = 1e-20;
 
     @Test
-    public void zTestOneSampleTest() {
+    void zTestOneSampleTest() {
 
         RandomSource.setSeed(1234);
         double mu = 75;

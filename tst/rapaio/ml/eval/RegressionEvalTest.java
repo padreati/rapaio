@@ -1,7 +1,7 @@
 package rapaio.ml.eval;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
@@ -12,7 +12,7 @@ import rapaio.ml.regression.linear.RidgeRegressionModel;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/8/19.
@@ -22,8 +22,8 @@ public class RegressionEvalTest {
     private Frame df;
     private RegressionEval reval;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         df = Datasets.loadISLAdvertising().removeVars("ID").copy();
         reval = RegressionEval.newInstance()
                 .withFrame(df)
@@ -38,7 +38,7 @@ public class RegressionEvalTest {
     }
 
     @Test
-    public void testCv() {
+    void testCv() {
         CVResult cvr = reval.cv(10);
         assertEquals(10, cvr.getFolds());
         assertEquals(3, cvr.getSummaryFrame().varCount());
@@ -52,7 +52,7 @@ public class RegressionEvalTest {
     }
 
     @Test
-    public void testDefault() {
+    void testDefault() {
         RegressionEval re = RegressionEval.newInstance()
                 .withFrame(df)
                 .withMetric(RMetric.RMS)

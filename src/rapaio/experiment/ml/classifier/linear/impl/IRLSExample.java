@@ -31,11 +31,11 @@ import rapaio.core.distributions.Bernoulli;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.QRDecomposition;
+import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.dense.SolidRV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.

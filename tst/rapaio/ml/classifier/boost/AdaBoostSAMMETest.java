@@ -24,7 +24,7 @@
 
 package rapaio.ml.classifier.boost;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
@@ -37,12 +37,11 @@ import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class AdaBoostSAMMETest {
 
     @Test
-    public void testBuild() throws IOException, URISyntaxException {
+    void testBuild() throws IOException {
 
         WS.setPrinter(new IdeaPrinter());
         AdaBoostSAMME ab = new AdaBoostSAMME()

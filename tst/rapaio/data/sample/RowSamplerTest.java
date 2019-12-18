@@ -24,22 +24,23 @@
 
 package rapaio.data.sample;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 
 import java.util.stream.DoubleStream;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * Test for row sampling tools
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/26/16.
  */
 public class RowSamplerTest {
@@ -47,22 +48,22 @@ public class RowSamplerTest {
     private Frame df;
     private VarDouble w;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         df = Datasets.loadIrisDataset();
         w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).withName("w");
-        Assert.assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
+        assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
     }
 
     @Test
-    public void identitySamplerTest() {
+    void identitySamplerTest() {
         Sample s = RowSampler.identity().nextSample(df, w);
-        Assert.assertTrue(s.df.deepEquals(df));
-        Assert.assertTrue(s.weights.deepEquals(w));
+        assertTrue(s.df.deepEquals(df));
+        assertTrue(s.weights.deepEquals(w));
     }
 
     @Test
-    public void bootstrapTest() {
+    void bootstrapTest() {
         RandomSource.setSeed(123);
 
         int N = 1_000;
@@ -73,11 +74,11 @@ public class RowSamplerTest {
         }
 
         // close to 1 - 1 / exp(1)
-        Assert.assertEquals(0.63328, Mean.of(count).value(), 1e-5);
+        assertEquals(0.63328, Mean.of(count).value(), 1e-5);
     }
 
     @Test
-    public void subsampleTest() {
+    void subsampleTest() {
         RandomSource.setSeed(123);
 
         int N = 1_000;
@@ -90,7 +91,7 @@ public class RowSamplerTest {
         // uniform counts close to 500
         count.printContent();
 
-        DVector freq = DVector.empty(true, df.rowCount());
+        DensityVector freq = DensityVector.empty(true, df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             freq.set(i, count.getDouble(i));
         }
@@ -100,15 +101,15 @@ public class RowSamplerTest {
 
         // chi square goodness of predict
 
-        Assert.assertTrue(chiTest.pValue() > 0.99);
+        assertTrue(chiTest.pValue() > 0.99);
     }
 
     @Test
-    public void nameSamplerTest() {
-        Assert.assertEquals("Identity", RowSampler.identity().name());
-        Assert.assertEquals("Bootstrap(p=1)", RowSampler.bootstrap().name());
-        Assert.assertEquals("Bootstrap(p=0.2)", RowSampler.bootstrap(0.2).name());
-        Assert.assertEquals("SubSampler(p=1)", RowSampler.subsampler(1.0).name());
-        Assert.assertEquals("SubSampler(p=0.2)", RowSampler.subsampler(0.2).name());
+    void nameSamplerTest() {
+        assertEquals("Identity", RowSampler.identity().name());
+        assertEquals("Bootstrap(p=1)", RowSampler.bootstrap().name());
+        assertEquals("Bootstrap(p=0.2)", RowSampler.bootstrap(0.2).name());
+        assertEquals("SubSampler(p=1)", RowSampler.subsampler(1.0).name());
+        assertEquals("SubSampler(p=0.2)", RowSampler.subsampler(0.2).name());
     }
 }

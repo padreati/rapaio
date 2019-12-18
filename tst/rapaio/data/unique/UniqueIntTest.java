@@ -1,7 +1,7 @@
 package rapaio.data.unique;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
@@ -10,20 +10,20 @@ import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueIntTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testRandomUnsorted() {
+    void testRandomUnsorted() {
         final int N = 100;
         int[] values = new int[N];
         for (int i = 0; i < N; i++) {
@@ -53,7 +53,7 @@ public class UniqueIntTest {
     }
 
     @Test
-    public void testDuplicatesUnsorted() {
+    void testDuplicatesUnsorted() {
         int[] sample = new int[]{3, 1, 7, 5, Integer.MIN_VALUE};
         final int N = 100;
         int[] values = new int[N];
@@ -87,7 +87,7 @@ public class UniqueIntTest {
     }
 
     @Test
-    public void testString() {
+    void testString() {
 
         int oldTextWidth = WS.getPrinter().textWidth();
         WS.getPrinter().withTextWidth(100);

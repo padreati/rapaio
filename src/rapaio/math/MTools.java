@@ -31,7 +31,6 @@ import rapaio.core.distributions.Normal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -41,23 +40,50 @@ import java.util.ArrayList;
  */
 public class MTools {
 
-    /* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */
-
+    /**
+     * sqrt(2)
+     */
     public static final double M_SQRT_2 = 1.41421356237309504880168872420969807856967187537694807317667973799073247846210703885038753432764157273501384623091229702;
-    /* 1/sqrt(2) */
+
+    /**
+     * 1/sqrt(2)
+     */
     public static final double M_1_SQRT_2 = 0.70710678118654752440084436210484903928483593768847403658833986899536623923105351942519376716382078636750692311545614851;
-    /* sqrt(32) */
+    /**
+     * sqrt(32)
+     */
     public static final double M_SQRT_32 = 5.65685424949238019520675489683879231427868750150779229270671895196292991384842815540155013731056629094005538492364918809;
 
+    /**
+     * ln(2)
+     */
     public static final double M_LN2 = 0.69314718055994530941723212145817656807550013436025525412068000949339362196969471560586332699641868754200148102057068573;
+
+    /**
+     * ln(10)
+     */
     public static final double M_LN10 = 2.30258509299404568401799145468436420760110148862877297603332790096757260967735248023599720508959829834196778404228624863;
+
+    /**
+     * log_10(2)
+     */
     public static final double M_LOG10_2 = 0.30102999566398119521373889472449302676818988146210854131042746112710818927442450948692725211818617204068447719143099537;
 
+    /**
+     * pi
+     */
     public static final double M_PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664;
+
+    /**
+     * 2*pi
+     */
     public static final double M_2PI = 6.28318530717958647692528676655900576839433879875021164194988918461563281257241799725606965068423413596429617302656461329;
+
+    /**
+     *
+     */
     public static final double M_LOG_PI = 1.14472988584940017414342735135305871164729481291531157151362307147213776988482607978362327027548970770200981222869798915;
 
-    public static final double PI = Math.PI;
     /* 1/pi */
     public static final double M_1_PI = 0.31830988618379067153776752674502872406891929148091289749533468811779359526845307018022760553250617191214568545351591607;
 
@@ -98,25 +124,6 @@ public class MTools {
     public static final double DBL_MAX = 1.797693134862315708145e+308;
     public static final double SQRT_DBL_EPSILON = sqrt(DBL_EPSILON);
 
-    /* Number of decimal digits of precision in a float/double */
-    public static final int FLT_DIG = 6;
-    public static final int DBL_DIG = 15;
-
-    /* Number of base-FLT_RADIX digits in the significand of a double */
-    public static final int FLT_MANT_DIG = 24;
-    public static final int DBL_MANT_DIG = 53;
-
-    /* Minimum int x such that FLT_RADIX**(x-1) is a normalised double */
-    public static final int FLT_MIN_EXP = -125;
-    public static final int DBL_MIN_EXP = -1021;
-
-    /* Maximum int x such that FLT_RADIX**(x-1) is a representable double */
-    public static final int FLT_MAX_EXP = 128;
-    public static final int DBL_MAX_EXP = 1024;
-
-    public static final double d1mach3 = 0.5 * DBL_EPSILON;
-    public static final double d1mach4 = DBL_EPSILON;
-
     /*
      * machine constants
      */
@@ -134,7 +141,6 @@ public class MTools {
 
     public static final double LOGPI = 1.14472988584940017414;
 
-    public static final double big = 4.503599627370496e15;
 
     public static final double biginv = 2.22044604925031308085e-16;
 
@@ -148,22 +154,22 @@ public class MTools {
     public static final double TWO_PI = 6.283185307179586476925286;
     public static final double SMALL_ERR = 1e-10;
     private static final double
-            a0 = 7.72156649015328655494e-02,
-            a1 = 3.22467033424113591611e-01,
-            a2 = 6.73523010531292681824e-02,
-            a3 = 2.05808084325167332806e-02,
-            a4 = 7.38555086081402883957e-03,
-            a5 = 2.89051383673415629091e-03,
-            a6 = 1.19270763183362067845e-03,
-            a7 = 5.10069792153511336608e-04,
-            a8 = 2.20862790713908385557e-04,
-            a9 = 1.08011567247583939954e-04,
-            a10 = 2.52144565451257326939e-05,
-            a11 = 4.48640949618915160150e-05,
-            tc = 1.46163214496836224576e+00,
-            tf = -1.21486290535849611461e-01,
-            tt = -3.63867699703950536541e-18,
-            t0 = 4.83836122723810047042e-01,
+            lng_a0 = 7.72156649015328655494e-02,
+            lng_a1 = 3.22467033424113591611e-01,
+            lng_a2 = 6.73523010531292681824e-02,
+            lng_a3 = 2.05808084325167332806e-02,
+            lng_a4 = 7.38555086081402883957e-03,
+            lng_a5 = 2.89051383673415629091e-03,
+            lng_a6 = 1.19270763183362067845e-03,
+            lng_a7 = 5.10069792153511336608e-04,
+            lng_a8 = 2.20862790713908385557e-04,
+            lng_a9 = 1.08011567247583939954e-04,
+            lng_a10 = 2.52144565451257326939e-05,
+            lng_a11 = 4.48640949618915160150e-05,
+            lng_tc = 1.46163214496836224576e+00,
+            lng_tf = -1.21486290535849611461e-01,
+            lng_tt = -3.63867699703950536541e-18,
+            lng_t0 = 4.83836122723810047042e-01,
             t1 = -1.47587722994593911752e-01,
             t2 = 6.46249402391333854778e-02,
             t3 = -3.27885410759859649565e-02,
@@ -212,7 +218,7 @@ public class MTools {
     /**
      * 1/2 * log(2 &#960;).
      */
-    private static final double HALF_LOG_2_PI = 0.5 * Math.log(TWO_PI);
+    private static final double HALF_LOG_2_PI = 0.5 * M_LN_2PI;
     /**
      * exact Stirling expansion error for certain values.
      */
@@ -333,7 +339,7 @@ public class MTools {
                     y = 1 - x;
                     i = 0;
                 } else if (ix >= 0x3FCDA661) {
-                    y = x - (tc - 1);
+                    y = x - (lng_tc - 1);
                     i = 1;
                 } else {
                     y = x;
@@ -347,7 +353,7 @@ public class MTools {
                 } /*
                  * [1.7316,2]
                  */ else if (ix >= 0x3FF3B4C4) {
-                    y = x - tc;
+                    y = x - lng_tc;
                     i = 1;
                 } /*
                  * [1.23,1.73]
@@ -360,22 +366,22 @@ public class MTools {
             switch (i) {
                 case 0:
                     z = y * y;
-                    p1 = a0 + z * (a2 + z * (a4 + z * (a6 + z * (a8 + z * a10))));
-                    p2 = z * (a1 + z * (a3 + z * (a5 + z * (a7 + z * (a9 + z * a11)))));
+                    p1 = lng_a0 + z * (lng_a2 + z * (lng_a4 + z * (lng_a6 + z * (lng_a8 + z * lng_a10))));
+                    p2 = z * (lng_a1 + z * (lng_a3 + z * (lng_a5 + z * (lng_a7 + z * (lng_a9 + z * lng_a11)))));
                     p = y * p1 + p2;
                     r += (p - 0.5 * y);
                     break;
                 case 1:
                     z = y * y;
                     w = z * y;
-                    p1 = t0 + w * (t3 + w * (t6 + w * (t9 + w * t12)));    /*
+                    p1 = lng_t0 + w * (t3 + w * (t6 + w * (t9 + w * t12)));    /*
                      * parallel comp
                      */
 
                     p2 = t1 + w * (t4 + w * (t7 + w * (t10 + w * t13)));
                     p3 = t2 + w * (t5 + w * (t8 + w * (t11 + w * t14)));
-                    p = z * p1 - (tt - w * (p2 + y * p3));
-                    r += (tf + p);
+                    p = z * p1 - (lng_tt - w * (p2 + y * p3));
+                    r += (lng_tf + p);
                     break;
                 case 2:
                     p1 = y * (u0 + y * (u1 + y * (u2 + y * (u3 + y * (u4 + y * u5)))));
@@ -708,6 +714,8 @@ public class MTools {
      * @param x the integration start point.
      */
     static public double incompleteGammaComplement(double a, double x) throws ArithmeticException {
+        final double big = 4.503599627370496e15;
+
         double ans, ax, c, yc, r, t, y, z;
         double pk, pkm1, pkm2, qk, qkm1, qkm2;
 
@@ -824,7 +832,7 @@ public class MTools {
             double ej = 2.0 * x * v;
             v *= v;
             int j = 1;
-            while (Double.isNaN(s) || Math.abs(s1-s) >= 1e-100) {
+            while (Double.isNaN(s) || Math.abs(s1 - s) >= 1e-100) {
                 s = s1;
                 ej *= v;
                 s1 = s + ej / ((j * 2) + 1);
@@ -907,61 +915,6 @@ public class MTools {
 
     public static boolean eq(double a, double b, double err) {
         return (a - b < err) && (b - a < err);
-    }
-
-    public static boolean sm(double a, double b) {
-        return (b - a > SMALL_ERR);
-    }
-
-    public static boolean gr(double a, double b) {
-        return (a - b > SMALL_ERR);
-    }
-
-    public static long combinations(int n, int k) {
-        long result = 1;
-        if (k > n / 2) {
-            k = n - k;
-        }
-        for (int d = 0; d < k; d++) {
-            long oldResult = result;
-            result = result * (n - d) / (d + 1);
-            // check for overflow
-            if (oldResult > result) {
-                throw new StackOverflowError("long range exceeded");
-            }
-        }
-        return result;
-    }
-
-    public static int[] computePrimes(int max) {
-        boolean[] flag = new boolean[max + 1];
-        int[] primes = new int[max + 1];
-        int plen = 0;
-        primes[plen++] = 1;
-        for (int i = 2; i <= max; i++) {
-            if (!flag[i]) {
-                primes[plen++] = i;
-                for (int j = i; j <= max; j += i) {
-                    flag[j] = true;
-                }
-            }
-        }
-        int[] p = new int[plen];
-        System.arraycopy(primes, 0, p, 0, plen);
-        return p;
-    }
-
-    public static int[] factors(int n, int[] primes) {
-        ArrayList<Integer> factors = new ArrayList<>();
-        for (int i = 1; i < primes.length; i++) {
-            if (n == 1)
-                break;
-            while (n % primes[i] == 0) {
-                n = n / primes[i];
-                factors.add(primes[i]);
-            }
-        }
-        return factors.stream().mapToInt(i -> i).toArray();
     }
 
     public static double fdist(double x, double d1, double d2) {

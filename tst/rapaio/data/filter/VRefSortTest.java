@@ -1,13 +1,12 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VRefSort;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -15,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class VRefSortTest {
 
     @Test
-    public void testSortRef() {
+    void testSortRef() {
         RandomSource.setSeed(1);
         Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = VarDouble.copy(7, 6, 1, 2, 5, 4);

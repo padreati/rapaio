@@ -24,12 +24,10 @@
 
 package rapaio.core;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
@@ -38,23 +36,20 @@ import rapaio.util.collection.DoubleArrays;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class SamplingToolsTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testSampleWR() {
+    void testSampleWR() {
         final int N = 1000;
         int[] sample = SamplingTools.sampleWR(10, N);
         assertEquals(N, sample.length);
@@ -69,14 +64,13 @@ public class SamplingToolsTest {
     }
 
     @Test
-    public void testInvalidSizeSamplingWOR() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Can't draw a sample without replacement bigger than population size.");
-        SamplingTools.sampleWOR(10, 100);
+    void testInvalidSizeSamplingWOR() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWOR(10, 100));
+        assertEquals("Can't draw a sample without replacement bigger than population size.", ex.getMessage());
     }
 
     @Test
-    public void testSamplingWOR() {
+    void testSamplingWOR() {
         final int TRIALS = 100_000;
         VarDouble v = VarDouble.empty();
         for (int next : SamplingTools.sampleWOR(TRIALS * 2, TRIALS)) {
@@ -90,10 +84,10 @@ public class SamplingToolsTest {
     }
 
     @Test
-    public void testSamplingWeightedWOR() {
+    void testSamplingWeightedWOR() {
 
         double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
-        DVector freq = DVector.empty(true, w.length);
+        DensityVector freq = DensityVector.empty(true, w.length);
 
         final int TRIALS = 10_000;
         for (int i = 0; i < TRIALS; i++) {
@@ -106,7 +100,7 @@ public class SamplingToolsTest {
             assertEquals(1.0 / 6, freq.get(i), 1e-20);
         }
 
-        freq = DVector.empty(true, w.length);
+        freq = DensityVector.empty(true, w.length);
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWeightedWOR(1, w)) {
                 freq.increment(next, 1);
@@ -117,37 +111,34 @@ public class SamplingToolsTest {
     }
 
     @Test
-    public void testInvalidNullProbWR() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Sampling probability array cannot be null.");
-        SamplingTools.sampleWeightedWR(10, null);
+    void testInvalidNullProbWR() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(10, null));
+        assertEquals("Sampling probability array cannot be null.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidNegativeProbabilities() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Frequencies must be positive.");
-        SamplingTools.sampleWeightedWR(2, new double[]{-1, 1});
+    void testInvalidNegativeProbabilities() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[]{-1, 1}));
+        assertEquals("Frequencies must be positive.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidSizeWeightedWOR() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Required sample size is bigger than population size.");
-        SamplingTools.sampleWeightedWOR(20, new double[]{0.1, 0.2, 0.3, 0.4});
+    void testInvalidSizeWeightedWOR() {
+        var ex = assertThrows(IllegalArgumentException.class,
+                () -> SamplingTools.sampleWeightedWOR(20, new double[]{0.1, 0.2, 0.3, 0.4}));
+        assertEquals("Required sample size is bigger than population size.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidSumZeroWeightedWR() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Sum of frequencies must be strict positive.");
-        SamplingTools.sampleWeightedWR(2, new double[]{0, 0});
+    void testInvalidSumZeroWeightedWR() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SamplingTools.sampleWeightedWR(2, new double[]{0, 0}));
+        assertEquals("Sum of frequencies must be strict positive.", ex.getMessage());
     }
 
     @Test
-    public void testSampleWeightedWR() {
+    void testSampleWeightedWR() {
         double[] w = new double[]{0.002, 0.018, 0.18, 1.8};
-        DVector freq = DVector.empty(true, w.length);
+        DensityVector freq = DensityVector.empty(true, w.length);
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
         for (int i = 0; i < TRIALS; i++) {
@@ -160,7 +151,7 @@ public class SamplingToolsTest {
     }
 
     @Test
-    public void testRandomSampleSizes() {
+    void testRandomSampleSizes() {
 
         Frame df = SolidFrame.byVars(VarDouble.seq(100).withName("x"));
 
@@ -179,7 +170,7 @@ public class SamplingToolsTest {
     }
 
     @Test
-    public void testRandomStratifiedSplit() {
+    void testRandomStratifiedSplit() {
 
         Frame df = SolidFrame.byVars(
                 VarDouble.seq(100).withName("x"),
@@ -187,7 +178,7 @@ public class SamplingToolsTest {
         );
 
         double[] p = new double[3];
-        Arrays.fill(p, 1./3);
+        Arrays.fill(p, 1. / 3);
         Frame[] strata = SamplingTools.randomSampleStratifiedSplit(df, "strata", p);
 
         for (Frame st : strata) {

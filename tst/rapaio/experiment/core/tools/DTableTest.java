@@ -24,17 +24,14 @@
 
 package rapaio.experiment.core.tools;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.printer.format.Format;
-import rapaio.sys.WS;
 
-import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class DTableTest {
 
     @Test
-    public void testPlayNoMissing() throws IOException {
+    void testPlayNoMissing() {
 
         Frame df = Datasets.loadPlay();
 
@@ -60,7 +57,7 @@ public class DTableTest {
     }
 
     @Test
-    public void testPlayWithMissing() throws IOException {
+    void testPlayWithMissing() {
 
         Frame df = Datasets.loadPlay();
         df.rvar("outlook").setMissing(5);
@@ -75,7 +72,7 @@ public class DTableTest {
     }
 
     @Test
-    public void testEntropy() {
+    void testEntropy() {
         DTable dt1 = DTable.empty(Arrays.asList("?", "a", "b"), Arrays.asList("?", "x", "y", "z"), false);
 
         dt1.update(0, 0, 1);
@@ -108,19 +105,10 @@ public class DTableTest {
 
         dt2.printSummary();
 
-        WS.println("splitByRowAverageEntropy: " + Format.floatFlex(dt1.splitByRowAverageEntropy()));
         assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
-
-        WS.println("splitByRowInfoGain: " + Format.floatFlex(dt1.splitByRowInfoGain()));
         assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
-
-        WS.println("splitByRowGainRatio: " + Format.floatFlex(dt1.splitByRowGainRatio()));
         assertEquals(dt1.splitByRowGainRatio(), dt2.splitByRowGainRatio(), 1e-30);
-
-        WS.println("splitByRowGiniGain: " + Format.floatFlex(dt1.splitByRowGiniGain()));
         assertEquals(dt1.splitByRowGiniGain(), dt2.splitByRowGiniGain(), 1e-30);
-
-        WS.println("splitByColGiniGain: " + Format.floatFlex(dt1.splitByColGiniGain()));
         assertEquals(dt1.splitByColGiniGain(), dt2.splitByColGiniGain(), 1e-30);
 
         dt1.withTotalSummary(true).printSummary();
@@ -128,7 +116,7 @@ public class DTableTest {
     }
 
     @Test
-    public void testNormalization() {
+    void testNormalization() {
         DTable dt2 = DTable.empty(Arrays.asList("a", "b"), Arrays.asList("x", "y", "z"), true);
 
         dt2.update(0, 0, 10);
@@ -139,20 +127,20 @@ public class DTableTest {
         dt2.update(1, 1, 19);
         dt2.update(1, 2, 12);
 
-        Assert.assertEquals("              x         y         z     total \n" +
+        assertEquals("              x         y         z     total \n" +
                 "    a 0.5555556 0.2692308 0.3333333 1.1581197 \n" +
                 "    b 0.4444444 0.7307692 0.6666667 1.8418803 \n" +
                 "total 1         1         1         3         \n", dt2.normalizeOnCols().toSummary());
 
         dt2.withTotalSummary(false);
 
-        Assert.assertEquals("          x         y         z \n" +
+        assertEquals("          x         y         z \n" +
                 "a 0.1612903 0.1129032 0.0967742 \n" +
                 "b 0.1290323 0.3064516 0.1935484 \n", dt2.normalizeOverall().toSummary());
-        Assert.assertEquals("          x         y         z \n" +
+        assertEquals("          x         y         z \n" +
                 "a 0.4347826 0.3043478 0.2608696 \n" +
                 "b 0.2051282 0.4871795 0.3076923 \n", dt2.normalizeOnRows().toSummary());
-        Assert.assertEquals("          x         y         z \n" +
+        assertEquals("          x         y         z \n" +
                 "a 0.5555556 0.2692308 0.3333333 \n" +
                 "b 0.4444444 0.7307692 0.6666667 \n", dt2.normalizeOnCols().toSummary());
     }

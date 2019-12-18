@@ -24,7 +24,7 @@
 
 package rapaio.experiment.ml.classifier.tree.ctree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.filter.FRetainTypes;
@@ -32,13 +32,9 @@ import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
 import rapaio.experiment.ml.classifier.tree.CTreeNode;
-import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.predicate.RowPredicate;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -46,7 +42,7 @@ import static org.junit.Assert.*;
 public class CTreeTest {
 
     @Test
-    public void testBuilderDecisionStump() throws IOException, URISyntaxException {
+    void testBuilderDecisionStump() {
         Frame df = Datasets.loadIrisDataset();
 
         CTree tree = CTree.newDecisionStump();
@@ -71,14 +67,14 @@ public class CTreeTest {
     }
 
     @Test
-    public void testBuilderID3() {
+    void testBuilderID3() {
         Frame df = Datasets.loadMushrooms();
         df = FRetainTypes.on(VType.NOMINAL).fapply(df);
         df.printSummary();
     }
 
     @Test
-    public void testCandidate() {
+    void testCandidate() {
         CTreeCandidate candidate = new CTreeCandidate(1, "test");
         candidate.addGroup(RowPredicate.numLessEqual("test", 0));
         candidate.addGroup(RowPredicate.numGreater("test", 0));
@@ -89,13 +85,13 @@ public class CTreeTest {
     }
 
     @Test
-    public void testPredictorStandard() {
+    void testPredictorStandard() {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
         tree.fit(df, "class");
         tree.printSummary();
 
-        ClassifierResult pred = tree.predict(df, true, true);
+        var pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().copy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();

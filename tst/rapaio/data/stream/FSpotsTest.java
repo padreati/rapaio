@@ -1,7 +1,8 @@
 package rapaio.data.stream;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Frame;
@@ -18,7 +19,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/27/18.
@@ -27,26 +28,24 @@ public class FSpotsTest {
 
     private static final double TOL = 1e-12;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         Frame x = SolidFrame.byVars(VarDouble.seq(10));
         Frame c1 = x.stream().toMappedFrame();
         assertTrue(x.deepEquals(c1));
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Frame x = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble));
         assertEquals(100, x.stream().count());
 
         assertTrue(x.deepEquals(x.stream().toMappedFrame()));
-
-        assertTrue(x.deepEquals(x.stream().findFirst().get().frame()));
 
         assertEquals(100, x.stream().count());
         assertEquals(100, x.stream().distinct().count());
@@ -69,14 +68,14 @@ public class FSpotsTest {
     }
 
     @Test
-    public void testFilter() {
+    void testFilter() {
         VarDouble x = VarDouble.from(100, () -> RandomSource.nextDouble() - 0.5);
         x.stream().filter(s -> s.getDouble() >= 0).forEach(s -> assertTrue(s.getDouble() >= 0));
         x.stream().unordered().filterValue(v -> v >= 0).forEach(s -> assertTrue(s.getDouble() >= 0.0));
     }
 
     @Test
-    public void testMappers() {
+    void testMappers() {
 
         VarDouble x = VarDouble.seq(100);
         assertEquals(5050, x.stream().map(VSpot::getInt).mapToDouble(a -> a).sum(), TOL);
@@ -88,7 +87,7 @@ public class FSpotsTest {
     }
 
     @Test
-    public void testFlatMap() {
+    void testFlatMap() {
         VarDouble x = VarDouble.seq(10);
         assertEquals(165, x.stream().flatMap(s -> IntStream.range(0, s.getInt()).boxed()).mapToInt(s -> s).sum());
         assertEquals(165, x.stream().flatMapToInt(s -> IntStream.range(0, s.getInt())).sum());
@@ -100,7 +99,7 @@ public class FSpotsTest {
     }
 
     @Test
-    public void testCollect() {
+    void testCollect() {
         Var x = VarInt.seq(10);
         Object[] a1 = x.stream().toArray();
         Object[] a2 = x.stream().toArray(Object[]::new);
@@ -111,7 +110,7 @@ public class FSpotsTest {
     }
 
     @Test
-    public void testSpliterator() {
+    void testSpliterator() {
         VarDouble x = VarDouble.from(10_000, RandomSource::nextDouble);
         double sum1 = x.stream().parallel().mapToDouble().sum();
         double sum3 = x.stream().sequential().mapToDouble().sum();
@@ -121,21 +120,21 @@ public class FSpotsTest {
     }
 
     @Test
-    public void testClose() {
+    void testClose() {
         Pair<Integer, Integer> pair = Pair.from(1, 2);
         VarDouble.wrap(1, 2, 3, 4).stream().onClose(() -> pair._1 = 3).close();
         assertEquals(3, pair._1.intValue());
     }
 
     @Test
-    public void testComplete() {
+    void testComplete() {
         Var index = VarInt.from(10, row -> row % 2 == 0 ? VarInt.MISSING_VALUE : row);
         assertEquals(5, index.stream().complete().count());
         assertEquals(5, index.stream().incomplete().count());
     }
 
     @Test
-    public void testGettersSetters() {
+    void testGettersSetters() {
         Frame df = SolidFrame.byVars(
                 VarDouble.wrap(1, 2).withName("x"),
                 VarNominal.copy("a", "b").withName("y"));

@@ -1,16 +1,15 @@
 package rapaio.ml.regression.simple;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.RegressionResult;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
@@ -21,16 +20,16 @@ public class RandomValueRegressionModelTest {
     private String son = "Son";
     private Frame df;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         RandomSource.setSeed(123);
         df = Datasets.loadPearsonHeightDataset();
     }
 
     @Test
-    public void testRandomValueRegression() {
-        RegressionResult fit1 = RandomValueRegressionModel.newRVR().fit(df, father).predict(df);
-        RegressionResult fit2 = RandomValueRegressionModel.from(Normal.of(10, 0.1)).fit(df, father).predict(df);
+    void testRandomValueRegression() {
+        var fit1 = RandomValueRegressionModel.newRVR().fit(df, father).predict(df);
+        var fit2 = RandomValueRegressionModel.from(Normal.of(10, 0.1)).fit(df, father).predict(df);
 
         // unsignificant if test on true distribution
         assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Uniform.of(0, 1)).pValue() > 0.01);
@@ -42,7 +41,7 @@ public class RandomValueRegressionModelTest {
     }
 
     @Test
-    public void testNaming() {
+    void testNaming() {
         RandomValueRegressionModel model = RandomValueRegressionModel.newRVR();
         assertEquals("RandomValueRegression", model.name());
         assertEquals("RandomValueRegression(distribution:Uniform(a=0,b=1))", model.newInstance().fullName());

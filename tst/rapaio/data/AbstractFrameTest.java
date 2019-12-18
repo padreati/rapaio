@@ -24,13 +24,10 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.datasets.Datasets;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -38,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 public class AbstractFrameTest {
 
     @Test
-    public void testStreamOnAbstractFrame() throws IOException, URISyntaxException {
+    void testStreamOnAbstractFrame() {
 
         Frame df = Datasets.loadIrisDataset();
         int count = (int) df.stream().count();

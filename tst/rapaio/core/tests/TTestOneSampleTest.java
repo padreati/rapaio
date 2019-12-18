@@ -24,19 +24,19 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TTestOneSampleTest {
 
     private static final double TOL = 1e-12;
 
     @Test
-    public void baseTest() {
+    void baseTest() {
         VarDouble x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5);
         Mean.of(x).printSummary();
         Variance.of(x).printSummary();
@@ -119,8 +119,6 @@ public class TTestOneSampleTest {
         assertEquals(Double.NaN, t5.pValue(), TOL);
         assertEquals(Double.NaN, t5.ciLow(), TOL);
         assertEquals(Double.NaN, t5.ciHigh(), TOL);
-
-
 
 
     }

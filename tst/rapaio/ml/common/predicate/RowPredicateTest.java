@@ -1,6 +1,6 @@
 package rapaio.ml.common.predicate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -10,7 +10,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
 import rapaio.math.MTools;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
@@ -22,7 +22,7 @@ public class RowPredicateTest {
     }
 
     @Test
-    public void testNumPredicates() {
+    void testNumPredicates() {
 
         Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).withName("x"));
 
@@ -69,7 +69,7 @@ public class RowPredicateTest {
     }
 
     @Test
-    public void testBinaryPredicates() {
+    void testBinaryPredicates() {
 
         int[] values = SamplingTools.sampleWR(2, 100);
         SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).withName("x"));

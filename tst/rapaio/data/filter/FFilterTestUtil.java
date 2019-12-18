@@ -15,8 +15,7 @@ public class FFilterTestUtil {
     public static Frame allDoubles(int n, int k) {
         Var[] vars = new Var[k];
         for (int i = 0; i < k; i++) {
-            vars[i] = VarDouble.from(n, row -> RandomSource.nextDouble() - 0.5)
-                    .withName(String.valueOf("V" + (i + 1)));
+            vars[i] = VarDouble.from(n, row -> RandomSource.nextDouble() - 0.5).withName("V" + (i + 1));
         }
         return SolidFrame.byVars(vars);
     }

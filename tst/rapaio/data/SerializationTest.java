@@ -24,16 +24,14 @@
 
 package rapaio.data;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
-import rapaio.printer.format.Format;
-import rapaio.sys.WS;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/15.
@@ -41,24 +39,18 @@ import java.net.URISyntaxException;
 public class SerializationTest {
 
     @Test
-    public void testFrames() throws IOException, ClassNotFoundException, URISyntaxException {
+    void testFrames() throws IOException, ClassNotFoundException {
         testFrame(Datasets.loadIrisDataset(), "iris", 7243);
         testFrame(Datasets.loadCarMpgDataset(), "car", 48884);
         testFrame(Datasets.loadRandom(), "random", 311112);
     }
 
-    private void testFrame(Frame df, String name, long initialSize) throws IOException, ClassNotFoundException {
-        WS.println("Testing " + name + " dataset serialization");
-        df.printSummary();
-
+    void testFrame(Frame df, String name, long initialSize) throws IOException, ClassNotFoundException {
         File tmp = File.createTempFile("test-", "ser");
         JavaIO.storeToFile(df, tmp);
 
         Frame restore = (Frame) JavaIO.restoreFromFile(tmp);
-        WS.println("dataset " + name + " serialization size: " + tmp.length());
-        WS.println("achievement " + (initialSize - tmp.length()) + " ( " + Format.floatFlex((initialSize - tmp.length()) * 1.0 / initialSize) + "%)");
-        WS.println();
 
-        Assert.assertTrue(df.deepEquals(restore));
+        assertTrue(df.deepEquals(restore));
     }
 }

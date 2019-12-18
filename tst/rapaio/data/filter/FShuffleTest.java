@@ -1,9 +1,9 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 public class FShuffleTest {
 
     @Test
-    public void testDouble() {
+    void testDouble() {
 
         Frame orig = FFilterTestUtil.allDoubles(100, 1);
         Frame[] shuffles = new Frame[10];
@@ -19,7 +19,7 @@ public class FShuffleTest {
             shuffles[i] = orig.fapply(FShuffle.filter().newInstance());
         }
         for (int i = 1; i < shuffles.length; i++) {
-            assertFalse(shuffles[i-1].deepEquals(shuffles[i]));
+            assertFalse(shuffles[i - 1].deepEquals(shuffles[i]));
         }
     }
 }

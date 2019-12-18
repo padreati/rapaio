@@ -1,26 +1,26 @@
 package rapaio.util.collection;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
 public class IntArraysTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(1234);
     }
 
     @Test
-    public void buildersTest() {
+    void buildersTest() {
         assertArrayEquals(new int[]{10, 10, 10}, IntArrays.newFill(3, 10));
         assertArrayEquals(new int[]{10, 11, 12}, IntArrays.newSeq(10, 13));
         assertArrayEquals(new int[]{4, 9, 16}, IntArrays.newFrom(new int[]{1, 2, 3, 4, 5}, 1, 4, x -> x * x));
@@ -28,7 +28,7 @@ public class IntArraysTest {
     }
 
     @Test
-    public void capacityTest() {
+    void capacityTest() {
         int[] array1 = new int[]{1, 2, 3, 4, 5};
         assertTrue(IntArrays.checkCapacity(array1, 2));
         assertTrue(IntArrays.checkCapacity(array1, array1.length));
@@ -48,7 +48,7 @@ public class IntArraysTest {
     }
 
     @Test
-    public void sortingTest() {
+    void sortingTest() {
         int N = 1000;
         int[] array1 = IntArrays.newFrom(IntArrays.newSeq(0, N), 0, N, x -> 1000 - x);
 
@@ -69,7 +69,7 @@ public class IntArraysTest {
     }
 
     @Test
-    public void shuffleTest() {
+    void shuffleTest() {
         int N = 1000;
         int[] array1 = IntArrays.newSeq(0, N);
         int[] shuffle1 = IntArrays.newCopy(array1, 0, N);
@@ -97,7 +97,7 @@ public class IntArraysTest {
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
 
         testEqualArrays(IntArrays.delete(new int[]{1, 2, 3}, 3, 0), 2, 3, 3);
         testEqualArrays(IntArrays.delete(new int[]{1, 2, 3}, 3, 1), 1, 3, 3);
@@ -105,6 +105,6 @@ public class IntArraysTest {
     }
 
     private void testEqualArrays(int[] actual, int... expected) {
-        Assert.assertArrayEquals(expected, actual);
+        Assertions.assertArrayEquals(expected, actual);
     }
 }

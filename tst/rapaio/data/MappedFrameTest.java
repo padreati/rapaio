@@ -24,16 +24,14 @@
 
 package rapaio.data;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.data.filter.FRefSort;
 import rapaio.datasets.Datasets;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,11 +40,8 @@ public class MappedFrameTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void colsSortedTest() {
+    void colsSortedTest() {
         Frame orig = Datasets.loadIrisDataset();
         Frame sort = FRefSort.by(RowComparators.doubleComparator(orig.rvar(1), true)).fapply(orig);
         sort = FRefSort.by(RowComparators.doubleComparator(orig.rvar(2), true)).fapply(sort);
@@ -56,7 +51,7 @@ public class MappedFrameTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         Frame df = SolidFrame.byVars(
                 VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
                 VarInt.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
@@ -76,13 +71,12 @@ public class MappedFrameTest {
         assertEquals(1, mapped.varCount());
         assertEquals(10, mapped.rowCount());
 
-        Mapping mapping = null;
-        Frame empty = df.mapRows(mapping);
+        Frame empty = df.mapRows((Mapping) null);
         assertEquals(0, empty.rowCount());
     }
 
     @Test
-    public void testMapAndBound() {
+    void testMapAndBound() {
         final int N = 10;
 
         Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
@@ -143,7 +137,7 @@ public class MappedFrameTest {
     }
 
     @Test
-    public void testVarNamesAndTypes() {
+    void testVarNamesAndTypes() {
         final int N = 10;
         Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
         Var y = VarInt.from(N, row -> row * 2).withName("y");
@@ -161,14 +155,14 @@ public class MappedFrameTest {
     }
 
     @Test
-    public void testInvalidVarIndex() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("var name: y does not exist");
-        SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y");
+    void testInvalidVarIndex() {
+        var ex = assertThrows(IllegalArgumentException.class,
+                () -> SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y"));
+        assertEquals("var name: y does not exist", ex.getMessage());
     }
 
     @Test
-    public void testAddClearRows() {
+    void testAddClearRows() {
         final int N = 10;
         Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
         Var y = VarInt.from(N, row -> row * 2).withName("y");
@@ -187,7 +181,7 @@ public class MappedFrameTest {
     }
 
     @Test
-    public void testGettersSetters() {
+    void testGettersSetters() {
         List<Var> varList = Arrays.asList(
                 VarDouble.wrap(0, VarDouble.MISSING_VALUE, 2, VarDouble.MISSING_VALUE).withName("a"),
                 VarInt.wrap(0, VarInt.MISSING_VALUE, 2, VarInt.MISSING_VALUE).withName("b"),

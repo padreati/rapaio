@@ -28,7 +28,7 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.printer.format.Format;
@@ -44,7 +44,7 @@ import rapaio.printer.format.TextTable;
  */
 public class ChiSqGoodnessOfFit implements HTest {
 
-    private final DVector dv;
+    private final DensityVector dv;
     private final Var p;
     private final VarDouble expected;
     private final int df; // degrees of freedom
@@ -66,7 +66,7 @@ public class ChiSqGoodnessOfFit implements HTest {
      * @param p vector of expected probabilities
      */
     public static ChiSqGoodnessOfFit from(Var x, Var p) {
-        DVector dv = buildDv(x);
+        DensityVector dv = buildDv(x);
         return new ChiSqGoodnessOfFit(dv, p);
     }
 
@@ -77,18 +77,18 @@ public class ChiSqGoodnessOfFit implements HTest {
      * @param dv vector of observed data
      * @param p  vector of expected probabilities
      */
-    public static ChiSqGoodnessOfFit from(DVector dv, Var p) {
+    public static ChiSqGoodnessOfFit from(DensityVector dv, Var p) {
         return new ChiSqGoodnessOfFit(dv, p);
     }
 
-    private static DVector buildDv(Var x) {
+    private static DensityVector buildDv(Var x) {
         switch (x.type()) {
             case BINARY:
             case NOMINAL:
-                return DVector.fromCounts(false, x);
+                return DensityVector.fromCounts(false, x);
             case DOUBLE:
             case INT:
-                DVector dv = DVector.empty(true, x.rowCount());
+                DensityVector dv = DensityVector.empty(true, x.rowCount());
                 for (int i = 0; i < x.rowCount(); i++) {
                     dv.set(i, x.getDouble(i));
                 }
@@ -99,7 +99,7 @@ public class ChiSqGoodnessOfFit implements HTest {
         }
     }
 
-    private ChiSqGoodnessOfFit(DVector dv, Var p) {
+    private ChiSqGoodnessOfFit(DensityVector dv, Var p) {
 
         VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 

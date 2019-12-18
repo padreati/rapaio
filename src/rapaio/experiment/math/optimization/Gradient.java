@@ -27,9 +27,9 @@
 
 package rapaio.experiment.math.optimization;
 
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.math.MTools;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
 import rapaio.util.Pair;
 
 /**

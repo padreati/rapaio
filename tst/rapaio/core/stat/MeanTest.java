@@ -1,11 +1,11 @@
 package rapaio.core.stat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/18.
@@ -14,13 +14,13 @@ public class MeanTest {
 
     private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         VarDouble x = VarDouble.from(100, row -> row % 2 == 0 ? Double.NaN : row);
         Mean mean = Mean.of(x);
         assertEquals(50, mean.value(), TOL);

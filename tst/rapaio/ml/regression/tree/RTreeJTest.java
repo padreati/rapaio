@@ -24,8 +24,8 @@
 
 package rapaio.ml.regression.tree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for regression decision trees
@@ -63,16 +63,16 @@ import static org.junit.Assert.*;
  */
 public class RTreeJTest {
 
-    private static final double TOL = 1e-20;
     public static final String Sales = "Sales";
+    private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(12434);
     }
 
     @Test
-    public void testNewInstance() {
+    void testNewInstance() {
         BiFunction<RTree, Integer, Boolean> myStoppingHook = (rTree, integer) -> false;
         BiConsumer<RTree, Integer> myRunningHook = (rTree, integer) -> {
         };
@@ -140,7 +140,7 @@ public class RTreeJTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         assertEquals("TreeClassifier {  minCount=1,\n" +
                 "  minScore=0,\n" +
                 "  maxDepth=2,\n" +
@@ -203,7 +203,7 @@ public class RTreeJTest {
     }
 
     @Test
-    public void testSimple() throws IOException {
+    void testSimple() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID", "Radio", "Newspaper"));
 
         String v = "TV";
@@ -302,7 +302,7 @@ public class RTreeJTest {
     }
 
     @Test
-    public void testLinearSeparableTest() {
+    void testLinearSeparableTest() {
         Var[] vars = new Var[]{
                 VarDouble.empty().withName("x"),
                 VarNominal.empty().withName("cat"),
@@ -341,7 +341,7 @@ public class RTreeJTest {
     }
 
     @Test
-    public void testISLR() throws IOException {
+    void testISLR() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         Frame[] frames = SamplingTools.randomSampleSlices(df, 0.7, 0.3);

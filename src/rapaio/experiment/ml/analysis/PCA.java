@@ -32,12 +32,12 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.math.linear.EigenPair;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.experiment.math.linear.EigenPair;
+import rapaio.experiment.math.linear.Linear;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;

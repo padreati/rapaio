@@ -24,18 +24,17 @@
 
 package rapaio.data.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VApply;
-import rapaio.data.filter.VFilter;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VApplyTest {
 
     @Test
-    public void testApply() {
+    void testApply() {
 
         VFilter vf = VApply.with(spot -> {
             if (spot.isMissing())
@@ -49,12 +48,12 @@ public class VApplyTest {
         Var x = VarDouble.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
         Var y = x.copy().fapply(vf);
-        Assert.assertEquals(0, y.getDouble(0), 1e-20);
-        Assert.assertEquals(0, y.getDouble(1), 1e-20);
-        Assert.assertEquals(1, y.getDouble(2), 1e-20);
-        Assert.assertEquals(0, y.getDouble(3), 1e-20);
-        Assert.assertEquals(-144, y.getDouble(4), 1e-20);
-        Assert.assertEquals(3.1 * 3.1, y.getDouble(5), 1e-20);
+        assertEquals(0, y.getDouble(0), 1e-20);
+        assertEquals(0, y.getDouble(1), 1e-20);
+        assertEquals(1, y.getDouble(2), 1e-20);
+        assertEquals(0, y.getDouble(3), 1e-20);
+        assertEquals(-144, y.getDouble(4), 1e-20);
+        assertEquals(3.1 * 3.1, y.getDouble(5), 1e-20);
 
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fapply(VApply.with(s -> {
@@ -72,11 +71,11 @@ public class VApplyTest {
             s.setLabel(String.copyValueOf(msg));
         }));
 
-        Assert.assertEquals("ana", l2.getLabel(0));
-        Assert.assertEquals("missing", l2.getLabel(1));
-        Assert.assertEquals("era", l2.getLabel(2));
-        Assert.assertEquals("missing", l2.getLabel(3));
-        Assert.assertEquals("erem", l2.getLabel(4));
+        assertEquals("ana", l2.getLabel(0));
+        assertEquals("missing", l2.getLabel(1));
+        assertEquals("era", l2.getLabel(2));
+        assertEquals("missing", l2.getLabel(3));
+        assertEquals("erem", l2.getLabel(4));
     }
 
 }

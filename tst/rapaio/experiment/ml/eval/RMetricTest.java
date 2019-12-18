@@ -1,10 +1,11 @@
 package rapaio.experiment.ml.eval;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/15/19.
@@ -14,7 +15,7 @@ public class RMetricTest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void testRMS() {
+    void testRMS() {
 
         RMetric rms = RMetric.RMS;
 

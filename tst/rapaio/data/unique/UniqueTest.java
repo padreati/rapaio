@@ -1,9 +1,8 @@
 package rapaio.data.unique;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.DUniform;
 import rapaio.data.Unique;
@@ -15,23 +14,20 @@ import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.VRefSort;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testSortedUnsortedDouble() {
+    void testSortedUnsortedDouble() {
         Var x = VarDouble.from(100, DUniform.of(0, 10)::sampleNext);
 
         Unique unsorted = Unique.of(x, false);
@@ -50,7 +46,7 @@ public class UniqueTest {
     }
 
     @Test
-    public void testSortedUnsortedInt() {
+    void testSortedUnsortedInt() {
         VarInt x = VarInt.from(100, row -> RandomSource.nextInt(10000));
 
         Unique unsorted = Unique.of(x, false);
@@ -66,7 +62,7 @@ public class UniqueTest {
     }
 
     @Test
-    public void testSortedUnsortedBinary() {
+    void testSortedUnsortedBinary() {
         Var x = VarBinary.from(100, row -> {
             int v = RandomSource.nextInt(3);
             if (v == 0) {
@@ -88,7 +84,7 @@ public class UniqueTest {
     }
 
     @Test
-    public void testSortedUnsortedLabel() {
+    void testSortedUnsortedLabel() {
         Var x = VarNominal.from(100, row -> {
             int len = RandomSource.nextInt(3);
             if (len == 0) {
@@ -114,9 +110,9 @@ public class UniqueTest {
     }
 
     @Test
-    public void testUnimplemented() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Cannot build unique structure for given type: not implemented.");
-        Unique.of(VarLong.copy(1, 2, 3, 4), false);
+    void testUnimplemented() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> Unique.of(VarLong.copy(1, 2, 3, 4), false));
+        assertEquals("Cannot build unique structure for given type: not implemented.", ex.getMessage());
     }
 }

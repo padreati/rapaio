@@ -24,19 +24,17 @@
 
 package rapaio.core.correlation;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for pearson correlation
@@ -47,23 +45,19 @@ public class CorrPearsonTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testInvalidSingleVar() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Correlation can be computed only between two variables.");
-        CorrPearson.of(VarDouble.seq(10));
+    void testInvalidSingleVar() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> CorrPearson.of(VarDouble.seq(10)));
+        assertEquals("Correlation can be computed only between two variables.", ex.getMessage());
     }
 
     @Test
-    public void maxCorrTest() {
+    void maxCorrTest() {
         VarDouble x = VarDouble.from(1_000, Math::sqrt);
         CorrPearson cp = CorrPearson.of(x, x);
         assertEquals(1, cp.singleValue(), 1e-20);
@@ -78,7 +72,7 @@ public class CorrPearsonTest {
     }
 
     @Test
-    public void randomTest() {
+    void randomTest() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
@@ -91,8 +85,7 @@ public class CorrPearsonTest {
     }
 
     @Test
-    public void testNonLinearCorr() {
-        RandomSource.setSeed(123);
+    void testNonLinearCorr() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -102,9 +95,7 @@ public class CorrPearsonTest {
     }
 
     @Test
-    public void testMultipleVarsNonLinear() {
-
-        RandomSource.setSeed(123);
+    void testMultipleVarsNonLinear() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -120,8 +111,7 @@ public class CorrPearsonTest {
         DistanceMatrix m = cp.matrix();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), m.get(i,j), TOL);
+                assertEquals(exp.get(i, j), m.get(i, j), TOL, "wrong values for [i,j]=[" + i + "," + j + "]");
             }
         }
 
@@ -134,14 +124,14 @@ public class CorrPearsonTest {
     }
 
     @Test
-    public void testMissingValues() {
+    void testMissingValues() {
         VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7);
         VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7);
         assertEquals(1, CorrPearson.of(x, y).singleValue(), 1e-30);
     }
 
     @Test
-    public void testZeroSd() {
+    void testZeroSd() {
         VarDouble x = VarDouble.fill(100, 10);
         assertEquals(Double.NaN, CorrPearson.of(x, x).singleValue(), TOL);
 

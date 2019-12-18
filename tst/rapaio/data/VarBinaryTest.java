@@ -24,10 +24,9 @@
 
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.sys.WS;
@@ -35,23 +34,20 @@ import rapaio.sys.WS;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarBinaryTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testEmpty() {
+    void testEmpty() {
         VarBinary b = VarBinary.empty();
         b.addInt(1);
         b.addInt(1);
@@ -69,7 +65,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testFill() {
+    void testFill() {
         VarBinary b = VarBinary.fill(10, 0);
 
         assertEquals(0, b.stream().incomplete().count());
@@ -91,7 +87,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testMissingValues() {
+    void testMissingValues() {
         VarBinary bin = VarBinary.copy(1, 0, 1, 0, -1, -1, 1, 0);
         assertEquals(8, bin.rowCount());
         assertTrue(bin.isMissing(4));
@@ -108,7 +104,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         VarBinary bin = VarBinary.copy(1, 1, 0, 0);
         assertEquals(4, bin.rowCount());
         assertEquals(1, bin.getInt(0));
@@ -149,7 +145,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testOther() {
+    void testOther() {
         VarBinary bin = VarBinary.empty();
         bin.addDouble(1);
         bin.setDouble(0, 0);
@@ -183,7 +179,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
 
         VarBinary bin = VarBinary.empty();
         bin.addDouble(1);
@@ -205,7 +201,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testInt() {
+    void testInt() {
 
         VarBinary bin = VarBinary.empty();
         bin.addInt(1);
@@ -228,7 +224,7 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testLong() {
+    void testLong() {
 
         VarBinary bin = VarBinary.empty();
         bin.addLong(1);
@@ -252,21 +248,19 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testAddInvalidLabel() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("The value x could not be converted to a binary value");
-        VarBinary.empty().addLabel("x");
+    void testAddInvalidLabel() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarBinary.empty().addLabel("x"));
+        assertEquals("The value x could not be converted to a binary value", ex.getMessage());
     }
 
     @Test
-    public void testSetInvalidLabel() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("The value x could not be converted to a binary value");
-        VarBinary.empty(0).setLabel(0, "x");
+    void testSetInvalidLabel() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarBinary.empty(0).setLabel(0, "x"));
+        assertEquals("The value x could not be converted to a binary value", ex.getMessage());
     }
 
     @Test
-    public void testLabel() {
+    void testLabel() {
 
         String[] labels = new String[]{"1", "0", "1", "?"};
 
@@ -296,14 +290,13 @@ public class VarBinaryTest {
     }
 
     @Test
-    public void testIllegalSetLevels() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Operation not implemented on binary variables");
-        VarBinary.empty().setLevels("?", "1");
+    void testIllegalSetLevels() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarBinary.empty().setLevels("?", "1"));
+        assertEquals("Operation not implemented on binary variables", ex.getMessage());
     }
 
     @Test
-    public void testPrint() {
+    void testPrint() {
         VarBinary var = VarBinary.copy(IntStream.range(0, 200).map(x -> RandomSource.nextInt(3) - 1).toArray()).withName("x");
         assertEquals("VarBinary [name:\"x\", rowCount:200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]", var.toString());
 

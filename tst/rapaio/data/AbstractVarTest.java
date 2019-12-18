@@ -24,10 +24,11 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.core.stat.Mean;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -35,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 public class AbstractVarTest {
 
     @Test
-    public void solidNumericCopyTest() {
+    void solidNumericCopyTest() {
 
         Var main = VarDouble.copy(1, 3, 5, 8, 9);
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
@@ -49,7 +50,7 @@ public class AbstractVarTest {
     }
 
     @Test
-    public void solidNominalCopyTest() {
+    void solidNominalCopyTest() {
         Var main = VarNominal.empty();
         main.addLabel("x");
         main.addLabel("y");
@@ -63,7 +64,7 @@ public class AbstractVarTest {
     }
 
     @Test
-    public void solidIndexCopyTest() {
+    void solidIntCopyTest() {
         Var main = VarInt.wrap(1, 2, 3, 4, 5);
         main.addMissing();
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
@@ -74,7 +75,7 @@ public class AbstractVarTest {
     }
 
     @Test
-    public void solidStampCopyTest() {
+    void solidLongCopyTest() {
         Var main = VarLong.wrap(1L, 2L, 3L, 4L, 6L);
         main.addMissing();
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
@@ -85,7 +86,7 @@ public class AbstractVarTest {
     }
 
     @Test
-    public void soliBinaryCopyTest() {
+    void soliBinaryCopyTest() {
         Var main = VarBinary.copy(1, 0, 0, 1);
         main.addMissing();
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).copy();
@@ -110,7 +111,7 @@ public class AbstractVarTest {
         assertEquals(5.5, mean, 10e-12);
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i+1, d.getInt(i));
+            assertEquals(i + 1, d.getInt(i));
         }
     }
 }

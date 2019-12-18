@@ -1,7 +1,8 @@
 package rapaio.printer.format;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -10,29 +11,27 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/18.
  */
 public class TextTableTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testSimple() throws IOException {
+    void testSimple() {
         Frame iris = Datasets.loadIrisDataset().mapRows(0, 1, 2, 50, 51, 52, 100, 101, 102);
         TextTable tt = TextTable.empty(iris.rowCount() + 1, iris.varCount() + 1);
         for (int i = 0; i < iris.varCount(); i++) {
             tt.set(0, i + 1, iris.rvar(i).name(), 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
-            tt.set(i + 1, 0, String.valueOf(i + "."), 1);
+            tt.set(i + 1, 0, i + ".", 1);
         }
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
@@ -53,7 +52,7 @@ public class TextTableTest {
     }
 
     @Test
-    public void testDotCentering() {
+    void testDotCentering() {
         TextTable tt = TextTable.empty(5, 1);
         tt.set(0, 0, "23343.345", 0, '.');
         tt.set(1, 0, "2342342323343.", 0, '.');
@@ -69,7 +68,7 @@ public class TextTableTest {
     }
 
     @Test
-    public void testDotMixt() {
+    void testDotMixt() {
         TextTable tt = TextTable.empty(5, 1);
         tt.set(0, 0, "23343.345", -1, '.');
         tt.set(1, 0, "2342342323343.", -1, '.');
@@ -85,7 +84,7 @@ public class TextTableTest {
     }
 
     @Test
-    public void testDynamic() {
+    void testDynamic() {
         VarNominal headerCol = VarNominal.empty().withName("header col");
         VarDouble x1 = VarDouble.empty().withName("x1");
         VarDouble x2 = VarDouble.empty().withName("x2");
@@ -344,7 +343,7 @@ public class TextTableTest {
     }
 
     @Test
-    public void testFloat() {
+    void testFloat() {
         Normal normal = Normal.of(0, 10);
         Var x = VarDouble.from(5, normal::sampleNext);
         x.addDouble(1);
@@ -377,10 +376,10 @@ public class TextTableTest {
     }
 
     private String randomString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < 3; i++) {
-            s = s + ('a' + RandomSource.nextInt('d' - 'a'));
+            s.append('a' + RandomSource.nextInt('d' - 'a'));
         }
-        return s;
+        return s.toString();
     }
 }

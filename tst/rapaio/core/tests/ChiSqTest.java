@@ -24,20 +24,20 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChiSqTest {
 
     private static final double TOL = 1e-4;
 
     @Test
-    public void testBasicGoodnessOfFit() {
+    void testBasicGoodnessOfFit() {
         VarNominal x1 = VarNominal.empty();
         for (int i = 0; i < 11; i++) {
             x1.addLabel("Heavy");
@@ -82,7 +82,7 @@ public class ChiSqTest {
     }
 
     @Test
-    public void testIndependence() {
+    void testIndependence() {
 
         ChiSqIndependence test1 = ChiSqIndependence.from(SolidRM.copy(2, 2, 38, 11, 14, 51), true);
         assertEquals("> ChiSqIndependence\n" +
@@ -126,7 +126,7 @@ public class ChiSqTest {
     }
 
     @Test
-    public void testConditionalIndependence() {
+    void testConditionalIndependence() {
         Var status = VarNominal.empty().withName("status");
         Var scout = VarNominal.empty().withName("scout");
         Var delinquent = VarNominal.empty().withName("delinquent");

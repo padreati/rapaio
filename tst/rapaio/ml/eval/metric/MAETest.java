@@ -1,12 +1,12 @@
 package rapaio.ml.eval.metric;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.eval.metric.MAE;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/6/17.
@@ -16,7 +16,7 @@ public class MAETest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
 
         final int N = 100;
         Var x = VarDouble.fill(N, 0).withName("x");
@@ -29,7 +29,7 @@ public class MAETest {
 
         MAE mae3 = MAE.from(SolidFrame.byVars(x, x), SolidFrame.byVars(y, z));
 
-        assertEquals((N+1)/2.0, mae1.mae(0), TOL);
+        assertEquals((N + 1) / 2.0, mae1.mae(0), TOL);
         assertEquals(mae1.mae(0), mae1.totalMae(), TOL);
 
         assertEquals(mae1.mae(0), mae2.mae(0), TOL);

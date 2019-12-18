@@ -24,14 +24,14 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -41,7 +41,7 @@ public class FrameTest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void testRemove() {
+    void testRemove() {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
@@ -67,7 +67,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testSetters() {
+    void testSetters() {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
@@ -85,7 +85,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
         SolidFrame df = SolidFrame.byVars(
                 VarNominal.copy("a", "b").withName("x"),
                 VarNominal.copy("x", "y").withName("y"),
@@ -109,7 +109,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testMapers() {
+    void testMappers() {
 
         SolidFrame df = SolidFrame.byVars(
                 VarDouble.seq(100).withName("x"),
@@ -135,7 +135,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testVarStream() {
+    void testVarStream() {
 
         List<Var> varList = Arrays.asList(
                 VarDouble.seq(100).withName("x"),
@@ -154,7 +154,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testSpotStream() {
+    void testSpotStream() {
         List<Var> varList = Arrays.asList(
                 VarDouble.seq(100).withName("x"),
                 VarDouble.seq(100).withName("y"),
@@ -167,7 +167,7 @@ public class FrameTest {
     }
 
     @Test
-    public void testDeepEquals() {
+    void testDeepEquals() {
 
         assertFalse(SolidFrame.byVars(VarDouble.seq(100)).deepEquals(SolidFrame.byVars(VarDouble.seq(10))));
         assertFalse(SolidFrame.byVars(VarDouble.seq(10).withName("x")).deepEquals(SolidFrame.byVars(

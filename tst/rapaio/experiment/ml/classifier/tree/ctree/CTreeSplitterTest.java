@@ -24,8 +24,8 @@
 
 package rapaio.experiment.ml.classifier.tree.ctree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -38,7 +38,7 @@ import rapaio.util.Pair;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests splitters implementations for CTree
@@ -51,8 +51,8 @@ public class CTreeSplitterTest {
     private Var w;
     private CTreeCandidate c;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.copy().withName("x"));
         w = values.fapply(VApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
@@ -62,7 +62,7 @@ public class CTreeSplitterTest {
     }
 
     @Test
-    public void testIgnored() {
+    void testIgnored() {
         Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.Ignored.performSplit(df, w, c.getGroupPredicates());
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -75,7 +75,7 @@ public class CTreeSplitterTest {
     }
 
     @Test
-    public void testMajority() {
+    void testMajority() {
         Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToMajority.performSplit(df, w, c.getGroupPredicates());
 
         assertEquals(2, pairs._1.size());
@@ -89,7 +89,7 @@ public class CTreeSplitterTest {
     }
 
     @Test
-    public void testToAllWeighted() {
+    void testToAllWeighted() {
         Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToAllWeighted.performSplit(df, w, c.getGroupPredicates());
 
         assertEquals(2, pairs._1.size());
@@ -106,7 +106,7 @@ public class CTreeSplitterTest {
     }
 
     @Test
-    public void testToRandom() {
+    void testToRandom() {
         Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c.getGroupPredicates());
 
         df.printHead();

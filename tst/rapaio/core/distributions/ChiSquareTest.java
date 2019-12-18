@@ -24,9 +24,7 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
@@ -34,17 +32,14 @@ import rapaio.io.Csv;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ChiSquareTest {
 
     private static final double TOL = 1e-9;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testWithR() throws IOException {
+    void testWithR() throws IOException {
         Frame df = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
@@ -91,7 +86,7 @@ public class ChiSquareTest {
     }
 
     @Test
-    public void testOtherChiSq() {
+    void testOtherChiSq() {
         ChiSquare c = ChiSquare.of(1);
 
         assertEquals("ChiSq(df=1)", c.name());
@@ -121,16 +116,14 @@ public class ChiSquareTest {
     }
 
     @Test
-    public void testInvalidDf() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("degrees of freedom parameter must have value greater than zero");
-        ChiSquare.of(0);
+    void testInvalidDf() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ChiSquare.of(0));
+        assertEquals("degrees of freedom parameter must have value greater than zero", ex.getMessage());
     }
 
     @Test
-    public void testNotImplementedEntropy() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Not implemented");
-        ChiSquare.of(12).entropy();
+    void testNotImplementedEntropy() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ChiSquare.of(12).entropy());
+        assertEquals("Not implemented", ex.getMessage());
     }
 }

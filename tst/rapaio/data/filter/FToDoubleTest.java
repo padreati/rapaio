@@ -24,29 +24,25 @@
 
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FRefSort;
-import rapaio.data.filter.FToDouble;
-import rapaio.data.filter.VToDouble;
 import rapaio.util.collection.IntComparator;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FToDoubleTest {
 
     @Test
-    public void testNormalCase() {
+    void testNormalCase() {
         int n = 10;
         ArrayList<String> dict = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -69,7 +65,7 @@ public class FToDoubleTest {
     }
 
     @Test
-    public void testNullVector() {
+    void testNullVector() {
         try {
             FRefSort.by((IntComparator[]) null).fapply(null);
         } catch (Exception ex) {
@@ -78,7 +74,7 @@ public class FToDoubleTest {
     }
 
     @Test
-    public void testNFE() {
+    void testNFE() {
         Var filtered = VarNominal.empty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = VToDouble.byDefault().fapply(filtered);

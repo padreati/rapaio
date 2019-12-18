@@ -1,6 +1,6 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Gamma;
 import rapaio.core.stat.Mean;
@@ -8,9 +8,8 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VStandardize;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/18.
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class VStandardizeTest {
 
     @Test
-    public void testDouble() {
+    void testDouble() {
 
         Distribution d = Gamma.of(0.5, 2);
         VarDouble x = VarDouble.from(1000, d::sampleNext);
@@ -35,14 +34,14 @@ public class VStandardizeTest {
     }
 
     @Test
-    public void testConstant() {
+    void testConstant() {
         VarDouble x = VarDouble.fill(100, 10);
         Var sd = x.copy().fapply(VStandardize.filter());
         assertTrue(x.deepEquals(sd));
     }
 
     @Test
-    public void testNonNumeric() {
+    void testNonNumeric() {
         VarNominal x = VarNominal.copy("a", "b");
         Var sd = x.fapply(VStandardize.filter());
         assertTrue(x.deepEquals(sd));

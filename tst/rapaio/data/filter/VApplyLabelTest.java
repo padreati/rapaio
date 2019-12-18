@@ -1,10 +1,10 @@
 package rapaio.data.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VApplyLabel;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -12,7 +12,7 @@ import rapaio.data.filter.VApplyLabel;
 public class VApplyLabelTest {
 
     @Test
-    public void testApplyLabel() {
+    void testApplyLabel() {
         Var l1 = VarNominal.copy("ana", "?", "are", "?", "mere");
         Var l2 = l1.fapply(VApplyLabel.with(l -> {
             if (l.equals("?")) {
@@ -28,11 +28,11 @@ public class VApplyLabelTest {
             return String.copyValueOf(msg);
         }));
 
-        Assert.assertEquals("ana", l2.getLabel(0));
-        Assert.assertEquals("missing", l2.getLabel(1));
-        Assert.assertEquals("era", l2.getLabel(2));
-        Assert.assertEquals("missing", l2.getLabel(3));
-        Assert.assertEquals("erem", l2.getLabel(4));
+        assertEquals("ana", l2.getLabel(0));
+        assertEquals("missing", l2.getLabel(1));
+        assertEquals("era", l2.getLabel(2));
+        assertEquals("missing", l2.getLabel(3));
+        assertEquals("erem", l2.getLabel(4));
 
     }
 }

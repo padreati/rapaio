@@ -320,4 +320,49 @@ public final class IntArrays {
             }
         };
     }
+
+    /**
+     * Substracts from values of vector a the values of vector b from start (inclusive)
+     * to end (exclusive). It returns the substracted vector.
+     *
+     * @param a     first vector
+     * @param b     second vector
+     * @param start start position (inclusive)
+     * @param end   end position (exclusive)
+     * @return instance of the first version
+     */
+    public static int[] minus(int[] a, int[] b, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] -= b[i];
+        }
+        return a;
+    }
+
+    /**
+     * Returns the multiplication of all elements starting with start (inclusive) till end (exclusive)
+     */
+    public static int product(int[] a, int start, int end) {
+        int prod = 1;
+        for (int i = start; i < end; i++) {
+            prod *= a[i];
+        }
+        return prod;
+    }
+
+    /**
+     * Computes sum_{i=start}^{end} a[i]*b[i].
+     *
+     * @param a     first array
+     * @param b     second array
+     * @param start start position (inclusive)
+     * @param end   end position (exclusive)
+     * @return computed value
+     */
+    public static int product(int[] a, int[] b, int start, int end) {
+        int sum = 0;
+        for (int i = start; i < end; i++) {
+            sum += a[i] * b[i];
+        }
+        return sum;
+    }
 }

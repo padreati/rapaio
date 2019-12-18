@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -42,7 +42,7 @@ public class NominalRule extends Rule {
 
     private final String testLabel;
 
-    public NominalRule(String testLabel, int targetIndex, DVector dv) {
+    public NominalRule(String testLabel, int targetIndex, DensityVector dv) {
         super(targetIndex, dv);
         this.testLabel = testLabel;
     }

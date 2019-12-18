@@ -37,12 +37,12 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.FRefSort;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.ml.common.distance.KMeansInitMethod;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 import rapaio.printer.format.Format;
+import rapaio.sys.WS;
 import rapaio.util.Pair;
 
 import java.util.Arrays;

@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
@@ -48,8 +48,8 @@ public class CTreeNode implements Serializable {
     final RowPredicate predicate;
     final List<CTreeNode> children = new ArrayList<>();
     boolean leaf = true;
-    DVector density;
-    DVector counter;
+    DensityVector density;
+    DensityVector counter;
     int bestIndex;
     CTreeCandidate bestCandidate;
 
@@ -81,7 +81,7 @@ public class CTreeNode implements Serializable {
         return predicate;
     }
 
-    public DVector getCounter() {
+    public DensityVector getCounter() {
         return counter;
     }
 
@@ -89,7 +89,7 @@ public class CTreeNode implements Serializable {
         return bestIndex;
     }
 
-    public DVector getDensity() {
+    public DensityVector getDensity() {
         return density;
     }
 

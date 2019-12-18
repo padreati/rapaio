@@ -24,13 +24,11 @@
 
 package rapaio.data;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -39,11 +37,8 @@ public class MappingTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testMappingBuilders() {
+    void testMappingBuilders() {
         Mapping empty1 = Mapping.empty();
         assertEquals(0, empty1.size());
 
@@ -59,7 +54,7 @@ public class MappingTest {
     }
 
     @Test
-    public void testCollector() {
+    void testCollector() {
         Mapping map1 = IntStream.range(5, 10).boxed().collect(Mapping.collector());
         testMap(map1, 5, 6, 7, 8, 9);
 

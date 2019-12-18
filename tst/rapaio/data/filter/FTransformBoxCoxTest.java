@@ -1,10 +1,10 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/4/18.
@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class FTransformBoxCoxTest {
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Frame src = FFilterTestUtil.allDoubleNominal(100, 2, 2);
 
         Frame f1 = src.copy().fapply(FTransformBoxCox.on(1.1, 1.1, VRange.of(1)));

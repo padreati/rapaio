@@ -24,13 +24,13 @@
 
 package rapaio.ml.eval.metric;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.eval.metric.Gini;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
@@ -40,7 +40,7 @@ public class GiniTest {
     private static final double TOL = 1e-6;
 
     @Test
-    public void testSmoke() {
+    void testSmoke() {
 
         VarDouble x = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
         VarDouble y = VarDouble.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
@@ -56,7 +56,7 @@ public class GiniTest {
      * This test is documented from here:
      */
     @Test
-    public void kaggleTests() {
+    void kaggleTests() {
         test(VarDouble.wrap(5.1, 3.2, 1.7, 6.2, 8.1), VarDouble.wrap(3.1, 5.2, 2.7, 5.1, 1.1), -0.043621399177, -0.335443037975);
         test(VarDouble.wrap(1, 2, 3), VarDouble.wrap(10, 20, 30), 0.111111, 1);
         test(VarDouble.wrap(1, 2, 3), VarDouble.wrap(30, 20, 10), -0.111111, -1);
@@ -80,7 +80,7 @@ public class GiniTest {
      * This test is documented from here: https://www.kaggle.com/c/liberty-mutual-fire-peril/discussion/9880
      */
     @Test
-    public void weightedGiniTest() {
+    void weightedGiniTest() {
         Gini gini = Gini.from(
                 VarDouble.wrap(0, 0, 1, 0, 1),
                 VarDouble.wrap(0.1, 0.4, 0.3, 1.2, 0.0),

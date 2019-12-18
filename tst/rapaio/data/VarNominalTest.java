@@ -24,27 +24,22 @@
 
 package rapaio.data;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarNominalTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testSmoke() {
+    void testSmoke() {
         Var v = VarNominal.empty(0);
         assertEquals(0, v.rowCount());
         assertEquals(1, v.levels().size());
@@ -66,7 +61,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testDictionary() {
+    void testDictionary() {
         Var v = VarNominal.empty(0, "a", "a", "v", "a");
         assertEquals(3, v.levels().size());
         assertEquals("?", v.levels().get(0));
@@ -86,7 +81,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testSetterGetter() {
+    void testSetterGetter() {
         Var v = VarNominal.empty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
@@ -148,7 +143,7 @@ public class VarNominalTest {
         } catch (Throwable ex) {
             exceptional = true;
         }
-        assertTrue(!exceptional);
+        assertFalse(exceptional);
 
         exceptional = false;
         try {
@@ -168,7 +163,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
         Var v = VarNominal.empty(1, "a", "b");
         assertTrue(v.isMissing(0));
 
@@ -183,7 +178,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testCopy() {
+    void testCopy() {
         VarNominal a = VarNominal.empty(0, "x", "y");
         a.addLabel("x");
         a.addLabel("y");
@@ -197,7 +192,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testFactorBaseAddRemove() {
+    void testFactorBaseAddRemove() {
         VarNominal var = VarNominal.empty(0, "x", "y");
 
         var.addMissing();
@@ -224,7 +219,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         String[] src1 = new String[]{"a", "b", "c", "?", "a", "b", "c", "?"};
         List<String> src2 = Arrays.stream(src1).collect(Collectors.toList());
 
@@ -248,28 +243,25 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testInvalidGetLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").getLong(0);
+    void testInvalidGetLong() {
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").getLong(0));
+        assertEquals("This operation is not available for nominal variables", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").addLong(1);
+    void testInvalidAddLong() {
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").addLong(1));
+        assertEquals("This operation is not available for nominal variables", ex.getMessage());
     }
 
     @Test
-    public void testInvalidSetLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for nominal variables");
-        VarNominal.empty(1, "x").setLong(0, 1);
+    void testInvalidSetLong() {
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").setLong(0, 1));
+        assertEquals("This operation is not available for nominal variables", ex.getMessage());
     }
 
     @Test
-    public void testJoinTermsDictionary() {
+    void testJoinTermsDictionary() {
         VarNominal x = VarNominal.empty(0, "a", "b", "c");
         x.addLabel("a");
         x.addLabel("b");
@@ -289,7 +281,7 @@ public class VarNominalTest {
     }
 
     @Test
-    public void testAddTermsDictionary() {
+    void testAddTermsDictionary() {
         VarNominal x = VarNominal.empty(0, "a", "b", "c");
         x.addLabel("a");
         x.addLabel("b");
@@ -306,10 +298,11 @@ public class VarNominalTest {
         assertEquals("y", x.getLabel(1));
         assertEquals("x", x.getLabel(2));
         assertEquals("z", x.getLabel(3));
+    }
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("new levels does not contains all old labels");
-        VarNominal y = VarNominal.empty(0, "a", "b");
-        y.setLevels("x");
+    @Test
+    void testInvalidCallToSetLevels() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VarNominal.empty(0, "a", "b").setLevels("x"));
+        assertEquals("new levels does not contains all old labels", ex.getMessage());
     }
 }

@@ -24,28 +24,24 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.io.Csv;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HypergeometricTest {
 
     private static final double TOL = 1e-15;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private Frame df;
     private Hypergeometric hg1;
     private Hypergeometric hg2;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "hyper.csv");
 
         hg1 = Hypergeometric.of(20, 20, 30);
@@ -53,7 +49,7 @@ public class HypergeometricTest {
     }
 
     @Test
-    public void testGeneric() {
+    void testGeneric() {
         Hypergeometric hg = Hypergeometric.of(10, 10, 6);
         assertEquals("Hypergeometric(m=10,n=10,k=6)", hg.name());
         assertTrue(hg1.discrete());
@@ -73,64 +69,59 @@ public class HypergeometricTest {
     }
 
     @Test
-    public void testInvalidWhiteBalls() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("m parameter should not be negative.");
-        Hypergeometric.of(-1, 10, 10);
+    void testInvalidWhiteBalls() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Hypergeometric.of(-1, 10, 10));
+        assertEquals("m parameter should not be negative.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidBlackBalls() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("n parameter should not be negative.");
-        Hypergeometric.of(10, -1, 10);
+    void testInvalidBlackBalls() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Hypergeometric.of(10, -1, 10));
+        assertEquals("n parameter should not be negative.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidSumTest() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("m + n should be at least 1.");
-        Hypergeometric.of(0, 0, 10);
+    void testInvalidSumTest() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Hypergeometric.of(0, 0, 10));
+        assertEquals("m + n should be at least 1.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidSampleSize() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Size of sample k should be at most m + n.");
-        Hypergeometric.of(10, 10, 30);
+    void testInvalidSampleSize() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Hypergeometric.of(10, 10, 30));
+        assertEquals("Size of sample k should be at most m + n.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidValuePdf() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("x should be an integer since the hypergeometric" +
-                " repartition is a discrete repartion.");
-        hg1.pdf(Double.POSITIVE_INFINITY);
+    void testInvalidValuePdf() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> hg1.pdf(Double.POSITIVE_INFINITY));
+        assertEquals("x should be an integer since the hypergeometric" +
+                " repartition is a discrete repartion.", ex.getMessage());
     }
 
     @Test
-    public void testRPdf() {
+    void testRPdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_20_20_30"), hg1.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_70_70_100"), hg2.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_20_20_30"), hg1.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_70_70_100"), hg2.pdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void testRCdf() {
+    void testRCdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_20_20_30"), hg1.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_70_70_100"), hg2.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_20_20_30"), hg1.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_70_70_100"), hg2.cdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void testRQuantile() {
+    void testRQuantile() {
         for (int i = 0; i < df.rowCount(); i++) {
-            if(df.getDouble(i, "x")>1)
+            if (df.getDouble(i, "x") > 1)
                 break;
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_20_20_30"), hg1.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_70_70_100"), hg2.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_20_20_30"), hg1.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_70_70_100"), hg2.quantile(df.getDouble(i, "x")), TOL);
         }
     }
 }

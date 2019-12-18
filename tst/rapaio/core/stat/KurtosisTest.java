@@ -1,11 +1,11 @@
 package rapaio.core.stat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
@@ -14,13 +14,13 @@ public class KurtosisTest {
 
     private static final double TOL = 1e-12;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Kurtosis kt = Kurtosis.of(VarDouble.wrap(1, 2, 45, 109, 200));
 
         // these values were computed in R from

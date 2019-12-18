@@ -24,15 +24,15 @@
 
 package rapaio.ml.eval.metric;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,7 +42,7 @@ public class ConfusionTest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         Var actual = VarNominal.empty(0, "cat", "dog", "mouse");
         Var predict = VarNominal.empty(0, "cat", "dog", "mouse");
 
@@ -64,7 +64,7 @@ public class ConfusionTest {
     }
 
     @Test
-    public void binarySmokeTest() {
+    void binarySmokeTest() {
         Var actual = VarNominal.copy("a", "a", "b", "a", "a", "b", "b");
         Var predict = VarNominal.copy("a", "b", "b", "a", "b", "a", "b");
 
@@ -94,7 +94,7 @@ public class ConfusionTest {
     }
 
     @Test
-    public void testPrinting() {
+    void testPrinting() {
         Var actual = VarNominal.copy("a", "a", "b", "a", "a", "b", "b");
         Var predict = VarNominal.copy("a", "b", "b", "a", "b", "a", "b");
 

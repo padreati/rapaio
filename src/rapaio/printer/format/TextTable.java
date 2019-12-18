@@ -434,15 +434,15 @@ public class TextTable {
     private String computeMergeText(int consoleWidth) {
         StringBuilder sb = new StringBuilder();
 
-        int toalColLen = Arrays.stream(finalLen).sum();
+        int totalColLen = Arrays.stream(finalLen).sum();
         int nonHeaderRows = rows - headerRows;
 
         int sets = 1;
-        int currentLen = toalColLen;
+        int currentLen = totalColLen;
 
         while (true) {
             int newSets = sets + 1;
-            int newCurrentLen = currentLen + toalColLen;
+            int newCurrentLen = currentLen + totalColLen;
             int newNonHeaderRows = (int) Math.ceil(((double) (rows - headerRows)) / newSets);
             if (newNonHeaderRows > newSets && newCurrentLen <= consoleWidth) {
                 sets = newSets;

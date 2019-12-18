@@ -1,13 +1,13 @@
 package rapaio.graphics.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.sys.WS;
 
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/11/17.
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class XWilkinsonTest {
 
     @Test
-    public void testLocale() {
+    void testLocale() {
 
         XWilkinson.Labels labels1 = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(0.123, 0.96, 5);
         XWilkinson.Labels labels2 = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(0, 10000000, 5);
@@ -35,7 +35,7 @@ public class XWilkinsonTest {
     }
 
     @Test
-    public void baseTest() {
+    void baseTest() {
         XWilkinson x = XWilkinson.base10(XWilkinson.DEEFAULT_EPS);
 
         WS.println(x.searchBounded(1e-20, 3e-20, 10).toString());

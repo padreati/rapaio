@@ -24,16 +24,16 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RTreeTestFunctionPurity {
 
     private static final double TOL = 1e-20;
 
     @Test
-    public void testWeightedVarGain() {
+    void testWeightedVarGain() {
 
         RTreeTestPayload payload = new RTreeTestPayload(2);
 
@@ -52,7 +52,7 @@ public class RTreeTestFunctionPurity {
     }
 
     @Test
-    public void testWeightedSdGain() {
+    void testWeightedSdGain() {
 
         RTreeTestPayload payload = new RTreeTestPayload(2);
 
@@ -69,7 +69,7 @@ public class RTreeTestFunctionPurity {
     }
 
     @Test
-    public void testWeightedSSGain() {
+    void testWeightedSSGain() {
         RTreeTestPayload payload = new RTreeTestPayload(2);
 
         payload.totalVar = 100.;

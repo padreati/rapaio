@@ -24,8 +24,7 @@
 
 package rapaio.ml.eval.metric;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -33,8 +32,7 @@ import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.eval.metric.ROC;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test for roc utility.
@@ -44,7 +42,7 @@ import java.net.URISyntaxException;
 public class ROCTest {
 
     @Test
-    public void testRoc() throws IOException, URISyntaxException {
+    void testRoc() {
 
         Frame df = Datasets.loadIrisDataset();
 
@@ -52,7 +50,7 @@ public class ROCTest {
         Var clazz = df.rvar("class");
 
         ROC roc = ROC.from(score, clazz, 3);
-        Assert.assertEquals("> ROC printSummary\n" +
+        assertEquals("> ROC printSummary\n" +
                         "\n" +
                         "threshold , fpr       , tpr       , acc       \n" +
                         "Infinity  , 0         , 0         , 0.6666667 \n" +
@@ -70,17 +68,17 @@ public class ROCTest {
                         "AUC: 0.8871\n",
                 roc.toSummary());
 
-        Assert.assertEquals(0.8871, roc.auc(), 1e-20);
+        assertEquals(0.8871, roc.auc(), 1e-20);
 
 
         double midValue = Mean.of(score).value();
         int midRow = roc.findRowForThreshold(midValue);
 
-        Assert.assertEquals(0.3, roc.data().getDouble(midRow, ROC.fpr), 1e-20);
-        Assert.assertEquals(0.94, roc.data().getDouble(midRow, ROC.tpr), 1e-20);
+        assertEquals(0.3, roc.data().getDouble(midRow, ROC.fpr), 1e-20);
+        assertEquals(0.94, roc.data().getDouble(midRow, ROC.tpr), 1e-20);
 
         VarNominal pred = VarNominal.from(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
-        Assert.assertEquals("> ROC printSummary\n" +
+        assertEquals("> ROC printSummary\n" +
                         "\n" +
                         "threshold , fpr       , tpr       , acc       \n" +
                         "Infinity  , 0         , 0         , 0.6666667 \n" +

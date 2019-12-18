@@ -24,8 +24,8 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -36,7 +36,7 @@ import rapaio.ml.common.predicate.RowPredicate;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RTreeSplitterTest {
 
@@ -46,8 +46,8 @@ public class RTreeSplitterTest {
     private Var w;
     private RTreeCandidate candidate;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         w = VarDouble.empty();
         df = SolidFrame.byVars(VarDouble.empty().withName("x"));
 
@@ -77,7 +77,7 @@ public class RTreeSplitterTest {
     }
 
     @Test
-    public void testIgnoreMissing() {
+    void testIgnoreMissing() {
 
         RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
         populate(0, 2, 1);
@@ -99,7 +99,7 @@ public class RTreeSplitterTest {
     }
 
     @Test
-    public void testRemainsWithMajority() {
+    void testRemainsWithMajority() {
 
         RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_MAJORITY;
         populate(0, 10, 1);
@@ -124,7 +124,7 @@ public class RTreeSplitterTest {
     }
 
     @Test
-    public void testRemainsToAllRandom() {
+    void testRemainsToAllRandom() {
         RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_RANDOM;
         populate(0, 10, 1);
         populate(1, 7, 2);

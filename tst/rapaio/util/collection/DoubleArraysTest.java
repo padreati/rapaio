@@ -1,13 +1,12 @@
 package rapaio.util.collection;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.
@@ -16,28 +15,21 @@ public class DoubleArraysTest {
 
     private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(1234);
     }
 
     @Test
-    public void buildersTest() {
+    void buildersTest() {
         assertArrayEquals(new double[]{10., 10., 10.}, DoubleArrays.newFill(3, 10.));
         assertArrayEquals(new double[]{10., 11., 12.}, DoubleArrays.newSeq(10, 13));
         assertArrayEquals(new double[]{4., 9., 16.}, DoubleArrays.newFrom(new double[]{1, 2, 3, 4, 5}, 1, 4, x -> x * x));
         assertArrayEquals(new double[]{3., 5.}, DoubleArrays.newCopy(new double[]{1, 3, 5, 7}, 1, 3));
     }
 
-    private void assertArrayEquals(double[] a, double[] b) {
-        assertEquals(a.length,b.length);
-        for (int i = 0; i < a.length; i++) {
-            assertEquals(a[i], b[i], TOL);
-        }
-    }
-
     @Test
-    public void capacityTest() {
+    void capacityTest() {
         double[] array1 = new double[]{1., 2., 3., 4., 5.};
         assertTrue(DoubleArrays.checkCapacity(array1, 2));
         assertTrue(DoubleArrays.checkCapacity(array1, array1.length));
@@ -57,7 +49,7 @@ public class DoubleArraysTest {
     }
 
     @Test
-    public void sortingTest() {
+    void sortingTest() {
         int N = 1000;
         double[] array1 = DoubleArrays.newFrom(DoubleArrays.newSeq(0, N), 0, N, x -> 1000. - x);
 
@@ -78,7 +70,7 @@ public class DoubleArraysTest {
     }
 
     @Test
-    public void shuffleTest() {
+    void shuffleTest() {
         int N = 1000;
         double[] array1 = DoubleArrays.newSeq(0, N);
         double[] shuffle1 = DoubleArrays.newCopy(array1, 0, N);
@@ -106,7 +98,7 @@ public class DoubleArraysTest {
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
 
         testEqualArrays(DoubleArrays.delete(new double[]{1, 2, 3}, 3, 0), 2, 3, 3);
         testEqualArrays(DoubleArrays.delete(new double[]{1, 2, 3}, 3, 1), 1, 3, 3);
@@ -114,6 +106,6 @@ public class DoubleArraysTest {
     }
 
     private void testEqualArrays(double[] actual, double... expected) {
-        Assert.assertArrayEquals(expected, actual, TOL);
+        assertArrayEquals(expected, actual, TOL);
     }
 }

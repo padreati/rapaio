@@ -1,7 +1,7 @@
 package rapaio.data.ops;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
@@ -9,7 +9,7 @@ import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.DataTestingTools.*;
 
 /**
@@ -20,13 +20,13 @@ public class DVarOpTest {
     private static final double TOLERANCE = 1e-12;
     private Normal normal = Normal.std();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void varDoubleSortedTest() {
+    void varDoubleSortedTest() {
 
         VarDouble x = VarDouble.from(100, row -> row % 4 == 0 ? Double.NaN : normal.sampleNext());
         VarDouble apply1 = x.copy().op().apply(v -> v + 1);
@@ -57,7 +57,7 @@ public class DVarOpTest {
     }
 
     @Test
-    public void varIntSortedTest() {
+    void varIntSortedTest() {
 
         Var x = VarInt.from(100, row -> row % 4 == 0 ? VarInt.MISSING_VALUE : RandomSource.nextInt(100));
         Var apply1 = x.copy().op().apply(v -> v + 1);
@@ -86,7 +86,7 @@ public class DVarOpTest {
     }
 
     @Test
-    public void testDoubleBasicOperations() {
+    void testDoubleBasicOperations() {
 
         VarDouble x1 = generateRandomDoubleVariable(10_000, 0.9);
         VarDouble x2 = generateRandomDoubleVariable(10_000, 0.9);
@@ -147,7 +147,7 @@ public class DVarOpTest {
 
 
     @Test
-    public void testIntBasicOperations() {
+    void testIntBasicOperations() {
 
         VarInt x1 = generateRandomIntVariable(10_000, 10, 100, 0.9);
         VarInt x2 = generateRandomIntVariable(10_000, 10, 20, 0.9);
@@ -183,7 +183,7 @@ public class DVarOpTest {
         Var t1 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) * x2.getInt(row));
         assertTrue(t1.deepEquals(x1.copy().op().mult(x2)));
 
-        Var t2 = VarInt.from(x1.rowCount(), row -> (int)Math.rint(x1.getInt(row) * x3.getDouble(row)));
+        Var t2 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) * x3.getDouble(row)));
         assertTrue(t2.deepEquals(x1.copy().op().mult(x3)));
 
         Var t3 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) * 17);
@@ -193,13 +193,13 @@ public class DVarOpTest {
         assertTrue(t4.deepEquals(x1.copy().op().mult(x4)));
 
 
-        Var d1 = VarInt.from(x1.rowCount(), row -> (int)Math.rint(x1.getInt(row) / x2.getDouble(row)));
+        Var d1 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / x2.getDouble(row)));
         assertTrue(d1.deepEquals(x1.copy().op().divide(x2)));
 
-        Var d2 = VarInt.from(x1.rowCount(), row -> (int)Math.rint(x1.getInt(row) / x3.getDouble(row)));
+        Var d2 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / x3.getDouble(row)));
         assertTrue(d2.deepEquals(x1.copy().op().divide(x3)));
 
-        Var d3 = VarInt.from(x1.rowCount(), row -> (int)Math.rint(x1.getInt(row) / 17.));
+        Var d3 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / 17.));
         assertTrue(d3.deepEquals(x1.copy().op().divide(17)));
 
 //        Var d4 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) / x4.getInt(row));

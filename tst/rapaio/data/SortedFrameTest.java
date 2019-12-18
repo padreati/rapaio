@@ -24,17 +24,16 @@
 
 package rapaio.data;
 
-import rapaio.util.collection.IntComparator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.filter.FRefSort;
 import rapaio.io.Csv;
+import rapaio.util.collection.IntComparator;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.data.RowComparators.*;
 
 /**
@@ -44,8 +43,8 @@ public class SortedFrameTest {
 
     private Frame df;
 
-    @Before
-    public void init() throws IOException, URISyntaxException {
+    @BeforeEach
+    void init() throws IOException {
         df = Csv.instance()
                 .withQuotes(false)
                 .withTypes(VType.DOUBLE, "z")
@@ -55,7 +54,7 @@ public class SortedFrameTest {
 
 
     @Test
-    public void testMultipleStressSortedLayers() {
+    void testMultipleStressSortedLayers() {
         RandomSource.setSeed(1);
         Var[] vars = new Var[1_000];
         for (int i = 0; i < 1_000; i++) {
@@ -80,7 +79,7 @@ public class SortedFrameTest {
     }
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
 
@@ -98,7 +97,7 @@ public class SortedFrameTest {
     }
 
     @Test
-    public void testSortNominal() {
+    void testSortNominal() {
         Frame sort = FRefSort.by(labelComparator(df.rvar(0), true)).fapply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.getLabel(i - 1, 0);
@@ -115,7 +114,7 @@ public class SortedFrameTest {
     }
 
     @Test
-    public void testSortNumeric() {
+    void testSortNumeric() {
         for (int col = 1; col <= 2; col++) {
             Frame sort = FRefSort.by(doubleComparator(df.rvar(col), true)).fapply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
@@ -130,7 +129,7 @@ public class SortedFrameTest {
     }
 
     @Test
-    public void testCols() {
+    void testCols() {
         Frame sorted = FRefSort.by(labelComparator(df.rvar(0), true)).fapply(df);
 
         assertEquals(df.varCount(), sorted.varCount());
@@ -147,7 +146,7 @@ public class SortedFrameTest {
     }
 
     @Test
-    public void testMultipleSortedLayers() {
+    void testMultipleSortedLayers() {
         Frame sorted = df;
 
         for (int i = 0; i < 10_000; i++) {

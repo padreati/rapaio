@@ -24,7 +24,7 @@
 
 package rapaio.ml.classifier.rule;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -33,10 +33,11 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -139,6 +140,8 @@ public class OneRuleTest {
         OneRule oneRule2 = new OneRule();
         oneRule2.fit(df2, "classes");
 
+        int oldTextWidth = WS.getPrinter().textWidth();
+        WS.getPrinter().withTextWidth(100);
         assertEquals("OneRule model\n" +
                 "================\n" +
                 "\n" +
@@ -152,14 +155,17 @@ public class OneRuleTest {
                 "\n" +
                 "Model fitted: true\n" +
                 "input vars: \n" +
-                " 0.                cap-shape : NOMINAL  |  8.               gill-color : NOMINAL  | 16.               veil-color : NOMINAL  | \n" +
-                " 1.              cap-surface : NOMINAL  |  9.              stalk-shape : NOMINAL  | 17.              ring-number : NOMINAL  | \n" +
-                " 2.                cap-color : NOMINAL  | 10.               stalk-root : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
-                " 3.                  bruises : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
-                " 4.                     odor : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 20.               population : NOMINAL  | \n" +
-                " 5.          gill-attachment : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 21.                  habitat : NOMINAL  | \n" +
-                " 6.             gill-spacing : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | \n" +
-                " 7.                gill-size : NOMINAL  | 15.                veil-type : NOMINAL  | \n" +
+                " 0.                cap-shape : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | \n" +
+                " 1.              cap-surface : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | \n" +
+                " 2.                cap-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | \n" +
+                " 3.                  bruises : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | \n" +
+                " 4.                     odor : NOMINAL  | 15.                veil-type : NOMINAL  | \n" +
+                " 5.          gill-attachment : NOMINAL  | 16.               veil-color : NOMINAL  | \n" +
+                " 6.             gill-spacing : NOMINAL  | 17.              ring-number : NOMINAL  | \n" +
+                " 7.                gill-size : NOMINAL  | 18.                ring-type : NOMINAL  | \n" +
+                " 8.               gill-color : NOMINAL  | 19.        spore-print-color : NOMINAL  | \n" +
+                " 9.              stalk-shape : NOMINAL  | 20.               population : NOMINAL  | \n" +
+                "10.               stalk-root : NOMINAL  | 21.                  habitat : NOMINAL  | \n" +
                 "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +
@@ -176,6 +182,7 @@ public class OneRuleTest {
                 "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n" +
                 "\n", oneRule2.toSummary());
+        WS.getPrinter().withTextWidth(oldTextWidth);
 
         assertEquals(oneRule2.toContent(), oneRule2.toSummary());
         assertEquals(oneRule2.toFullContent(), oneRule2.toSummary());

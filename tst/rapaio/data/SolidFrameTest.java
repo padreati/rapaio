@@ -24,17 +24,15 @@
 
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import rapaio.math.linear.dense.SolidRM;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import rapaio.experiment.math.linear.dense.SolidRM;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -43,15 +41,12 @@ public class SolidFrameTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private Var x;
     private Var y;
     private Frame df1;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         x = VarDouble.wrap(1, 2, 3, 4).withName("x");
         y = VarNominal.copy("a", "c", "b", "a").withName("y");
         df1 = SolidFrame.byVars(
@@ -61,34 +56,43 @@ public class SolidFrameTest {
     }
 
     @Test
-    public void testEmptySolidFrame() {
+    void testEmptySolidFrame() {
         Frame df = SolidFrame.byVars();
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
     }
 
     @Test
-    public void testInvalidVarName() {
-        expectedException.expect(NullPointerException.class);
-        df1.varIndex("q");
+    void testInvalidVarName() {
+        assertThrows(NullPointerException.class, () -> df1.varIndex("q"));
     }
 
     @Test
-    public void testInvalidVarIndex() {
-        expectedException.expect(ArrayIndexOutOfBoundsException.class);
-        expectedException.expectMessage("10");
-        df1.rvar(10);
+    void testInvalidVarIndex() {
+        var ex = assertThrows(ArrayIndexOutOfBoundsException.class, () -> df1.rvar(10));
+        assertEquals("Index 10 out of bounds for length 3", ex.getMessage());
     }
 
     @Test
-    public void testInvalidVarIndexNegative() {
-        expectedException.expect(ArrayIndexOutOfBoundsException.class);
-        expectedException.expectMessage("-10");
-        df1.rvar(-10);
+    void testInvalidVarIndexNegative() {
+        var ex = assertThrows(ArrayIndexOutOfBoundsException.class, () -> df1.rvar(-10));
+        assertEquals("Index -10 out of bounds for length 3", ex.getMessage());
     }
 
     @Test
-    public void testColIndexes() {
+    void testInvalidBuildFromMappedVars() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SolidFrame.byVars(x, y.mapRows(Mapping.range(0, 4))));
+        assertEquals("Not allowed mapped vectors in solid frame", ex.getMessage());
+    }
+
+    @Test
+    void testInvalidBuildFromBoundVars() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> SolidFrame.byVars(x, y.mapRows(0, 1).bindRows(y.mapRows(2, 3))));
+        assertEquals("Not allowed bounded vectors in solid frame", ex.getMessage());
+    }
+
+    @Test
+    void testColIndexes() {
         assertEquals(3, df1.varCount());
         assertEquals("x", df1.varNames()[0]);
         assertEquals("z", df1.varNames()[2]);
@@ -105,7 +109,7 @@ public class SolidFrameTest {
     }
 
     @Test
-    public void testConvenientMethods() {
+    void testConvenientMethods() {
         List<Var> vars = new ArrayList<>();
         vars.add(VarDouble.copy(1., 2., 3., 4.).withName("x"));
         vars.add(VarDouble.copy(3., 5., 9., 12.).withName("y"));
@@ -146,22 +150,9 @@ public class SolidFrameTest {
         assertEquals(5, df.getInt(0, 3));
     }
 
-    @Test
-    public void testInvalidBuildFromMappedVars() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Not allowed mapped vectors in solid frame");
-        SolidFrame.byVars(x, y.mapRows(Mapping.range(0, 4)));
-    }
 
     @Test
-    public void testInvalidBuildFromBoundVars() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Not allowed bounded vectors in solid frame");
-        SolidFrame.byVars(x, y.mapRows(0, 1).bindRows(y.mapRows(2, 3)));
-    }
-
-    @Test
-    public void testBuilders() {
+    void testBuilders() {
 
         Frame df1 = SolidFrame.byVars(x, y);
 
@@ -210,7 +201,7 @@ public class SolidFrameTest {
     }
 
     @Test
-    public void testMatrixBuilders() {
+    void testMatrixBuilders() {
         SolidRM rm = SolidRM.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
@@ -237,13 +228,13 @@ public class SolidFrameTest {
     }
 
     @Test
-    public void testType() {
+    void testType() {
         assertEquals(VType.DOUBLE, SolidFrame.byVars(x, y).type("x"));
         assertEquals(VType.NOMINAL, SolidFrame.byVars(x, y).type("y"));
     }
 
     @Test
-    public void testAddClearRows() {
+    void testAddClearRows() {
         SolidRM rm = SolidRM.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
@@ -254,8 +245,8 @@ public class SolidFrameTest {
 
         assertEquals(6, fm.rowCount());
         for (int i = 0; i < 3; i++) {
-            assertEquals(i+1, fm.getDouble(i, "a"), TOL);
-            assertTrue(fm.isMissing(i+3, "a"));
+            assertEquals(i + 1, fm.getDouble(i, "a"), TOL);
+            assertTrue(fm.isMissing(i + 3, "a"));
         }
 
         fm.clearRows();

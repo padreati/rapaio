@@ -27,9 +27,9 @@
 
 package rapaio.experiment.math.optimization;
 
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.experiment.math.optimization.lbfgs.Mcsrch;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.

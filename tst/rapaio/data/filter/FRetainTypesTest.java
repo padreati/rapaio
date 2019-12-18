@@ -1,10 +1,10 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class FRetainTypesTest {
 
     @Test
-    public void testAll() {
+    void testAll() {
 
         Frame src = FFilterTestUtil.allDoubleNominal(100, 5, 3);
 

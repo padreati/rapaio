@@ -24,69 +24,61 @@
 
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
 public class BoundVarTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private VarDouble a;
     private VarDouble b;
     private VarDouble c;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         a = VarDouble.seq(0, 10);
         b = VarDouble.empty(1);
         c = VarDouble.seq(20, 40);
     }
 
     @Test
-    public void testInvalidBindTypes() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("It is not allowed to bind variables of different types");
-        VarDouble.scalar(1).bindRows(VarInt.seq(10));
+    void testInvalidBindTypes() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VarDouble.scalar(1).bindRows(VarInt.seq(10)));
+        assertEquals("It is not allowed to bind variables of different types", ex.getMessage());
     }
 
     @Test
-    public void testInvalidBindEmptyCollections() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("List of vars is empty");
-        BoundVar.from(new ArrayList<>(), new ArrayList<>());
+    void testInvalidBindEmptyCollections() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> BoundVar.from(new ArrayList<>(), new ArrayList<>()));
+        assertEquals("List of vars is empty", ex.getMessage());
     }
 
     @Test
-    public void testInvalidEmptyCountCollection() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("List of counts is empty");
+    void testInvalidEmptyCountCollection() {
         List<Var> vars = new ArrayList<>();
         vars.add(VarDouble.seq(10));
-        BoundVar.from(new ArrayList<>(), vars);
+        var ex = assertThrows(IllegalArgumentException.class, () -> BoundVar.from(new ArrayList<>(), vars));
+        assertEquals("List of counts is empty", ex.getMessage());
     }
 
     @Test
-    public void testInvalidNonMatchingCollections() {
+    void testInvalidNonMatchingCollections() {
         List<Var> vars = new ArrayList<>();
         vars.add(VarDouble.seq(10));
         List<Integer> counts = new ArrayList<>();
         counts.add(10);
         counts.add(1);
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("List of counts is not equal with list of variables");
-        BoundVar.from(counts, vars);
+        var ex = assertThrows(IllegalArgumentException.class, () -> BoundVar.from(counts, vars));
+        assertEquals("List of counts is not equal with list of variables", ex.getMessage());
     }
 
     @Test
@@ -95,13 +87,12 @@ public class BoundVarTest {
         VarDouble b = VarDouble.wrap(4, 5);
         Var x = BoundVar.from(a, b);
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Row index is not valid: 100");
-        x.getDouble(100);
+        var ex = assertThrows(IllegalArgumentException.class, () -> x.getDouble(100));
+        assertEquals("Row index is not valid: 100", ex.getMessage());
     }
 
     @Test
-    public void testBind() {
+    void testBind() {
         VarDouble a = VarDouble.wrap(1, 2, 3);
         VarDouble b = VarDouble.wrap(4, 5);
         VarDouble c = VarDouble.wrap(6, 7, 8, 9);
@@ -145,78 +136,68 @@ public class BoundVarTest {
         z.setMissing(1);
         assertTrue(z.isMissing(1));
 
-        expectedException.expect(OperationNotAvailableException.class);
-        x.addMissing();
+        Var x1 = x;
+        assertThrows(OperationNotAvailableException.class, x1::addMissing);
     }
 
     @Test
-    public void testInvalidAddDouble() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addDouble(1.0);
+    void testInvalidAddDouble() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addDouble(1.0));
     }
 
     @Test
-    public void testInvalidAddInt() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addInt(1);
+    void testInvalidAddInt() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addInt(1));
     }
 
     @Test
-    public void testInvalidAddLong() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addLong(1);
+    void testInvalidAddLong() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addLong(1));
     }
 
     @Test
-    public void testInvalidAddLabel() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addLabel("1");
+    void testInvalidAddLabel() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addLabel("1"));
     }
 
     @Test
-    public void testInvalidAddBoolean() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addInt(1);
+    void testInvalidAddBoolean() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addInt(1));
     }
 
     @Test
-    public void testInvalidAddMissing() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addMissing();
+    void testInvalidAddMissing() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addMissing());
     }
 
     @Test
-    public void testInvalidAddRows() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).addRows(1);
+    void testInvalidAddRows() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).addRows(1));
     }
 
     @Test
-    public void testInvalidRemoveRow() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).removeRow(1);
+    void testInvalidRemoveRow() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).removeRow(1));
     }
 
     @Test
-    public void testInvalidAddClear() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).clearRows();
+    void testInvalidAddClear() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).clearRows());
     }
 
     @Test
-    public void testInvalidSetLevelk() {
-        expectedException.expect(OperationNotAvailableException.class);
-        BoundVar.from(a, b, c).setLevels(new String[]{});
+    void testInvalidSetLevelk() {
+        assertThrows(OperationNotAvailableException.class, () -> BoundVar.from(a, b, c).setLevels(new String[]{}));
     }
 
     @Test
-    public void testNewInstance() {
+    void testNewInstance() {
         Var var = BoundVar.from(VarDouble.seq(10)).newInstance(10);
         assertTrue(var.deepEquals(VarDouble.empty(10)));
     }
 
     @Test
-    public void testDoubleBound() {
+    void testDoubleBound() {
         Var a = VarDouble.wrap(1, 2);
         Var b = VarDouble.wrap(3, 4);
 
@@ -227,7 +208,7 @@ public class BoundVarTest {
 
 
     @Test
-    public void testIntBound() {
+    void testIntBound() {
         Var a = VarInt.wrap(1, 2);
         Var b = VarInt.wrap(3, 4);
 
@@ -238,7 +219,7 @@ public class BoundVarTest {
 
 
     @Test
-    public void testStampBound() {
+    void testStampBound() {
         Var a = VarLong.wrap(1, 2);
         Var b = VarLong.wrap(3, 4);
 
@@ -248,7 +229,7 @@ public class BoundVarTest {
     }
 
     @Test
-    public void testBinaryBound() {
+    void testBinaryBound() {
         Var a = VarBinary.copy(1);
         Var b = VarBinary.copy(0);
 
@@ -258,7 +239,7 @@ public class BoundVarTest {
     }
 
     @Test
-    public void testNominalBound() {
+    void testNominalBound() {
         Var a = VarNominal.copy("a", "b", "a");
         Var b = VarNominal.copy("b", "a", "b");
 

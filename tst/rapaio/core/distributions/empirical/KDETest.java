@@ -24,15 +24,15 @@
 
 package rapaio.core.distributions.empirical;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class KDETest {
 
@@ -42,8 +42,8 @@ public class KDETest {
     private Var x = VarDouble.seq(-20, 20, 0.01);
     private Var y;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void beforeEach() {
         RandomSource.setSeed(1234);
         sample = Normal.of(0, 1).sample(1_000);
         y = VarDouble.from(x, Normal.of(0, 1)::pdf);
@@ -62,7 +62,7 @@ public class KDETest {
     }
 
     @Test
-    public void testNames() {
+    void testNames() {
         assertEquals("KFuncGaussian", new KFuncGaussian().toSummary());
         assertEquals("KFuncBiWeight", new KFuncBiWeight().toSummary());
         assertEquals("KFuncCosine", new KFuncCosine().toSummary());
@@ -76,13 +76,13 @@ public class KDETest {
     private void test(KFunc fun) {
         KDE kde = KDE.of(sample, fun);
         Var z = VarDouble.from(x, kde::pdf);
-        Var delta = VarDouble.from(x.rowCount(), row -> y.getDouble(row)-z.getDouble(row));
+        Var delta = VarDouble.from(x.rowCount(), row -> y.getDouble(row) - z.getDouble(row));
         Mean mean = Mean.of(delta);
-        assertTrue(Math.abs(mean.value())<TOL);
+        assertTrue(Math.abs(mean.value()) < TOL);
     }
 
     @Test
-    public void testOtherThings() {
+    void testOtherThings() {
         assertEquals(0, new KFuncCosine().pdf(10, 1, 2), TOL);
         assertEquals(0, new KFuncTricube().pdf(10, 1, 2), TOL);
         assertEquals(0, new KFuncTriweight().pdf(10, 1, 2), TOL);
@@ -93,7 +93,7 @@ public class KDETest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         VarDouble sample = VarDouble.from(100, Normal.std()::sampleNext);
 
         assertEquals("KFuncGaussian", KDE.of(sample).kernel().toSummary());

@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
@@ -335,8 +335,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     }
 
     private void learnNode(CTreeNode node, Frame df, Var weights) {
-        node.density = DVector.fromWeights(false, df.rvar(firstTargetName()), weights);
-        node.counter = DVector.fromCounts(false, df.rvar(firstTargetName()));
+        node.density = DensityVector.fromWeights(false, df.rvar(firstTargetName()), weights);
+        node.counter = DensityVector.fromCounts(false, df.rvar(firstTargetName()));
         node.bestIndex = node.density.findBestIndex();
 
         if (df.rowCount() == 0) {
@@ -499,9 +499,9 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     protected ClassifierResult<CTree> corePredict(Frame df, boolean withClasses, boolean withDensities) {
         ClassifierResult<CTree> prediction = ClassifierResult.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
-            Pair<Integer, DVector> res = predictPoint(this, root, i, df);
+            Pair<Integer, DensityVector> res = predictPoint(this, root, i, df);
             int index = res._1;
-            DVector dv = res._2;
+            DensityVector dv = res._2;
             if (withClasses)
                 prediction.firstClasses().setInt(i, index);
             if (withDensities)
@@ -512,7 +512,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
         return prediction;
     }
 
-    protected Pair<Integer, DVector> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
+    protected Pair<Integer, DensityVector> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
         if (node.isLeaf())
             return Pair.from(node.getBestIndex(), node.getDensity().copy().normalize());
 
@@ -523,10 +523,10 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
         }
 
         List<String> dict = tree.firstTargetLevels();
-        DVector dv = DVector.empty(false, dict);
+        DensityVector dv = DensityVector.empty(false, dict);
         double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
-            DVector d = this.predictPoint(tree, child, row, df)._2;
+            DensityVector d = this.predictPoint(tree, child, row, df)._2;
             double wc = child.getDensity().sum();
             dv.plus(d, wc);
             w += wc;
@@ -615,7 +615,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
         sb.append(Format.floatFlexShort(node.getCounter().sum())).append("/");
         sb.append(Format.floatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
         sb.append(firstTargetLevels().get(node.getBestIndex())).append(" (");
-        DVector d = node.getDensity().copy().normalize();
+        DensityVector d = node.getDensity().copy().normalize();
         for (int i = 1; i < firstTargetLevels().size(); i++) {
             sb.append(Format.floatFlexShort(d.get(i))).append(" ");
         }

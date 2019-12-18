@@ -24,9 +24,12 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -35,7 +38,7 @@ import java.util.Arrays;
 public class VRangeTest {
 
     @Test
-    public void testSmoke() {
+    void testSmoke() {
         Frame df = SolidFrame.byVars(
                 VarDouble.empty().withName("a"),
                 VarDouble.empty().withName("b"),
@@ -96,7 +99,7 @@ public class VRangeTest {
                 new String[]{"x", "y"});
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testWrongNumber() {
         Frame df = SolidFrame.byVars(
                 VarDouble.empty().withName("a"),
@@ -107,15 +110,15 @@ public class VRangeTest {
                 VarNominal.empty(0, "C", "D").withName("y")
         );
 
-        test(VRange.of("0~af"), df,
+        assertThrows(NumberFormatException.class, () -> test(VRange.of("0~af"), df,
                 new int[]{0, 1, 2, 3},
                 new String[]{"a", "b", "c", "d"},
-                new String[]{"x", "y"});
+                new String[]{"x", "y"}));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoIndexes() {
-        VRange.of(new int[]{});
+        assertThrows(IllegalArgumentException.class, () -> VRange.of(new int[]{}));
     }
 
     private void test(VRange range, Frame df, int[] indexes, String[] names, String[] reverse) {

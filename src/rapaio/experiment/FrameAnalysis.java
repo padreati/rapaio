@@ -27,7 +27,7 @@
 
 package rapaio.experiment;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -132,12 +132,12 @@ public class FrameAnalysis {
                         });
                         break;
                     case NOMINAL:
-                        DVector dv1 = DVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 1).toMappedVar());
+                        DensityVector dv1 = DensityVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 1).toMappedVar());
                         double[] v1 = dv1.streamValues().sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[0][i < bins ? i : bins - 1] += v1[i];
                         }
-                        DVector dv2 = DVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 2).toMappedVar());
+                        DensityVector dv2 = DensityVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 2).toMappedVar());
                         double[] v2 = dv2.streamValues().sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[1][i < bins ? i : bins - 1] += v2[i];

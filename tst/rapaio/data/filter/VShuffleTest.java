@@ -1,12 +1,11 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VShuffle;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class VShuffleTest {
 
     @Test
-    public void testShuffle() {
+    void testShuffle() {
         RandomSource.setSeed(1);
         double N = 1000.0;
         Var x = VarDouble.seq(0, N, 1);

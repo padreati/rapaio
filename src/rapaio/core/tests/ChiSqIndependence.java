@@ -30,7 +30,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Var;
 import rapaio.experiment.core.tools.DTable;
-import rapaio.math.linear.RM;
+import rapaio.experiment.math.linear.RM;
 import rapaio.printer.format.Format;
 
 import java.util.ArrayList;
@@ -165,6 +165,5 @@ public final class ChiSqIndependence implements HTest {
         sb.append("Expected data:\n");
         sb.append(expected.toSummary()).append("\n");
         return sb.toString();
-
     }
 }

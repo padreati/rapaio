@@ -24,74 +24,74 @@
 
 package rapaio.data.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.FRandomProjection;
 import rapaio.datasets.Datasets;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/3/16.
  */
 public class FRandomProjectionTest {
 
-    @Test
-    public void gausianSDTest() throws IOException, URISyntaxException {
-
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(1);
+    }
+
+    @Test
+    void gausianSDTest() {
+
         FRandomProjection rp = FRandomProjection.newGaussianSd(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.rvar(0).name());
-        Assert.assertEquals("RP_2", df.rvar(1).name());
-        Assert.assertEquals("RP_3", df.rvar(2).name());
+        assertEquals(3, df.varCount());
+        assertEquals("RP_1", df.rvar(0).name());
+        assertEquals("RP_2", df.rvar(1).name());
+        assertEquals("RP_3", df.rvar(2).name());
 
 
         double corr = CorrPearson.of(df).singleValue();
-        Assert.assertEquals(0.4085654587641364, corr, 1e-20);
+        assertEquals(0.4085654587641364, corr, 1e-20);
     }
 
     @Test
-    public void achioptasTest() throws IOException, URISyntaxException {
+    void achioptasTest() {
 
-        RandomSource.setSeed(1);
         FRandomProjection rp = FRandomProjection.newAchlioptas(3, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
         df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.rvar(0).name());
-        Assert.assertEquals("RP_2", df.rvar(1).name());
-        Assert.assertEquals("RP_3", df.rvar(2).name());
+        assertEquals(3, df.varCount());
+        assertEquals("RP_1", df.rvar(0).name());
+        assertEquals("RP_2", df.rvar(1).name());
+        assertEquals("RP_3", df.rvar(2).name());
 
 
         double corr = CorrPearson.of(df).singleValue();
-        Assert.assertEquals(-0.5035565970961098, corr, 1e-20);
+        assertEquals(-0.5035565970961098, corr, 1e-20);
     }
 
     @Test
-    public void achioptas5Test() throws IOException, URISyntaxException {
+    void achioptas5Test() {
 
         RandomSource.setSeed(1);
         FRandomProjection rp = FRandomProjection.newAchlioptas(3, 5, VRange.all()).newInstance();
         Frame df = Datasets.loadIrisDataset().fapply(rp);
-        df.printSummary();
 
-        Assert.assertEquals(3, df.varCount());
-        Assert.assertEquals("RP_1", df.rvar(0).name());
-        Assert.assertEquals("RP_2", df.rvar(1).name());
-        Assert.assertEquals("RP_3", df.rvar(2).name());
+        assertEquals(3, df.varCount());
+        assertEquals("RP_1", df.rvar(0).name());
+        assertEquals("RP_2", df.rvar(1).name());
+        assertEquals("RP_3", df.rvar(2).name());
 
 
         double corr = CorrPearson.of(df).singleValue();
-        Assert.assertEquals(-0.5195786390214067, corr, 1e-20);
+        assertEquals(-0.5195786390214067, corr, 1e-20);
     }
 }

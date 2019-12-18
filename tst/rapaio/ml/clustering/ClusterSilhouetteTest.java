@@ -1,6 +1,6 @@
 package rapaio.ml.clustering;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.experiment.ml.clustering.ClusterSilhouette;

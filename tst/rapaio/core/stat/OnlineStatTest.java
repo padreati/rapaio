@@ -24,15 +24,15 @@
 
 package rapaio.core.stat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -41,13 +41,13 @@ public class OnlineStatTest {
 
     private static final double TOL = 1e-12;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testVariance() {
+    void testVariance() {
 
         RandomSource.setSeed(1223);
 
@@ -80,7 +80,7 @@ public class OnlineStatTest {
     }
 
     @Test
-    public void testParallelStat() {
+    void testParallelStat() {
         Var a = VarDouble.wrap(1, 2, 3, 13, 17, 30);
         Var b = VarDouble.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
@@ -105,7 +105,7 @@ public class OnlineStatTest {
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         int N = 1000;
         double[] values = new double[N];
         for (int i = 0; i < N; i++) {

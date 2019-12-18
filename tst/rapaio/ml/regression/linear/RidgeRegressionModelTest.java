@@ -1,14 +1,14 @@
 package rapaio.ml.regression.linear;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.RV;
+import rapaio.experiment.math.linear.RV;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -19,13 +19,13 @@ public class RidgeRegressionModelTest {
 
     private Frame df;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         df = Datasets.loadISLAdvertising().removeVars("ID");
     }
 
     @Test
-    public void testNoRegularization() throws IOException {
+    void testNoRegularization() throws IOException {
 
         // test the results for ridge are the same as those for linear regression when lambda equals 0
 
@@ -63,7 +63,7 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void ridgeCoefficientsTestedWithR() {
+    void ridgeCoefficientsTestedWithR() {
 
         double[] lambdas = new double[]{0, 0.1, 0.5, 1, 5, 10, 100, 1_000_000};
         double[][] coeff = new double[][]{
@@ -85,7 +85,7 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void testProperties() {
+    void testProperties() {
         RidgeRegressionModel rlm = RidgeRegressionModel.newRidgeLm(0);
 
         assertTrue(rlm.hasIntercept());
@@ -102,7 +102,7 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void testCoefficients() {
+    void testCoefficients() {
         RidgeRegressionModel rlm = RidgeRegressionModel.newRidgeLm(10).fit(df, "Sales");
 
         assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.getCoefficients(0).valueStream().toArray(), TOL);
@@ -112,9 +112,9 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void testPredictionWithIntercept() {
+    void testPredictionWithIntercept() {
         RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).fit(df, "Sales");
-        LinearRegressionResult result = model.predict(df);
+        var result = model.predict(df);
         RV beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(4, beta_hat.count());
 
@@ -130,9 +130,9 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void testPredictionWithOutIntercept() {
+    void testPredictionWithOutIntercept() {
         RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).withIntercept(false).fit(df, "Sales");
-        LinearRegressionResult result = model.predict(df);
+        var result = model.predict(df);
         RV beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(3, beta_hat.count());
 
@@ -148,7 +148,7 @@ public class RidgeRegressionModelTest {
     }
 
     @Test
-    public void testNames() {
+    void testNames() {
         RidgeRegressionModel model1 = RidgeRegressionModel.newRidgeLm(1.2);
         RidgeRegressionModel model2 = RidgeRegressionModel.newRidgeLm(Math.PI).withIntercept(false).withCentering(false).withScaling(false);
 

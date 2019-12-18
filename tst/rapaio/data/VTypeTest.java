@@ -1,8 +1,9 @@
 package rapaio.data;
 
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/18.
@@ -13,7 +14,7 @@ public class VTypeTest {
             VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
 
     @Test
-    public void testNewInstance() {
+    void testNewInstance() {
 
         VarDouble varDouble = VarDouble.empty();
         VarLong varLong = VarLong.empty();
@@ -31,9 +32,9 @@ public class VTypeTest {
     }
 
     @Test
-    public void testIsCategory() {
-        boolean[] numeric = new boolean[] {true, true, false, true, false, false};
-        boolean[] binary = new boolean[] {true, false, false, false, false, false};
+    void testIsCategory() {
+        boolean[] numeric = new boolean[]{true, true, false, true, false, false};
+        boolean[] binary = new boolean[]{true, false, false, false, false, false};
         boolean[] nominal = new boolean[]{false, false, false, false, true, false};
         String[] code = new String[]{"bin", "int", "long", "dbl", "nom", "str"};
 

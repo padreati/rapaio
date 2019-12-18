@@ -24,15 +24,14 @@
 
 package rapaio.ml.regression.simple;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VToDouble;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.RegressionResult;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for simple regression algorithms
@@ -45,17 +44,17 @@ public class ConstantRegressionModelTest {
     private String son = "Son";
     private Frame df;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         df = Datasets.loadPearsonHeightDataset();
     }
 
     @Test
-    public void testConstantRegression() {
+    void testConstantRegression() {
 
         ConstantRegressionModel r1 = ConstantRegressionModel.with(66).newInstance();
         r1.fit(df, father);
-        RegressionResult fit1 = r1.predict(df);
+        var fit1 = r1.predict(df);
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: ConstantRegression\n" +
@@ -74,7 +73,7 @@ public class ConstantRegressionModelTest {
 
         ConstantRegressionModel r2 = ConstantRegressionModel.with(1);
         r2.fit(df, father);
-        RegressionResult fit2 = r2.predict(df, true);
+        var fit2 = r2.predict(df, true);
 
         assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstPrediction()));

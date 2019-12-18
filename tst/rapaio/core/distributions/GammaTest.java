@@ -24,11 +24,9 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.tests.KSTestOneSample;
 import rapaio.data.Frame;
@@ -36,16 +34,14 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.io.Csv;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.math.MTools.sqrt;
 
 public class GammaTest {
 
     private static final double TOL = 1e-13;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private Frame df;
     private Gamma g_low_low;
     private Gamma g_one_low;
@@ -57,8 +53,8 @@ public class GammaTest {
     private Gamma g_one_high;
     private Gamma g_high_high;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void beforeEach() throws IOException {
         RandomSource.setSeed(123);
         df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
         g_low_low = Gamma.of(0.5, 0.5);
@@ -73,28 +69,25 @@ public class GammaTest {
     }
 
     @Test
-    public void testInvalidParamAlpha() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value parameters alpha (-1) and beta (1) parameters should be strictly positive.");
-        Gamma.of(-1, 1);
+    void testInvalidParamAlpha() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Gamma.of(-1, 1));
+        Assertions.assertEquals("Value parameters alpha (-1) and beta (1) parameters should be strictly positive.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidParamBeta() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Value parameters alpha (1) and beta (-1) parameters should be strictly positive.");
-        Gamma.of(1, -1);
+    void testInvalidParamBeta() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Gamma.of(1, -1));
+        assertEquals("Value parameters alpha (1) and beta (-1) parameters should be strictly positive.", ex.getMessage());
     }
 
     @Test
-    public void testNotImplementedEntropy() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Not implemented");
-        Gamma.of(2, 3).entropy();
+    void testNotImplementedEntropy() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Gamma.of(2, 3).entropy());
+        assertEquals("Not implemented", ex.getMessage());
     }
 
     @Test
-    public void testMiscelaneous() {
+    void testMiscelaneous() {
         Gamma g = Gamma.of(0.5, 0.5);
 
         assertFalse(g.discrete());
@@ -112,60 +105,60 @@ public class GammaTest {
     }
 
     @Test
-    public void testRPdf() {
+    void testRPdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_1"), g_low_low.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_2"), g_low_one.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_3"), g_low_high.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_4"), g_one_low.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_5"), g_one_one.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_6"), g_one_high.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_7"), g_high_low.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_8"), g_high_one.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_9"), g_high_high.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_1"), g_low_low.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_2"), g_low_one.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_3"), g_low_high.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_4"), g_one_low.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_5"), g_one_one.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_6"), g_one_high.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_7"), g_high_low.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_8"), g_high_one.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "pdf_9"), g_high_high.pdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
         }
     }
 
     @Test
-    public void testRCdf() {
+    void testRCdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_1"), g_low_low.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_2"), g_low_one.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_3"), g_low_high.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_4"), g_one_low.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_5"), g_one_one.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_6"), g_one_high.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_7"), g_high_low.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_8"), g_high_one.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_9"), g_high_high.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_1"), g_low_low.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_2"), g_low_one.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_3"), g_low_high.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_4"), g_one_low.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_5"), g_one_one.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_6"), g_one_high.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_7"), g_high_low.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_8"), g_high_one.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "cdf_9"), g_high_high.cdf(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
         }
     }
 
     @Test
-    public void testRQuantile() {
+    void testRQuantile() {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") > 1)
                 break;
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_1"), g_low_low.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_2"), g_low_one.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_3"), g_low_high.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_4"), g_one_low.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_5"), g_one_one.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_6"), g_one_high.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_7"), g_high_low.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_8"), g_high_one.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_9"), g_high_high.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_1"), g_low_low.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_2"), g_low_one.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_3"), g_low_high.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_4"), g_one_low.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_5"), g_one_one.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_6"), g_one_high.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_7"), g_high_low.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_8"), g_high_one.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
+            assertEquals(df.getDouble(i, "q_9"), g_high_high.quantile(df.getDouble(i, "x")), TOL, String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")));
         }
     }
 
     @Test
-    public void testSampling() {
+    void testSampling() {
         Gamma g1 = Gamma.of(10, 10);
         Var sample1 = g1.sample(100);
-        Assert.assertTrue(KSTestOneSample.from(sample1, g1).pValue() > 0.05);
+        assertTrue(KSTestOneSample.from(sample1, g1).pValue() > 0.05);
 
         Gamma g2 = Gamma.of(0.1, 0.1);
         Var sample2 = g2.sample(100);
-        Assert.assertTrue(KSTestOneSample.from(sample2, g2).pValue() > 0.05);
+        assertTrue(KSTestOneSample.from(sample2, g2).pValue() > 0.05);
     }
 }

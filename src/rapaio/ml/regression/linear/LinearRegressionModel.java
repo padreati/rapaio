@@ -30,10 +30,10 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.QRDecomposition;
+import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.format.TextTable;
 

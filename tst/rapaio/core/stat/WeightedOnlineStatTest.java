@@ -1,13 +1,13 @@
 package rapaio.core.stat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/17.
@@ -17,7 +17,7 @@ public class WeightedOnlineStatTest {
     private static final double TOL = 1e-11;
 
     @Test
-    public void reverseTest() {
+    void reverseTest() {
 
         RandomSource.setSeed(124);
         Uniform unif = Uniform.of(0, 1);
@@ -43,7 +43,7 @@ public class WeightedOnlineStatTest {
     }
 
     @Test
-    public void weightedTest() {
+    void weightedTest() {
 
         RandomSource.setSeed(123);
 
@@ -72,7 +72,7 @@ public class WeightedOnlineStatTest {
     }
 
     @Test
-    public void multipleStats() {
+    void multipleStats() {
 
         WeightedOnlineStat wos1 = WeightedOnlineStat.empty();
         WeightedOnlineStat wos2 = WeightedOnlineStat.empty();

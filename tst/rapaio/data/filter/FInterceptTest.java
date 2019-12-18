@@ -24,13 +24,12 @@
 
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.FIntercept;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class FInterceptTest {
 
     @Test
-    public void testInterceptValues() {
+    void testInterceptValues() {
         Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).withName("a"));
         Frame after = FIntercept.filter().newInstance().fapply(before);
 

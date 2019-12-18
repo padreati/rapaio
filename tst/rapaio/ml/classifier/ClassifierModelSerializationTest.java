@@ -24,7 +24,7 @@
 
 package rapaio.ml.classifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -40,14 +40,13 @@ import rapaio.ml.eval.metric.Confusion;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ClassifierModelSerializationTest {
 
     @Test
-    public void testOneRuleIris() throws IOException, URISyntaxException, ClassNotFoundException {
+    void testOneRuleIris() throws IOException, ClassNotFoundException {
 
         Var varModel = VarNominal.empty();
         Var varData = VarNominal.empty();
@@ -71,8 +70,8 @@ public class ClassifierModelSerializationTest {
 
         T shaddow = (T) JavaIO.restoreFromFile(tmp);
 
-        ClassifierResult modelFit = model.predict(df);
-        ClassifierResult shaddowFit = shaddow.predict(df);
+        var modelFit = model.predict(df);
+        var shaddowFit = shaddow.predict(df);
 
         modelFit.printSummary();
         assertEquals(modelFit.toSummary(), shaddowFit.toSummary());

@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.ensemble;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
 import rapaio.ml.classifier.ClassifierResult;
@@ -52,7 +52,7 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.empty(false, dictionary);
+                DensityVector dv = DensityVector.empty(false, dictionary);
                 for (int j = 1; j < dictionary.size(); j++) {
                     dv.increment(j, densities.getDouble(i, j));
                 }
@@ -94,7 +94,7 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.empty(false, dictionary);
+                DensityVector dv = DensityVector.empty(false, dictionary);
                 for (int j = 0; j < dictionary.size(); j++) {
                     dv.increment(j, densities.getDouble(i, j));
                 }

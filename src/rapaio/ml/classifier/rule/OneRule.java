@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.rule;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.RowComparators;
 import rapaio.data.VType;
@@ -120,13 +120,13 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     protected ClassifierResult<OneRule> corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
         ClassifierResult<OneRule> pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
-            Pair<String, DVector> p = predict(test, i);
+            Pair<String, DensityVector> p = predict(test, i);
             if (withClasses) {
                 pred.firstClasses().setLabel(i, p._1);
             }
             if (withDensities) {
                 List<String> dict = firstTargetLevels();
-                DVector dv = p._2.copy();
+                DensityVector dv = p._2.copy();
                 dv.normalize();
                 for (int j = 0; j < dict.size(); j++) {
                     pred.firstDensity().setDouble(i, j, dv.get(j));
@@ -136,10 +136,10 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         return pred;
     }
 
-    private Pair<String, DVector> predict(Frame df, int row) {
+    private Pair<String, DensityVector> predict(Frame df, int row) {
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return Pair.from("?", DVector.empty(true, firstTargetLevels().size()));
+            return Pair.from("?", DensityVector.empty(true, firstTargetLevels().size()));
         }
         String testVar = bestRuleSet.getVarName();
         switch (df.rvar(testVar).type()) {
@@ -168,7 +168,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
                     }
                 }
         }
-        return Pair.from("?", DVector.empty(true, firstTargetLevels().size()));
+        return Pair.from("?", DensityVector.empty(true, firstTargetLevels().size()));
     }
 
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {
@@ -177,10 +177,10 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         List<String> testDict = df.rvar(testVar).levels();
         List<String> targetDict = firstTargetLevels();
 
-        DVector[] dvs = IntStream.range(0, testDict.size()).boxed().map(i -> DVector.empty(false, targetDict)).toArray(DVector[]::new);
+        DensityVector[] dvs = IntStream.range(0, testDict.size()).boxed().map(i -> DensityVector.empty(false, targetDict)).toArray(DensityVector[]::new);
         df.stream().forEach(s -> dvs[df.getInt(s.row(), testVar)].increment(df.getInt(s.row(), firstTargetName()), weights.getDouble(s.row())));
         for (int i = 0; i < testDict.size(); i++) {
-            DVector dv = dvs[i];
+            DensityVector dv = dvs[i];
             int bestIndex = dv.findBestIndex();
             set.getRules().add(new NominalRule(testDict.get(i), bestIndex, dv));
         }
@@ -202,7 +202,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
 
         // first process missing values
         if (pos > 0) {
-            DVector hist = DVector.empty(true, firstTargetLevels());
+            DensityVector hist = DensityVector.empty(true, firstTargetLevels());
             for (int i = 0; i < pos; i++) {
                 hist.increment(df.getInt(sort.getInt(i), firstTargetName()), weights.getDouble(sort.getInt(i)));
             }
@@ -219,7 +219,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         while (i < sort.rowCount()) {
             // start a new bucket
             int startIndex = i;
-            DVector hist = DVector.empty(true, firstTargetLevels());
+            DensityVector hist = DensityVector.empty(true, firstTargetLevels());
 
             do { // fill it until it has enough of the majority class
                 index = df.getInt(sort.getInt(i), firstTargetName());
@@ -266,7 +266,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
                 continue;
             }
             if (last.getTargetClass().equals(rule.getTargetClass())) {
-                DVector dv = last.getDV().copy();
+                DensityVector dv = last.getDV().copy();
                 dv.plus(rule.getDV(), 1);
                 last = new NumericRule(last.getMinValue(), rule.getMaxValue(), false, last.getTargetIndex(), dv);
             } else {

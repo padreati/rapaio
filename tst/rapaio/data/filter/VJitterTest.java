@@ -1,15 +1,14 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VJitter;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 public class VJitterTest {
 
     @Test
-    public void testJitterStandard() {
+    void testJitterStandard() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.standard());
         Mean mean = Mean.of(a);
@@ -32,7 +31,7 @@ public class VJitterTest {
     }
 
     @Test
-    public void testJitterStandardSd() {
+    void testJitterStandardSd() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.gaussian(0, 2));
         Mean mean = Mean.of(a);
@@ -47,7 +46,7 @@ public class VJitterTest {
     }
 
     @Test
-    public void testJitterDistributed() {
+    void testJitterDistributed() {
         RandomSource.setSeed(1);
         Var a = VarDouble.fill(100_000, 1).fapply(VJitter.with(ChiSquare.of(5)));
         Mean mean = Mean.of(a);

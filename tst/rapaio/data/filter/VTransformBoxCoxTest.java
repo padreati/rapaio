@@ -1,13 +1,13 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VTransformBoxCox;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/2/18.
@@ -16,10 +16,13 @@ public class VTransformBoxCoxTest {
 
     private static final double TOL = 1e-20;
 
-    @Test
-    public void testDouble() {
-
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(1233);
+    }
+
+    @Test
+    void testDouble() {
         Normal normal = Normal.of(1, 10);
         double[] values = new double[100];
         for (int i = 0; i < values.length; i++) {

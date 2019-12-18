@@ -1,11 +1,11 @@
 package rapaio.data.mapping;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Mapping;
 import rapaio.data.VarInt;
 import rapaio.util.collection.IntIterator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/26/18.
@@ -28,7 +28,7 @@ public class ArrayMappingTest {
     }
 
     @Test
-    public void testAddRemoveClear() {
+    void testAddRemoveClear() {
 
         ArrayMapping mapping = new ArrayMapping(10, 20);
         assertEquals(10, mapping.size());
@@ -58,7 +58,7 @@ public class ArrayMappingTest {
     }
 
     @Test
-    public void testStreamsAndCollections() {
+    void testStreamsAndCollections() {
         ArrayMapping mapping = new ArrayMapping(10, 20);
 
         int[] values1 = mapping.elements();

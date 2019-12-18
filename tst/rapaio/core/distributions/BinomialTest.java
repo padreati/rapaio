@@ -24,14 +24,13 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.io.Csv;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for binomial distribution
@@ -42,7 +41,7 @@ public class BinomialTest {
     private static final double TOL = 1e-12;
     private Frame df;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         df = Csv.instance()
                 .withHeader(true)
@@ -51,21 +50,21 @@ public class BinomialTest {
     }
 
     @Test
-    public void nameTest() {
+    void nameTest() {
         assertEquals("Binomial(p=0.5,n=10)", Binomial.of(0.5, 10).name());
     }
 
     @Test
-    public void bigN() {
+    void bigN() {
         Binomial b = Binomial.of(0.5, 10000000);
-        assertEquals(10000000/2, b.quantile(0.5), TOL);
+        assertEquals(10000000. / 2, b.quantile(0.5), TOL);
     }
 
     @Test
-    public void testVariousArtifacts() {
+    void testVariousArtifacts() {
 
         Binomial b = Binomial.of(0.2, 120);
-        Assert.assertTrue(b.discrete());
+        assertTrue(b.discrete());
         assertEquals(0, b.min(), TOL);
         assertEquals(120, b.max(), TOL);
         assertEquals(24, b.mean(), TOL);
@@ -78,7 +77,7 @@ public class BinomialTest {
     }
 
     @Test
-    public void testBinomialPdf() {
+    void testBinomialPdf() {
 
         Binomial b1 = Binomial.of(0.1, 10);
         Binomial b2 = Binomial.of(0.1, 100);
@@ -101,7 +100,7 @@ public class BinomialTest {
     }
 
     @Test
-    public void testBinomialCdf() {
+    void testBinomialCdf() {
 
         Binomial b1 = Binomial.of(0.1, 10);
         Binomial b2 = Binomial.of(0.1, 100);
@@ -124,7 +123,7 @@ public class BinomialTest {
     }
 
     @Test
-    public void testBinomialQuantile() {
+    void testBinomialQuantile() {
 
         Binomial b1 = Binomial.of(0.1, 10);
         Binomial b2 = Binomial.of(0.1, 100);

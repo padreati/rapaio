@@ -24,17 +24,15 @@
 
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.datasets.Datasets;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -42,9 +40,6 @@ import static org.junit.Assert.*;
 public class BoundFrameTest {
 
     private static final double TOL = 1e-20;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     // frame with first rows
     private Frame df1 = SolidFrame.byVars(
@@ -73,29 +68,29 @@ public class BoundFrameTest {
             VarDouble.wrap(1 / 7.).withName("1/x")
     );
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void befoeEach() {
         RandomSource.setSeed(1234);
     }
 
     @Test
-    public void testInvalidVarsWithSameName() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("bound frame does not allow variables with the same name");
-        BoundFrame.byVars(VarDouble.wrap(1.).withName("x"), VarDouble.wrap(1.).withName("x"));
+    void testInvalidVarsWithSameName() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> BoundFrame.byVars(VarDouble.wrap(1.).withName("x"), VarDouble.wrap(1.).withName("x")));
+        assertEquals("bound frame does not allow variables with the same name: x", ex.getMessage());
     }
 
     @Test
-    public void testInvalidFramesWithVarsWithSameName() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("bound frame does not allow variables with the same name: x");
-        BoundFrame.byVars(
-                SolidFrame.byVars(VarDouble.wrap(1.).withName("x")),
-                SolidFrame.byVars(VarDouble.wrap(2.).withName("x")));
+    void testInvalidFramesWithVarsWithSameName() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> BoundFrame.byVars(
+                        SolidFrame.byVars(VarDouble.wrap(1.).withName("x")),
+                        SolidFrame.byVars(VarDouble.wrap(2.).withName("x"))));
+        assertEquals("bound frame does not allow variables with the same name: x", ex.getMessage());
     }
 
     @Test
-    public void testBuildersByVars() {
+    void testBuildersByVars() {
 
         Var[] vars = new Var[]{
                 VarDouble.wrap(1, 2, 3, Double.NaN).withName("a"),
@@ -123,29 +118,26 @@ public class BoundFrameTest {
     }
 
     @Test
-    public void testInvalidBindByRowsWithDifferentRowCount() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Can't bind by rows frames with different variable counts.");
-        BoundFrame.byRows(df1, df2, df3);
+    void testInvalidBindByRowsWithDifferentRowCount() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BoundFrame.byRows(df1, df2, df3));
+        assertEquals("Can't bind by rows frames with different variable counts.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidBindRowsWithDifferentNames() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Can't bind by rows frames with different variable names " +
-                "or with different order of the variables.");
-        BoundFrame.byRows(df1, df2, df4);
+    void testInvalidBindRowsWithDifferentNames() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BoundFrame.byRows(df1, df2, df4));
+        assertEquals("Can't bind by rows frames with different variable names " +
+                "or with different order of the variables.", ex.getMessage());
     }
 
     @Test
-    public void testBindRowsVarsWithDifferentTypes() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Can't bind by rows variable of different types.");
-        BoundFrame.byRows(df1, df2, df5);
+    void testBindRowsVarsWithDifferentTypes() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BoundFrame.byRows(df1, df2, df5));
+        assertEquals("Can't bind by rows variable of different types.", ex.getMessage());
     }
 
     @Test
-    public void testBuildersByRows() {
+    void testBuildersByRows() {
 
         Frame source = Datasets.loadRandom();
 
@@ -157,14 +149,14 @@ public class BoundFrameTest {
 
         VType[] types = new VType[]{VType.BINARY, VType.DOUBLE, VType.INT, VType.LONG, VType.NOMINAL};
         String[] names = new String[]{"boolean", "double", "int", "long", "nominal"};
-        BiConsumer[] verifyIndex = new BiConsumer[]{
+        var verifyIndex = new BiConsumer[]{
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, (int) j), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLong((int) i, (int) j), bound.getLong((int) i, (int) j)),
                 (i, j) -> assertEquals(source.getLabel((int) i, (int) j), bound.getLabel((int) i, (int) j)),
         };
-        BiConsumer[] verifyName = new BiConsumer[]{
+        var verifyName = new BiConsumer[]{
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
                 (i, j) -> assertEquals(source.getDouble((int) i, (int) j), bound.getDouble((int) i, names[(int) j]), TOL),
                 (i, j) -> assertEquals(source.getInt((int) i, (int) j), bound.getInt((int) i, names[(int) j])),
@@ -182,21 +174,21 @@ public class BoundFrameTest {
 
         for (int i = 0; i < 10; i++) {
             bound.setInt(i, 0, 1);
-            bound.setInt(i+10, "boolean", 0);
-            bound.setMissing(i+20, 0);
-            bound.setMissing(i+30, "boolean");
+            bound.setInt(i + 10, "boolean", 0);
+            bound.setMissing(i + 20, 0);
+            bound.setMissing(i + 30, "boolean");
 
             bound.setDouble(i, 1, 1);
-            bound.setDouble(i+10, "double", 2);
+            bound.setDouble(i + 10, "double", 2);
 
             bound.setInt(i, 2, 1);
-            bound.setInt(i+10, "int", 2);
+            bound.setInt(i + 10, "int", 2);
 
             bound.setLong(i, 3, 1L);
-            bound.setLong(i+10, "long", 2L);
+            bound.setLong(i + 10, "long", 2L);
 
             bound.setLabel(i, 4, "xx");
-            bound.setLabel(i+10, "nominal", "yy");
+            bound.setLabel(i + 10, "nominal", "yy");
         }
 
         assertTrue(bound.deepEquals(BoundFrame.byRows(df1, df2)));
@@ -221,7 +213,7 @@ public class BoundFrameTest {
     }
 
     @Test
-    public void testVars() {
+    void testVars() {
         Frame df = BoundFrame.byRows(df1, df2);
 
         // check var names after binding
@@ -240,7 +232,7 @@ public class BoundFrameTest {
     }
 
     @Test
-    public void testBindMapVars() {
+    void testBindMapVars() {
         Frame df = BoundFrame.byVars(df1);
         df = df.bindVars(VarDouble.wrap(-1, -2, -3, -4).withName("y"));
 
@@ -273,7 +265,7 @@ public class BoundFrameTest {
     }
 
     @Test
-    public void testBindMapRows() {
+    void testBindMapRows() {
         Frame df = BoundFrame.byVars(df1);
         df = df.bindRows(df2);
 
@@ -300,26 +292,23 @@ public class BoundFrameTest {
     }
 
     @Test
-    public void testInvalidVarName() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Variable with name: uu does not exists.");
+    void testInvalidVarName() {
         Frame df = Datasets.loadRandom();
-        BoundFrame.byVars(df).rvar("uu");
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BoundFrame.byVars(df).rvar("uu"));
+        assertEquals("Variable with name: uu does not exists.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidClearRows() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for bound frames.");
+    void testInvalidClearRows() {
         Frame df = Datasets.loadRandom();
-        BoundFrame.byVars(df).addRows(10);
+        var ex = assertThrows(IllegalStateException.class, () -> BoundFrame.byVars(df).addRows(10));
+        assertEquals("This operation is not available for bound frames.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddRows() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("This operation is not available for bound frames.");
+    void testInvalidAddRows() {
         Frame df = Datasets.loadRandom();
-        BoundFrame.byVars(df).clearRows();
+        var ex = assertThrows(IllegalStateException.class, () -> BoundFrame.byVars(df).clearRows());
+        assertEquals("This operation is not available for bound frames.", ex.getMessage());
     }
 }

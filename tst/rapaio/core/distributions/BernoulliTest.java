@@ -24,14 +24,13 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.data.Var;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/17/16.
@@ -40,13 +39,13 @@ public class BernoulliTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
+    @BeforeEach
+    void beforeEach() {
+        RandomSource.setSeed(1234);
+    }
 
     @Test
-    public void testBase() {
-
-        RandomSource.setSeed(1234);
+    void testBase() {
 
         Bernoulli b90 = Bernoulli.of(0.9);
         Bernoulli b80 = Bernoulli.of(0.8);
@@ -99,16 +98,14 @@ public class BernoulliTest {
     }
 
     @Test
-    public void testInvalidProbability() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Probability parameter must be in closed interval [0,1]");
-        Bernoulli.of(12);
+    void testInvalidProbability() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Bernoulli.of(12));
+        assertEquals("Probability parameter must be in closed interval [0,1]", ex.getMessage());
     }
 
     @Test
-    public void testInvalidProbabilityLow() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Probability parameter must be in closed interval [0,1]");
-        Bernoulli.of(-0.1);
+    void testInvalidProbabilityLow() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Bernoulli.of(-0.1));
+        assertEquals("Probability parameter must be in closed interval [0,1]", ex.getMessage());
     }
 }

@@ -24,12 +24,12 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
@@ -39,7 +39,7 @@ public class ZTestTwoSamplesTest {
     private static final double TOL = 1e-12;
 
     @Test
-    public void zTestTwoSamples() {
+    void zTestTwoSamples() {
         Var x = VarDouble.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
         Var y = VarDouble.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 

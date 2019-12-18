@@ -24,15 +24,16 @@
 
 package rapaio.math;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static rapaio.math.MTools.*;
 
 public class MathToolsTest {
 
     @Test
-    public void baseWithRefTest() {
+    void baseWithRefTest() {
 
         // test values computed in other libraries
 

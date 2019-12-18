@@ -24,8 +24,7 @@
 
 package rapaio.core.tests;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
@@ -37,51 +36,53 @@ import rapaio.datasets.Datasets;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KSTestTest {
 
     @Test
-    public void testPearson() throws IOException, URISyntaxException {
+    void testPearson() throws IOException, URISyntaxException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
         KSTestTwoSamples test = KSTestTwoSamples.from(df.rvar("Son"), df.rvar("Father"));
         test.printSummary();
 
-        Assert.assertEquals(0.150278, test.d(), 10e-5);
-        Assert.assertEquals(0.0000000000411316, test.pValue(), 10e-10);
+        assertEquals(0.150278, test.d(), 10e-5);
+        assertEquals(0.0000000000411316, test.pValue(), 10e-10);
     }
 
     @Test
-    public void testNormal() {
+    void testNormal() {
         RandomSource.setSeed(1);
         Normal d = Normal.std();
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
-        Assert.assertTrue(test.d() < 0.4);
-        Assert.assertTrue(test.pValue() > 0.08);
+        assertTrue(test.d() < 0.4);
+        assertTrue(test.pValue() > 0.08);
     }
 
     @Test
-    public void testUniform() {
+    void testUniform() {
         RandomSource.setSeed(1);
         VarDouble sample = Uniform.of(0, 1).sample(1_000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();
-        Assert.assertTrue(test.d() > 0.4);
-        Assert.assertTrue(test.pValue() < 0.001);
+        assertTrue(test.d() > 0.4);
+        assertTrue(test.pValue() < 0.001);
     }
 
     @Test
-    public void testStudentT() {
+    void testStudentT() {
         RandomSource.setSeed(1);
         StudentT d = StudentT.of(3, 0, 1);
         VarDouble sample = d.sample(1000);
         KSTestOneSample test = KSTestOneSample.from(sample, Normal.std());
         test.printSummary();
-        Assert.assertTrue(test.d() > 0.04);
-        Assert.assertTrue(test.pValue() < 0.05);
+        assertTrue(test.d() > 0.04);
+        assertTrue(test.pValue() < 0.05);
     }
 }

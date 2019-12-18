@@ -24,10 +24,10 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 public class TTestTwoPairedTest {
 
     @Test
-    public void basicTest() {
+    void basicTest() {
 
         final double TOL = 1e-12;
 

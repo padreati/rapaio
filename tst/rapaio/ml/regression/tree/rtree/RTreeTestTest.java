@@ -1,7 +1,7 @@
 package rapaio.ml.regression.tree.rtree;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -11,29 +11,29 @@ import rapaio.ml.regression.tree.RTree;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
 public class RTreeTestTest {
 
-    private Frame df;
-    private Var w;
-    private RTree tree;
     private static final String TARGET = "humidity";
     private static final String NUM_TEST = "temp";
     private static final String NOM_TEST = "outlook";
+    private Frame df;
+    private Var w;
+    private RTree tree;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         df = Datasets.loadPlay();
         w = VarDouble.fill(df.rowCount(), 1);
         tree = RTree.newDecisionStump();
     }
 
     @Test
-    public void ignoreTest() {
+    void ignoreTest() {
 
         RTreeTest m = RTreeTest.Ignore;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
@@ -44,7 +44,7 @@ public class RTreeTestTest {
     }
 
     @Test
-    public void nominalFullTest() {
+    void nominalFullTest() {
 
         RTreeTest m = RTreeTest.NominalFull;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
@@ -67,7 +67,7 @@ public class RTreeTestTest {
     }
 
     @Test
-    public void nominalFullTestFailed() {
+    void nominalFullTestFailed() {
 
         RTreeTest m = RTreeTest.NominalFull;
         Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
@@ -78,7 +78,7 @@ public class RTreeTestTest {
     }
 
     @Test
-    public void nominalBinaryTest() {
+    void nominalBinaryTest() {
         RTreeTest m = RTreeTest.NominalBinary;
 
         assertEquals("NominalBinary", m.name());
@@ -93,7 +93,7 @@ public class RTreeTestTest {
     }
 
     @Test
-    public void numericBinaryTest() {
+    void numericBinaryTest() {
         RTreeTest m = RTreeTest.NumericBinary;
 
         assertEquals("NumericBinary", m.name());

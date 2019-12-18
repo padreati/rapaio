@@ -24,22 +24,20 @@
 
 package rapaio.experiment.ml.analysis;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.io.Csv;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.eval.metric.Confusion;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Principal component analysis decomposition test
@@ -48,15 +46,15 @@ import rapaio.ml.eval.metric.Confusion;
  */
 public class PCATest {
 
-    Frame df;
+    private static Frame df;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeAll
+    static void beforeAll() throws Exception {
         df = Csv.instance().read(PCATest.class.getResourceAsStream("pca.csv"));
     }
 
     @Test
-    public void pcaTest() {
+    void pcaTest() {
         RM x = SolidRM.copy(df.removeVars(VRange.of("y")));
 
         PCA pca = new PCA();
@@ -67,7 +65,7 @@ public class PCATest {
     }
 
     @Test
-    public void irisPca() {
+    void irisPca() {
         RandomSource.setSeed(123);
         Frame iris = Datasets.loadIrisDataset();
         Frame x = iris.removeVars(VRange.of("class"));
@@ -83,25 +81,14 @@ public class PCATest {
         CForest rf2 = CForest.newRF().withPoolSize(0).withRuns(2);
 
         rf1.fit(iris, "class");
-        ClassifierResult fit1 = rf1.predict(iris);
+        var fit1 = rf1.predict(iris);
 
         rf2.fit(fit.mapVars("0~2,class"), "class");
-        ClassifierResult fit2 = rf2.predict(fit.mapVars("0~2,class"));
+        var fit2 = rf2.predict(fit.mapVars("0~2,class"));
 
         double acc1 = Confusion.from(iris.rvar("class"), fit1.firstClasses()).accuracy();
         double acc2 = Confusion.from(iris.rvar("class"), fit2.firstClasses()).accuracy();
 
-        Assert.assertTrue(acc1<acc2);
-    }
-
-    @Test
-    public void testColinear() {
-        Var x = VarDouble.copy(1, 2, 3, 4).withName("x");
-        Var y = VarDouble.copy(2, 3, 4, 5).withName("y");
-        Var z = VarDouble.copy(4, 2, 6, 9).withName("z");
-
-        PCA pca = new PCA();
-        pca.fit(SolidFrame.byVars(x, y, z));
-        pca.printSummary();
+        assertTrue(acc1 < acc2);
     }
 }

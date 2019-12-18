@@ -24,10 +24,11 @@
 
 package rapaio.core;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/1/16.
@@ -36,21 +37,18 @@ public class RandomSourceTest {
 
 
     @Test
-    public void reproducibleTest() {
+    void reproducibleTest() {
 
-        Var seeds = VarInt.from(100, i -> i*i);
+        Var seeds = VarInt.from(100, i -> i * i);
 
         RandomSource.setSeed(0);
-        checkRandom(seeds);
-    }
 
-    private void checkRandom(Var seeds) {
         for (int i = 0; i < seeds.rowCount(); i++) {
             RandomSource.setSeed(seeds.getInt(i));
             int n1 = RandomSource.nextInt(1000);
             RandomSource.setSeed(seeds.getInt(i));
             int n2 = RandomSource.nextInt(1000);
-            Assert.assertEquals(n1, n2);
+            assertEquals(n1, n2);
         }
     }
 }

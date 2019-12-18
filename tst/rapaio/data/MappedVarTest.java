@@ -24,16 +24,14 @@
 
 package rapaio.data;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.stream.VSpot;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -42,11 +40,8 @@ public class MappedVarTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         Var a = VarDouble.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
         assertEquals(2, a.rowCount());
         assertEquals(3, a.getDouble(0), TOL);
@@ -66,7 +61,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testSource() {
+    void testSource() {
         VarDouble x = VarDouble.seq(0, 100);
         MappedVar map = x.mapRows(Mapping.range(10));
 
@@ -75,55 +70,48 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testInvalidAddRows() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarDouble.scalar(1).mapRows(0).addRows(10);
+    void testInvalidAddRows() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarDouble.scalar(1).mapRows(0).addRows(10));
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddDouble() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarDouble.scalar(1).mapRows(0).addDouble(0);
+    void testInvalidAddDouble() {
+        assertThrows(OperationNotAvailableException.class, () -> VarDouble.scalar(1).mapRows(0).addDouble(0));
     }
 
     @Test
-    public void testInvalidAddInt() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarDouble.scalar(1).mapRows(0).addInt(0);
+    void testInvalidAddInt() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarDouble.scalar(1).mapRows(0).addInt(0));
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddNominal() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarNominal.copy("1").mapRows(0).addLabel("0");
+    void testInvalidAddNominal() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarNominal.copy("1").mapRows(0).addLabel("0"));
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddLong() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarLong.scalar(1).mapRows(0).addLong(0);
+    void testInvalidAddLong() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarLong.scalar(1).mapRows(0).addLong(0));
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddBoolean() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarBinary.fill(1, 1).mapRows(0).addInt(1);
+    void testInvalidAddBoolean() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarBinary.fill(1, 1).mapRows(0).addInt(1));
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testInvalidAddMissing() {
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("Operation not available on mapped vectors");
-        VarBinary.fill(1, 1).mapRows(0).addMissing();
+    void testInvalidAddMissing() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarBinary.fill(1, 1).mapRows(0).addMissing());
+        assertEquals("Operation not available on mapped vectors", ex.getMessage());
     }
 
     @Test
-    public void testMappedNominal() {
+    void testMappedNominal() {
         Var x = VarNominal.copy("a").mapRows(0);
         x.setLevels("x");
         assertEquals("x", x.getLabel(0));
@@ -138,7 +126,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testMappedBinary() {
+    void testMappedBinary() {
         Var x = VarBinary.copy(1, 0, 1).mapRows(0, 2);
         assertEquals(2, x.rowCount());
         assertEquals(1, x.getInt(0));
@@ -150,7 +138,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testMappedLong() {
+    void testMappedLong() {
         Var x = VarLong.copy(100, 200).mapRows(0, 1);
         assertEquals(2, x.rowCount());
         assertEquals(100, x.getLong(0));
@@ -161,7 +149,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testMappedDouble() {
+    void testMappedDouble() {
         VarDouble x = VarDouble.seq(10);
         MappedVar y = x.mapRows(1, 2, 3);
         y.setDouble(0, 10);
@@ -173,7 +161,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testMappedInt() {
+    void testMappedInt() {
         VarInt x = VarInt.seq(10);
         MappedVar y = x.mapRows(1, 2, 3);
         y.setInt(0, 10);
@@ -185,14 +173,14 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
         VarInt x = VarInt.empty(10);
         Var map = x.mapRows(0, 1, 2);
         assertTrue(map.isMissing(0));
     }
 
     @Test
-    public void testRemoveClearRows() {
+    void testRemoveClearRows() {
         Var x = VarInt.seq(100).mapRows(1, 2, 3, 4);
         assertTrue(x.deepEquals(VarInt.wrap(1, 2, 3, 4)));
 
@@ -204,21 +192,21 @@ public class MappedVarTest {
     }
 
     @Test
-    public void testNewInstance() {
+    void testNewInstance() {
         Var x = VarInt.seq(10).mapRows(1, 2, 3);
         assertTrue(x.newInstance(0).deepEquals(VarInt.empty()));
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals("MappedVar[type=int, name:?, rowCount:3]", VarInt.seq(10).mapRows(1, 2, 3).toString());
     }
 
     @Test
-    public void testPrinting() {
-        int[] mapping = new int[] {1, 3, 6, 9};
+    void testPrinting() {
+        int[] mapping = new int[]{1, 3, 6, 9};
 
-        VarDouble vDouble = VarDouble.from(10, row -> (row+1) % 3 == 0 ? 1. : row);
+        VarDouble vDouble = VarDouble.from(10, row -> (row + 1) % 3 == 0 ? 1. : row);
         Var mapped = vDouble.mapRows(mapping);
         assertEquals("MappedVar(type=dbl) [name:\"?\", rowCount:4]\n" +
                 "row value \n" +
@@ -250,7 +238,7 @@ public class MappedVarTest {
     }
 
     @Test
-    public void filteredTests() {
+    void filteredTests() {
 
         RandomSource.setSeed(123);
         Normal normal = Normal.std();

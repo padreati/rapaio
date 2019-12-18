@@ -24,21 +24,21 @@
 
 package rapaio.core.tests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TTestTwoSamplesTest {
 
     private static final double TOL = 1e-12;
 
     @Test
-    public void precomputedTest() {
+    void precomputedTest() {
         Normal n = Normal.of(0, 10);
         Var x = VarDouble.from(100, n::sampleNext).withName("x");
         Var y = VarDouble.from(100, n::sampleNext).withName("y");
@@ -54,7 +54,7 @@ public class TTestTwoSamplesTest {
     }
 
     @Test
-    public void testTTest() {
+    void testTTest() {
 
         Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
         Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
@@ -70,7 +70,7 @@ public class TTestTwoSamplesTest {
         assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
         assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 
-        assertEquals(true, t1.hasEqualVars());
+        assertTrue(t1.hasEqualVars());
         assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
 
         assertEquals(0, t1.getMu(), TOL);
@@ -114,7 +114,7 @@ public class TTestTwoSamplesTest {
         assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
         assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 
-        assertEquals(false, t1.hasEqualVars());
+        assertFalse(t1.hasEqualVars());
         assertEquals(-1.166666666666667, t1.getSampleMean(), TOL);
 
         assertEquals(0, t1.getMu(), TOL);

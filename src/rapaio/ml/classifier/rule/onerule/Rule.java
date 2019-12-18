@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.rule.onerule;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 
 import java.io.Serializable;
 
@@ -41,10 +41,10 @@ public abstract class Rule implements Serializable {
     private static final long serialVersionUID = 7073304176052957223L;
 
     protected final int targetIndex;
-    protected final DVector dv;
+    protected final DensityVector dv;
     protected final boolean zeroWeight;
 
-    public Rule(int targetIndex, DVector dv) {
+    public Rule(int targetIndex, DensityVector dv) {
         this.targetIndex = targetIndex;
         this.dv = dv;
         this.zeroWeight = Math.abs(dv.sum()) < 1e-32;
@@ -70,7 +70,7 @@ public abstract class Rule implements Serializable {
         return zeroWeight ? 0.0 : dv.get(targetIndex) / dv.sum();
     }
 
-    public DVector getDV() {
+    public DensityVector getDV() {
         return dv;
     }
 }

@@ -24,15 +24,12 @@
 
 package rapaio.datasets;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -43,16 +40,16 @@ public class DatasetsTest {
     public DatasetsTest() {
     }
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void beforeEach() {
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    public void afterEach() {
     }
 
     @Test
-    public void testIrisDataset() throws IOException, URISyntaxException {
+    public void testIrisDataset() {
         Frame df = Datasets.loadIrisDataset();
 
         assertNotNull(df);

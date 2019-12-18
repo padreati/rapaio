@@ -24,8 +24,8 @@
 
 package rapaio.ml.classifier.bayes;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
@@ -38,7 +38,7 @@ import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
 import rapaio.ml.eval.metric.Confusion;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -53,8 +53,8 @@ public class NaiveBayesTest {
     private Frame dfBad;
     private Frame dfMixt;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(1L);
         Normal normal = Normal.std();
         target = VarNominal.from(N, row -> row >= 50 ? "A" : "B").withName("target");
@@ -68,7 +68,7 @@ public class NaiveBayesTest {
     }
 
     @Test
-    public void testBasicCvpGaussian() {
+    void testBasicCvpGaussian() {
         Var goodPrediction = new NaiveBayes().fit(dfGood, "target").predict(dfGood).firstClasses();
         assertEquals(Confusion.from(target, goodPrediction).accuracy(), 1, TOL);
 
@@ -83,7 +83,7 @@ public class NaiveBayesTest {
     }
 
     @Test
-    public void testBasicCvpEmpirical() {
+    void testBasicCvpEmpirical() {
         Var goodPrediction = new NaiveBayes().withNumEstimator(new KernelPdf()).fit(dfGood, "target").predict(dfGood).firstClasses();
         assertEquals(Confusion.from(target, goodPrediction).accuracy(), 1, TOL);
 
@@ -98,7 +98,7 @@ public class NaiveBayesTest {
     }
 
     @Test
-    public void testGaussianNoVariance() {
+    void testGaussianNoVariance() {
         Frame df = SolidFrame.byVars(VarDouble.from(N, row -> row >= 50 ? 1.0 : 1.1).withName("constant"), target);
         NaiveBayes nb = new NaiveBayes().withLaplaceSmoother(1);
         nb.fit(df, "target");
@@ -108,7 +108,7 @@ public class NaiveBayesTest {
     }
 
     @Test
-    public void testBuilder() {
+    void testBuilder() {
         NaiveBayes nb = new NaiveBayes()
                 .withPriorSupplier(PriorSupplier.PRIOR_UNIFORM)
                 .withLaplaceSmoother(2)
@@ -123,7 +123,7 @@ public class NaiveBayesTest {
     }
 
     @Test
-    public void testSummary() {
+    void testSummary() {
         NaiveBayes nb = new NaiveBayes();
         assertEquals("NaiveBayes model\n" +
                 "================\n" +

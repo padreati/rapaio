@@ -1,12 +1,12 @@
 package rapaio.core.stat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/10/18.
@@ -15,13 +15,13 @@ public class QuantilesTest {
 
     private static final double TOL = 1e-12;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testDoubleR7() {
+    void testDoubleR7() {
 
         Normal normal = Normal.std();
         VarDouble x = VarDouble.from(1_000_000, normal::sampleNext);
@@ -43,7 +43,7 @@ public class QuantilesTest {
     }
 
     @Test
-    public void testDoubleR8() {
+    void testDoubleR8() {
 
         Normal normal = Normal.std();
         VarDouble x = VarDouble.from(1_000_000, normal::sampleNext);

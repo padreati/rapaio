@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.math.linear.RV;
+import rapaio.experiment.math.linear.RV;
 import rapaio.util.Pair;
 
 import java.io.Serializable;

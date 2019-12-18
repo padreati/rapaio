@@ -24,18 +24,19 @@
 
 package rapaio.experiment.ml.classifier.tree.ctree;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.filter.FRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.core.tools.DTable;
 import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.eval.metric.Confusion;
 
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -43,19 +44,19 @@ import java.io.IOException;
 public class C45ClassifierModelTest {
 
     @Test
-    public void testNominalInfoGain() throws IOException {
+    void testNominalInfoGain() {
         Frame df = Datasets.loadPlay();
         df = FRetainTypes.on(VType.NOMINAL).fapply(df);
         final String className = "class";
 
         CTree classifier = CTree.newC45();
         classifier.fit(df, className);
-        ClassifierResult pred = classifier.predict(df);
+        var pred = classifier.predict(df);
 
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), false);
         DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), false);
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
-        Assert.assertTrue(classifier.getRoot().getBestCandidate().getGroupPredicates().get(0).toString().contains(splitCol));
+        assertTrue(classifier.getRoot().getBestCandidate().getGroupPredicates().get(0).toString().contains(splitCol));
 
         classifier.printSummary();
 
@@ -73,7 +74,7 @@ public class C45ClassifierModelTest {
         classifier.fit(df, className);
         classifier.printSummary();
 
-        ClassifierResult pred = classifier.predict(df);
+        var pred = classifier.predict(df);
 
         Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();
@@ -88,7 +89,7 @@ public class C45ClassifierModelTest {
         classifier.fit(df, className);
         classifier.printSummary();
 
-        ClassifierResult pred = classifier.predict(df);
+        var pred = classifier.predict(df);
 
         Confusion cm = Confusion.from(df.rvar("class"), pred.firstClasses());
         cm.printSummary();

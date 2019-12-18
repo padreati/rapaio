@@ -24,20 +24,16 @@
 
 package rapaio.data.filter;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.FFilter;
-import rapaio.data.filter.FMapVars;
-import rapaio.data.filter.FRemoveVars;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
@@ -46,18 +42,18 @@ public class FMapRemoveVarsTest {
 
     private Frame df;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         df = SolidFrame.byVars(
                 VarDouble.fill(10, 1).withName("a"),
                 VarDouble.fill(10, 2).withName("b"),
                 VarDouble.fill(10, 3).withName("c"),
-                VarNominal.from(10, r -> String.valueOf(r%3)).withName("d")
+                VarNominal.from(10, r -> String.valueOf(r % 3)).withName("d")
         );
     }
 
     @Test
-    public void testMapVars() {
+    void testMapVars() {
         assertMapEquals(VRange.all());
         assertMapEquals(VRange.onlyTypes(VType.DOUBLE));
         assertMapEquals(VRange.onlyTypes(VType.NOMINAL));
@@ -68,7 +64,7 @@ public class FMapRemoveVarsTest {
     }
 
     @Test
-    public void testRemoveVars() {
+    void testRemoveVars() {
         assertRemoveVars(VRange.all());
         assertRemoveVars(VRange.onlyTypes(VType.DOUBLE));
         assertRemoveVars(VRange.onlyTypes(VType.NOMINAL));
@@ -79,7 +75,7 @@ public class FMapRemoveVarsTest {
     }
 
     @Test
-    public void testBoth() {
+    void testBoth() {
 
         Frame df1 = df.mapVars(VRange.onlyTypes(VType.DOUBLE)).removeVars(VRange.of(1));
         Frame df2 = FRemoveVars.remove(VRange.of(1)).fapply(FMapVars.map(VRange.onlyTypes(VType.DOUBLE)).fapply(df));
@@ -88,15 +84,15 @@ public class FMapRemoveVarsTest {
     }
 
     @Test
-    public void testInstance() {
+    void testInstance() {
         FFilter map = FMapVars.map(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         map.fit(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, df.apply(map).varCount());
+        assertEquals(2, df.apply(map).varCount());
 
         FFilter remove = FRemoveVars.remove(VRange.onlyTypes(VType.DOUBLE)).newInstance();
         remove.fit(df.mapVars("0,1"));
 
-        Assert.assertEquals(2, remove.apply(df).varCount());
+        assertEquals(2, remove.apply(df).varCount());
     }
 }

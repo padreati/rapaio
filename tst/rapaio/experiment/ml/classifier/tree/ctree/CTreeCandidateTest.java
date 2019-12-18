@@ -1,13 +1,14 @@
 package rapaio.experiment.ml.classifier.tree.ctree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.common.predicate.RowPredicate;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/21/17.
@@ -15,7 +16,7 @@ import static org.junit.Assert.*;
 public class CTreeCandidateTest {
 
     @Test
-    public void basic() {
+    void basic() {
         CTreeCandidate c = new CTreeCandidate(0.1, "t1");
         c.addGroup(RowPredicate.numLessEqual("x", 1));
         c.addGroup(RowPredicate.numGreater("x", 1));

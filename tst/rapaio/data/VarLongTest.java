@@ -1,9 +1,7 @@
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 
 import java.util.ArrayList;
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
@@ -22,22 +20,19 @@ public class VarLongTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(134);
     }
 
     @Test
-    public void testEmptyWithNoRows() {
+    void testEmptyWithNoRows() {
         VarLong empty = VarLong.empty();
         assertEquals(0, empty.rowCount());
     }
 
     @Test
-    public void testVarEmptyWithRows() {
+    void testVarEmptyWithRows() {
         VarLong empty = VarLong.empty(100);
         assertEquals(100, empty.rowCount());
         for (int i = 0; i < 100; i++) {
@@ -46,14 +41,14 @@ public class VarLongTest {
     }
 
     @Test
-    public void testStaticBuilders() {
+    void testStaticBuilders() {
         int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : RandomSource.nextInt(100)).toArray();
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
         VarLong copy = VarLong.copy(sourceIntArray);
         assertEquals(100, copy.rowCount());
         for (int i = 0; i < 100; i++) {
-            assertEquals((double) sourceIntArray[i], copy.getLong(i), TOL);
+            assertEquals(sourceIntArray[i], copy.getLong(i), TOL);
         }
         assertTrue(copy.deepEquals(VarLong.copy(sourceIntList)));
         assertTrue(copy.deepEquals(VarLong.copy(copy)));
@@ -93,7 +88,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         Var v = VarLong.empty();
         boolean flag = v.type().isNumeric();
         assertFalse(flag);
@@ -101,14 +96,16 @@ public class VarLongTest {
 
         assertEquals(0, v.rowCount());
         assertEquals("VarLong [name:\"?\", rowCount:1, values: ?]", VarLong.empty(1).toString());
-
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Illegal row count: -1");
-        VarLong.empty(-1);
     }
 
     @Test
-    public void testGetterSetter() {
+    void testNegativeSize() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.empty(-1));
+        assertEquals("Illegal row count: -1", ex.getMessage());
+    }
+
+    @Test
+    void testGetterSetter() {
         Var v = VarLong.from(10, i -> (long) Math.log(10 + i));
 
         for (int i = 0; i < 10; i++) {
@@ -124,35 +121,31 @@ public class VarLongTest {
     }
 
     @Test
-    public void testSetUnparsableString() {
-        expectedException.expect(NumberFormatException.class);
-        expectedException.expectMessage("For input string: \"test\"");
-        VarLong.scalar(10).setLabel(0, "test");
+    void testSetUnparsableString() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).setLabel(0, "test"));
+        assertEquals("For input string: \"test\"", ex.getMessage());
     }
 
     @Test
-    public void testAddUnparsableLabel() {
-        expectedException.expect(NumberFormatException.class);
-        expectedException.expectMessage("For input string: \"x\"");
-        VarLong.scalar(10).addLabel("x");
+    void testAddUnparsableLabel() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).addLabel("x"));
+        assertEquals("For input string: \"x\"", ex.getMessage());
     }
 
     @Test
-    public void testGetLevels() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Operation not available for long variable");
-        VarLong.scalar(10).levels();
+    void testGetLevels() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).levels());
+        assertEquals("Operation not available for long variable", ex.getMessage());
     }
 
     @Test
-    public void testSetLeveles() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Operation not available for long variable");
-        VarLong.scalar(10).setLevels(new String[]{});
+    void testSetLeveles() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> VarLong.scalar(10).setLevels(new String[]{}));
+        assertEquals("Operation not available for long variable", ex.getMessage());
     }
 
     @Test
-    public void testOneNumeric() {
+    void testOneNumeric() {
         Var one = VarLong.scalar((long) Math.PI);
 
         assertEquals(1, one.rowCount());
@@ -167,7 +160,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void testWithName() {
+    void testWithName() {
         VarLong x = VarLong.copy(1, 2, 3, 5).withName("X");
         assertEquals("X", x.name());
 
@@ -181,7 +174,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void testOtherValues() {
+    void testOtherValues() {
         VarLong x = VarLong.copy(1, 2, 3, 4).withName("x");
 
         x.addInt(10);
@@ -211,7 +204,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void testClearRemove() {
+    void testClearRemove() {
         VarLong x = VarLong.copy(1, 2, 3);
         VarLong x2 = VarLong.copy(x);
         x.removeRow(1);
@@ -239,7 +232,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void testLabelOperations() {
+    void testLabelOperations() {
         VarLong var = VarLong.wrap(1, 1, 1, 1);
 
         var.setLabel(0, "?");
@@ -261,7 +254,7 @@ public class VarLongTest {
     }
 
     @Test
-    public void testCollector() {
+    void testCollector() {
         List<Long> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             list.add((long) RandomSource.nextDouble() * 100);

@@ -1,7 +1,7 @@
 package rapaio.data.unique;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Unique;
 import rapaio.data.VarInt;
@@ -11,20 +11,20 @@ import rapaio.sys.WS;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/22/18.
  */
 public class UniqueLabelTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testRandomUnsorted() {
+    void testRandomUnsorted() {
         final int N = 100;
         String[] values = new String[N];
         for (int i = 0; i < N; i++) {
@@ -60,7 +60,7 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testDuplicatesUnsorted() {
+    void testDuplicatesUnsorted() {
         String[] sample = new String[]{"3", "1", "7", "5", "?"};
         final int N = 100;
         String[] values = new String[N];
@@ -100,7 +100,7 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testIdsByRowUnsorted() {
+    void testIdsByRowUnsorted() {
         VarNominal x = VarNominal.copy("a", "b", "c", "d", "e");
         Unique unique = Unique.of(x, false);
         for (int i = 0; i < x.rowCount(); i++) {
@@ -109,7 +109,7 @@ public class UniqueLabelTest {
     }
 
     @Test
-    public void testString() {
+    void testString() {
 
         int oldTextWidth = WS.getPrinter().textWidth();
         WS.getPrinter().withTextWidth(100);

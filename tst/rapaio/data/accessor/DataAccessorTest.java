@@ -1,13 +1,13 @@
 package rapaio.data.accessor;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/18.
@@ -16,13 +16,13 @@ public class DataAccessorTest {
 
     private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(1234);
     }
 
     @Test
-    public void testVarDoubleDataAccessor() {
+    void testVarDoubleDataAccessor() {
         VarDouble x = VarDouble.from(100, RandomSource::nextDouble);
 
         double[] data = x.elements();
@@ -38,7 +38,7 @@ public class DataAccessorTest {
     }
 
     @Test
-    public void testVarLongDataAccessor() {
+    void testVarLongDataAccessor() {
         VarLong x = VarLong.from(100, () -> (long) RandomSource.nextDouble() * 100);
 
         long[] data = x.getArray();
@@ -55,7 +55,7 @@ public class DataAccessorTest {
     }
 
     @Test
-    public void testVarIntDataAccessor() {
+    void testVarIntDataAccessor() {
         VarInt x = VarInt.from(100, row -> (int) RandomSource.nextDouble() * 100);
 
         int[] data = x.elements();

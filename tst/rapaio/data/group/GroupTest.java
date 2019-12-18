@@ -1,8 +1,9 @@
 package rapaio.data.group;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Group;
@@ -16,7 +17,7 @@ import rapaio.util.StringBag;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.data.Group.*;
 
 /**
@@ -26,10 +27,10 @@ public class GroupTest {
 
     private Frame iris;
     private Frame play;
-    private int textWidth=0;
+    private int textWidth = 0;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(1234);
         play = Datasets.loadPlay();
         iris = Datasets.loadIrisDataset();
@@ -37,13 +38,13 @@ public class GroupTest {
         WS.getPrinter().withTextWidth(100);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void afterEach() {
         WS.getPrinter().withTextWidth(textWidth);
     }
 
     @Test
-    public void testGroupStrings() {
+    void testGroupStrings() {
 
         Group group1 = Group.from(play, "class", "outlook");
         assertEquals("GroupBy{keys:[class,outlook], group count:5, row count:14}", group1.toString());
@@ -79,7 +80,7 @@ public class GroupTest {
                 " [3] noplay sunny    2  ->    85     85    false [10] play   rain     12  ->   68     80    false \n" +
                 " [4] noplay sunny    3  ->    72     95    false [11] play   rain     13  ->   70     96    false \n" +
                 " [5] play   overcast 5  ->    72     90     true [12] play   sunny    0  ->    75     70     true \n" +
-                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n",group1.toSummary());
+                " [6] play   overcast 6  ->    83     78    false [13] play   sunny    4  ->    69     70    false \n", group1.toSummary());
 
         assertEquals("temp,humidity,windy", String.join(",", group1.getFeatureNameList()));
 
@@ -131,7 +132,7 @@ public class GroupTest {
     }
 
     @Test
-    public void testAggregate() {
+    void testAggregate() {
         Group group1 = Group.from(iris, "class");
         Group.Aggregate agg1 = group1.aggregate(count("petal-width"));
 
@@ -167,7 +168,7 @@ public class GroupTest {
     }
 
     @Test
-    public void testGroupFunctions() {
+    void testGroupFunctions() {
 
         play.printFullContent();
 
@@ -188,17 +189,17 @@ public class GroupTest {
                 "[1]    83     0.4940476    0.3294078      0.6348274     5.8118653  0.4515259   -0.8914041      0.4089033     \n" +
                 "\n", group.aggregate(
                 sum("temp"), sum(1, "temp"), mean("temp"), mean(1, "temp"), nunique("windy"), nunique(1, "windy"),
-                min("temp"), min(1, "temp"), max("temp"), max(1, "temp"),skewness("temp"), skewness(1, "temp"),
+                min("temp"), min(1, "temp"), max("temp"), max(1, "temp"), skewness("temp"), skewness(1, "temp"),
                 std("temp"), std(1, "temp"), kurtosis("temp"), kurtosis(1, "temp")
-                ).toFrame().toContent());
+        ).toFrame().toContent());
     }
 
     @Test
-    public void testNominalAggregate() {
+    void testNominalAggregate() {
 
         final int N = 100;
         String[] groupLevels = new String[]{"alpha", "beta", "gamma", "delta", "iota", "niu", "miu"};
-        String[] fieldLevels = new String[] {"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
+        String[] fieldLevels = new String[]{"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
 
         VarNominal varGroup = VarNominal.from(N, row -> groupLevels[RandomSource.nextInt(groupLevels.length)], groupLevels).withName("group");
         VarNominal field = VarNominal.from(N, row -> fieldLevels[RandomSource.nextInt(fieldLevels.length)], fieldLevels).withName("field");
@@ -206,15 +207,15 @@ public class GroupTest {
         Frame df = SolidFrame.byVars(varGroup, field);
 
         Group group = Group.from(df, "group");
-        Frame grouped = group.aggregate(Group.count("field")).toFrame();
+        Frame grouped = group.aggregate(count("field")).toFrame();
 
         Map<StringBag, Integer> counts = new HashMap<>();
         df.stream().forEach(s -> {
             StringBag sb = StringBag.of(s, VRange.of("group"));
-            if(!counts.containsKey(sb)) {
+            if (!counts.containsKey(sb)) {
                 counts.put(sb, 0);
             }
-            counts.put(sb, counts.get(sb)+1);
+            counts.put(sb, counts.get(sb) + 1);
         });
 
         for (int i = 0; i < grouped.rowCount(); i++) {
@@ -223,7 +224,7 @@ public class GroupTest {
 
             StringBag sb = StringBag.of(Map.of("group", gr));
             assertTrue(counts.containsKey(sb));
-            assertEquals((int)counts.get(sb), count);
+            assertEquals((int) counts.get(sb), count);
         }
     }
 }

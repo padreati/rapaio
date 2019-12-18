@@ -24,8 +24,8 @@
 
 package rapaio.experiment.ml.classifier.svm;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -57,11 +57,10 @@ import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.sys.WS;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for binary smo
@@ -71,7 +70,7 @@ import static org.junit.Assert.assertEquals;
 public class BinarySMOTest {
 
     @Test
-    public void testDescription() {
+    void testDescription() {
         BinarySMO smo = new BinarySMO().withMaxRuns(200);
         assertEquals("BinarySMO\n" +
                         "{\n" +
@@ -131,7 +130,7 @@ public class BinarySMOTest {
     }
 
     @Test
-    public void testLinear() throws IOException {
+    void testLinear() throws IOException {
 
         Frame df = Datasets.loadSonar();
         df.copy().fapply(FStandardize.on(VRange.all())).printSummary();
@@ -148,7 +147,7 @@ public class BinarySMOTest {
     }
 
     @Test
-    public void testMultipleKernels() throws IOException {
+    void testMultipleKernels() throws IOException {
 
         Frame df = Datasets.loadSonar();
 
@@ -184,7 +183,7 @@ public class BinarySMOTest {
             BinarySMO smo = new BinarySMO();
             df = df.fapply(FStandardize.on(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
-            Assert.assertTrue(s > 0.6);
+            assertTrue(s > 0.6);
 
             name.addLabel(k.name());
             score.addDouble(s);

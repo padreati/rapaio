@@ -1,28 +1,22 @@
 package rapaio.data.filter;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VToDouble;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
  */
 public class VToDoubleTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testToDouble() {
+    void testToDouble() {
         Var num1 = VarDouble.wrap(1.0, 2.0, 1.2, Double.NaN, 3.0, Double.NaN, 3.2);
         Var nom1 = VarNominal.copy("1", "2", "1.2", "?", "3", "?", "3.2");
         Var nom2 = VarNominal.copy("1", "2", "1.2", "mimi", "3", "lulu", "3.2");
@@ -67,9 +61,8 @@ public class VToDoubleTest {
     }
 
     @Test
-    public void testUnsupportedLongToDouble() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Variable type: long is not supported.");
-        VarLong.wrap(1, 2, 3).fapply(VToDouble.byDefault());
+    void testUnsupportedLongToDouble() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VarLong.wrap(1, 2, 3).fapply(VToDouble.byDefault()));
+        assertEquals("Variable type: long is not supported.", ex.getMessage());
     }
 }

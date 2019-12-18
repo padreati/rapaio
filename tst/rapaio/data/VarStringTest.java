@@ -1,15 +1,14 @@
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/19/18.
@@ -19,11 +18,8 @@ public class VarStringTest {
     private String[] largeValues;
     private String[] shortValues = new String[]{"Ana", "are", "mere"};
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
         largeValues = new String[100];
         for (int i = 0; i < 100; i++) {
@@ -37,7 +33,7 @@ public class VarStringTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
 
         VarString empty1 = VarString.empty();
         assertEquals(0, empty1.rowCount());
@@ -68,7 +64,7 @@ public class VarStringTest {
     }
 
     @Test
-    public void testAddRemoveClear() {
+    void testAddRemoveClear() {
         VarString text = VarString.copy(shortValues);
         text.addRows(3);
 
@@ -89,69 +85,58 @@ public class VarStringTest {
     }
 
     @Test
-    public void testGetDouble() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).getDouble(0);
+    void testGetDouble() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).getDouble(0));
     }
 
     @Test
-    public void testSetDouble() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).setDouble(0, 0);
+    void testSetDouble() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setDouble(0, 0));
     }
 
     @Test
-    public void testAddDouble() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).addDouble(10.f);
+    void testAddDouble() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).addDouble(10.f));
     }
 
     @Test
-    public void testGetInt() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).getInt(0);
+    void testGetInt() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).getInt(0));
     }
 
     @Test
-    public void testSetInt() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).setInt(0, 0);
+    void testSetInt() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setInt(0, 0));
     }
 
     @Test
-    public void testAddInt() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).addInt(10);
+    void testAddInt() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).addInt(10));
     }
 
     @Test
-    public void testGetLong() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).getLong(0);
+    void testGetLong() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).getLong(0));
     }
 
     @Test
-    public void testSetLong() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).setLong(0, 0);
+    void testSetLong() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setLong(0, 0));
     }
 
     @Test
-    public void testAddLong() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).addLong(10);
+    void testAddLong() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).addLong(10));
     }
 
     @Test
-    public void testSetLevels() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).setLevels(new String[]{});
+    void testSetLevels() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).setLevels(new String[]{}));
     }
 
     @Test
-    public void testLevels() {
-        expectedException.expect(OperationNotAvailableException.class);
-        VarString.empty(1).levels();
+    void testLevels() {
+        assertThrows(OperationNotAvailableException.class, () -> VarString.empty(1).levels());
     }
 
     @Test
@@ -166,7 +151,7 @@ public class VarStringTest {
     }
 
     @Test
-    public void testMissingOperations() {
+    void testMissingOperations() {
         VarString x = VarString.empty(1);
         assertEquals(1, x.rowCount());
         assertNull(x.getLabel(0));

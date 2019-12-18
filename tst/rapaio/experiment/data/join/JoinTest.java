@@ -1,7 +1,7 @@
 package rapaio.experiment.data.join;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
@@ -10,7 +10,8 @@ import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.FRefSort;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/22/18.
@@ -20,8 +21,8 @@ public class JoinTest {
     private Frame df1;
     private Frame df2;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         df1 = SolidFrame.byVars(
                 VarNominal.copy("a", "b", "c", "a", "b").withName("id"),
                 VarInt.copy(20, 20, 40, 30, 40).withName("age"),
@@ -35,7 +36,7 @@ public class JoinTest {
     }
 
     @Test
-    public void leftJoinTest() {
+    void leftJoinTest() {
         assertEquals("    id   city    age children     id   city    age children \n" +
                         "[0]  a      Iasi  20    1     [4]  c      Iasi  40    3     \n" +
                         "[1]  a Bucharest  20    1     [5]  d Bucharest   ?    ?     \n" +
@@ -48,7 +49,7 @@ public class JoinTest {
     }
 
     @Test
-    public void rightJoinTest() {
+    void rightJoinTest() {
 
         Frame a1 = Join.leftJoin(df1, df2);
         a1 = a1.fapply(FRefSort.by(a1.rvar(0).refComparator(), a1.rvar(0).refComparator()));

@@ -1,26 +1,19 @@
 package rapaio.data.filter;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VFilter;
-import rapaio.data.filter.VQuantileDiscrete;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/1/18.
  */
 public class VQuantileDiscreteTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testDouble() {
+    void testDouble() {
         Var x = VarDouble.seq(10, 11, 0.01);
 
         VFilter f1 = VQuantileDiscrete.split(2);
@@ -60,16 +53,14 @@ public class VQuantileDiscreteTest {
     }
 
     @Test
-    public void testInvalidNumperOfPercentiles() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Number of quantiles must be positive.");
-        VQuantileDiscrete.with();
+    void testInvalidNumperOfPercentiles() {
+        var ex = assertThrows(IllegalArgumentException.class, VQuantileDiscrete::with);
+        assertEquals("Number of quantiles must be positive.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidK() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Number of parts k: 1 of the split must be greater than 1.");
-        VQuantileDiscrete.split(1);
+    void testInvalidK() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VQuantileDiscrete.split(1));
+        assertEquals("Number of parts k: 1 of the split must be greater than 1.", ex.getMessage());
     }
 }

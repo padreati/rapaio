@@ -24,7 +24,7 @@
 
 package rapaio.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.filter.VApplyDouble;
 import rapaio.data.filter.VRefSort;
@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 public class VarTest {
 
     @Test
-    public void testDictionary() {
+    void testDictionary() {
         Var x = VarNominal.copy("x", "y", "x", "z");
         Var y = VarNominal.copy("x", "y", "x", "z");
 
@@ -64,7 +64,7 @@ public class VarTest {
     }
 
     @Test
-    public void testNumericCollector() {
+    void testNumericCollector() {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
         Var x = VarDouble.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarDouble.collector());
@@ -74,7 +74,7 @@ public class VarTest {
     }
 
     @Test
-    public void testIndexCollector() {
+    void testIndexCollector() {
         int[] src = IntStream.range(0, 100_000).toArray();
         Var x = VarInt.wrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(VarInt.collector());
@@ -84,7 +84,7 @@ public class VarTest {
     }
 
     @Test
-    public void copyNameTest() {
+    void copyNameTest() {
         VarDouble num = VarDouble.seq(1, 10, 0.5).withName("num");
         assertEquals(num.name(), num.copy().name());
         assertEquals(num.name(), num.mapRows(2, 5).copy().name());
@@ -107,7 +107,7 @@ public class VarTest {
     }
 
     @Test
-    public void testFilters() {
+    void testFilters() {
 
         double[] x = IntStream.range(0, 100).mapToDouble(v -> v).toArray();
         double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
@@ -127,7 +127,7 @@ public class VarTest {
     }
 
     @Test
-    public void testRefComparator() {
+    void testRefComparator() {
         Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
         varDouble = varDouble.fapply(VRefSort.from(varDouble.refComparator()));
         for (int i = 1; i < varDouble.rowCount(); i++) {
@@ -154,7 +154,7 @@ public class VarTest {
     }
 
     @Test
-    public void testDeepEquals() {
+    void testDeepEquals() {
         assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarDouble.scalar(1).withName("y")));
         assertFalse(VarDouble.seq(2).withName("x").deepEquals(VarDouble.scalar(1).withName("x")));
         assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarInt.scalar(1).withName("x")));

@@ -24,16 +24,14 @@
 
 package rapaio.data;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Sum;
 import rapaio.sys.WS;
 
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,11 +40,8 @@ public class VarIntTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
-
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         Var index = VarInt.empty(1);
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
@@ -54,42 +49,37 @@ public class VarIntTest {
     }
 
     @Test
-    public void invalidRowNumber() {
-        expected.expect(IllegalArgumentException.class);
-        expected.expectMessage("Illegal row count: -1");
-        VarInt.empty(-1);
+    void invalidRowNumber() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VarInt.empty(-1));
+        assertEquals("Illegal row count: -1", ex.getMessage());
     }
 
     @Test
-    public void unparsableSetLabel() {
-        expected.expect(NumberFormatException.class);
-        expected.expectMessage("For input string: \"Test\"");
-        VarInt.empty(1).setLabel(0, "Test");
+    void unparsableSetLabel() {
+        var ex = assertThrows(NumberFormatException.class, () -> VarInt.empty(1).setLabel(0, "Test"));
+        assertEquals("For input string: \"Test\"", ex.getMessage());
     }
 
     @Test
-    public void unparsableAddLabel() {
-        expected.expect(NumberFormatException.class);
-        expected.expectMessage("For input string: \"Test\"");
-        VarInt.empty(1).addLabel("Test");
+    void unparsableAddLabel() {
+        var ex = assertThrows(NumberFormatException.class, () -> VarInt.empty(1).addLabel("Test"));
+        assertEquals("For input string: \"Test\"", ex.getMessage());
     }
 
     @Test
-    public void testNotImplementedLevels() {
-        expected.expect(IllegalStateException.class);
-        expected.expectMessage("Operation not available for integer variables.");
-        VarInt.seq(10).levels();
+    void testNotImplementedLevels() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarInt.seq(10).levels());
+        assertEquals("Operation not available for integer variables.", ex.getMessage());
     }
 
     @Test
-    public void testNotImplementedSetLevels() {
-        expected.expect(IllegalStateException.class);
-        expected.expectMessage("Operation not available for integer variables.");
-        VarInt.seq(10).setLevels(new String[]{"a", "b"});
+    void testNotImplementedSetLevels() {
+        var ex = assertThrows(IllegalStateException.class, () -> VarInt.seq(10).setLevels(new String[]{"a", "b"}));
+        assertEquals("Operation not available for integer variables.", ex.getMessage());
     }
 
     @Test
-    public void testSetterGetter() {
+    void testSetterGetter() {
 
         Var index = VarInt.fill(3, 0);
 
@@ -116,10 +106,10 @@ public class VarIntTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
         Var index = VarInt.seq(1, 10, 1);
         for (int i = 0; i < index.rowCount(); i++) {
-            assertTrue(!index.isMissing(i));
+            assertFalse(index.isMissing(i));
         }
         for (int i = 0; i < index.rowCount(); i++) {
             if (i % 2 == 0)
@@ -131,7 +121,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testOneIndex() {
+    void testOneIndex() {
         Var one = VarInt.scalar(2);
         assertEquals(1, one.rowCount());
         assertEquals(2, one.getInt(0));
@@ -150,7 +140,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testBuilders() {
+    void testBuilders() {
         Var empty1 = VarInt.empty();
         assertEquals(0, empty1.rowCount());
         empty1 = VarInt.empty(10);
@@ -211,7 +201,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testLabels() {
+    void testLabels() {
         int[] array = new int[]{1, 2, 3, VarInt.MISSING_VALUE, 5, 6, VarInt.MISSING_VALUE};
 
         VarInt int1 = VarInt.empty();
@@ -256,7 +246,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testDouble() {
+    void testDouble() {
 
         double[] values = new double[]{0, 1, Double.NaN, 3, 4, Double.NaN, 6, 7, -8, -100};
         VarInt int1 = VarInt.empty();
@@ -288,7 +278,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testStamp() {
+    void testStamp() {
         VarInt x = VarInt.empty();
         x.addLong(0);
         x.addMissing();
@@ -311,13 +301,11 @@ public class VarIntTest {
         x.clearRows();
         assertEquals(0, x.rowCount());
 
-
-        expected.expect(IndexOutOfBoundsException.class);
-        x.removeRow(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> x.removeRow(-1));
     }
 
     @Test
-    public void testSolidCopy() {
+    void testSolidCopy() {
 
         VarInt x1 = VarInt.copy(1, 2, 3, 4, 5);
         Var x2 = MappedVar.byRows(x1, 0, 1, 2);
@@ -332,7 +320,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testDataAccessor() {
+    void testDataAccessor() {
         VarInt int1 = VarInt.seq(0, 100, 2);
         for (int i = 0; i < int1.rowCount(); i++) {
             assertEquals(int1.getInt(i), int1.elements()[i]);
@@ -344,7 +332,7 @@ public class VarIntTest {
     }
 
     @Test
-    public void testString() {
+    void testString() {
         final VarInt x = VarInt.wrap(1, 2, VarInt.MISSING_VALUE,
                 -10, 0, 100, VarInt.MISSING_VALUE, 16, 1, 2, 3, 4, 5, 6,
                 7, 34, 322342, 2424, 24324, 24, 234234, 2423, 4, 234, 23,

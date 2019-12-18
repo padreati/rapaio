@@ -1,10 +1,10 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
@@ -14,7 +14,7 @@ public class FApplyDoubleTest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void testDouble() {
+    void testDouble() {
 
         Frame df = FFilterTestUtil.allDoubles(100, 2);
         Frame sign = df.copy().fapply(FApplyDouble.on(Math::signum, VRange.all()));

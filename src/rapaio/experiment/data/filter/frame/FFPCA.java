@@ -30,9 +30,9 @@ package rapaio.experiment.data.filter.frame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.filter.AbstractFF;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
 import rapaio.experiment.ml.analysis.PCA;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
 
 import java.util.function.BiFunction;
 

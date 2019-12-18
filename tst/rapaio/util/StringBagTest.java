@@ -1,6 +1,6 @@
 package rapaio.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Mapping;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/19.
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 public class StringBagTest {
 
     @Test
-    public void testBuildersAndSort() {
+    void testBuildersAndSort() {
 
         var df = Datasets.loadRandom();
 
@@ -63,7 +63,7 @@ public class StringBagTest {
     }
 
     @Test
-    public void testCompareAndEquals() {
+    void testCompareAndEquals() {
         StringBag sb1 = StringBag.of(Map.of("k1", "v1", "k2", "v2"));
         StringBag sb2 = StringBag.of(Map.of("k1", "v1", "k2", "v2"));
 

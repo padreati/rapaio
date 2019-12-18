@@ -1,16 +1,15 @@
 package rapaio.data.filter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarNominal;
 import rapaio.ml.classifier.rule.OneRule;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.
@@ -20,13 +19,13 @@ public class FFImputeWithClassifierTest {
     private static final String[] xd = new String[]{"a", "b", "c", "d", "?"};
     private static final String[] yd = new String[]{"x", "y", "?"};
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testBasic() {
+    void testBasic() {
 
         VarNominal x = VarNominal.from(100, row -> xd[RandomSource.nextInt(xd.length)]).withName("x");
         VarNominal y = VarNominal.from(100, row -> yd[RandomSource.nextInt(yd.length)]).withName("y");

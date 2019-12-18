@@ -24,33 +24,33 @@
 
 package rapaio.ml.common;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.experiment.math.linear.RV;
+import rapaio.experiment.math.linear.dense.SolidRV;
 
 import java.util.Collections;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class VarSelectorTest {
 
+    private final String[] varNames = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
     private Frame df;
     private String classColName;
-    private final String[] varNames = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         df = SolidFrame.byVars(
                 0,
                 VarInt.scalar(1).withName("a"),
@@ -67,7 +67,7 @@ public class VarSelectorTest {
     }
 
     @Test
-    public void testFixedVarSelector() {
+    void testFixedVarSelector() {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             int mcols = 5;
@@ -95,7 +95,7 @@ public class VarSelectorTest {
     }
 
     @Test
-    public void testAutoVarSelector() {
+    void testAutoVarSelector() {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             VarSelector colSelector = VarSelector.auto().withVarNames(varNames);
@@ -120,7 +120,7 @@ public class VarSelectorTest {
     }
 
     @Test
-    public void testAllVarSelector() {
+    void testAllVarSelector() {
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             VarSelector colSelector = VarSelector.all();
@@ -140,19 +140,19 @@ public class VarSelectorTest {
     }
 
     @Test
-    public void testNames() {
+    void testNames() {
         assertEquals("VarSelector[ALL]", VarSelector.all().name());
         assertEquals("VarSelector[4]", VarSelector.fixed(4).name());
         assertEquals("VarSelector[AUTO]", VarSelector.auto().name());
     }
 
     @Test
-    public void testMCount() {
+    void testMCount() {
         assertEquals(4, VarSelector.fixed(4).withVarNames(varNames).mCount());
     }
 
     @Test
-    public void testAddRemoveVars() {
+    void testAddRemoveVars() {
 
         int len = varNames.length;
 

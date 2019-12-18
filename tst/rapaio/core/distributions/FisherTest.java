@@ -1,8 +1,9 @@
 package rapaio.core.distributions;
 
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/10/17.
@@ -12,7 +13,7 @@ public class FisherTest {
     private static final double TOL = 1e-12;
 
     @Test
-    public void testBasic() {
+    void testBasic() {
 
         Fisher f = Fisher.of(4, 7);
 
@@ -25,7 +26,7 @@ public class FisherTest {
         assertEquals(2.94, f.var(), TOL);
         assertEquals(10.614455552060438, f.skewness(), TOL);
 
-        assertEquals(Double.NaN, Fisher.of(1,2).mean(), TOL);
+        assertEquals(Double.NaN, Fisher.of(1, 2).mean(), TOL);
         assertEquals(Double.NaN, Fisher.of(1, 2).mode(), TOL);
         assertEquals(Double.NaN, Fisher.of(1, 2).var(), TOL);
         assertEquals(Double.NaN, Fisher.of(3, 3).skewness(), TOL);
@@ -39,7 +40,7 @@ public class FisherTest {
     }
 
     @Test
-    public void testWithR() {
+    void testWithR() {
 
         Fisher f1_1 = Fisher.of(1, 1);
         assertEquals(0.13207992798466983153, f1_1.pdf(1.2), TOL);

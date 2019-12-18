@@ -27,7 +27,7 @@
 
 package rapaio.experiment.selection;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VType;
@@ -52,9 +52,9 @@ import java.util.stream.Collectors;
 public class Apriori implements Printable {
 
     private Frame inputDf;
-    private BiPredicate<Integer, DVector> filter;
+    private BiPredicate<Integer, DensityVector> filter;
 
-    private List<List<Pair<AprioriRule, DVector>>> P;
+    private List<List<Pair<AprioriRule, DensityVector>>> P;
     private List<AprioriRule> rules;
     private List<String> targetLevels;
     private double coverage;
@@ -63,7 +63,7 @@ public class Apriori implements Printable {
         return inputDf.varNames();
     }
 
-    public void train(Frame df, String target, BiPredicate<Integer, DVector> filter) {
+    public void train(Frame df, String target, BiPredicate<Integer, DensityVector> filter) {
 
         List<Var> inputVars = df.varStream()
                 .filter(var -> var.type().equals(VType.NOMINAL))
@@ -88,19 +88,19 @@ public class Apriori implements Printable {
             }
         }
 
-        List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.from(rule,
-                DVector.empty(false, df.levels(target))))
+        List<Pair<AprioriRule, DensityVector>> counts = C.stream().map(rule -> Pair.from(rule,
+                DensityVector.empty(false, df.levels(target))))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < df.rowCount(); i++) {
-            for (Pair<AprioriRule, DVector> cnt : counts) {
+            for (Pair<AprioriRule, DensityVector> cnt : counts) {
                 if (cnt._1.matchRow(df, i)) {
                     cnt._2.increment(df.getInt(i, target), 1);
                 }
             }
         }
 
-        List<Pair<AprioriRule, DVector>> list = counts.stream()
+        List<Pair<AprioriRule, DensityVector>> list = counts.stream()
                 .filter(pair -> filter.test(df.rowCount(), pair._2))
                 .collect(Collectors.toList());
         list.sort((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()));
@@ -113,21 +113,21 @@ public class Apriori implements Printable {
         while (true) {
             int k = P.size();
 
-            Map<String, Pair<AprioriRule, DVector>> cnts = new HashMap<>();
+            Map<String, Pair<AprioriRule, DensityVector>> cnts = new HashMap<>();
 
             // loop for all possibilities
             for (int i = 0; i < df.rowCount(); i++) {
                 for (AprioriRule b : base) {
                     if (!b.matchRow(df, i))
                         continue;
-                    for (Pair<AprioriRule, DVector> tPrev : P.get(k - 1)) {
+                    for (Pair<AprioriRule, DensityVector> tPrev : P.get(k - 1)) {
                         if (!tPrev._1.isExtention(b))
                             continue;
                         if (!tPrev._1.matchRow(df, i))
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, df.levels(target))));
+                            cnts.put(next.toString(), Pair.from(next, DensityVector.empty(false, df.levels(target))));
                         }
                         cnts.get(next.toString())._2.increment(df.getInt(i, target), 1);
                     }
@@ -135,7 +135,7 @@ public class Apriori implements Printable {
             }
 
             // keep only survivors
-            List<Pair<AprioriRule, DVector>> top = cnts.values().stream()
+            List<Pair<AprioriRule, DensityVector>> top = cnts.values().stream()
                     .filter(pair -> filter.test(df.rowCount(), pair._2))
                     .collect(Collectors.toList());
 
@@ -148,12 +148,12 @@ public class Apriori implements Printable {
 
         // eliminate redundant tasks
         for (int i = 0; i < P.size() - 1; i++) {
-            Iterator<Pair<AprioriRule, DVector>> it = P.get(i).iterator();
+            Iterator<Pair<AprioriRule, DensityVector>> it = P.get(i).iterator();
             while (it.hasNext()) {
-                Pair<AprioriRule, DVector> next = it.next();
+                Pair<AprioriRule, DensityVector> next = it.next();
                 boolean out = false;
                 for (int j = i + 1; j < P.size(); j++) {
-                    for (Pair<AprioriRule, DVector> pair : P.get(j)) {
+                    for (Pair<AprioriRule, DensityVector> pair : P.get(j)) {
                         if (pair._1.contains(next._1)) {
                             out = true;
                             break;
@@ -170,7 +170,7 @@ public class Apriori implements Printable {
         // create final rules
 
         rules = new ArrayList<>();
-        for (List<Pair<AprioriRule, DVector>> aP : P) {
+        for (List<Pair<AprioriRule, DensityVector>> aP : P) {
             rules.addAll(aP.stream().map(pair -> pair._1).collect(Collectors.toSet()));
         }
 

@@ -24,7 +24,7 @@
 
 package rapaio.ml.regression.linear;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
@@ -32,12 +32,12 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.RV;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test for linear regression.
@@ -49,7 +49,7 @@ public class LinearRegressionModelTest {
     private static final double TOL = 1e-20;
 
     @Test
-    public void testOneTarget() throws IOException {
+    void testOneTarget() throws IOException {
 
         Frame df = Datasets.loadISLAdvertising()
                 .removeVars(VRange.of("ID", "Sales", "Newspaper"));
@@ -87,7 +87,7 @@ public class LinearRegressionModelTest {
                         "TV           0.009478 \n" +
                         "\n", lm.toSummary());
 
-        LinearRegressionResult lmfit = lm.predict(df, true);
+        var lmfit = lm.predict(df, true);
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
@@ -133,7 +133,7 @@ public class LinearRegressionModelTest {
 
         assertEquals(2, lmfit.getBetaSignificance().length);
 
-        LinearRegressionResult lmfit2 = lm.predict(df, false);
+        var lmfit2 = lm.predict(df, false);
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
@@ -157,7 +157,7 @@ public class LinearRegressionModelTest {
     }
 
     @Test
-    public void testMultipleTargets() throws IOException {
+    void testMultipleTargets() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
         LinearRegressionModel lm = new LinearRegressionModel().withIntercept(true);
@@ -219,7 +219,7 @@ public class LinearRegressionModelTest {
     }
 
     @Test
-    public void testIntercept() {
+    void testIntercept() {
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
         VarDouble x = VarDouble.seq(0, 100, 1).withName("x");
@@ -232,8 +232,8 @@ public class LinearRegressionModelTest {
         LinearRegressionModel lm1 = LinearRegressionModel.newLm().withIntercept(true).fit(df1, "y");
         LinearRegressionModel lm2 = LinearRegressionModel.newLm().withIntercept(false).fit(df2, "y");
 
-        LinearRegressionResult pred1 = lm1.predict(df1, true);
-        LinearRegressionResult pred2 = lm2.predict(df2, true);
+        var pred1 = lm1.predict(df1, true);
+        var pred2 = lm2.predict(df2, true);
 
         lm1.printContent();
         lm2.printContent();
@@ -242,7 +242,7 @@ public class LinearRegressionModelTest {
     }
 
     @Test
-    public void testNewInstance() {
+    void testNewInstance() {
         LinearRegressionModel lm1 = LinearRegressionModel.newLm().withIntercept(false);
         LinearRegressionModel lm2 = lm1.newInstance();
 
@@ -250,7 +250,7 @@ public class LinearRegressionModelTest {
     }
 
     @Test
-    public void testCoefficients() {
+    void testCoefficients() {
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
         VarDouble x = VarDouble.seq(0, 100, 1).withName("x");
@@ -261,7 +261,7 @@ public class LinearRegressionModelTest {
         Frame df = BoundFrame.byVars(x, y1, y2);
 
         LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true).fit(df, "y1,y2");
-        LinearRegressionResult pred = lm.predict(df, true);
+        var pred = lm.predict(df, true);
 
         RM betas = lm.allCoefficients();
         RV firstBetas = lm.firstCoefficients();

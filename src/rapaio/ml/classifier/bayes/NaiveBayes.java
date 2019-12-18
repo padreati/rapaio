@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
@@ -183,7 +183,7 @@ public class NaiveBayes
         ClassifierResult<NaiveBayes> pred = ClassifierResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
-                    DVector dv = DVector.empty(false, firstTargetLevels());
+                    DensityVector dv = DensityVector.empty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().size(); j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
 

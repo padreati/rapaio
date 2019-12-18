@@ -24,11 +24,9 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/4/14.
@@ -37,11 +35,8 @@ public class UniformTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testVariousFeatures() {
+    void testVariousFeatures() {
         Uniform u = Uniform.of(0, 10);
 
         assertFalse(u.discrete());
@@ -60,7 +55,7 @@ public class UniformTest {
     }
 
     @Test
-    public void testUniformPdf() {
+    void testUniformPdf() {
         Distribution u = Uniform.of(0, 2);
 
         assertEquals("Uniform(a=0,b=2)", u.name());
@@ -73,7 +68,7 @@ public class UniformTest {
     }
 
     @Test
-    public void testUniformCdf() {
+    void testUniformCdf() {
         Distribution u = Uniform.of(0, 2);
 
         assertEquals(0, u.cdf(-1), TOL);
@@ -85,7 +80,7 @@ public class UniformTest {
     }
 
     @Test
-    public void testUniformQuantile() {
+    void testUniformQuantile() {
         Distribution u = Uniform.of(0, 2);
 
         assertEquals(0, u.quantile(0), TOL);
@@ -96,16 +91,14 @@ public class UniformTest {
     }
 
     @Test
-    public void testLowQuantile() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("probability value should lie in [0,1] interval");
-        Uniform.of(0, 10).quantile(-1);
+    void testLowQuantile() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> Uniform.of(0, 10).quantile(-1));
+        assertEquals("probability value should lie in [0,1] interval", ex.getMessage());
     }
 
     @Test
-    public void testHighQuantile() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("probability value should lie in [0,1] interval");
-        Uniform.of(0, 10).quantile(1.1);
+    void testHighQuantile() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> Uniform.of(0, 10).quantile(1.1));
+        assertEquals("probability value should lie in [0,1] interval", ex.getMessage());
     }
 }

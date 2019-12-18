@@ -1,10 +1,10 @@
 package rapaio.ts;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/17.
@@ -25,8 +25,8 @@ public class AcfTest {
     private VarDouble cov3;
 
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
 
         ts1 = VarDouble.fill(20, 1).withName("ts1");
         ts2 = VarDouble.seq(1, 20).withName("ts2");
@@ -63,7 +63,7 @@ public class AcfTest {
     }
 
     @Test
-    public void basicTest() {
+    void basicTest() {
         Acf acf1 = Acf.from(ts1, ts1.rowCount());
         acf1.printSummary();
         for (int i = 0; i < acf1.correlation().rowCount(); i++) {

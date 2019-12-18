@@ -24,30 +24,24 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test for
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/28/15.
  */
 public class StudentTTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void testPdf() throws IOException {
+    void testPdf() throws IOException {
         Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -69,7 +63,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void testCdf() throws IOException {
+    void testCdf() throws IOException {
         Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -91,7 +85,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void testQuantile() throws IOException {
+    void testQuantile() throws IOException {
         Frame df = Csv.instance()
                 .withDefaultTypes(VType.DOUBLE)
                 .withQuotes(false)
@@ -113,7 +107,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void testWithR() throws IOException {
+    void testWithR() throws IOException {
         Frame df = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
@@ -167,7 +161,7 @@ public class StudentTTest {
     }
 
     @Test
-    public void testOtherT() {
+    void testOtherT() {
 
         StudentT t = StudentT.of(10, 2, 3);
         assertEquals(2, t.mean(), TOL);
@@ -187,30 +181,26 @@ public class StudentTTest {
     }
 
     @Test
-    public void testInvalidDf() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("degrees of freedom in student t distribution must have a value greater than 0.");
-        StudentT.of(-1);
+    void testInvalidDf() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> StudentT.of(-1));
+        assertEquals("degrees of freedom in student t distribution must have a value greater than 0.", ex.getMessage());
     }
 
     @Test
-    public void testInvalidNegativeProbabilityOnQuantile() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Probability must be in the range [0,1]");
-        StudentT.of(2).quantile(-1);
+    void testInvalidNegativeProbabilityOnQuantile() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> StudentT.of(2).quantile(-1));
+        assertEquals("Probability must be in the range [0,1]", ex.getMessage());
     }
 
     @Test
-    public void testInvalidPositiveProbabilityOnQuantile() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Probability must be in the range [0,1]");
-        StudentT.of(2).quantile(2);
+    void testInvalidPositiveProbabilityOnQuantile() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> StudentT.of(2).quantile(2));
+        assertEquals("Probability must be in the range [0,1]", ex.getMessage());
     }
 
     @Test
-    public void testEntropy() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Not implemented.");
-        StudentT.of(4).entropy();
+    void testEntropy() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> StudentT.of(4).entropy());
+        assertEquals("Not implemented.", ex.getMessage());
     }
 }

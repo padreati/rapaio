@@ -24,10 +24,8 @@
 
 package rapaio.data;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.sys.WS;
@@ -39,7 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -48,22 +46,19 @@ public class VarDoubleTest {
 
     private static final double TOL = 1e-20;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(134);
     }
 
     @Test
-    public void testEmptyWithNoRows() {
+    void testEmptyWithNoRows() {
         VarDouble empty = VarDouble.empty();
         assertEquals(0, empty.rowCount());
     }
 
     @Test
-    public void testVarEmptyWithRows() {
+    void testVarEmptyWithRows() {
         VarDouble empty = VarDouble.empty(100);
         assertEquals(100, empty.rowCount());
         for (int i = 0; i < 100; i++) {
@@ -72,7 +67,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testStaticBuilders() {
+    void testStaticBuilders() {
         int[] sourceIntArray = IntStream.range(0, 100).map(i -> (i % 10 == 0) ? Integer.MIN_VALUE : RandomSource.nextInt(100)).toArray();
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
@@ -119,7 +114,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void smokeTest() {
+    void smokeTest() {
         Var v = VarDouble.empty();
         boolean flag = v.type().isNumeric();
         assertTrue(flag);
@@ -127,14 +122,16 @@ public class VarDoubleTest {
 
         assertEquals(0, v.rowCount());
         assertEquals("VarDouble [name:\"?\", rowCount:1, values: ?]", VarDouble.empty(1).toString());
-
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Illegal row count: -1");
-        VarDouble.empty(-1);
     }
 
     @Test
-    public void testGetterSetter() {
+    void testBuildNegativeRowCount() {
+        var ex = assertThrows(IllegalArgumentException.class, () -> VarDouble.empty(-1));
+        assertEquals("Illegal row count: -1", ex.getMessage());
+    }
+
+    @Test
+    void testGetterSetter() {
         Var v = VarDouble.from(10, i -> Math.log(10 + i));
 
         for (int i = 0; i < 10; i++) {
@@ -151,35 +148,31 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testSetUnparsableString() {
-        expectedException.expect(NumberFormatException.class);
-        expectedException.expectMessage("For input string: \"test\"");
-        VarDouble.scalar(10).setLabel(0, "test");
+    void testSetUnparsableString() {
+        var ex = assertThrows(NumberFormatException.class, () -> VarDouble.scalar(10).setLabel(0, "test"));
+        assertEquals("For input string: \"test\"", ex.getMessage());
     }
 
     @Test
-    public void testAddUnparsableLabel() {
-        expectedException.expect(NumberFormatException.class);
-        expectedException.expectMessage("For input string: \"x\"");
-        VarDouble.scalar(10).addLabel("x");
+    void testAddUnparsableLabel() {
+        var ex = assertThrows(NumberFormatException.class, () -> VarDouble.scalar(10).addLabel("x"));
+        assertEquals("For input string: \"x\"", ex.getMessage());
     }
 
     @Test
-    public void testGetLevels() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Operation not available for double vectors.");
-        VarDouble.scalar(10).levels();
+    void testGetLevels() {
+        var ex = assertThrows(RuntimeException.class, () -> VarDouble.scalar(10).levels());
+        assertEquals("Operation not available for double vectors.", ex.getMessage());
     }
 
     @Test
-    public void testSetLeveles() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Operation not available for double vectors.");
-        VarDouble.scalar(10).setLevels(new String[]{});
+    void testSetLeveles() {
+        var ex = assertThrows(RuntimeException.class, () -> VarDouble.scalar(10).setLevels(new String[]{}));
+        assertEquals("Operation not available for double vectors.", ex.getMessage());
     }
 
     @Test
-    public void testOneNumeric() {
+    void testOneNumeric() {
         Var one = VarDouble.scalar(Math.PI);
 
         assertEquals(1, one.rowCount());
@@ -191,7 +184,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testWithName() {
+    void testWithName() {
         VarDouble x = VarDouble.copy(1, 2, 3, 5).withName("X");
         assertEquals("X", x.name());
 
@@ -205,7 +198,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testOtherValues() {
+    void testOtherValues() {
         VarDouble x = VarDouble.copy(1, 2, 3, 4).withName("x");
 
         x.addInt(10);
@@ -235,7 +228,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testClearRemove() {
+    void testClearRemove() {
         VarDouble x = VarDouble.copy(1, 2, 3);
         VarDouble x2 = VarDouble.copy(x);
         x.removeRow(1);
@@ -263,7 +256,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testLabelOperations() {
+    void testLabelOperations() {
         VarDouble var = VarDouble.wrap(1.0, 1.0, 1.0, 1.0);
 
         var.setLabel(0, "?");
@@ -285,7 +278,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testCollector() {
+    void testCollector() {
         List<Double> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             list.add(RandomSource.nextDouble() * 100);
@@ -297,7 +290,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testString() {
+    void testString() {
         Var x = VarDouble.from(10, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext());
 
         assertEquals("VarDouble [name:\"?\", rowCount:10, values: ?, 0.6503131914222008, 1.1647628389666604, 0.7719984559060187, ?, 2.1236947978859986, 1.6546944254696838, 0.12053767260217511, ?, -0.01950154486410645]",
@@ -365,7 +358,7 @@ public class VarDoubleTest {
     }
 
     @Test
-    public void testSequence() {
+    void testSequence() {
         assertTrue(VarDouble.seq(0, 0.9, 0.3).deepEquals(VarDouble.from(4, r -> r * 0.3)));
         assertTrue(VarDouble.seq(-1, 1, 0.25).deepEquals(VarDouble.from(9, r -> r * 0.25 - 1)));
     }

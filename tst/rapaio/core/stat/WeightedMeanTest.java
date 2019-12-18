@@ -24,11 +24,11 @@
 
 package rapaio.core.stat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/25/14.
@@ -38,7 +38,7 @@ public class WeightedMeanTest {
     private static final double TOL = 1e-12;
 
     @Test
-    public void testBasic() {
+    void testBasic() {
 
         VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
 
@@ -64,7 +64,7 @@ public class WeightedMeanTest {
     }
 
     @Test
-    public void testMissing() {
+    void testMissing() {
 
         VarDouble values = VarDouble.copy(Double.NaN, Double.NaN).withName("x");
         VarDouble weights = VarDouble.copy(1, 1);

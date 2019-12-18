@@ -24,19 +24,15 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
 
-import static java.awt.image.ImageObserver.ERROR;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -45,14 +41,11 @@ public class NormalTest {
 
     private static final double TOL = 1e-12;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
     private Frame otherDf;
     private Frame stdDf;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         otherDf = Csv.instance()
                 .withHeader(true)
                 .withSeparatorChar(',')
@@ -68,7 +61,7 @@ public class NormalTest {
     }
 
     @Test
-    public void testOtherQuantile() {
+    void testOtherQuantile() {
         Normal d = Normal.of(10, 2);
         for (int i = 0; i < otherDf.rowCount(); i++) {
             if (otherDf.getDouble(i, "x") > 0 && otherDf.getDouble(i, "x") < 1) {
@@ -78,7 +71,7 @@ public class NormalTest {
     }
 
     @Test
-    public void testOtherPdf() {
+    void testOtherPdf() {
         Normal d = Normal.of(10, 2);
         for (int i = 0; i < otherDf.rowCount(); i++) {
             assertEquals(otherDf.getDouble(i, "pdf"), d.pdf(otherDf.getDouble(i, "x")), TOL);
@@ -86,7 +79,7 @@ public class NormalTest {
     }
 
     @Test
-    public void testOtherCdf() {
+    void testOtherCdf() {
         Normal d = Normal.of(10, 2);
         for (int i = 0; i < otherDf.rowCount(); i++) {
             assertEquals(otherDf.getDouble(i, "cdf"), d.cdf(otherDf.getDouble(i, "x")), TOL);
@@ -94,7 +87,7 @@ public class NormalTest {
     }
 
     @Test
-    public void testOtherAspects() {
+    void testOtherAspects() {
         Normal normal = Normal.std();
         assertEquals(Double.NEGATIVE_INFINITY, normal.min(), TOL);
         assertEquals(Double.POSITIVE_INFINITY, normal.max(), TOL);
@@ -117,55 +110,53 @@ public class NormalTest {
     }
 
     @Test
-    public void testInvalidQuantileSmallInput() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Inverse of a probability requires a probablity in the range [0,1], not -1.0");
-        Normal.std().quantile(-1);
+    void testInvalidQuantileSmallInput() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Normal.std().quantile(-1));
+        assertEquals("Inverse of a probability requires a probablity in the range [0,1], not -1.0", ex.getMessage());
     }
 
     @Test
-    public void testInvalidQuantileBigInput() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Inverse of a probability requires a probablity in the range [0,1], not 2.0");
-        Normal.std().quantile(2);
+    void testInvalidQuantileBigInput() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Normal.std().quantile(2));
+        assertEquals("Inverse of a probability requires a probablity in the range [0,1], not 2.0", ex.getMessage());
     }
 
     @Test
-    public void testName() {
+    void testName() {
         assertEquals("Normal(mu=10, sd=20)", Normal.of(10, 20).name());
         assertEquals("Normal(mu=10.3, sd=20.3)", Normal.of(10.3, 20.3).name());
     }
 
     @Test
-    public void testIsDiscrete() {
+    void testIsDiscrete() {
         assertFalse(Normal.std().discrete());
         assertFalse(Normal.of(0, 23).discrete());
     }
 
 
     @Test
-    public void testStandardQuantile() {
+    void testStandardQuantile() {
         Normal d = Normal.std();
         for (int i = 0; i < stdDf.rowCount(); i++) {
             if (stdDf.getDouble(i, "x") > 0 && stdDf.getDouble(i, "x") < 1) {
-                Assert.assertEquals(stdDf.getDouble(i, "quantile"), d.quantile(stdDf.getDouble(i, "x")), ERROR);
+                assertEquals(stdDf.getDouble(i, "quantile"), d.quantile(stdDf.getDouble(i, "x")), TOL);
             }
         }
     }
 
     @Test
-    public void testStandardPdf() {
+    void testStandardPdf() {
         Normal d = Normal.std();
         for (int i = 0; i < stdDf.rowCount(); i++) {
-            Assert.assertEquals(stdDf.getDouble(i, "pdf"), d.pdf(stdDf.getDouble(i, "x")), ERROR);
+            assertEquals(stdDf.getDouble(i, "pdf"), d.pdf(stdDf.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void testStandardCdf() {
+    void testStandardCdf() {
         Normal d = Normal.std();
         for (int i = 0; i < stdDf.rowCount(); i++) {
-            Assert.assertEquals(stdDf.getDouble(i, "cdf"), d.cdf(stdDf.getDouble(i, "x")), ERROR);
+            assertEquals(stdDf.getDouble(i, "cdf"), d.cdf(stdDf.getDouble(i, "x")), TOL);
         }
     }
 }

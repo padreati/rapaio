@@ -1,13 +1,12 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.data.filter.VSort;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/28/18.
@@ -15,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class VSortTest {
 
     @Test
-    public void testSortNominal() {
+    void testSortNominal() {
         RandomSource.setSeed(1);
         Var x1 = VarNominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = x1.fapply(VSort.asc());
@@ -29,7 +28,7 @@ public class VSortTest {
     }
 
     @Test
-    public void testSortNumeric() {
+    void testSortNumeric() {
         RandomSource.setSeed(1);
         Var x1 = VarDouble.copy(7, 5, 1, 2, 5, 4);
         Var x2 = x1.fapply(VSort.asc());

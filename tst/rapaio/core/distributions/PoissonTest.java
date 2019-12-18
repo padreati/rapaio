@@ -24,23 +24,16 @@
 
 package rapaio.core.distributions;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.io.Csv;
 
-import java.io.IOException;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PoissonTest {
 
     private static final double TOL = 1e-13;
-
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
 
     private Frame df;
     private Poisson pois1;
@@ -48,10 +41,10 @@ public class PoissonTest {
     private Poisson pois10;
     private Poisson pois100;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         df = Csv.instance()
-                .withNAValues("NaN","Inf")
+                .withNAValues("NaN", "Inf")
                 .read(rapaio.core.distributions.HypergeometricTest.class, "pois.csv");
 
         pois1 = Poisson.of(1);
@@ -61,7 +54,7 @@ public class PoissonTest {
     }
 
     @Test
-    public void testMiscelaneous() {
+    void testMiscelaneous() {
         assertEquals("Poisson(lambda=1)", pois1.name());
         assertTrue(pois1.discrete());
         assertEquals(0, pois1.pdf(-1), TOL);
@@ -79,41 +72,40 @@ public class PoissonTest {
     }
 
     @Test
-    public void testInvalidLambda() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("lambda parameter value must be a real positive value");
-        Poisson.of(-1);
+    void testInvalidLambda() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> Poisson.of(-1));
+        assertEquals("lambda parameter value must be a real positive value", ex.getMessage());
     }
 
     @Test
-    public void testRPdf() throws IOException {
+    void testRPdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_1"), pois1.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_5"), pois5.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_10"), pois10.pdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "pdf_100"), pois100.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_1"), pois1.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_5"), pois5.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_10"), pois10.pdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "pdf_100"), pois100.pdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void testRCdf() throws IOException {
+    void testRCdf() {
         for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_1"), pois1.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_5"), pois5.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_10"), pois10.cdf(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "cdf_100"), pois100.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_1"), pois1.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_5"), pois5.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_10"), pois10.cdf(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "cdf_100"), pois100.cdf(df.getDouble(i, "x")), TOL);
         }
     }
 
     @Test
-    public void testRQuantile() {
+    void testRQuantile() {
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.getDouble(i, "x") >= 1)
                 break;
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_1"), pois1.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_5"), pois5.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_10"), pois10.quantile(df.getDouble(i, "x")), TOL);
-            assertEquals(String.format("error at i: %d, value: %f", i, df.getDouble(i, "x")), df.getDouble(i, "q_100"), pois100.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_1"), pois1.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_5"), pois5.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_10"), pois10.quantile(df.getDouble(i, "x")), TOL);
+            assertEquals(df.getDouble(i, "q_100"), pois100.quantile(df.getDouble(i, "x")), TOL);
         }
     }
 }

@@ -24,21 +24,19 @@
 
 package rapaio.core.correlation;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -50,41 +48,35 @@ public class CorrSpearmanTest {
     private final Var iq = VarDouble.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = VarDouble.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
         RandomSource.setSeed(123);
     }
 
     @Test
-    public void testInvalidSingleVariable() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Correlation can be computed only between two variables.");
-        CorrSpearman.of(VarDouble.seq(10));
+    void testInvalidSingleVariable() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> CorrSpearman.of(VarDouble.seq(10)));
+        assertEquals("Correlation can be computed only between two variables.", ex.getMessage());
     }
 
     @Test
-    public void testUnequalRowCount() {
+    void testUnequalRowCount() {
         Var x = VarDouble.from(100, Normal.std()::sampleNext);
         Var y = VarDouble.from(10, Normal.std()::sampleNext);
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Variables does not have the same size.");
-        CorrSpearman.of(x,y);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> CorrSpearman.of(x, y));
+        assertEquals("Variables does not have the same size.", ex.getMessage());
     }
 
     @Test
-    public void testFromWikipedia() {
+    void testFromWikipedia() {
         CorrSpearman sc = CorrSpearman.of(iq, tvHours);
         // according with wikipedia article rho must be -0.175757575
         assertEquals(-0.175757575, sc.matrix().get(0, 1), 1e-8);
     }
 
     @Test
-    public void testSameVector() {
+    void testSameVector() {
         CorrSpearman same = CorrSpearman.of(iq, iq);
         assertEquals(1., same.matrix().get(0, 1), 1e-10);
 
@@ -93,7 +85,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void maxCorrTest() {
+    void maxCorrTest() {
         VarDouble x = VarDouble.from(1_000, Math::sqrt).withName("x");
         CorrSpearman cp = CorrSpearman.of(x, x);
         assertEquals(1, cp.singleValue(), 1e-12);
@@ -104,7 +96,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void randomTest() {
+    void randomTest() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
@@ -114,7 +106,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void testNonLinearCorr() {
+    void testNonLinearCorr() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -124,7 +116,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void testMultipleVarsNonLinear() {
+    void testMultipleVarsNonLinear() {
         Normal norm = Normal.of(0, 12);
         VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
@@ -140,14 +132,13 @@ public class CorrSpearmanTest {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals("wrong values for [i,j]=[" + i + "," + j + "]",
-                        exp.get(i, j), m.get(i, j), TOL);
+                assertEquals(exp.get(i, j), m.get(i, j), TOL);
             }
         }
     }
 
     @Test
-    public void testMissingValues() {
+    void testMissingValues() {
         VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
         VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
 
@@ -156,7 +147,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void testCollisions() {
+    void testCollisions() {
         VarDouble x = VarDouble.wrap(1, 2, 3, 3, 3, 3, 4, 5, 6);
         VarDouble y = VarDouble.from(x, value -> value * value);
 
@@ -165,7 +156,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void testSummary() {
+    void testSummary() {
 
         Var x1 = VarDouble.from(100, Normal.std()::sampleNext);
         Var x2 = VarDouble.from(100, Normal.std()::sampleNext);
@@ -182,7 +173,7 @@ public class CorrSpearmanTest {
     }
 
     @Test
-    public void testManyVars() {
+    void testManyVars() {
         int K = 10;
         Var[] vars = new Var[K];
         for (int i = 0; i < K; i++) {

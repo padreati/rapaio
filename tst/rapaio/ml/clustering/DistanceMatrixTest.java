@@ -1,14 +1,14 @@
 package rapaio.ml.clustering;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
+import rapaio.experiment.math.linear.RM;
+import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/13/17.
@@ -17,13 +17,13 @@ public class DistanceMatrixTest {
 
     private static final double TOL = 1e-20;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.nextDouble();
     }
 
     @Test
-    public void testEmpty() {
+    void testEmpty() {
 
         Normal normal = Normal.of(0, 10);
 

@@ -1,11 +1,11 @@
 package rapaio.data.filter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/18.
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class FStandardizeTest {
 
     @Test
-    public void testDouble() {
+    void testDouble() {
         Frame src = FFilterTestUtil.allDoubles(100, 2);
 
         FStandardize filter = FStandardize.on(VRange.all());

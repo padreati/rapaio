@@ -24,10 +24,8 @@
 
 package rapaio.io;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
@@ -38,25 +36,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class CsvTest {
 
-    private Csv persistence;
+    private static Csv persistence;
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void setUp() {
         persistence = Csv.instance().withTrimSpaces(true).withEscapeChar('\"');
     }
 
     @Test
-    public void testHeader() throws IOException {
+    void testHeader() throws IOException {
         Frame f = persistence.read(getClass(), "csv-test.csv");
         assertNotNull(f);
         assertEquals(5, f.varCount());
@@ -64,7 +59,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testLineWithoutQuotas() {
+    void testLineWithoutQuotas() {
         checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 "  , ,,,", new String[]{"  ", " ", "", ""});
         checkLine(Csv.instance().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
@@ -81,7 +76,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testLineWithQuotas() {
+    void testLineWithQuotas() {
         checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana", new String[]{"ana"});
         checkLine(Csv.instance().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
@@ -95,7 +90,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testFullFrame() throws IOException {
+    void testFullFrame() throws IOException {
         persistence.withQuotes(true);
         Frame df = persistence.read(getClass(), "csv-test.csv");
         assertNotNull(df);
@@ -116,7 +111,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testDefaults() throws IOException {
+    void testDefaults() throws IOException {
         Frame df = Csv.instance()
                 .withQuotes(true)
                 .withHeader(true)
@@ -171,7 +166,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testSkipRows() throws IOException {
+    void testSkipRows() throws IOException {
 
         List<String> allVarNames = new ArrayList<>();
         allVarNames.add("sepal-length");
@@ -223,7 +218,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testTypes() throws IOException {
+    void testTypes() throws IOException {
         Frame t1 = Csv.instance()
                 .withTypes(VType.DOUBLE, "sepal-length")
                 .withTypes(VType.NOMINAL, "petal-width", "sepal-length")
@@ -238,7 +233,7 @@ public class CsvTest {
     }
 
     @Test
-    public void testNAValues() throws IOException {
+    void testNAValues() throws IOException {
         // no NA values
         Frame na1 = Csv.instance().read(Datasets.class, "iris-r.csv");
         assertEquals(150, na1.stream().complete().count());

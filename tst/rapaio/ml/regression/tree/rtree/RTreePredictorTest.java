@@ -24,30 +24,27 @@
 
 package rapaio.ml.regression.tree.rtree;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.util.DoublePair;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RTreePredictorTest {
 
     private static final double TOL = 1e-20;
 
     @Test
-    public void standardPredictorTest() throws IOException, URISyntaxException {
+    void standardPredictorTest() {
 
         RTreePredictor pred = RTreePredictor.STANDARD;
         assertEquals("STANDARD", pred.name());
 
         // nodes
 
-        RTreeNode root = new RTreeNode(1,null, "root", (row, frame) -> true, 1);
+        RTreeNode root = new RTreeNode(1, null, "root", (row, frame) -> true, 1);
         root.setLeaf(false);
 
         RTreeNode left = new RTreeNode(2, root, "x < 10", (row, frame) -> frame.getDouble(row, "x") < 10, 2);

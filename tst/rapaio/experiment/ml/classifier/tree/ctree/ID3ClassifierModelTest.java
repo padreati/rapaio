@@ -25,8 +25,7 @@
 
 package rapaio.experiment.ml.classifier.tree.ctree;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.filter.FRetainTypes;
@@ -36,7 +35,7 @@ import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreePurityFunction;
 import rapaio.experiment.ml.classifier.tree.CTreeTest;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -44,7 +43,7 @@ import java.io.IOException;
 public class ID3ClassifierModelTest {
 
     @Test
-    public void testBasicID3Entropy() throws IOException {
+    void testBasicID3Entropy() {
         Frame df = Datasets.loadPlay();
         df.printSummary();
         df = FRetainTypes.on(VType.NOMINAL).fapply(df);
@@ -58,13 +57,13 @@ public class ID3ClassifierModelTest {
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);
         DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), true);
         String splitCol = (dtWindy.splitByRowAverageEntropy() < dtOutlook.splitByRowAverageEntropy()) ? "windy" : "outlook";
-        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
+        assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         id3.printSummary();
     }
 
     @Test
-    public void testBasicID3InfoGain() throws IOException {
+    void testBasicID3InfoGain() {
         Frame df = FRetainTypes.on(VType.NOMINAL).fapply(Datasets.loadPlay());
         final String className = "class";
 
@@ -80,7 +79,7 @@ public class ID3ClassifierModelTest {
         DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), true);
         DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), true);
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
-        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
+        assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         id3.printSummary();
     }

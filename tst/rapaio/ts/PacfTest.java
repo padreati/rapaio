@@ -1,10 +1,11 @@
 package rapaio.ts;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/3/17.
@@ -23,8 +24,8 @@ public class PacfTest {
     private VarDouble ref3;
 
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void beforeEach() {
 
         ts1 = VarDouble.fill(20, 1).withName("ts1");
         ts2 = VarDouble.seq(1, 20).withName("ts2");
@@ -52,7 +53,7 @@ public class PacfTest {
     }
 
     @Test
-    public void basicTest() {
+    void basicTest() {
 
         Pacf pacf2 = Pacf.from(ts2, ts2.rowCount() - 1);
         pacf2.printSummary();
@@ -63,7 +64,7 @@ public class PacfTest {
         Pacf pacf3 = Pacf.from(ts3, ts3.rowCount() - 1);
         pacf3.printSummary();
         for (int i = 0; i < pacf3.values().rowCount(); i++) {
-            assertEquals("err at i=" + i , ref3.getDouble(i), pacf3.values().getDouble(i), TOL);
+            assertEquals(ref3.getDouble(i), pacf3.values().getDouble(i), TOL, "err at i=" + i);
         }
     }
 }

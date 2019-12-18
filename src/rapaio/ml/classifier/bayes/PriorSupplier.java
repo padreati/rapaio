@@ -27,7 +27,7 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.tools.DVector;
+import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 
@@ -55,7 +55,7 @@ public interface PriorSupplier extends Serializable {
         @Override
         public Map<String, Double> learnPriors(Frame df, Var weights, String targetVar) {
             Map<String, Double> priors = new HashMap<>();
-            DVector dv = DVector.fromWeights(false, df.rvar(targetVar), weights);
+            DensityVector dv = DensityVector.fromWeights(false, df.rvar(targetVar), weights);
             dv.normalize();
             for (int i = 1; i < df.levels(targetVar).size(); i++) {
                 priors.put(df.levels(targetVar).get(i), dv.get(i));

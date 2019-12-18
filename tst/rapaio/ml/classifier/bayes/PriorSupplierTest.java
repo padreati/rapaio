@@ -1,7 +1,7 @@
 package rapaio.ml.classifier.bayes;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/14/19.
@@ -30,8 +30,8 @@ public class PriorSupplierTest {
     private Var target;
 
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RandomSource.setSeed(1234);
         normal = Normal.of(0, 10);
         weights = normal.sample(N);
@@ -43,7 +43,7 @@ public class PriorSupplierTest {
     }
 
     @Test
-    public void testMLE() {
+    void testMLE() {
         List<String> levels = new ArrayList<>(target.levels());
         levels.remove(0);
 
@@ -67,7 +67,7 @@ public class PriorSupplierTest {
     }
 
     @Test
-    public void testUniform() {
+    void testUniform() {
         List<String> levels = new ArrayList<>(target.levels());
         levels.remove(0);
 
