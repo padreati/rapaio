@@ -32,9 +32,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.experiment.math.optimization.IRLSOptimizer;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -141,7 +141,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                     // we allow only binary outputs
                     throw new RuntimeException("Target variable cannot be nominal with more than 2 levels.");
                 }
-                SolidRV result = SolidRV.empty(target.rowCount());
+                SolidRV result = SolidRV.zeros(target.rowCount());
                 for (int i = 0; i < target.rowCount(); i++) {
                     result.set(i, target.getInt(i) - 1);
                 }

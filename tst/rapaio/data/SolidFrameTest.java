@@ -26,7 +26,7 @@ package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRM;
 
 import java.util.ArrayList;
 import java.util.Arrays;

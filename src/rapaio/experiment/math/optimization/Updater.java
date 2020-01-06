@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RV;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
@@ -83,7 +83,7 @@ class L1Updater implements Updater {
         // Apply proximal operator (soft thresholding)
         double shrinkageVal = regParam * thisIterStepSize;
         int i = 0;
-        int len = brzWeights.count();
+        int len = brzWeights.size();
         while (i < len) {
             double wi = brzWeights.get(i);
             brzWeights.set(i, Math.signum(wi) * Math.max(0.0, Math.abs(wi) - shrinkageVal));

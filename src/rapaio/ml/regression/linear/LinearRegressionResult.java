@@ -32,11 +32,11 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.QRDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.math.MTools;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
@@ -148,10 +148,10 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 sb.append("> Coefficients: \n");
                 RV coeff = lm.getCoefficients(i);
 
-                TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+                TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
                 tt.textCenter(0, 0, "Name");
                 tt.textCenter(0, 1, "Estimate");
-                for (int j = 0; j < coeff.count(); j++) {
+                for (int j = 0; j < coeff.size(); j++) {
                     tt.textLeft(j + 1, 0, lm.inputName(j));
                     tt.floatFlex(j + 1, 1, coeff.get(j));
                 }
@@ -163,7 +163,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
                 RV coeff = lm.getCoefficients(i);
-                double rsa = (rs * (res.rowCount() - 1) - coeff.count() + 1) / degrees;
+                double rsa = (rs * (res.rowCount() - 1) - coeff.size() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;
                 double fvalue = (ess.get(targetName) * degrees) / (rss.get(targetName) * (fdegree1));
@@ -175,7 +175,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
 
                 sb.append("> Coefficients: \n");
 
-                TextTable tt = TextTable.empty(coeff.count() + 1, 6, 1, 1);
+                TextTable tt = TextTable.empty(coeff.size() + 1, 6, 1, 1);
 
                 tt.textRight(0, 0, "Name");
                 tt.textRight(0, 1, "Estimate");
@@ -183,7 +183,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 tt.textRight(0, 3, "t value");
                 tt.textRight(0, 4, "P(>|t|)");
                 tt.textRight(0, 5, "");
-                for (int j = 0; j < coeff.count(); j++) {
+                for (int j = 0; j < coeff.size(); j++) {
                     tt.textLeft(j + 1, 0, model.inputName(j));
                     tt.floatMedium(j + 1, 1, coeff.get(j));
                     tt.floatMedium(j + 1, 2, beta_std_error.get(j, i));

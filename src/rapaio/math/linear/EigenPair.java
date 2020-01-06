@@ -25,33 +25,44 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.linear;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-
-import java.util.function.BiFunction;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
-public class R2Hessian implements RHessian {
+public class EigenPair {
 
-    private static final long serialVersionUID = -7499515114017044967L;
+    private RV rv;
+    private RM rm;
 
-    private final BiFunction<Double, Double, RM> f;
-
-    public R2Hessian(BiFunction<Double, Double, RM> f) {
-        this.f = f;
+    public static EigenPair from(RV values, RM vectors) {
+        return new EigenPair(values, vectors);
     }
 
-    @Override
-    public RM apply(double... x) {
-        return f.apply(x[0], x[1]);
+    private EigenPair(RV values, RM vectors) {
+        this.rv = values;
+        this.rm = vectors;
     }
 
-    @Override
-    public RM apply(RV x) {
-        return f.apply(x.get(0), x.get(1));
+    public RV getRV() {
+        return rv;
+    }
+
+    public RM getRM() {
+        return rm;
+    }
+
+    public RM expandedValues() {
+        RM expandedRV = SolidRM.empty(rv.size(), rv.size());
+        for (int i = 0; i < rv.size(); i++) {
+            expandedRV.set(i, i, rv.get(i));
+        }
+        return expandedRV;
+    }
+
+    public RV vector(int colNum) {
+        return rm.mapCol(colNum);
     }
 }

@@ -28,10 +28,10 @@
 package rapaio.experiment.mc;
 
 import rapaio.core.RandomSource;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
@@ -131,7 +131,7 @@ public class MarkovChain implements Printable {
         double c = RandomSource.nextDouble();
 
         int last = -1;
-        for (int i = 0; i < p.count(); i++) {
+        for (int i = 0; i < p.size(); i++) {
             c -= p.get(i);
             if (c <= 0) {
                 result.add(states.get(i));
@@ -150,8 +150,8 @@ public class MarkovChain implements Printable {
 
             if (!cache.containsKey(last)) {
                 RV ref = m.mapRow(last);
-                double[] index = new double[ref.count()];
-                for (int i = 0; i < ref.count(); i++) {
+                double[] index = new double[ref.size()];
+                for (int i = 0; i < ref.size(); i++) {
                     index[i] = ref.get(i);
                     if (i > 0) {
                         index[i] += index[i - 1];

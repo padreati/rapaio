@@ -50,7 +50,7 @@ public class PriorSupplierTest {
         assertEquals("PRIOR_MLE", PriorSupplier.PRIOR_MLE.name());
 
         Map<String, Double> priors = PriorSupplier.PRIOR_MLE.learnPriors(SolidFrame.byVars(target), weights, TARGET_NAME);
-        double totalWeight = weights.op().sum();
+        double totalWeight = weights.op().nansum();
 
         assertEquals(levels.size(), priors.size());
         for (String level : levels) {

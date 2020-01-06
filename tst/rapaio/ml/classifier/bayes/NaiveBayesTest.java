@@ -78,8 +78,8 @@ public class NaiveBayesTest {
         Var mixtPrediction = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt).firstClasses();
         Var mixtProb = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt, true, true).firstDensity().rvar(1);
         assertEquals(1, Confusion.from(target, mixtPrediction).accuracy(), 0.1);
-        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().avg(), 0.01);
-        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().avg(), 0.01);
+        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().nanmean(), 0.01);
+        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().nanmean(), 0.01);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class NaiveBayesTest {
         Var mixtPrediction = new NaiveBayes().withNumEstimator(new KernelPdf()).fit(dfMixt, "target").predict(dfMixt).firstClasses();
         Var mixtProb = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt).firstDensity().rvar(1);
         assertEquals(1, Confusion.from(target, mixtPrediction).accuracy(), 0.1);
-        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().avg(), 0.01);
-        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().avg(), 0.01);
+        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().nanmean(), 0.01);
+        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().nanmean(), 0.01);
     }
 
     @Test
@@ -103,8 +103,8 @@ public class NaiveBayesTest {
         NaiveBayes nb = new NaiveBayes().withLaplaceSmoother(1);
         nb.fit(df, "target");
         Var prediction = nb.predict(df).firstDensity().rvar(1);
-        assertEquals(1.0, prediction.mapRows(Mapping.range(0, 50)).op().avg(), TOL);
-        assertEquals(0.0, prediction.mapRows(Mapping.range(50, 100)).op().avg(), TOL);
+        assertEquals(1.0, prediction.mapRows(Mapping.range(0, 50)).op().nanmean(), TOL);
+        assertEquals(0.0, prediction.mapRows(Mapping.range(50, 100)).op().nanmean(), TOL);
     }
 
     @Test

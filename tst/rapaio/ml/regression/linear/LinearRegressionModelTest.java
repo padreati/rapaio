@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.io.IOException;
 

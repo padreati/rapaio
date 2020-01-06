@@ -32,12 +32,12 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.experiment.math.linear.EigenPair;
-import rapaio.experiment.math.linear.Linear;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.EigenPair;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -93,11 +93,11 @@ public class PCA implements Printable {
         RM x = SolidRM.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = SolidRV.empty(x.colCount());
-            sd = SolidRV.empty(x.colCount());
+            mean = SolidRV.zeros(x.colCount());
+            sd = SolidRV.zeros(x.colCount());
             for (int i = 0; i < x.colCount(); i++) {
                 mean.set(i, x.mapCol(i).mean());
-                sd.set(i, x.mapCol(i).variance().sdValue());
+                sd.set(i, Math.sqrt(x.mapCol(i).variance()));
             }
             for (int i = 0; i < x.rowCount(); i++) {
                 for (int j = 0; j < x.colCount(); j++) {
@@ -118,7 +118,7 @@ public class PCA implements Printable {
 
         logger.fine("sort eigen values and vectors");
 
-        Integer[] rows = new Integer[values.count()];
+        Integer[] rows = new Integer[values.size()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }

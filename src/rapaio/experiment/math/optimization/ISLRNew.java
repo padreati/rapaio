@@ -32,12 +32,12 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.QRDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.graphics.plot.Plot;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.format.Format;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
@@ -84,12 +84,12 @@ public class ISLRNew {
             RV e = A.dot(x).minus(b);
 
             // error weights for IRLS
-            RV w = SolidRV.from(e.count(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
+            RV w = SolidRV.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
 
             // normalize weight matrix
-            RM W = SolidRM.empty(w.count(), w.count());
+            RM W = SolidRM.empty(w.size(), w.size());
             double wsum = w.sum();
-            for (int i = 0; i < w.count(); i++) {
+            for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 
@@ -169,12 +169,12 @@ public class ISLRNew {
 
             // error weights for IRLS
             double pkk = pk;
-            RV w = SolidRV.from(e.count(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
+            RV w = SolidRV.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
 
             // normalize weight matrix
-            RM W = SolidRM.empty(w.count(), w.count());
+            RM W = SolidRM.empty(w.size(), w.size());
             double wsum = w.valueStream().sum();
-            for (int i = 0; i < w.count(); i++) {
+            for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 

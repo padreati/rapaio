@@ -34,13 +34,13 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
-import rapaio.experiment.math.linear.EigenPair;
-import rapaio.experiment.math.linear.Linear;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.QRDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.EigenPair;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -101,11 +101,11 @@ public class LDA implements Printable {
 
         // compute mean and sd
 
-        mean = SolidRV.empty(xx.colCount());
-        sd = SolidRV.empty(xx.colCount());
+        mean = SolidRV.zeros(xx.colCount());
+        sd = SolidRV.zeros(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean());
-            sd.set(i, xx.mapCol(i).variance().sdValue());
+            sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
         }
 
         // scale the whole data if it is the case
@@ -134,7 +134,7 @@ public class LDA implements Printable {
 
         classMean = new RV[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = SolidRV.empty(x[i].colCount());
+            classMean[i] = SolidRV.zeros(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean());
             }
@@ -172,7 +172,7 @@ public class LDA implements Printable {
 
         logger.fine("sort eigen values and vectors");
 
-        Integer[] rows = new Integer[eigenValues.count()];
+        Integer[] rows = new Integer[eigenValues.size()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
@@ -239,14 +239,14 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
-                VarDouble.empty(eigenValues.count()).withName("values"),
-                VarDouble.empty(eigenValues.count()).withName("percent")
+                VarDouble.empty(eigenValues.size()).withName("values"),
+                VarDouble.empty(eigenValues.size()).withName("percent")
         );
         double total = 0.0;
-        for (int i = 0; i < eigenValues.count(); i++) {
+        for (int i = 0; i < eigenValues.size(); i++) {
             total += eigenValues.get(i);
         }
-        for (int i = 0; i < eigenValues.count(); i++) {
+        for (int i = 0; i < eigenValues.size(); i++) {
             eval.setDouble(i, "values", eigenValues.get(i));
             eval.setDouble(i, "percent", eigenValues.get(i) / total);
         }

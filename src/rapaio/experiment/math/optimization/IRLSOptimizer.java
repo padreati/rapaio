@@ -29,11 +29,11 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.LUDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.LUDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.format.Format;
 
 import java.util.List;
@@ -87,8 +87,8 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.getDouble(j - 1));
         }
 
-        derivatives = SolidRV.empty(xs.size());
-        err = SolidRV.empty(y.rowCount());
+        derivatives = SolidRV.zeros(xs.size());
+        err = SolidRV.zeros(y.rowCount());
         grad = SolidRM.empty(w.rowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
@@ -129,11 +129,11 @@ public class IRLSOptimizer {
         }
         RV delta = lu.solve(grad).mapCol(0);
 
-        w.op().minus(delta.asNumericVar());
+        w.op().minus(delta.asVarDouble());
 
         double max = Math.abs(delta.get(0));
         double min = Math.abs(delta.get(0));
-        for (int i = 1; i < delta.count(); i++) {
+        for (int i = 1; i < delta.size(); i++) {
             max = Math.max(max, Math.abs(delta.get(i)));
             min = Math.min(min, Math.abs(delta.get(i)));
         }

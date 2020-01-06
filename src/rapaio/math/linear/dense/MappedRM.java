@@ -25,10 +25,10 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -89,7 +89,7 @@ public class MappedRM implements RM {
 
     @Override
     public SolidRV mapCol(int i) {
-        SolidRV v = SolidRV.empty(rowIndexes.length);
+        SolidRV v = SolidRV.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
         }
@@ -98,7 +98,7 @@ public class MappedRM implements RM {
 
     @Override
     public RV mapRow(int i) {
-        SolidRV v = SolidRV.empty(colIndexes.length);
+        SolidRV v = SolidRV.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }

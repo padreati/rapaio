@@ -71,7 +71,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
-    public double sum() {
+    public double nansum() {
         double sum = 0.0;
         for (int i = 0; i < source.rowCount(); i++) {
             if (source.isMissing(i)) {
@@ -83,7 +83,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
-    public double avg() {
+    public double nanmean() {
         double count = 0.0;
         double sum = 0.0;
         for (int i = 0; i < source.rowCount(); i++) {

@@ -26,10 +26,10 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.stream.IntStream;
 
@@ -117,14 +117,14 @@ public class MatrixMultiplication {
 
     public static RV ikjParallel(RM A, RV b) {
 
-        if (A.colCount() != b.count()) {
+        if (A.colCount() != b.size()) {
             throw new IllegalArgumentException(
                     String.format("Matrix [%d,%d] and vector[%d,1] are not conform for multiplication.",
-                            A.rowCount(), A.colCount(), b.count()
+                            A.rowCount(), A.colCount(), b.size()
                     ));
         }
 
-        RV C = SolidRV.empty(A.rowCount());
+        RV C = SolidRV.zeros(A.rowCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < A.colCount(); j++) {
                 C.increment(i, A.get(i, j) * b.get(j));

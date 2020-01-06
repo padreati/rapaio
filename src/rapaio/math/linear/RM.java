@@ -25,17 +25,17 @@
  *
  */
 
-package rapaio.experiment.math.linear;
+package rapaio.math.linear;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.dense.MappedRM;
-import rapaio.experiment.math.linear.dense.MatrixMultiplication;
-import rapaio.experiment.math.linear.dense.SVDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.math.MTools;
+import rapaio.math.linear.dense.MappedRM;
+import rapaio.math.linear.dense.MatrixMultiplication;
+import rapaio.math.linear.dense.SVDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.sys.WS;
@@ -256,7 +256,7 @@ public interface RM extends Serializable, Printable {
      * Diagonal vector of values
      */
     default RV diag() {
-        RV rv = SolidRV.empty(rowCount());
+        RV rv = SolidRV.zeros(rowCount());
         for (int i = 0; i < rowCount(); i++) {
             rv.set(i, get(i, i));
         }
@@ -299,7 +299,7 @@ public interface RM extends Serializable, Printable {
     }
 
     default RV rowSum() {
-        SolidRV sum = SolidRV.empty(rowCount());
+        SolidRV sum = SolidRV.zeros(rowCount());
         for (int i = 0; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
                 sum.increment(j, get(j, i));

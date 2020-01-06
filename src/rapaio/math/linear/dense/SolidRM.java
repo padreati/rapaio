@@ -25,14 +25,14 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
 import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -246,7 +246,7 @@ public class SolidRM implements RM {
 
     @Override
     public SolidRV mapCol(int i) {
-        SolidRV v = SolidRV.empty(rowCount);
+        SolidRV v = SolidRV.zeros(rowCount);
         for (int j = 0; j < rowCount; j++) {
             v.set(j, get(j, i));
         }
@@ -255,7 +255,7 @@ public class SolidRM implements RM {
 
     @Override
     public RV mapRow(int i) {
-        SolidRV v = SolidRV.empty(colCount);
+        SolidRV v = SolidRV.zeros(colCount);
         for (int j = 0; j < colCount; j++) {
             v.set(j, get(i, j));
         }

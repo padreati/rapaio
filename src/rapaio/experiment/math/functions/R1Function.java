@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RV;
 
 import java.util.function.Function;
 

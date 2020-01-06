@@ -25,15 +25,14 @@
  *
  */
 
-package rapaio.experiment.math.linear;
+package rapaio.math.linear;
 
-import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
+import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 /**
@@ -42,6 +41,11 @@ import java.util.stream.DoubleStream;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface RV extends Serializable, Printable {
+
+    /**
+     * @return length of vector
+     */
+    int size();
 
     /**
      * Gets value from zero-based position index
@@ -68,33 +72,12 @@ public interface RV extends Serializable, Printable {
     void increment(int i, double value);
 
     /**
-     * @return length of vector
-     */
-    int count();
-
-    /**
-     * Scalar multiplication. All the values from vector
-     * will be multiplied with the given scalar
-     *
-     * @param scalar scaar value
-     * @return the same object
-     */
-    RV dot(double scalar);
-
-    /**
-     * Adds to all elements the value of x, it is
-     * similar wtth calling increment with x for all positions
-     * of the vector
+     * Adds to all elements the value of x
      *
      * @param x value to be incremented with
      * @return same object
      */
-    default RV plus(double x) {
-        for (int i = 0; i < count(); i++) {
-            increment(i, x);
-        }
-        return this;
-    }
+    RV plus(double x);
 
     /**
      * Adds to to all positions values from the
@@ -108,30 +91,20 @@ public interface RV extends Serializable, Printable {
      * @param B vector which contains values used for increment operation
      * @return same object
      */
-    default RV plus(RV B) {
-        if (count() != B.count())
-            throw new IllegalArgumentException(String.format(
-                    "Vectors are not conform for addition: [%d] + [%d]", count(), B.count()));
-        for (int i = 0; i < count(); i++) {
-            increment(i, B.get(i));
-        }
-        return this;
-    }
+    RV plus(RV B);
 
     /**
-     * Substract from all elements the value of x, it is
+     * Substracts from all elements the value of x, it is
      * similar wtth calling increment with -x for all positions
      * of the vector
      *
      * @param x value to be decremented with
      * @return same object
      */
-    default RV minus(double x) {
-        return plus(-x);
-    }
+    RV minus(double x);
 
     /**
-     * Substract from all positions values from the
+     * Substracts from all positions values from the
      * corresponding positions of the vector B.
      * The resulted vectors will have values:
      * this[i] <- this[i] + B[i].
@@ -142,15 +115,27 @@ public interface RV extends Serializable, Printable {
      * @param B vector which contains values used for increment operation
      * @return same object
      */
-    default RV minus(RV B) {
-        if (count() != B.count())
-            throw new IllegalArgumentException(String.format(
-                    "Matrices are not conform for substraction: [%d] + [%d]", count(), B.count()));
-        for (int i = 0; i < count(); i++) {
-            increment(i, -B.get(i));
-        }
-        return this;
-    }
+    RV minus(RV B);
+
+    /**
+     * Scalar multiplication. All the values from vector
+     * will be multiplied with the given scalar
+     *
+     * @param scalar scaar value
+     * @return the same object
+     */
+    RV dot(double scalar);
+
+    /**
+     * Dot product between two vectors is equal to the sum of the
+     * product of elements from each given position.
+     * <p>
+     * sum_{i=1}^{n}a_i*b_i
+     *
+     * @param b the vector used to compute dot product
+     * @return same vector object
+     */
+    double dot(RV b);
 
     /**
      * Computes the p norm of the vector.
@@ -181,22 +166,27 @@ public interface RV extends Serializable, Printable {
     RV normalize(double p);
 
     /**
-     * Dot product between two vectors is equal to the sum of the
-     * product of elements from each given position.
-     * <p>
-     * sum_{i=1}^{n}a_i*b_i
+     * Computes the sum of all elements in vector. If there is
+     * at least one NaN value, the computed sum is NaN.
      *
-     * @param b the vector used to compute dot product
-     * @return same vector object
+     * @return sum of all elements in the vector
      */
-    default double dotProd(RV b) {
-        int max = Math.max(count(), b.count());
-        double s = 0;
-        for (int i = 0; i < max; i++) {
-            s += get(i) * b.get(i);
-        }
-        return s;
-    }
+    double sum();
+
+    /**
+     * Sum of all non missing values (Double.NaN is considered missing value). Note that if all elements are missing, then
+     * the computed sum equals 0.
+     *
+     * @return sum of all non missing elements.
+     */
+    double nansum();
+
+    /**
+     * Computes count of non missing values
+     *
+     * @return count of non missing values
+     */
+    int nancount();
 
     /**
      * Computes a sample mean object where the sample values
@@ -204,34 +194,30 @@ public interface RV extends Serializable, Printable {
      *
      * @return mean result
      */
-    default double mean() {
-        return asNumericVar().op().avg();
-    }
+    double mean();
 
-    default double sum() {
-        return asNumericVar().op().sum();
-    }
-
-    default RV apply(Function<Double, Double> f) {
-        for (int i = 0; i < count(); i++) {
-            set(i, f.apply(get(i)));
-        }
-        return this;
-    }
+    /**
+     * Computes non missing (non NaN) values from the vector
+     * @return mean of non missing values
+     */
+    double nanmean();
 
     /**
      * Computes a sample variance object where the
      * sample values consists of the elements of the vector.
      *
-     * @return the sample variance object
+     * @return the sample variance
      */
-    default Variance variance() {
-        VarDouble values = VarDouble.empty();
-        for (int i = 0; i < count(); i++) {
-            values.addDouble(get(i));
-        }
-        return Variance.of(values);
-    }
+    double variance();
+
+    /**
+     * Computes sample variance ignoring NaN missing values.
+     *
+     * @return sample variance value
+     */
+    double nanvariance();
+
+    RV apply(DoubleDoubleFunction f);
 
     /**
      * Creates a new solid copy of the vector.
@@ -258,25 +244,9 @@ public interface RV extends Serializable, Printable {
      * @return a matrix corresponding with the current vector
      */
     default RM asMatrix() {
-        SolidRM res = SolidRM.empty(count(), 1);
-        for (int i = 0; i < count(); i++) {
+        SolidRM res = SolidRM.empty(size(), 1);
+        for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
-        }
-        return res;
-    }
-
-    /**
-     * A vector is also a matrix, but for implementation
-     * reasons the objects are not the same. This method
-     * creates a new copy of the vector in the form of a transposed matrix
-     * with 1 rows and n columns.
-     *
-     * @return a matrix corresponding with the current transposed vector
-     */
-    default RM asMatrixT() {
-        SolidRM res = SolidRM.empty(1, count());
-        for (int i = 0; i < count(); i++) {
-            res.set(0, i, get(i));
         }
         return res;
     }
@@ -288,6 +258,5 @@ public interface RV extends Serializable, Printable {
      */
     DoubleStream valueStream();
 
-
-    VarDouble asNumericVar();
+    VarDouble asVarDouble();
 }

@@ -70,7 +70,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     @Override
-    public double sum() {
+    public double nansum() {
         double sum = 0.0;
         for (int i = 0; i < rowCount; i++) {
             if (Double.isNaN(data[i])) {
@@ -82,7 +82,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     @Override
-    public double avg() {
+    public double nanmean() {
         double count = 0.0;
         double sum = 0.0;
         for (int i = 0; i < rowCount; i++) {

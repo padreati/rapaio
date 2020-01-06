@@ -31,10 +31,10 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.io.Csv;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.eval.metric.Confusion;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

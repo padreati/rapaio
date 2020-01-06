@@ -25,10 +25,10 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.io.Serializable;
 
@@ -56,7 +56,7 @@ public class QRDecomposition implements Serializable {
     private QRDecomposition(RM A) {
         // Initialize.
         QR = A.copy();
-        Rdiag = SolidRV.empty(QR.colCount());
+        Rdiag = SolidRV.zeros(QR.colCount());
 
         // Main loop.
         for (int k = 0; k < QR.colCount(); k++) {

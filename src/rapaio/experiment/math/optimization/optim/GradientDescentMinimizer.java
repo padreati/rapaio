@@ -30,9 +30,9 @@ package rapaio.experiment.math.optimization.optim;
 import rapaio.data.VarDouble;
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.linear.RV;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.linear.RV;
 
 import java.util.ArrayList;
 import java.util.List;

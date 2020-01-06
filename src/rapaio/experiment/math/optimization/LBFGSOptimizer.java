@@ -27,9 +27,9 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.experiment.math.optimization.lbfgs.Mcsrch;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
@@ -41,7 +41,7 @@ public class LBFGSOptimizer {
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
         double g[], diag[], w[];
-        RV x = SolidRV.empty(ndim);
+        RV x = SolidRV.zeros(ndim);
         g = new double[ndim];
         diag = new double[ndim];
         w = new double[nwork];
@@ -461,9 +461,9 @@ class LBFGS {
                 }
             }
 
-            double[] dx = new double[x.count()];
+            double[] dx = new double[x.size()];
             
-            for(int i = 0; i < x.count(); i++) {
+            for(int i = 0; i < x.size(); i++) {
             	dx[i] = x.get(i);
             }
             

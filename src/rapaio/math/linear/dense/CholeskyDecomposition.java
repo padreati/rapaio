@@ -25,10 +25,10 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
 
-import rapaio.experiment.math.linear.RM;
+import rapaio.math.linear.RM;
 
 import java.io.Serializable;
 

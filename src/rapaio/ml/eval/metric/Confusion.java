@@ -28,8 +28,8 @@
 package rapaio.ml.eval.metric;
 
 import rapaio.data.Var;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;

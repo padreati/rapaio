@@ -22,12 +22,12 @@
  *
  */
 
-package rapaio.experiment.math.linear;
+package rapaio.math.linear;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.jupiter.api.Assertions.*;
 

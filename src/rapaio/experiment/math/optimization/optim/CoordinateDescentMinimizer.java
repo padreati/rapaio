@@ -30,10 +30,10 @@ package rapaio.experiment.math.optimization.optim;
 import rapaio.data.VarDouble;
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRV;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,13 +83,13 @@ public class CoordinateDescentMinimizer implements Minimizer {
             RV d1fx = d1f.apply(sol);
             double max = abs(d1fx.get(0));
             int index = 0;
-            for (int j = 1; j < d1fx.count(); j++) {
+            for (int j = 1; j < d1fx.size(); j++) {
                 if (abs(d1fx.get(j)) > max) {
                     max = abs(d1fx.get(j));
                     index = j;
                 }
             }
-            RV deltaX = SolidRV.fill(d1fx.count(), 0);
+            RV deltaX = SolidRV.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
             if (abs(deltaX.norm(2)) < tol) {

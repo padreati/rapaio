@@ -30,10 +30,10 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.QRDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.format.TextTable;
 
@@ -123,10 +123,10 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
             sb.append("> Coefficients: \n");
             RV coeff = beta.mapCol(i);
 
-            TextTable tt = TextTable.empty(coeff.count() + 1, 2, 1, 0);
+            TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");
             tt.textCenter(0, 1, "Estimate");
-            for (int j = 0; j < coeff.count(); j++) {
+            for (int j = 0; j < coeff.size(); j++) {
                 tt.textLeft(j + 1, 0, inputNames[j]);
                 tt.floatMedium(j + 1, 1, coeff.get(j));
             }

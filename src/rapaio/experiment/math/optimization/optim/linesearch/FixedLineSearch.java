@@ -29,7 +29,7 @@ package rapaio.experiment.math.optimization.optim.linesearch;
 
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.

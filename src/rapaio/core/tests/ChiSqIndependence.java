@@ -30,7 +30,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Var;
 import rapaio.experiment.core.tools.DTable;
-import rapaio.experiment.math.linear.RM;
+import rapaio.math.linear.RM;
 import rapaio.printer.format.Format;
 
 import java.util.ArrayList;

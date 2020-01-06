@@ -31,11 +31,11 @@ import rapaio.data.VarDouble;
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
 import rapaio.experiment.math.functions.RHessian;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.CholeskyDecomposition;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.CholeskyDecomposition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +105,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             CholeskyDecomposition chol = modifiedCholesky(d2f_x);
             delta_x = chol.solve(d1f_x_n.asMatrix()).mapCol(0);
 
-            double error = d1f_x.copy().dotProd(delta_x);
+            double error = d1f_x.copy().dot(delta_x);
             if (pow(error, 2) / 2 < tol) {
                 converged = true;
                 break;

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

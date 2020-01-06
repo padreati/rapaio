@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +89,7 @@ public class VarSelectorTest {
         }
 
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.asNumericVar();
+        VarDouble counts = freq.asVarDouble();
 
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }
@@ -114,7 +114,7 @@ public class VarSelectorTest {
         }
 
         VarDouble expectedProbability = VarDouble.fill(varNames.length, 1.0 / varNames.length);
-        VarDouble counts = freq.asNumericVar();
+        VarDouble counts = freq.asVarDouble();
 
         assertTrue(ChiSqGoodnessOfFit.from(counts, expectedProbability).pValue() >= 0.2); // no evidence at all
     }

@@ -32,10 +32,10 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRM;
-import rapaio.experiment.math.linear.dense.SolidRV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 
 import java.util.stream.IntStream;
 
@@ -106,8 +106,8 @@ public class FRandomProjection extends AbstractFF {
     private static Method gaussian(int k) {
         return rowCount -> {
             Normal norm = Normal.std();
-            RV v = SolidRV.empty(rowCount);
-            for (int i = 0; i < v.count(); i++) {
+            RV v = SolidRV.zeros(rowCount);
+            for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
             v.normalize(2);
@@ -125,7 +125,7 @@ public class FRandomProjection extends AbstractFF {
 
         return rowCount -> {
             int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
-            RV v = SolidRV.empty(rowCount);
+            RV v = SolidRV.zeros(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.set(i, -sqrt);

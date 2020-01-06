@@ -33,10 +33,10 @@ import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;

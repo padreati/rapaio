@@ -31,9 +31,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.dense.SolidRM;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 
 import static org.junit.jupiter.api.Assertions.*;

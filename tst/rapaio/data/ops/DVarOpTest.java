@@ -38,14 +38,14 @@ public class DVarOpTest {
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
-        double sum1 = x.op().sum();
-        double sum2 = x.copy().op().sort(true).op().sum();
-        double sum3 = x.copy().op().sort(false).op().avg() * 75;
-        double sum4 = x.copy().op().sort(x.refComparator()).op().sum();
-        double sum5 = x.mapRows(x.op().sortedCompleteRows()).op().sum();
-        double sum6 = x.mapRows(x.op().sortedCompleteRows(false)).op().sum();
-        double sum7 = x.mapRows(x.op().sortedRows()).op().sum();
-        double sum8 = x.mapRows(x.op().sortedRows(false)).op().sum();
+        double sum1 = x.op().nansum();
+        double sum2 = x.copy().op().sort(true).op().nansum();
+        double sum3 = x.copy().op().sort(false).op().nanmean() * 75;
+        double sum4 = x.copy().op().sort(x.refComparator()).op().nansum();
+        double sum5 = x.mapRows(x.op().sortedCompleteRows()).op().nansum();
+        double sum6 = x.mapRows(x.op().sortedCompleteRows(false)).op().nansum();
+        double sum7 = x.mapRows(x.op().sortedRows()).op().nansum();
+        double sum8 = x.mapRows(x.op().sortedRows(false)).op().nansum();
 
         assertEquals(sum1, sum2, TOLERANCE);
         assertEquals(sum1, sum3, TOLERANCE);
@@ -67,14 +67,14 @@ public class DVarOpTest {
         assertTrue(apply1.deepEquals(apply3));
         assertTrue(apply1.deepEquals(apply4));
 
-        double sum1 = x.op().sum();
-        double sum2 = x.copy().op().sort(true).op().sum();
-        double sum3 = x.copy().op().sort(false).op().avg() * 75;
-        double sum4 = x.copy().op().sort(x.refComparator()).op().sum();
-        double sum5 = x.mapRows(x.op().sortedCompleteRows()).op().sum();
-        double sum6 = x.mapRows(x.op().sortedCompleteRows(false)).op().sum();
-        double sum7 = x.mapRows(x.op().sortedRows()).op().sum();
-        double sum8 = x.mapRows(x.op().sortedRows(false)).op().sum();
+        double sum1 = x.op().nansum();
+        double sum2 = x.copy().op().sort(true).op().nansum();
+        double sum3 = x.copy().op().sort(false).op().nanmean() * 75;
+        double sum4 = x.copy().op().sort(x.refComparator()).op().nansum();
+        double sum5 = x.mapRows(x.op().sortedCompleteRows()).op().nansum();
+        double sum6 = x.mapRows(x.op().sortedCompleteRows(false)).op().nansum();
+        double sum7 = x.mapRows(x.op().sortedRows()).op().nansum();
+        double sum8 = x.mapRows(x.op().sortedRows(false)).op().nansum();
 
         assertEquals(sum1, sum2, TOLERANCE);
         assertEquals(sum1, sum3, TOLERANCE);

@@ -22,13 +22,13 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.experiment.math.linear.RM;
+import rapaio.math.linear.RM;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

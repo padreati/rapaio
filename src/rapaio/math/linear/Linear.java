@@ -25,10 +25,10 @@
  *
  */
 
-package rapaio.experiment.math.linear;
+package rapaio.math.linear;
 
-import rapaio.experiment.math.linear.dense.CholeskyDecomposition;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.CholeskyDecomposition;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
  * Linear algebra tool bag class.

@@ -59,7 +59,7 @@ public interface DVarOp<T extends Var> {
      *
      * @return sum of non missing values
      */
-    double sum();
+    double nansum();
 
     /**
      * Computes the average of non missing values.
@@ -67,7 +67,7 @@ public interface DVarOp<T extends Var> {
      *
      * @return average of non missing values
      */
-    double avg();
+    double nanmean();
 
     /**
      * Adds a constant to all values from the variable.

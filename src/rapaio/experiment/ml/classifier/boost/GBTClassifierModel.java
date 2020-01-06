@@ -32,9 +32,9 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.sample.Sample;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
-import rapaio.experiment.math.linear.dense.SolidRM;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -182,7 +182,7 @@ public class GBTClassifierModel
 
         for (int k = 0; k < K; k++) {
 
-            Var resk = residual.mapRow(k).asNumericVar().withName("##tt##");
+            Var resk = residual.mapRow(k).asVarDouble().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
             RTree tree = rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(K));

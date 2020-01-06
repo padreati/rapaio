@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RV;
 
 import java.util.Arrays;
 
@@ -58,7 +58,7 @@ public class SolidRVTest {
     @Test
     void testBuilders() {
 
-        RV x = SolidRV.empty(N);
+        RV x = SolidRV.zeros(N);
         Assertions.assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(0, x.get(i), TOL);
@@ -107,11 +107,11 @@ public class SolidRVTest {
     void incrementTest() {
         RV x = SolidRV.from(VarDouble.seq(0, 1, 0.01));
         RV y = x.copy();
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
             y.increment(i, sign * 10);
         }
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             if (i % 2 == 0) {
                 assertEquals(x.get(i) + 10, y.get(i), TOL);
             } else {
@@ -122,11 +122,11 @@ public class SolidRVTest {
 
     @Test
     void setterTest() {
-        RV y = SolidRV.empty(N);
-        for (int i = 0; i < y.count(); i++) {
+        RV y = SolidRV.zeros(N);
+        for (int i = 0; i < y.size(); i++) {
             y.set(i, x.get(i));
         }
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i), y.get(i), TOL);
         }
     }
@@ -134,7 +134,7 @@ public class SolidRVTest {
     @Test
     void scalarPlusTest() {
         RV y = x.copy().plus(10);
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
     }
@@ -144,21 +144,21 @@ public class SolidRVTest {
         RV z = SolidRV.from(VarDouble.fill(N, 10));
         RV y = x.copy().plus(z);
 
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
         }
     }
 
     @Test
     void vectorPlusNonconformantTest() {
-        RV y = SolidRV.empty(N / 2);
+        RV y = SolidRV.zeros(N / 2);
         assertThrows(IllegalArgumentException.class, () -> x.plus(y));
     }
 
     @Test
     void scalarDotTest() {
         RV y = x.copy().dot(10);
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
     }
@@ -166,7 +166,7 @@ public class SolidRVTest {
     @Test
     void scalarMinusTest() {
         RV y = x.copy().minus(10);
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
     }
@@ -176,14 +176,14 @@ public class SolidRVTest {
         RV z = SolidRV.from(VarDouble.fill(N, 10));
         RV y = x.copy().minus(z);
 
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
         }
     }
 
     @Test
     void vectorMinusNonconformantTest() {
-        RV y = SolidRV.empty(N / 2);
+        RV y = SolidRV.zeros(N / 2);
         assertThrows(IllegalArgumentException.class, () -> x.minus(y));
     }
 
@@ -206,14 +206,14 @@ public class SolidRVTest {
     @Test
     void meanVarTest() {
         assertEquals(Mean.of(varx).value(), x.mean(), TOL);
-        assertEquals(Variance.of(varx).value(), x.variance().value(), TOL);
+        assertEquals(Variance.of(varx).value(), x.variance(), TOL);
     }
 
     @Test
     void normalizeTest() {
         RV y = x.copy().normalize(1.5);
         double norm = x.norm(1.5);
-        for (int i = 0; i < y.count(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / norm, y.get(i), TOL);
         }
     }

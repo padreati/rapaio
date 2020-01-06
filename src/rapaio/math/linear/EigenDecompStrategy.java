@@ -25,44 +25,8 @@
  *
  */
 
-package rapaio.experiment.math.linear;
+package rapaio.math.linear;
 
-import rapaio.experiment.math.linear.dense.SolidRM;
-
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
- */
-public class EigenPair {
-
-    private RV rv;
-    private RM rm;
-
-    public static EigenPair from(RV values, RM vectors) {
-        return new EigenPair(values, vectors);
-    }
-
-    private EigenPair(RV values, RM vectors) {
-        this.rv = values;
-        this.rm = vectors;
-    }
-
-    public RV getRV() {
-        return rv;
-    }
-
-    public RM getRM() {
-        return rm;
-    }
-
-    public RM expandedValues() {
-        RM expandedRV = SolidRM.empty(rv.count(), rv.count());
-        for (int i = 0; i < rv.count(); i++) {
-            expandedRV.set(i, i, rv.get(i));
-        }
-        return expandedRV;
-    }
-
-    public RV vector(int colNum) {
-        return rm.mapCol(colNum);
-    }
+public abstract class EigenDecompStrategy {
+	public abstract EigenPair getEigenDecomp(RM s, int maxRuns, double tol);
 }

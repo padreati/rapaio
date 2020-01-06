@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.experiment.math.linear.dense;
+package rapaio.math.linear.dense;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
@@ -30,8 +30,8 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.math.linear.RM;
-import rapaio.experiment.math.linear.RV;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import static org.junit.jupiter.api.Assertions.*;
 

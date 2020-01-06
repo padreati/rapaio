@@ -88,7 +88,7 @@ public final class VarDouble extends AbstractVar {
         while (it.hasNext()) {
             data[pos++] = it.next().doubleValue();
         }
-        return VarDouble.wrap(data);
+        return VarDouble.wrapArray(data.length, data);
     }
 
     /**
@@ -102,7 +102,7 @@ public final class VarDouble extends AbstractVar {
         for (int i = 0; i < values.length; i++) {
             data[i] = values[i];
         }
-        return VarDouble.wrap(data);
+        return VarDouble.wrapArray(values.length, data);
     }
 
     /**
@@ -146,6 +146,19 @@ public final class VarDouble extends AbstractVar {
         VarDouble numeric = new VarDouble(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
+        return numeric;
+    }
+
+    /**
+     * Builds new double variable as a wrapper around an array of doubles
+     *
+     * @param values wrapped array of doubles
+     * @return new instance of numeric variable
+     */
+    public static VarDouble wrapArray(int rows, double... values) {
+        VarDouble numeric = new VarDouble(0, 0, 0);
+        numeric.data = values;
+        numeric.rows = rows;
         return numeric;
     }
 
