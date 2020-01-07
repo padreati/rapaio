@@ -216,4 +216,92 @@ public class DoubleArraysTest {
         assertEquals(Double.NaN, variance(array1, 0, 0));
         assertEquals(Double.NaN, nanvariance(array1, 10, 10));
     }
+
+    @Test
+    void testPlus() {
+        double[] array1 = DoubleArrays.newFrom(0, 100, row -> row);
+
+        for (int i = 0; i < 100; i++) {
+            int start = RandomSource.nextInt(50);
+            int end = 50 + RandomSource.nextInt(50);
+
+            double[] array2 = DoubleArrays.newCopy(array1, start, end);
+            DoubleArrays.plus(array2, 10, 0, end - start);
+            double[] array3 = DoubleArrays.plusc(array1, 10, start, end);
+
+            assertArrayEquals(array2, array3, TOL);
+
+            double[] array4 = DoubleArrays.newFill(end - start, 10);
+            double[] array5 = DoubleArrays.plus(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array6 = DoubleArrays.plusc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+
+            assertArrayEquals(array5, array6);
+        }
+    }
+
+    @Test
+    void testMinus() {
+        double[] array1 = DoubleArrays.newFrom(0, 100, row -> row);
+
+        for (int i = 0; i < 100; i++) {
+            int start = RandomSource.nextInt(50);
+            int end = 50 + RandomSource.nextInt(50);
+
+            double[] array2 = DoubleArrays.newCopy(array1, start, end);
+            DoubleArrays.minus(array2, 10, 0, end - start);
+            double[] array3 = DoubleArrays.minusc(array1, 10, start, end);
+
+            assertArrayEquals(array2, array3, TOL);
+
+            double[] array4 = DoubleArrays.newFill(end - start, 10);
+            double[] array5 = DoubleArrays.minus(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array6 = DoubleArrays.minusc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+
+            assertArrayEquals(array5, array6);
+        }
+    }
+
+    @Test
+    void testDot() {
+        double[] array1 = DoubleArrays.newFrom(0, 100, row -> row);
+
+        for (int i = 0; i < 100; i++) {
+            int start = RandomSource.nextInt(50);
+            int end = 50 + RandomSource.nextInt(50);
+
+            double[] array2 = DoubleArrays.newCopy(array1, start, end);
+            DoubleArrays.dot(array2, 10, 0, end - start);
+            double[] array3 = DoubleArrays.dotc(array1, 10, start, end);
+
+            assertArrayEquals(array2, array3, TOL);
+
+            double[] array4 = DoubleArrays.newFill(end - start, 10);
+            double[] array5 = DoubleArrays.dot(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array6 = DoubleArrays.dotc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+
+            assertArrayEquals(array5, array6);
+        }
+    }
+
+    @Test
+    void testDiv() {
+        double[] array1 = DoubleArrays.newFrom(0, 100, row -> row);
+
+        for (int i = 0; i < 100; i++) {
+            int start = RandomSource.nextInt(50);
+            int end = 50 + RandomSource.nextInt(50);
+
+            double[] array2 = DoubleArrays.newCopy(array1, start, end);
+            DoubleArrays.div(array2, 10, 0, end - start);
+            double[] array3 = DoubleArrays.divc(array1, 10, start, end);
+
+            assertArrayEquals(array2, array3, TOL);
+
+            double[] array4 = DoubleArrays.newFill(end - start, 10);
+            double[] array5 = DoubleArrays.div(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array6 = DoubleArrays.divc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+
+            assertArrayEquals(array5, array6);
+        }
+    }
 }

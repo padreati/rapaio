@@ -441,6 +441,23 @@ public final class DoubleArrays {
         };
     }
 
+    // plus
+
+    public static double[] plus(double[] a, double s, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] += s;
+        }
+        return a;
+    }
+
+    public static double[] plusc(double[] a, double s, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] + s;
+        }
+        return array;
+    }
+
     public static double[] plus(double[] a, double[] b, int start, int end) {
         for (int i = start; i < end; i++) {
             a[i] += b[i];
@@ -456,6 +473,23 @@ public final class DoubleArrays {
         return array;
     }
 
+    // minus
+
+    public static double[] minus(double[] a, double s, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] -= s;
+        }
+        return a;
+    }
+
+    public static double[] minusc(double[] a, double s, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] - s;
+        }
+        return array;
+    }
+
     public static double[] minus(double[] a, double[] b, int start, int end) {
         for (int i = start; i < end; i++) {
             a[i] -= b[i];
@@ -467,6 +501,70 @@ public final class DoubleArrays {
         double[] array = new double[end - start];
         for (int i = start; i < end; i++) {
             array[i - start] = a[i] - b[i];
+        }
+        return array;
+    }
+
+    // dot
+
+    public static double[] dot(double[] a, double s, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] *= s;
+        }
+        return a;
+    }
+
+    public static double[] dotc(double[] a, double s, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] * s;
+        }
+        return array;
+    }
+
+    public static double[] dot(double[] a, double[] b, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] *= b[i];
+        }
+        return a;
+    }
+
+    public static double[] dotc(double[] a, double[] b, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] * b[i];
+        }
+        return array;
+    }
+
+    // div
+
+    public static double[] div(double[] a, double s, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] /= s;
+        }
+        return a;
+    }
+
+    public static double[] divc(double[] a, double s, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] / s;
+        }
+        return array;
+    }
+
+    public static double[] div(double[] a, double[] b, int start, int end) {
+        for (int i = start; i < end; i++) {
+            a[i] /= b[i];
+        }
+        return a;
+    }
+
+    public static double[] divc(double[] a, double[] b, int start, int end) {
+        double[] array = new double[end - start];
+        for (int i = start; i < end; i++) {
+            array[i - start] = a[i] / b[i];
         }
         return array;
     }
