@@ -24,7 +24,6 @@
 
 package rapaio.math.linear.dense;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.distributions.Normal;
@@ -46,7 +45,7 @@ public class SolidDVectorTest {
 
     private Normal normal;
     private Var varx;
-    private DVector x;
+    private SolidDVector x;
 
     @BeforeEach
     void beforeEach() {
@@ -56,19 +55,37 @@ public class SolidDVectorTest {
     }
 
     @Test
+    void testBuilderZeros() {
+        var zeros = SolidDVector.zeros(N);
+        assertNotNull(zeros);
+        for (int i = 0; i < N; i++) {
+            assertEquals(0, zeros.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testBuildersOnes() {
+        var ones = SolidDVector.ones(N);
+        assertNotNull(ones);
+        assertEquals(N, ones.size());
+        for (int i = 0; i < ones.size(); i++) {
+            assertEquals(1., ones.get(i), TOL);
+        }
+    }
+
+    @Test
+    void testBuildersFill() {
+        var fill = SolidDVector.fill(N, 13);
+        assertNotNull(fill);
+        assertEquals(N, fill.size());
+        for (int i = 0; i < fill.size(); i++) {
+            assertEquals(13, fill.get(i), TOL);
+        }
+    }
+
+    @Test
     void testBuilders() {
 
-        DVector x = SolidDVector.zeros(N);
-        Assertions.assertNotNull(x);
-        for (int i = 0; i < N; i++) {
-            assertEquals(0, x.get(i), TOL);
-        }
-
-        x = SolidDVector.fill(N, Double.NaN);
-        assertNotNull(x);
-        for (int i = 0; i < N; i++) {
-            assertTrue(Double.isNaN(x.get(i)));
-        }
 
         x = SolidDVector.from(VarDouble.seq(N - 1));
         assertNotNull(x);
