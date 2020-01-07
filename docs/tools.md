@@ -24,3 +24,7 @@ Solution:
 * To create an ASCII-format detached signature, myfile.asc:
 
       $ gpg --detach-sign -a myfile
+      
+* deploy 
+      
+      $ mvn -f pom-maven-release.xml clean verify gpg:sign install:install deploy:deploy
