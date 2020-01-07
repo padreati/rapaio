@@ -222,8 +222,8 @@ public class SolidDVectorTest {
 
     @Test
     void meanVarTest() {
-        assertEquals(Mean.of(varx).value(), x.mean(), TOL);
-        assertEquals(Variance.of(varx).value(), x.variance(), TOL);
+        assertEquals(Mean.of(varx).value(), x.mean(), 1e-12);
+        assertEquals(Variance.of(varx).value(), x.variance(), 1e-12);
     }
 
     @Test
