@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import java.util.Map;
 
@@ -49,11 +49,11 @@ public class MatrixMultiplicationTest {
     void basicTestMM() {
 
         Normal normal = Normal.std();
-        RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
-        RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        RM c1 = A.dot(B);
-        RM c2 = MatrixMultiplication.ikjAlgorithm(A, B);
+        DMatrix c1 = A.dot(B);
+        DMatrix c2 = MatrixMultiplication.ikjAlgorithm(A, B);
 
         assertTrue(c1.isEqual(c2));
         assertFalse(c1.isEqual(c2.t()));
@@ -63,10 +63,10 @@ public class MatrixMultiplicationTest {
     void testDifferentMethods() {
 
         Normal normal = Normal.std();
-        RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
-        RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        RM c = A.dot(B);
+        DMatrix c = A.dot(B);
 
         assertTrue(c.isEqual(MatrixMultiplication.ijkAlgorithm(A, B), TOL));
         assertTrue(c.isEqual(MatrixMultiplication.ijkParallel(A, B), TOL));

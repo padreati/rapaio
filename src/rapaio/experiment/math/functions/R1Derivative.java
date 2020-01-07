@@ -27,8 +27,8 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDVector;
 
 import java.util.function.Function;
 
@@ -46,12 +46,12 @@ public class R1Derivative implements RDerivative {
     }
 
     @Override
-    public RV apply(double... x) {
-        return SolidRV.wrap(f.apply(x[0]));
+    public DVector apply(double... x) {
+        return SolidDVector.wrap(f.apply(x[0]));
     }
 
     @Override
-    public RV apply(RV x) {
-        return SolidRV.wrap(f.apply(x.get(0)));
+    public DVector apply(DVector x) {
+        return SolidDVector.wrap(f.apply(x.get(0)));
     }
 }

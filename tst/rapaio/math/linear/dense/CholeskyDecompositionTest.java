@@ -27,7 +27,7 @@ package rapaio.math.linear.dense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,11 +44,11 @@ public class CholeskyDecompositionTest {
     @Test
     void testBasic() {
         for (int i = 0; i < TIMES; i++) {
-            RM a = SolidRM.random(30, 30);
-            RM b = a.t().dot(a);
+            DMatrix a = SolidDMatrix.random(30, 30);
+            DMatrix b = a.t().dot(a);
 
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(b);
-            RM l = cholesky.getL();
+            DMatrix l = cholesky.getL();
 
             assertTrue(cholesky.isSPD());
             assertTrue(b.isEqual(l.dot(l.t()), TOL));
@@ -58,7 +58,7 @@ public class CholeskyDecompositionTest {
     @Test
     void testNonSPD() {
         for (int i = 0; i < TIMES; i++) {
-            RM a = SolidRM.random(30, 30);
+            DMatrix a = SolidDMatrix.random(30, 30);
             CholeskyDecomposition cholesky = CholeskyDecomposition.from(a);
             assertFalse(cholesky.isSPD());
         }
@@ -66,50 +66,50 @@ public class CholeskyDecompositionTest {
 
     @Test
     void testSystem() {
-        RM a1 = SolidRM.wrap(new double[][]{
+        DMatrix a1 = SolidDMatrix.wrap(new double[][]{
                 {2, -1, 0},
                 {-1, 2, -1},
                 {0, -1, 2}
         });
-        RM b1 = SolidRM.wrap(new double[][]{
+        DMatrix b1 = SolidDMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {0}
         });
-        RM x1 = SolidRM.wrap(new double[][]{
+        DMatrix x1 = SolidDMatrix.wrap(new double[][]{
                 {-0.25},
                 {-1.5},
                 {-0.75}
         });
-        RM s1 = CholeskyDecomposition.from(a1).solve(b1);
+        DMatrix s1 = CholeskyDecomposition.from(a1).solve(b1);
         s1.printSummary();
         assertTrue(x1.isEqual(s1, TOL));
 
 
-        RM a2 = SolidRM.wrap(new double[][]{
+        DMatrix a2 = SolidDMatrix.wrap(new double[][]{
                 {2, 3},
                 {3, 9},
         });
-        RM b2 = SolidRM.wrap(new double[][]{
+        DMatrix b2 = SolidDMatrix.wrap(new double[][]{
                 {6},
                 {15},
         });
-        RM x2 = SolidRM.wrap(new double[][]{
+        DMatrix x2 = SolidDMatrix.wrap(new double[][]{
                 {1},
                 {1.33333333333333333333333333333333},
         });
-        RM s2 = LUDecomposition.from(a2).solve(b2);
+        DMatrix s2 = LUDecomposition.from(a2).solve(b2);
         s2.printSummary();
         assertTrue(x2.isEqual(s2, TOL));
     }
 
     @Test
     void testSystemNonSymmetric() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(SolidRM.random(2, 2)).solve(SolidRM.random(2, 1)));
+        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(SolidDMatrix.random(2, 2)).solve(SolidDMatrix.random(2, 1)));
     }
 
     @Test
     void testSystemNonCompatible() {
-        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(SolidRM.random(2, 2)).solve(SolidRM.random(3, 1)));
+        assertThrows(IllegalArgumentException.class, () -> CholeskyDecomposition.from(SolidDMatrix.random(2, 2)).solve(SolidDMatrix.random(3, 1)));
     }
 }

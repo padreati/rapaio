@@ -1,7 +1,7 @@
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
@@ -9,5 +9,5 @@ import rapaio.math.linear.RV;
 @FunctionalInterface
 public interface RHessian {
 
-    RM apply(RV x);
+    DMatrix apply(DVector x);
 }

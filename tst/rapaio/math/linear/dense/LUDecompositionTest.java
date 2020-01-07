@@ -27,7 +27,7 @@ package rapaio.math.linear.dense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,42 +43,42 @@ public class LUDecompositionTest {
     @Test
     void testBasicGaussian() {
 
-        RM a = SolidRM.random(100, 100);
+        DMatrix a = SolidDMatrix.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
-        RM a1 = a.mapRows(lu.getPivot());
-        RM a2 = lu.getL().dot(lu.getU());
+        DMatrix a1 = a.mapRows(lu.getPivot());
+        DMatrix a2 = lu.getL().dot(lu.getU());
         assertTrue(a1.isEqual(a2, TOL));
     }
 
     @Test
     void testBasicCrout() {
-        RM a = SolidRM.random(100, 100);
+        DMatrix a = SolidDMatrix.random(100, 100);
         LUDecomposition lu = LUDecomposition.from(a, LUDecomposition.Method.CROUT);
-        RM a1 = a.mapRows(lu.getPivot());
-        RM a2 = lu.getL().dot(lu.getU());
+        DMatrix a1 = a.mapRows(lu.getPivot());
+        DMatrix a2 = lu.getL().dot(lu.getU());
         assertTrue(a1.isEqual(a2, TOL));
     }
 
     @Test
     void testIsSingular() {
-        assertFalse(LUDecomposition.from(SolidRM.empty(10, 10)).isNonSingular());
-        assertTrue(LUDecomposition.from(SolidRM.random(10, 10)).isNonSingular());
+        assertFalse(LUDecomposition.from(SolidDMatrix.empty(10, 10)).isNonSingular());
+        assertTrue(LUDecomposition.from(SolidDMatrix.random(10, 10)).isNonSingular());
     }
 
     @Test
     void solveTest() {
 
-        RM a1 = SolidRM.wrap(new double[][]{
+        DMatrix a1 = SolidDMatrix.wrap(new double[][]{
                 {3, 2, -1},
                 {2, -2, 4},
                 {-1, 0.5, -1}
         });
-        RM b1 = SolidRM.wrap(new double[][]{
+        DMatrix b1 = SolidDMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {0}
         });
-        RM x1 = SolidRM.wrap(new double[][]{
+        DMatrix x1 = SolidDMatrix.wrap(new double[][]{
                 {1},
                 {-2},
                 {-2}
@@ -86,15 +86,15 @@ public class LUDecompositionTest {
         assertTrue(x1.isEqual(LUDecomposition.from(a1).solve(b1), TOL));
 
 
-        RM a2 = SolidRM.wrap(new double[][]{
+        DMatrix a2 = SolidDMatrix.wrap(new double[][]{
                 {2, 3},
                 {4, 9},
         });
-        RM b2 = SolidRM.wrap(new double[][]{
+        DMatrix b2 = SolidDMatrix.wrap(new double[][]{
                 {6},
                 {15},
         });
-        RM x2 = SolidRM.wrap(new double[][]{
+        DMatrix x2 = SolidDMatrix.wrap(new double[][]{
                 {1.5},
                 {1},
         });
@@ -103,7 +103,7 @@ public class LUDecompositionTest {
 
     @Test
     void determinantTest() {
-        RM a = SolidRM.wrap(new double[][]{
+        DMatrix a = SolidDMatrix.wrap(new double[][]{
                 {1, 2},
                 {3, 4}
         });
@@ -112,16 +112,16 @@ public class LUDecompositionTest {
 
     @Test
     void determinantTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidRM.random(4, 3)).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidDMatrix.random(4, 3)).det());
     }
 
     @Test
     void builderTestEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidRM.random(2, 3)).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidDMatrix.random(2, 3)).det());
     }
 
     @Test
     void builderTestMethodEx() {
-        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidRM.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
+        assertThrows(IllegalArgumentException.class, () -> LUDecomposition.from(SolidDMatrix.random(2, 3), LUDecomposition.Method.GAUSSIAN_ELIMINATION).det());
     }
 }

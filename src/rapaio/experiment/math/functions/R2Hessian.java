@@ -27,8 +27,8 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 import java.util.function.BiFunction;
 
@@ -39,19 +39,19 @@ public class R2Hessian implements RHessian {
 
     private static final long serialVersionUID = -7499515114017044967L;
 
-    private final BiFunction<Double, Double, RM> f;
+    private final BiFunction<Double, Double, DMatrix> f;
 
-    public R2Hessian(BiFunction<Double, Double, RM> f) {
+    public R2Hessian(BiFunction<Double, Double, DMatrix> f) {
         this.f = f;
     }
 
     @Override
-    public RM apply(double... x) {
+    public DMatrix apply(double... x) {
         return f.apply(x[0], x[1]);
     }
 
     @Override
-    public RM apply(RV x) {
+    public DMatrix apply(DVector x) {
         return f.apply(x.get(0), x.get(1));
     }
 }

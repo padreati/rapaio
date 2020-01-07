@@ -27,8 +27,8 @@ package rapaio.ml.eval.metric;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.SolidDMatrix;
 
 import java.util.Arrays;
 
@@ -54,7 +54,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        RM frequency = SolidRM.wrap(new double[][]{
+        DMatrix frequency = SolidDMatrix.wrap(new double[][]{
                 {2, 1, 1},
                 {0, 1, 1},
                 {0, 1, 4}});
@@ -70,7 +70,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        RM frequency = SolidRM.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = SolidDMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.isEqual(cm.frequencyMatrix()));
         assertTrue(frequency.copy().dot(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
 

@@ -27,8 +27,8 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDVector;
 
 import java.io.Serializable;
 
@@ -38,9 +38,9 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface RDerivative extends Serializable {
 
-    default RV apply(double...x) {
-        return apply(SolidRV.wrap(x));
+    default DVector apply(double...x) {
+        return apply(SolidDVector.wrap(x));
     }
 
-    RV apply(RV x);
+    DVector apply(DVector x);
 }

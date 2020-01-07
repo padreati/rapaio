@@ -34,13 +34,13 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -61,27 +61,27 @@ public class LDA implements Printable {
 
     private double tol = 1e-24;
     private int maxRuns = 10_000;
-    protected RV eigenValues;
-    protected RM eigenVectors;
+    protected DVector eigenValues;
+    protected DMatrix eigenVectors;
 
     protected String[] inputNames;
-    protected RV mean;
-    protected RV sd;
+    protected DVector mean;
+    protected DVector sd;
 
     protected boolean scaling = true;
 
-    public RV getEigenValues() {
+    public DVector getEigenValues() {
         return eigenValues;
     }
 
-    public RM getEigenVectors() {
+    public DMatrix getEigenVectors() {
         return eigenVectors;
     }
 
     private String targetName;
     private List<String> targetLevels;
 
-    private RV[] classMean;
+    private DVector[] classMean;
 
     public LDA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -97,12 +97,12 @@ public class LDA implements Printable {
     	validate(df, targetVars);
 
         logger.fine("start lda predict");
-        RM xx = SolidRM.copy(df.removeVars(VRange.of(targetName)));
+        DMatrix xx = SolidDMatrix.copy(df.removeVars(VRange.of(targetName)));
 
         // compute mean and sd
 
-        mean = SolidRV.zeros(xx.colCount());
-        sd = SolidRV.zeros(xx.colCount());
+        mean = SolidDVector.zeros(xx.colCount());
+        sd = SolidDVector.zeros(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean());
             sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
@@ -121,7 +121,7 @@ public class LDA implements Printable {
 
         // compute sliced data for each class
 
-        RM[] x = new RM[targetLevels.size()];
+        DMatrix[] x = new DMatrix[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
@@ -132,9 +132,9 @@ public class LDA implements Printable {
 
         // compute class means
 
-        classMean = new RV[targetLevels.size()];
+        classMean = new DVector[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = SolidRV.zeros(x[i].colCount());
+            classMean[i] = SolidDVector.zeros(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean());
             }
@@ -142,26 +142,26 @@ public class LDA implements Printable {
 
         // build within scatter matrix
 
-        RM sw = SolidRM.empty(inputNames.length, inputNames.length);
+        DMatrix sw = SolidDMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             sw.plus(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
-        RM sb = SolidRM.empty(inputNames.length, inputNames.length);
+        DMatrix sb = SolidDMatrix.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
-            RM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
+            DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
             sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
         }
 
         // inverse sw
-		RM swi = QRDecomposition.from(sw).solve(SolidRM.identity(inputNames.length));
+		DMatrix swi = QRDecomposition.from(sw).solve(SolidDMatrix.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
-        RM sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
-        RM sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
+        DMatrix sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
+        DMatrix sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
 
         EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
@@ -184,8 +184,8 @@ public class LDA implements Printable {
         eigenVectors = eigenVectors.mapCols(indexes).copy();
     }
 
-    public Frame predict(Frame df, BiFunction<RV, RM, Integer> kFunction) {
-        RM x = SolidRM.copy(df.mapVars(inputNames));
+    public Frame predict(Frame df, BiFunction<DVector, DMatrix, Integer> kFunction) {
+        DMatrix x = SolidDMatrix.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -203,7 +203,7 @@ public class LDA implements Printable {
             dim[i] = i;
             names[i] = "lda_" + (i + 1);
         }
-        RM result = x.dot(eigenVectors.mapCols(dim));
+        DMatrix result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(VRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :

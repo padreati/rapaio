@@ -31,11 +31,11 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
 import rapaio.math.MTools;
-import rapaio.math.linear.dense.MappedRM;
+import rapaio.math.linear.dense.MappedDMatrix;
 import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SVDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.sys.WS;
@@ -51,7 +51,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RM extends Serializable, Printable {
+public interface DMatrix extends Serializable, Printable {
 
     /**
      * @return number of rows
@@ -88,20 +88,20 @@ public interface RM extends Serializable, Printable {
      */
     void increment(int row, int col, double value);
 
-    RV mapCol(int col);
+    DVector mapCol(int col);
 
-    RV mapRow(int row);
+    DVector mapRow(int row);
 
-    default RM mapRows(int... indexes) {
-        return new MappedRM(this, true, indexes);
+    default DMatrix mapRows(int... indexes) {
+        return new MappedDMatrix(this, true, indexes);
     }
 
-    default RM rangeRows(int start, int end) {
+    default DMatrix rangeRows(int start, int end) {
         int[] rows = new int[end - start];
         for (int i = start; i < end; i++) {
             rows[i - start] = i;
         }
-        return new MappedRM(this, true, rows);
+        return new MappedDMatrix(this, true, rows);
     }
 
     /**
@@ -110,7 +110,7 @@ public interface RM extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    default RM removeRows(int... indexes) {
+    default DMatrix removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] rows = new int[rowCount() - rem.size()];
         int pos = 0;
@@ -119,22 +119,22 @@ public interface RM extends Serializable, Printable {
                 continue;
             rows[pos++] = i;
         }
-        return new MappedRM(this, true, rows);
+        return new MappedDMatrix(this, true, rows);
     }
 
-    default RM mapCols(int... indexes) {
-        return new MappedRM(this, false, indexes);
+    default DMatrix mapCols(int... indexes) {
+        return new MappedDMatrix(this, false, indexes);
     }
 
-    default RM rangeCols(int start, int end) {
+    default DMatrix rangeCols(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
             cols[i - start] = i;
         }
-        return new MappedRM(this, false, cols);
+        return new MappedDMatrix(this, false, cols);
     }
 
-    default RM removeCols(int... indexes) {
+    default DMatrix removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
@@ -143,23 +143,23 @@ public interface RM extends Serializable, Printable {
                 continue;
             cols[pos++] = i;
         }
-        return new MappedRM(this, false, cols);
+        return new MappedDMatrix(this, false, cols);
     }
 
     /**
      * @return new transposed matrix
      */
-    RM t();
+    DMatrix t();
 
-    default RM dot(RM B) {
+    default DMatrix dot(DMatrix B) {
         return MatrixMultiplication.ikjParallel(this, B);
     }
 
-    default RV dot(RV b) {
+    default DVector dot(DVector b) {
         return MatrixMultiplication.ikjParallel(this, b);
     }
 
-    default RM dot(double x) {
+    default DMatrix dot(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * x);
@@ -168,7 +168,7 @@ public interface RM extends Serializable, Printable {
         return this;
     }
 
-    default RM plus(double x) {
+    default DMatrix plus(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 increment(i, j, x);
@@ -177,7 +177,7 @@ public interface RM extends Serializable, Printable {
         return this;
     }
 
-    default RM plus(RM B) {
+    default DMatrix plus(DMatrix B) {
         if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
             throw new IllegalArgumentException(String.format(
                     "Matrices are not conform for addition: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
@@ -189,11 +189,11 @@ public interface RM extends Serializable, Printable {
         return this;
     }
 
-    default RM minus(double x) {
+    default DMatrix minus(double x) {
         return plus(-x);
     }
 
-    default RM minus(RM B) {
+    default DMatrix minus(DMatrix B) {
         if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
             throw new IllegalArgumentException(String.format(
                     "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
@@ -255,16 +255,16 @@ public interface RM extends Serializable, Printable {
     /**
      * Diagonal vector of values
      */
-    default RV diag() {
-        RV rv = SolidRV.zeros(rowCount());
+    default DVector diag() {
+        DVector DVector = SolidDVector.zeros(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            rv.set(i, get(i, i));
+            DVector.set(i, get(i, i));
         }
-        return rv;
+        return DVector;
     }
 
-    default RM scatter() {
-        RM scatter = SolidRM.empty(colCount(), colCount());
+    default DMatrix scatter() {
+        DMatrix scatter = SolidDMatrix.empty(colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();
@@ -286,8 +286,8 @@ public interface RM extends Serializable, Printable {
     // other tools
     ///////////////////////
 
-    default RV rowValueMax() {
-        SolidRV max = SolidRV.copy(mapCol(0));
+    default DVector rowValueMax() {
+        SolidDVector max = SolidDVector.copy(mapCol(0));
         for (int i = 1; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
                 if(max.get(j) < get(j, i)) {
@@ -298,8 +298,8 @@ public interface RM extends Serializable, Printable {
         return max;
     }
 
-    default RV rowSum() {
-        SolidRV sum = SolidRV.zeros(rowCount());
+    default DVector rowSum() {
+        SolidDVector sum = SolidDVector.zeros(rowCount());
         for (int i = 0; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
                 sum.increment(j, get(j, i));
@@ -312,21 +312,21 @@ public interface RM extends Serializable, Printable {
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.
      *
-     * @param RM given matrix
+     * @param DMatrix given matrix
      * @return true if dimension and elements are equal
      */
-    default boolean isEqual(RM RM) {
-        return isEqual(RM, 1e-20);
+    default boolean isEqual(DMatrix DMatrix) {
+        return isEqual(DMatrix, 1e-20);
     }
 
-    default boolean isEqual(RM RM, double tol) {
-        if (rowCount() != RM.rowCount())
+    default boolean isEqual(DMatrix DMatrix, double tol) {
+        if (rowCount() != DMatrix.rowCount())
             return false;
-        if (colCount() != RM.colCount())
+        if (colCount() != DMatrix.colCount())
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MTools.eq(get(i, j), RM.get(i, j), tol))
+                if (!MTools.eq(get(i, j), DMatrix.get(i, j), tol))
                     return false;
             }
         }
@@ -335,7 +335,7 @@ public interface RM extends Serializable, Printable {
 
     DoubleStream valueStream();
 
-    RM copy();
+    DMatrix copy();
 
     default String toSummary() {
 

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,13 +50,13 @@ public class SVDecompositionTest {
             int n = RandomSource.nextInt(20) + 1;
             int m = RandomSource.nextInt(20) + n;
 
-            RM a = SolidRM.random(m, n);
+            DMatrix a = SolidDMatrix.random(m, n);
 
             SVDecomposition svd = SVDecomposition.from(a);
 
-            RM u = svd.getU();
-            RM s = svd.getS();
-            RM v = svd.getV();
+            DMatrix u = svd.getU();
+            DMatrix s = svd.getS();
+            DMatrix v = svd.getV();
 
             assertTrue(a.isEqual(u.dot(s).dot(v.t()), TOL));
 
@@ -73,7 +73,7 @@ public class SVDecompositionTest {
 
     @Test
     void testDimension() {
-        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(SolidRM.random(10, 50)));
+        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(SolidDMatrix.random(10, 50)));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class SVDecompositionTest {
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            double c = SVDecomposition.from(SolidRM.random(10, 10)).cond();
+            double c = SVDecomposition.from(SolidDMatrix.random(10, 10)).cond();
             assertTrue(Math.log10(c) < 4);
         }
 
@@ -91,7 +91,7 @@ public class SVDecompositionTest {
         Normal norm = Normal.of(0, 0.000001);
 
         for (int i = 0; i < 100; i++) {
-            RM a = SolidRM.random(10, 10);
+            DMatrix a = SolidDMatrix.random(10, 10);
 
             // we create the first column as a slightly modified
             // version of the second column, thus we have linearity

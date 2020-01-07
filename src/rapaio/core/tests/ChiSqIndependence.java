@@ -30,7 +30,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Var;
 import rapaio.experiment.core.tools.DTable;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 import rapaio.printer.format.Format;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public final class ChiSqIndependence implements HTest {
         return new ChiSqIndependence(DTable.fromCounts(x, y, false), yates);
     }
 
-    public static ChiSqIndependence from(RM m, boolean yates) {
+    public static ChiSqIndependence from(DMatrix m, boolean yates) {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
         for (int i = 0; i < m.rowCount(); i++) {
@@ -71,7 +71,7 @@ public final class ChiSqIndependence implements HTest {
         return from(m, rowLevels, colLevels, yates);
     }
 
-    public static ChiSqIndependence from(RM m, List<String> rowLevels, List<String> colLevels, boolean yates) {
+    public static ChiSqIndependence from(DMatrix m, List<String> rowLevels, List<String> colLevels, boolean yates) {
         if (m.rowCount() != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }

@@ -31,8 +31,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.SolidDMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,7 +102,7 @@ public class CorrPearsonTest {
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
-        RM exp = SolidRM.copy(3, 3,
+        DMatrix exp = SolidDMatrix.copy(3, 3,
                 1, 0.8356446312071465, 0.7997143292750087,
                 0.8356446312071465, 1, 0.9938073109055182,
                 0.7997143292750087, 0.9938073109055182, 1);

@@ -33,11 +33,11 @@ import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.format.Format;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
@@ -67,7 +67,7 @@ public class ISLRNew {
      * @param maxIt number of maximum iterations
      * @param tol   tolerance
      */
-    public static Pair<RV, VarDouble> basicISLR(RM A, RV b, double p, int maxIt, double tol) {
+    public static Pair<DVector, VarDouble> basicISLR(DMatrix A, DVector b, double p, int maxIt, double tol) {
 
         if (A.colCount() < 4) {
             maxIt = 10;
@@ -75,31 +75,31 @@ public class ISLRNew {
 
         // initial L2 solution
 
-        RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+        DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
         VarDouble err = VarDouble.empty().withName("errors");
 
         for (int it = 0; it < maxIt; it++) {
 
             // error vector
-            RV e = A.dot(x).minus(b);
+            DVector e = A.dot(x).minus(b);
 
             // error weights for IRLS
-            RV w = SolidRV.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
+            DVector w = SolidDVector.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
 
             // normalize weight matrix
-            RM W = SolidRM.empty(w.size(), w.size());
+            DMatrix W = SolidDMatrix.empty(w.size(), w.size());
             double wsum = w.sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 
             // apply weights
-            RM WA = W.dot(A);
+            DMatrix WA = W.dot(A);
 
             // weighted L2 solution
 
-            RM A1 = WA.t().dot(WA);
-            RV b1 = WA.t().dot(W).dot(b);
+            DMatrix A1 = WA.t().dot(WA);
+            DVector b1 = WA.t().dot(W).dot(b);
 
             try {
                 x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
@@ -136,7 +136,7 @@ public class ISLRNew {
      * @param iterMax
      * @return
      */
-    public static Pair<RV, VarDouble> islrH(RM A, RV b, double p, double K, int iterMax, double tol) {
+    public static Pair<DVector, VarDouble> islrH(DMatrix A, DVector b, double p, double K, int iterMax, double tol) {
 
         if (A.colCount() < 5) {
             iterMax = 10;
@@ -153,7 +153,7 @@ public class ISLRNew {
         double pk = 2;
 
         // initial L2 solution
-        RV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+        DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
 
         VarDouble err = VarDouble.empty().withName("errors");
 
@@ -165,28 +165,28 @@ public class ISLRNew {
             }
 
             // error vector
-            RV e = A.dot(x).minus(b);
+            DVector e = A.dot(x).minus(b);
 
             // error weights for IRLS
             double pkk = pk;
-            RV w = SolidRV.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
+            DVector w = SolidDVector.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
 
             // normalize weight matrix
-            RM W = SolidRM.empty(w.size(), w.size());
+            DMatrix W = SolidDMatrix.empty(w.size(), w.size());
             double wsum = w.valueStream().sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 
             // apply weights
-            RM WA = W.dot(A);
+            DMatrix WA = W.dot(A);
 
             // weighted L2 solution
 
-            RM A1 = WA.t().dot(WA);
-            RV b1 = WA.t().dot(W).dot(b);
+            DMatrix A1 = WA.t().dot(WA);
+            DVector b1 = WA.t().dot(W).dot(b);
 
-            RV x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+            DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
 
             // Newton's parameter
             double q = 1.0 / (pk - 1);
@@ -194,7 +194,7 @@ public class ISLRNew {
             double nn;
             if (p > 2) {
                 // partial update for p>2
-                x = x1.dot(q).plus(x.dot(1 - q));
+                x = x1.times(q).plus(x.times(1 - q));
                 nn = p;
             } else {
                 // no partial update for p<=2
@@ -222,20 +222,20 @@ public class ISLRNew {
 
         dfa.printSummary();
 
-        RM A = SolidRM.copy(dfa);
-        RV b = SolidRM.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
+        DMatrix A = SolidDMatrix.copy(dfa);
+        DVector b = SolidDMatrix.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
 
 
         double[] pp = new double[]{1, 1.5, 2, 2.5, 5, 10, 100};
         double[] k = new double[]{0.8, 0.8, 0.8, 1.01, 1.1, 1.1, 2.01};
 
-        List<Pair<RV, VarDouble>> numVars = new ArrayList<>();
+        List<Pair<DVector, VarDouble>> numVars = new ArrayList<>();
 
         Plot plot = plot();
         for (int i = 0; i < pp.length; i++) {
             double prob = pp[i];
             double h = k[i];
-            Pair<RV, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
+            Pair<DVector, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
             plot.lines(pair._2);
 
             WS.println("Solution 1 for p=" + Format.floatFlex(prob));
@@ -244,7 +244,7 @@ public class ISLRNew {
             WS.println();
 
 
-            Pair<RV, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
+            Pair<DVector, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
             plot.lines(pair2._2, color(1));
 
             WS.println("Solution 2 for p=" + Format.floatFlex(prob));

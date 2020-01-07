@@ -30,8 +30,8 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.printer.Printable;
 
@@ -49,7 +49,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     // learning artifacts
 
-    protected RM beta;
+    protected DMatrix beta;
 
     /**
      * @return true if the linear model adds an intercept
@@ -69,15 +69,15 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
         return this;
     }
 
-    public RV firstCoefficients() {
+    public DVector firstCoefficients() {
         return beta.mapCol(0);
     }
 
-    public RV getCoefficients(int targetIndex) {
+    public DVector getCoefficients(int targetIndex) {
         return beta.mapCol(targetIndex);
     }
 
-    public RM allCoefficients() {
+    public DMatrix allCoefficients() {
         return beta;
     }
 

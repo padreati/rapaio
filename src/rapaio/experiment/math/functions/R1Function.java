@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 import java.util.function.Function;
 
@@ -52,7 +52,7 @@ public class R1Function implements RFunction {
     }
 
     @Override
-    public double apply(RV x) {
+    public double apply(DVector x) {
         return f.apply(x.get(0));
     }
 }

@@ -270,14 +270,14 @@ public class DoubleArraysTest {
             int end = 50 + RandomSource.nextInt(50);
 
             double[] array2 = DoubleArrays.newCopy(array1, start, end);
-            DoubleArrays.dot(array2, 10, 0, end - start);
-            double[] array3 = DoubleArrays.dotc(array1, 10, start, end);
+            DoubleArrays.times(array2, 10, 0, end - start);
+            double[] array3 = DoubleArrays.timesc(array1, 10, start, end);
 
             assertArrayEquals(array2, array3, TOL);
 
             double[] array4 = DoubleArrays.newFill(end - start, 10);
-            double[] array5 = DoubleArrays.dot(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
-            double[] array6 = DoubleArrays.dotc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array5 = DoubleArrays.times(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
+            double[] array6 = DoubleArrays.timesc(DoubleArrays.newCopy(array1, start, end), array4, 0, end - start);
 
             assertArrayEquals(array5, array6);
         }

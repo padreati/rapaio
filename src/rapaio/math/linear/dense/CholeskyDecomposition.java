@@ -28,7 +28,7 @@
 package rapaio.math.linear.dense;
 
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import java.io.Serializable;
 
@@ -44,7 +44,7 @@ import java.io.Serializable;
  */
 public class CholeskyDecomposition implements Serializable {
 
-    public static CholeskyDecomposition from(RM a) {
+    public static CholeskyDecomposition from(DMatrix a) {
         return new CholeskyDecomposition(a);
     }
 
@@ -71,7 +71,7 @@ public class CholeskyDecomposition implements Serializable {
      * @param A Square, symmetric matrix.
      */
 
-    private CholeskyDecomposition(RM A) {
+    private CholeskyDecomposition(DMatrix A) {
 
         // Initialize.
         n = A.rowCount();
@@ -165,8 +165,8 @@ public class CholeskyDecomposition implements Serializable {
     /**
      * @return L triangular factor
      */
-    public RM getL() {
-        return SolidRM.wrap(l);
+    public DMatrix getL() {
+        return SolidDMatrix.wrap(l);
     }
 
     /**
@@ -178,7 +178,7 @@ public class CholeskyDecomposition implements Serializable {
      * @throws RuntimeException         Matrix is not symmetric positive definite.
      */
 
-    public RM solve(RM B) {
+    public DMatrix solve(DMatrix B) {
         if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -187,7 +187,7 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        RM x = B.copy();
+        DMatrix x = B.copy();
         int nx = B.colCount();
 
         x = forwardSubstitution(n, nx, x, l);
@@ -196,7 +196,7 @@ public class CholeskyDecomposition implements Serializable {
         return x;
     }
 
-    public static RM backwardSubstitution(int n, int nx, RM X, double[][] L) {
+    public static DMatrix backwardSubstitution(int n, int nx, DMatrix X, double[][] L) {
 
         // Solve L'*X = Y;
         for (int k = n - 1; k >= 0; k--) {
@@ -210,7 +210,7 @@ public class CholeskyDecomposition implements Serializable {
         return X;
     }
 
-    public static RM forwardSubstitution(int n, int nx, RM X, double[][] L) {
+    public static DMatrix forwardSubstitution(int n, int nx, DMatrix X, double[][] L) {
 
         // Solve L*Y = B;
         for (int k = 0; k < n; k++) {

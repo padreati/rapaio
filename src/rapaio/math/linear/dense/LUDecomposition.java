@@ -27,7 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -52,7 +52,7 @@ public class LUDecomposition implements Serializable, Printable {
     private static final long serialVersionUID = -4226024886673558685L;
 
     // internal storage of decomposition
-    private RM LU;
+    private DMatrix LU;
     private int rowCount;
     private int colCount;
     // pivot sign
@@ -65,19 +65,19 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @param A input matrix
      */
-    public static LUDecomposition from(RM A) {
+    public static LUDecomposition from(DMatrix A) {
         if(A.rowCount()<A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
-    public static LUDecomposition from(RM A, Method method) {
+    public static LUDecomposition from(DMatrix A, Method method) {
         if(A.rowCount()<A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, method);
     }
 
-    private LUDecomposition(RM A, Method method) {
+    private LUDecomposition(DMatrix A, Method method) {
         method.method().accept(this, A);
     }
 
@@ -98,8 +98,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return L lower triangular factor
      */
-    public RM getL() {
-        RM X = SolidRM.empty(rowCount, colCount);
+    public DMatrix getL() {
+        DMatrix X = SolidDMatrix.empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j <= i; j++) {
                 if (i > j) {
@@ -117,8 +117,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return U upper triangular factor
      */
-    public RM getU() {
-        RM U = SolidRM.empty(colCount, colCount);
+    public DMatrix getU() {
+        DMatrix U = SolidDMatrix.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             for (int j = i; j < colCount; j++) {
                 U.set(i, j, LU.get(i, j));
@@ -161,7 +161,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is singular.
      */
-    public RM solve(RM B) {
+    public DMatrix solve(DMatrix B) {
         if (B.rowCount() != rowCount) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -171,7 +171,7 @@ public class LUDecomposition implements Serializable, Printable {
 
         // Copy right hand side with pivoting
         int nx = B.colCount();
-        RM X = B.mapRows(piv).copy();
+        DMatrix X = B.mapRows(piv).copy();
 
         // Solve L*Y = B(piv,:)
 
@@ -218,7 +218,7 @@ public class LUDecomposition implements Serializable, Printable {
          **/
         CROUT {
             @Override
-            BiConsumer<LUDecomposition, RM> method() {
+            BiConsumer<LUDecomposition, DMatrix> method() {
                 return (lu, A) -> {
                     lu.LU = A.copy();
                     lu.rowCount = A.rowCount();
@@ -290,7 +290,7 @@ public class LUDecomposition implements Serializable, Printable {
          */
         GAUSSIAN_ELIMINATION {
             @Override
-            BiConsumer<LUDecomposition, RM> method() {
+            BiConsumer<LUDecomposition, DMatrix> method() {
                 return (lu, A) -> {
 
                     // Initialize.
@@ -337,6 +337,6 @@ public class LUDecomposition implements Serializable, Printable {
             }
         };
 
-        abstract BiConsumer<LUDecomposition, RM> method();
+        abstract BiConsumer<LUDecomposition, DMatrix> method();
     }
 }

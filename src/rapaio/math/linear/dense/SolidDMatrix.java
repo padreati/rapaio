@@ -31,8 +31,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -41,7 +41,7 @@ import java.util.stream.DoubleStream;
 /**
  * Dense 2 dimensional matrix with values in double floating point precision
  */
-public class SolidRM implements RM {
+public class SolidDMatrix implements DMatrix {
 
     private static final long serialVersionUID = -2186520026933442642L;
 
@@ -56,8 +56,8 @@ public class SolidRM implements RM {
      * @param colCount number of columns
      * @return a new instance of the matrix object
      */
-    public static SolidRM empty(int rowCount, int colCount) {
-        return new SolidRM(rowCount, colCount);
+    public static SolidDMatrix empty(int rowCount, int colCount) {
+        return new SolidDMatrix(rowCount, colCount);
     }
 
     /**
@@ -68,8 +68,8 @@ public class SolidRM implements RM {
      * @param n number of rows and also number of columns
      * @return a new instance of identity matrix of order n
      */
-    public static SolidRM identity(int n) {
-        SolidRM m = new SolidRM(n, n);
+    public static SolidDMatrix identity(int n) {
+        SolidDMatrix m = new SolidDMatrix(n, n);
         for (int i = 0; i < n; i++) {
             m.set(i, i, 1.0);
         }
@@ -82,15 +82,15 @@ public class SolidRM implements RM {
      * @param n number of rows and columns
      * @return new instance of centering matrix
      */
-    public static SolidRM centering(int n) {
+    public static SolidDMatrix centering(int n) {
         if (n <= 0)
             throw new IllegalArgumentException("Dimension of the centering matrix should be at least 1");
         return fill(n, n, (r, c) -> (r == c) ? (1.0 - 1.0 / n) : -1.0 / n);
     }
 
-    public static SolidRM random(int rowCount, int colCount) {
+    public static SolidDMatrix random(int rowCount, int colCount) {
         Normal normal = Normal.std();
-        return SolidRM.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
+        return SolidDMatrix.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
     }
 
     /**
@@ -101,8 +101,8 @@ public class SolidRM implements RM {
      * @param fill     value which fills all cells of the matrix
      * @return new matrix filled with value
      */
-    public static SolidRM fill(int rowCount, int colCount, double fill) {
-        SolidRM ret = new SolidRM(rowCount, colCount);
+    public static SolidDMatrix fill(int rowCount, int colCount, double fill) {
+        SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
         if (fill != 0.0) {
             for (int i = 0; i < rowCount; i++) {
                 Arrays.fill(ret.values[i], fill);
@@ -120,8 +120,8 @@ public class SolidRM implements RM {
      * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    public static SolidRM fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
-        SolidRM ret = new SolidRM(rowCount, colCount);
+    public static SolidDMatrix fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
+        SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
                 ret.set(i, j, fun.apply(i, j));
@@ -141,32 +141,32 @@ public class SolidRM implements RM {
      * @param source   value array
      * @return new matrix which contains a copy of the source
      */
-    public static SolidRM copy(int rowCount, int colCount, double... source) {
-        SolidRM m = empty(rowCount, colCount);
+    public static SolidDMatrix copy(int rowCount, int colCount, double... source) {
+        SolidDMatrix m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source, i * colCount, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static SolidRM wrap(double[][] source) {
+    public static SolidDMatrix wrap(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        return new SolidRM(rowCount, colCount, source);
+        return new SolidDMatrix(rowCount, colCount, source);
     }
 
-    public static SolidRM copy(double[][] source) {
+    public static SolidDMatrix copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        SolidRM m = empty(rowCount, colCount);
+        SolidDMatrix m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source[i], 0, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static RM copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
-        RM mm = new SolidRM(rowEnd - rowStart, colEnd - colStart);
+    public static DMatrix copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
+        DMatrix mm = new SolidDMatrix(rowEnd - rowStart, colEnd - colStart);
         for (int i = rowStart; i < rowEnd; i++) {
             for (int j = colStart; j < colEnd; j++) {
                 mm.set(i - rowStart, j - colStart, source[i][j]);
@@ -175,8 +175,8 @@ public class SolidRM implements RM {
         return mm;
     }
 
-    public static SolidRM copy(Frame df) {
-        SolidRM m = empty(df.rowCount(), df.varCount());
+    public static SolidDMatrix copy(Frame df) {
+        SolidDMatrix m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -185,9 +185,9 @@ public class SolidRM implements RM {
         return m;
     }
 
-    public static SolidRM copy(Var... vars) {
+    public static SolidDMatrix copy(Var... vars) {
         Frame df = BoundFrame.byVars(vars);
-        SolidRM m = empty(df.rowCount(), df.varCount());
+        SolidDMatrix m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -196,13 +196,13 @@ public class SolidRM implements RM {
         return m;
     }
 
-    private SolidRM(int rowCount, int colCount) {
+    private SolidDMatrix(int rowCount, int colCount) {
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = new double[rowCount][colCount];
     }
 
-    private SolidRM(int rowCount, int colCount, double[][] values) {
+    private SolidDMatrix(int rowCount, int colCount, double[][] values) {
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = values;
@@ -234,8 +234,8 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public RM t() {
-        SolidRM t = new SolidRM(colCount, rowCount);
+    public DMatrix t() {
+        SolidDMatrix t = new SolidDMatrix(colCount, rowCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 t.set(j, i, get(i, j));
@@ -245,8 +245,8 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public SolidRV mapCol(int i) {
-        SolidRV v = SolidRV.zeros(rowCount);
+    public SolidDVector mapCol(int i) {
+        SolidDVector v = SolidDVector.zeros(rowCount);
         for (int j = 0; j < rowCount; j++) {
             v.set(j, get(j, i));
         }
@@ -254,8 +254,8 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public RV mapRow(int i) {
-        SolidRV v = SolidRV.zeros(colCount);
+    public DVector mapRow(int i) {
+        SolidDVector v = SolidDVector.zeros(colCount);
         for (int j = 0; j < colCount; j++) {
             v.set(j, get(i, j));
         }
@@ -268,8 +268,8 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public SolidRM copy() {
-        SolidRM copy = new SolidRM(rowCount, colCount);
+    public SolidDMatrix copy() {
+        SolidDMatrix copy = new SolidDMatrix(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
         }

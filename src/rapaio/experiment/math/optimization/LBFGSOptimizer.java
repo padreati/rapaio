@@ -28,8 +28,8 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.experiment.math.optimization.lbfgs.Mcsrch;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
@@ -41,7 +41,7 @@ public class LBFGSOptimizer {
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
         double g[], diag[], w[];
-        RV x = SolidRV.zeros(ndim);
+        DVector x = SolidDVector.zeros(ndim);
         g = new double[ndim];
         diag = new double[ndim];
         w = new double[nwork];
@@ -182,7 +182,7 @@ class LBFGS {
      * of using <tt>x</tt>. When <tt>LBFGS.lbfgs_cimpl</tt> automatically stops,
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
-    public static RV solution_cache;
+    public static DVector solution_cache;
     private static double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
     private static int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
     private static boolean finish = false;
@@ -324,7 +324,7 @@ class LBFGS {
      * @throws ExceptionWithIflag
      */
 
-    public static void lbfgs(int n, int m, RV x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
+    public static void lbfgs(int n, int m, DVector x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
         boolean execute_entire_while_loop = false;
 
         if (w == null || w.length != n * (2 * m + 1) + 2 * m) {
@@ -334,7 +334,7 @@ class LBFGS {
         if (iflag[0] == 0) {
             // Initialize.
 
-            solution_cache = SolidRV.copy(x);
+            solution_cache = SolidDVector.copy(x);
 
             iter = 0;
 
@@ -555,7 +555,7 @@ class LBFGS {
      * @param stp    Current stepsize.
      * @param finish Whether this method should print the ``we're done'' message.
      */
-    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, RV x, double f, double[] g, double[] stp, boolean finish) {
+    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, DVector x, double f, double[] g, double[] stp, boolean finish) {
         int i;
 
         if (iter == 0) {

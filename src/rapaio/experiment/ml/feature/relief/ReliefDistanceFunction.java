@@ -27,14 +27,14 @@
 
 package rapaio.experiment.ml.feature.relief;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/19/18.
  */
 public interface ReliefDistanceFunction {
 
-    double distance(RM m, boolean[] numeric, int i, int j);
+    double distance(DMatrix m, boolean[] numeric, int i, int j);
 
     static ReliefDistanceFunction l2() {
         return new L2ReliefScoreFunction();
@@ -44,7 +44,7 @@ public interface ReliefDistanceFunction {
 class L2ReliefScoreFunction implements ReliefDistanceFunction {
 
     @Override
-    public double distance(RM m, boolean[] numeric, int i, int j) {
+    public double distance(DMatrix m, boolean[] numeric, int i, int j) {
         double distance = 0.0;
         for (int k = 0; k < numeric.length; k++) {
             if (Double.isNaN(m.get(i, k)) || Double.isNaN(m.get(j, k))) {

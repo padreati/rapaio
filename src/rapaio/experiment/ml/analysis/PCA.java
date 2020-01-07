@@ -32,12 +32,12 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -54,20 +54,20 @@ public class PCA implements Printable {
 
     private double tol = 1e-10;
     private int maxRuns = 2_000;
-    protected RV values;
-    protected RM eigenVectors;
+    protected DVector values;
+    protected DMatrix eigenVectors;
 
     protected String[] inputNames;
-    protected RV mean;
-    protected RV sd;
+    protected DVector mean;
+    protected DVector sd;
 
     protected boolean scaling = true;
 
-    public RV eigenValues() {
+    public DVector eigenValues() {
         return values;
     }
 
-    public RM eigenVectors() {
+    public DMatrix eigenVectors() {
         return eigenVectors;
     }
 
@@ -90,11 +90,11 @@ public class PCA implements Printable {
         validate(df);
 
         logger.fine("start pca predict");
-        RM x = SolidRM.copy(df);
+        DMatrix x = SolidDMatrix.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = SolidRV.zeros(x.colCount());
-            sd = SolidRV.zeros(x.colCount());
+            mean = SolidDVector.zeros(x.colCount());
+            sd = SolidDVector.zeros(x.colCount());
             for (int i = 0; i < x.colCount(); i++) {
                 mean.set(i, x.mapCol(i).mean());
                 sd.set(i, Math.sqrt(x.mapCol(i).variance()));
@@ -109,7 +109,7 @@ public class PCA implements Printable {
         }
 
         logger.fine("build scatter");
-        RM s = x.scatter();
+        DMatrix s = x.scatter();
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s, maxRuns, tol);
@@ -132,7 +132,7 @@ public class PCA implements Printable {
     public Frame predict(Frame df, int k) {
         // TODO check if we have all the initial columns
 
-        RM x = SolidRM.copy(df.mapVars(inputNames));
+        DMatrix x = SolidDMatrix.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -149,7 +149,7 @@ public class PCA implements Printable {
             dim[i] = i;
             names[i] = "pca_" + (i + 1);
         }
-        RM result = x.dot(eigenVectors.mapCols(dim));
+        DMatrix result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(VRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :

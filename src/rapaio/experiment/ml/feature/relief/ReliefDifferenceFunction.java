@@ -27,14 +27,14 @@
 
 package rapaio.experiment.ml.feature.relief;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/18.
  */
 public interface ReliefDifferenceFunction {
 
-    double difference(RM x, boolean[] numeric, int index, int row1, int row2);
+    double difference(DMatrix x, boolean[] numeric, int index, int row1, int row2);
 
     static ReliefDifferenceFunction standard() {
         return new StandardReliefDifferenceFunction();
@@ -44,7 +44,7 @@ public interface ReliefDifferenceFunction {
 class StandardReliefDifferenceFunction implements ReliefDifferenceFunction {
 
     @Override
-    public double difference(RM x, boolean[] numeric, int index, int row1, int row2) {
+    public double difference(DMatrix x, boolean[] numeric, int index, int row1, int row2) {
         if(Double.isNaN(x.get(row1, index)) || Double.isNaN(x.get(row2, index))) {
             return Double.NaN;
         }

@@ -33,70 +33,70 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SolidRVTest {
+public class SolidDVectorTest {
 
     private static final double TOL = 1e-15;
     private static final int N = 100;
 
     private Normal normal;
     private Var varx;
-    private RV x;
+    private DVector x;
 
     @BeforeEach
     void beforeEach() {
         normal = Normal.of(0, 10);
         varx = VarDouble.from(N, normal::sampleNext);
-        x = SolidRV.from(varx);
+        x = SolidDVector.from(varx);
     }
 
     @Test
     void testBuilders() {
 
-        RV x = SolidRV.zeros(N);
+        DVector x = SolidDVector.zeros(N);
         Assertions.assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(0, x.get(i), TOL);
         }
 
-        x = SolidRV.fill(N, Double.NaN);
+        x = SolidDVector.fill(N, Double.NaN);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertTrue(Double.isNaN(x.get(i)));
         }
 
-        x = SolidRV.from(VarDouble.seq(N - 1));
+        x = SolidDVector.from(VarDouble.seq(N - 1));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        RV y = SolidRV.from(VarDouble.seq(N - 1));
-        x = SolidRV.copy(y);
+        DVector y = SolidDVector.from(VarDouble.seq(N - 1));
+        x = SolidDVector.copy(y);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidRV.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
+        x = SolidDVector.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
             assertEquals(i, x.get(i + N), TOL);
         }
 
-        x = SolidRV.wrap(0, 1, 2, 3, 4, 5);
+        x = SolidDVector.wrap(0, 1, 2, 3, 4, 5);
         assertNotNull(x);
         for (int i = 0; i < 6; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidRV.from(10, Math::sqrt);
+        x = SolidDVector.from(10, Math::sqrt);
         assertNotNull(x);
         for (int i = 0; i < 10; i++) {
             assertEquals(Math.sqrt(i), x.get(i), TOL);
@@ -105,8 +105,8 @@ public class SolidRVTest {
 
     @Test
     void incrementTest() {
-        RV x = SolidRV.from(VarDouble.seq(0, 1, 0.01));
-        RV y = x.copy();
+        DVector x = SolidDVector.from(VarDouble.seq(0, 1, 0.01));
+        DVector y = x.copy();
         for (int i = 0; i < y.size(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
             y.increment(i, sign * 10);
@@ -122,7 +122,7 @@ public class SolidRVTest {
 
     @Test
     void setterTest() {
-        RV y = SolidRV.zeros(N);
+        DVector y = SolidDVector.zeros(N);
         for (int i = 0; i < y.size(); i++) {
             y.set(i, x.get(i));
         }
@@ -133,7 +133,7 @@ public class SolidRVTest {
 
     @Test
     void scalarPlusTest() {
-        RV y = x.copy().plus(10);
+        DVector y = x.copy().plus(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
@@ -141,8 +141,8 @@ public class SolidRVTest {
 
     @Test
     void vectorPlusTest() {
-        RV z = SolidRV.from(VarDouble.fill(N, 10));
-        RV y = x.copy().plus(z);
+        DVector z = SolidDVector.from(VarDouble.fill(N, 10));
+        DVector y = x.copy().plus(z);
 
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
@@ -151,13 +151,13 @@ public class SolidRVTest {
 
     @Test
     void vectorPlusNonconformantTest() {
-        RV y = SolidRV.zeros(N / 2);
+        DVector y = SolidDVector.zeros(N / 2);
         assertThrows(IllegalArgumentException.class, () -> x.plus(y));
     }
 
     @Test
     void scalarDotTest() {
-        RV y = x.copy().dot(10);
+        DVector y = x.copy().times(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
@@ -165,7 +165,7 @@ public class SolidRVTest {
 
     @Test
     void scalarMinusTest() {
-        RV y = x.copy().minus(10);
+        DVector y = x.copy().minus(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
@@ -173,8 +173,8 @@ public class SolidRVTest {
 
     @Test
     void vectorMinusTest() {
-        RV z = SolidRV.from(VarDouble.fill(N, 10));
-        RV y = x.copy().minus(z);
+        DVector z = SolidDVector.from(VarDouble.fill(N, 10));
+        DVector y = x.copy().minus(z);
 
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
@@ -183,7 +183,7 @@ public class SolidRVTest {
 
     @Test
     void vectorMinusNonconformantTest() {
-        RV y = SolidRV.zeros(N / 2);
+        DVector y = SolidDVector.zeros(N / 2);
         assertThrows(IllegalArgumentException.class, () -> x.minus(y));
     }
 
@@ -211,7 +211,7 @@ public class SolidRVTest {
 
     @Test
     void normalizeTest() {
-        RV y = x.copy().normalize(1.5);
+        DVector y = x.copy().normalize(1.5);
         double norm = x.norm(1.5);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / norm, y.get(i), TOL);
@@ -224,7 +224,7 @@ public class SolidRVTest {
         for (int i = 0; i < x.length; i++) {
             x[i] = i;
         }
-        RV y = SolidRV.wrap(x);
+        DVector y = SolidDVector.wrap(x);
 
         double xsum = Arrays.stream(x).sum();
         double ysum = y.valueStream().sum();

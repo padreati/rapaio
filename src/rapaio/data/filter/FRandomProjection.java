@@ -32,10 +32,10 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 
 import java.util.stream.IntStream;
 
@@ -62,7 +62,7 @@ public class FRandomProjection extends AbstractFF {
 
     private final int k;
     private final Method method;
-    private RM rp;
+    private DMatrix rp;
 
     private FRandomProjection(int k, Method method, VRange vRange) {
         super(vRange);
@@ -79,9 +79,9 @@ public class FRandomProjection extends AbstractFF {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = SolidRM.empty(varNames.length, k);
+        rp = SolidDMatrix.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
-            RV v = method.projection(varNames.length);
+            DVector v = method.projection(varNames.length);
             for (int j = 0; j < varNames.length; j++) {
                 rp.set(j, i, v.get(j));
             }
@@ -91,8 +91,8 @@ public class FRandomProjection extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
 
-        RM X = SolidRM.copy(df.mapVars(varNames));
-        RM p = X.dot(rp);
+        DMatrix X = SolidDMatrix.copy(df.mapVars(varNames));
+        DMatrix p = X.dot(rp);
 
         Frame non = df.removeVars(VRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
@@ -100,13 +100,13 @@ public class FRandomProjection extends AbstractFF {
     }
 
     public interface Method {
-        RV projection(int rowCount);
+        DVector projection(int rowCount);
     }
 
     private static Method gaussian(int k) {
         return rowCount -> {
             Normal norm = Normal.std();
-            RV v = SolidRV.zeros(rowCount);
+            DVector v = SolidDVector.zeros(rowCount);
             for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
@@ -125,7 +125,7 @@ public class FRandomProjection extends AbstractFF {
 
         return rowCount -> {
             int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
-            RV v = SolidRV.zeros(rowCount);
+            DVector v = SolidDVector.zeros(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.set(i, -sqrt);

@@ -27,7 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static java.lang.StrictMath.hypot;
 
@@ -49,7 +49,7 @@ public class SVDecomposition implements java.io.Serializable {
 
     private static final long serialVersionUID = -502574786523851631L;
 
-    public static SVDecomposition from(RM A) {
+    public static SVDecomposition from(DMatrix A) {
         return new SVDecomposition(A);
     }
 
@@ -62,11 +62,11 @@ public class SVDecomposition implements java.io.Serializable {
     private static final boolean wantv = true;
     private final int minCount;
 
-    private SVDecomposition(RM Arg) {
+    private SVDecomposition(DMatrix Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
-        RM A = Arg.copy();
+        DMatrix A = Arg.copy();
         rowCount = Arg.rowCount();
         colCount = Arg.colCount();
 
@@ -100,7 +100,7 @@ public class SVDecomposition implements java.io.Serializable {
 
     }
 
-    private void setupFinalBidiagonal(double[] e, RM A) {
+    private void setupFinalBidiagonal(double[] e, DMatrix A) {
         // Set up the final bidiagonal matrix or order p.
         p = Math.min(colCount, rowCount + 1);
         pp = p - 1;
@@ -174,7 +174,7 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
-    private void reduceBidigonalForm(RM A, double[] e, double[] work) {
+    private void reduceBidigonalForm(DMatrix A, double[] e, double[] work) {
         // Reduce A to bidiagonal form, storing the diagonal elements
         // in s and the super-diagonal elements in e.
         for (int k = 0; k < Math.max(nct, nrt); k++) {
@@ -497,8 +497,8 @@ public class SVDecomposition implements java.io.Serializable {
         return k;
     }
 
-    public RM getU() {
-        return SolidRM.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
+    public DMatrix getU() {
+        return SolidDMatrix.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
     }
 
     /**
@@ -506,8 +506,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return RV
      */
-    public RM getV() {
-        return SolidRM.copy(v);
+    public DMatrix getV() {
+        return SolidDMatrix.copy(v);
     }
 
     /**
@@ -524,8 +524,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return S
      */
-    public RM getS() {
-        RM S = SolidRM.empty(colCount, colCount);
+    public DMatrix getS() {
+        DMatrix S = SolidDMatrix.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             S.set(i, i, this.s[i]);
         }

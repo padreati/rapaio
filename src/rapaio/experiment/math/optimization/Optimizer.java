@@ -29,7 +29,7 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -52,7 +52,7 @@ public interface Optimizer {
      * @return the compute value for the optimization.
      */
     VarDouble optimize(double eps, int iterationLimit,
-                       BiFunction<RV, RV, Double> fn,
-                       BiFunction<RV, RV, Double> fg,
-                       RV x0, List<Var> inputs, VarDouble outputs);
+                       BiFunction<DVector, DVector, Double> fn,
+                       BiFunction<DVector, DVector, Double> fg,
+                       DVector x0, List<Var> inputs, VarDouble outputs);
 }

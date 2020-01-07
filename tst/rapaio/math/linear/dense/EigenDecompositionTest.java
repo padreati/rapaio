@@ -28,7 +28,7 @@ package rapaio.math.linear.dense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,12 +45,12 @@ public class EigenDecompositionTest {
     @Test
     void testSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            RM a = SolidRM.random(10, 10).scatter();
+            DMatrix a = SolidDMatrix.random(10, 10).scatter();
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            RM v = evd.getV();
-            RM d = evd.getD();
-            RM vt = evd.getV().t();
+            DMatrix v = evd.getV();
+            DMatrix d = evd.getD();
+            DMatrix vt = evd.getV().t();
 
             assertTrue(a.isEqual(v.dot(d).dot(vt), TOL));
         }
@@ -59,12 +59,12 @@ public class EigenDecompositionTest {
     @Test
     void testNonSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            RM a = SolidRM.random(10, 10);
+            DMatrix a = SolidDMatrix.random(10, 10);
 
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            RM v = evd.getV();
-            RM d = evd.getD();
+            DMatrix v = evd.getV();
+            DMatrix d = evd.getD();
 
             assertTrue(a.dot(v).isEqual(v.dot(d), TOL));
         }

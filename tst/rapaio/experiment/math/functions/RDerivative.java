@@ -1,6 +1,6 @@
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
@@ -8,5 +8,5 @@ import rapaio.math.linear.RV;
 @FunctionalInterface
 public interface RDerivative {
 
-    RV apply(RV x);
+    DVector apply(DVector x);
 }

@@ -33,8 +33,8 @@ import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.io.Csv;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.eval.metric.Confusion;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,7 +55,7 @@ public class PCATest {
 
     @Test
     void pcaTest() {
-        RM x = SolidRM.copy(df.removeVars(VRange.of("y")));
+        DMatrix x = SolidDMatrix.copy(df.removeVars(VRange.of("y")));
 
         PCA pca = new PCA();
         pca.fit(df.removeVars(VRange.of("y")));

@@ -27,8 +27,8 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -36,15 +36,15 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class MappedRM implements RM {
+public class MappedDMatrix implements DMatrix {
 
     private static final long serialVersionUID = -3840785397560969659L;
 
-    private final RM ref;
+    private final DMatrix ref;
     private final int[] rowIndexes;
     private final int[] colIndexes;
 
-    public MappedRM(RM ref, boolean byRow, int... indexes) {
+    public MappedDMatrix(DMatrix ref, boolean byRow, int... indexes) {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;
@@ -88,8 +88,8 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public SolidRV mapCol(int i) {
-        SolidRV v = SolidRV.zeros(rowIndexes.length);
+    public SolidDVector mapCol(int i) {
+        SolidDVector v = SolidDVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
         }
@@ -97,8 +97,8 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public RV mapRow(int i) {
-        SolidRV v = SolidRV.zeros(colIndexes.length);
+    public DVector mapRow(int i) {
+        SolidDVector v = SolidDVector.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
@@ -106,8 +106,8 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public SolidRM t() {
-        SolidRM copy = SolidRM.empty(colIndexes.length, rowIndexes.length);
+    public SolidDMatrix t() {
+        SolidDMatrix copy = SolidDMatrix.empty(colIndexes.length, rowIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(j, i, ref.get(rowIndexes[i], colIndexes[j]));
@@ -125,8 +125,8 @@ public class MappedRM implements RM {
     }
 
     @Override
-    public SolidRM copy() {
-        SolidRM copy = SolidRM.empty(rowIndexes.length, colIndexes.length);
+    public SolidDMatrix copy() {
+        SolidDMatrix copy = SolidDMatrix.empty(rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));

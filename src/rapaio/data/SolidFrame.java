@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,15 +109,15 @@ public class SolidFrame extends AbstractFrame {
         return SolidFrame.byVars(rows, vars);
     }
 
-    public static Frame matrix(RM rm, String... varNames) {
-        return matrix(rm, Arrays.asList(varNames));
+    public static Frame matrix(DMatrix DMatrix, String... varNames) {
+        return matrix(DMatrix, Arrays.asList(varNames));
     }
 
-    public static Frame matrix(RM rm, List<String> varNames) {
-        Frame df = matrix(rm.rowCount(), varNames);
-        for (int i = 0; i < rm.rowCount(); i++) {
-            for (int j = 0; j < rm.colCount(); j++) {
-                df.setDouble(i, j, rm.get(i, j));
+    public static Frame matrix(DMatrix DMatrix, List<String> varNames) {
+        Frame df = matrix(DMatrix.rowCount(), varNames);
+        for (int i = 0; i < DMatrix.rowCount(); i++) {
+            for (int j = 0; j < DMatrix.colCount(); j++) {
+                df.setDouble(i, j, DMatrix.get(i, j));
             }
         }
         return df;

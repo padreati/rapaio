@@ -28,7 +28,7 @@
 package rapaio.math.linear;
 
 import rapaio.data.VarDouble;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.printer.Printable;
 import rapaio.util.function.DoubleDoubleFunction;
 
@@ -40,7 +40,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RV extends Serializable, Printable {
+public interface DVector extends Serializable, Printable {
 
     /**
      * @return length of vector
@@ -77,7 +77,7 @@ public interface RV extends Serializable, Printable {
      * @param x value to be incremented with
      * @return same object
      */
-    RV plus(double x);
+    DVector plus(double x);
 
     /**
      * Adds to to all positions values from the
@@ -91,7 +91,7 @@ public interface RV extends Serializable, Printable {
      * @param B vector which contains values used for increment operation
      * @return same object
      */
-    RV plus(RV B);
+    DVector plus(DVector B);
 
     /**
      * Substracts from all elements the value of x, it is
@@ -101,7 +101,7 @@ public interface RV extends Serializable, Printable {
      * @param x value to be decremented with
      * @return same object
      */
-    RV minus(double x);
+    DVector minus(double x);
 
     /**
      * Substracts from all positions values from the
@@ -112,10 +112,10 @@ public interface RV extends Serializable, Printable {
      * Vectors must be conformant for addition, which means
      * that they have to have the same size.
      *
-     * @param B vector which contains values used for increment operation
+     * @param b vector which contains values used for increment operation
      * @return same object
      */
-    RV minus(RV B);
+    DVector minus(DVector b);
 
     /**
      * Scalar multiplication. All the values from vector
@@ -124,7 +124,31 @@ public interface RV extends Serializable, Printable {
      * @param scalar scaar value
      * @return the same object
      */
-    RV dot(double scalar);
+    DVector times(double scalar);
+
+    /**
+     * Element wise multiplication between two vectors.
+     *
+     * @param b factor vector
+     * @return element wise multiplication result vector
+     */
+    DVector times(DVector b);
+
+    /**
+     * Scalar division. All values from vector will be divided by scalar value.
+     *
+     * @param scalar value
+     * @return reference to original vector
+     */
+    DVector div(double scalar);
+
+    /**
+     * Element wise division between two vectors.
+     *
+     * @param b factor vector
+     * @return element wise division result vector
+     */
+    DVector div(DVector b);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -135,7 +159,7 @@ public interface RV extends Serializable, Printable {
      * @param b the vector used to compute dot product
      * @return same vector object
      */
-    double dot(RV b);
+    double dot(DVector b);
 
     /**
      * Computes the p norm of the vector.
@@ -163,7 +187,7 @@ public interface RV extends Serializable, Printable {
      * @param p order of the p norm used at normalization.
      * @return normalized vector
      */
-    RV normalize(double p);
+    DVector normalize(double p);
 
     /**
      * Computes the sum of all elements in vector. If there is
@@ -217,7 +241,7 @@ public interface RV extends Serializable, Printable {
      */
     double nanvariance();
 
-    RV apply(DoubleDoubleFunction f);
+    DVector apply(DoubleDoubleFunction f);
 
     /**
      * Creates a new solid copy of the vector.
@@ -233,7 +257,7 @@ public interface RV extends Serializable, Printable {
      *
      * @return a new solid copy of the vector
      */
-    RV copy();
+    DVector copy();
 
     /**
      * A vector is also a matrix, but for implementation
@@ -243,8 +267,8 @@ public interface RV extends Serializable, Printable {
      *
      * @return a matrix corresponding with the current vector
      */
-    default RM asMatrix() {
-        SolidRM res = SolidRM.empty(size(), 1);
+    default DMatrix asMatrix() {
+        SolidDMatrix res = SolidDMatrix.empty(size(), 1);
         for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
         }

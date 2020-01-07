@@ -32,9 +32,9 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.sample.Sample;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -71,8 +71,8 @@ public class GBTClassifierModel
     // learning artifacts
 
     private int K;
-    private RM f;
-    private RM residual;
+    private DMatrix f;
+    private DMatrix residual;
     private List<List<RTree>> trees;
 
     private GBTClassifierModel() {
@@ -133,8 +133,8 @@ public class GBTClassifierModel
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = SolidRM.empty(K, df.rowCount());
-        residual = SolidRM.empty(K, df.rowCount());
+        f = SolidDMatrix.empty(K, df.rowCount());
+        residual = SolidDMatrix.empty(K, df.rowCount());
         trees = new ArrayList<>();
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
@@ -142,7 +142,7 @@ public class GBTClassifierModel
 
         // build individual regression targets for each class
 
-        SolidRM yk = SolidRM.empty(K, df.rowCount());
+        SolidDMatrix yk = SolidDMatrix.empty(K, df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
@@ -156,11 +156,11 @@ public class GBTClassifierModel
         return true;
     }
 
-    private void buildAdditionalTree(Frame df, Var w, RM yk) {
+    private void buildAdditionalTree(Frame df, Var w, DMatrix yk) {
 
         // a) Set p_k(x)
 
-        RV max = f.t().rowValueMax();
+        DVector max = f.t().rowValueMax();
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
@@ -200,7 +200,7 @@ public class GBTClassifierModel
     public ClassifierResult<GBTClassifierModel> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult<GBTClassifierModel> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        RM p_f = SolidRM.empty(K, df.rowCount());
+        DMatrix p_f = SolidDMatrix.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
             for (RTree tree : trees.get(k)) {
@@ -213,7 +213,7 @@ public class GBTClassifierModel
 
         // make probabilities
 
-        RV max = p_f.t().rowValueMax();
+        DVector max = p_f.t().rowValueMax();
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

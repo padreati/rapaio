@@ -32,7 +32,7 @@ import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,17 +49,17 @@ public class GradientDescentMinimizer implements Minimizer {
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
-    private final RV x;
+    private final DVector x;
     private final RFunction f;
     private final RDerivative d1f;
 
-    private RV sol;
+    private DVector sol;
 
-    private List<RV> solutions = new ArrayList<>();
+    private List<DVector> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
-    public GradientDescentMinimizer(RV x, RFunction f, RDerivative d1f, int maxIt) {
+    public GradientDescentMinimizer(DVector x, RFunction f, RDerivative d1f, int maxIt) {
         this.x = x;
         this.f = f;
         this.d1f = d1f;
@@ -76,13 +76,13 @@ public class GradientDescentMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            RV delta_x = d1f.apply(sol).dot(-1);
+            DVector delta_x = d1f.apply(sol).times(-1);
             if (abs(delta_x.norm(2)) < tol) {
                 converged = true;
                 break;
             }
             double t = lineSearch.find(f, d1f, x, delta_x);
-            sol.plus(delta_x.dot(t));
+            sol.plus(delta_x.times(t));
         }
     }
 
@@ -93,11 +93,11 @@ public class GradientDescentMinimizer implements Minimizer {
         return sb.toString();
     }
 
-    public List<RV> solutions() {
+    public List<DVector> solutions() {
         return solutions;
     }
 
-    public RV solution() {
+    public DVector solution() {
         return sol;
     }
 

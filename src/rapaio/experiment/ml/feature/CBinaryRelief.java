@@ -36,7 +36,7 @@ import rapaio.data.Var;
 import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
@@ -63,7 +63,7 @@ public class CBinaryRelief {
     private double[] weights;
     private boolean[] target;
 
-    private SolidRM x;
+    private SolidDMatrix x;
 
     public static CBinaryRelief newReliefF() {
         return new CBinaryRelief();
@@ -91,7 +91,7 @@ public class CBinaryRelief {
         inputNames = Arrays.stream(df.varNames()).filter(name -> !targetName.equals(name)).collect(Collectors.toList());
         this.targetName = targetName;
 
-        x = SolidRM.empty(df.rowCount(), inputNames.size());
+        x = SolidDMatrix.empty(df.rowCount(), inputNames.size());
         numeric = new boolean[inputNames.size()];
 
         for (int i = 0; i < inputNames.size(); i++) {
@@ -171,7 +171,7 @@ public class CBinaryRelief {
 
             // compute distance matrix within sample
 
-            SolidRM dm = SolidRM.empty(rlen, rlen);
+            SolidDMatrix dm = SolidDMatrix.empty(rlen, rlen);
             for (int i = 0; i < rlen; i++) {
                 for (int j = i + 1; j < rlen; j++) {
                     double dist = distFun.distance(x, numeric, rows[i], rows[j]);

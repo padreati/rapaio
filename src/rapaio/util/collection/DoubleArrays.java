@@ -507,14 +507,14 @@ public final class DoubleArrays {
 
     // dot
 
-    public static double[] dot(double[] a, double s, int start, int end) {
+    public static double[] times(double[] a, double s, int start, int end) {
         for (int i = start; i < end; i++) {
             a[i] *= s;
         }
         return a;
     }
 
-    public static double[] dotc(double[] a, double s, int start, int end) {
+    public static double[] timesc(double[] a, double s, int start, int end) {
         double[] array = new double[end - start];
         for (int i = start; i < end; i++) {
             array[i - start] = a[i] * s;
@@ -522,14 +522,14 @@ public final class DoubleArrays {
         return array;
     }
 
-    public static double[] dot(double[] a, double[] b, int start, int end) {
+    public static double[] times(double[] a, double[] b, int start, int end) {
         for (int i = start; i < end; i++) {
             a[i] *= b[i];
         }
         return a;
     }
 
-    public static double[] dotc(double[] a, double[] b, int start, int end) {
+    public static double[] timesc(double[] a, double[] b, int start, int end) {
         double[] array = new double[end - start];
         for (int i = start; i < end; i++) {
             array[i - start] = a[i] * b[i];

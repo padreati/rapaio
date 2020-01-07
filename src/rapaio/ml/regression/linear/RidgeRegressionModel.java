@@ -32,10 +32,10 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
@@ -185,8 +185,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         }
 
         String[] selNames = Arrays.copyOfRange(inputNames, hasIntercept ? 1 : 0, inputNames.length);
-        RM X = SolidRM.empty(df.rowCount() + selNames.length, selNames.length);
-        RM Y = SolidRM.empty(df.rowCount() + selNames.length, targetNames.length);
+        DMatrix X = SolidDMatrix.empty(df.rowCount() + selNames.length, selNames.length);
+        DMatrix Y = SolidDMatrix.empty(df.rowCount() + selNames.length, targetNames.length);
 
         double sqrt = Math.sqrt(this.lambda);
         for (int i = 0; i < selNames.length; i++) {
@@ -204,9 +204,9 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             }
         }
 
-        RM rawBeta = QRDecomposition.from(X).solve(Y);
+        DMatrix rawBeta = QRDecomposition.from(X).solve(Y);
         int offset = hasIntercept ? 1 : 0;
-        beta = SolidRM.empty(rawBeta.rowCount() + offset, rawBeta.colCount());
+        beta = SolidDMatrix.empty(rawBeta.rowCount() + offset, rawBeta.colCount());
         for (int i = 0; i < rawBeta.rowCount(); i++) {
             for (int j = 0; j < rawBeta.colCount(); j++) {
                 beta.set(i + offset, j, rawBeta.get(i, j) / (scaling ? inputSd.get(inputNames[i + offset]) : 1));
@@ -238,7 +238,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            RV coeff = beta.mapCol(i);
+            DVector coeff = beta.mapCol(i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

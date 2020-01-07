@@ -29,11 +29,11 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.LUDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.format.Format;
 
 import java.util.List;
@@ -53,14 +53,14 @@ public class IRLSOptimizer {
     /**
      * The hessian matrix
      */
-    private RM hessian;
+    private DMatrix hessian;
     /**
      * Contains the values of the coefficients for each data point
      */
-    private RM coef;
-    private RV derivatives;
-    private RV err;
-    private RM grad;
+    private DMatrix coef;
+    private DVector derivatives;
+    private DVector err;
+    private DMatrix grad;
 
     /**
      * Performs optimization on the given inputs to find the minima of the function.
@@ -78,8 +78,8 @@ public class IRLSOptimizer {
                               Function<Var, Double> f, Function<Var, Double> fd,
                               VarDouble w, List<Var> xs, VarDouble y) {
 
-        hessian = SolidRM.empty(w.rowCount(), w.rowCount());
-        coef = SolidRM.empty(xs.size(), w.rowCount());
+        hessian = SolidDMatrix.empty(w.rowCount(), w.rowCount());
+        coef = SolidDMatrix.empty(xs.size(), w.rowCount());
         for (int i = 0; i < xs.size(); i++) {
             Var x_i = xs.get(i);
             coef.set(i, 0, 1.0);
@@ -87,9 +87,9 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.getDouble(j - 1));
         }
 
-        derivatives = SolidRV.zeros(xs.size());
-        err = SolidRV.zeros(y.rowCount());
-        grad = SolidRM.empty(w.rowCount(), 1);
+        derivatives = SolidDVector.zeros(xs.size());
+        err = SolidDVector.zeros(y.rowCount());
+        grad = SolidDMatrix.empty(w.rowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -127,7 +127,7 @@ public class IRLSOptimizer {
             //TODO use a pesudo inverse instead of giving up
             return Double.NaN;//Indicate that we need to stop
         }
-        RV delta = lu.solve(grad).mapCol(0);
+        DVector delta = lu.solve(grad).mapCol(0);
 
         w.op().minus(delta.asVarDouble());
 

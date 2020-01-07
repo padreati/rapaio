@@ -28,11 +28,11 @@
 package rapaio.math.linear;
 
 import rapaio.math.linear.dense.CholeskyDecomposition;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidDMatrix;
 
 /**
  * Linear algebra tool bag class.
- * Contains various utilities to create and manipulate linear algbra constructs like {@link RM} or {@link RV}
+ * Contains various utilities to create and manipulate linear algbra constructs like {@link DMatrix} or {@link DVector}
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
@@ -41,18 +41,18 @@ public final class Linear {
     private Linear() {
     }
 
-    public static RM chol2inv(RM R) {
-        return chol2inv(R, SolidRM.identity(R.rowCount()));
+    public static DMatrix chol2inv(DMatrix R) {
+        return chol2inv(R, SolidDMatrix.identity(R.rowCount()));
     }
 
-    public static RM chol2inv(RM R, RM B) {
-        RM ref = R.t();
+    public static DMatrix chol2inv(DMatrix R, DMatrix B) {
+        DMatrix ref = R.t();
         if (B.rowCount() != R.rowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
 
         // Copy right hand side.
-        RM X = B.copy();
+        DMatrix X = B.copy();
 
         int n = ref.rowCount();
         int nx = X.colCount();
@@ -69,17 +69,17 @@ public final class Linear {
         return X;
     }
 
-    public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
+    public static EigenPair eigenDecomp(DMatrix s, int maxRuns, double tol) {
 
         EigenDecompStrategy eigenDecompStrategy = new EigenDecompStatistics();
 
         return eigenDecompStrategy.getEigenDecomp(s, maxRuns, tol);
     }
 
-    public static RM pdPower(RM s, double power, int maxRuns, double tol) {
+    public static DMatrix pdPower(DMatrix s, double power, int maxRuns, double tol) {
         EigenPair eigenPair = eigenDecomp(s, maxRuns, tol);
-        RM U = eigenPair.getRM();
-        RM lambda = eigenPair.expandedValues();
+        DMatrix U = eigenPair.getRM();
+        DMatrix lambda = eigenPair.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {
             //TODO quick fix
             // this is because negative numbers can be produced for small quantities
@@ -89,7 +89,7 @@ public final class Linear {
     }
 
     @SuppressWarnings("unused")
-    private static boolean inTolerance(RM s, double tol) {
+    private static boolean inTolerance(DMatrix s, double tol) {
         for (int i = 0; i < s.rowCount(); i++) {
             for (int j = i + 1; j < s.colCount(); j++) {
                 if (Math.abs(s.get(i, j)) > tol)

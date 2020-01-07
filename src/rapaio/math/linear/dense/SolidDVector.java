@@ -30,7 +30,7 @@ package rapaio.math.linear.dense;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.DoubleDoubleFunction;
 import rapaio.util.function.IntDoubleFunction;
@@ -39,7 +39,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
-public class SolidRV implements RV {
+public class SolidDVector implements DVector {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
@@ -49,8 +49,8 @@ public class SolidRV implements RV {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static SolidRV zeros(int n) {
-        return new SolidRV(n, DoubleArrays.newFill(n, 0));
+    public static SolidDVector zeros(int n) {
+        return new SolidDVector(n, DoubleArrays.newFill(n, 0));
     }
 
     /**
@@ -59,8 +59,8 @@ public class SolidRV implements RV {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static SolidRV ones(int n) {
-        return new SolidRV(n, DoubleArrays.newFill(n, 1));
+    public static SolidDVector ones(int n) {
+        return new SolidDVector(n, DoubleArrays.newFill(n, 1));
     }
 
     /**
@@ -71,8 +71,8 @@ public class SolidRV implements RV {
      * @param fill fill value
      * @return new real dense vector
      */
-    public static SolidRV fill(int n, double fill) {
-        return new SolidRV(n, DoubleArrays.newFill(n, fill));
+    public static SolidDVector fill(int n, double fill) {
+        return new SolidDVector(n, DoubleArrays.newFill(n, fill));
     }
 
     /**
@@ -83,17 +83,17 @@ public class SolidRV implements RV {
      * @param v given variable
      * @return new real dense vector
      */
-    public static SolidRV from(Var v) {
+    public static SolidDVector from(Var v) {
         if (v instanceof VarDouble) {
             VarDouble vd = (VarDouble) v;
             double[] array = vd.elements();
-            return new SolidRV(vd.rowCount(), array);
+            return new SolidDVector(vd.rowCount(), array);
         }
         double[] values = new double[v.rowCount()];
         for (int i = 0; i < values.length; i++) {
             values[i] = v.getDouble(i);
         }
-        return new SolidRV(values.length, values);
+        return new SolidDVector(values.length, values);
     }
 
     /**
@@ -103,10 +103,10 @@ public class SolidRV implements RV {
      * @param source source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    public static SolidRV copy(RV source) {
-        SolidRV v = zeros(source.size());
-        if (source instanceof SolidRV) {
-            System.arraycopy(((SolidRV) source).values, 0, v.values, 0, source.size());
+    public static SolidDVector copy(DVector source) {
+        SolidDVector v = zeros(source.size());
+        if (source instanceof SolidDVector) {
+            System.arraycopy(((SolidDVector) source).values, 0, v.values, 0, source.size());
         } else {
             for (int i = 0; i < v.values.length; i++) {
                 v.values[i] = source.get(i);
@@ -122,7 +122,7 @@ public class SolidRV implements RV {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static SolidRV wrap(double... values) {
+    public static SolidDVector wrap(double... values) {
         return wrapArray(values.length, values);
     }
 
@@ -133,13 +133,13 @@ public class SolidRV implements RV {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static SolidRV wrapArray(int size, double[] values) {
+    public static SolidDVector wrapArray(int size, double[] values) {
         Objects.requireNonNull(values);
-        return new SolidRV(size, values);
+        return new SolidDVector(size, values);
     }
 
-    public static SolidRV from(int len, IntDoubleFunction fun) {
-        return new SolidRV(len, DoubleArrays.newFrom(0, len, fun));
+    public static SolidDVector from(int len, IntDoubleFunction fun) {
+        return new SolidDVector(len, DoubleArrays.newFrom(0, len, fun));
     }
 
     // internals
@@ -147,12 +147,12 @@ public class SolidRV implements RV {
     private final int size;
     private final double[] values;
 
-    private SolidRV(int size, double[] values) {
+    private SolidDVector(int size, double[] values) {
         this.size = size;
         this.values = values;
     }
 
-    private void checkConformance(RV vector) {
+    private void checkConformance(DVector vector) {
         if (size != vector.size()) {
             throw new IllegalArgumentException(
                     String.format("Vectors are not conform for operation: [%d] vs [%d]", size, vector.size()));
@@ -180,22 +180,18 @@ public class SolidRV implements RV {
     }
 
     @Override
-    public RV plus(double x) {
-        for (int i = 0; i < size; i++) {
-            values[i] += x;
-        }
+    public DVector plus(double x) {
+        DoubleArrays.plus(values, x, 0, size);
         return this;
     }
 
     @Override
-    public RV plus(RV b) {
+    public DVector plus(DVector b) {
         checkConformance(b);
 
-        if (b instanceof SolidRV) {
-            SolidRV sb = (SolidRV) b;
-            for (int i = 0; i < size; i++) {
-                values[i] += sb.values[i];
-            }
+        if (b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector) b;
+            DoubleArrays.plus(values, sb.values, 0, size);
             return this;
         }
 
@@ -206,21 +202,17 @@ public class SolidRV implements RV {
     }
 
     @Override
-    public RV minus(double x) {
-        for (int i = 0; i < size; i++) {
-            values[i] -= x;
-        }
+    public DVector minus(double x) {
+        DoubleArrays.minus(values, x, 0, size);
         return this;
     }
 
     @Override
-    public RV minus(RV b) {
+    public DVector minus(DVector b) {
         checkConformance(b);
-        if (b instanceof SolidRV) {
-            SolidRV sb = (SolidRV) b;
-            for (int i = 0; i < size; i++) {
-                values[i] -= sb.values[i];
-            }
+        if (b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector) b;
+            DoubleArrays.minus(values, sb.values, 0, size);
             return this;
         }
 
@@ -231,19 +223,52 @@ public class SolidRV implements RV {
     }
 
     @Override
-    public RV dot(double scalar) {
+    public DVector times(double scalar) {
+        DoubleArrays.times(values, scalar, 0, size);
+        return this;
+    }
+
+    @Override
+    public DVector times(DVector b) {
+        checkConformance(b);
+        if(b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector)b;
+            DoubleArrays.times(values, sb.values, 0, size);
+            return this;
+        }
         for (int i = 0; i < size; i++) {
-            values[i] *= scalar;
+            values[i] *= b.get(i);
+        }
+        return this;
+    }
+
+
+    @Override
+    public DVector div(double scalar) {
+        DoubleArrays.div(values, scalar, 0, size);
+        return this;
+    }
+
+    @Override
+    public DVector div(DVector b) {
+        checkConformance(b);
+        if(b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector)b;
+            DoubleArrays.div(values, sb.values, 0, size);
+            return this;
+        }
+        for (int i = 0; i < size; i++) {
+            values[i] /= b.get(i);
         }
         return this;
     }
 
     @Override
-    public double dot(RV b) {
+    public double dot(DVector b) {
         checkConformance(b);
         double s = 0;
-        if (b instanceof SolidRV) {
-            SolidRV sb = (SolidRV) b;
+        if (b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector) b;
             for (int i = 0; i < size; i++) {
                 s = Math.fma(values[i], sb.values[i], s);
             }
@@ -279,10 +304,10 @@ public class SolidRV implements RV {
         return Math.pow(s, 1.0 / p);
     }
 
-    public RV normalize(double p) {
+    public DVector normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
-            dot(1.0 / norm);
+            times(1.0 / norm);
         return this;
     }
 
@@ -322,15 +347,15 @@ public class SolidRV implements RV {
     }
 
     @Override
-    public RV apply(DoubleDoubleFunction f) {
+    public DVector apply(DoubleDoubleFunction f) {
         for (int i = 0; i < size; i++) {
             values[i] = f.applyAsDouble(values[i]);
         }
         return this;
     }
 
-    public SolidRV copy() {
-        SolidRV copy = SolidRV.zeros(size);
+    public SolidDVector copy() {
+        SolidDVector copy = SolidDVector.zeros(size);
         System.arraycopy(values, 0, copy.values, 0, size);
         return copy;
     }

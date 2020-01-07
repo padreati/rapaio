@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,15 +53,15 @@ public class QRDecompositionTest {
 
             int off = RandomSource.nextInt(n);
 
-            RM a = SolidRM.random(n + off, n);
+            DMatrix a = SolidDMatrix.random(n + off, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
-            RM q = qr.getQ();
-            RM r = qr.getR();
+            DMatrix q = qr.getQ();
+            DMatrix r = qr.getR();
 
             // test various properties of the decomposition
 
-            RM I = SolidRM.identity(n);
+            DMatrix I = SolidDMatrix.identity(n);
             assertTrue(I.isEqual(q.t().dot(q), TOL));
 
             for (int i = 0; i < n; i++) {
@@ -91,11 +91,11 @@ public class QRDecompositionTest {
 
             // generate a random matrix
 
-            RM a = SolidRM.random(n, n);
+            DMatrix a = SolidDMatrix.random(n, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
-            RM h = qr.getH();
-            RM p = SolidRM.identity(10).minus(h.dot(2).dot(h.t()));
+            DMatrix h = qr.getH();
+            DMatrix p = SolidDMatrix.identity(10).minus(h.dot(2).dot(h.t()));
 
             // p is hermitian
             assertTrue(p.isEqual(p.t(), TOL));
@@ -118,8 +118,8 @@ public class QRDecompositionTest {
             // and take some samples
 
             int rows = 8_000;
-            RM a = SolidRM.empty(rows, 3);
-            RM b = SolidRM.empty(rows, 1);
+            DMatrix a = SolidDMatrix.empty(rows, 3);
+            DMatrix b = SolidDMatrix.empty(rows, 1);
 
             for (int i = 0; i < rows; i++) {
                 double x1 = unif.sampleNext();
@@ -134,7 +134,7 @@ public class QRDecompositionTest {
                 b.set(i, 0, y);
             }
 
-            RM x = QRDecomposition.from(a).solve(b);
+            DMatrix x = QRDecomposition.from(a).solve(b);
 
             double c0 = x.get(0, 0);
             double c1 = x.get(1, 0);
@@ -148,11 +148,11 @@ public class QRDecompositionTest {
 
     @Test
     void testIncompatible() {
-        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(SolidRM.random(10, 10)).solve(SolidRM.random(12, 1)));
+        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(SolidDMatrix.random(10, 10)).solve(SolidDMatrix.random(12, 1)));
     }
 
     @Test
     void testSingular() {
-        assertThrows(RuntimeException.class, () -> QRDecomposition.from(SolidRM.fill(10, 10, 2)).solve(SolidRM.random(10, 1)));
+        assertThrows(RuntimeException.class, () -> QRDecomposition.from(SolidDMatrix.fill(10, 10, 2)).solve(SolidDMatrix.random(10, 1)));
     }
 }

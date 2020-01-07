@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.optimization;
 
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
@@ -37,7 +37,7 @@ import java.io.Serializable;
  */
 @Deprecated
 public interface Updater extends Serializable {
-    Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam);
+    Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam);
 }
 
 /**
@@ -48,10 +48,10 @@ public interface Updater extends Serializable {
 class SimpleUpdater implements Updater {
     private static final long serialVersionUID = -2067278844383126771L;
 
-    public Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam) {
+    public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
-        RV brzWeights = weightsOld.copy();
-        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
+        DVector brzWeights = weightsOld.copy();
+        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
         return Pair.from(brzWeights, 0.0);
     }
 }
@@ -75,11 +75,11 @@ class SimpleUpdater implements Updater {
  */
 @Deprecated
 class L1Updater implements Updater {
-    public Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam) {
+    public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         // Take gradient step
-        RV brzWeights = weightsOld.copy();
-        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
+        DVector brzWeights = weightsOld.copy();
+        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
         // Apply proximal operator (soft thresholding)
         double shrinkageVal = regParam * thisIterStepSize;
         int i = 0;
@@ -101,15 +101,15 @@ class L1Updater implements Updater {
  */
 @Deprecated
 class SquaredL2Updater implements Updater {
-    public Pair<RV, Double> compute(RV weightsOld, RV gradient, double stepSize, int iter, double regParam) {
+    public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
         // add up both updates from the gradient of the loss (= step) as well as
         // the gradient of the regularizer (= regParam * weightsOld)
         // w' = w - thisIterStepSize * (gradient + regParam * w)
         // w' = (1 - thisIterStepSize * regParam) * w - thisIterStepSize * gradient
         double thisIterStepSize = stepSize / Math.sqrt(iter);
-        RV brzWeights = weightsOld.copy();
-        brzWeights.minus(brzWeights.copy().dot(thisIterStepSize * regParam));
-        brzWeights.plus(gradient.copy().dot(-thisIterStepSize));
+        DVector brzWeights = weightsOld.copy();
+        brzWeights.minus(brzWeights.copy().times(thisIterStepSize * regParam));
+        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
         double norm = brzWeights.norm(2.0);
 
         return Pair.from(brzWeights, 0.5 * regParam * norm * norm);

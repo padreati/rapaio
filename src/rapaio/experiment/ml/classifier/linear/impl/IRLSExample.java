@@ -31,11 +31,11 @@ import rapaio.core.distributions.Bernoulli;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.
@@ -53,23 +53,23 @@ public class IRLSExample {
         Var intercept = VarDouble.fill(n, 1).withName("intercept");
         Var x = VarDouble.from(n, uniform::sampleNext).withName("x");
 
-        RM X = SolidRM.copy(intercept, x).copy();
+        DMatrix X = SolidDMatrix.copy(intercept, x).copy();
 
-        RV beta_sim = SolidRV.wrap(1, 1);
-        RV pi_sim = X.dot(beta_sim).apply(IRLSExample::invlogit);
+        DVector beta_sim = SolidDVector.wrap(1, 1);
+        DVector pi_sim = X.dot(beta_sim).apply(IRLSExample::invlogit);
 
-        RV y = SolidRV.from(VarDouble.from(n, row -> Bernoulli.of(pi_sim.get(row)).sampleNext()));
+        DVector y = SolidDVector.from(VarDouble.from(n, row -> Bernoulli.of(pi_sim.get(row)).sampleNext()));
 
 
         IRLS_logit(X, y, 500, 1e-10).printSummary();
     }
 
-    public static RV IRLS_logit(RM x, RV y, int maxIter, double tolerance) {
+    public static DVector IRLS_logit(DMatrix x, DVector y, int maxIter, double tolerance) {
 
         int n = x.rowCount();
         int p = x.colCount();
-        RV W = SolidRV.fill(n, 0);
-        RV beta = QRDecomposition.from(x).solve(y.asMatrix()).mapCol(0);
+        DVector W = SolidDVector.fill(n, 0);
+        DVector beta = QRDecomposition.from(x).solve(y.asMatrix()).mapCol(0);
 
         beta.printSummary();
 
@@ -78,7 +78,7 @@ public class IRLSExample {
             maxIter--;
 
             // evaluate probabilities
-            RV pi = x.dot(beta);
+            DVector pi = x.dot(beta);
             pi.apply(IRLSExample::invlogit);
 
             // set diagonal
@@ -101,6 +101,6 @@ public class IRLSExample {
 //                beta = beta_star
 //        print("Maximum iteration reached without convergence")
         }
-        return SolidRV.zeros(2);
+        return SolidDVector.zeros(2);
     }
 }

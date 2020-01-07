@@ -30,19 +30,19 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SolidRMTest {
+public class SolidDMatrixTest {
 
     private static final double TOL = 1e-20;
 
     @Test
     void buildersTest() {
 
-        RM i3 = SolidRM.identity(3);
+        DMatrix i3 = SolidDMatrix.identity(3);
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -52,20 +52,20 @@ public class SolidRMTest {
                 }
             }
 
-        RM empty = SolidRM.empty(3, 4);
+        DMatrix empty = SolidDMatrix.empty(3, 4);
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 4; j++)
                 assertEquals(0, empty.get(i, j), TOL);
 
 
-        RM fill = SolidRM.fill(3, 4, 12);
+        DMatrix fill = SolidDMatrix.fill(3, 4, 12);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(12, fill.get(i, j), TOL);
             }
         }
 
-        RM fillFun = SolidRM.fill(3, 4, (i, j) -> Math.sqrt(i * j));
+        DMatrix fillFun = SolidDMatrix.fill(3, 4, (i, j) -> Math.sqrt(i * j));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(Math.sqrt(i * j), fillFun.get(i, j), TOL);
@@ -73,14 +73,14 @@ public class SolidRMTest {
         }
 
         Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
-        RM copy1 = SolidRM.copy(iris);
+        DMatrix copy1 = SolidDMatrix.copy(iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {
                 assertEquals(iris.getDouble(j, i), copy1.get(j, i), TOL);
             }
         }
 
-        RM copy2 = SolidRM.copy(iris.varStream().toArray(Var[]::new));
+        DMatrix copy2 = SolidDMatrix.copy(iris.varStream().toArray(Var[]::new));
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
                 assertEquals(copy1.get(i, j), copy2.get(i, j), TOL);
@@ -92,7 +92,7 @@ public class SolidRMTest {
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        RM copy3 = SolidRM.copy(3, 4, values);
+        DMatrix copy3 = SolidDMatrix.copy(3, 4, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
@@ -104,14 +104,14 @@ public class SolidRMTest {
                 {5, 6, 7, 8},
                 {9, 10, 11, 12}
         };
-        RM copy4 = SolidRM.copy(m);
+        DMatrix copy4 = SolidDMatrix.copy(m);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(m[i][j], copy4.get(i, j), TOL);
             }
         }
 
-        RM copy5 = SolidRM.copy(m, 1, 3, 1, 4);
+        DMatrix copy5 = SolidDMatrix.copy(m, 1, 3, 1, 4);
         assertEquals("       |      0|     1|     2|\n" +
                 "     0 |  6.000  7.000  8.000\n" +
                 "     1 | 10.000 11.000 12.000\n", copy5.toSummary());
@@ -126,9 +126,9 @@ public class SolidRMTest {
                 {9, 10, 11, 12}
         };
 
-        RM x = SolidRM.copy(values);
-        RM x_t = x.t();
-        RM y = x_t.t();
+        DMatrix x = SolidDMatrix.copy(values);
+        DMatrix x_t = x.t();
+        DMatrix y = x_t.t();
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
@@ -140,13 +140,13 @@ public class SolidRMTest {
         }
 
         double[] col = new double[]{2, 6, 10};
-        RV vcol = x.mapCol(1);
+        DVector vcol = x.mapCol(1);
         for (int i = 0; i < col.length; i++) {
             assertEquals(col[i], vcol.get(i), TOL);
         }
 
         double[] row = new double[]{5, 6, 7, 8};
-        RV vrow = x.mapRow(1);
+        DVector vrow = x.mapRow(1);
         for (int i = 0; i < row.length; i++) {
             assertEquals(row[i], vrow.get(i), TOL);
         }
@@ -156,7 +156,7 @@ public class SolidRMTest {
             assertEquals(i + 1, vals[i], TOL);
         }
 
-        RM xx = x.copy();
+        DMatrix xx = x.copy();
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < x.colCount(); j++) {
                 assertEquals(x.get(i, j), xx.get(i, j), TOL);
@@ -166,7 +166,7 @@ public class SolidRMTest {
 
     @Test
     void testOps() {
-        RM x = SolidRM.empty(2, 2);
+        DMatrix x = SolidDMatrix.empty(2, 2);
         x.set(0, 0, 1);
         x.increment(0, 1, 2);
         x.set(1, 0, 3);

@@ -28,21 +28,21 @@
 package rapaio.math.linear;
 
 import rapaio.math.linear.dense.EigenDecomposition;
-import rapaio.math.linear.dense.SolidRM;
-import rapaio.math.linear.dense.SolidRV;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 
 public class EigenDecompStatistics extends EigenDecompStrategy{
 
 	@Override
-	public EigenPair getEigenDecomp(RM s, int maxRuns, double tol) {
+	public EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol) {
 		int n = s.colCount();
         EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
-        RM _vectors = evd.getV();
+        DMatrix _vectors = evd.getV();
 
-        RV values = SolidRV.zeros(n);
-        RM vectors = SolidRM.empty(n, n);
+        DVector values = SolidDVector.zeros(n);
+        DMatrix vectors = SolidDMatrix.empty(n, n);
 
         for (int i = 0; i < values.size(); i++) {
             values.set(values.size() - i - 1, _values[i]);

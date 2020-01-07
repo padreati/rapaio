@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DVector;
 
 import java.io.IOException;
 
@@ -115,7 +115,7 @@ public class RidgeRegressionModelTest {
     void testPredictionWithIntercept() {
         RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).fit(df, "Sales");
         var result = model.predict(df);
-        RV beta_hat = result.getBetaHat().mapCol(0);
+        DVector beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(4, beta_hat.size());
 
         assertEquals(model.firstCoefficients().get(0), beta_hat.get(0), TOL);
@@ -133,7 +133,7 @@ public class RidgeRegressionModelTest {
     void testPredictionWithOutIntercept() {
         RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).withIntercept(false).fit(df, "Sales");
         var result = model.predict(df);
-        RV beta_hat = result.getBetaHat().mapCol(0);
+        DVector beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(3, beta_hat.size());
 
         assertEquals(model.firstCoefficients().get(0), beta_hat.get(0), TOL);

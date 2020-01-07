@@ -30,10 +30,10 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.format.TextTable;
 
@@ -91,8 +91,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        RM X = SolidRM.copy(df.mapVars(inputNames()));
-        RM Y = SolidRM.copy(df.mapVars(targetNames()));
+        DMatrix X = SolidDMatrix.copy(df.mapVars(inputNames()));
+        DMatrix Y = SolidDMatrix.copy(df.mapVars(targetNames()));
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }
@@ -121,7 +121,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            RV coeff = beta.mapCol(i);
+            DVector coeff = beta.mapCol(i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

@@ -27,7 +27,7 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.RM;
+import rapaio.math.linear.DMatrix;
 
 import java.io.Serializable;
 
@@ -46,7 +46,7 @@ import java.io.Serializable;
  */
 public class EigenDecomposition implements Serializable {
 
-    public static EigenDecomposition from(RM a) {
+    public static EigenDecomposition from(DMatrix a) {
         return new EigenDecomposition(a);
     }
 
@@ -59,7 +59,7 @@ public class EigenDecomposition implements Serializable {
     private double[] eigenValues1, eigenValues2;
 
     // Array for internal storage of eigenvectors.
-    private RM eigenVectors;
+    private DMatrix eigenVectors;
 
     //Array for internal storage of nonsymmetric Hessenberg form.
     private double[][] nonSymHessenbergForm;
@@ -73,9 +73,9 @@ public class EigenDecomposition implements Serializable {
      *
      * @param a Square matrix
      */
-    private EigenDecomposition(RM a) {
+    private EigenDecomposition(DMatrix a) {
         dimension = a.colCount();
-        eigenVectors = SolidRM.empty(dimension, dimension);
+        eigenVectors = SolidDMatrix.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];
 
@@ -102,7 +102,7 @@ public class EigenDecomposition implements Serializable {
         }
     }
 
-    private boolean isSymmetric(RM a) {
+    private boolean isSymmetric(DMatrix a) {
 
         boolean returnValue = true;
         for (int row = 0; (row < dimension) & returnValue; row++) {
@@ -916,7 +916,7 @@ public class EigenDecomposition implements Serializable {
      *
      * @return V
      */
-    public RM getV() {
+    public DMatrix getV() {
         return eigenVectors;
     }
 
@@ -943,8 +943,8 @@ public class EigenDecomposition implements Serializable {
      *
      * @return D the block diagonal eigenvalue matrix
      */
-    public RM getD() {
-        RM d = SolidRM.empty(dimension, dimension);
+    public DMatrix getD() {
+        DMatrix d = SolidDMatrix.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
             d.set(i, i, eigenValues1[i]);
             if (eigenValues2[i] > 0) {

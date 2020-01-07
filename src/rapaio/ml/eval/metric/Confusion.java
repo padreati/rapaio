@@ -28,8 +28,8 @@
 package rapaio.ml.eval.metric;
 
 import rapaio.data.Var;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.printer.Printable;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
@@ -54,8 +54,8 @@ public final class Confusion implements Printable {
     private final Var actual;
     private final Var predict;
     private final List<String> factors;
-    private final RM cmFrequency;
-    private final RM cmProbability;
+    private final DMatrix cmFrequency;
+    private final DMatrix cmProbability;
     private final boolean binary;
 
     // true positive - predicted true and actual true
@@ -81,8 +81,8 @@ public final class Confusion implements Printable {
         this.actual = actual;
         this.predict = predict;
         this.factors = actual.levels();
-        this.cmFrequency = SolidRM.empty(factors.size() - 1, factors.size() - 1);
-        this.cmProbability = SolidRM.empty(factors.size() - 1, factors.size() - 1);
+        this.cmFrequency = SolidDMatrix.empty(factors.size() - 1, factors.size() - 1);
+        this.cmProbability = SolidDMatrix.empty(factors.size() - 1, factors.size() - 1);
         this.binary = actual.levels().size() == 3;
         validate();
         compute();
@@ -412,7 +412,7 @@ public final class Confusion implements Printable {
      *
      * @return frequency confusion matrix
      */
-    public RM frequencyMatrix() {
+    public DMatrix frequencyMatrix() {
         return cmFrequency;
     }
 
@@ -423,7 +423,7 @@ public final class Confusion implements Printable {
      *
      * @return probability confusion matrix
      */
-    public RM probabilityMatrix() {
+    public DMatrix probabilityMatrix() {
         return cmProbability;
     }
 }
