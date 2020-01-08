@@ -42,10 +42,10 @@ Library can be used through maven. Last published release on maven central is 2.
        <dependency>
          <groupId>io.github.padreati</groupId>
          <artifactId>rapaio</artifactId>
-         <version>2.1.0</version>
+         <version>2.2.1</version>
        </dependency>
 
-Latest snapshot is published 2.1.1-SNAPSHOP and is published on oss-sonatype. 
+Latest snapshot is published 2.2.2-SNAPSHOP and is published on oss-sonatype. 
 
 Another way to use the library is in jupyter / jupyter-lab notebooks. This is excellent for experimenting with short interactive 
 notebooks or to document the idea you are working on. You have to install jupyter / jupyter-lab and IJava kernel. For more information
