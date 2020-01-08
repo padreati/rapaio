@@ -115,7 +115,7 @@ public class IRLSOptimizer {
                 double factor = derivatives.get(k) * coefficient_kj;
 
                 for (int i = 0; i < hessian.rowCount(); i++)
-                    hessian.increment(j, i, coef.get(k, i) * factor);
+                    hessian.set(j, i, hessian.get(j, i) + coef.get(k, i) * factor);
             }
             grad.set(j, 0, gradTmp);
         }

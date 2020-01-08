@@ -112,9 +112,10 @@ public class MarkovChain implements Printable {
             if (chain.isEmpty())
                 continue;
 
-            p.increment(revert.get(chain.get(0)), 1);
+            int pos = revert.get(chain.get(0));
+            p.set(pos, p.get(pos) + 1);
             for (int i = 1; i < chain.size(); i++) {
-                m.increment(revert.get(chain.get(i - 1)), revert.get(chain.get(i)), 1.0);
+                m.set(revert.get(chain.get(i - 1)), revert.get(chain.get(i)), m.get(revert.get(chain.get(i - 1)), revert.get(chain.get(i))) + 1.0);
             }
         }
 

@@ -88,7 +88,7 @@ public final class Confusion implements Printable {
         compute();
     }
 
-    private final void validate() {
+    private void validate() {
         if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("Actual values variable must be nominal.");
         }
@@ -108,11 +108,11 @@ public final class Confusion implements Printable {
         }
     }
 
-    private final void compute() {
+    private void compute() {
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.getInt(i) != 0 && predict.getInt(i) != 0) {
                 completeCases++;
-                cmFrequency.increment(actual.getInt(i) - 1, predict.getInt(i) - 1, 1);
+                cmFrequency.set(actual.getInt(i) - 1, predict.getInt(i) - 1, cmFrequency.get(actual.getInt(i) - 1, predict.getInt(i) - 1) + 1);
             }
         }
         acc = cmFrequency.trace();

@@ -83,11 +83,6 @@ public class MappedDMatrix implements DMatrix {
     }
 
     @Override
-    public void increment(int i, int j, double value) {
-        ref.increment(rowIndexes[i], colIndexes[j], value);
-    }
-
-    @Override
     public SolidDVector mapCol(int i) {
         SolidDVector v = SolidDVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {

@@ -168,10 +168,10 @@ public class SolidDMatrixTest {
     void testOps() {
         DMatrix x = SolidDMatrix.empty(2, 2);
         x.set(0, 0, 1);
-        x.increment(0, 1, 2);
+        x.set(0, 1, x.get(0, 1) + 2);
         x.set(1, 0, 3);
-        x.increment(1, 1, 6);
-        x.increment(1, 1, -2);
+        x.set(1, 1, x.get(1, 1) + 6);
+        x.set(1, 1, x.get(1, 1) - 2);
 
         double[] vals = new double[]{1, 2, 3, 4};
         double[] xvals = x.valueStream().toArray();

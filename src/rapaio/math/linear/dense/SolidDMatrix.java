@@ -31,17 +31,20 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.util.function.IntIntDoubleBiFunction;
 
 import java.util.Arrays;
-import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 /**
- * Dense 2 dimensional matrix with values in double floating point precision
+ * Dense matrix with values in double floating point precision.
+ * Values are stored in arrays of arrays with first array holding row references
+ * and secondary level arrays being the row arrays.
  */
-public class SolidDMatrix implements DMatrix {
+public class SolidDMatrix extends AbstractDMatrix {
 
     private static final long serialVersionUID = -2186520026933442642L;
 
@@ -76,18 +79,6 @@ public class SolidDMatrix implements DMatrix {
         return m;
     }
 
-    /**
-     * Centering matrix, see definition here: https://en.wikipedia.org/wiki/Centering_matrix
-     *
-     * @param n number of rows and columns
-     * @return new instance of centering matrix
-     */
-    public static SolidDMatrix centering(int n) {
-        if (n <= 0)
-            throw new IllegalArgumentException("Dimension of the centering matrix should be at least 1");
-        return fill(n, n, (r, c) -> (r == c) ? (1.0 - 1.0 / n) : -1.0 / n);
-    }
-
     public static SolidDMatrix random(int rowCount, int colCount) {
         Normal normal = Normal.std();
         return SolidDMatrix.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
@@ -120,11 +111,11 @@ public class SolidDMatrix implements DMatrix {
      * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    public static SolidDMatrix fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
+    public static SolidDMatrix fill(int rowCount, int colCount, IntIntDoubleBiFunction fun) {
         SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
-                ret.set(i, j, fun.apply(i, j));
+                ret.set(i, j, fun.applyAsDouble(i, j));
             }
         }
         return ret;
@@ -132,8 +123,8 @@ public class SolidDMatrix implements DMatrix {
 
     /**
      * Builds a new matrix from a linearized array of values.
-     * The array contains the values by row, aka first cols elements
-     * is the first row, second cols elements is the second row,
+     * The array contains the values by row, aka first elements in {@param source}
+     * is the first row, followed by the second row elements, and so on.
      * and so on.
      *
      * @param rowCount number of rows
@@ -226,11 +217,6 @@ public class SolidDMatrix implements DMatrix {
     @Override
     public void set(int row, int col, double value) {
         values[row][col] = value;
-    }
-
-    @Override
-    public void increment(int row, int col, double value) {
-        values[row][col] += value;
     }
 
     @Override

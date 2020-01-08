@@ -192,7 +192,7 @@ public class EigenDecomposition implements Serializable {
                     f = eigenValues1[j];
                     g = eigenValues2[j];
                     for (int k = j; k <= i - 1; k++) {
-                        eigenVectors.increment(k, j, -(f * eigenValues2[k] + g * eigenValues1[k]));
+                        eigenVectors.set(k, j, eigenVectors.get(k, j) - (f * eigenValues2[k] + g * eigenValues1[k]));
                     }
                     eigenValues1[j] = eigenVectors.get(i - 1, j);
                     eigenVectors.set(i, j, 0.0);
@@ -217,7 +217,7 @@ public class EigenDecomposition implements Serializable {
                         g += eigenVectors.get(k, i + 1) * eigenVectors.get(k, j);
                     }
                     for (int k = 0; k <= i; k++) {
-                        eigenVectors.increment(k, j, -g * eigenValues1[k]);
+                        eigenVectors.set(k, j, eigenVectors.get(k, j) - g * eigenValues1[k]);
                     }
                 }
             }
@@ -439,7 +439,7 @@ public class EigenDecomposition implements Serializable {
                     // Double division avoids possible underflow
                     g = (g / ort[m]) / nonSymHessenbergForm[m][m - 1];
                     for (int i = m; i <= high; i++) {
-                        eigenVectors.increment(i, j, g * ort[i]);
+                        eigenVectors.set(i, j, eigenVectors.get(i, j) + g * ort[i]);
                     }
                 }
             }

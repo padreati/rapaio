@@ -88,7 +88,7 @@ public class QRDecomposition implements Serializable {
                     }
                 }
             }
-            Rdiag.increment(k, -nrm);
+            Rdiag.set(k, Rdiag.get(k) - nrm);
         }
     }
 

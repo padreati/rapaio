@@ -194,7 +194,7 @@ public class SVDecomposition implements java.io.Serializable {
                     for (int i = k; i < rowCount; i++) {
                         A.set(i, k, A.get(i, k) / s[k]);
                     }
-                    A.increment(k, k, 1.0);
+                    A.set(k, k, A.get(k, k) + 1.0);
                 }
                 s[k] = -s[k];
             }
@@ -208,7 +208,7 @@ public class SVDecomposition implements java.io.Serializable {
                     }
                     t = -t / A.get(k, k);
                     for (int i = k; i < rowCount; i++) {
-                        A.increment(i, j, t * A.get(i, k));
+                        A.set(i, j, A.get(i, j) + t * A.get(i, k));
                     }
                 }
 
@@ -257,7 +257,7 @@ public class SVDecomposition implements java.io.Serializable {
                     for (int j = k + 1; j < colCount; j++) {
                         double t = -e[j] / e[k + 1];
                         for (int i = k + 1; i < rowCount; i++) {
-                            A.increment(i, j, t * work[i]);
+                            A.set(i, j, A.get(i, j) + t * work[i]);
                         }
                     }
                 }

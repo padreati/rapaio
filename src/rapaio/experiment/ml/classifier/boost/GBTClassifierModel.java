@@ -164,14 +164,14 @@ public class GBTClassifierModel
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
-                sum += Math.exp(f.get(k,i) - max.get(i));
+                sum += Math.exp(f.get(k, i) - max.get(i));
                 if (!Double.isFinite(sum)) {
                     WS.println("ERROR");
                 }
             }
             for (int k = 0; k < K; k++) {
-                residual.set(k,i, yk.get(k,i) -
-                        Math.exp(f.get(k,i) - max.get(i)) / Math.exp(sum));
+                residual.set(k, i, yk.get(k, i) -
+                        Math.exp(f.get(k, i) - max.get(i)) / Math.exp(sum));
             }
         }
 
@@ -189,9 +189,9 @@ public class GBTClassifierModel
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
-            RegressionResult rr = tree.predict(df, false);
+            RegressionResult<RTree> rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                f.increment(k,i, shrinkage * rr.firstPrediction().getDouble(i));
+                f.set(k, i, f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
             }
         }
     }
@@ -204,9 +204,9 @@ public class GBTClassifierModel
 
         for (int k = 0; k < K; k++) {
             for (RTree tree : trees.get(k)) {
-                RegressionResult rr = tree.predict(df, false);
+                RegressionResult<RTree> rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.increment(k, i, shrinkage * rr.firstPrediction().getDouble(i));
+                    p_f.set(k, i, p_f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
                 }
             }
         }

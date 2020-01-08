@@ -126,7 +126,7 @@ public class SolidDVectorTest {
         DVector y = x.copy();
         for (int i = 0; i < y.size(); i++) {
             int sign = i % 2 == 0 ? 1 : -1;
-            y.increment(i, sign * 10);
+            y.set(i, y.get(i) + sign * 10);
         }
         for (int i = 0; i < y.size(); i++) {
             if (i % 2 == 0) {

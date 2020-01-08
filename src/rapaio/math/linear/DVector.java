@@ -64,14 +64,6 @@ public interface DVector extends Serializable, Printable {
     void set(int i, double value);
 
     /**
-     * Increment with the given value the value from the given position.
-     *
-     * @param i     zero-based index position
-     * @param value value used for increment
-     */
-    void increment(int i, double value);
-
-    /**
      * Adds to all elements the value of x
      *
      * @param x value to be incremented with

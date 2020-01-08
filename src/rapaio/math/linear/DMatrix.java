@@ -54,12 +54,12 @@ import java.util.stream.DoubleStream;
 public interface DMatrix extends Serializable, Printable {
 
     /**
-     * @return number of rows
+     * @return number of rows of the matrix
      */
     int rowCount();
 
     /**
-     * @return number of columns
+     * @return number of columns of the matrix
      */
     int colCount();
 
@@ -78,15 +78,6 @@ public interface DMatrix extends Serializable, Printable {
      * @param value value to be set
      */
     void set(int row, int col, double value);
-
-    /**
-     * Increment value at the given row and column indexes
-     *
-     * @param row   row index
-     * @param col   column index
-     * @param value increment value
-     */
-    void increment(int row, int col, double value);
 
     DVector mapCol(int col);
 
@@ -171,7 +162,7 @@ public interface DMatrix extends Serializable, Printable {
     default DMatrix plus(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                increment(i, j, x);
+                set(i, j, get(i, j) + x);
             }
         }
         return this;
@@ -183,7 +174,7 @@ public interface DMatrix extends Serializable, Printable {
                     "Matrices are not conform for addition: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                increment(i, j, B.get(i, j));
+                set(i, j, get(i, j) + B.get(i, j));
             }
         }
         return this;
@@ -199,7 +190,7 @@ public interface DMatrix extends Serializable, Printable {
                     "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                increment(i, j, -B.get(i, j));
+                set(i, j, get(i, j) - B.get(i, j));
             }
         }
         return this;
@@ -207,10 +198,10 @@ public interface DMatrix extends Serializable, Printable {
 
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
-     * matrix is the sum of the elemenets from the main diagonal.
+     * matrix is the sum of the elements from the main diagonal.
      * Otherwise returns an exception.
      *
-     * @return
+     * @return value of the matrix trace
      */
     default double trace() {
         if(rowCount()!=colCount()) {
@@ -275,7 +266,7 @@ public interface DMatrix extends Serializable, Printable {
                 row[i] = get(k, i) - mean[i];
             for (int i = 0; i < row.length; i++) {
                 for (int j = 0; j < row.length; j++) {
-                    scatter.increment(i, j, row[i] * row[j]);
+                    scatter.set(i, j, scatter.get(i, j) + row[i] * row[j]);
                 }
             }
         }
@@ -302,7 +293,7 @@ public interface DMatrix extends Serializable, Printable {
         SolidDVector sum = SolidDVector.zeros(rowCount());
         for (int i = 0; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
-                sum.increment(j, get(j, i));
+                sum.set(j, sum.get(j) + get(j, i));
             }
         }
         return sum;

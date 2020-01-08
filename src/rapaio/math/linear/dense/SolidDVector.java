@@ -30,6 +30,7 @@ package rapaio.math.linear.dense;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.math.linear.AbstractDVector;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.DoubleDoubleFunction;
@@ -39,7 +40,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
-public class SolidDVector implements DVector {
+public class SolidDVector extends AbstractDVector {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
@@ -107,10 +108,10 @@ public class SolidDVector implements DVector {
         SolidDVector v = zeros(source.size());
         if (source instanceof SolidDVector) {
             System.arraycopy(((SolidDVector) source).values, 0, v.values, 0, source.size());
-        } else {
-            for (int i = 0; i < v.values.length; i++) {
-                v.values[i] = source.get(i);
-            }
+            return v;
+        }
+        for (int i = 0; i < v.values.length; i++) {
+            v.values[i] = source.get(i);
         }
         return v;
     }
@@ -152,13 +153,6 @@ public class SolidDVector implements DVector {
         this.values = values;
     }
 
-    private void checkConformance(DVector vector) {
-        if (size != vector.size()) {
-            throw new IllegalArgumentException(
-                    String.format("Vectors are not conform for operation: [%d] vs [%d]", size, vector.size()));
-        }
-    }
-
     @Override
     public int size() {
         return size;
@@ -172,11 +166,6 @@ public class SolidDVector implements DVector {
     @Override
     public void set(int i, double value) {
         values[i] = value;
-    }
-
-    @Override
-    public void increment(int i, double value) {
-        values[i] += value;
     }
 
     @Override
@@ -196,7 +185,7 @@ public class SolidDVector implements DVector {
         }
 
         for (int i = 0; i < size(); i++) {
-            increment(i, b.get(i));
+            values[i] += b.get(i);
         }
         return this;
     }
@@ -217,7 +206,7 @@ public class SolidDVector implements DVector {
         }
 
         for (int i = 0; i < size(); i++) {
-            increment(i, -b.get(i));
+            values[i] -= b.get(i);
         }
         return this;
     }
@@ -231,8 +220,8 @@ public class SolidDVector implements DVector {
     @Override
     public DVector times(DVector b) {
         checkConformance(b);
-        if(b instanceof SolidDVector) {
-            SolidDVector sb = (SolidDVector)b;
+        if (b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector) b;
             DoubleArrays.times(values, sb.values, 0, size);
             return this;
         }
@@ -252,8 +241,8 @@ public class SolidDVector implements DVector {
     @Override
     public DVector div(DVector b) {
         checkConformance(b);
-        if(b instanceof SolidDVector) {
-            SolidDVector sb = (SolidDVector)b;
+        if (b instanceof SolidDVector) {
+            SolidDVector sb = (SolidDVector) b;
             DoubleArrays.div(values, sb.values, 0, size);
             return this;
         }

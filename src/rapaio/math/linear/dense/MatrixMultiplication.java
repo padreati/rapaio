@@ -66,7 +66,7 @@ public class MatrixMultiplication {
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                    C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
                 }
             }
         }
@@ -79,7 +79,7 @@ public class MatrixMultiplication {
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                    C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
                 }
             }
         });
@@ -94,7 +94,7 @@ public class MatrixMultiplication {
                 if (A.get(i, k) == 0)
                     continue;
                 for (int j = 0; j < B.colCount(); j++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                    C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
                 }
             }
         }
@@ -108,7 +108,7 @@ public class MatrixMultiplication {
                 if (A.get(i, k) == 0)
                     continue;
                 for (int j = 0; j < B.colCount(); j++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                    C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
                 }
             }
         });
@@ -127,7 +127,7 @@ public class MatrixMultiplication {
         DVector C = SolidDVector.zeros(A.rowCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < A.colCount(); j++) {
-                C.increment(i, A.get(i, j) * b.get(j));
+                C.set(i, C.get(i) + A.get(i, j) * b.get(j));
             }
         });
         return C;
@@ -160,8 +160,7 @@ public class MatrixMultiplication {
                                 sum += A.get(i, k) * B.get(k, j);
                             }
                             // Set Cij := sum
-                            C.increment(i, j, sum);
-
+                            C.set(i, j, C.get(i, j) + sum);
                         }
                     }
 
