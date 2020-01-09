@@ -121,23 +121,6 @@ public class SolidDVectorTest {
     }
 
     @Test
-    void incrementTest() {
-        DVector x = SolidDVector.from(VarDouble.seq(0, 1, 0.01));
-        DVector y = x.copy();
-        for (int i = 0; i < y.size(); i++) {
-            int sign = i % 2 == 0 ? 1 : -1;
-            y.set(i, y.get(i) + sign * 10);
-        }
-        for (int i = 0; i < y.size(); i++) {
-            if (i % 2 == 0) {
-                assertEquals(x.get(i) + 10, y.get(i), TOL);
-            } else {
-                assertEquals(x.get(i) - 10, y.get(i), TOL);
-            }
-        }
-    }
-
-    @Test
     void setterTest() {
         DVector y = SolidDVector.zeros(N);
         for (int i = 0; i < y.size(); i++) {
@@ -221,18 +204,18 @@ public class SolidDVectorTest {
     }
 
     @Test
-    void meanVarTest() {
-        assertEquals(Mean.of(varx).value(), x.mean(), 1e-12);
-        assertEquals(Variance.of(varx).value(), x.variance(), 1e-12);
-    }
-
-    @Test
     void normalizeTest() {
         DVector y = x.copy().normalize(1.5);
         double norm = x.norm(1.5);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / norm, y.get(i), TOL);
         }
+    }
+
+    @Test
+    void meanVarTest() {
+        assertEquals(Mean.of(varx).value(), x.mean(), 1e-12);
+        assertEquals(Variance.of(varx).value(), x.variance(), 1e-12);
     }
 
     @Test

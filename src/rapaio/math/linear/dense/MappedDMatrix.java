@@ -27,6 +27,7 @@
 
 package rapaio.math.linear.dense;
 
+import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
@@ -36,7 +37,7 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class MappedDMatrix implements DMatrix {
+public class MappedDMatrix extends AbstractDMatrix {
 
     private static final long serialVersionUID = -3840785397560969659L;
 

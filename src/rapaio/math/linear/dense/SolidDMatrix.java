@@ -31,26 +31,19 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
 import rapaio.util.function.IntIntDoubleBiFunction;
 
 import java.util.Arrays;
-import java.util.stream.DoubleStream;
 
 /**
  * Dense matrix with values in double floating point precision.
  * Values are stored in arrays of arrays with first array holding row references
  * and secondary level arrays being the row arrays.
  */
-public class SolidDMatrix extends AbstractDMatrix {
+public class SolidDMatrix extends BaseDMatrix {
 
     private static final long serialVersionUID = -2186520026933442642L;
-
-    private final int rowCount;
-    private final int colCount;
-    private final double[][] values;
 
     /**
      * Builds a zero filled matrix with n rows and m columns
@@ -188,35 +181,11 @@ public class SolidDMatrix extends AbstractDMatrix {
     }
 
     private SolidDMatrix(int rowCount, int colCount) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = new double[rowCount][colCount];
+        super(rowCount, colCount);
     }
 
     private SolidDMatrix(int rowCount, int colCount, double[][] values) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = values;
-    }
-
-    @Override
-    public int rowCount() {
-        return rowCount;
-    }
-
-    @Override
-    public int colCount() {
-        return colCount;
-    }
-
-    @Override
-    public double get(int row, int col) {
-        return values[row][col];
-    }
-
-    @Override
-    public void set(int row, int col, double value) {
-        values[row][col] = value;
+        super(rowCount, colCount, values);
     }
 
     @Override
@@ -224,33 +193,10 @@ public class SolidDMatrix extends AbstractDMatrix {
         SolidDMatrix t = new SolidDMatrix(colCount, rowCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
-                t.set(j, i, get(i, j));
+                t.values[j][i] = get(i, j);
             }
         }
         return t;
-    }
-
-    @Override
-    public SolidDVector mapCol(int i) {
-        SolidDVector v = SolidDVector.zeros(rowCount);
-        for (int j = 0; j < rowCount; j++) {
-            v.set(j, get(j, i));
-        }
-        return v;
-    }
-
-    @Override
-    public DVector mapRow(int i) {
-        SolidDVector v = SolidDVector.zeros(colCount);
-        for (int j = 0; j < colCount; j++) {
-            v.set(j, get(i, j));
-        }
-        return v;
-    }
-
-    @Override
-    public DoubleStream valueStream() {
-        return Arrays.stream(values).flatMapToDouble(Arrays::stream);
     }
 
     @Override

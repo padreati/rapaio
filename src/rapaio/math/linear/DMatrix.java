@@ -31,8 +31,6 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
 import rapaio.math.MTools;
-import rapaio.math.linear.dense.MappedDMatrix;
-import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
@@ -41,9 +39,6 @@ import rapaio.printer.format.Format;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
@@ -64,6 +59,8 @@ public interface DMatrix extends Serializable, Printable {
     int colCount();
 
     /**
+     * Getter for value found at given row and column index.
+     *
      * @param row row index
      * @param col column index
      * @return value at given row index and column index
@@ -83,17 +80,9 @@ public interface DMatrix extends Serializable, Printable {
 
     DVector mapRow(int row);
 
-    default DMatrix mapRows(int... indexes) {
-        return new MappedDMatrix(this, true, indexes);
-    }
+    DMatrix mapRows(int... indexes);
 
-    default DMatrix rangeRows(int start, int end) {
-        int[] rows = new int[end - start];
-        for (int i = start; i < end; i++) {
-            rows[i - start] = i;
-        }
-        return new MappedDMatrix(this, true, rows);
-    }
+    DMatrix rangeRows(int start, int end);
 
     /**
      * Builds a new matrix having all columns and all the rows not specified by given indexes
@@ -101,100 +90,32 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    default DMatrix removeRows(int... indexes) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] rows = new int[rowCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            if (rem.contains(i))
-                continue;
-            rows[pos++] = i;
-        }
-        return new MappedDMatrix(this, true, rows);
-    }
+    DMatrix removeRows(int... indexes);
 
-    default DMatrix mapCols(int... indexes) {
-        return new MappedDMatrix(this, false, indexes);
-    }
+    DMatrix mapCols(int... indexes);
 
-    default DMatrix rangeCols(int start, int end) {
-        int[] cols = new int[end - start];
-        for (int i = start; i < end; i++) {
-            cols[i - start] = i;
-        }
-        return new MappedDMatrix(this, false, cols);
-    }
+    DMatrix rangeCols(int start, int end);
 
-    default DMatrix removeCols(int... indexes) {
-        Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] cols = new int[colCount() - rem.size()];
-        int pos = 0;
-        for (int i = 0; i < colCount(); i++) {
-            if (rem.contains(i))
-                continue;
-            cols[pos++] = i;
-        }
-        return new MappedDMatrix(this, false, cols);
-    }
+    DMatrix removeCols(int... indexes);
 
     /**
      * @return new transposed matrix
      */
     DMatrix t();
 
-    default DMatrix dot(DMatrix B) {
-        return MatrixMultiplication.ikjParallel(this, B);
-    }
+    DMatrix plus(double x);
 
-    default DVector dot(DVector b) {
-        return MatrixMultiplication.ikjParallel(this, b);
-    }
+    DMatrix plus(DMatrix B);
 
-    default DMatrix dot(double x) {
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) * x);
-            }
-        }
-        return this;
-    }
+    DMatrix minus(double x);
 
-    default DMatrix plus(double x) {
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) + x);
-            }
-        }
-        return this;
-    }
+    DMatrix minus(DMatrix B);
 
-    default DMatrix plus(DMatrix B) {
-        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
-            throw new IllegalArgumentException(String.format(
-                    "Matrices are not conform for addition: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) + B.get(i, j));
-            }
-        }
-        return this;
-    }
+    DMatrix dot(double x);
 
-    default DMatrix minus(double x) {
-        return plus(-x);
-    }
+    DVector dot(DVector b);
 
-    default DMatrix minus(DMatrix B) {
-        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
-            throw new IllegalArgumentException(String.format(
-                    "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) - B.get(i, j));
-            }
-        }
-        return this;
-    }
+    DMatrix dot(DMatrix B);
 
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared

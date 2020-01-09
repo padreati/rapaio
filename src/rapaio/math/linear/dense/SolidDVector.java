@@ -30,7 +30,6 @@ package rapaio.math.linear.dense;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.AbstractDVector;
 import rapaio.math.linear.DVector;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.DoubleDoubleFunction;
@@ -40,7 +39,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
-public class SolidDVector extends AbstractDVector {
+public class SolidDVector extends BaseDVector {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
@@ -143,71 +142,37 @@ public class SolidDVector extends AbstractDVector {
         return new SolidDVector(len, DoubleArrays.newFrom(0, len, fun));
     }
 
-    // internals
-
-    private final int size;
-    private final double[] values;
-
-    private SolidDVector(int size, double[] values) {
-        this.size = size;
-        this.values = values;
+    protected SolidDVector(int len, double[] values) {
+        super(len, values);
     }
 
     @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public double get(int i) {
-        return values[i];
-    }
-
-    @Override
-    public void set(int i, double value) {
-        values[i] = value;
-    }
-
-    @Override
-    public DVector plus(double x) {
+    public BaseDVector plus(double x) {
         DoubleArrays.plus(values, x, 0, size);
         return this;
     }
 
     @Override
-    public DVector plus(DVector b) {
-        checkConformance(b);
-
+    public BaseDVector plus(DVector b) {
         if (b instanceof SolidDVector) {
+            checkConformance(b);
             SolidDVector sb = (SolidDVector) b;
             DoubleArrays.plus(values, sb.values, 0, size);
             return this;
         }
-
-        for (int i = 0; i < size(); i++) {
-            values[i] += b.get(i);
-        }
+        super.plus(b);
         return this;
     }
 
     @Override
-    public DVector minus(double x) {
-        DoubleArrays.minus(values, x, 0, size);
-        return this;
-    }
-
-    @Override
-    public DVector minus(DVector b) {
-        checkConformance(b);
+    public BaseDVector minus(DVector b) {
         if (b instanceof SolidDVector) {
+            checkConformance(b);
             SolidDVector sb = (SolidDVector) b;
             DoubleArrays.minus(values, sb.values, 0, size);
             return this;
         }
-
-        for (int i = 0; i < size(); i++) {
-            values[i] -= b.get(i);
-        }
+        super.minus(b);
         return this;
     }
 
@@ -225,12 +190,9 @@ public class SolidDVector extends AbstractDVector {
             DoubleArrays.times(values, sb.values, 0, size);
             return this;
         }
-        for (int i = 0; i < size; i++) {
-            values[i] *= b.get(i);
-        }
+        super.times(b);
         return this;
     }
-
 
     @Override
     public DVector div(double scalar) {
