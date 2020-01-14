@@ -103,8 +103,6 @@ public abstract class AbstractDVector implements DVector {
             double max = Double.NaN;
             for (int i = 0; i < size(); i++) {
                 double value = get(i);
-                if (Double.isNaN(value))
-                    continue;
                 if (Double.isNaN(max)) {
                     max = value;
                 } else {

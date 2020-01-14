@@ -987,6 +987,4 @@ public class MTools {
     public static double floorMod(double a, double n) {
         return a - n * Math.floor(a / n);
     }
-
-
 }

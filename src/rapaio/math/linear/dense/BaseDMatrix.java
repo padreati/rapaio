@@ -10,20 +10,24 @@ import java.util.stream.DoubleStream;
  * Basic implementation of a matrix which uses array of arrays. This implementation
  * uses only API interface for implementations. The purpose of this implementation is to
  * offer default implementation baselines for all specialization matrices.
- *
+ * <p>
  * On purpose, this implementation helps implementers in two purposes:
  * <ul>
  *     <li>offers a performance baseline for specific implementations</li>
  *     <li>offers a skeleton implementation to make performance improvement development possible
  *     in an incremental manner</li>
  * </ul>
- *
+ * <p>
  * This class is a reference implementation and it is not intended to be used in
  * performance critical operations.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
 public class BaseDMatrix extends AbstractDMatrix {
+
+    public static BaseDMatrix empty(int rowCount, int colCount) {
+        return new BaseDMatrix(rowCount, colCount);
+    }
 
     private static final long serialVersionUID = -7586346894985345827L;
 

@@ -124,7 +124,7 @@ public final class Confusion implements Printable {
         } else {
             acc = acc / completeCases;
         }
-        cmProbability.plus(cmFrequency).dot(1.0 / completeCases);
+        cmProbability.plus(cmFrequency).times(1.0 / completeCases);
 
         if (binary) {
             tp = cmFrequency.get(0, 0);

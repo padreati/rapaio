@@ -95,7 +95,7 @@ public class QRDecompositionTest {
             QRDecomposition qr = QRDecomposition.from(a);
 
             DMatrix h = qr.getH();
-            DMatrix p = SolidDMatrix.identity(10).minus(h.dot(2).dot(h.t()));
+            DMatrix p = SolidDMatrix.identity(10).minus(h.times(2).dot(h.t()));
 
             // p is hermitian
             assertTrue(p.isEqual(p.t(), TOL));

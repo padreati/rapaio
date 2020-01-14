@@ -27,16 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
-import rapaio.data.VarDouble;
-import rapaio.math.MTools;
-import rapaio.math.linear.dense.SVDecomposition;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
-import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;
@@ -65,7 +56,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param col column index
      * @return value at given row index and column index
      */
-    double get(int row, int col);
+    double get(final int row, final int col);
 
     /**
      * Sets value at the given row and column indexes
@@ -74,48 +65,277 @@ public interface DMatrix extends Serializable, Printable {
      * @param col   column index
      * @param value value to be set
      */
-    void set(int row, int col, double value);
+    void set(final int row, int col, final double value);
 
-    DVector mapCol(int col);
+    /**
+     * Returns a vector build from values of a row in
+     * the original matrix. Depending on implementation,
+     * the vector can be a view over the original data.
+     * If one wants a copy of a row as a vector than
+     * she must call {@link #mapRowCopy(int)}.
+     *
+     * @param row row index
+     * @return result vector reference
+     */
+    DVector mapRow(final int row);
 
-    DVector mapRow(int row);
+    /**
+     * Returns a vector build from values of a row
+     * in original matrix. The vector contains a copy of
+     * the original values.
+     *
+     * @param row row index
+     * @return result vector reference
+     */
+    DVector mapRowCopy(final int row);
 
-    DMatrix mapRows(int... indexes);
+    /**
+     * Creates a new matrix which contains only the rows
+     * specified by given indexes. Depending on the implementation
+     * the new matrix can be a view on the original data. If one
+     * wants a copied matrix, she must call {@link #mapRowsCopy(int...)}
+     *
+     * @param rows row indexes
+     * @return result matrix reference
+     */
+    DMatrix mapRows(int... rows);
 
+    /**
+     * Creates a new matrix which contains only the rows
+     * specified by given indexes. The new matrix is a copy
+     * over the original data.
+     *
+     * @param rows row indexes
+     * @return result matrix reference
+     */
+    DMatrix mapRowsCopy(int... rows);
+
+    /**
+     * Creates a new matrix which contains only rows with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive. Depending on the implementation
+     * the new matrix can be a view. To obtain a copy method
+     * {@link #rangeRowsCopy(int, int)} must be called.
+     *
+     * @param start start row index (inclusive)
+     * @param end end row index (exclusive)
+     * @return result matrix reference
+     */
     DMatrix rangeRows(int start, int end);
 
     /**
-     * Builds a new matrix having all columns and all the rows not specified by given indexes
+     * Creates a new matrix which contains only rows with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive. The new matrix contains a
+     * copy of the data.
+     *
+     * @param start start row index (inclusive)
+     * @param end end row index (exclusive)
+     * @return result matrix reference
+     */
+    DMatrix rangeRowsCopy(int start, int end);
+
+    /**
+     * Builds a new matrix having all columns and all the rows not specified by given indexes.
+     * Depending on the implementation this can be a view over the original matrix.
+     * To obtain a new copy of the data method {@link #removeRowsCopy(int...)} must be called.
+     *
+     * @param rows rows which will be removed
+     * @return new mapped matrix containing all rows not specified by indexes
+     */
+    DMatrix removeRows(int... rows);
+
+    /**
+     * Builds a new matrix having all columns and all the rows not specified by given indexes.
+     * containg a copy of the original data.
      *
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeRows(int... indexes);
-
-    DMatrix mapCols(int... indexes);
-
-    DMatrix rangeCols(int start, int end);
-
-    DMatrix removeCols(int... indexes);
+    DMatrix removeRowsCopy(int... indexes);
 
     /**
+     * Returns a vector build from values of a column in
+     * the original matrix. Depending on implementation,
+     * the vector can be a view over the original array.
+     * If one wants a copy of a column as a vector than
+     * she must call {@link #mapColCopy(int)}.
+     *
+     * @param col column index
+     * @return result vector reference
+     */
+    DVector mapCol(final int col);
+
+    /**
+     * Returns a vector build from values of a column
+     * in original matrix. The vector contains a copy of
+     * the original values.
+     *
+     * @param col column index
+     * @return result vector reference
+     */
+    DVector mapColCopy(final int col);
+
+    /**
+     * Creates a new matrix which contains only the cols
+     * specified by given indexes. Depending on the implementation
+     * the new matrix can be a view on the original data. If one
+     * wants a copied matrix, she must call {@link #mapColsCopy(int...)}
+     *
+     * @param indexes column indexes
+     * @return result matrix reference
+     */
+    DMatrix mapCols(int... indexes);
+
+    /**
+     * Creates a new matrix which contains only the cols
+     * specified by given indexes. The new matrix is a copy
+     * over the original data.
+     *
+     * @param cols column indexes
+     * @return result matrix reference
+     */
+    DMatrix mapColsCopy(int... cols);
+
+    /**
+     * Creates a new matrix which contains only cols with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive. Depending on the implementation
+     * the new matrix can be a view. To obtain a copy method
+     * {@link #rangeColsCopy(int, int)} must be called.
+     *
+     * @param start start column index (inclusive)
+     * @param end end column index (exclusive)
+     * @return result matrix reference
+     */
+    DMatrix rangeCols(int start, int end);
+
+    /**
+     * Creates a new matrix which contains only columns with
+     * indices in the given range starting from {@param start} inclusive
+     * and ending at {@param end} exclusive. The new matrix contains a
+     * copy of the data.
+     *
+     * @param start start column index (inclusive)
+     * @param end end column index (exclusive)
+     * @return result matrix reference
+     */
+    DMatrix rangeColsCopy(int start, int end);
+
+    /**
+     * Builds a new matrix having all columns not specified by given indexes.
+     * Depending on the implementation this can be a view over the original matrix.
+     * To obtain a new copy of the data method {@link #removeColsCopy(int...)} must be called.
+     *
+     * @param cols columns which will be removed
+     * @return new mapped matrix containing all rows not specified by indexes
+     */
+    DMatrix removeCols(int... cols);
+
+    /**
+     * Builds a new matrix having all columns not specified by given indexes.
+     * containg a copy of the original data.
+     *
+     * @param cols columns which will be removed
+     * @return new mapped matrix containing all rows not specified by indexes
+     */
+    DMatrix removeColsCopy(int... cols);
+
+    /**
+     * Creates an instance of a transposed matrix. Depending on implementation
+     * this can be a view of the original data.
+     *
      * @return new transposed matrix
      */
     DMatrix t();
 
+    /**
+     * Adds a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be added
+     * @return instance of the result matrix
+     */
     DMatrix plus(double x);
 
-    DMatrix plus(DMatrix B);
+    /**
+     * Adds element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be added
+     * @return instance of the result matrix
+     */
+    DMatrix plus(DMatrix b);
 
+    /**
+     * Substract a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be substracted
+     * @return instance of the result matrix
+     */
     DMatrix minus(double x);
 
-    DMatrix minus(DMatrix B);
+    /**
+     * Substracts element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be substracted
+     * @return instance of the result matrix
+     */
+    DMatrix minus(DMatrix b);
 
-    DMatrix dot(double x);
+    /**
+     * Multiply a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be multiplied with
+     * @return instance of the result matrix
+     */
+    DMatrix times(double x);
 
+    /**
+     * Multiplies element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be multiplied with
+     * @return instance of the result matrix
+     */
+    DMatrix times(DMatrix b);
+
+    /**
+     * Divide a scalar value from all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x divisor value
+     * @return instance of the result matrix
+     */
+    DMatrix div(double x);
+
+    /**
+     * Divides element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with division elements
+     * @return instance of the result matrix
+     */
+    DMatrix div(DMatrix b);
+
+    /**
+     * Computes matrix vector multiplication.
+     *
+     * @param b vector to be multiplied with
+     * @return result vector
+     */
     DVector dot(DVector b);
 
-    DMatrix dot(DMatrix B);
+    /**
+     * Computes matrix - matrix multiplication.
+     *
+     * @param b matrix to be multiplied with
+     * @return matrix result
+     */
+    DMatrix dot(DMatrix b);
 
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
@@ -124,101 +344,36 @@ public interface DMatrix extends Serializable, Printable {
      *
      * @return value of the matrix trace
      */
-    default double trace() {
-        if(rowCount()!=colCount()) {
-            throw new IllegalArgumentException("Matrix is not squared, trace of the matrix is not defined.");
-        }
-        double sum = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            sum += get(i, i);
-        }
-        return sum;
-    }
+    double trace();
 
     /**
-     * Matrix rank
+     * Matrix rank obtained using singular value decomposition.
      *
      * @return effective numerical rank, obtained from SVD.
      */
-    default int rank() {
-        return SVDecomposition.from(this).rank();
-    }
-
-    default Mean mean() {
-        VarDouble values = VarDouble.empty();
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                values.addDouble(get(i, j));
-            }
-        }
-        return Mean.of(values);
-    }
-
-    default Variance var() {
-        VarDouble values = VarDouble.empty();
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                values.addDouble(get(i, j));
-            }
-        }
-        return Variance.of(values);
-    }
+    int rank();
 
     /**
-     * Diagonal vector of values
+     * Vector with values from main diagonal
      */
-    default DVector diag() {
-        DVector DVector = SolidDVector.zeros(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
-            DVector.set(i, get(i, i));
-        }
-        return DVector;
-    }
+    DVector diag();
 
-    default DMatrix scatter() {
-        DMatrix scatter = SolidDMatrix.empty(colCount(), colCount());
-        double[] mean = new double[colCount()];
-        for (int i = 0; i < colCount(); i++) {
-            mean[i] = mapCol(i).mean();
-        }
-        for (int k = 0; k < rowCount(); k++) {
-            double[] row = new double[colCount()];
-            for (int i = 0; i < colCount(); i++)
-                row[i] = get(k, i) - mean[i];
-            for (int i = 0; i < row.length; i++) {
-                for (int j = 0; j < row.length; j++) {
-                    scatter.set(i, j, scatter.get(i, j) + row[i] * row[j]);
-                }
-            }
-        }
-        return scatter;
-    }
+    /**
+     * Computes scatter matrix.
+     *
+     * @return scatter matrix instance
+     */
+    DMatrix scatter();
 
-    ///////////////////////
-    // other tools
-    ///////////////////////
-
-    default DVector rowValueMax() {
-        SolidDVector max = SolidDVector.copy(mapCol(0));
-        for (int i = 1; i < colCount(); i++) {
-            for (int j = 0; j < rowCount(); j++) {
-                if(max.get(j) < get(j, i)) {
-                    max.set(j, get(j, i));
-                }
-            }
-        }
-        return max;
-    }
-
-    default DVector rowSum() {
-        SolidDVector sum = SolidDVector.zeros(rowCount());
-        for (int i = 0; i < colCount(); i++) {
-            for (int j = 0; j < rowCount(); j++) {
-                sum.set(j, sum.get(j) + get(j, i));
-            }
-        }
-        return sum;
-    }
+    /**
+     * Builds a vector with maximum values fro rows.
+     * Thus if a matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the maximum
+     * value from the row with position as index.
+     *
+     * @return vector with result values
+     */
+    DVector rowValueMax();
 
     /**
      * Does not override equals since this is a costly
@@ -227,83 +382,39 @@ public interface DMatrix extends Serializable, Printable {
      * @param DMatrix given matrix
      * @return true if dimension and elements are equal
      */
-    default boolean isEqual(DMatrix DMatrix) {
-        return isEqual(DMatrix, 1e-20);
-    }
+    boolean isEqual(DMatrix DMatrix);
 
-    default boolean isEqual(DMatrix DMatrix, double tol) {
-        if (rowCount() != DMatrix.rowCount())
-            return false;
-        if (colCount() != DMatrix.colCount())
-            return false;
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                if (!MTools.eq(get(i, j), DMatrix.get(i, j), tol))
-                    return false;
-            }
-        }
-        return true;
-    }
+    /**
+     * Compares matrices using a tolerance for values.
+     * If the absolute difference between two values is less
+     * than the specified tolerance, than the values are
+     * considered equal.
+     *
+     * @param DMatrix matrix to compare with
+     * @param tol tolerance
+     * @return true if dimensions and elements are equal
+     */
+    boolean isEqual(DMatrix DMatrix, double tol);
 
+    /**
+     * Stream of double values, the element order is not guaranteed,
+     * it depends on the implementation.
+     *
+     * @return double value stream
+     */
     DoubleStream valueStream();
 
+    /**
+     * Creates a copy of a matrix.
+     *
+     * @return copy matrix reference
+     */
     DMatrix copy();
 
-    default String toSummary() {
-
-        StringBuilder sb = new StringBuilder();
-
-        String[][] m = new String[rowCount()][colCount()];
-        int max = 1;
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                m[i][j] = Format.floatShort(get(i, j));
-                max = Math.max(max, m[i][j].length() + 1);
-            }
-        }
-        max = Math.max(max, String.format("[,%d]", rowCount()).length());
-        max = Math.max(max, String.format("[%d,]", colCount()).length());
-
-        int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
-        int vCount = Math.min(rowCount() + 1, 101);
-        int hLast = 0;
-        while (hLast < colCount()) {
-
-            // take vertical stripes
-
-            int hStart = hLast;
-            int hEnd = Math.min(hLast + hCount, colCount());
-            int vLast = 0;
-
-            while (vLast < rowCount()) {
-
-                // print rows
-
-                int vStart = vLast;
-                int vEnd = Math.min(vLast + vCount, rowCount());
-
-                for (int i = vStart; i <= vEnd; i++) {
-                    for (int j = hStart; j <= hEnd; j++) {
-                        if (i == vStart && j == hStart) {
-                            sb.append(String.format("%" + (max) + "s| ", ""));
-                            continue;
-                        }
-                        if (i == vStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d|", j - 1));
-                            continue;
-                        }
-                        if (j == hStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d |", i - 1));
-                            continue;
-                        }
-                        sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
-                    }
-                    sb.append("\n");
-                }
-                vLast = vEnd;
-            }
-            hLast = hEnd;
-        }
-        return sb.toString();
-    }
+    /**
+     * Builds a summary of the matrix.
+     *
+     * @return string which contains matrix summary
+     */
+    String toSummary();
 }

@@ -60,7 +60,7 @@ public class ConfusionTest {
                 {0, 1, 4}});
 
         assertTrue(frequency.isEqual(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().dot(1 / 11.0).isEqual(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().times(1 / 11.0).isEqual(cm.probabilityMatrix()));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ConfusionTest {
 
         DMatrix frequency = SolidDMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.isEqual(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().dot(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().times(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);

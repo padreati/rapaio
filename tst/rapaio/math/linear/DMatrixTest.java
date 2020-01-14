@@ -119,25 +119,13 @@ public class DMatrixTest {
     void dotTest() {
 
         DMatrix a1 = SolidDMatrix.random(10, 10);
-        DMatrix a2 = a1.copy().dot(2);
+        DMatrix a2 = a1.copy().times(2);
         DMatrix a3 = a1.copy().plus(a1);
 
         assertTrue(a2.isEqual(a3, TOL));
 
         DMatrix i10 = SolidDMatrix.identity(10);
         assertTrue(a1.isEqual(a1.dot(i10), TOL));
-    }
-
-    @Test
-    void meanVarTest() {
-        DMatrix a1 = SolidDMatrix.wrap(new double[][]{
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9}
-        });
-
-        assertEquals(5, a1.mean().value(), TOL);
-        assertEquals(7.5, a1.var().value(), TOL);
     }
 
     @Test
@@ -187,6 +175,6 @@ public class DMatrixTest {
                 {360.0, 360.0, 0.0},
                 {180.0, 0.0, 720.0}
         });
-        assertTrue(s3.isEqual(a3.scatter().dot(1.0 / a3.rowCount())));
+        assertTrue(s3.isEqual(a3.scatter().times(1.0 / a3.rowCount())));
     }
 }
