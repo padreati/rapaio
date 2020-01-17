@@ -39,6 +39,7 @@ public class Format {
     private static DecimalFormat formatDecLong = new DecimalFormat();
     private static DecimalFormat formatDecFlex = new DecimalFormat();
     private static DecimalFormat formatDecFlexShort = new DecimalFormat();
+    private static DecimalFormat formatDecFlexLong = new DecimalFormat();
 
     static {
         formatDecShort.setMinimumIntegerDigits(1);
@@ -56,6 +57,9 @@ public class Format {
         formatDecFlexShort.setMinimumFractionDigits(0);
         formatDecFlexShort.setMaximumFractionDigits(3);
         formatDecFlexShort.setMinimumIntegerDigits(1);
+        formatDecFlexLong.setMinimumFractionDigits(0);
+        formatDecFlexLong.setMaximumFractionDigits(12);
+        formatDecFlexLong.setMinimumIntegerDigits(1);
     }
 
     private Format() {
@@ -87,6 +91,13 @@ public class Format {
         if (Double.isInfinite(value))
             return Double.toString(value);
         return formatDecFlexShort.format(value);
+    }
+    public static String floatFlexLong(double value) {
+        if (Double.isNaN(value))
+            return "?";
+        if (Double.isInfinite(value))
+            return Double.toString(value);
+        return formatDecFlexLong.format(value);
     }
 
     public static String pValueStars(double pValue) {

@@ -31,19 +31,48 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.StandardDMatrixTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SolidDMatrixTest {
+public class SolidDMatrixTest extends StandardDMatrixTest {
 
-    private static final double TOL = 1e-20;
+    @Override
+    protected DMatrix generateSequential(int n, int m) {
+        SolidDMatrix matrix = SolidDMatrix.empty(n, m);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                matrix.set(i, j, i * m + j);
+            }
+        }
+        return matrix;
+    }
+
+    @Override
+    protected DMatrix generateIdentity(int n) {
+        return SolidDMatrix.identity(n);
+    }
+
+    @Override
+    protected DMatrix generateFill(int n, int m, double fill) {
+        return SolidDMatrix.fill(n, m, fill);
+    }
+
+    @Override
+    protected DMatrix generateWrap(double[][] values) {
+        return SolidDMatrix.wrap(values);
+    }
+
+    @Override
+    protected String className() {
+        return "SolidDMatrix";
+    }
 
     @Test
     void buildersTest() {
 
         DMatrix i3 = SolidDMatrix.identity(3);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
                     assertEquals(1.0, i3.get(i, j), TOL);
@@ -51,11 +80,14 @@ public class SolidDMatrixTest {
                     assertEquals(0.0, i3.get(i, j), TOL);
                 }
             }
+        }
 
         DMatrix empty = SolidDMatrix.empty(3, 4);
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 4; j++) {
                 assertEquals(0, empty.get(i, j), TOL);
+            }
+        }
 
 
         DMatrix fill = SolidDMatrix.fill(3, 4, 12);
@@ -112,70 +144,9 @@ public class SolidDMatrixTest {
         }
 
         DMatrix copy5 = SolidDMatrix.copy(m, 1, 3, 1, 4);
-        assertEquals("       |      0|     1|     2|\n" +
-                "     0 |  6.000  7.000  8.000\n" +
-                "     1 | 10.000 11.000 12.000\n", copy5.toSummary());
-    }
+        assertTrue(copy5.isEqual(SolidDMatrix.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
-    @Test
-    void testMappings() {
-
-        double[][] values = new double[][]{
-                {1, 2, 3, 4},
-                {5, 6, 7, 8},
-                {9, 10, 11, 12}
-        };
-
-        DMatrix x = SolidDMatrix.copy(values);
-        DMatrix x_t = x.t();
-        DMatrix y = x_t.t();
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                double v = values[i][j];
-                assertEquals(v, x.get(i, j), TOL);
-                assertEquals(v, x_t.get(j, i), TOL);
-                assertEquals(v, y.get(i, j), TOL);
-            }
-        }
-
-        double[] col = new double[]{2, 6, 10};
-        DVector vcol = x.mapCol(1);
-        for (int i = 0; i < col.length; i++) {
-            assertEquals(col[i], vcol.get(i), TOL);
-        }
-
-        double[] row = new double[]{5, 6, 7, 8};
-        DVector vrow = x.mapRow(1);
-        for (int i = 0; i < row.length; i++) {
-            assertEquals(row[i], vrow.get(i), TOL);
-        }
-
-        double[] vals = x.valueStream().toArray();
-        for (int i = 0; i < vals.length; i++) {
-            assertEquals(i + 1, vals[i], TOL);
-        }
-
-        DMatrix xx = x.copy();
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < x.colCount(); j++) {
-                assertEquals(x.get(i, j), xx.get(i, j), TOL);
-            }
-        }
-    }
-
-    @Test
-    void testOps() {
-        DMatrix x = SolidDMatrix.empty(2, 2);
-        x.set(0, 0, 1);
-        x.set(0, 1, x.get(0, 1) + 2);
-        x.set(1, 0, 3);
-        x.set(1, 1, x.get(1, 1) + 6);
-        x.set(1, 1, x.get(1, 1) - 2);
-
-        double[] vals = new double[]{1, 2, 3, 4};
-        double[] xvals = x.valueStream().toArray();
-
-        assertArrayEquals(vals, xvals, TOL);
+        DMatrix copy6 = SolidDMatrix.random(2, 2);
+        assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());
     }
 }

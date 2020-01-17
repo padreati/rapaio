@@ -1,31 +1,39 @@
 package rapaio.math.linear.dense;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.math.linear.StandardDVectorTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public class BaseDVectorTest {
+public class BaseDVectorTest extends StandardDVectorTest {
 
-    private static final double TOL = 1e-15;
-    private Normal normal;
-    private double[] values;
-    private BaseDVector x;
+    @Override
+    public DVector generateWrap(double[] values) {
+        return BaseDVector.wrap(values);
+    }
 
-    @BeforeEach
-    void beforeEach() {
-        RandomSource.setSeed(123);
-        normal = Normal.std();
-        values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
-        x = new BaseDVector(100, values);
+    @Override
+    public DVector generateFill(int size, double fill) {
+        double[] array = new double[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = fill;
+        }
+        return BaseDVector.wrap(array);
+    }
+
+    @Override
+    public DVector generateZeros(int size) {
+        return BaseDVector.wrap(new double[size]);
+    }
+
+    @Override
+    public String className() {
+        return "BaseDVector";
     }
 
     @Test

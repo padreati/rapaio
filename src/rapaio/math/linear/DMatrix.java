@@ -366,14 +366,14 @@ public interface DMatrix extends Serializable, Printable {
     DMatrix scatter();
 
     /**
-     * Builds a vector with maximum values fro rows.
+     * Builds a vector with maximum values from rows.
      * Thus if a matrix has m rows and n columns, the resulted vector
      * will have size m and will contain in each position the maximum
-     * value from the row with position as index.
+     * value from the row with that position.
      *
      * @return vector with result values
      */
-    DVector rowValueMax();
+    DVector rowMaxValues();
 
     /**
      * Does not override equals since this is a costly

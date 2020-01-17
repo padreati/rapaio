@@ -151,6 +151,15 @@ public class TextTable {
         }
     }
 
+    public void floatFlexLong(int r, int c, double x) {
+        String text = Format.floatFlexLong(x);
+        if (text.indexOf('.') > -0) {
+            set(r, c, text, 1, '.');
+        } else {
+            set(r, c, text, "");
+        }
+    }
+
     public void intRow(int r, int c, int row) {
         textRight(r, c, '[' + String.valueOf(row) + ']');
     }

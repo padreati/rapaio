@@ -29,6 +29,10 @@ public class BaseDMatrix extends AbstractDMatrix {
         return new BaseDMatrix(rowCount, colCount);
     }
 
+    public static BaseDMatrix wrap(double[][] values) {
+        return new BaseDMatrix(values.length, (values.length == 0) ? 0 : values[0].length, values);
+    }
+
     private static final long serialVersionUID = -7586346894985345827L;
 
     protected final int rowCount;

@@ -160,7 +160,7 @@ public class GBTClassifierModel
 
         // a) Set p_k(x)
 
-        DVector max = f.t().rowValueMax();
+        DVector max = f.t().rowMaxValues();
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
@@ -213,7 +213,7 @@ public class GBTClassifierModel
 
         // make probabilities
 
-        DVector max = p_f.t().rowValueMax();
+        DVector max = p_f.t().rowMaxValues();
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

@@ -1,6 +1,7 @@
 package rapaio.math.linear;
 
-import rapaio.data.SolidFrame;
+import rapaio.printer.format.Format;
+import rapaio.printer.format.TextTable;
 import rapaio.util.function.DoubleDoubleFunction;
 
 /**
@@ -221,23 +222,71 @@ public abstract class AbstractDVector implements DVector {
         return this;
     }
 
-    public String toSummary() {
-        return SolidFrame.byVars(asVarDouble()).toFullContent();
-    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("RV[").append(size()).append("]{");
-        for (int i = 0; i < size(); i++) {
-            if (i > 0) sb.append(",");
-            sb.append(get(i));
-            if (i > 10) {
-                sb.append("...");
-                break;
+        sb.append(this.getClass().getSimpleName()).append("{");
+        sb.append("size:").append(size()).append(", values:");
+        sb.append("[");
+        for (int i = 0; i < Math.min(20, size()); i++) {
+            sb.append(Format.floatFlexLong(get(i)));
+            if (i != size() - 1) {
+                sb.append(",");
             }
         }
-        sb.append("}");
+        if (size() > 20) {
+            sb.append("...");
+        }
+        sb.append("]}");
         return sb.toString();
+    }
+
+    @Override
+    public String toSummary() {
+        return toContent();
+    }
+
+    @Override
+    public String toContent() {
+        int head = 20;
+        int tail = 2;
+
+        boolean full = head + tail >= size();
+
+        if (full) {
+            return toFullContent();
+        }
+
+        int[] rows = new int[Math.min(head + tail + 1, size())];
+        for (int i = 0; i < head; i++) {
+            rows[i] = i;
+        }
+        rows[head] = -1;
+        for (int i = 0; i < tail; i++) {
+            rows[i + head + 1] = i + size() - tail;
+        }
+        TextTable tt = TextTable.empty(rows.length, 2, 0, 1);
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i] == -1) {
+                tt.textCenter(i, 0, "...");
+                tt.textCenter(i, 1, "...");
+            } else {
+                tt.intRow(i, 0, rows[i]);
+                tt.floatFlexLong(i, 1, get(rows[i]));
+            }
+        }
+        return tt.getDynamicText();
+    }
+
+    @Override
+    public String toFullContent() {
+
+        TextTable tt = TextTable.empty(size(), 2, 0, 1);
+        for (int i = 0; i < size(); i++) {
+            tt.intRow(i, 0, i);
+            tt.floatFlexLong(i, 1, get(i));
+        }
+        return tt.getDynamicText();
     }
 }

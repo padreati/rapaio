@@ -27,7 +27,6 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
@@ -316,28 +315,8 @@ public class SolidDVector extends BaseDVector {
         return Arrays.stream(values).limit(size);
     }
 
-    public String toSummary() {
-        return SolidFrame.byVars(VarDouble.wrapArray(size, values)).toFullContent();
-    }
-
     @Override
     public VarDouble asVarDouble() {
         return VarDouble.wrapArray(size, values);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RV[").append(size()).append("]{");
-        for (int i = 0; i < size(); i++) {
-            if (i > 0) sb.append(",");
-            sb.append(values[i]);
-            if (i > 10) {
-                sb.append("...");
-                break;
-            }
-        }
-        sb.append("}");
-        return sb.toString();
     }
 }

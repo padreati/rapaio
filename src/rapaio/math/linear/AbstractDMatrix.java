@@ -7,7 +7,7 @@ import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.format.Format;
-import rapaio.sys.WS;
+import rapaio.printer.format.TextTable;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -21,11 +21,8 @@ public abstract class AbstractDMatrix implements DMatrix {
     private static final long serialVersionUID = -8475836385935066885L;
 
     protected void checkMatrixSameSize(DMatrix b) {
-        if (rowCount() != b.rowCount()) {
-            throw new IllegalArgumentException("Matrix rows count are not the same.");
-        }
-        if (colCount() != b.colCount()) {
-            throw new IllegalArgumentException("Matrix column count are not the same.");
+        if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
+            throw new IllegalArgumentException("Matrices are not conform with this operation.");
         }
     }
 
@@ -337,12 +334,8 @@ public abstract class AbstractDMatrix implements DMatrix {
         return scatter;
     }
 
-    ///////////////////////
-    // other tools
-    ///////////////////////
-
     @Override
-    public DVector rowValueMax() {
+    public DVector rowMaxValues() {
         SolidDVector max = SolidDVector.copy(mapCol(0));
         for (int i = 1; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
@@ -358,23 +351,23 @@ public abstract class AbstractDMatrix implements DMatrix {
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.
      *
-     * @param DMatrix given matrix
+     * @param m given matrix
      * @return true if dimension and elements are equal
      */
     @Override
-    public boolean isEqual(DMatrix DMatrix) {
-        return isEqual(DMatrix, 1e-20);
+    public boolean isEqual(DMatrix m) {
+        return isEqual(m, MTools.SMALL_ERR);
     }
 
     @Override
-    public boolean isEqual(DMatrix DMatrix, double tol) {
-        if (rowCount() != DMatrix.rowCount())
+    public boolean isEqual(DMatrix m, double tol) {
+        if (rowCount() != m.rowCount())
             return false;
-        if (colCount() != DMatrix.colCount())
+        if (colCount() != m.colCount())
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MTools.eq(get(i, j), DMatrix.get(i, j), tol))
+                if (!MTools.eq(get(i, j), m.get(i, j), tol))
                     return false;
             }
         }
@@ -382,61 +375,124 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toSummary() {
-
+    public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append(this.getClass().getSimpleName()).append("{");
+        sb.append("rowCount:").append(rowCount()).append(", colCount:").append(colCount()).append(", values:");
+        sb.append("[");
+        for (int i = 0; i < Math.min(10, rowCount()); i++) {
+            sb.append("[");
+            for (int j = 0; j < Math.min(10, colCount()); j++) {
+                sb.append(Format.floatFlexLong(get(i, j)));
+                if (j != colCount() - 1) {
+                    sb.append(",");
+                }
+            }
+            if (colCount() > 10) {
+                sb.append("...");
+            }
+            sb.append("]");
+            if (i != rowCount() - 1) {
+                sb.append(",");
+            }
+        }
+        if (rowCount() > 10) {
+            sb.append("...");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 
-        String[][] m = new String[rowCount()][colCount()];
-        int max = 1;
+    @Override
+    public String toSummary() {
+        return toContent();
+    }
+
+    @Override
+    public String toContent() {
+        int headRows = 20;
+        int headCols = 20;
+        int tailRows = 2;
+        int tailCols = 2;
+
+        boolean fullRows = headRows + tailRows >= rowCount();
+        boolean fullCols = headCols + tailCols >= colCount();
+
+        if (fullRows && fullCols) {
+            return toFullContent();
+        }
+
+        int[] rows = new int[Math.min(headRows + tailRows + 1, rowCount())];
+
+        if (fullRows) {
+            for (int i = 0; i < rowCount(); i++) {
+                rows[i] = i;
+            }
+        } else {
+            for (int i = 0; i < headRows; i++) {
+                rows[i] = i;
+            }
+            rows[headRows] = -1;
+            for (int i = 0; i < tailRows; i++) {
+                rows[i + headRows + 1] = i + rowCount() - tailRows;
+            }
+        }
+        int[] cols = new int[Math.min(headCols + tailCols + 1, colCount())];
+        if (fullCols) {
+            for (int i = 0; i < colCount(); i++) {
+                cols[i] = i;
+            }
+        } else {
+            for (int i = 0; i < headCols; i++) {
+                cols[i] = i;
+            }
+            cols[headCols] = -1;
+            for (int i = 0; i < tailCols; i++) {
+                cols[i + headCols + 1] = i + colCount() - tailCols;
+            }
+        }
+        TextTable tt = TextTable.empty(rows.length + 1, cols.length + 1, 1, 1);
+        for (int i = 0; i < rows.length; i++) {
+            if (rows[i] == -1) {
+                tt.textCenter(i + 1, 0, "...");
+            } else {
+                tt.intRow(i + 1, 0, rows[i]);
+            }
+        }
+        for (int i = 0; i < cols.length; i++) {
+            if (cols[i] == -1) {
+                tt.textCenter(0, i + 1, "...");
+            } else {
+                tt.intRow(0, i + 1, cols[i]);
+            }
+        }
+        for (int i = 0; i < rows.length; i++) {
+            for (int j = 0; j < cols.length; j++) {
+                if (rows[i] == -1 || cols[j] == -1) {
+                    tt.textCenter(i + 1, j + 1, "...");
+                } else {
+                    tt.floatFlexLong(i + 1, j + 1, get(rows[i], cols[j]));
+                }
+            }
+        }
+        return tt.getDynamicText();
+    }
+
+    @Override
+    public String toFullContent() {
+
+        TextTable tt = TextTable.empty(rowCount() + 1, colCount() + 1, 1, 1);
+        for (int i = 0; i < rowCount(); i++) {
+            tt.intRow(i + 1, 0, i);
+        }
+        for (int i = 0; i < colCount(); i++) {
+            tt.intRow(0, i + 1, i);
+        }
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m[i][j] = Format.floatShort(get(i, j));
-                max = Math.max(max, m[i][j].length() + 1);
+                tt.floatFlexLong(i + 1, j + 1, get(i, j));
             }
         }
-        max = Math.max(max, String.format("[,%d]", rowCount()).length());
-        max = Math.max(max, String.format("[%d,]", colCount()).length());
-
-        int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
-        int vCount = Math.min(rowCount() + 1, 101);
-        int hLast = 0;
-        while (hLast < colCount()) {
-
-            // take vertical stripes
-
-            int hStart = hLast;
-            int hEnd = Math.min(hLast + hCount, colCount());
-            int vLast = 0;
-
-            while (vLast < rowCount()) {
-
-                // print rows
-
-                int vStart = vLast;
-                int vEnd = Math.min(vLast + vCount, rowCount());
-
-                for (int i = vStart; i <= vEnd; i++) {
-                    for (int j = hStart; j <= hEnd; j++) {
-                        if (i == vStart && j == hStart) {
-                            sb.append(String.format("%" + (max) + "s| ", ""));
-                            continue;
-                        }
-                        if (i == vStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d|", j - 1));
-                            continue;
-                        }
-                        if (j == hStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d |", i - 1));
-                            continue;
-                        }
-                        sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
-                    }
-                    sb.append("\n");
-                }
-                vLast = vEnd;
-            }
-            hLast = hEnd;
-        }
-        return sb.toString();
+        return tt.getDynamicText();
     }
 }
