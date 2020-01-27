@@ -2,6 +2,7 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
+import rapaio.util.function.DoubleDoubleFunction;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -69,6 +70,26 @@ public class BaseDMatrix extends AbstractDMatrix {
     @Override
     public void set(int row, int col, double value) {
         values[row][col] = value;
+    }
+
+    @Override
+    public void increment(int row, int col, double value) {
+        values[row][col] += value;
+    }
+
+    @Override
+    public void apply(int row, int col, DoubleDoubleFunction function) {
+        values[row][col] = function.applyAsDouble(values[row][col]);
+    }
+
+    @Override
+    public DMatrix apply(DoubleDoubleFunction fun) {
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < colCount; j++) {
+                values[i][j] = fun.applyAsDouble(values[i][j]);
+            }
+        }
+        return this;
     }
 
     @Override

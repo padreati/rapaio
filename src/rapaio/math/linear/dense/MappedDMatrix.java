@@ -30,6 +30,7 @@ package rapaio.math.linear.dense;
 import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.util.function.DoubleDoubleFunction;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -84,6 +85,16 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
+    public void increment(int row, int col, double value) {
+        ref.increment(rowIndexes[row], colIndexes[col], value);
+    }
+
+    @Override
+    public void apply(int row, int col, DoubleDoubleFunction function) {
+        ref.apply(rowIndexes[row], colIndexes[col], function);
+    }
+
+    @Override
     public SolidDVector mapCol(int i) {
         SolidDVector v = SolidDVector.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
@@ -99,6 +110,16 @@ public class MappedDMatrix extends AbstractDMatrix {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
         return v;
+    }
+
+    @Override
+    public DMatrix apply(DoubleDoubleFunction fun) {
+        for (int row : rowIndexes) {
+            for (int col : colIndexes) {
+                ref.apply(row, col, fun);
+            }
+        }
+        return this;
     }
 
     @Override

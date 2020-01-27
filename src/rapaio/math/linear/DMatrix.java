@@ -28,6 +28,7 @@
 package rapaio.math.linear;
 
 import rapaio.printer.Printable;
+import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;
@@ -66,6 +67,24 @@ public interface DMatrix extends Serializable, Printable {
      * @param value value to be set
      */
     void set(final int row, int col, final double value);
+
+    /**
+     * Increment the value at given position.
+     *
+     * @param row   row index
+     * @param col   column index
+     * @param value value to be added
+     */
+    void increment(final int row, final int col, final double value);
+
+    /**
+     * Set the value at given position with the result of the applied function.
+     *
+     * @param row      row index
+     * @param col      column index
+     * @param function function to be applied
+     */
+    void apply(final int row, final int col, DoubleDoubleFunction function);
 
     /**
      * Returns a vector build from values of a row in
@@ -118,7 +137,7 @@ public interface DMatrix extends Serializable, Printable {
      * {@link #rangeRowsCopy(int, int)} must be called.
      *
      * @param start start row index (inclusive)
-     * @param end end row index (exclusive)
+     * @param end   end row index (exclusive)
      * @return result matrix reference
      */
     DMatrix rangeRows(int start, int end);
@@ -130,7 +149,7 @@ public interface DMatrix extends Serializable, Printable {
      * copy of the data.
      *
      * @param start start row index (inclusive)
-     * @param end end row index (exclusive)
+     * @param end   end row index (exclusive)
      * @return result matrix reference
      */
     DMatrix rangeRowsCopy(int start, int end);
@@ -205,7 +224,7 @@ public interface DMatrix extends Serializable, Printable {
      * {@link #rangeColsCopy(int, int)} must be called.
      *
      * @param start start column index (inclusive)
-     * @param end end column index (exclusive)
+     * @param end   end column index (exclusive)
      * @return result matrix reference
      */
     DMatrix rangeCols(int start, int end);
@@ -217,7 +236,7 @@ public interface DMatrix extends Serializable, Printable {
      * copy of the data.
      *
      * @param start start column index (inclusive)
-     * @param end end column index (exclusive)
+     * @param end   end column index (exclusive)
      * @return result matrix reference
      */
     DMatrix rangeColsCopy(int start, int end);
@@ -338,6 +357,14 @@ public interface DMatrix extends Serializable, Printable {
     DMatrix dot(DMatrix b);
 
     /**
+     * Apply the given function to all elements of the matrix.
+     *
+     * @param fun function to be applied
+     * @return same instance matrix
+     */
+    DMatrix apply(DoubleDoubleFunction fun);
+
+    /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
      * matrix is the sum of the elements from the main diagonal.
      * Otherwise returns an exception.
@@ -391,7 +418,7 @@ public interface DMatrix extends Serializable, Printable {
      * considered equal.
      *
      * @param DMatrix matrix to compare with
-     * @param tol tolerance
+     * @param tol     tolerance
      * @return true if dimensions and elements are equal
      */
     boolean isEqual(DMatrix DMatrix, double tol);
