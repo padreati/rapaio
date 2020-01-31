@@ -41,6 +41,7 @@ import rapaio.ml.classifier.rule.onerule.RuleSet;
 import rapaio.ml.common.Capabilities;
 import rapaio.util.Pair;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -67,7 +68,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         MAJORITY
     }
 
-    public interface Binning {
+    public interface Binning extends Serializable {
 
         String name();
 
