@@ -224,6 +224,7 @@ of production ready tools from this field.
 **Classification**
 
 * ZeroRule
+* OneRule
 
 **Regression**
 
@@ -277,7 +278,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* OneRule
 * Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 * Linear: BinaryLogistic
 * Decision Trees - CTree: DecisionStump, ID3, C45, CART

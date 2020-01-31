@@ -29,7 +29,7 @@ package rapaio.ml.classifier.rule.onerule;
 
 import rapaio.core.tools.DensityVector;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.floatFlexLong;
 
 /**
  * Rule from one rule based algorithm for nominal variables
@@ -56,9 +56,9 @@ public class NominalRule extends Rule {
         return "NominalRule {"
                 + "value=" + testLabel
                 + ", class=" + dv.level(targetIndex)
-                + ", errors=" + floatFlex(getErrorCount())
-                + ", total=" + floatFlex(getTotalCount())
-                + ", acc=" + floatFlex(getAcc())
+                + ", errors=" + floatFlexLong(getErrorCount())
+                + ", total=" + floatFlexLong(getTotalCount())
+                + ", acc=" + floatFlexLong(getAcc())
                 + '}';
     }
 }

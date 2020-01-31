@@ -29,39 +29,61 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
-import rapaio.data.RowComparators;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.VarInt;
-import rapaio.data.filter.VRefSort;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.rule.onerule.HolteBinning;
 import rapaio.ml.classifier.rule.onerule.NominalRule;
 import rapaio.ml.classifier.rule.onerule.NumericRule;
 import rapaio.ml.classifier.rule.onerule.Rule;
 import rapaio.ml.classifier.rule.onerule.RuleSet;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
 import rapaio.util.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<OneRule>>
-        implements Printable {
+public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<OneRule>> {
+
+    public static OneRule newModel() {
+        return new OneRule();
+    }
+
+    public enum MissingHandler {
+        /**
+         * Missing values are treated as a separate category and the prediction is computed only
+         * from the target values which corresponds to missing test values.
+         */
+        CATEGORY,
+        /**
+         * Missing values are ignored from calculations and at prediction time when a missing
+         * value is encountered in test variable the predicted value is the overall training
+         * set maximal value.
+         */
+        MAJORITY
+    }
+
+    public interface Binning {
+
+        String name();
+
+        RuleSet compute(String testVarName, OneRule parent, Frame df, Var weights);
+    }
 
     private static final long serialVersionUID = 6220103690711818091L;
-
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
 
-    private double minCount = 6;
+    private MissingHandler missingHandler = MissingHandler.MAJORITY;
+    private Binning binning = new HolteBinning(3);
     private RuleSet bestRuleSet;
+    private DensityVector missingDensity;
+
+    private OneRule() {
+    }
 
     @Override
     public String name() {
@@ -70,17 +92,46 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
 
     @Override
     public String fullName() {
-        return String.format("OneRule (minCount=%s)", Format.floatFlex(minCount));
+        StringBuilder sb = new StringBuilder();
+        sb.append("OneRule{");
+        sb.append("missingHandler=").append(getMissingHandler().name()).append(",");
+        sb.append("binning=").append(getBinning().name());
+        sb.append("}");
+        return sb.toString();
     }
 
     @Override
     public OneRule newInstance() {
-        return new OneRule().withMinCount(minCount);
+        return newInstanceDecoration(new OneRule())
+                .withMissingHandler(getMissingHandler())
+                .withBinning(getBinning());
     }
 
-    public OneRule withMinCount(double minCount) {
-        this.minCount = minCount;
+    public MissingHandler getMissingHandler() {
+        return missingHandler;
+    }
+
+    public OneRule withMissingHandler(MissingHandler missingHandler) {
+        this.missingHandler = missingHandler;
         return this;
+    }
+
+    public Binning getBinning() {
+        return binning;
+    }
+
+    public OneRule withBinning(Binning binning) {
+        this.binning = binning;
+        return this;
+    }
+
+    /**
+     * Gets best fitted rule set.
+     *
+     * @return best fitted rule set
+     */
+    public RuleSet getBestRuleSet() {
+        return bestRuleSet;
     }
 
     @Override
@@ -100,11 +151,10 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         for (String testCol : inputNames()) {
             RuleSet ruleSet;
             switch (df.rvar(testCol).type()) {
-                case BINARY:
                 case INT:
                 case DOUBLE:
                 case LONG:
-                    ruleSet = buildNumeric(testCol, df, weights);
+                    ruleSet = binning.compute(testCol, this, df, weights);
                     break;
                 default:
                     ruleSet = buildNominal(testCol, df, weights);
@@ -113,11 +163,20 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
                 bestRuleSet = ruleSet;
             }
         }
-        return true;
+
+        missingDensity = DensityVector.fromWeights(false, df.rvar(firstTargetName()), weights);
+
+        return bestRuleSet != null;
     }
 
     @Override
     protected ClassifierResult<OneRule> corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
+
+        if (bestRuleSet == null) {
+            log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
+            throw new IllegalStateException("Best rule not found. Either the classifier was not trained, either something went wrong.");
+        }
+
         ClassifierResult<OneRule> pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DensityVector> p = predict(test, i);
@@ -126,10 +185,9 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
             }
             if (withDensities) {
                 List<String> dict = firstTargetLevels();
-                DensityVector dv = p._2.copy();
-                dv.normalize();
+                DensityVector density = p._2.copy().normalize();
                 for (int j = 0; j < dict.size(); j++) {
-                    pred.firstDensity().setDouble(i, j, dv.get(j));
+                    pred.firstDensity().setDouble(i, j, density.get(j));
                 }
             }
         }
@@ -137,25 +195,25 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     private Pair<String, DensityVector> predict(Frame df, int row) {
-        if (bestRuleSet == null) {
-            log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return Pair.from("?", DensityVector.empty(true, firstTargetLevels().size()));
-        }
         String testVar = bestRuleSet.getVarName();
+
+        boolean missing = df.rvar(testVar).isMissing(row);
+        if (missing && missingHandler.equals(MissingHandler.MAJORITY)) {
+            return Pair.from(testVar, missingDensity);
+        }
+
         switch (df.rvar(testVar).type()) {
-            case BINARY:
             case INT:
             case DOUBLE:
             case LONG:
-                boolean missing = df.rvar(testVar).isMissing(row);
                 double value = df.getDouble(row, testVar);
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NumericRule numRule = (NumericRule) oneRule;
                     if (missing && numRule.isMissingValue()) {
-                        return Pair.from(numRule.getTargetClass(), numRule.getDV());
+                        return Pair.from(numRule.getTargetClass(), numRule.getDensityVector());
                     }
                     if (!missing && !numRule.isMissingValue() && value >= numRule.getMinValue() && value <= numRule.getMaxValue()) {
-                        return Pair.from(numRule.getTargetClass(), numRule.getDV());
+                        return Pair.from(numRule.getTargetClass(), numRule.getDensityVector());
                     }
                 }
                 break;
@@ -164,118 +222,35 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NominalRule nomRule = (NominalRule) oneRule;
                     if (nomRule.getTestLabel().equals(label)) {
-                        return Pair.from(nomRule.getTargetClass(), nomRule.getDV());
+                        return Pair.from(nomRule.getTargetClass(), nomRule.getDensityVector());
                     }
                 }
         }
         return Pair.from("?", DensityVector.empty(true, firstTargetLevels().size()));
     }
 
-    private RuleSet buildNominal(String testVar, Frame df, Var weights) {
-        RuleSet set = new RuleSet(testVar);
+    private RuleSet buildNominal(String testVarName, Frame df, Var weights) {
+        RuleSet set = new RuleSet(testVarName);
 
-        List<String> testDict = df.rvar(testVar).levels();
+        List<String> testDict = df.rvar(testVarName).levels();
         List<String> targetDict = firstTargetLevels();
 
-        DensityVector[] dvs = IntStream.range(0, testDict.size()).boxed().map(i -> DensityVector.empty(false, targetDict)).toArray(DensityVector[]::new);
-        df.stream().forEach(s -> dvs[df.getInt(s.row(), testVar)].increment(df.getInt(s.row(), firstTargetName()), weights.getDouble(s.row())));
+        DensityVector[] densityVectors = new DensityVector[testDict.size()];
+        for (int i = 0; i < densityVectors.length; i++) {
+            densityVectors[i] = DensityVector.empty(false, targetDict);
+        }
+
+        int testIndex = df.varIndex(testVarName);
+        int targetIndex = df.varIndex(firstTargetName());
+        for (int i = 0; i < df.rowCount(); i++) {
+            densityVectors[df.getInt(i, testIndex)].increment(df.getInt(i, targetIndex), weights.getDouble(i));
+        }
+
         for (int i = 0; i < testDict.size(); i++) {
-            DensityVector dv = dvs[i];
+            DensityVector dv = densityVectors[i];
             int bestIndex = dv.findBestIndex();
             set.getRules().add(new NominalRule(testDict.get(i), bestIndex, dv));
         }
-        return set;
-    }
-
-    private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
-        RuleSet set = new RuleSet(testCol);
-        Var sort = new VRefSort(RowComparators.doubleComparator(df.rvar(testCol), true),
-                RowComparators.labelComparator(df.rvar(firstTargetName()), true)).fapply(VarInt.seq(weights.rowCount()));
-        int pos = 0;
-        while (pos < sort.rowCount()) {
-            if (df.isMissing(sort.getInt(pos), testCol)) {
-                pos++;
-                continue;
-            }
-            break;
-        }
-
-        // first process missing values
-        if (pos > 0) {
-            DensityVector hist = DensityVector.empty(true, firstTargetLevels());
-            for (int i = 0; i < pos; i++) {
-                hist.increment(df.getInt(sort.getInt(i), firstTargetName()), weights.getDouble(sort.getInt(i)));
-            }
-            int next = hist.findBestIndex();
-            set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, next, hist));
-        }
-
-        // now learn numeric intervals
-        List<NumericRule> candidates = new ArrayList<>();
-
-        //splits from same value
-        int i = pos;
-        int index;
-        while (i < sort.rowCount()) {
-            // start a new bucket
-            int startIndex = i;
-            DensityVector hist = DensityVector.empty(true, firstTargetLevels());
-
-            do { // fill it until it has enough of the majority class
-                index = df.getInt(sort.getInt(i), firstTargetName());
-                hist.increment(index, weights.getDouble(sort.getInt(i)));
-                i++;
-            } while (hist.get(index) < minCount && i < sort.rowCount());
-
-            // while class remains the same, keep on filling
-            while (i < sort.rowCount()) {
-                index = sort.getInt(i);
-                if (df.getInt(sort.getInt(i), firstTargetName()) == index) {
-                    hist.increment(index, weights.getDouble(sort.getInt(i)));
-                    i++;
-                    continue;
-                }
-                break;
-            }
-            // keep on while attr value is the same
-            while (i < sort.rowCount()
-                    && df.getDouble(sort.getInt(i - 1), testCol)
-                    == df.getDouble(sort.getInt(i), testCol)) {
-                index = df.getInt(sort.getInt(i), firstTargetName());
-                hist.increment(index, weights.getDouble(sort.getInt(i)));
-                i++;
-            }
-            int next = hist.findBestIndex();
-            double minValue = Double.NEGATIVE_INFINITY;
-            if (startIndex != pos) {
-                minValue = (df.getDouble(sort.getInt(startIndex), testCol)
-                        + df.getDouble(sort.getInt(startIndex - 1), testCol)) / 2.;
-            }
-            double maxValue = Double.POSITIVE_INFINITY;
-            if (i != sort.rowCount()) {
-                maxValue = (df.getDouble(sort.getInt(i - 1), testCol) + df.getDouble(sort.getInt(i), testCol)) / 2;
-            }
-
-            candidates.add(new NumericRule(minValue, maxValue, false, next, hist));
-        }
-
-        NumericRule last = null;
-        for (NumericRule rule : candidates) {
-            if (last == null) {
-                last = rule;
-                continue;
-            }
-            if (last.getTargetClass().equals(rule.getTargetClass())) {
-                DensityVector dv = last.getDV().copy();
-                dv.plus(rule.getDV(), 1);
-                last = new NumericRule(last.getMinValue(), rule.getMaxValue(), false, last.getTargetIndex(), dv);
-            } else {
-                set.getRules().add(last);
-                last = rule;
-            }
-        }
-
-        set.getRules().add(last);
         return set;
     }
 
@@ -283,9 +258,9 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(fullName()).append(", fitted=").append(hasLearned());
-        if(hasLearned()) {
+        if (hasLearned()) {
             sb.append(", rule set: ").append(bestRuleSet.toString());
-            for(Rule rule : bestRuleSet.getRules()) {
+            for (Rule rule : bestRuleSet.getRules()) {
                 sb.append(", ").append(rule.toString());
             }
         }
@@ -316,7 +291,6 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         for (Rule rule : bestRuleSet.getRules()) {
             sb.append("> ").append(rule.toString()).append("\n");
         }
-        sb.append("\n");
         return sb.toString();
     }
 

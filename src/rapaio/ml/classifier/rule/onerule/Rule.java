@@ -32,7 +32,7 @@ import rapaio.core.tools.DensityVector;
 import java.io.Serializable;
 
 /**
- * Interface for a rule in one rule algorithm
+ * Base class for a rule in one rule algorithm
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
@@ -70,7 +70,7 @@ public abstract class Rule implements Serializable {
         return zeroWeight ? 0.0 : dv.get(targetIndex) / dv.sum();
     }
 
-    public DensityVector getDV() {
+    public DensityVector getDensityVector() {
         return dv;
     }
 }

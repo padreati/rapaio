@@ -53,7 +53,7 @@ public class ClassifierModelSerializationTest {
         Var varAcc = VarDouble.empty();
 
         Frame iris = Datasets.loadIrisDataset();
-        testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(OneRule.newModel(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);

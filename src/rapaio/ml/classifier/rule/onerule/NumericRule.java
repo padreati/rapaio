@@ -29,10 +29,10 @@ package rapaio.ml.classifier.rule.onerule;
 
 import rapaio.core.tools.DensityVector;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.format.Format.floatFlexLong;
 
 /**
- * Rule for one rule algoritm for numeric variables
+ * Rule for one rule model for numeric variables
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
@@ -64,22 +64,19 @@ public class NumericRule extends Rule {
 
     @Override
     public String toString() {
-        if (missingValue) {
-            return "NumericRule {"
-                    + "missing=true"
-                    + ", class=" + dv.level(targetIndex)
-                    + ", errors=" + floatFlex(getErrorCount())
-                    + ", total=" + floatFlex(getTotalCount())
-                    + ", acc=" + floatFlex(getAcc())
-                    + " }";
+        StringBuilder sb = new StringBuilder();
+        sb.append("NumericRule {");
+        if(missingValue) {
+            sb.append("missing=true,");
+        } else {
+            sb.append("minValue=").append(floatFlexLong(minValue)).append(",");
+            sb.append("maxValue=").append(floatFlexLong(maxValue)).append(",");
         }
-        return "NumericRule {"
-                + "min=" + floatFlex(minValue)
-                + ", max=" + floatFlex(maxValue)
-                + ", class=" + dv.level(targetIndex)
-                + ", errors=" + floatFlex(getErrorCount())
-                + ", total=" + floatFlex(getTotalCount())
-                + ", acc=" + floatFlex(getAcc())
-                + " }";
+        sb.append("class=").append(dv.level(targetIndex)).append(",");
+        sb.append("errors=").append(floatFlexLong(getErrorCount())).append(",");
+        sb.append("total=").append(floatFlexLong(getTotalCount())).append(",");
+        sb.append("accuracy=").append(floatFlexLong(getAcc()));
+        sb.append("}");
+        return sb.toString();
     }
 }
