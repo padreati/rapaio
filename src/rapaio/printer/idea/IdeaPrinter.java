@@ -42,7 +42,7 @@ public class IdeaPrinter extends StandardPrinter {
 
     private static final Logger logger = Logger.getLogger(IdeaPrinter.class.getName());
 
-    public static final int DEFAULT_PORT = 56339;
+    public static final int DEFAULT_PORT = 56739;
 
     @Override
     public int graphicWidth() {

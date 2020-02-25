@@ -40,26 +40,22 @@ public abstract class Rule implements Serializable {
 
     private static final long serialVersionUID = 7073304176052957223L;
 
-    protected final int targetIndex;
-    protected final DensityVector dv;
+    protected final String targetLevel;
+    protected final DensityVector<String> dv;
     protected final boolean zeroWeight;
 
-    public Rule(int targetIndex, DensityVector dv) {
-        this.targetIndex = targetIndex;
+    public Rule(String targetLevel, DensityVector<String> dv) {
+        this.targetLevel = targetLevel;
         this.dv = dv;
         this.zeroWeight = Math.abs(dv.sum()) < 1e-32;
     }
 
-    public int getTargetIndex() {
-        return targetIndex;
-    }
-
     public String getTargetClass() {
-        return dv.level(targetIndex);
+        return targetLevel;
     }
 
     public double getErrorCount() {
-        return zeroWeight ? 0.0 : dv.sum() - dv.get(targetIndex);
+        return zeroWeight ? 0.0 : dv.sum() - dv.get(targetLevel);
     }
 
     public double getTotalCount() {
@@ -67,10 +63,10 @@ public abstract class Rule implements Serializable {
     }
 
     public double getAcc() {
-        return zeroWeight ? 0.0 : dv.get(targetIndex) / dv.sum();
+        return zeroWeight ? 0.0 : dv.get(targetLevel) / dv.sum();
     }
 
-    public DensityVector getDensityVector() {
+    public DensityVector<String> getDensityVector() {
         return dv;
     }
 }

@@ -25,27 +25,25 @@
  *
  */
 
-package rapaio.ml.classifier.bayes.estimator;
+package rapaio.ml.classifier.bayes.nb;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/21/19.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
-public interface NomEstimator extends Serializable {
-
-    NomEstimator newInstance();
+public interface Prior extends Serializable {
 
     String name();
 
-    String learningInfo();
+    String fittedName();
 
-    void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar);
+    void fitPriors(Frame df, Var weights, String targetVar);
 
-    double computeProbability(String testLabel, String targetLabel);
+    double computePrior(String category);
 
+    Prior newInstance();
 }

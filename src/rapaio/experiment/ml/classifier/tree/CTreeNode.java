@@ -48,9 +48,9 @@ public class CTreeNode implements Serializable {
     final RowPredicate predicate;
     final List<CTreeNode> children = new ArrayList<>();
     boolean leaf = true;
-    DensityVector density;
-    DensityVector counter;
-    int bestIndex;
+    DensityVector<String> density;
+    DensityVector<String> counter;
+    String bestLabel;
     CTreeCandidate bestCandidate;
 
     public CTreeNode(int id, final CTreeNode parent, final String groupName, final RowPredicate predicate, int depth) {
@@ -81,15 +81,15 @@ public class CTreeNode implements Serializable {
         return predicate;
     }
 
-    public DensityVector getCounter() {
+    public DensityVector<String> getCounter() {
         return counter;
     }
 
-    public int getBestIndex() {
-        return bestIndex;
+    public String getBestLabel() {
+        return bestLabel;
     }
 
-    public DensityVector getDensity() {
+    public DensityVector<String> getDensity() {
         return density;
     }
 

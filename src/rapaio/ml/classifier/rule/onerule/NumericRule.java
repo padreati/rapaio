@@ -43,8 +43,8 @@ public class NumericRule extends Rule {
     private final double maxValue;
     private final boolean missingValue;
 
-    public NumericRule(double minValue, double maxValue, boolean missingValue, int targetIndex, DensityVector dv) {
-        super(targetIndex, dv);
+    public NumericRule(double minValue, double maxValue, boolean missingValue, String targetLevel, DensityVector dv) {
+        super(targetLevel, dv);
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.missingValue = missingValue;
@@ -72,7 +72,7 @@ public class NumericRule extends Rule {
             sb.append("minValue=").append(floatFlexLong(minValue)).append(",");
             sb.append("maxValue=").append(floatFlexLong(maxValue)).append(",");
         }
-        sb.append("class=").append(dv.level(targetIndex)).append(",");
+        sb.append("class=").append(targetLevel).append(",");
         sb.append("errors=").append(floatFlexLong(getErrorCount())).append(",");
         sb.append("total=").append(floatFlexLong(getTotalCount())).append(",");
         sb.append("accuracy=").append(floatFlexLong(getAcc()));

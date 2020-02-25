@@ -87,7 +87,7 @@ public class SamplingToolsTest {
     void testSamplingWeightedWOR() {
 
         double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
-        DensityVector freq = DensityVector.empty(true, w.length);
+        var freq = DensityVector.emptyByLabels(w.length);
 
         final int TRIALS = 10_000;
         for (int i = 0; i < TRIALS; i++) {
@@ -100,7 +100,7 @@ public class SamplingToolsTest {
             assertEquals(1.0 / 6, freq.get(i), 1e-20);
         }
 
-        freq = DensityVector.empty(true, w.length);
+        freq = DensityVector.emptyByLabels(w.length);
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWeightedWOR(1, w)) {
                 freq.increment(next, 1);
@@ -138,7 +138,7 @@ public class SamplingToolsTest {
     @Test
     void testSampleWeightedWR() {
         double[] w = new double[]{0.002, 0.018, 0.18, 1.8};
-        DensityVector freq = DensityVector.empty(true, w.length);
+        var freq = DensityVector.emptyByLabels(w.length);
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
         for (int i = 0; i < TRIALS; i++) {

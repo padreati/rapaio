@@ -57,20 +57,20 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
 
     // parameters
 
-    private RowSampler sampler = RowSampler.identity();
-    private boolean learned = false;
-    private int poolSize = 0;
-    private int runs = 1;
-    private BiConsumer<M, Integer> runningHook;
-    private BiFunction<M, Integer, Boolean> stoppingHook;
+    protected RowSampler sampler = RowSampler.identity();
+    protected boolean learned = false;
+    protected int poolSize = 0;
+    protected int runs = 1;
+    protected BiConsumer<M, Integer> runningHook;
+    protected BiFunction<M, Integer, Boolean> stoppingHook;
 
     // learning artifacts
 
-    private String[] inputNames;
-    private VType[] inputTypes;
-    private String[] targetNames;
-    private VType[] targetTypes;
-    private Map<String, List<String>> targetLevels;
+    protected String[] inputNames;
+    protected VType[] inputTypes;
+    protected String[] targetNames;
+    protected VType[] targetTypes;
+    protected Map<String, List<String>> targetLevels;
 
     public M newInstanceDecoration(M classifier) {
         return classifier
@@ -220,7 +220,24 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
 
     protected abstract R corePredict(Frame df, boolean withClasses, boolean withDistributions);
 
-    public String baseSummary() {
+    public String fullNameSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append(" model\n");
+        sb.append("================\n\n");
+
+        sb.append("Description:\n");
+        sb.append(fullName()).append("\n\n");
+        return sb.toString();
+    }
+
+    public String capabilitiesSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Capabilities:\n");
+        sb.append(capabilities().toString()).append("\n");
+        return sb.toString();
+    }
+
+    public String inputVarsSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("input vars: \n");
 
@@ -234,7 +251,11 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
             tt.textRight(i, 4, " |");
         }
         sb.append(tt.getDynamicText()).append("\n");
+        return sb.toString();
+    }
 
+    public String targetVarsSummary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
                 .append(targetName(i)).append(" : ")

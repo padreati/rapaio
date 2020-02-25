@@ -182,7 +182,7 @@ public interface CTreePruning extends Serializable {
         private ValuePair bottomUpCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
 
             if (node.isLeaf()) {
-                ValuePair err = df.getInt(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+                ValuePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
                 bottomUp.get(node.getId()).increment(err);
                 return err;
             }
@@ -199,7 +199,7 @@ public interface CTreePruning extends Serializable {
 
         private void topDownCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
 
-            ValuePair err = df.getInt(row, tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+            ValuePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
             topDown.get(node.getId()).increment(err);
 
             for (CTreeNode child : node.getChildren()) {

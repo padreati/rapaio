@@ -39,33 +39,47 @@ public class DensityVectorTest {
 
     @Test
     void testBuilders() {
-        assertTrue(DensityVector.empty(true, "a", "b").equalsFull(DensityVector.empty(false, Arrays.asList("?", "a", "b"))));
-        assertTrue(DensityVector.fromCounts(true, VarNominal.copy("a", "b", "a"))
-                .equalsFull(DensityVector.fromCounts(true, VarNominal.copy("a", "a", "b"))));
-        assertTrue(DensityVector.empty(false, 2).equalsFull(DensityVector.empty(true, "v1")));
-        assertTrue(DensityVector.fromCounts(true, VarNominal.copy("a", "a", "b", "c"))
-                .equalsFull(DensityVector.fromWeights(
+        assertTrue(DensityVector.emptyByLabels(true, "a", "b")
+                .equalsFull(DensityVector.emptyByLabels(false, Arrays.asList("?", "a", "b"))));
+
+        assertTrue(DensityVector.emptyByLabels(true, Arrays.asList("a", "b"))
+                .equalsFull(DensityVector.emptyByLabels(false, "?", "a", "b")));
+
+        assertTrue(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "a"))
+                .equalsFull(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b"))));
+        assertTrue(DensityVector.emptyByLabels(1).equalsFull(DensityVector.emptyByLabels(true, "v0")));
+        assertTrue(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b", "c"))
+                .equalsFull(DensityVector.fromLevelWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
                         VarDouble.copy(0.5, 1.5, 1, 1))));
-        assertTrue(DensityVector.fromCounts(true, VarNominal.copy("a", "a", "b", "c"))
-                .equalsFull(DensityVector.fromWeights(
+        assertTrue(DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b", "c"))
+                .equalsFull(DensityVector.fromLevelWeights(
                         true,
                         VarNominal.copy("a", "a", "b", "c"),
-                        VarDouble.copy(0.5, 1.5, 1, 1),
-                        "?", "a", "b", "c")));
+                        VarDouble.copy(0.5, 1.5, 1, 1))));
+    }
+
+    @Test
+    void testNewInstance() {
+        var dv1 = DensityVector.emptyByLabels(true, "a", "b");
+        var dv2 = dv1.newInstance();
+
+        assertNotNull(dv1);
+        assertNotNull(dv2);
+        assertEquals(dv1.rowCount(), dv2.rowCount());
+        assertTrue(dv1.equalsFull(dv2));
+
+        assertEquals(dv1.toSummary(), dv2.toFullContent());
     }
 
     @Test
     void testUseFirst() {
-        assertTrue(DensityVector.fromCounts(true, VarNominal.copy("a", "b", "c")).isFirstUsed());
-        assertFalse(DensityVector.fromCounts(false, VarNominal.copy("a", "b", "c")).isFirstUsed());
+        assertEquals(4, DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "c")).index().size());
+        assertEquals(3, DensityVector.fromLevelCounts(false, VarNominal.copy("a", "b", "c")).index().size());
 
-        assertEquals(0, DensityVector.fromCounts(true, VarNominal.copy("a", "b", "c")).start());
-        assertEquals(1, DensityVector.fromCounts(false, VarNominal.copy("a", "b", "c")).start());
-
-        double[] v1 = DensityVector.fromCounts(true, VarNominal.copy("a", "b", "c")).streamValues().toArray();
-        double[] v2 = DensityVector.fromCounts(false, VarNominal.copy("a", "b", "c")).streamValues().toArray();
+        double[] v1 = DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "c")).streamValues().toArray();
+        double[] v2 = DensityVector.fromLevelCounts(false, VarNominal.copy("a", "b", "c")).streamValues().toArray();
 
         assertEquals(v1.length, v2.length + 1);
         for (int i = 0; i < v2.length; i++) {
@@ -74,32 +88,31 @@ public class DensityVectorTest {
 
         assertEquals("? a b c \n" +
                 "- - - - \n" +
-                "0 1 1 1 \n", DensityVector.fromCounts(true, VarNominal.copy("a", "b", "c")).toSummary());
+                "0 1 1 1 \n", DensityVector.fromLevelCounts(true, VarNominal.copy("a", "b", "c")).toSummary());
     }
 
     @Test
-    void testLevels() {
-        DensityVector dv = DensityVector.fromCounts(true, VarNominal.copy("a", "a", "b", "a", "b"));
-        List<String> levels = dv.levels();
-        assertEquals(3, levels.size());
-        assertEquals("?", levels.get(0));
-        assertEquals("a", levels.get(1));
-        assertEquals("b", levels.get(2));
+    void testIndexValues() {
+        var dv = DensityVector.fromLevelCounts(true, VarNominal.copy("a", "a", "b", "a", "b"));
+        List<String> levels = dv.index().getValues();
 
-        assertEquals("?", dv.level(0));
-        assertEquals("a", dv.level(1));
-        assertEquals("b", dv.level(2));
+        assertEquals(Arrays.asList("?", "a", "b"), dv.index().getValues());
+        assertEquals(Arrays.asList("?", "a", "b"), dv.index().getValueStrings());
 
         assertEquals(0, dv.get("?"), TOL);
         assertEquals(3, dv.get("a"), TOL);
         assertEquals(2, dv.get("b"), TOL);
+
+        assertEquals("?", dv.getIndexValue(0));
+        assertEquals("a", dv.getIndexValue(1));
+        assertEquals("b", dv.getIndexValue(2));
     }
 
     @Test
     void testIncrement() {
-        DensityVector dv1 = DensityVector.fromWeights(true, VarNominal.copy("a", "b", "c"), VarDouble.copy(1.0, 7.0, 5.0));
+        var dv1 = DensityVector.fromLevelWeights(true, VarNominal.copy("a", "b", "c"), VarDouble.copy(1.0, 7.0, 5.0));
 
-        DensityVector dv2 = DensityVector.empty(true, "?", "a", "b", "c");
+        var dv2 = DensityVector.emptyByLabels(true, "?", "a", "b", "c");
         dv2.increment(1, 1);
         dv2.increment(2, 4);
         dv2.increment("b", 3);
@@ -111,28 +124,29 @@ public class DensityVectorTest {
         assertTrue(dv1.equalsFull(dv2));
 
         dv2.plus(dv1, 2);
-        for (int i = 0; i < dv2.levels().size(); i++) {
+        for (int i = 0; i < dv2.index().size(); i++) {
             assertEquals(dv1.get(i) * 3, dv2.get(i), TOL);
         }
     }
 
     @Test
     void invalidPlusSize() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> DensityVector.empty(true, 10).plus(DensityVector.empty(true, 9), 0));
+        var ex = assertThrows(IllegalArgumentException.class, () ->
+                DensityVector.emptyByLabels(10).plus(DensityVector.emptyByLabels(9), 0));
         assertEquals("Cannot update density vector, row count is different", ex.getMessage());
     }
 
     @Test
     void testSet() {
-        DensityVector dv1 = DensityVector.fromWeights(false,
+        var dv1 = DensityVector.fromLevelWeights(false,
                 VarNominal.copy("?", "a", "b", "c"),
                 VarDouble.copy(0.0, 1.0, 7.0, 5.0)
         );
 
-        DensityVector dv2 = DensityVector.empty(false, "?", "a", "b", "c");
-        dv2.increment(1, dv1.get(1));
-        dv2.set(2, 4);
-        dv2.increment(2, 3);
+        var dv2 = DensityVector.emptyByLabels(false, "?", "a", "b", "c");
+        dv2.increment(0, dv1.get(0));
+        dv2.set(1, 4);
+        dv2.increment(1, 3);
         dv2.set("c", 5);
 
         assertTrue(dv1.equalsFull(dv2));
@@ -140,19 +154,22 @@ public class DensityVectorTest {
 
     @Test
     void testFindBestIndex() {
-        DensityVector dv1 = DensityVector.fromWeights(true,
+        var dv1 = DensityVector.fromLevelWeights(true,
                 VarNominal.copy("a", "b", "c"),
                 VarDouble.copy(1.0, 7.0, 5.0)
         );
         dv1.set(0, 100);
         assertEquals(0, dv1.findBestIndex());
+        assertEquals("?", dv1.findBestLabel());
 
-        DensityVector dv2 = DensityVector.fromWeights(true,
+        var dv2 = DensityVector.fromLevelWeights(true,
                 VarNominal.copy("a", "b", "c"),
                 VarDouble.copy(1.0, 2.0, 2.0)
         );
         for (int i = 0; i < 100; i++) {
             int index = dv2.findBestIndex();
+            String label = dv2.findBestLabel();
+            assertTrue(label.equals("b") || label.equals("c"));
             assertTrue(index >= 2);
             assertTrue(index <= 3);
         }
@@ -160,7 +177,7 @@ public class DensityVectorTest {
 
     @Test
     void testNormalize() {
-        DensityVector dv1 = DensityVector.fromWeights(true,
+        var dv1 = DensityVector.fromLevelWeights(true,
                 VarNominal.copy("a", "b", "c"),
                 VarDouble.copy(1.0, 1.0, 1.0)
         );
@@ -177,7 +194,7 @@ public class DensityVectorTest {
             assertEquals(dv1.get(i), 1.0 / 4.0, TOL);
         }
 
-        DensityVector dv2 = DensityVector.fromWeights(true,
+        var dv2 = DensityVector.fromLevelWeights(true,
                 VarNominal.copy("a", "b", "c"),
                 VarDouble.copy(-2, 0, 2));
 
@@ -195,19 +212,26 @@ public class DensityVectorTest {
 
     @Test
     void testSums() {
-        DensityVector dv = DensityVector.fromWeights(false,
+        var dv = DensityVector.fromLevelWeights(false,
                 VarNominal.copy("?", "a", "b", "c"),
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
-        assertEquals(9.0, dv.sum(), 1e-20);
-        assertEquals(6.0, dv.sumExcept(2), 1e-20);
+        assertEquals(9.0, dv.sum(), TOL);
+        assertEquals(6.0, dv.sumExcept(1), TOL);
+        assertEquals(6.0, dv.sumExcept("b"));
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> dv.sumExcept(-1));
+        assertEquals("Except index must be greater or equal with 0.", ex.getMessage());
+
+        ex = assertThrows(IllegalArgumentException.class, () -> dv.sumExcept("ex"));
+        assertEquals("Except value: ex not found.", ex.getMessage());
     }
 
 
     @Test
     void testCountValues() {
-        DensityVector dv = DensityVector.fromWeights(true,
+        var dv = DensityVector.fromLevelWeights(true,
                 VarNominal.copy("?", "a", "b", "c"),
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
@@ -217,13 +241,13 @@ public class DensityVectorTest {
 
     @Test
     void testSolidCopy() {
-        DensityVector dv1 = DensityVector.fromWeights(
+        var dv1 = DensityVector.fromLevelWeights(
                 false,
                 VarNominal.copy("?", "a", "b", "c"),
                 VarDouble.copy(1.0, 2.0, 3.0, 4.0)
         );
 
-        DensityVector dv2 = dv1.copy();
+        var dv2 = dv1.copy();
         assertEquals(dv1.toString(), dv2.toString());
     }
 }

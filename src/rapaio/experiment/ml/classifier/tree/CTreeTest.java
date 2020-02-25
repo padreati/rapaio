@@ -28,9 +28,9 @@
 package rapaio.experiment.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
+import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.core.tools.DTable;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntComparator;
@@ -89,14 +89,14 @@ public interface CTreeTest extends Serializable {
             }
             double testValue = df.getDouble(split, testName);
 
-            DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName), false);
+            var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.isMissing(i, testName)) {
                     misCount++;
-                    dt.update(0, df.getInt(i, targetName), w.getDouble(i));
+                    continue;
                 }
-                dt.update(df.getDouble(i, testName) <= testValue ? 1 : 2, df.getInt(i, targetName), w.getDouble(i));
+                dt.increment(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName), w.getDouble(i));
             }
 
             double score = function.compute(dt);
@@ -121,17 +121,15 @@ public interface CTreeTest extends Serializable {
 
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
-            DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName), false);
+            var dt = DensityTable.emptyByLabel(false, DensityTable.NUMERIC_DEFAULT_LABELS, df.levels(targetName));
 
             int[] rows = new int[df.rowCount()];
             int len = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                boolean missing = df.isMissing(i, testNameIndex);
-                int row = missing ? 0 : 2;
-                if (!missing) {
+                if(!df.isMissing(i, testNameIndex)) {
                     rows[len++] = i;
+                    dt.increment(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
                 }
-                dt.update(row, df.getInt(i, targetNameIndex), weights.getDouble(i));
             }
             // TODO: Revise the implication of missing records
             int misCount = df.rowCount() - len;
@@ -151,13 +149,13 @@ public interface CTreeTest extends Serializable {
 
                 if (df.isMissing(row, testNameIndex)) continue;
 
-                int index = df.getInt(row, targetNameIndex);
+                int index = df.getInt(row, targetNameIndex) - 1;
                 double w = weights.getDouble(row);
-                dt.update(2, index, -w);
-                dt.update(1, index, +w);
+                dt.increment(1, index, -w);
+                dt.increment(0, index, +w);
 
-                if (i >= misCount + c.minCount() - 1 &&
-                        i < df.rowCount() - c.minCount() &&
+                if (i + 1 >= c.minCount() &&
+                        i < len - c.minCount() &&
                         values[rows[i]] < values[rows[i + 1]]) {
 
                     double currentScore = function.compute(dt);
@@ -194,7 +192,7 @@ public interface CTreeTest extends Serializable {
 
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
-            DTable dt = DTable.fromCounts(test, target, false);
+            var dt = DensityTable.fromLevelCounts(false, test, target);
             if (!(dt.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
             }
@@ -217,11 +215,11 @@ public interface CTreeTest extends Serializable {
 
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
-            DTable counts = DTable.fromCounts(df, testName, targetName, false);
+            var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
             if (!counts.hasColsWithMinimumCount(c.minCount(), 2)) {
                 return null;
             }
-            DTable dt = DTable.fromWeights(df, testName, targetName, weights, false);
+            var dt = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
             double value = function.compute(dt);
             CTreeCandidate candidate = new CTreeCandidate(value, testName);
             df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
@@ -242,18 +240,13 @@ public interface CTreeTest extends Serializable {
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
 
-            DTable counts = DTable.fromCounts(df, testName, targetName, false);
+            var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
             if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
                 return null;
             }
 
             CTreeCandidate best = null;
             double bestScore = 0.0;
-
-            int[] termCount = new int[df.levels(testName).size()];
-            for (int i = 0; i < df.rowCount(); i++) {
-                termCount[df.getInt(i, testName)]++;
-            }
 
             double[] rowCounts = counts.rowTotals();
             for (int i = 1; i < df.levels(testName).size(); i++) {
@@ -262,7 +255,7 @@ public interface CTreeTest extends Serializable {
 
                 String testLabel = df.rvar(testName).levels().get(i);
 
-                DTable dt = DTable.binaryFromWeights(df, testName, targetName, weights, testLabel, false);
+                var dt = DensityTable.fromBinaryLevelWeights(false, df, testName, targetName, weights, testLabel);
                 double currentScore = function.compute(dt);
                 if (best != null) {
                     int comp = Double.compare(bestScore, currentScore);

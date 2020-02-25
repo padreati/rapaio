@@ -132,12 +132,14 @@ public class FrameAnalysis {
                         });
                         break;
                     case NOMINAL:
-                        DensityVector dv1 = DensityVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 1).toMappedVar());
+                        var filtered1 = var.stream().complete().filter(s -> target.getInt(s.row()) == 1).toMappedVar();
+                        var dv1 = DensityVector.fromLevelCounts(false, filtered1);
                         double[] v1 = dv1.streamValues().sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[0][i < bins ? i : bins - 1] += v1[i];
                         }
-                        DensityVector dv2 = DensityVector.fromCounts(false, var.stream().complete().filter(s -> target.getInt(s.row()) == 2).toMappedVar());
+                        var filtered2 = var.stream().complete().filter(s -> target.getInt(s.row()) == 2).toMappedVar();
+                        var dv2 = DensityVector.fromLevelCounts(false, filtered2);
                         double[] v2 = dv2.streamValues().sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[1][i < bins ? i : bins - 1] += v2[i];
@@ -151,10 +153,10 @@ public class FrameAnalysis {
                             counts.put(txt, counts.get(txt) + 1);
                         });
                         TreeMap<Integer, List<String>> reverse = new TreeMap<>();
-                        counts.entrySet().forEach(e -> {
-                            if (!reverse.containsKey(e.getValue()))
-                                reverse.put(e.getValue(), new ArrayList<>());
-                            reverse.get(e.getValue()).add(e.getKey());
+                        counts.forEach((key, value) -> {
+                            if (!reverse.containsKey(value))
+                                reverse.put(value, new ArrayList<>());
+                            reverse.get(value).add(key);
                         });
                         int p = 0;
                         for (Map.Entry<Integer, List<String>> e : reverse.entrySet()) {
@@ -170,10 +172,10 @@ public class FrameAnalysis {
                             counts2.put(txt, counts2.get(txt) + 1);
                         });
                         TreeMap<Integer, List<String>> reverse2 = new TreeMap<>();
-                        counts2.entrySet().forEach(e -> {
-                            if (!reverse2.containsKey(e.getValue()))
-                                reverse2.put(e.getValue(), new ArrayList<>());
-                            reverse2.get(e.getValue()).add(e.getKey());
+                        counts2.forEach((key, value) -> {
+                            if (!reverse2.containsKey(value))
+                                reverse2.put(value, new ArrayList<>());
+                            reverse2.get(value).add(key);
                         });
                         int p2 = 0;
                         for (Map.Entry<Integer, List<String>> e : reverse2.entrySet()) {

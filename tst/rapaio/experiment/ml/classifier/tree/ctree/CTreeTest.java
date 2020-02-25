@@ -89,9 +89,9 @@ public class CTreeTest {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
         tree.fit(df, "class");
-        tree.printSummary();
 
         var pred = tree.predict(df, true, true);
+        pred.printSummary();
         df = df.bindVars(pred.firstClasses().copy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();

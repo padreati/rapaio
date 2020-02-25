@@ -44,13 +44,6 @@ import rapaio.printer.format.TextTable;
  */
 public class ChiSqGoodnessOfFit implements HTest {
 
-    private final DensityVector dv;
-    private final Var p;
-    private final VarDouble expected;
-    private final int df; // degrees of freedom
-    private final double chiValue; // chi-square statistic's value
-    private final double pValue;
-
     /**
      * Builds the test from given observed data in input x and
      * from expected probabilities in p.
@@ -66,8 +59,7 @@ public class ChiSqGoodnessOfFit implements HTest {
      * @param p vector of expected probabilities
      */
     public static ChiSqGoodnessOfFit from(Var x, Var p) {
-        DensityVector dv = buildDv(x);
-        return new ChiSqGoodnessOfFit(dv, p);
+        return new ChiSqGoodnessOfFit(buildDv(x), p);
     }
 
     /**
@@ -77,18 +69,18 @@ public class ChiSqGoodnessOfFit implements HTest {
      * @param dv vector of observed data
      * @param p  vector of expected probabilities
      */
-    public static ChiSqGoodnessOfFit from(DensityVector dv, Var p) {
+    public static ChiSqGoodnessOfFit from(DensityVector<String> dv, Var p) {
         return new ChiSqGoodnessOfFit(dv, p);
     }
 
-    private static DensityVector buildDv(Var x) {
+    private static DensityVector<String> buildDv(Var x) {
         switch (x.type()) {
             case BINARY:
             case NOMINAL:
-                return DensityVector.fromCounts(false, x);
+                return DensityVector.fromLevelCounts(false, x);
             case DOUBLE:
             case INT:
-                DensityVector dv = DensityVector.empty(true, x.rowCount());
+                var dv = DensityVector.emptyByLabels(x.rowCount());
                 for (int i = 0; i < x.rowCount(); i++) {
                     dv.set(i, x.getDouble(i));
                 }
@@ -99,11 +91,18 @@ public class ChiSqGoodnessOfFit implements HTest {
         }
     }
 
-    private ChiSqGoodnessOfFit(DensityVector dv, Var p) {
+    private final DensityVector<String> dv;
+    private final Var p;
+    private final VarDouble expected;
+    private final int df; // degrees of freedom
+    private final double chiValue; // chi-square statistic's value
+    private final double pValue;
+
+    private ChiSqGoodnessOfFit(DensityVector<String> dv, Var p) {
 
         VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 
-        if (dv.rowCount() - dv.start() != expected.rowCount()) {
+        if (dv.rowCount() != expected.rowCount()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
         }
 
@@ -116,9 +115,9 @@ public class ChiSqGoodnessOfFit implements HTest {
         }
 
         double sum = 0;
-        for (int i = dv.start(); i < dv.rowCount(); i++) {
+        for (int i = 0; i < dv.rowCount(); i++) {
             double o = dv.get(i);
-            double e = expected.getDouble(i - dv.start());
+            double e = expected.getDouble(i);
 
             if (Math.abs(e) < 1e-50) {
                 sum += Double.POSITIVE_INFINITY;
@@ -127,7 +126,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             if (Math.abs(e) < 1e-50 && Math.abs(o - e) < 1e50) {
                 continue;
             }
-            sum += Math.pow(o - e, 2) / expected.getDouble(i - dv.start());
+            sum += Math.pow(o - e, 2) / expected.getDouble(i);
         }
         chiValue = sum;
         pValue = 1.0 - ChiSquare.of(df).cdf(chiValue);
@@ -178,11 +177,10 @@ public class ChiSqGoodnessOfFit implements HTest {
         tt.textLeft(3, 0, "Expected count");
         tt.textLeft(4, 0, "Expected prob");
 
-        int off = dv.isFirstUsed() ? 0 : 1;
-        for (int i = 0; i < dv.rowCount() - off; i++) {
-            tt.textRight(0, i + 1, dv.level(i + off));
-            tt.textRight(1, i + 1, new String(new char[dv.level(i + off).length()]).replace("\0", "-"));
-            tt.floatFlex(2, i + 1, dv.get(i + off));
+        for (int i = 0; i < dv.rowCount(); i++) {
+            tt.textRight(0, i + 1, dv.index().getValueString(i));
+            tt.textRight(1, i + 1, new String(new char[dv.index().getValueString(i).length()]).replace("\0", "-"));
+            tt.floatFlex(2, i + 1, dv.get(i));
             tt.floatFlex(3, i + 1, expected.getDouble(i));
             tt.floatFlex(4, i + 1, p.getDouble(i));
         }

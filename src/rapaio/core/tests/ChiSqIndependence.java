@@ -28,8 +28,8 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.ChiSquare;
+import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
-import rapaio.experiment.core.tools.DTable;
 import rapaio.math.linear.DMatrix;
 import rapaio.printer.format.Format;
 
@@ -56,7 +56,7 @@ public final class ChiSqIndependence implements HTest {
      * @return result object
      */
     public static ChiSqIndependence from(Var x, Var y, boolean yates) {
-        return new ChiSqIndependence(DTable.fromCounts(x, y, false), yates);
+        return new ChiSqIndependence(DensityTable.fromLevelCounts(false, x, y), yates);
     }
 
     public static ChiSqIndependence from(DMatrix m, boolean yates) {
@@ -78,43 +78,42 @@ public final class ChiSqIndependence implements HTest {
         if (m.colCount() != colLevels.size()) {
             throw new IllegalArgumentException("Col levels length is different than matrix cols.");
         }
-        DTable dt = DTable.empty(rowLevels, colLevels, true);
+        var dt = DensityTable.emptyByLabel(true, rowLevels, colLevels);
         for (int i = 0; i < m.rowCount(); i++) {
             for (int j = 0; j < m.colCount(); j++) {
-                dt.update(i, j, m.get(i, j));
+                dt.increment(i, j, m.get(i, j));
             }
         }
         return from(dt, yates);
     }
 
-    public static ChiSqIndependence from(DTable dt, boolean yates) {
+    public static ChiSqIndependence from(DensityTable<String, String> dt, boolean yates) {
         return new ChiSqIndependence(dt, yates);
     }
 
-    private final DTable dt;
-    private final DTable expected;
+    private final DensityTable<String, String> dt;
+    private final DensityTable<String, String> expected;
     private final boolean yates;
     private final int df; // degrees of freedom
     private final double chiValue; // chi-square statistic's value
     private final double pValue;
 
-    private ChiSqIndependence(DTable dt, boolean yates) {
+    private ChiSqIndependence(DensityTable<String, String> dt, boolean yates) {
         this.yates = yates;
         this.dt = dt;
-        int off = dt.useFirst() ? 0 : 1;
-        df = (dt.rowCount() - 1 - off) * (dt.colCount() - 1 - off);
+        df = (dt.rowCount() - 1) * (dt.colCount() - 1);
 
-        expected = DTable.empty(dt.rowLevels(), dt.colLevels(), dt.useFirst());
+        expected = dt.newInstance();
 
         double[] rowTotals = dt.rowTotals();
         double[] colTotals = dt.colTotals();
         double total = Arrays.stream(rowTotals).sum();
 
         double sum = 0.0;
-        for (int i = dt.start(); i < dt.rowCount(); i++) {
-            for (int j = dt.start(); j < dt.colCount(); j++) {
+        for (int i = 0; i < dt.rowCount(); i++) {
+            for (int j = 0; j < dt.colCount(); j++) {
                 double exp = rowTotals[i] * colTotals[j] / total;
-                expected.update(i, j, exp);
+                expected.increment(i, j, exp);
                 sum += Math.pow(Math.abs(dt.get(i, j) - exp) - (yates ? 0.5 : 0.0), 2) / exp;
             }
         }

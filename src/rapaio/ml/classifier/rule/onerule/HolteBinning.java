@@ -11,6 +11,8 @@ import rapaio.util.collection.IntArrays;
  */
 public class HolteBinning implements OneRule.Binning {
 
+    private static final long serialVersionUID = -31152824223543734L;
+
     private final int minCount;
 
     public HolteBinning(int minCount) {
@@ -44,7 +46,7 @@ public class HolteBinning implements OneRule.Binning {
             int startIndex = i;
 
             // start a new bucket
-            DensityVector hist = null;
+            DensityVector<String> hist = null;
             int bestIndex = Integer.MIN_VALUE;
 
             // while class remains the same, keep on filling
@@ -52,10 +54,9 @@ public class HolteBinning implements OneRule.Binning {
 
                 // compute a density for all next observations with the same value
                 int j = i;
-                DensityVector delta = DensityVector.empty(false, parent.firstTargetLevels());
+                DensityVector<String> delta = DensityVector.emptyByLabels(false, parent.firstTargetLevels());
                 while (j < len && df.getDouble(rows[j], testVarName) == df.getDouble(rows[i], testVarName)) {
-                    int index = df.getInt(j, parent.firstTargetName());
-                    delta.increment(index, weights.getDouble(rows[i]));
+                    delta.increment(df.getLabel(j, parent.firstTargetName()), weights.getDouble(rows[i]));
                     j++;
                 }
 
@@ -98,16 +99,16 @@ public class HolteBinning implements OneRule.Binning {
             }
 
             // create the interval rule and append it to rule set
-            set.getRules().add(new NumericRule(minValue, maxValue, false, bestIndex, hist));
+            set.getRules().add(new NumericRule(minValue, maxValue, false, hist.getIndexValue(bestIndex), hist));
         }
 
         // now process missing values if there are such instances
         if (len < df.rowCount()) {
-            DensityVector hist = DensityVector.empty(true, parent.firstTargetLevels());
+            DensityVector<String> hist = DensityVector.emptyByLabels(true, parent.firstTargetLevels());
             for (int j = len; j < df.rowCount(); j++) {
                 hist.increment(df.getInt(rows[i], parent.firstTargetName()), weights.getDouble(rows[i]));
             }
-            set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, hist.findBestIndex(), hist));
+            set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, hist.getIndexValue(hist.findBestIndex()), hist));
         }
 
         return set;

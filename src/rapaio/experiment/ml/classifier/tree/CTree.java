@@ -335,12 +335,12 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     }
 
     private void learnNode(CTreeNode node, Frame df, Var weights) {
-        node.density = DensityVector.fromWeights(false, df.rvar(firstTargetName()), weights);
-        node.counter = DensityVector.fromCounts(false, df.rvar(firstTargetName()));
-        node.bestIndex = node.density.findBestIndex();
+        node.density = DensityVector.fromLevelWeights(false, df.rvar(firstTargetName()), weights);
+        node.counter = DensityVector.fromLevelCounts(false, df.rvar(firstTargetName()));
+        node.bestLabel = node.density.findBestLabel();
 
         if (df.rowCount() == 0) {
-            node.bestIndex = node.parent.bestIndex;
+            node.bestLabel = node.parent.bestLabel;
             return;
         }
         if (node.counter.countValues(x -> x > 0) == 1 ||
@@ -499,22 +499,22 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     protected ClassifierResult<CTree> corePredict(Frame df, boolean withClasses, boolean withDensities) {
         ClassifierResult<CTree> prediction = ClassifierResult.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
-            Pair<Integer, DensityVector> res = predictPoint(this, root, i, df);
-            int index = res._1;
-            DensityVector dv = res._2;
+            Pair<String, DensityVector<String>> res = predictPoint(this, root, i, df);
+            String label = res._1;
+            var dv = res._2;
             if (withClasses)
-                prediction.firstClasses().setInt(i, index);
+                prediction.firstClasses().setLabel(i, label);
             if (withDensities)
-                for (int j = 0; j < firstTargetLevels().size(); j++) {
-                    prediction.firstDensity().setDouble(i, j, dv.get(j));
+                for (int j = 1; j < firstTargetLevels().size(); j++) {
+                    prediction.firstDensity().setDouble(i, j, dv.get(firstTargetLevel(j)));
                 }
         }
         return prediction;
     }
 
-    protected Pair<Integer, DensityVector> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
+    protected Pair<String, DensityVector<String>> predictPoint(CTree tree, CTreeNode node, int row, Frame df) {
         if (node.isLeaf())
-            return Pair.from(node.getBestIndex(), node.getDensity().copy().normalize());
+            return Pair.from(node.getBestLabel(), node.getDensity().copy().normalize());
 
         for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(row, df)) {
@@ -523,18 +523,18 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
         }
 
         List<String> dict = tree.firstTargetLevels();
-        DensityVector dv = DensityVector.empty(false, dict);
+        var dv = DensityVector.emptyByLabels(false, dict);
         double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
-            DensityVector d = this.predictPoint(tree, child, row, df)._2;
+            var d = this.predictPoint(tree, child, row, df)._2;
             double wc = child.getDensity().sum();
             dv.plus(d, wc);
             w += wc;
         }
-        for (int i = 0; i < dict.size(); i++) {
-            dv.set(i, dv.get(i) / w);
+        for (int i = 1; i < dict.size(); i++) {
+            dv.set(tree.firstTargetLevel(i), dv.get(tree.firstTargetLevel(i)) / w);
         }
-        return Pair.from(dv.findBestIndex(), dv);
+        return Pair.from(dv.findBestLabel(), dv);
     }
 
     private void additionalValidation(Frame df) {
@@ -578,7 +578,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
             return sb.toString();
         }
 
-        sb.append(baseSummary());
+//        sb.append(baseSummary());
 
         sb.append("\n");
 
@@ -613,11 +613,11 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
         }
         sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
         sb.append(Format.floatFlexShort(node.getCounter().sum())).append("/");
-        sb.append(Format.floatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
-        sb.append(firstTargetLevels().get(node.getBestIndex())).append(" (");
-        DensityVector d = node.getDensity().copy().normalize();
+        sb.append(Format.floatFlexShort(node.getCounter().sumExcept(node.getBestLabel()))).append(" ");
+        sb.append(node.getBestLabel()).append(" (");
+        var d = node.getDensity().copy().normalize();
         for (int i = 1; i < firstTargetLevels().size(); i++) {
-            sb.append(Format.floatFlexShort(d.get(i))).append(" ");
+            sb.append(Format.floatFlexShort(d.get(firstTargetLevel(i)))).append(" ");
         }
         sb.append(") ");
         if (node.isLeaf()) {

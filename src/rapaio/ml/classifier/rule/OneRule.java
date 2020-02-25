@@ -81,7 +81,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     private MissingHandler missingHandler = MissingHandler.MAJORITY;
     private Binning binning = new HolteBinning(3);
     private RuleSet bestRuleSet;
-    private DensityVector missingDensity;
+    private DensityVector<String> missingDensity;
 
     private OneRule() {
     }
@@ -165,7 +165,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
             }
         }
 
-        missingDensity = DensityVector.fromWeights(false, df.rvar(firstTargetName()), weights);
+        missingDensity = DensityVector.fromLevelWeights(false, df.rvar(firstTargetName()), weights);
 
         return bestRuleSet != null;
     }
@@ -180,22 +180,22 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
 
         ClassifierResult<OneRule> pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
-            Pair<String, DensityVector> p = predict(test, i);
+            Pair<String, DensityVector<String>> p = predict(test, i);
             if (withClasses) {
                 pred.firstClasses().setLabel(i, p._1);
             }
             if (withDensities) {
-                List<String> dict = firstTargetLevels();
-                DensityVector density = p._2.copy().normalize();
-                for (int j = 0; j < dict.size(); j++) {
-                    pred.firstDensity().setDouble(i, j, density.get(j));
+                List<String> targetLevels = firstTargetLevels();
+                DensityVector<String> density = p._2.copy().normalize();
+                for (int j = 1; j < targetLevels.size(); j++) {
+                    pred.firstDensity().setDouble(i, j, density.get(targetLevels.get(j)));
                 }
             }
         }
         return pred;
     }
 
-    private Pair<String, DensityVector> predict(Frame df, int row) {
+    private Pair<String, DensityVector<String>> predict(Frame df, int row) {
         String testVar = bestRuleSet.getVarName();
 
         boolean missing = df.rvar(testVar).isMissing(row);
@@ -227,7 +227,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
                     }
                 }
         }
-        return Pair.from("?", DensityVector.empty(true, firstTargetLevels().size()));
+        return Pair.from("?", DensityVector.emptyByLabels(true, firstTargetLevels()));
     }
 
     private RuleSet buildNominal(String testVarName, Frame df, Var weights) {
@@ -236,21 +236,21 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
         List<String> testDict = df.rvar(testVarName).levels();
         List<String> targetDict = firstTargetLevels();
 
-        DensityVector[] densityVectors = new DensityVector[testDict.size()];
+        DensityVector<String>[] densityVectors = new DensityVector[testDict.size()];
         for (int i = 0; i < densityVectors.length; i++) {
-            densityVectors[i] = DensityVector.empty(false, targetDict);
+            densityVectors[i] = DensityVector.emptyByLabels(false, targetDict);
         }
 
         int testIndex = df.varIndex(testVarName);
         int targetIndex = df.varIndex(firstTargetName());
         for (int i = 0; i < df.rowCount(); i++) {
-            densityVectors[df.getInt(i, testIndex)].increment(df.getInt(i, targetIndex), weights.getDouble(i));
+            densityVectors[df.getInt(i, testIndex)].increment(df.getLabel(i, targetIndex), weights.getDouble(i));
         }
 
         for (int i = 0; i < testDict.size(); i++) {
-            DensityVector dv = densityVectors[i];
+            DensityVector<String> dv = densityVectors[i];
             int bestIndex = dv.findBestIndex();
-            set.getRules().add(new NominalRule(testDict.get(i), bestIndex, dv));
+            set.getRules().add(new NominalRule(testDict.get(i), dv.index().getValue(bestIndex), dv));
         }
         return set;
     }
@@ -271,14 +271,8 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     @Override
     public String toSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("OneRule model\n");
-        sb.append("================\n\n");
-
-        sb.append("Description:\n");
-        sb.append(fullName()).append("\n\n");
-
-        sb.append("Capabilities:\n");
-        sb.append(capabilities().toString()).append("\n");
+        sb.append(fullNameSummary());
+        sb.append(capabilitiesSummary());
 
         sb.append("Model fitted: ").append(hasLearned()).append("\n");
 
@@ -286,7 +280,8 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
             return sb.toString();
         }
 
-        sb.append(baseSummary());
+        sb.append(inputVarsSummary());
+        sb.append(targetVarsSummary());
 
         sb.append("Best").append(bestRuleSet.toString()).append("\n");
         for (Rule rule : bestRuleSet.getRules()) {

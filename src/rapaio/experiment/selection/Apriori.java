@@ -39,6 +39,7 @@ import rapaio.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +53,8 @@ import java.util.stream.Collectors;
 public class Apriori implements Printable {
 
     private Frame inputDf;
-    private BiPredicate<Integer, DensityVector> filter;
 
-    private List<List<Pair<AprioriRule, DensityVector>>> P;
+    private List<List<Pair<AprioriRule, DensityVector<String>>>> P;
     private List<AprioriRule> rules;
     private List<String> targetLevels;
     private double coverage;
@@ -63,7 +63,7 @@ public class Apriori implements Printable {
         return inputDf.varNames();
     }
 
-    public void train(Frame df, String target, BiPredicate<Integer, DensityVector> filter) {
+    public void train(Frame df, String target, BiPredicate<Integer, DensityVector<String>> filter) {
 
         List<Var> inputVars = df.varStream()
                 .filter(var -> var.type().equals(VType.NOMINAL))
@@ -71,7 +71,6 @@ public class Apriori implements Printable {
                 .collect(Collectors.toList());
         this.inputDf = SolidFrame.byVars(inputVars);
         this.targetLevels = df.levels(target);
-        this.filter = filter;
 
         List<AprioriRule> C = new ArrayList<>();
         P = new ArrayList<>();
@@ -88,23 +87,22 @@ public class Apriori implements Printable {
             }
         }
 
-        List<Pair<AprioriRule, DensityVector>> counts = C.stream().map(rule -> Pair.from(rule,
-                DensityVector.empty(false, df.levels(target))))
+        List<Pair<AprioriRule, DensityVector<String>>> counts = C.stream().map(rule -> Pair.from(rule,
+                DensityVector.emptyByLabels(false, df.levels(target))))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < df.rowCount(); i++) {
-            for (Pair<AprioriRule, DensityVector> cnt : counts) {
+            for (Pair<AprioriRule, DensityVector<String>> cnt : counts) {
                 if (cnt._1.matchRow(df, i)) {
-                    cnt._2.increment(df.getInt(i, target), 1);
+                    cnt._2.increment(df.getLabel(i, target), 1);
                 }
             }
         }
 
-        List<Pair<AprioriRule, DensityVector>> list = counts.stream()
+        P.add(counts.stream()
                 .filter(pair -> filter.test(df.rowCount(), pair._2))
-                .collect(Collectors.toList());
-        list.sort((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()));
-        P.add(list);
+                .sorted((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()))
+                .collect(Collectors.toList()));
 
         // do iterations
 
@@ -113,21 +111,21 @@ public class Apriori implements Printable {
         while (true) {
             int k = P.size();
 
-            Map<String, Pair<AprioriRule, DensityVector>> cnts = new HashMap<>();
+            Map<String, Pair<AprioriRule, DensityVector<String>>> cnts = new HashMap<>();
 
             // loop for all possibilities
             for (int i = 0; i < df.rowCount(); i++) {
                 for (AprioriRule b : base) {
                     if (!b.matchRow(df, i))
                         continue;
-                    for (Pair<AprioriRule, DensityVector> tPrev : P.get(k - 1)) {
+                    for (Pair<AprioriRule, DensityVector<String>> tPrev : P.get(k - 1)) {
                         if (!tPrev._1.isExtention(b))
                             continue;
                         if (!tPrev._1.matchRow(df, i))
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.from(next, DensityVector.empty(false, df.levels(target))));
+                            cnts.put(next.toString(), Pair.from(next, DensityVector.emptyByLabels(false, df.levels(target))));
                         }
                         cnts.get(next.toString())._2.increment(df.getInt(i, target), 1);
                     }
@@ -135,7 +133,7 @@ public class Apriori implements Printable {
             }
 
             // keep only survivors
-            List<Pair<AprioriRule, DensityVector>> top = cnts.values().stream()
+            List<Pair<AprioriRule, DensityVector<String>>> top = cnts.values().stream()
                     .filter(pair -> filter.test(df.rowCount(), pair._2))
                     .collect(Collectors.toList());
 
@@ -148,12 +146,12 @@ public class Apriori implements Printable {
 
         // eliminate redundant tasks
         for (int i = 0; i < P.size() - 1; i++) {
-            Iterator<Pair<AprioriRule, DensityVector>> it = P.get(i).iterator();
+            Iterator<Pair<AprioriRule, DensityVector<String>>> it = P.get(i).iterator();
             while (it.hasNext()) {
-                Pair<AprioriRule, DensityVector> next = it.next();
+                Pair<AprioriRule, DensityVector<String>> next = it.next();
                 boolean out = false;
                 for (int j = i + 1; j < P.size(); j++) {
-                    for (Pair<AprioriRule, DensityVector> pair : P.get(j)) {
+                    for (Pair<AprioriRule, DensityVector<String>> pair : P.get(j)) {
                         if (pair._1.contains(next._1)) {
                             out = true;
                             break;
@@ -170,7 +168,7 @@ public class Apriori implements Printable {
         // create final rules
 
         rules = new ArrayList<>();
-        for (List<Pair<AprioriRule, DensityVector>> aP : P) {
+        for (List<Pair<AprioriRule, DensityVector<String>>> aP : P) {
             rules.addAll(aP.stream().map(pair -> pair._1).collect(Collectors.toSet()));
         }
 
@@ -259,7 +257,7 @@ class AprioriRule {
     }
 
     public boolean contains(AprioriRule rule) {
-        Set<AprioriRuleClause> set = clauses.stream().collect(Collectors.toSet());
+        Set<AprioriRuleClause> set = new HashSet<>(clauses);
         for (AprioriRuleClause c : rule.clauses) {
             if (!set.contains(c))
                 return false;

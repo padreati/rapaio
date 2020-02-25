@@ -42,8 +42,8 @@ public class NominalRule extends Rule {
 
     private final String testLabel;
 
-    public NominalRule(String testLabel, int targetIndex, DensityVector dv) {
-        super(targetIndex, dv);
+    public NominalRule(String testLabel, String targetLevel, DensityVector dv) {
+        super(targetLevel, dv);
         this.testLabel = testLabel;
     }
 
@@ -55,7 +55,7 @@ public class NominalRule extends Rule {
     public String toString() {
         return "NominalRule {"
                 + "value=" + testLabel
-                + ", class=" + dv.level(targetIndex)
+                + ", class=" + targetLevel
                 + ", errors=" + floatFlexLong(getErrorCount())
                 + ", total=" + floatFlexLong(getTotalCount())
                 + ", acc=" + floatFlexLong(getAcc())

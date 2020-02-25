@@ -52,15 +52,15 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DensityVector dv = DensityVector.empty(false, dictionary);
+                var dv = DensityVector.emptyByLabels(false, dictionary);
                 for (int j = 1; j < dictionary.size(); j++) {
-                    dv.increment(j, densities.getDouble(i, j));
+                    dv.increment(dictionary.get(j), densities.getDouble(i, j));
                 }
                 dv.normalize();
                 for (int j = 1; j < dictionary.size(); j++) {
-                    densities.setDouble(i, j, dv.get(j));
+                    densities.setDouble(i, j, dv.get(dictionary.get(j)));
                 }
-                classes.setDouble(i, dv.findBestIndex());
+                classes.setDouble(i, dv.findBestIndex() + 1);
             }
         }
 
@@ -94,15 +94,15 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DensityVector dv = DensityVector.empty(false, dictionary);
-                for (int j = 0; j < dictionary.size(); j++) {
-                    dv.increment(j, densities.getDouble(i, j));
+                var dv = DensityVector.emptyByLabels(false, dictionary);
+                for (int j = 1; j < dictionary.size(); j++) {
+                    dv.increment(dictionary.get(j), densities.getDouble(i, j));
                 }
                 dv.normalize();
-                for (int j = 0; j < dictionary.size(); j++) {
-                    densities.setDouble(i, j, dv.get(j));
+                for (int j = 1; j < dictionary.size(); j++) {
+                    densities.setDouble(i, j, dv.get(dictionary.get(j)));
                 }
-                classes.setDouble(i, dv.findBestIndex());
+                classes.setDouble(i, dv.findBestIndex() + 1);
             }
         }
 

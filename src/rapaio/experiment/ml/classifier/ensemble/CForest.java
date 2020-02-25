@@ -89,7 +89,7 @@ public class CForest
     // learning artifacts
     private double oobError = Double.NaN;
     private List<ClassifierModel> predictors = new ArrayList<>();
-    private Map<Integer, DensityVector> oobDensities;
+    private Map<Integer, DensityVector<String>> oobDensities;
     private Var oobFit;
     private Var oobTrueClass;
     private Map<String, List<Double>> freqVIMap = new HashMap<>();
@@ -261,7 +261,7 @@ public class CForest
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobFit = VarNominal.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
-                oobDensities.put(i, DensityVector.empty(false, firstTargetLevels()));
+                oobDensities.put(i, DensityVector.emptyByLabels(false, firstTargetLevels()));
             }
         }
         if (freqVIComp && c instanceof CTree) {
@@ -371,19 +371,18 @@ public class CForest
 
     private void gainVICompute(Pair<ClassifierModel, VarInt> weak) {
         CTree weakTree = (CTree) weak._1;
-        DensityVector scores = DensityVector.empty(false, inputNames());
+        var scores = DensityVector.emptyByLabels(false, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
-            double score = scores.get(varName);
             if (!gainVIMap.containsKey(varName)) {
                 gainVIMap.put(varName, new ArrayList<>());
             }
-            gainVIMap.get(varName).add(score);
+            gainVIMap.get(varName).add(scores.get(varName));
         }
     }
 
-    private void collectGainVI(CTreeNode node, DensityVector dv) {
+    private void collectGainVI(CTreeNode node, DensityVector<String> dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();
@@ -394,19 +393,18 @@ public class CForest
 
     private void freqVICompute(Pair<ClassifierModel, VarInt> weak) {
         CTree weakTree = (CTree) weak._1;
-        DensityVector scores = DensityVector.empty(false, inputNames());
+        var scores = DensityVector.emptyByLabels(false, inputNames());
         collectFreqVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
-            double score = scores.get(varName);
             if (!freqVIMap.containsKey(varName)) {
                 freqVIMap.put(varName, new ArrayList<>());
             }
-            freqVIMap.get(varName).add(score);
+            freqVIMap.get(varName).add(scores.get(varName));
         }
     }
 
-    private void collectFreqVI(CTreeNode node, DensityVector dv) {
+    private void collectFreqVI(CTreeNode node, DensityVector<String> dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();
@@ -420,7 +418,7 @@ public class CForest
         double totalOobInstances;
         VarInt oobIndexes = weak._2;
         Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
-        ClassifierResult fit = weak._1.predict(oobTest);
+        var fit = weak._1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().getInt(j);
             oobDensities.get(oobIndexes.getInt(j)).increment(fitIndex, 1.0);
@@ -428,7 +426,7 @@ public class CForest
         oobFit.clearRows();
         totalOobError = 0.0;
         totalOobInstances = 0.0;
-        for (Map.Entry<Integer, DensityVector> e : oobDensities.entrySet()) {
+        for (Map.Entry<Integer, DensityVector<String>> e : oobDensities.entrySet()) {
             if (e.getValue().sum() > 0) {
                 int bestIndex = e.getValue().findBestIndex();
                 String bestLevel = firstTargetLevels().get(bestIndex);
@@ -443,7 +441,7 @@ public class CForest
     }
 
     private Pair<ClassifierModel, VarInt> buildWeakPredictor(Frame df, Var weights) {
-        ClassifierModel weak = c.newInstance();
+        var weak = c.newInstance();
 
         Sample sample = sampler().nextSample(df, weights);
 
@@ -462,7 +460,7 @@ public class CForest
     @Override
     protected ClassifierResult<CForest> corePredict(Frame df, boolean withClasses, boolean withDensities) {
         ClassifierResult<CForest> cp = ClassifierResult.build(this, df, true, true);
-        List<ClassifierResult> treeFits = predictors.stream().parallel()
+        var treeFits = predictors.stream().parallel()
                 .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
         baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());
@@ -486,7 +484,8 @@ public class CForest
         }
 
         sb.append("Learned model:\n");
-        sb.append(baseSummary());
+        sb.append(inputVarsSummary());
+        sb.append(targetVarsSummary());
 
         // stuff specific to rf
         // todo

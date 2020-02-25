@@ -111,6 +111,7 @@ relational data bases.
 * DVector - vector of frequencies
 * Unique - data structure to collect and manipulate unique values of a variable
 * Group - data structure to build and manipulate group by aggregations
+* Index - data structure for transforming value domains into dense indexes
 
 **Core**
 
@@ -127,6 +128,8 @@ other sampling strategies for sampling rows.
     * generates discrete integer samples with/without replacement, weighted/non-weighted
     * offers utility methods for bootstraps, simple random, stratified sampling
 * *RowSampler* implementations used in machine learning algorithms: bootstrap, identity, subsampling
+* *DensityVector* onw way discrete density vector tool
+* *DensityTable* two way discrete density table tool
 
 
 **Distributions**
@@ -225,6 +228,7 @@ of production ready tools from this field.
 
 * ZeroRule
 * OneRule
+* Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli)
 
 **Regression**
 
@@ -260,7 +264,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Core tools**
 
-* DTable
 * Distance Matrix
 
 **Evaluation: metrics**
@@ -278,7 +281,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 * Linear: BinaryLogistic
 * Decision Trees - CTree: DecisionStump, ID3, C45, CART
   * purity: entropy, infogain, gain ration, gini index

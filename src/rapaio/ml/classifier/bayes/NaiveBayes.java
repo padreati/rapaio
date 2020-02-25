@@ -29,57 +29,64 @@ package rapaio.ml.classifier.bayes;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
-import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
-import rapaio.ml.classifier.bayes.estimator.NomEstimator;
-import rapaio.ml.classifier.bayes.estimator.NumEstimator;
+import rapaio.ml.classifier.bayes.nb.Estimator;
+import rapaio.ml.classifier.bayes.nb.Prior;
+import rapaio.ml.classifier.bayes.nb.PriorMLE;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static rapaio.printer.format.Format.floatFlex;
-
 /**
- * Naive Bayes Classifier.
+ * Mixed Naive Bayes Classifier.
  * <p>
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NaiveBayes
-        extends AbstractClassifierModel<NaiveBayes, ClassifierResult<NaiveBayes>>
-        implements Printable {
+public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult<NaiveBayes>> implements Printable {
+
+    public static NaiveBayes newModel() {
+        return new NaiveBayes();
+    }
 
     private static final long serialVersionUID = -7602854063045679683L;
     private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());
 
     // algorithm parameters
 
-    private double laplaceSmoother = 1;
-    private PriorSupplier priorSupplier = PriorSupplier.PRIOR_MLE;
-    private Map<String, Double> priors;
+    private Prior prior = new PriorMLE();
+    private List<Estimator> estimatorList = new ArrayList<>();
 
-    private NumEstimator numEstimator = new GaussianPdf();
-    private NomEstimator nomEstimator = new MultinomialPmf();
-
-    private Map<String, NomEstimator> nomData = new ConcurrentHashMap<>();
-    private Map<String, NumEstimator> numData = new ConcurrentHashMap<>();
+    private NaiveBayes() {
+    }
 
     @Override
     public NaiveBayes newInstance() {
-        return newInstanceDecoration(new NaiveBayes())
-                .withNumEstimator(numEstimator)
-                .withNomEstimator(nomEstimator)
-                .withLaplaceSmoother(laplaceSmoother)
-                .withPriorSupplier(priorSupplier);
+        NaiveBayes copy = newInstanceDecoration(new NaiveBayes());
+        copy.withPriorSupplier(getPrior().newInstance());
+
+        LinkedList<Estimator> copyEstimators = new LinkedList<>();
+        for (Estimator estimator : estimatorList) {
+            copyEstimators.add(estimator.newInstance());
+        }
+        copy.withEstimators(copyEstimators);
+        return copy;
     }
 
     @Override
@@ -89,9 +96,12 @@ public class NaiveBayes
 
     @Override
     public String fullName() {
-        return name() + "(" +
-                "numEstimator=" + numEstimator.name() + ", " +
-                "nomEstimator=" + nomEstimator.name() + ")";
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append("{prior=").append(prior.fittedName()).append(",");
+        sb.append("estimators=[")
+                .append(estimatorList.stream().map(Estimator::fittedName).collect(Collectors.joining(",")))
+                .append("]}");
+        return sb.toString();
     }
 
     @Override
@@ -100,45 +110,71 @@ public class NaiveBayes
                 .withInputCount(0, 1_000_000)
                 .withInputTypes(VType.NOMINAL, VType.DOUBLE, VType.INT, VType.BINARY)
                 .withTargetCount(1, 1)
-                .withTargetTypes(VType.NOMINAL)
+                .withTargetTypes(VType.NOMINAL, VType.BINARY)
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(true);
     }
 
-    public NumEstimator getNumEstimator() {
-        return numEstimator;
+    public Prior getPrior() {
+        return prior;
     }
 
-    public NaiveBayes withNumEstimator(NumEstimator numEstimator) {
-        this.numEstimator = numEstimator;
+    public NaiveBayes withPriorSupplier(Prior prior) {
+        this.prior = prior;
         return this;
     }
 
-    public NomEstimator getNomEstimator() {
-        return nomEstimator;
+    public List<Estimator> getEstimators() {
+        return Collections.unmodifiableList(estimatorList);
     }
 
-    public NaiveBayes withNomEstimator(NomEstimator nomEstimator) {
-        this.nomEstimator = nomEstimator;
+    public NaiveBayes withEstimators(Estimator... estimator) {
+        return withEstimators(Arrays.asList(estimator));
+    }
+
+    public NaiveBayes withEstimators(Collection<? extends Estimator> estimators) {
+        Set<String> varNames = new HashSet<>();
+        for (Estimator e : estimatorList) {
+            varNames.addAll(e.getTestVarNames());
+        }
+        for (Estimator e : estimators) {
+            for (String testVarName : e.getTestVarNames()) {
+                if (varNames.contains(testVarName)) {
+                    throw new IllegalArgumentException("Cannot add estimator since it contains variable: " + testVarName +
+                            " which is already handled by " + e.name());
+                }
+            }
+            estimatorList.add(e);
+            varNames.addAll(e.getTestVarNames());
+        }
         return this;
     }
 
-    public NaiveBayes withLaplaceSmoother(double laplaceSmoother) {
-        this.laplaceSmoother = laplaceSmoother;
-        return this;
-    }
+    @Override
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVars) {
+        List<String> targets = VRange.of(targetVars).parseVarNames(df);
+        this.targetNames = targets.toArray(new String[0]);
+        this.targetTypes = targets.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);
+        this.targetLevels = new HashMap<>();
+        this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
 
-    public double getLaplaceSmoother() {
-        return laplaceSmoother;
-    }
+        HashSet<String> targetSet = new HashSet<>(targets);
+        HashSet<String> allVarsSet = new HashSet<>(Arrays.asList(df.varNames()));
 
-    public PriorSupplier getPriorSupplier() {
-        return priorSupplier;
-    }
+        String[] inputs = estimatorList.stream().flatMap(e -> e.getTestVarNames().stream()).toArray(String[]::new);
+        for (String inputVar : inputs) {
+            if (targetSet.contains(inputVar)) {
+                throw new IllegalStateException("Input variable: " + inputVar + " is also a target variable.");
+            }
+            if(!allVarsSet.contains(inputVar)) {
+                throw new IllegalStateException("Input variable: " + inputVar + " is not contained in training data frame.");
+            }
+        }
+        this.inputNames = inputs;
+        this.inputTypes = Arrays.stream(inputNames).map(name -> df.rvar(name).type()).toArray(VType[]::new);
 
-    public NaiveBayes withPriorSupplier(PriorSupplier priorSupplier) {
-        this.priorSupplier = priorSupplier;
-        return this;
+        capabilities().checkAtLearnPhase(df, weights, targetVars);
+        return FitSetup.valueOf(df, weights, targetVars);
     }
 
     @Override
@@ -146,32 +182,22 @@ public class NaiveBayes
 
         // build priors
 
-        priors = priorSupplier.learnPriors(df, weights, firstTargetName());
+        prior.fitPriors(df, weights, firstTargetName());
 
         // build conditional probabilities
 
-        nomData = new ConcurrentHashMap<>();
-        numData = new ConcurrentHashMap<>();
-
         logger.fine("start learning...");
-        Arrays.stream(df.varNames()).parallel().forEach(
-                testCol -> {
-                    if (firstTargetName().equals(testCol)) {
-                        return;
-                    }
-                    if (df.rvar(testCol).type().isNumeric()) {
-                        NumEstimator estimator = numEstimator.newInstance();
-                        estimator.learn(df, firstTargetName(), testCol);
-                        numData.put(testCol, estimator);
-                        return;
-                    }
-                    if (df.rvar(testCol).type().isNominal() || df.rvar(testCol).type().isBinary()) {
-                        NomEstimator estimator = nomEstimator.newInstance();
-                        estimator.learn(this, df, weights, firstTargetName(), testCol);
-                        nomData.put(testCol, estimator);
-                    }
-                });
-        logger.fine("learning phase finished");
+        for (Estimator estimator : estimatorList) {
+            boolean fitted = estimator.fit(df, weights, firstTargetName());
+            if (fitted) {
+                logger.info("Fitter estimator: " + estimator.fittedName());
+            } else {
+                String message = "Estimator: " + estimator.fittedName() + " cannot be fitted.";
+                logger.severe(message);
+                throw new IllegalStateException(message);
+            }
+        }
+        logger.fine("Learning phase finished successfully.");
         return true;
     }
 
@@ -183,23 +209,14 @@ public class NaiveBayes
         ClassifierResult<NaiveBayes> pred = ClassifierResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
-                    DensityVector dv = DensityVector.empty(false, firstTargetLevels());
+                    DensityVector<String> dv = DensityVector.emptyByLabels(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().size(); j++) {
-                        double sumLog = Math.log(priors.get(firstTargetLevel(j)));
+                        double sumLog = Math.log(prior.computePrior(firstTargetLevel(j)));
 
-                        for (Map.Entry<String, NumEstimator> e : numData.entrySet()) {
-                            if (df.isMissing(i, e.getKey())) {
-                                continue;
-                            }
-                            sumLog += Math.log(e.getValue().computeProbability(df.getDouble(i, e.getKey()), firstTargetLevel(j)));
+                        for (Estimator estimator : estimatorList) {
+                            sumLog += Math.log(estimator.predict(df, i, firstTargetLevel(j)));
                         }
-                        for (Map.Entry<String, NomEstimator> e : nomData.entrySet()) {
-                            if (df.isMissing(i, e.getKey())) {
-                                continue;
-                            }
-                            sumLog += Math.log(e.getValue().computeProbability(df.getLabel(i, e.getKey()), firstTargetLevel(j)));
-                        }
-                        dv.increment(j, Math.exp(sumLog));
+                        dv.increment(firstTargetLevel(j), Math.exp(sumLog));
                     }
                     dv.normalize();
 
@@ -208,7 +225,7 @@ public class NaiveBayes
                     }
                     if (withDensities) {
                         for (int j = 1; j < firstTargetLevels().size(); j++) {
-                            pred.firstDensity().setDouble(i, j, dv.get(j));
+                            pred.firstDensity().setDouble(i, j, dv.get(firstTargetLevel(j)));
                         }
                     }
                 });
@@ -219,35 +236,29 @@ public class NaiveBayes
     @Override
     public String toSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("NaiveBayes model\n");
+        sb.append(name()).append(" model\n");
         sb.append("================\n\n");
 
-        sb.append("Description:\n");
-        sb.append(fullName()).append("\n\n");
-
-        sb.append("Capabilities:\n");
-        sb.append(capabilities().toString()).append("\n");
-
-        sb.append("Learned model:\n");
+        sb.append(capabilitiesSummary());
 
         if (!hasLearned()) {
-            sb.append("Learning phase not called\n\n");
-            return sb.toString();
-        }
+            sb.append("Model not fitted.\n\n");
+            sb.append("Prior: ").append(prior.name()).append("\n");
+            sb.append("Estimators: \n");
+            for (Estimator estimator : estimatorList) {
+                sb.append("\t- ").append(estimator.fittedName()).append("\n");
+            }
+        } else {
+            sb.append("Model is fitted.\n\n");
 
-        sb.append(baseSummary());
+            sb.append(inputVarsSummary());
+            sb.append(targetVarsSummary());
 
-        sb.append("prior probabilities:\n");
-        String targetName = firstTargetName();
-        firstTargetLevels().stream().skip(1).forEach(label -> sb.append("> P(").append(targetName).append("='").append(label).append("')=").append(floatFlex(priors.get(label))).append("\n"));
-
-        if (!numData.isEmpty()) {
-            sb.append("numerical estimators:\n");
-            numData.forEach((key, value) -> sb.append("> ").append(key).append(" : ").append(value.learningInfo()).append("\n"));
-        }
-        if (!nomData.isEmpty()) {
-            sb.append("nominal estimators:\n");
-            nomData.forEach((key, value) -> sb.append("> ").append(key).append(" : ").append(value.learningInfo()).append("\n"));
+            sb.append("Prior: ").append(prior.fittedName());
+            sb.append("Estimators: \n");
+            for (Estimator estimator : estimatorList) {
+                sb.append("\t- ").append(estimator.fittedName()).append("\n");
+            }
         }
         return sb.toString();
     }

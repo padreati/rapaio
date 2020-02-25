@@ -59,8 +59,8 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         Var target = df.rvar(firstTargetName());
-        DensityVector dv = DensityVector.fromWeights(false, target, weights);
-        prediction = target.levels().get(dv.findBestIndex());
+        DensityVector<String> dv = DensityVector.fromLevelWeights(false, target, weights);
+        prediction = dv.index().getValueString(dv.findBestIndex());
         return true;
     }
 

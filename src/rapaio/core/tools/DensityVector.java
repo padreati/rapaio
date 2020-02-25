@@ -28,18 +28,19 @@
 package rapaio.core.tools;
 
 import rapaio.core.RandomSource;
-import rapaio.data.VType;
+import rapaio.data.Index;
 import rapaio.data.Var;
+import rapaio.data.index.IndexLabel;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.DoublePredicate;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
@@ -49,16 +50,19 @@ import java.util.stream.DoubleStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DensityVector implements Printable, Serializable {
+public class DensityVector<T> implements Printable, Serializable {
 
     /**
      * Builds a distribution vector with given levels
      *
-     * @param labels used to name values
+     * @param values used to name values
      * @return new empty distribution vector
      */
-    public static DensityVector empty(boolean useFirst, List<String> labels) {
-        return new DensityVector(useFirst, labels);
+    public static DensityVector<String> emptyByLabels(boolean useFirst, List<String> values) {
+        if (useFirst) {
+            return new DensityVector<>(IndexLabel.fromLabelValues(values));
+        }
+        return new DensityVector<>(IndexLabel.fromLabelValues(values.subList(1, values.size())));
     }
 
     /**
@@ -67,8 +71,11 @@ public class DensityVector implements Printable, Serializable {
      * @param labels used to name values
      * @return new empty distribution vector
      */
-    public static DensityVector empty(boolean useFirst, String... labels) {
-        return new DensityVector(useFirst, Arrays.asList(labels));
+    public static DensityVector<String> emptyByLabels(boolean useMissing, String... labels) {
+        if (useMissing) {
+            return new DensityVector<>(IndexLabel.fromLabelValues(labels));
+        }
+        return new DensityVector<>(IndexLabel.fromLabelValues(Arrays.stream(labels).skip(1).collect(Collectors.toList())));
     }
 
     /**
@@ -77,16 +84,12 @@ public class DensityVector implements Printable, Serializable {
      * @param rows size of the distribution vector
      * @return new empty distribution vector
      */
-    public static DensityVector empty(boolean useFirst, int rows) {
-        String[] labels = new String[rows];
-        for (int i = 0; i < labels.length; i++) {
-            if (i == 0) {
-                labels[i] = useFirst ? "v0" : "?";
-            } else {
-                labels[i] = "v" + i;
-            }
+    public static DensityVector<String> emptyByLabels(int rows) {
+        ArrayList<String> labels = new ArrayList<>();
+        for (int i = 0; i < rows; i++) {
+            labels.add("v" + i);
         }
-        return new DensityVector(useFirst, Arrays.asList(labels));
+        return new DensityVector<>(IndexLabel.fromLabelValues(labels));
     }
 
     /**
@@ -98,8 +101,13 @@ public class DensityVector implements Printable, Serializable {
      * @param var given nominal value
      * @return new distribution vector filled with counts
      */
-    public static DensityVector fromCounts(boolean useFirst, Var var) {
-        return new DensityVector(useFirst, var.levels(), var, null);
+    public static DensityVector<String> fromLevelCounts(boolean useMissing, Var var) {
+        IndexLabel index = IndexLabel.fromVarLevels(useMissing, var);
+        DensityVector<String> dv = new DensityVector<>(index);
+        for (int row : index.getIndexList(var)) {
+            dv.increment(row, 1);
+        }
+        return dv;
     }
 
     /**
@@ -111,58 +119,37 @@ public class DensityVector implements Printable, Serializable {
      * @param weights given numeric weights
      * @return new distribution variable
      */
-    public static DensityVector fromWeights(boolean useFirst, Var var, Var weights) {
-        return new DensityVector(useFirst, var.levels(), var, weights);
-    }
-
-    /**
-     * Builds a new distribution vector, with given names, grouped by
-     * the nominal variable and with values as sums on numeric weights
-     *
-     * @param labels  array of names
-     * @param var     defines nominal grouping
-     * @param weights weights used to compute sums for each cell
-     * @return new distribution vector
-     */
-    public static DensityVector fromWeights(boolean useFirst, Var var, Var weights, String... labels) {
-        return new DensityVector(useFirst, Arrays.asList(labels), var, weights);
+    public static DensityVector<String> fromLevelWeights(boolean useMissing, Var var, Var weights) {
+        IndexLabel index = IndexLabel.fromVarLevels(useMissing, var);
+        DensityVector<String> dv = new DensityVector<>(index);
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (index.containsValue(var, i)) {
+                dv.increment(index.getIndex(var, i), weights.getDouble(i));
+            }
+        }
+        return dv;
     }
 
     private static final long serialVersionUID = -546802690694348698L;
-    private final List<String> levels;
-    private final Map<String, Integer> reverse = new HashMap<>();
+    private final Index<T> index;
     private final double[] values;
-    private boolean useFirst;
-    private int start;
     private double total;
 
-    private DensityVector(boolean useFirst, List<String> labels) {
-        this.useFirst = useFirst;
-        this.start = useFirst ? 0 : 1;
-
-        this.levels = labels;
-        for (int i = 0; i < labels.size(); i++) {
-            reverse.put(labels.get(i), i);
-        }
-        this.values = new double[this.levels.size()];
+    private DensityVector(Index<T> index) {
+        this.index = index;
+        this.values = new double[this.index.size()];
     }
 
-    private DensityVector(boolean useFirst, List<String> labels, Var var, Var weights) {
-        this(useFirst, labels);
-        int off = var.type().equals(VType.BINARY) ? 1 : 0;
-        for (int i = 0; i < var.rowCount(); i++) {
-            double w = weights == null ? 1 : weights.getDouble(i);
-            values[var.getInt(i) + off] += w;
-            total += w;
-        }
+    public DensityVector<T> newInstance() {
+        return new DensityVector<>(index);
     }
 
-    public boolean isFirstUsed() {
-        return useFirst;
+    public Index<T> index() {
+        return index;
     }
 
-    public List<String> levels() {
-        return levels;
+    public T getIndexValue(int pos) {
+        return index.getValue(pos);
     }
 
     /**
@@ -175,12 +162,8 @@ public class DensityVector implements Printable, Serializable {
         return values[pos];
     }
 
-    public String level(int pos) {
-        return levels.get(pos);
-    }
-
-    public double get(String name) {
-        return get(reverse.get(name));
+    public double get(T name) {
+        return get(index.getIndex(name));
     }
 
     /**
@@ -194,8 +177,8 @@ public class DensityVector implements Printable, Serializable {
         total += value;
     }
 
-    public void increment(String name, double value) {
-        increment(reverse.get(name), value);
+    public void increment(T name, double value) {
+        increment(index.getIndex(name), value);
     }
 
     /**
@@ -204,7 +187,7 @@ public class DensityVector implements Printable, Serializable {
      * @param dv     density vector which will be added
      * @param factor the factor used to multiply added density vector with
      */
-    public void plus(DensityVector dv, double factor) {
+    public void plus(DensityVector<T> dv, double factor) {
         if (values.length != dv.values.length)
             throw new IllegalArgumentException("Cannot update density vector, row count is different");
         for (int i = 0; i < values.length; i++) {
@@ -224,8 +207,8 @@ public class DensityVector implements Printable, Serializable {
         values[pos] = value;
     }
 
-    public void set(String name, double value) {
-        set(reverse.get(name), value);
+    public void set(T name, double value) {
+        set(index.getIndex(name), value);
     }
 
     /**
@@ -236,9 +219,9 @@ public class DensityVector implements Printable, Serializable {
      */
     public int findBestIndex() {
         double n = 1;
-        int bestIndex = start;
-        double best = values[start];
-        for (int i = start + 1; i < values.length; i++) {
+        int bestIndex = 0;
+        double best = values[0];
+        for (int i = 1; i < values.length; i++) {
             if (values[i] > best) {
                 best = values[i];
                 bestIndex = i;
@@ -256,10 +239,32 @@ public class DensityVector implements Printable, Serializable {
         return bestIndex;
     }
 
+    public String findBestLabel() {
+        double n = 1;
+        String bestLabel = index.getValueString(0);
+        double best = values[0];
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] > best) {
+                best = values[i];
+                bestLabel = index.getValueString(i);
+                n = 1;
+                continue;
+            }
+            if (values[i] == best) {
+                if (RandomSource.nextDouble() > n / (n + 1)) {
+                    best = values[i];
+                    bestLabel = index.getValueString(i);
+                }
+                n++;
+            }
+        }
+        return bestLabel;
+    }
+
     /**
      * Normalize values from density vector to sum
      */
-    public DensityVector normalize() {
+    public DensityVector<T> normalize() {
         normalize(1);
         return this;
     }
@@ -267,14 +272,14 @@ public class DensityVector implements Printable, Serializable {
     /**
      * Normalize values from density vector to sum of powers
      */
-    public DensityVector normalize(double pow) {
+    public DensityVector<T> normalize(double pow) {
         total = 0.0;
-        for (int i = start; i < values.length; i++) {
-            total += MTools.pow(values[i], pow);
+        for (double value : values) {
+            total += MTools.pow(value, pow);
         }
         if (total == 0)
             return this;
-        for (int i = start; i < values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             values[i] /= total;
         }
         total = 1.0;
@@ -282,12 +287,12 @@ public class DensityVector implements Printable, Serializable {
     }
 
     /**
-     * Computes the sum of all cells. First cell is skipped if {@link #isFirstUsed()} = false
+     * Computes the sum of all cells
      *
      * @return sum of elements
      */
     public double sum() {
-        return useFirst ? total : total - values[0];
+        return total;
     }
 
     /**
@@ -297,10 +302,30 @@ public class DensityVector implements Printable, Serializable {
      * @return partial sum of cells
      */
     public double sumExcept(int except) {
-        if (except <= 0) {
-            throw new IllegalArgumentException("except index must be greater than 0");
+        if (except < 0) {
+            throw new IllegalArgumentException("Except index must be greater or equal with 0.");
         }
         return sum() - values[except];
+    }
+
+    /**
+     * Computes the sum of all cells except a given one and eventually the missing value cell.
+     *
+     * @param except the cell excepted from computation
+     * @return partial sum of cells
+     */
+    public double sumExcept(String except) {
+        int intexcept = -1;
+        for (int i = 0; i < index.size(); i++) {
+            if (index.getValueString(i).equals(except)) {
+                intexcept = i;
+                break;
+            }
+        }
+        if (intexcept < 0) {
+            throw new IllegalArgumentException("Except value: " + except + " not found.");
+        }
+        return sum() - values[intexcept];
     }
 
     /**
@@ -311,8 +336,8 @@ public class DensityVector implements Printable, Serializable {
      */
     public int countValues(DoublePredicate predicate) {
         int count = 0;
-        for (int i = start; i < values.length; i++) {
-            if (predicate.test(values[i])) {
+        for (double value : values) {
+            if (predicate.test(value)) {
                 count++;
             }
         }
@@ -320,7 +345,7 @@ public class DensityVector implements Printable, Serializable {
     }
 
     public int rowCount() {
-        return levels.size();
+        return index.size();
     }
 
     /**
@@ -328,40 +353,30 @@ public class DensityVector implements Printable, Serializable {
      *
      * @return a solid copy of distribution vector
      */
-    public DensityVector copy() {
-        DensityVector d = new DensityVector(useFirst, levels);
-        System.arraycopy(values, 0, d.values, 0, levels.size());
+    public DensityVector<T> copy() {
+        DensityVector<T> d = new DensityVector<>(index);
+        System.arraycopy(values, 0, d.values, 0, index.size());
         d.total = total;
         return d;
     }
 
-    /**
-     * @return index of the first cell, is 1 if missing cell exists and {@param useMissing} exists, 0 otherwise
-     */
-    public int start() {
-        return start;
-    }
-
     public DoubleStream streamValues() {
-        if (isFirstUsed()) {
-            return Arrays.stream(values);
-        }
-        return Arrays.stream(values).skip(1);
+        return Arrays.stream(values);
     }
 
-    public boolean equalsFull(DensityVector o) {
-        if (levels.size() - start != o.levels.size() - o.start) {
+    public boolean equalsFull(DensityVector<T> o) {
+        if (index.size() != o.index.size()) {
             return false;
         }
-        if (values.length - start != o.values.length - o.start) {
+        if (values.length != o.values.length) {
             return false;
         }
-        for (int i = 0; i < levels.size() - start; i++) {
-            if (!levels.get(i + start).equals(o.levels.get(i + o.start)))
+        for (int i = 0; i < index.size(); i++) {
+            if (!index.getValue(i).equals(o.index.getValue(i)))
                 return false;
         }
-        for (int i = 0; i < values.length - start; i++) {
-            if (Math.abs(values[i + start] - o.values[i + o.start]) > 1e-30) {
+        for (int i = 0; i < values.length; i++) {
+            if (Math.abs(values[i] - o.values[i]) > 1e-30) {
                 return false;
             }
         }
@@ -370,24 +385,24 @@ public class DensityVector implements Printable, Serializable {
 
     @Override
     public String toString() {
-        return String.format("DVector{levels=[%s], firstUsed=%b, values=%s, total=%f}",
-                String.join(",", levels), useFirst, Arrays.toString(values), total);
+        return String.format("DVector{levels=[%s], values=%s, total=%f}",
+                String.join(",", index.getValueStrings()), Arrays.toString(values), total);
     }
 
     @Override
     public String toContent() {
-        TextTable tt = TextTable.empty(3, levels.size());
-        for (int i = start; i < levels.size(); i++) {
-            tt.textRight(0, i, levels.get(i));
-            tt.textRight(1, i, repeat(levels.get(i).length(), '-'));
+        TextTable tt = TextTable.empty(3, index.size());
+        for (int i = 0; i < index.size(); i++) {
+            tt.textRight(0, i, index.getValueString(i));
+            tt.textRight(1, i, repeat(index.getValueString(i).length()));
             tt.floatFlex(2, i, values[i]);
         }
         return tt.getDynamicText();
     }
 
-    private String repeat(int length, char c) {
+    private String repeat(int length) {
         char[] buffer = new char[length];
-        Arrays.fill(buffer, c);
+        Arrays.fill(buffer, '-');
         return String.valueOf(buffer);
     }
 

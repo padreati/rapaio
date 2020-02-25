@@ -26,11 +26,11 @@ package rapaio.experiment.ml.classifier.tree.ctree;
 
 
 import org.junit.jupiter.api.Test;
+import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.filter.FRetainTypes;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.core.tools.DTable;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.eval.metric.Confusion;
 
@@ -53,8 +53,8 @@ public class C45ClassifierModelTest {
         classifier.fit(df, className);
         var pred = classifier.predict(df);
 
-        DTable dtWindy = DTable.fromCounts(df.rvar("windy"), df.rvar("class"), false);
-        DTable dtOutlook = DTable.fromCounts(df.rvar("outlook"), df.rvar("class"), false);
+        var dtWindy = DensityTable.fromLevelCounts(false, df.rvar("windy"), df.rvar("class"));
+        var dtOutlook = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
         String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
         assertTrue(classifier.getRoot().getBestCandidate().getGroupPredicates().get(0).toString().contains(splitCol));
 

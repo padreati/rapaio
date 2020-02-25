@@ -91,7 +91,7 @@ public class RowSamplerTest {
         // uniform counts close to 500
         count.printContent();
 
-        DensityVector freq = DensityVector.empty(true, df.rowCount());
+        var freq = DensityVector.emptyByLabels(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             freq.set(i, count.getDouble(i));
         }

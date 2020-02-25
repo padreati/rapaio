@@ -24,21 +24,26 @@
 
 package rapaio.ml.classifier.bayes;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.Mapping;
 import rapaio.data.SolidFrame;
+import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.ml.classifier.bayes.estimator.KernelPdf;
-import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.datasets.Datasets;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.bayes.nb.Estimator;
+import rapaio.ml.classifier.bayes.nb.GaussianEstimator;
+import rapaio.ml.classifier.bayes.nb.KernelEstimator;
+import rapaio.ml.classifier.bayes.nb.PriorUniform;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -46,160 +51,213 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class NaiveBayesTest {
 
-    private static final int N = 100;
-    private static final double TOL = 1e-20;
-    private Var target;
-    private Frame dfGood;
-    private Frame dfBad;
-    private Frame dfMixt;
+    private static final double TOLERANCE = 1e-12;
 
-    @BeforeEach
-    void setUp() {
-        RandomSource.setSeed(1L);
-        Normal normal = Normal.std();
-        target = VarNominal.from(N, row -> row >= 50 ? "A" : "B").withName("target");
-        Var nom1 = VarNominal.from(N, row -> row >= 50 ? "a" : "b").withName("nom1");
-        Var nom2 = VarNominal.from(N, row -> row % 2 == 0 ? "a" : "b").withName("nom2");
-        Var num1 = VarDouble.from(N, row -> row >= 50 ? normal.sampleNext() : normal.sampleNext() + 10).withName("num1");
-        Var num2 = VarDouble.from(N, normal::sampleNext).withName("num2");
-        dfGood = SolidFrame.byVars(nom1, num1, target);
-        dfBad = SolidFrame.byVars(nom2, num2, target);
-        dfMixt = SolidFrame.byVars(nom1, nom2, num1, num2, target);
+    @Test
+    void testBuilders() {
+
+        var iris = Datasets.loadIrisDataset();
+
+        NaiveBayes nb = NaiveBayes.newModel();
+        assertEquals("NaiveBayes", nb.name());
+        assertEquals("NaiveBayes{prior=MLE{},estimators=[]}", nb.fullName());
+        assertEquals("MLE", nb.getPrior().name());
+
+        // change default parameters
+
+        nb.withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
+        nb.withPriorSupplier(new PriorUniform());
+
+        assertEquals("NaiveBayes", nb.name());
+        assertEquals("NaiveBayes{prior=Uniform{value=?,targetLevels=[]}," +
+                "estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]}," +
+                "Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}", nb.fullName());
+        assertEquals("Uniform", nb.getPrior().name());
+
+        // fit it to see changes
+
+        nb.fit(iris, VarDouble.fill(iris.rowCount(), 1), "class");
+
+        assertEquals("NaiveBayes{prior=Uniform{value=0.3333333,targetLevels=[virginica,setosa,versicolor]}," +
+                "estimators=[Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), " +
+                "setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}," +
+                "Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), " +
+                "setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}," +
+                "Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), " +
+                "setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}," +
+                "Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), " +
+                "setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}]}", nb.fullName());
+
+        // test now if new instance produce a default with settings
+
+        var copy = nb.newInstance();
+
+        assertEquals("NaiveBayes{prior=Uniform{value=?,targetLevels=[]}," +
+                "estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]}," +
+                "Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}", copy.fullName());
     }
 
     @Test
-    void testBasicCvpGaussian() {
-        Var goodPrediction = new NaiveBayes().fit(dfGood, "target").predict(dfGood).firstClasses();
-        assertEquals(Confusion.from(target, goodPrediction).accuracy(), 1, TOL);
+    void testEstimatorsHandling() {
 
-        Var badPrediction = new NaiveBayes().fit(dfBad, "target").predict(dfBad).firstClasses();
-        assertEquals(0.5, Confusion.from(target, badPrediction).accuracy(), 0.1);
+        assertEquals(0, NaiveBayes.newModel().getEstimators().size());
 
-        Var mixtPrediction = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt).firstClasses();
-        Var mixtProb = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt, true, true).firstDensity().rvar(1);
-        assertEquals(1, Confusion.from(target, mixtPrediction).accuracy(), 0.1);
-        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().nanmean(), 0.01);
-        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().nanmean(), 0.01);
+        assertEquals(Arrays.asList("a", "b", "x", "y"), NaiveBayes.newModel()
+                .withEstimators(GaussianEstimator.forNames("a", "b"))
+                .withEstimators(GaussianEstimator.forName("x"))
+                .withEstimators(KernelEstimator.forName("y"))
+                .getEstimators().stream().flatMap(e -> e.getTestVarNames().stream()).collect(Collectors.toList())
+        );
+
+        var ex = assertThrows(IllegalArgumentException.class, () -> NaiveBayes.newModel()
+                .withEstimators(GaussianEstimator.forName("a")).withEstimators(GaussianEstimator.forName("a")));
+        assertEquals("Cannot add estimator since it contains variable: a which is already handled by Gaussian{test=a}", ex.getMessage());
     }
 
     @Test
-    void testBasicCvpEmpirical() {
-        Var goodPrediction = new NaiveBayes().withNumEstimator(new KernelPdf()).fit(dfGood, "target").predict(dfGood).firstClasses();
-        assertEquals(Confusion.from(target, goodPrediction).accuracy(), 1, TOL);
-
-        Var badPrediction = new NaiveBayes().withNumEstimator(new KernelPdf()).fit(dfBad, "target").predict(dfBad).firstClasses();
-        assertEquals(0.5, Confusion.from(target, badPrediction).accuracy(), 0.1);
-
-        Var mixtPrediction = new NaiveBayes().withNumEstimator(new KernelPdf()).fit(dfMixt, "target").predict(dfMixt).firstClasses();
-        Var mixtProb = new NaiveBayes().fit(dfMixt, "target").predict(dfMixt).firstDensity().rvar(1);
-        assertEquals(1, Confusion.from(target, mixtPrediction).accuracy(), 0.1);
-        assertEquals(0.99, mixtProb.mapRows(Mapping.range(0, 50)).op().nanmean(), 0.01);
-        assertEquals(0.01, mixtProb.mapRows(Mapping.range(50, 100)).op().nanmean(), 0.01);
+    void testInvalidFit() {
+        var ex = assertThrows(IllegalStateException.class, () -> NaiveBayes.newModel()
+                .withEstimators(GaussianEstimator.forName("a"))
+                .fit(SolidFrame.byVars(VarNominal.copy("a", "b").withName("y")), "y"));
+        assertEquals("Input variable: a is not contained in training data frame.", ex.getMessage());
     }
 
     @Test
-    void testGaussianNoVariance() {
-        Frame df = SolidFrame.byVars(VarDouble.from(N, row -> row >= 50 ? 1.0 : 1.1).withName("constant"), target);
-        NaiveBayes nb = new NaiveBayes().withLaplaceSmoother(1);
-        nb.fit(df, "target");
-        Var prediction = nb.predict(df).firstDensity().rvar(1);
-        assertEquals(1.0, prediction.mapRows(Mapping.range(0, 50)).op().nanmean(), TOL);
-        assertEquals(0.0, prediction.mapRows(Mapping.range(50, 100)).op().nanmean(), TOL);
+    void testPrediction() {
+
+        Estimator estimator = new Estimator() {
+            private static final long serialVersionUID = 5459709521908513314L;
+
+            @Override
+            public Estimator newInstance() {
+                return null;
+            }
+
+            @Override
+            public String name() {
+                return null;
+            }
+
+            @Override
+            public String fittedName() {
+                return null;
+            }
+
+            @Override
+            public List<String> getTestVarNames() {
+                return Collections.singletonList("a");
+            }
+
+            @Override
+            public boolean fit(Frame df, Var weights, String targetName) {
+                return true;
+            }
+
+            @Override
+            public double predict(Frame df, int row, String targetLevel) {
+                if (targetLevel.equals("a")) {
+                    return 1 / (1 + Math.exp(row / 10.));
+                } else {
+                    return 1 / (1 + Math.exp(-row / 10.));
+                }
+            }
+        };
+        NaiveBayes model = NaiveBayes.newModel()
+                .withEstimators(estimator);
+
+        Frame df = SolidFrame.byVars(
+                VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("a"),
+                VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("t")
+        );
+        model.fit(df, "t");
+        ClassifierResult<NaiveBayes> result = model.predict(df, true, true);
+
+
+        Frame densities = result.firstDensity();
+        for (int i = 0; i < densities.rowCount(); i++) {
+            assertEquals(0, densities.getDouble(i, 0), TOLERANCE);
+
+            double r1 = 1 / (1 + Math.exp(i / 10.)) * model.getPrior().computePrior("a");
+            double r2 = 1 / (1 + Math.exp(-i / 10.)) * model.getPrior().computePrior("b");
+            double sum = r1 + r2;
+            r1 /= sum;
+            r2 /= sum;
+
+            assertEquals(r1, densities.getDouble(i, "a"), TOLERANCE);
+            assertEquals(r2, densities.getDouble(i, "b"), TOLERANCE);
+        }
     }
 
     @Test
-    void testBuilder() {
-        NaiveBayes nb = new NaiveBayes()
-                .withPriorSupplier(PriorSupplier.PRIOR_UNIFORM)
-                .withLaplaceSmoother(2)
-                .withNumEstimator(new KernelPdf())
-                .withNomEstimator(new MultinomialPmf());
-        NaiveBayes nbCopy = nb.newInstance();
+    void testPrinter() {
+        Frame iris = Datasets.loadIrisDataset();
+        NaiveBayes model = NaiveBayes.newModel().withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
 
-        assertEquals(nb.getLaplaceSmoother(), nbCopy.getLaplaceSmoother(), TOL);
-        assertEquals(nb.getPriorSupplier(), nbCopy.getPriorSupplier());
-        assertEquals(nb.getNomEstimator(), nbCopy.getNomEstimator());
-        assertEquals(nb.getNumEstimator(), nbCopy.getNumEstimator());
-    }
+        assertEquals("NaiveBayes{prior=MLE{},estimators=[" +
+                "Gaussian{test=sepal-length, values=[]}," +
+                "Gaussian{test=sepal-width, values=[]}," +
+                "Gaussian{test=petal-length, values=[]}," +
+                "Gaussian{test=petal-width, values=[]}]}", model.toString());
 
-    @Test
-    void testSummary() {
-        NaiveBayes nb = new NaiveBayes();
         assertEquals("NaiveBayes model\n" +
                 "================\n" +
                 "\n" +
-                "Description:\n" +
-                "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
-                "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL\n" +
+                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL,BINARY\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
-                "Learned model:\n" +
-                "Learning phase not called\n" +
-                "\n", nb.toSummary());
+                "Model not fitted.\n" +
+                "\n" +
+                "Prior: MLE\n" +
+                "Estimators: \n" +
+                "\t- Gaussian{test=sepal-length, values=[]}\n" +
+                "\t- Gaussian{test=sepal-width, values=[]}\n" +
+                "\t- Gaussian{test=petal-length, values=[]}\n" +
+                "\t- Gaussian{test=petal-width, values=[]}\n", model.toContent());
+        assertEquals(model.toSummary(), model.toContent());
+        assertEquals(model.toFullContent(), model.toContent());
 
-        nb.fit(dfGood, "target");
+        model.fit(iris, "class");
+
+        assertEquals("NaiveBayes{prior=MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333},estimators=[" +
+                "Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), " +
+                "setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}," +
+                "Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), " +
+                "setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}," +
+                "Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), " +
+                "setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}," +
+                "Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), " +
+                "setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}]}", model.toString());
 
         assertEquals("NaiveBayes model\n" +
                 "================\n" +
                 "\n" +
-                "Description:\n" +
-                "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
-                "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL\n" +
+                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL,BINARY\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
-                "Learned model:\n" +
+                "Model is fitted.\n" +
+                "\n" +
                 "input vars: \n" +
-                "0. nom1 : NOMINAL  | \n" +
-                "1. num1 : DOUBLE   | \n" +
+                "0. sepal-length : DOUBLE  | \n" +
+                "1.  sepal-width : DOUBLE  | \n" +
+                "2. petal-length : DOUBLE  | \n" +
+                "3.  petal-width : DOUBLE  | \n" +
                 "\n" +
                 "target vars:\n" +
-                "> target : NOMINAL [?,B,A]\n" +
+                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
                 "\n" +
-                "prior probabilities:\n" +
-                "> P(target='B')=0.5\n" +
-                "> P(target='A')=0.5\n" +
-                "numerical estimators:\n" +
-                "> num1 : GaussianPdf {A~Normal(mu=0.0614354, sd=1.0404937), B~Normal(mu=9.8896993, sd=1.1051043)}\n" +
-                "nominal estimators:\n" +
-                "> nom1 : MultinomialPmf\n", nb.toSummary());
+                "Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}Estimators: \n" +
+                "\t- Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}\n" +
+                "\t- Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}\n" +
+                "\t- Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}\n" +
+                "\t- Gaussian{test=petal-width, values=[virginica:Normal(mu=2.026, sd=0.2718897), setosa:Normal(mu=0.246, sd=0.1043264), versicolor:Normal(mu=1.326, sd=0.1957652)]}\n", model.toContent());
+        assertEquals(model.toSummary(), model.toContent());
+        assertEquals(model.toFullContent(), model.toContent());
 
-        nb.withNumEstimator(new KernelPdf()).fit(dfGood, "target");
-        assertEquals("NaiveBayes model\n" +
-                "================\n" +
-                "\n" +
-                "Description:\n" +
-                "NaiveBayes(numEstimator=EmpiricKDE, nomEstimator=MultinomialPmf)\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL\n" +
-                "counts inputs/targets: [0,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Learned model:\n" +
-                "input vars: \n" +
-                "0. nom1 : NOMINAL  | \n" +
-                "1. num1 : DOUBLE   | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> target : NOMINAL [?,B,A]\n" +
-                "\n" +
-                "prior probabilities:\n" +
-                "> P(target='B')=0.5\n" +
-                "> P(target='A')=0.5\n" +
-                "numerical estimators:\n" +
-                "> num1 : EmpiricKDE{ KFuncGaussian }\n" +
-                "nominal estimators:\n" +
-                "> nom1 : MultinomialPmf\n", nb.toSummary());
-
-        assertEquals("NaiveBayes(numEstimator=EmpiricKDE, nomEstimator=MultinomialPmf)", nb.fullName());
-        assertEquals(nb.toContent(), nb.toSummary());
-        assertEquals(nb.toFullContent(), nb.toSummary());
     }
-
 }
+
+
