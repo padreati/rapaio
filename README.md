@@ -37,15 +37,13 @@ library written in Java.*
 
 ## Installation
 
-Library can be used through maven. Last published release on maven central is 2.1.0.
+Library can be used through maven. Last published release on maven central is 2.2.2
 
        <dependency>
          <groupId>io.github.padreati</groupId>
          <artifactId>rapaio</artifactId>
-         <version>2.2.1</version>
+         <version>2.2.2</version>
        </dependency>
-
-Latest snapshot is published 2.2.2-SNAPSHOP and is published on oss-sonatype. 
 
 Another way to use the library is in jupyter / jupyter-lab notebooks. This is excellent for experimenting with short interactive 
 notebooks or to document the idea you are working on. You have to install jupyter / jupyter-lab and IJava kernel. For more information
@@ -53,7 +51,7 @@ on that you can follow the instruction from [here](https://github.com/SpencerPar
  specific to IJava kernel jupyter notation. 
 
     %mavenRepo oss-sonatype-snapshots https://oss.sonatype.org/content/repositories/snapshots/
-    %maven io.github.padreati:rapaio:2.1.1-SNAPSHOT    
+    %maven io.github.padreati:rapaio:2.2.2    
 
 The last option to use the library is do download the release files from this repository. If you use IntelliJ Idea IDE, you can use 
 also the rapaio-studio plugin, which was developed as a companion for folks who like to use the IDE. The plugin has also a github 

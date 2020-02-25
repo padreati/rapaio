@@ -34,7 +34,7 @@
     <artifactId>rapaio</artifactId>
     <packaging>jar</packaging>
 
-    <version>2.2.2-SNAPSHOT</version>
+    <version>2.2.3-SNAPSHOT</version>
 
     <name>Rapaio Library</name>
     <description>Rapaio Library core files</description>
