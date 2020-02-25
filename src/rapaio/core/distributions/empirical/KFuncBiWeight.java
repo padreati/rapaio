@@ -27,6 +27,9 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * BiCubic kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -53,11 +56,11 @@ public class KFuncBiWeight implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncBiWeight";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncBiWeight";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

@@ -37,6 +37,7 @@ import rapaio.ml.classifier.rule.onerule.HolteBinning;
 import rapaio.sys.WS;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -202,8 +203,8 @@ public class OneRuleTest {
         OneRule modelMushrooms = OneRule.newModel();
         modelMushrooms.fit(mushrooms, "classes");
 
-        int oldTextWidth = WS.getPrinter().textWidth();
-        WS.getPrinter().withTextWidth(100);
+        int oldTextWidth = WS.getPrinter().getOptions().textWidth();
+        WS.getPrinter().withOptions(textWidth(100));
         assertEquals("OneRule model\n" +
                 "================\n" +
                 "\n" +
@@ -243,7 +244,7 @@ public class OneRuleTest {
                 "> NominalRule {value=y, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=s, class=p, errors=0, total=576, acc=1}\n" +
                 "> NominalRule {value=m, class=p, errors=0, total=36, acc=1}\n", modelMushrooms.toSummary());
-        WS.getPrinter().withTextWidth(oldTextWidth);
+        WS.getPrinter().withOptions(textWidth(oldTextWidth));
 
         assertEquals(modelMushrooms.toContent(), modelMushrooms.toSummary());
         assertEquals(modelMushrooms.toFullContent(), modelMushrooms.toSummary());

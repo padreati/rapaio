@@ -29,6 +29,8 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 
@@ -146,7 +148,7 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
@@ -158,13 +160,13 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     public enum Type {

@@ -29,7 +29,9 @@ package rapaio.core.tests;
 
 import rapaio.data.Var;
 import rapaio.data.filter.VSort;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 /**
  * Two-samples K-S test
@@ -118,7 +120,7 @@ public class KSTestTwoSamples implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 

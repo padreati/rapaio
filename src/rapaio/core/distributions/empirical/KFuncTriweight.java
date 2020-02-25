@@ -27,6 +27,9 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * Triweight kernel function
  *
@@ -58,11 +61,11 @@ public class KFuncTriweight implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncTriweight";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncTriweight";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

@@ -31,8 +31,10 @@ import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.List;
 
@@ -148,7 +150,7 @@ public final class Confusion implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         addConfusionMatrix(sb);
         addDetails(sb);
@@ -156,13 +158,13 @@ public final class Confusion implements Printable {
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     private void addConfusionMatrix(StringBuilder sb) {

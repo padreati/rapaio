@@ -41,7 +41,9 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -560,7 +562,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");

@@ -7,6 +7,8 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * ZeroR classification algorithm.
@@ -94,17 +96,17 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         return toString();
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return toString();
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         return toString();
     }
 }

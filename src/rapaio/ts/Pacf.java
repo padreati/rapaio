@@ -32,7 +32,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Partial auto correlation function
@@ -96,7 +98,7 @@ public class Pacf implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Pacf summary\n");
         sb.append("===========\n");
@@ -109,7 +111,7 @@ public class Pacf implements Printable {
             tt.textRight(i + 1, 0, lags.getLabel(i));
             tt.floatFlex(i + 1, 1, pacf.getDouble(i));
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
         return sb.toString();
     }

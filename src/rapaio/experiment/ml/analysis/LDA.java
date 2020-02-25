@@ -42,6 +42,8 @@ import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -235,7 +237,7 @@ public class LDA implements Printable {
     }
 
     @Override
-	public String toSummary() {
+	public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(
@@ -253,10 +255,10 @@ public class LDA implements Printable {
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(eval.toFullContent()).append("\n");
+        sb.append(eval.toFullContent(printer, options)).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.toSummary()).append("\n");
+        sb.append(eigenVectors.toSummary(printer, options)).append("\n");
 
         return sb.toString();
     }

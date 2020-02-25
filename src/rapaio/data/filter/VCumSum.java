@@ -28,6 +28,8 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
@@ -50,13 +52,13 @@ public class VCumSum implements VFilter {
 
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "VCumSum";
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VCumSum";
     }
 
 }

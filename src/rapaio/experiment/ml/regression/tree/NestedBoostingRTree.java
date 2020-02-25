@@ -39,6 +39,8 @@ import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.loss.RegressionLoss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
@@ -202,12 +204,12 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         return null;
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         nodeContent(sb, root, 0);
         return sb.toString();
@@ -228,7 +230,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         return null;
     }
 

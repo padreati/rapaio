@@ -27,25 +27,17 @@
 
 package rapaio.printer;
 
+import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POpts;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractPrinter implements Printer {
 
-    private int textWidth;
     private int graphicWidth;
     private int graphicHeight;
-
-    @Override
-    public int textWidth() {
-        return textWidth;
-    }
-
-    @Override
-    public Printer withTextWidth(int chars) {
-        textWidth = chars;
-        return this;
-    }
+    private POpts opts = new POpts(null);
 
     @Override
     public Printer withGraphicShape(int width, int height) {
@@ -62,5 +54,18 @@ public abstract class AbstractPrinter implements Printer {
     @Override
     public int graphicHeight() {
         return graphicHeight;
+    }
+
+    @Override
+    public POpts getOptions() {
+        return new POpts(opts);
+    }
+
+    @Override
+    public Printer withOptions(POption... options) {
+        for (POption option : options) {
+            option.bind(opts);
+        }
+        return this;
     }
 }

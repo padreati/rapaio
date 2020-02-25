@@ -39,6 +39,8 @@ import rapaio.math.linear.Linear;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -167,15 +169,15 @@ public class PCA implements Printable {
         inputNames = df.varStream().map(Var::name).toArray(String[]::new);
     }
 
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(values.toSummary()).append("\n");
+        sb.append(values.toSummary(printer, options)).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
-        sb.append(eigenVectors.toSummary()).append("\n");
+        sb.append(eigenVectors.toSummary(printer, options)).append("\n");
 
         return sb.toString();
     }

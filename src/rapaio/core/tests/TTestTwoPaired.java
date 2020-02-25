@@ -32,6 +32,8 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -177,7 +179,7 @@ public class TTestTwoPaired implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> TTestTwoPaired\n");

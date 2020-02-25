@@ -28,6 +28,8 @@
 package rapaio.core.distributions.empirical;
 
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
 
@@ -66,12 +68,12 @@ public interface KFunc extends Printable, Serializable {
     double maxValue(double x, double bandwidth);
 
     @Override
-    default String toFullContent() {
-        return toContent();
+    default String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    default String toSummary() {
-        return toContent();
+    default String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

@@ -55,6 +55,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -468,7 +470,7 @@ public class CForest
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest model\n");
         sb.append("================\n\n");
@@ -484,7 +486,7 @@ public class CForest
         }
 
         sb.append("Learned model:\n");
-        sb.append(inputVarsSummary());
+        sb.append(inputVarsSummary(printer, options));
         sb.append(targetVarsSummary());
 
         // stuff specific to rf

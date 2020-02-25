@@ -32,6 +32,8 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
 import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -213,7 +215,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");
@@ -233,7 +235,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
-            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).toSummary());
+            sb.append(Confusion.from(df.rvar(model.firstTargetName()), firstClasses()).toSummary(printer, options));
         } else {
             sb.append("data frame does not contain target variable.");
         }

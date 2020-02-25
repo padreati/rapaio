@@ -28,6 +28,8 @@
 package rapaio.math.linear;
 
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
@@ -442,6 +444,8 @@ public interface DMatrix extends Serializable, Printable {
      * Builds a summary of the matrix.
      *
      * @return string which contains matrix summary
+     * @param printer
+     * @param options
      */
-    String toSummary();
+    String toSummary(Printer printer, POption... options);
 }

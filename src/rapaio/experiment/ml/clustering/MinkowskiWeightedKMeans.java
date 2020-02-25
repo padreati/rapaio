@@ -41,7 +41,9 @@ import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.ml.common.distance.KMeansInitMethod;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
@@ -445,7 +447,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("MinkowskiWeightedKMeans clustering model\n");
@@ -474,11 +476,11 @@ public class MinkowskiWeightedKMeans implements Printable {
             sb.append("\n");
 
             sb.append("Per cluster: \n");
-            sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).toFullContent());
+            sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).toFullContent(printer, options));
             sb.append("\n");
             sb.append("Cluster weights:\n");
             Frame w = SolidFrame.byVars(VarInt.seq(k).withName("ID")).bindVars(weights);
-            sb.append(w.toFullContent());
+            sb.append(w.toFullContent(printer, options));
             sb.append("\n");
         }
 

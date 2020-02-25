@@ -28,6 +28,8 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.function.Function;
 
@@ -59,12 +61,12 @@ public class VApplyLabel implements VFilter {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "VApplyLabel";
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VApplyLabel";
     }
 }

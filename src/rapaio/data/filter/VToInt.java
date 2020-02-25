@@ -30,6 +30,8 @@ package rapaio.data.filter;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleIntFunction;
 import rapaio.util.function.IntIntFunction;
 
@@ -168,12 +170,12 @@ public class VToInt implements VFilter {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "VToInt";
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VToInt";
     }
 }

@@ -38,7 +38,9 @@ import rapaio.data.group.function.GroupFunSkewness;
 import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -383,9 +385,9 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         if (df.rowCount() < 40) {
-            return toFullContent();
+            return toFullContent(printer, options);
         }
         StringBuilder sb = new StringBuilder();
 
@@ -433,7 +435,7 @@ public class Group implements Printable {
             int r = rows.get(df.rowCount() - 40 + i);
             fillRowData(tt, i, r);
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         return sb.toString();
     }
 
@@ -451,7 +453,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("group by: ").append(String.join(", ", pkNamesList)).append("\n");
@@ -491,13 +493,13 @@ public class Group implements Printable {
                 pos++;
             }
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         return sb.toString();
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     /**
@@ -660,7 +662,7 @@ public class Group implements Printable {
         }
 
         @Override
-        public String toSummary() {
+        public String toSummary(Printer printer, POption... options) {
             StringBuilder sb = new StringBuilder();
 
             sb.append("group by: ");
@@ -683,9 +685,9 @@ public class Group implements Printable {
             return sb.toString();
         }
 
-        private String selectedContent(int headRows, int tailRows) {
+        private String selectedContent(Printer printer, POption[] options, int headRows, int tailRows) {
             StringBuilder sb = new StringBuilder();
-            sb.append(toSummary());
+            sb.append(toSummary(printer, options));
 
             VarInt sortedGroupIds = group.getSortedGroupIds();
             VarInt selectedGroupIds = VarInt.empty();
@@ -741,18 +743,18 @@ public class Group implements Printable {
                 }
                 pos++;
             }
-            sb.append(tt.getDynamicText()).append("\n");
+            sb.append(tt.getDynamicText(printer, options)).append("\n");
             return sb.toString();
         }
 
         @Override
-        public String toContent() {
-            return selectedContent(30, 10);
+        public String toContent(Printer printer, POption... options) {
+            return selectedContent(printer, options, 30, 10);
         }
 
         @Override
-        public String toFullContent() {
-            return selectedContent(group.getGroupCount(), 0);
+        public String toFullContent(Printer printer, POption... options) {
+            return selectedContent(printer, options, group.getGroupCount(), 0);
         }
     }
 }

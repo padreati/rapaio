@@ -89,7 +89,7 @@ public class GradientDescentMinimizer implements Minimizer {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("solution: ").append(sol.toSummary()).append("\n");
+        sb.append("solution: ").append(sol.toString()).append("\n");
         return sb.toString();
     }
 

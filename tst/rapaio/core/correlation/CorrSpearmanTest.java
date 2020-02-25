@@ -37,6 +37,7 @@ import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.sys.WS;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -180,7 +181,7 @@ public class CorrSpearmanTest {
             vars[i] = VarDouble.from(100, Normal.std()::sampleNext).withName("Var_" + (i + 1));
         }
 
-        WS.getPrinter().withTextWidth(100);
+        WS.getPrinter().withOptions(textWidth(100));
 
         CorrSpearman cs = CorrSpearman.of(vars);
         assertEquals("spearman[Var_1, Var_2, Var_3, Var_4, Var_5, Var_6, Var_7, Var_8, Var_9, Var_10] " +

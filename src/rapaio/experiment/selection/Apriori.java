@@ -34,7 +34,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -186,7 +188,7 @@ public class Apriori implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         StringBuilder sb = new StringBuilder();
         // print a list of rules

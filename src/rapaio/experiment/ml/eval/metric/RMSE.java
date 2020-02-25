@@ -32,8 +32,10 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -112,7 +114,7 @@ public class RMSE implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> Root Mean Squared Error (RMSE):\n");
         sb.append("\n");
@@ -128,7 +130,7 @@ public class RMSE implements Printable {
             tt.textRight(i + 1, 1, Format.floatFlex(rmse.getDouble(i)));
             tt.textRight(i + 1, 2, Format.floatFlex(mse.getDouble(i)));
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
 
         sb.append("Total RMSE: ").append(Format.floatFlex(totalRmse)).append("\n");

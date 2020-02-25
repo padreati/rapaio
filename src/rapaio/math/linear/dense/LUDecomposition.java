@@ -29,6 +29,8 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -66,13 +68,13 @@ public class LUDecomposition implements Serializable, Printable {
      * @param A input matrix
      */
     public static LUDecomposition from(DMatrix A) {
-        if(A.rowCount()<A.colCount())
+        if (A.rowCount() < A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
     public static LUDecomposition from(DMatrix A, Method method) {
-        if(A.rowCount()<A.colCount())
+        if (A.rowCount() < A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, method);
     }
@@ -182,7 +184,7 @@ public class LUDecomposition implements Serializable, Printable {
                 }
             }
         }
-        
+
         // Solve U*X = Y;
 
         for (int k = colCount - 1; k >= 0; k--) {
@@ -199,14 +201,14 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition summary\n");
         sb.append("========================\n");
 
-        sb.append("\nL matrix\n").append(getL().toSummary());
-        sb.append("\nU matrix:\n").append(getU().toSummary());
+        sb.append("\nL matrix\n").append(getL().toSummary(printer, options));
+        sb.append("\nU matrix:\n").append(getU().toSummary(printer, options));
         return sb.toString();
     }
 

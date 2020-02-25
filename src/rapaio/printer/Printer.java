@@ -28,6 +28,9 @@
 package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
+import rapaio.printer.opt.POption;
+import rapaio.printer.opt.POptionTextWidth;
+import rapaio.printer.opt.POpts;
 
 /**
  * Interface for the printing system. The printing system is the device responsible with
@@ -42,14 +45,9 @@ import rapaio.graphics.base.Figure;
  */
 public interface Printer {
 
-    /**
-     * Configures text width for text output wrapping
-     *
-     * @param chars number of characters per line, after which a
-     *              line should be split
-     * @return printer instance
-     */
-    Printer withTextWidth(int chars);
+    static POption<Integer> textWidth(int textWidth) {
+        return new POptionTextWidth(textWidth);
+    }
 
     /**
      * Configures default graphic image shape (width and height)
@@ -60,11 +58,6 @@ public interface Printer {
     Printer withGraphicShape(int width, int height);
 
     /**
-     * @return configured value for text width
-     */
-    int textWidth();
-
-    /**
      * @return configured value for graphical image width
      */
     int graphicWidth();
@@ -73,6 +66,11 @@ public interface Printer {
      * @return configured value for graphical image height
      */
     int graphicHeight();
+
+
+    POpts getOptions();
+
+    Printer withOptions(POption...options);
 
     /**
      * Print a message to text output
@@ -111,15 +109,15 @@ public interface Printer {
         println(printable.toString());
     }
 
-    default void printSummary(Printable printable) {
-        println(printable.toSummary());
+    default void printSummary(Printable printable, POption... options) {
+        println(printable.toSummary(this, options));
     }
 
-    default void printContent(Printable printable) {
-        println(printable.toContent());
+    default void printContent(Printable printable, POption... options) {
+        println(printable.toContent(this, options));
     }
 
-    default void printFullContent(Printable printable) {
-        println(printable.toFullContent());
+    default void printFullContent(Printable printable, POption... options) {
+        println(printable.toFullContent(this, options));
     }
 }

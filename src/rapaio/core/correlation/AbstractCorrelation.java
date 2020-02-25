@@ -29,8 +29,10 @@ package rapaio.core.correlation;
 
 import rapaio.data.Var;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 
@@ -106,22 +108,22 @@ public abstract class AbstractCorrelation implements Correlation {
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         if (d.names().length == 2) {
             summaryTwo(sb);
         } else {
-            summaryMore(sb);
+            summaryMore(sb, printer, options);
         }
         return sb.toString();
     }
@@ -131,7 +133,7 @@ public abstract class AbstractCorrelation implements Correlation {
         sb.append(Format.floatFlex(d.get(0, 1))).append("\n");
     }
 
-    private void summaryMore(StringBuilder sb) {
+    private void summaryMore(StringBuilder sb, Printer printer, POption... options) {
         sb.append(String.format("> %s[%s] - %s\n", corrName(), Arrays.deepToString(d.names()), corrDescription()));
 
         TextTable tt = TextTable.empty(d.names().length + 1, d.names().length + 1, 1, 1);
@@ -149,6 +151,6 @@ public abstract class AbstractCorrelation implements Correlation {
                 }
             }
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
     }
 }

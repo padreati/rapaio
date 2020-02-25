@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -296,7 +297,7 @@ public class VarDoubleTest {
         assertEquals("VarDouble [name:\"?\", rowCount:10, values: ?, 0.6503131914222008, 1.1647628389666604, 0.7719984559060187, ?, 2.1236947978859986, 1.6546944254696838, 0.12053767260217511, ?, -0.01950154486410645]",
                 x.toString());
 
-        WS.getPrinter().withTextWidth(100);
+        WS.getPrinter().withOptions(textWidth(100));
 
         x = VarDouble.from(200, row -> (row % 4 == 0) ? Double.NaN : Normal.std().sampleNext());
         assertEquals("VarDouble [name:\"?\", rowCount:200]\n" +

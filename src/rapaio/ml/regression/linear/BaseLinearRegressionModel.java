@@ -34,6 +34,8 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/19.
@@ -142,13 +144,13 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
 }

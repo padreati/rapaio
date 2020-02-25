@@ -33,7 +33,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -237,7 +239,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
         return sb.toString();
     }
 
-    public String inputVarsSummary() {
+    public String inputVarsSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("input vars: \n");
 
@@ -250,7 +252,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
             tt.textLeft(i, 3, inputTypes[i].name());
             tt.textRight(i, 4, " |");
         }
-        sb.append(tt.getDynamicText()).append("\n");
+        sb.append(tt.getDynamicText(printer, options)).append("\n");
         return sb.toString();
     }
 

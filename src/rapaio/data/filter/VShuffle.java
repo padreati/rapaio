@@ -30,6 +30,8 @@ package rapaio.data.filter;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
 /**
@@ -60,12 +62,12 @@ public class VShuffle implements VFilter {
     }
 
     @Override
-    public String toContent() {
-        return "VShuffle";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VShuffle";
     }
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.data.Group.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/21/19.
@@ -34,13 +35,13 @@ public class GroupTest {
         RandomSource.setSeed(1234);
         play = Datasets.loadPlay();
         iris = Datasets.loadIrisDataset();
-        textWidth = WS.getPrinter().textWidth();
-        WS.getPrinter().withTextWidth(100);
+        textWidth = WS.getPrinter().getOptions().textWidth();
+        WS.getPrinter().withOptions(textWidth(100));
     }
 
     @AfterEach
     void afterEach() {
-        WS.getPrinter().withTextWidth(textWidth);
+        WS.getPrinter().withOptions(textWidth(textWidth));
     }
 
     @Test

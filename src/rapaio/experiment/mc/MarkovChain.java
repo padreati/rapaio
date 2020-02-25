@@ -33,6 +33,8 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -185,7 +187,7 @@ public class MarkovChain implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         RandomSource.setSeed(1);
 
@@ -197,7 +199,7 @@ public class MarkovChain implements Printable {
         sb.append("values: \n");
         String buff = "";
         for (String state : states) {
-            if (buff.length() + state.length() + 3 >= WS.getPrinter().textWidth()) {
+            if (buff.length() + state.length() + 3 >= WS.getPrinter().getOptions().textWidth()) {
                 sb.append(buff).append("\n");
                 buff = "";
             }
@@ -207,10 +209,10 @@ public class MarkovChain implements Printable {
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");
-        sb.append(p.toSummary());
+        sb.append(p.toSummary(printer, options));
 
         sb.append("Matrix: \n");
-        sb.append(m.toSummary());
+        sb.append(m.toSummary(printer, options));
 
         return sb.toString();
     }

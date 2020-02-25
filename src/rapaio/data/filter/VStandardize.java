@@ -30,7 +30,9 @@ package rapaio.data.filter;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
@@ -84,16 +86,16 @@ public class VStandardize implements VFilter {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("VStandardize(mean=");
         sb.append(Format.floatFlex(mean)).append(", sd:");
         sb.append(Format.floatFlex(sd)).append(")");
         return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return toContent();
     }
 }

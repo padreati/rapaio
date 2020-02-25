@@ -39,6 +39,8 @@ import rapaio.ml.classifier.rule.onerule.NumericRule;
 import rapaio.ml.classifier.rule.onerule.Rule;
 import rapaio.ml.classifier.rule.onerule.RuleSet;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
@@ -269,7 +271,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(fullNameSummary());
         sb.append(capabilitiesSummary());
@@ -280,7 +282,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
             return sb.toString();
         }
 
-        sb.append(inputVarsSummary());
+        sb.append(inputVarsSummary(printer, options));
         sb.append(targetVarsSummary());
 
         sb.append("Best").append(bestRuleSet.toString()).append("\n");
@@ -291,13 +293,13 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 }
 

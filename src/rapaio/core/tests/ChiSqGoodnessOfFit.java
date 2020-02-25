@@ -31,8 +31,10 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Pearson Chi Square goodness of predict test.
@@ -155,7 +157,7 @@ public class ChiSqGoodnessOfFit implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqGoodnessOfFit\n");
         sb.append("\n");
@@ -185,7 +187,7 @@ public class ChiSqGoodnessOfFit implements HTest {
             tt.floatFlex(4, i + 1, p.getDouble(i));
         }
 
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
 
         return sb.toString();

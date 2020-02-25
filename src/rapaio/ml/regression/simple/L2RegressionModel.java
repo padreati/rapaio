@@ -38,7 +38,9 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -130,7 +132,7 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -145,14 +147,14 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(means[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).toContent());
+            sb.append(SolidFrame.byVars(target, median).toContent(printer, options));
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -167,14 +169,14 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(means[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).toFullContent());
+            sb.append(SolidFrame.byVars(target, median).toFullContent(printer, options));
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

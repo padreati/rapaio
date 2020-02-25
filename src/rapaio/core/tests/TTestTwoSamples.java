@@ -31,6 +31,8 @@ import rapaio.core.distributions.StudentT;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -413,7 +415,7 @@ public class TTestTwoSamples implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.tTestTwoSamples\n");

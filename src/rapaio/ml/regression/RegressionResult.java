@@ -32,6 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -228,7 +230,7 @@ public class RegressionResult<M extends RegressionModel> implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(model.headerSummary());
@@ -239,7 +241,7 @@ public class RegressionResult<M extends RegressionModel> implements Printable {
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "="))).append('\n');
 
-            String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).toSummary();
+            String fullSummary = SolidFrame.byVars(prediction(target), residual(target)).toSummary(printer, options);
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(10).collect(Collectors.toList());
             sb.append(list.stream().collect(Collectors.joining("\n", "", "\n")));
 

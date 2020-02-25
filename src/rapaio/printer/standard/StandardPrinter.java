@@ -56,8 +56,6 @@ public class StandardPrinter extends AbstractPrinter {
             reader = new InputStreamReader(System.in);
             writer = new PrintWriter(System.out);
         }
-
-        withTextWidth(120);
         withGraphicShape(1200, 600);
     }
 

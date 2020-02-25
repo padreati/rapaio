@@ -32,7 +32,9 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.unique.UniqueLabel;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
 import java.io.IOException;
@@ -162,7 +164,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("> summary(name: ").append(name()).append(", type: ").append(type().name()).append(")\n");
@@ -300,7 +302,7 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
 
@@ -319,22 +321,22 @@ public abstract class AbstractVar implements Var {
                 tt.intRow(i + 101 - rowCount(), 0, i);
                 textTablePutValue(tt, i + 101 - rowCount(), 1, i);
             }
-            sb.append(tt.getDynamicText());
+            sb.append(tt.getDynamicText(printer, options));
         } else {
-            fullTable(sb);
+            fullTable(sb, printer, options);
         }
         return sb.toString();
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
-        fullTable(sb);
+        fullTable(sb, printer, options);
         return sb.toString();
     }
 
-    private void fullTable(StringBuilder sb) {
+    private void fullTable(StringBuilder sb, Printer printer, POption... options) {
         TextTable tt = TextTable.empty(rowCount() + 1, 2, 1, 1);
         tt.textCenter(0, 0, "row");
         tt.textCenter(0, 1, "value");
@@ -342,6 +344,6 @@ public abstract class AbstractVar implements Var {
             tt.intRow(i + 1, 0, i);
             textTablePutValue(tt, i + 1, 1, i);
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
     }
 }

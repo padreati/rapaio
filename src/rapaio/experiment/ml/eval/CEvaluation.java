@@ -203,7 +203,7 @@ public class CEvaluation {
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
             Confusion cm = Confusion.from(test.rvar(classColName), classes);
-            printer.printSummary(cm);
+            cm.printSummary(printer);
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;

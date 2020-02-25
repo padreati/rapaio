@@ -36,6 +36,8 @@ import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 
@@ -260,7 +262,7 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         throw new IllegalArgumentException("not implemented");
     }
 }

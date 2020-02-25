@@ -32,6 +32,7 @@ import rapaio.sys.WS;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -339,7 +340,7 @@ public class VarIntTest {
                 4, 2, 4, 23, 4, 23, 4, 234, 23, 423, 42, 34, 23);
         assertEquals("VarInt [name:\"?\", rowCount:38, values: 1, 2, ?, -10, 0, 100, ?, 16, 1, 2, 3, 4, ..., 34, 23]", x.toString());
 
-        WS.getPrinter().withTextWidth(100);
+        WS.getPrinter().withOptions(textWidth(100));
 
         RandomSource.setSeed(123);
         for (int i = 0; i < 200; i++) {

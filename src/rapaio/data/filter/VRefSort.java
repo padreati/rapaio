@@ -30,6 +30,8 @@ package rapaio.data.filter;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntComparator;
 
@@ -61,12 +63,12 @@ public class VRefSort implements VFilter {
     }
 
     @Override
-    public String toContent() {
-        return "VRefSort";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VRefSort";
     }
 }

@@ -38,8 +38,10 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
@@ -135,7 +137,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(lm.headerSummary());
         sb.append("\n");
@@ -170,7 +172,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
 
                 sb.append("> Residuals: \n");
-                sb.append(getHorizontalSummary5(res));
+                sb.append(getHorizontalSummary5(res, printer, options));
                 sb.append("\n");
 
                 sb.append("> Coefficients: \n");
@@ -208,7 +210,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
         return sb.toString();
     }
 
-    private String getHorizontalSummary5(Var var) {
+    private String getHorizontalSummary5(Var var, Printer printer, POption... options) {
         TextTable tt1 = TextTable.empty(2, 5, 1, 0);
 
         String[] headers1 = new String[]{"Min", "1Q", "Median", "3Q", "Max"};
@@ -217,6 +219,6 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends
             tt1.textRight(0, i, headers1[i]);
             tt1.floatFlex(1, i, values1[i]);
         }
-        return tt1.getDynamicText();
+        return tt1.getDynamicText(printer, options);
     }
 }

@@ -27,6 +27,9 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * Tri-cubic kernel function
  *
@@ -58,11 +61,11 @@ public class KFuncTricube implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncTricube";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncTricube";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

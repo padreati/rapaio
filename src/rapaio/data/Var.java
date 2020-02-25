@@ -32,6 +32,8 @@ import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
@@ -431,5 +433,5 @@ public interface Var extends Serializable, Printable {
     }
 
     @Override
-    String toSummary();
+    String toSummary(Printer printer, POption... options);
 }

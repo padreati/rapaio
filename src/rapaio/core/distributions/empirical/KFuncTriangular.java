@@ -27,6 +27,9 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * Triangular kernel function
  *
@@ -54,11 +57,11 @@ public class KFuncTriangular implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncTriangular";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncTriangular";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

@@ -31,7 +31,8 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.sys.WS;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -379,8 +380,8 @@ public class TextTable {
         return getText(-1);
     }
 
-    public String getDynamicText() {
-        return getText(WS.getPrinter().textWidth());
+    public String getDynamicText(Printer printer, POption...options) {
+        return getText(printer.getOptions().bind(options).textWidth());
     }
 
     public String getText(int consoleWidth) {

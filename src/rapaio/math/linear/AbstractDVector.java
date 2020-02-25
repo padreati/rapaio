@@ -1,7 +1,9 @@
 package rapaio.math.linear;
 
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleDoubleFunction;
 
 /**
@@ -243,19 +245,19 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         int head = 20;
         int tail = 2;
 
         boolean full = head + tail >= size();
 
         if (full) {
-            return toFullContent();
+            return toFullContent(printer, options);
         }
 
         int[] rows = new int[Math.min(head + tail + 1, size())];
@@ -276,17 +278,17 @@ public abstract class AbstractDVector implements DVector {
                 tt.floatFlexLong(i, 1, get(rows[i]));
             }
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
 
         TextTable tt = TextTable.empty(size(), 2, 0, 1);
         for (int i = 0; i < size(); i++) {
             tt.intRow(i, 0, i);
             tt.floatFlexLong(i, 1, get(i));
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 }

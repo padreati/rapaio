@@ -30,8 +30,10 @@ package rapaio.data.unique;
 import rapaio.data.Mapping;
 import rapaio.data.Unique;
 import rapaio.data.VarInt;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
 import java.util.HashMap;
@@ -114,7 +116,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         int max = uniqueCount();
         if (max > 40) {
             max = 40;
@@ -138,13 +140,13 @@ public abstract class AbstractUnique implements Unique {
                 tt.textRight(i + 1, 1, Integer.toString(rowList(uniqueCount() - 40 + i).size()));
                 tt.textRight(i + 1, 2, Format.floatShort(rowList(uniqueCount() - 40 + i).size() / total));
             }
-            return tt.getDynamicText();
+            return tt.getDynamicText(printer, options);
         }
-        return toFullContent();
+        return toFullContent(printer, options);
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         TextTable tt = TextTable.empty(uniqueCount() + 1, 3, 1, 0);
         tt.textCenter(0, 0, "Value");
         tt.textCenter(0, 1, "Count");
@@ -156,11 +158,11 @@ public abstract class AbstractUnique implements Unique {
             tt.textRight(i + 1, 1, Integer.toString(rowList(i).size()));
             tt.textRight(i + 1, 2, Format.floatShort(rowList(i).size() / total));
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         return toString();
     }
 }

@@ -33,7 +33,9 @@ import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
 import rapaio.math.MTools;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -390,14 +392,14 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         TextTable tt = TextTable.empty(3, index.size());
         for (int i = 0; i < index.size(); i++) {
             tt.textRight(0, i, index.getValueString(i));
             tt.textRight(1, i, repeat(index.getValueString(i).length()));
             tt.floatFlex(2, i, values[i]);
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 
     private String repeat(int length) {
@@ -407,12 +409,12 @@ public class DensityVector<T> implements Printable, Serializable {
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

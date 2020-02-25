@@ -29,6 +29,8 @@ package rapaio.experiment.ml.clustering;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -213,7 +215,7 @@ public class ClusterSilhouette implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Cluster silhouette summary\n");
         sb.append("==========================\n");

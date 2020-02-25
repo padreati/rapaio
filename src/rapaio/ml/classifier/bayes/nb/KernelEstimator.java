@@ -104,7 +104,7 @@ public class KernelEstimator extends AbstractEstimator {
         sb.append("Kernel{test=").append(testVarName);
         sb.append(", kdes=[");
         sb.append(kdes.entrySet().stream()
-                .map(e -> e.getKey() + ":{kfun=" + e.getValue().kernel().toContent() + ",bw=" + Format.floatFlex(e.getValue().bandwidth()) + "}")
+                .map(e -> e.getKey() + ":{kfun=" + e.getValue().kernel().toString() + ",bw=" + Format.floatFlex(e.getValue().bandwidth()) + "}")
                 .collect(Collectors.joining(",")));
         sb.append("]");
         sb.append("}");

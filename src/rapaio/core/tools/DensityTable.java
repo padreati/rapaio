@@ -35,7 +35,9 @@ import rapaio.experiment.core.tools.ConcreteRowAverageEntropy;
 import rapaio.experiment.core.tools.ConcreteRowIntrinsicInfo;
 import rapaio.experiment.core.tools.ConcreteTotalColEntropy;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -409,7 +411,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         TextTable tt = TextTable.empty(rowIndex.size() + 2, colIndex.size() + 2, 1, 0);
         putLevels(tt);
         tt.textRight(0, colIndex.size() + 1, "total");
@@ -425,7 +427,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         }
         double total = Arrays.stream(rowTotals).sum();
         tt.floatFlex(rowIndex.size() + 1, colIndex.size() + 1, total);
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 
     private void putLevels(TextTable tt) {

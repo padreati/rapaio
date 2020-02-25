@@ -30,7 +30,9 @@ package rapaio.data.filter;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,12 +127,12 @@ public class VQuantileDiscrete implements VFilter {
     }
 
     @Override
-    public String toContent() {
-        return "VQuantileDiscrete(q=[" + String.join(",", Arrays.stream(qp).mapToObj(Format::floatFlex).toArray(String[]::new)) + "])";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VQuantileDiscrete(q=[" + String.join(",", Arrays.stream(qp).mapToObj(Format::floatFlex).toArray(String[]::new)) + "])";
     }
 }

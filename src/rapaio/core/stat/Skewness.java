@@ -29,6 +29,8 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -102,7 +104,7 @@ public class Skewness implements Printable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "> skewness[" + varName + "]\n" +
                 "total rows: " + rows + " (complete: " + complete + ", missing: " + (rows - complete) + ")\n" +
                 "skewness (g1): " + floatFlex(g1) + "\n" +
@@ -111,12 +113,12 @@ public class Skewness implements Printable {
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

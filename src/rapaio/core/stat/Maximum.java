@@ -29,6 +29,8 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -74,19 +76,19 @@ public class Maximum implements Printable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "> maximum[" + varName + "]\n" +
                 "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
                 "maximum: " + floatFlex(value) + "\n";
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

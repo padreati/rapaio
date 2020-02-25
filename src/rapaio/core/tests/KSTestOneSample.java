@@ -30,7 +30,9 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.VSort;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -128,7 +130,7 @@ public class KSTestOneSample implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
 

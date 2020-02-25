@@ -39,6 +39,8 @@ import rapaio.ml.classifier.bayes.nb.Prior;
 import rapaio.ml.classifier.bayes.nb.PriorMLE;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -234,7 +236,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" model\n");
         sb.append("================\n\n");
@@ -251,7 +253,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
         } else {
             sb.append("Model is fitted.\n\n");
 
-            sb.append(inputVarsSummary());
+            sb.append(inputVarsSummary(printer, options));
             sb.append(targetVarsSummary());
 
             sb.append("Prior: ").append(prior.fittedName());
@@ -264,13 +266,13 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override

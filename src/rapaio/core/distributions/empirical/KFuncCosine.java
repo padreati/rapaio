@@ -28,6 +28,9 @@
 package rapaio.core.distributions.empirical;
 
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * Cosine kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -58,11 +61,11 @@ public class KFuncCosine implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncCosine";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncCosine";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

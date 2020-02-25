@@ -46,6 +46,8 @@ import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2RegressionModel;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,7 +212,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         throw new IllegalArgumentException("not implemented");
     }
 }

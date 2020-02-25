@@ -35,7 +35,9 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -108,7 +110,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -130,7 +132,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
                 tt.textLeft(j + 1, 0, inputNames[j]);
                 tt.floatMedium(j + 1, 1, coeff.get(j));
             }
-            sb.append(tt.getDynamicText());
+            sb.append(tt.getDynamicText(printer, options));
             sb.append("\n");
         }
         return sb.toString();

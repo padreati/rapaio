@@ -31,7 +31,9 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,7 +147,7 @@ public final class ChiSqIndependence implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqIndependence\n");
         sb.append("\n");
@@ -159,10 +161,10 @@ public final class ChiSqIndependence implements HTest {
         sb.append("\n");
 
         sb.append("Observed data:\n");
-        sb.append(dt.toSummary()).append("\n");
+        sb.append(dt.toSummary(printer, options)).append("\n");
 
         sb.append("Expected data:\n");
-        sb.append(expected.toSummary()).append("\n");
+        sb.append(expected.toSummary(printer, options)).append("\n");
         return sb.toString();
     }
 }

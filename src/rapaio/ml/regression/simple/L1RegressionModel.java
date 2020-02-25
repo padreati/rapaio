@@ -38,7 +38,9 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 /**
  * Simple regression which predicts with the median value of the target columns.
@@ -138,7 +140,7 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -153,14 +155,14 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(medians[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).toContent());
+            sb.append(SolidFrame.byVars(target, median).toContent(printer, options));
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -175,14 +177,14 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
                 target.addLabel(targetName(i));
                 median.addDouble(medians[i]);
             }
-            sb.append(SolidFrame.byVars(target, median).toFullContent());
+            sb.append(SolidFrame.byVars(target, median).toFullContent(printer, options));
         }
         sb.append("\n");
         return sb.toString();
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

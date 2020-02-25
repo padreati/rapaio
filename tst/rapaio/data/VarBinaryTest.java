@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static rapaio.printer.Printer.textWidth;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -300,7 +301,7 @@ public class VarBinaryTest {
         VarBinary var = VarBinary.copy(IntStream.range(0, 200).map(x -> RandomSource.nextInt(3) - 1).toArray()).withName("x");
         assertEquals("VarBinary [name:\"x\", rowCount:200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]", var.toString());
 
-        WS.getPrinter().withTextWidth(100);
+        WS.getPrinter().withOptions(textWidth(100));
 
         assertEquals("VarBinary [name:\"x\", rowCount:200]\n" +
                 " row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value  row  value \n" +

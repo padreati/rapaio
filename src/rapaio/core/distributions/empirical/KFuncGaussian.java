@@ -28,6 +28,8 @@
 package rapaio.core.distributions.empirical;
 
 import rapaio.core.distributions.Normal;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * GaussianPdf kernel function
@@ -57,11 +59,11 @@ public class KFuncGaussian implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncGaussian";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncGaussian";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

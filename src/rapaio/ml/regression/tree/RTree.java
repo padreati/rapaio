@@ -48,6 +48,8 @@ import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 import rapaio.ml.regression.tree.rtree.RTreeTest;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
 
 import java.util.Arrays;
@@ -406,7 +408,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName());
         sb.append("\n model fitted: ").append(hasLearned).append("\n");
@@ -424,13 +426,13 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     }
 
     @Override
-    public String toContent() {
-        return toSummary();
+    public String toContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return toSummary();
+    public String toFullContent(Printer printer, POption... options) {
+        return toSummary(printer, options);
     }
 
     private void buildSummary(StringBuilder sb, RTreeNode node, int level) {

@@ -31,7 +31,9 @@ import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -96,7 +98,7 @@ public class CFeatureSelectionSummary implements Printable {
 
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("CFeatureSelection summary\n");

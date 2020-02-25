@@ -27,7 +27,9 @@
 
 package rapaio.data;
 
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 
 import java.util.List;
@@ -68,17 +70,17 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public String toContent() {
-        return selection(10, 5);
+    public String toContent(Printer printer, POption... options) {
+        return selection(10, 5, printer, options);
     }
 
     @Override
-    public String toFullContent() {
-        return selection(rowCount(), 0);
+    public String toFullContent(Printer printer, POption... options) {
+        return selection(rowCount(), 0, printer, options);
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -98,7 +100,7 @@ public abstract class AbstractFrame implements Frame {
             tt.textLeft(i, 3, rvar(i).type().code());
             tt.textRight(i, 4, "|");
         }
-        sb.append("\n").append(tt.getDynamicText()).append("\n");
+        sb.append("\n").append(tt.getDynamicText(printer, options)).append("\n");
 
         sb.append("* summary: \n");
 
@@ -113,7 +115,7 @@ public abstract class AbstractFrame implements Frame {
                 ((AbstractVar) rvar(i)).fillSummary(tt, i * 2, i * 2 + 1);
             }
         }
-        sb.append(tt.getDynamicText()).append("\n");
+        sb.append(tt.getDynamicText(printer, options)).append("\n");
         return sb.toString();
     }
 
@@ -122,7 +124,7 @@ public abstract class AbstractFrame implements Frame {
     }
 
     public String head(int lines) {
-        return selection(lines, 0);
+        return selection(lines, 0, WS.getPrinter());
     }
 
     public void printHead() {
@@ -133,7 +135,7 @@ public abstract class AbstractFrame implements Frame {
         WS.println(head(lines));
     }
 
-    private String selection(int head, int tail) {
+    private String selection(int head, int tail, Printer printer, POption... options) {
         if (varCount() == 0) {
             return "";
         }
@@ -179,6 +181,6 @@ public abstract class AbstractFrame implements Frame {
                 }
             }
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 }

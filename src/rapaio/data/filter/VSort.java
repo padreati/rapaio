@@ -28,6 +28,8 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -55,12 +57,12 @@ public class VSort implements VFilter {
     }
 
     @Override
-    public String toContent() {
-        return "VSort";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VSort";
     }
 }

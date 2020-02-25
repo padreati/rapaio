@@ -30,6 +30,8 @@ package rapaio.data.filter;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleDoubleFunction;
 import rapaio.util.function.IntDoubleFunction;
 
@@ -198,13 +200,13 @@ public class VToDouble implements VFilter {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "VToDouble";
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VToDouble";
     }
 
 }

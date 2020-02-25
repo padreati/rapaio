@@ -27,6 +27,9 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
+
 /**
  * Epanechnikov kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -53,11 +56,11 @@ public class KFuncEpanechnikov implements KFunc {
 
     @Override
     public String toString() {
-        return toContent();
+        return "KFuncEpanechnikov";
     }
 
     @Override
-    public String toContent() {
-        return "KFuncEpanechnikov";
+    public String toContent(Printer printer, POption... options) {
+        return toString();
     }
 }

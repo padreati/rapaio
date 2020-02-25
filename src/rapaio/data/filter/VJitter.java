@@ -30,6 +30,8 @@ package rapaio.data.filter;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * Applies a random noise from a given distribution to a numeric vector.
@@ -78,12 +80,12 @@ public class VJitter implements VFilter {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "VJitter(d=" + d.name() + ")";
     }
 
     @Override
     public String toString() {
-        return toContent();
+        return "VJitter(d=" + d.name() + ")";
     }
 }

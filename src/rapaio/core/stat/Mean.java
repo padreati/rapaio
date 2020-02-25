@@ -29,6 +29,8 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -121,7 +123,7 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return "> mean[" + varName + "]\n" +
                 "total rows: " + floatFlex(completeCount + missingCount) +
                 " (complete: " + floatFlex(completeCount) +
@@ -130,12 +132,12 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

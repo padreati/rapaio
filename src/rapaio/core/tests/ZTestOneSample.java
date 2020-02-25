@@ -30,6 +30,8 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -202,7 +204,7 @@ public class ZTestOneSample implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         sb.append("> HTTools.zTestOneSample\n");

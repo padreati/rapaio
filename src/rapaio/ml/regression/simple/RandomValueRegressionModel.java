@@ -36,6 +36,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 /**
  * A trivial regression which predicts using random
@@ -114,7 +116,7 @@ public class RandomValueRegressionModel
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         if (isFitted()) {
@@ -124,12 +126,12 @@ public class RandomValueRegressionModel
     }
 
     @Override
-    public String toFullContent() {
-        return toContent();
+    public String toFullContent(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 }

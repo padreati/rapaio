@@ -6,8 +6,10 @@ import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -404,12 +406,12 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toSummary() {
-        return toContent();
+    public String toSummary(Printer printer, POption... options) {
+        return toContent(printer, options);
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         int headRows = 20;
         int headCols = 20;
         int tailRows = 2;
@@ -419,7 +421,7 @@ public abstract class AbstractDMatrix implements DMatrix {
         boolean fullCols = headCols + tailCols >= colCount();
 
         if (fullRows && fullCols) {
-            return toFullContent();
+            return toFullContent(printer, options);
         }
 
         int[] rows = new int[Math.min(headRows + tailRows + 1, rowCount())];
@@ -475,11 +477,11 @@ public abstract class AbstractDMatrix implements DMatrix {
                 }
             }
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
 
         TextTable tt = TextTable.empty(rowCount() + 1, colCount() + 1, 1, 1);
         for (int i = 0; i < rowCount(); i++) {
@@ -493,6 +495,6 @@ public abstract class AbstractDMatrix implements DMatrix {
                 tt.floatFlexLong(i + 1, j + 1, get(i, j));
             }
         }
-        return tt.getDynamicText();
+        return tt.getDynamicText(printer, options);
     }
 }

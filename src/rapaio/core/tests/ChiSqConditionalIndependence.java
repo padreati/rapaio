@@ -31,7 +31,9 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 import rapaio.printer.format.Format;
+import rapaio.printer.opt.POption;
 
 import java.util.List;
 
@@ -119,7 +121,7 @@ public class ChiSqConditionalIndependence implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqConditionalIndependence\n");
         sb.append("\n");
@@ -147,7 +149,7 @@ public class ChiSqConditionalIndependence implements HTest {
             String zlevel = zlevels[i];
 
             sb.append("> ").append(z.name()).append(" = '").append(zlevel).append("'\n");
-            sb.append(ztests[i].toSummary()).append("\n");
+            sb.append(ztests[i].toSummary(printer, options)).append("\n");
         }
 
         return sb.toString();

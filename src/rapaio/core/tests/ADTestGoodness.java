@@ -33,6 +33,8 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VRefSort;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import static java.lang.Math.*;
 import static rapaio.printer.format.Format.*;
@@ -163,7 +165,7 @@ public class ADTestGoodness implements HTest {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ADTestGoodness\n");
         sb.append("\n");

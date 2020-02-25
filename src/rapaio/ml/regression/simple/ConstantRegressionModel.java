@@ -34,7 +34,9 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 import static rapaio.printer.format.Format.floatFlex;
 
@@ -112,17 +114,17 @@ public class ConstantRegressionModel
     }
 
     @Override
-    public String toContent() {
+    public String toContent(Printer printer, POption... options) {
         return fullName();
     }
 
     @Override
-    public String toFullContent() {
+    public String toFullContent(Printer printer, POption... options) {
         return fullName();
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -139,7 +141,7 @@ public class ConstantRegressionModel
                 tt.textRight(1 + i, 0, targetName(i));
                 tt.floatFlex(1 + i, 1, constant);
             }
-            sb.append(tt.getDynamicText());
+            sb.append(tt.getDynamicText(printer, options));
         }
         sb.append("\n");
         return sb.toString();

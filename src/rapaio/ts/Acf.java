@@ -33,7 +33,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printable;
+import rapaio.printer.Printer;
 import rapaio.printer.format.TextTable;
+import rapaio.printer.opt.POption;
 
 /**
  * Sample AutoCorrelation Function
@@ -90,7 +92,7 @@ public final class Acf implements Printable {
     }
 
     @Override
-    public String toSummary() {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Acf summary\n");
         sb.append("===========\n");
@@ -105,7 +107,7 @@ public final class Acf implements Printable {
             tt.floatFlex(i + 1, 1, correlation.getDouble(i));
             tt.floatFlex(i + 1, 2, covariance.getDouble(i));
         }
-        sb.append(tt.getDynamicText());
+        sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
         return sb.toString();
     }
