@@ -59,6 +59,13 @@ public class KernelEstimator extends AbstractEstimator {
         return new KernelEstimator(testName, kfunc, bandwidth);
     }
 
+    public static List<KernelEstimator> forRange(Frame df, VRange vRange) {
+        List<String> varNames = vRange.parseVarNames(df);
+        return varNames.stream()
+                .map(name -> new KernelEstimator(name, new KFuncGaussian(), 0))
+                .collect(Collectors.toList());
+    }
+
     public static List<KernelEstimator> forType(Frame df, VType type) {
         return forType(df, type, new KFuncGaussian());
     }

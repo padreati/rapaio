@@ -222,6 +222,11 @@ the field of machine learning: classification, regression, clustering, time seri
 etc. This library provides some of them and the final aim is to contain a consistent collection 
 of production ready tools from this field.   
 
+**Model selection and evaluation**
+
+* Confusion Matrix
+* CrossValidation for Classifiers (metrics: Accuracy, LogLoss)
+
 **Classification**
 
 * ZeroRule
@@ -240,9 +245,6 @@ of production ready tools from this field.
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 
-**Evaluation: metrics**
-
-* Confusion Matrix
 
 ### Experminental Features
 

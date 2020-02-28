@@ -249,7 +249,8 @@ public class NaiveBayesTest {
                 "target vars:\n" +
                 "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
                 "\n" +
-                "Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}Estimators: \n" +
+                "Prior: MLE{virginica:0.3333333,setosa:0.3333333,versicolor:0.3333333}\n" +
+                "Estimators: \n" +
                 "\t- Gaussian{test=sepal-length, values=[virginica:Normal(mu=6.588, sd=0.6294887), setosa:Normal(mu=5.006, sd=0.348947), versicolor:Normal(mu=5.936, sd=0.5109834)]}\n" +
                 "\t- Gaussian{test=sepal-width, values=[virginica:Normal(mu=2.974, sd=0.3192554), setosa:Normal(mu=3.428, sd=0.3752546), versicolor:Normal(mu=2.77, sd=0.3106445)]}\n" +
                 "\t- Gaussian{test=petal-length, values=[virginica:Normal(mu=5.552, sd=0.5463479), setosa:Normal(mu=1.462, sd=0.1719186), versicolor:Normal(mu=4.26, sd=0.4651881)]}\n" +

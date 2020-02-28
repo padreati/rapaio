@@ -28,15 +28,10 @@
 package rapaio.experiment.ml.eval;
 
 import rapaio.core.SamplingTools;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.filter.FShuffle;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.eval.metric.Confusion;
@@ -44,8 +39,6 @@ import rapaio.printer.Printer;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 
 import static rapaio.graphics.Plotter.*;
@@ -56,120 +49,6 @@ import static rapaio.sys.WS.print;
  */
 @Deprecated
 public class CEvaluation {
-
-    public static double cv(Frame df, String classColName, ClassifierModel c, int folds) {
-        print("\nCrossValidation with " + folds + " folds\n");
-
-        List<Mapping> strata = buildStrata(df, folds, classColName);
-        VarDouble acc = VarDouble.empty();
-
-        for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.empty();
-            Mapping testMapping = Mapping.empty();
-            for (int j = 0; j < folds; j++) {
-                if (j == i) {
-                    testMapping.addAll(strata.get(j).iterator());
-                } else {
-                    trainMapping.addAll(strata.get(j).iterator());
-                }
-            }
-            Frame train = MappedFrame.byRow(df, trainMapping);
-            Frame test = MappedFrame.byRow(df, testMapping);
-
-            ClassifierModel cc = c.newInstance();
-            cc.fit(train, classColName);
-            ClassifierResult cp = cc.predict(test);
-
-            Confusion conf = Confusion.from(test.rvar(classColName), cp.firstClasses());
-            acc.addDouble(conf.accuracy());
-            print(String.format("CV %2d:  acc=%.6f, mean=%.6f, se=%.6f\n", i + 1,
-                    conf.accuracy(),
-                    Mean.of(acc).value(),
-                    Variance.of(acc).sdValue()));
-        }
-
-        double correct = Mean.of(acc).value();
-        print("==============\n");
-        print(String.format("Mean accuracy:%.6f\n", correct));
-        print(String.format("SE: %.6f     (Standard error)\n", Variance.of(acc).sdValue()));
-        return correct;
-    }
-
-    private static List<Mapping> buildStrata(Frame df, int folds, String classColName) {
-        List<String> dict = df.rvar(classColName).levels();
-        List<Mapping> rows = new ArrayList<>();
-        for (int i = 0; i < dict.size(); i++) {
-            rows.add(Mapping.empty());
-        }
-        for (int i = 0; i < df.rowCount(); i++) {
-            rows.get(df.getInt(i, classColName)).add(i);
-        }
-        Mapping shuffle = Mapping.empty();
-        for (int i = 0; i < dict.size(); i++) {
-            rows.get(i).shuffle();
-            shuffle.addAll(rows.get(i).iterator());
-        }
-        List<Mapping> strata = new ArrayList<>();
-        for (int i = 0; i < folds; i++) {
-            strata.add(Mapping.empty());
-        }
-        int fold = 0;
-        for (int next : shuffle) {
-            strata.get(fold).add(next);
-            fold++;
-            if (fold == folds) {
-                fold = 0;
-            }
-        }
-        return strata;
-    }
-
-    public static void multiCv(Frame df, String classColName, List<ClassifierModel> classifierModels, int folds) {
-        print("CrossValidation with " + folds + " folds\n");
-        df = df.fapply(FShuffle.filter());
-        double[] tacc = new double[classifierModels.size()];
-
-        for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.empty();
-            Mapping testMapping = Mapping.empty();
-            if (folds >= df.rowCount() - 1) {
-                testMapping.add(i);
-                for (int j = 0; j < df.rowCount(); j++) {
-                    if (j != i) {
-                        trainMapping.add(j);
-                    }
-                }
-
-            } else {
-                for (int j = 0; j < df.rowCount(); j++) {
-                    if (j % folds == i) {
-                        testMapping.add(j);
-                    } else {
-                        trainMapping.add(j);
-                    }
-                }
-            }
-            Frame train = MappedFrame.byRow(df, trainMapping);
-            Frame test = MappedFrame.byRow(df, testMapping);
-
-            for (int k = 0; k < classifierModels.size(); k++) {
-                ClassifierModel c = classifierModels.get(k).newInstance();
-                c.fit(train, classColName);
-                ClassifierResult cp = c.predict(test);
-                Confusion cm = Confusion.from(test.rvar(classColName), cp.firstClasses());
-                double acc = cm.accuracy();
-                tacc[k] += acc;
-                print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.name()));
-            }
-            print("-----------\n");
-
-        }
-
-        for (int k = 0; k < classifierModels.size(); k++) {
-            tacc[k] /= (1. * folds);
-            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifierModels.get(k).name()));
-        }
-    }
 
     public static void bootstrapValidation(Printer printer, Frame df, String classColName, ClassifierModel c, int bootstraps) {
         Var weights = VarDouble.fill(df.rowCount(), 1.0);

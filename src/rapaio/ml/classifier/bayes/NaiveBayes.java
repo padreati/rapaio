@@ -51,7 +51,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -68,7 +67,6 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     private static final long serialVersionUID = -7602854063045679683L;
-    private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());
 
     // algorithm parameters
 
@@ -188,25 +186,19 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
         // build conditional probabilities
 
-        logger.fine("start learning...");
         for (Estimator estimator : estimatorList) {
             boolean fitted = estimator.fit(df, weights, firstTargetName());
             if (fitted) {
-                logger.info("Fitter estimator: " + estimator.fittedName());
             } else {
                 String message = "Estimator: " + estimator.fittedName() + " cannot be fitted.";
-                logger.severe(message);
                 throw new IllegalStateException(message);
             }
         }
-        logger.fine("Learning phase finished successfully.");
         return true;
     }
 
     @Override
     protected ClassifierResult<NaiveBayes> corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
-
-        logger.fine("start fitting values...");
 
         ClassifierResult<NaiveBayes> pred = ClassifierResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
@@ -223,7 +215,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
                     dv.normalize();
 
                     if (withClasses) {
-                        pred.firstClasses().setInt(i, dv.findBestIndex());
+                        pred.firstClasses().setLabel(i, dv.findBestLabel());
                     }
                     if (withDensities) {
                         for (int j = 1; j < firstTargetLevels().size(); j++) {
@@ -231,7 +223,6 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
                         }
                     }
                 });
-        logger.fine("fitting phase finished.");
         return pred;
     }
 
@@ -256,7 +247,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
             sb.append(inputVarsSummary(printer, options));
             sb.append(targetVarsSummary());
 
-            sb.append("Prior: ").append(prior.fittedName());
+            sb.append("Prior: ").append(prior.fittedName()).append("\n");
             sb.append("Estimators: \n");
             for (Estimator estimator : estimatorList) {
                 sb.append("\t- ").append(estimator.fittedName()).append("\n");

@@ -53,11 +53,12 @@ import rapaio.experiment.ml.classifier.svm.kernel.SphericalKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.SplineKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.WaveKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.WaveletKernel;
-import rapaio.experiment.ml.eval.CEvaluation;
+import rapaio.ml.eval.CEval;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -142,8 +143,9 @@ public class BinarySMOTest {
                 .withC(0.1);
 
         RandomSource.setSeed(1);
-        double score = CEvaluation.cv(df.fapply(FStandardize.on(VRange.all())), target, smo1, 10);
-        assertEquals(0.76, score, 1e-7);
+        double score = CEval.cv(df.fapply(FStandardize.on(VRange.all())), target, smo1, 10,
+                Arrays.asList(CEval.Metric.accuracy())).getMeanScore(CEval.Metric.accuracy().name());
+        assertEquals(0.7359523809523809, score, 1e-7);
     }
 
     @Test
@@ -182,7 +184,8 @@ public class BinarySMOTest {
 
             BinarySMO smo = new BinarySMO();
             df = df.fapply(FStandardize.on(VRange.all()));
-            double s = CEvaluation.cv(df, "Class", smo, 3);
+            double s = CEval.cv(df, "Class", smo, 3, Arrays.asList(CEval.Metric.accuracy()))
+                    .getMeanScore(CEval.Metric.accuracy().name());
             assertTrue(s > 0.6);
 
             name.addLabel(k.name());

@@ -68,8 +68,25 @@ public interface Printer {
     int graphicHeight();
 
 
+    /**
+     * Creates a new instance of printing options collection.
+     * Any modification on this instance will not affect what
+     * is stored as configuration on the printer itself.
+     *
+     * If one wants to modify the printing options from printer instance
+     * she must use {@link #withOptions(POption[])} method.
+     *
+     * @return new copy of printing options collection
+     */
     POpts getOptions();
 
+    /**
+     * Changes the options for this printer. Any change will affect
+     * new instances created with {@link #getOptions()}.
+     *
+     * @param options options to be applied on this printer instance
+     * @return instance of the printer
+     */
     Printer withOptions(POption...options);
 
     /**
