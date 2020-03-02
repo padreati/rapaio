@@ -91,13 +91,13 @@ public class BernoulliEstimator extends AbstractEstimator {
 
     @Override
     public String name() {
-        return "Binomial{test=" + testName + "}";
+        return "Bernoulli{test=" + testName + "}";
     }
 
     @Override
     public String fittedName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Binomial{test=").append(testName);
+        sb.append("Bernoulli{test=").append(testName);
         sb.append(", laplaceSmoother=").append(Format.floatFlex(laplaceSmoother));
         sb.append(", values=[");
         if (density != null) {

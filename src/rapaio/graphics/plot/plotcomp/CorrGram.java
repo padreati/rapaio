@@ -46,8 +46,8 @@ public class CorrGram extends PlotComponent {
 
     private static final long serialVersionUID = 7529398214880633755L;
 
-    private boolean grid = false;
-    private boolean labels = true;
+    private boolean grid;
+    private boolean labels;
     private final DistanceMatrix d;
     private final int[][] colors;
 

@@ -67,11 +67,11 @@ public interface Printable {
     /**
      * Returns a text representation of summary statistics.
      *
-     * @param printer
+     * @param printer printer instance
      * @param options printing options
      * @return summary statistics text representation
      */
-    default String toSummary(Printer printer, POption... options) {
+    default String toSummary(Printer printer, POption<?>... options) {
         return toString();
     }
 
@@ -81,18 +81,18 @@ public interface Printable {
      * @param options printing options
      * @return summary statistics text representation
      */
-    default String toSummary(POption... options) {
+    default String toSummary(POption<?>... options) {
         return toSummary(WS.getPrinter(), options);
     }
 
     /**
      * Eventually truncated text representation of the printable object content
      *
-     * @param printer
+     * @param printer printer instance
      * @param options printing options
      * @return eventually truncated content's text representation
      */
-    default String toContent(Printer printer, POption... options) {
+    default String toContent(Printer printer, POption<?>... options) {
         return toString();
     }
 
@@ -102,18 +102,18 @@ public interface Printable {
      * @param options printing options
      * @return eventually truncated content's text representation
      */
-    default String toContent(POption... options) {
+    default String toContent(POption<?>... options) {
         return toContent(WS.getPrinter(), options);
     }
 
     /**
      * Full text representation of the printable object content
      *
-     * @param printer
+     * @param printer printer instance
      * @param options printing options
      * @return full content's text representation
      */
-    default String toFullContent(Printer printer, POption... options) {
+    default String toFullContent(Printer printer, POption<?>... options) {
         return toString();
     }
 
@@ -123,7 +123,7 @@ public interface Printable {
      * @param options printing options
      * @return full content's text representation
      */
-    default String toFullContent(POption... options) {
+    default String toFullContent(POption<?>... options) {
         return toFullContent(WS.getPrinter(), options);
     }
 
@@ -149,7 +149,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printSummary(POption... options) {
+    default void printSummary(POption<?>... options) {
         WS.getPrinter().printSummary(this, options);
     }
 
@@ -159,7 +159,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printSummary(Printer printer, POption... options) {
+    default void printSummary(Printer printer, POption<?>... options) {
         printer.printSummary(this, options);
     }
 
@@ -168,7 +168,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printContent(POption... options) {
+    default void printContent(POption<?>... options) {
         WS.getPrinter().printContent(this);
     }
 
@@ -178,7 +178,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printContent(Printer printer, POption... options) {
+    default void printContent(Printer printer, POption<?>... options) {
         printer.printContent(this, options);
     }
 
@@ -187,7 +187,7 @@ public interface Printable {
      *
      * @param options printing options
      */
-    default void printFullContent(POption... options) {
+    default void printFullContent(POption<?>... options) {
         WS.getPrinter().printFullContent(this, options);
     }
 
@@ -197,7 +197,7 @@ public interface Printable {
      * @param printer printer instance
      * @param options printing options
      */
-    default void printFullContent(Printer printer, POption... options) {
+    default void printFullContent(Printer printer, POption<?>... options) {
         printer.printFullContent(this, options);
     }
 }

@@ -35,17 +35,17 @@ import java.util.stream.IntStream;
  */
 public class CEval {
 
-    public static Result cv(Frame df, String targetName, ClassifierModel model,
-                            int folds, List<Metric> metrics) {
+    public static <M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> Result<M, R> cv(
+            Frame df, String targetName, ClassifierModel<M, R> model, int folds, List<Metric> metrics) {
         return cv(df, targetName, model, folds, 1, metrics, false, 1);
     }
 
-    public static Result cv(Frame df, String targetName, ClassifierModel model,
-                            int folds, int rounds, List<Metric> metrics,
-                            boolean interactive, int threads) {
+    public static <M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> Result<M, R> cv(
+            Frame df, String targetName, ClassifierModel<M, R> model, int folds, int rounds, List<Metric> metrics,
+            boolean interactive, int threads) {
 
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        List<Future<Run>> futures = new LinkedList<>();
+        List<Future<Run<M, R>>> futures = new LinkedList<>();
 
         // create features for parallel execution
 
@@ -57,35 +57,36 @@ public class CEval {
                 Frame train = df.removeRows(foldRows.get(fold));
                 Frame test = df.mapRows(foldRows.get(fold));
 
-                Future<Run> futureRun = executorService.submit(() -> {
+                Future<Run<M, R>> futureRun = executorService.submit(() -> {
                     var m = model.newInstance();
                     m.fit(train, targetName);
                     var prediction = m.predict(test, true, true);
-                    return new Run(const_round, const_fold, prediction, test);
+                    return new Run<>(const_round, const_fold, prediction, test);
                 });
                 futures.add(futureRun);
             }
 
         }
 
-        Result result = new Result(model, df, targetName, folds, rounds, metrics);
+        var result = new Result<>(model, df, targetName, folds, rounds, metrics);
 
         // collect results
 
         while (!futures.isEmpty()) {
-            Iterator<Future<Run>> iterator = futures.iterator();
+            Iterator<Future<Run<M, R>>> iterator = futures.iterator();
             while (iterator.hasNext()) {
-                Future<Run> future = iterator.next();
+                Future<Run<M, R>> future = iterator.next();
                 if (future.isDone()) {
                     try {
-                        Run run = future.get();
+                        var run = future.get();
                         result.appendRun(run.round, run.fold, run.result, run.test.rvar(targetName));
                         if (interactive) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("round:").append(run.round);
                             sb.append(", fold:").append(run.fold).append(":\n");
                             for (Metric metric : metrics) {
-                                sb.append("- ").append(metric.name()).append(": ").append(metric.compute(run.result, run.test.rvar(targetName)));
+                                sb.append("- ").append(metric.name()).append(": ");
+                                sb.append(metric.compute(run.result, run.test.rvar(targetName)));
                             }
                             WS.println(sb.toString());
                         }
@@ -127,13 +128,13 @@ public class CEval {
         return strata;
     }
 
-    private static class Run {
+    private static class Run<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> {
         private final int round;
         private final int fold;
-        private ClassifierResult result;
+        private ClassifierResult<M> result;
         private Frame test;
 
-        public Run(final int round, final int fold, ClassifierResult result, Frame test) {
+        public Run(final int round, final int fold, ClassifierResult<M> result, Frame test) {
             this.round = round;
             this.fold = fold;
             this.result = result;
@@ -144,9 +145,9 @@ public class CEval {
     /**
      * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
      */
-    public static class Result implements Printable {
+    public static class Result<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> implements Printable {
 
-        final ClassifierModel model;
+        final ClassifierModel<M, R> model;
         final Frame df;
         final String targetName;
 
@@ -156,7 +157,7 @@ public class CEval {
 
         private Frame scores;
 
-        public Result(ClassifierModel model, Frame df, String targetName, int folds, int rounds, List<Metric> metrics) {
+        public Result(ClassifierModel<M, R> model, Frame df, String targetName, int folds, int rounds, List<Metric> metrics) {
             this.model = model;
             this.df = df;
             this.targetName = targetName;
@@ -185,7 +186,7 @@ public class CEval {
             }
         }
 
-        public ClassifierModel getModel() {
+        public ClassifierModel<M, R> getModel() {
             return model;
         }
 
@@ -213,20 +214,22 @@ public class CEval {
             return Mean.of(scores.rvar(metric)).value();
         }
 
-        void appendRun(int round, int fold, ClassifierResult result, Var testVar) {
+        void appendRun(int round, int fold, ClassifierResult<M> result, Var testVar) {
             int row = round * folds + fold;
             for (Metric metric : metrics) {
                 scores.setDouble(row, metric.name(), metric.compute(result, testVar));
             }
         }
 
-        @Override
-        public String toContent(Printer printer, POption... options) {
+        private String toContentName(Printer printer, POption<?>... options) {
             StringBuilder sb = new StringBuilder();
-
             sb.append("Model:\n");
             sb.append(model.fullName()).append("\n");
+            return sb.toString();
+        }
 
+        private String toContentCVScore(Printer printer, POption<?>... options) {
+            StringBuilder sb = new StringBuilder();
             sb.append("CV score\n");
             sb.append("=============\n");
             Var metricVar = VarNominal.empty().withName("metric");
@@ -246,7 +249,17 @@ public class CEval {
         }
 
         @Override
-        public String toFullContent(Printer printer, POption... options) {
+        public String toContent(Printer printer, POption<?>... options) {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(toContentName(printer, options));
+            sb.append(toContentCVScore(printer, options));
+
+            return sb.toString();
+        }
+
+        @Override
+        public String toFullContent(Printer printer, POption<?>... options) {
             StringBuilder sb = new StringBuilder();
             sb.append("Model:\n");
             sb.append(model.fullName()).append("\n");
@@ -268,21 +281,7 @@ public class CEval {
                     .toFullContent(printer, options));
             sb.append("\n");
 
-            sb.append("CV score\n");
-            sb.append("=============\n");
-            Var metricVar = VarNominal.empty().withName("metric");
-            Var meanVar = VarDouble.empty().withName("mean");
-            Var stdVar = VarDouble.empty().withName("std");
-            Frame global = SolidFrame.byVars(metricVar, meanVar, stdVar);
-
-            for (Metric metric : metrics) {
-                global.addRows(1);
-                global.setLabel(global.rowCount() - 1, "metric", metric.name());
-                global.setDouble(global.rowCount() - 1, "mean", Mean.of(scores.rvar(metric.name())).value());
-                global.setDouble(global.rowCount() - 1, "std", Variance.of(scores.rvar(metric.name())).sdValue());
-            }
-            sb.append(global.toFullContent(printer, options));
-            sb.append("\n");
+            sb.append(toContentCVScore(printer, options));
 
             return sb.toString();
         }

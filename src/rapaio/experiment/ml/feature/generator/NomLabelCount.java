@@ -117,12 +117,12 @@ public class NomLabelCount extends AbstractFeatureGroupGenerator {
                 // normalize each row
                 for (int row = 0; row < bound.rowCount(); row++) {
                     double sum = 0.0;
-                    for (int i = 0; i < vars.size(); i++) {
-                        sum += vars.get(i).getDouble(row);
+                    for (Var var : vars) {
+                        sum += var.getDouble(row);
                     }
                     // normalize
-                    for (int i = 0; i < vars.size(); i++) {
-                        vars.get(i).setDouble(row, vars.get(i).getDouble(row) / sum);
+                    for (Var var : vars) {
+                        var.setDouble(row, var.getDouble(row) / sum);
                     }
                 }
             }
