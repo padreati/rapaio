@@ -24,38 +24,38 @@ public class BernoulliEstimatorTest {
     void testBuilders() {
 
         var estimator = BernoulliEstimator.forName("x");
-        assertEquals("Binomial{test=x, laplaceSmoother=1, values=[]}", estimator.fittedName());
+        assertEquals("Bernoulli{test=x, laplaceSmoother=1, values=[]}", estimator.fittedName());
 
         estimator = BernoulliEstimator.forName("x", 1.2);
-        assertEquals("Binomial{test=x, laplaceSmoother=1.2, values=[]}", estimator.fittedName());
+        assertEquals("Bernoulli{test=x, laplaceSmoother=1.2, values=[]}", estimator.fittedName());
 
         List<BernoulliEstimator> estimators = BernoulliEstimator.forNames("a", "b", "c");
-        assertEquals("Binomial{test=a, laplaceSmoother=1, values=[]}", estimators.get(0).fittedName());
-        assertEquals("Binomial{test=b, laplaceSmoother=1, values=[]}", estimators.get(1).fittedName());
-        assertEquals("Binomial{test=c, laplaceSmoother=1, values=[]}", estimators.get(2).fittedName());
+        assertEquals("Bernoulli{test=a, laplaceSmoother=1, values=[]}", estimators.get(0).fittedName());
+        assertEquals("Bernoulli{test=b, laplaceSmoother=1, values=[]}", estimators.get(1).fittedName());
+        assertEquals("Bernoulli{test=c, laplaceSmoother=1, values=[]}", estimators.get(2).fittedName());
 
         estimators = BernoulliEstimator.forNames(1.2, "a", "b", "c");
-        assertEquals("Binomial{test=a, laplaceSmoother=1.2, values=[]}", estimators.get(0).fittedName());
-        assertEquals("Binomial{test=b, laplaceSmoother=1.2, values=[]}", estimators.get(1).fittedName());
-        assertEquals("Binomial{test=c, laplaceSmoother=1.2, values=[]}", estimators.get(2).fittedName());
+        assertEquals("Bernoulli{test=a, laplaceSmoother=1.2, values=[]}", estimators.get(0).fittedName());
+        assertEquals("Bernoulli{test=b, laplaceSmoother=1.2, values=[]}", estimators.get(1).fittedName());
+        assertEquals("Bernoulli{test=c, laplaceSmoother=1.2, values=[]}", estimators.get(2).fittedName());
 
         estimators = BernoulliEstimator.forRange(SolidFrame.byVars(
                 VarNominal.empty().withName("a"),
                 VarNominal.empty().withName("b"),
                 VarNominal.empty().withName("c")
         ), VRange.all());
-        assertEquals("Binomial{test=a, laplaceSmoother=1, values=[]}", estimators.get(0).fittedName());
-        assertEquals("Binomial{test=b, laplaceSmoother=1, values=[]}", estimators.get(1).fittedName());
-        assertEquals("Binomial{test=c, laplaceSmoother=1, values=[]}", estimators.get(2).fittedName());
+        assertEquals("Bernoulli{test=a, laplaceSmoother=1, values=[]}", estimators.get(0).fittedName());
+        assertEquals("Bernoulli{test=b, laplaceSmoother=1, values=[]}", estimators.get(1).fittedName());
+        assertEquals("Bernoulli{test=c, laplaceSmoother=1, values=[]}", estimators.get(2).fittedName());
 
         estimators = BernoulliEstimator.forRange(1.2, SolidFrame.byVars(
                 VarNominal.empty().withName("a"),
                 VarNominal.empty().withName("b"),
                 VarNominal.empty().withName("c")
         ), VRange.all());
-        assertEquals("Binomial{test=a, laplaceSmoother=1.2, values=[]}", estimators.get(0).fittedName());
-        assertEquals("Binomial{test=b, laplaceSmoother=1.2, values=[]}", estimators.get(1).fittedName());
-        assertEquals("Binomial{test=c, laplaceSmoother=1.2, values=[]}", estimators.get(2).fittedName());
+        assertEquals("Bernoulli{test=a, laplaceSmoother=1.2, values=[]}", estimators.get(0).fittedName());
+        assertEquals("Bernoulli{test=b, laplaceSmoother=1.2, values=[]}", estimators.get(1).fittedName());
+        assertEquals("Bernoulli{test=c, laplaceSmoother=1.2, values=[]}", estimators.get(2).fittedName());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class BernoulliEstimatorTest {
         var estimator = BernoulliEstimator.forName("x");
         estimator.fit(df, VarDouble.fill(x.rowCount(), 1), "y");
 
-        assertEquals("Binomial{test=x, laplaceSmoother=1, values=[" +
+        assertEquals("Bernoulli{test=x, laplaceSmoother=1, values=[" +
                 "{targetLevel:?,[?:0.333,0:0.167,1:0.167,}," +
                 "{targetLevel:a,[?:0.333,0:0.5,1:0.5,}," +
                 "{targetLevel:b,[?:0.333,0:0.333,1:0.333,},]}", estimator.fittedName());
