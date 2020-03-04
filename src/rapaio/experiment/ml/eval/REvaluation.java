@@ -36,7 +36,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.filter.FShuffle;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.cmetric.Confusion;
 import rapaio.printer.Printer;
 
 import java.util.List;

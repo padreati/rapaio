@@ -34,10 +34,10 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.cmetric.Confusion;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
 import rapaio.printer.format.Format;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Arrays;

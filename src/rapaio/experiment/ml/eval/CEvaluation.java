@@ -34,7 +34,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.cmetric.Confusion;
 import rapaio.printer.Printer;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;

@@ -29,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.ml.eval.cmetric.Confusion;
 
 import java.util.Arrays;
 

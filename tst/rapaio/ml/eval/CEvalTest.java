@@ -6,11 +6,10 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.nb.GaussianEstimator;
-
-import java.util.Arrays;
+import rapaio.ml.eval.cmetric.CMetric;
+import rapaio.ml.eval.split.StratifiedKFold;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.printer.Printer.textWidth;
@@ -28,17 +27,19 @@ public class CEvalTest {
     @Test
     void cvTest() {
         Frame iris = Datasets.loadIrisDataset();
-        ClassifierModel nb = NaiveBayes.newModel().withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
-        CEval.Result result = CEval.cv(iris, "class", nb, 10, 2, Arrays.asList(CEval.Metric.accuracy(), CEval.Metric.logloss()), true, 1);
+        var nb = NaiveBayes.newModel().withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
+        var result = CEval.newInstance(iris, "class", nb)
+                .withSplitStrategy(new StratifiedKFold(2, 10))
+                .withMetrics(CMetric.accuracy(), CMetric.logloss())
+                .withThreads(1)
+                .run();
 
         assertNotNull(result);
-        assertEquals(10, result.getFolds());
-        assertEquals(2, result.getRounds());
         assertEquals(nb.name(), result.getModel().name());
         assertTrue(result.getFrame().deepEquals(iris));
         assertEquals("class", result.getTargetName());
 
-        Frame raw = result.getRawScores();
+        Frame raw = result.getTestScores();
         assertNotNull(raw);
         assertEquals(10 * 2, raw.rowCount());
         assertEquals(4, raw.varCount());
@@ -47,34 +48,34 @@ public class CEvalTest {
                 "NaiveBayes{prior=MLE{},estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]},Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}\n" +
                 "CV score\n" +
                 "=============\n" +
-                "     metric    mean       std    \n" +
-                "[0] Accuracy 0.9533333 0.0488463 \n" +
-                "[1]  LogLoss 1.9635111 1.9293964 \n" +
+                "     metric     mean       std    \n" +
+                "[0] Accuracy  0.96      0.0065376 \n" +
+                "[1]  LogLoss 14.8946138 1.9126599 \n" +
                 "\n", result.toContent(textWidth(100)));
         assertEquals("Model:\n" +
                 "NaiveBayes{prior=MLE{},estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]},Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}\n" +
                 "Raw scores:\n" +
                 "===========\n" +
-                "     round fold Accuracy   LogLoss       round fold Accuracy   LogLoss       round fold Accuracy   LogLoss  \n" +
-                " [0]     0    0 0.9333333 2.1714128  [7]     0    7 0.9333333 1.0274013 [14]     1    4 1         0.7122148 \n" +
-                " [1]     0    1 0.8       7.7266373  [8]     0    8 1         0.4627481 [15]     1    5 1         0.9126003 \n" +
-                " [2]     0    2 1         0.0989728  [9]     0    9 1         0.5383851 [16]     1    6 0.9333333 1.3961202 \n" +
-                " [3]     0    3 1         0.6918864 [10]     1    0 0.9333333 1.1826963 [17]     1    7 0.9333333 4.9907208 \n" +
-                " [4]     0    4 0.9333333 4.2276744 [11]     1    1 1         0.4081769 [18]     1    8 0.9333333 2.2989367 \n" +
-                " [5]     0    5 0.9333333 1.37594   [12]     1    2 0.9333333 1.3309705 [19]     1    9 0.9333333 3.016199  \n" +
-                " [6]     0    6 1         0.8267066 [13]     1    3 0.9333333 3.8738227 \n" +
+                "     round fold Accuracy   LogLoss        round fold Accuracy   LogLoss        round fold Accuracy   LogLoss   \n" +
+                " [0]     0    0 0.962963  14.4392313  [7]     0    7 0.962963  15.530261  [14]     1    4 0.9555556 15.2002472 \n" +
+                " [1]     0    1 0.9777778  9.2642465  [8]     0    8 0.9555556 16.000559  [15]     1    5 0.9555556 16.3006638 \n" +
+                " [2]     0    2 0.9555556 16.3721544  [9]     0    9 0.9555556 16.5657826 [16]     1    6 0.962963  15.9817162 \n" +
+                " [3]     0    3 0.9481481 16.3202788 [10]     1    0 0.9555556 16.3230409 [17]     1    7 0.962963  13.102989  \n" +
+                " [4]     0    4 0.962963  12.4977892 [11]     1    1 0.9555556 16.7767023 [18]     1    8 0.962963  14.1861791 \n" +
+                " [5]     0    5 0.9555556 16.4135835 [12]     1    2 0.9703704 14.6013046 [19]     1    9 0.962963  14.2118673 \n" +
+                " [6]     0    6 0.9555556 15.6107897 [13]     1    3 0.962963  12.1928901 \n" +
                 "\n" +
                 "Round scores:\n" +
                 "=============\n" +
                 "    round Accuracy_mean Accuracy_std LogLoss_mean LogLoss_std \n" +
-                "[0]     0   0.9533333    0.06         1.9147765    2.2416557  \n" +
-                "[1]     1   0.9533333    0.0305505    2.0122458    1.4293751  \n" +
+                "[0]     0   0.9592593    0.0075903    14.9014676   2.2160437  \n" +
+                "[1]     1   0.9607407    0.0047431    14.88776     1.4282036  \n" +
                 "\n" +
                 "CV score\n" +
                 "=============\n" +
-                "     metric    mean       std    \n" +
-                "[0] Accuracy 0.9533333 0.0488463 \n" +
-                "[1]  LogLoss 1.9635111 1.9293964 \n" +
+                "     metric     mean       std    \n" +
+                "[0] Accuracy  0.96      0.0065376 \n" +
+                "[1]  LogLoss 14.8946138 1.9126599 \n" +
                 "\n", result.toFullContent());
     }
 
@@ -86,10 +87,10 @@ public class CEvalTest {
         model.fit(df, "class");
         var r = model.predict(df, true, true);
 
-        assertEquals("Accuracy", CEval.Metric.accuracy().name());
-        double p = CEval.Metric.accuracy().compute(r, df.rvar("class"));
+        assertEquals("Accuracy", CMetric.accuracy().name());
+        double p = CMetric.accuracy().compute(r, df.rvar("class"));
         assertEquals(0.96, p);
-        double up = CEval.Metric.accuracy(false).compute(r, df.rvar("class"));
+        double up = CMetric.accuracy(false).compute(r, df.rvar("class"));
         assertEquals(144, up);
 
         assertEquals(p*df.rowCount(), up);

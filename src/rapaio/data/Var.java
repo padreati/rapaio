@@ -39,9 +39,11 @@ import rapaio.util.collection.IntComparator;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Random access list of observed values (observations) of a random variable (a vector with sample values).
@@ -103,6 +105,18 @@ public interface Var extends Serializable, Printable {
      */
     default MappedVar mapRows(int... rows) {
         return mapRows(Mapping.wrap(rows));
+    }
+
+    default MappedVar removeRows(Mapping mapping) {
+        Set<Integer> remove = mapping.stream().boxed().collect(Collectors.toSet());
+        int[] map = new int[Math.max(0, rowCount() - remove.size())];
+        int pos = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            if (!remove.contains(i)) {
+                map[pos++] = i;
+            }
+        }
+        return mapRows(Mapping.wrap(map));
     }
 
     /**

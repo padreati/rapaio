@@ -35,7 +35,7 @@ import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.io.Csv;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.cmetric.Confusion;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

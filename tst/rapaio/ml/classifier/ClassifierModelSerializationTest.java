@@ -37,7 +37,7 @@ import rapaio.io.JavaIO;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.nb.KernelEstimator;
 import rapaio.ml.classifier.rule.OneRule;
-import rapaio.ml.eval.metric.Confusion;
+import rapaio.ml.eval.cmetric.Confusion;
 
 import java.io.File;
 import java.io.IOException;
