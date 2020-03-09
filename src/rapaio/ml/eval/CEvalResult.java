@@ -9,6 +9,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
+import rapaio.data.filter.FRefSort;
 import rapaio.data.group.GroupFun;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -92,6 +93,10 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
             for (CMetric metric : ceval.getMetrics()) {
                 trainScores.setDouble(lastRow, metric.name(), metric.compute(trainResult, split.getTrainDf().rvar(split.getTargetName())));
             }
+            trainScores = trainScores.fapply(FRefSort.by(
+                    trainScores.rvar(FIELD_ROUND).refComparator(),
+                    trainScores.rvar(FIELD_FOLD).refComparator()
+            )).copy();
 
             testScores.addRows(1);
             testScores.setInt(lastRow, FIELD_ROUND, split.getRound());
@@ -99,6 +104,11 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
             for (CMetric metric : ceval.getMetrics()) {
                 testScores.setDouble(lastRow, metric.name(), metric.compute(trainResult, split.getTrainDf().rvar(split.getTargetName())));
             }
+
+            testScores = testScores.fapply(FRefSort.by(
+                    testScores.rvar(FIELD_ROUND).refComparator(),
+                    testScores.rvar(FIELD_FOLD).refComparator()
+            )).copy();
         } finally {
             scoresLock.unlock();
         }
