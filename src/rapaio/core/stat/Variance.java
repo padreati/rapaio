@@ -32,7 +32,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Compensated version of the algorithm for calculation of

@@ -35,8 +35,8 @@ import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.cmetric.Confusion;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
-import rapaio.printer.format.Format;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;

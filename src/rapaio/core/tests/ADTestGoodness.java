@@ -37,7 +37,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import static java.lang.Math.*;
-import static rapaio.printer.format.Format.*;
+import static rapaio.printer.Format.*;
 
 /**
  * Hypothesis test which assess if a given samples belongs to a normal distribution.

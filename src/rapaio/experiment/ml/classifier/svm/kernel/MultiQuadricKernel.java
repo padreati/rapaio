@@ -28,7 +28,7 @@
 package rapaio.experiment.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 /**
  * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.

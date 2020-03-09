@@ -29,8 +29,8 @@ package rapaio.core.tests;
 
 import rapaio.data.Var;
 import rapaio.data.filter.VSort;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 
 /**

@@ -1,6 +1,6 @@
 package rapaio.core.distributions;
 
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/20.

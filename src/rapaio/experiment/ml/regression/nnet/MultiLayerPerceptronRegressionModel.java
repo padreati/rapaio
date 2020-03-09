@@ -41,7 +41,7 @@ import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

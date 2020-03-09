@@ -52,7 +52,7 @@ import rapaio.printer.opt.POption;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Gradient Boosting Tree

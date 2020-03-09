@@ -34,7 +34,7 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.LUDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.util.List;
 import java.util.function.Function;

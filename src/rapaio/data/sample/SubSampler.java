@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Sample obtaind by subsampling, which is a sample without replacement

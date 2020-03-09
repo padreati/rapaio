@@ -30,9 +30,9 @@ package rapaio.experiment.ml.selection;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 

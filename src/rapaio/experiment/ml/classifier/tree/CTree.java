@@ -40,9 +40,9 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 

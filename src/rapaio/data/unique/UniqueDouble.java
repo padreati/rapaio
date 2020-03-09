@@ -31,7 +31,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.DoubleComparator;
 import rapaio.util.collection.IntArrays;

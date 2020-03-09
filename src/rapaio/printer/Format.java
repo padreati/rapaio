@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.printer.format;
+package rapaio.printer;
 
 import java.text.DecimalFormat;
 
@@ -34,32 +34,32 @@ import java.text.DecimalFormat;
  */
 public class Format {
 
-    private static DecimalFormat formatDecShort = new DecimalFormat();
-    private static DecimalFormat formatDecMedium = new DecimalFormat();
-    private static DecimalFormat formatDecLong = new DecimalFormat();
-    private static DecimalFormat formatDecFlex = new DecimalFormat();
-    private static DecimalFormat formatDecFlexShort = new DecimalFormat();
-    private static DecimalFormat formatDecFlexLong = new DecimalFormat();
+    public static DecimalFormat formatDecShort = new DecimalFormat();
+    public static DecimalFormat formatDecMedium = new DecimalFormat();
+    public static DecimalFormat formatDecLong = new DecimalFormat();
+    public static DecimalFormat formatDecFlex = new DecimalFormat();
+    public static DecimalFormat formatDecFlexShort = new DecimalFormat();
+    public static DecimalFormat formatDecFlexLong = new DecimalFormat();
 
     static {
         formatDecShort.setMinimumIntegerDigits(1);
         formatDecShort.setMinimumFractionDigits(3);
         formatDecShort.setMaximumFractionDigits(3);
         formatDecMedium.setMinimumIntegerDigits(1);
-        formatDecMedium.setMinimumFractionDigits(6);
-        formatDecMedium.setMaximumFractionDigits(6);
+        formatDecMedium.setMinimumFractionDigits(7);
+        formatDecMedium.setMaximumFractionDigits(7);
+        formatDecLong.setMinimumIntegerDigits(1);
         formatDecLong.setMinimumFractionDigits(30);
         formatDecLong.setMaximumFractionDigits(30);
-        formatDecLong.setMinimumIntegerDigits(1);
-        formatDecFlex.setMinimumFractionDigits(0);
-        formatDecFlex.setMaximumFractionDigits(7);
-        formatDecFlex.setMinimumIntegerDigits(1);
+        formatDecFlexShort.setMinimumIntegerDigits(1);
         formatDecFlexShort.setMinimumFractionDigits(0);
         formatDecFlexShort.setMaximumFractionDigits(3);
-        formatDecFlexShort.setMinimumIntegerDigits(1);
-        formatDecFlexLong.setMinimumFractionDigits(0);
-        formatDecFlexLong.setMaximumFractionDigits(12);
+        formatDecFlex.setMinimumIntegerDigits(1);
+        formatDecFlex.setMinimumFractionDigits(0);
+        formatDecFlex.setMaximumFractionDigits(7);
         formatDecFlexLong.setMinimumIntegerDigits(1);
+        formatDecFlexLong.setMinimumFractionDigits(0);
+        formatDecFlexLong.setMaximumFractionDigits(30);
     }
 
     private Format() {

@@ -27,6 +27,10 @@
 
 package rapaio.data;
 
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -412,6 +416,11 @@ public final class VarBinary extends AbstractVar {
         buff = new byte[in.readInt()];
         in.readFully(buff);
         missing = BitSet.valueOf(buff);
+    }
+
+    @Override
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+        tt.textCenter(i, j, getLabel(row));
     }
 
     @Override

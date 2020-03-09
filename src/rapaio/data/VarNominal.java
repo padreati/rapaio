@@ -27,6 +27,10 @@
 
 package rapaio.data;
 
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -397,6 +401,11 @@ public final class VarNominal extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = in.readShort();
         }
+    }
+
+    @Override
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+        tt.textCenter(i, j, getLabel(row));
     }
 
     @Override

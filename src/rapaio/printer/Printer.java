@@ -31,6 +31,9 @@ import rapaio.graphics.base.Figure;
 import rapaio.printer.opt.POption;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POpts;
+import rapaio.printer.opt.POtpionFloatFormat;
+
+import java.text.DecimalFormat;
 
 /**
  * Interface for the printing system. The printing system is the device responsible with
@@ -47,6 +50,10 @@ public interface Printer {
 
     static POption<Integer> textWidth(int textWidth) {
         return new POptionTextWidth(textWidth);
+    }
+
+    static POtpionFloatFormat floatFormat(DecimalFormat format) {
+        return new POtpionFloatFormat(format);
     }
 
     /**

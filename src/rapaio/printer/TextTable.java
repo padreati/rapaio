@@ -25,13 +25,12 @@
  *
  */
 
-package rapaio.printer.format;
+package rapaio.printer;
 
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
@@ -143,13 +142,17 @@ public class TextTable {
         set(r, c, null, x);
     }
 
-    public void floatFlex(int r, int c, double x) {
-        String text = Format.floatFlex(x);
+    public void floatString(int r, int c, String text) {
         if (text.indexOf('.') > -0) {
             set(r, c, text, 1, '.');
         } else {
             set(r, c, text, "");
         }
+    }
+
+    public void floatFlex(int r, int c, double x) {
+        String text = Format.floatFlex(x);
+        floatString(r, c, text);
     }
 
     public void floatFlexLong(int r, int c, double x) {

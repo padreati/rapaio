@@ -6,9 +6,9 @@ import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;

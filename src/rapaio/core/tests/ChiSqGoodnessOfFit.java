@@ -31,9 +31,9 @@ import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 /**

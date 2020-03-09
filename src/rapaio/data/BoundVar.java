@@ -27,7 +27,9 @@
 
 package rapaio.data;
 
-import rapaio.printer.format.TextTable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -272,11 +274,11 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
         if (vars.get(0) instanceof AbstractVar) {
-            ((AbstractVar) vars.get(0)).textTablePutValue(tt, i, j, row);
+            ((AbstractVar) vars.get(0)).textTablePutValue(tt, i, j, row, printer, options);
         } else {
-            super.textTablePutValue(tt, i, j, row);
+            tt.textCenter(i, j, getLabel(row));
         }
     }
 }

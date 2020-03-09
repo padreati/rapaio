@@ -28,7 +28,9 @@
 package rapaio.data;
 
 import rapaio.core.RandomSource;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntIterator;
 import rapaio.util.function.IntIntFunction;
@@ -450,7 +452,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption[] options) {
         tt.textRight(i, j, getLabel(row));
     }
 

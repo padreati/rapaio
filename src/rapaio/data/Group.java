@@ -39,7 +39,7 @@ import rapaio.data.group.function.GroupFunStd;
 import rapaio.data.group.function.GroupFunSum;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;

@@ -34,7 +34,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.util.Collections;
 import java.util.List;

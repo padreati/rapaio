@@ -82,9 +82,9 @@ public class LinearRegressionModelTest {
                         "Target <<< Radio >>>\n" +
                         "\n" +
                         "> Coefficients: \n" +
-                        "   Name     Estimate  \n" +
-                        "(Intercept) 21.870319 \n" +
-                        "TV           0.009478 \n" +
+                        "   Name      Estimate  \n" +
+                        "(Intercept) 21.8703186 \n" +
+                        "TV           0.0094781 \n" +
                         "\n", lm.toSummary());
 
         var lmfit = lm.predict(df, true);
@@ -107,15 +107,15 @@ public class LinearRegressionModelTest {
                         "-22.6304611 -13.2782023 -0.3958475 13.1830607 26.947222 \n" +
                         "\n" +
                         "> Coefficients: \n" +
-                        "       Name  Estimate Std. error   t value  P(>|t|)     \n" +
-                        "(Intercept) 21.870319  2.088102  10.473778   <2e-16 *** \n" +
-                        "TV           0.009478  0.012271   0.772387 0.440806     \n" +
+                        "       Name   Estimate Std. error    t value   P(>|t|)     \n" +
+                        "(Intercept) 21.8703186 2.0881021  10.4737782    <2e-16 *** \n" +
+                        "TV           0.0094781 0.0122712   0.7723873 0.4408061     \n" +
                         "--------\n" +
                         "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                         "\n" +
                         "Residual standard error: 14.861881 on 198 degrees of freedom\n" +
                         "Multiple R-squared:  0.003004, Adjusted R-squared:  -0.0020313\n" +
-                        "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.440806\n" +
+                        "F-statistic: 0.597 on 1 and 198 DF,  p-value: 0.4408061\n" +
                         "\n", lmfit.toSummary());
 
 
@@ -184,10 +184,10 @@ public class LinearRegressionModelTest {
                 "-8.6230898 -1.7346082 -0.0948177 1.8925968 8.4512125 \n" +
                 "\n" +
                 "> Coefficients: \n" +
-                "       Name Estimate Std. error   t value  P(>|t|)     \n" +
-                "(Intercept) 5.774948  0.525338  10.992828   <2e-16 *** \n" +
-                "TV          0.046901  0.002581  18.172707   <2e-16 *** \n" +
-                "Newspaper   0.044219  0.010174   4.346276 0.000022 *** \n" +
+                "       Name  Estimate Std. error    t value   P(>|t|)     \n" +
+                "(Intercept) 5.7749480 0.5253378  10.9928280    <2e-16 *** \n" +
+                "TV          0.0469012 0.0025809  18.1727070    <2e-16 *** \n" +
+                "Newspaper   0.0442194 0.0101741   4.3462757 0.0000222 *** \n" +
                 "--------\n" +
                 "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +
@@ -202,16 +202,16 @@ public class LinearRegressionModelTest {
                 "-33.4130794 -11.7301826 -0.5438912 10.5752129 31.8607305 \n" +
                 "\n" +
                 "> Coefficients: \n" +
-                "       Name  Estimate Std. error  t value    P(>|t|)     \n" +
-                "(Intercept) 15.043008  2.347560  6.407932   1.06e-09 *** \n" +
-                "TV           0.006029  0.011533  0.522724   0.601754     \n" +
-                "Newspaper    0.240052  0.045465  5.279958   3.40e-07 *** \n" +
+                "       Name   Estimate Std. error   t value     P(>|t|)     \n" +
+                "(Intercept) 15.0430082 2.3475604  6.4079322   1.06e-09  *** \n" +
+                "TV           0.0060286 0.0115330  0.5227241   0.6017537     \n" +
+                "Newspaper    0.2400515 0.0454647  5.2799584   3.40e-07  *** \n" +
                 "--------\n" +
                 "Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n" +
                 "\n" +
                 "Residual standard error: 13.9454627 on 197 degrees of freedom\n" +
                 "Multiple R-squared:  0.1266009, Adjusted R-squared:  0.1177339\n" +
-                "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.000002\n" +
+                "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.0000016\n" +
                 "\n", lm.predict(df, true).toSummary());
 
         assertEquals(lm.toContent(), lm.toSummary());

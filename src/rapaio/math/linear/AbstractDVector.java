@@ -1,8 +1,8 @@
 package rapaio.math.linear;
 
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleDoubleFunction;
 

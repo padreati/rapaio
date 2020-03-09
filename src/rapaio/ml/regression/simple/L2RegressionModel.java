@@ -37,9 +37,9 @@ import rapaio.data.VarNominal;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 
 /**

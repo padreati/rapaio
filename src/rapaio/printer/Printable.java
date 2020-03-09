@@ -169,7 +169,7 @@ public interface Printable {
      * @param options printing options
      */
     default void printContent(POption<?>... options) {
-        WS.getPrinter().printContent(this);
+        WS.getPrinter().printContent(this, options);
     }
 
     /**

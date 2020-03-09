@@ -64,7 +64,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Implements a regression decision tree.

@@ -30,10 +30,10 @@ package rapaio.experiment.ml.eval.metric;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 /**

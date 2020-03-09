@@ -29,9 +29,9 @@ package rapaio.core.correlation;
 
 import rapaio.data.Var;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;

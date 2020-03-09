@@ -2,6 +2,9 @@ package rapaio.data;
 
 import rapaio.data.format.InstantFormatter;
 import rapaio.data.format.InstantParser;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.collection.LongArrays;
 
 import java.time.Instant;
@@ -205,5 +208,10 @@ public class VarTime extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return new VarTime(rows);
+    }
+
+    @Override
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+        tt.textCenter(i, j, getLabel(row));
     }
 }

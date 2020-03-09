@@ -28,7 +28,7 @@
 package rapaio.ml.common.predicate;
 
 import rapaio.data.Frame;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.io.Serializable;
 

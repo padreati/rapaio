@@ -30,11 +30,11 @@ package rapaio.core.tests;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.VSort;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
 * One-sample KS (Kolmogorov-Smirnoff) test.

@@ -33,7 +33,7 @@ import rapaio.data.ops.DVarOp;
 import rapaio.data.ops.DefaultDVarOp;
 import rapaio.data.unique.UniqueLabel;
 import rapaio.printer.Printer;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntArrays;
 
@@ -131,9 +131,7 @@ public abstract class AbstractVar implements Var {
 
     protected abstract int elementsInToString();
 
-    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
-        tt.textCenter(i, j, getLabel(row));
-    }
+    protected abstract void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options);
 
     @Override
     public String toString() {
@@ -313,13 +311,13 @@ public abstract class AbstractVar implements Var {
 
             for (int i = 0; i < 80; i++) {
                 tt.intRow(i + 1, 0, i);
-                textTablePutValue(tt, i + 1, 1, i);
+                textTablePutValue(tt, i + 1, 1, i, printer, options);
             }
             tt.textCenter(80, 0, "...");
             tt.textCenter(80, 1, "...");
             for (int i = rowCount() - 20; i < rowCount(); i++) {
                 tt.intRow(i + 101 - rowCount(), 0, i);
-                textTablePutValue(tt, i + 101 - rowCount(), 1, i);
+                textTablePutValue(tt, i + 101 - rowCount(), 1, i, printer, options);
             }
             sb.append(tt.getDynamicText(printer, options));
         } else {
@@ -342,7 +340,7 @@ public abstract class AbstractVar implements Var {
         tt.textCenter(0, 1, "value");
         for (int i = 0; i < rowCount(); i++) {
             tt.intRow(i + 1, 0, i);
-            textTablePutValue(tt, i + 1, 1, i);
+            textTablePutValue(tt, i + 1, 1, i, printer, options);
         }
         sb.append(tt.getDynamicText(printer, options));
     }

@@ -29,7 +29,7 @@ package rapaio.ml.classifier.rule.onerule;
 
 import rapaio.core.tools.DensityVector;
 
-import static rapaio.printer.format.Format.floatFlexLong;
+import static rapaio.printer.Format.floatFlexLong;
 
 /**
  * Rule from one rule based algorithm for nominal variables

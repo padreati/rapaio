@@ -37,7 +37,7 @@ public abstract class AbstractPrinter implements Printer {
 
     private int graphicWidth;
     private int graphicHeight;
-    private POpts opts = new POpts(null);
+    private POpts opts = new POpts(POpts.defaults);
 
     @Override
     public Printer withGraphicShape(int width, int height) {

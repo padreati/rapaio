@@ -33,9 +33,9 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 

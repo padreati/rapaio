@@ -33,7 +33,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Two sample z test: tests the difference between two sample means

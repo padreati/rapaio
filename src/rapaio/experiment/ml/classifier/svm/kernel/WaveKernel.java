@@ -28,7 +28,7 @@
 package rapaio.experiment.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 /**
  * The Wave kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:

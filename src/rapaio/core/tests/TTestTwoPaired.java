@@ -35,7 +35,7 @@ import rapaio.data.VarDouble;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * t test two paired samples for mean of differences

@@ -34,7 +34,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 /**

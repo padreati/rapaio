@@ -32,7 +32,7 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.sample.RowSampler;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 
 import java.util.Arrays;
 import java.util.HashSet;

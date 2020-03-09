@@ -30,11 +30,14 @@ package rapaio.data;
 
 import rapaio.data.ops.DVarOp;
 import rapaio.data.ops.DoubleDVarOp;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -553,11 +556,12 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
         if (isMissing(row)) {
             tt.textCenter(i, j, "?");
         } else {
-            tt.floatFlex(i, j, getDouble(row));
+            DecimalFormat format = printer.getOptions().bind(options).floatFormat();
+            tt.floatString(i, j, format.format(getDouble(row)));
         }
     }
 }

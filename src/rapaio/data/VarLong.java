@@ -27,6 +27,10 @@
 
 package rapaio.data;
 
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -493,5 +497,10 @@ public class VarLong extends AbstractVar {
     public void setArray(long[] values, int rowCount) {
         data = values;
         rows = rowCount;
+    }
+
+    @Override
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+        tt.textRight(i, j, String.valueOf(getLong(row)));
     }
 }

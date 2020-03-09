@@ -29,7 +29,7 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.math.MTools;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import static rapaio.math.MTools.*;
 

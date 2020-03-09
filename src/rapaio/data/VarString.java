@@ -27,6 +27,9 @@
 
 package rapaio.data;
 
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 import rapaio.util.serializable.SFunction;
 
 import java.util.ArrayList;
@@ -244,6 +247,11 @@ public class VarString extends AbstractVar {
             }
         }
         return true;
+    }
+
+    @Override
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
+        tt.textCenter(i, j, getLabel(row));
     }
 
     @Override

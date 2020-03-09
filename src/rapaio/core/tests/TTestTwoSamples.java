@@ -34,7 +34,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * t test for checking if two samples have the same mean

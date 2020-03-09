@@ -28,7 +28,7 @@
 package rapaio.data;
 
 import rapaio.printer.Printer;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 

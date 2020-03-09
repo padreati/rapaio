@@ -29,9 +29,9 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.math.MTools;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Gamma distribution;

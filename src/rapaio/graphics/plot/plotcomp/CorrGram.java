@@ -32,7 +32,7 @@ import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.PlotComponent;
 import rapaio.math.MTools;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

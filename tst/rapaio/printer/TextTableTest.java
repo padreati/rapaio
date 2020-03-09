@@ -1,4 +1,4 @@
-package rapaio.printer.format;
+package rapaio.printer;
 
 
 import org.junit.jupiter.api.BeforeEach;

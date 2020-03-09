@@ -154,52 +154,127 @@ public class DVarOpTest {
         VarDouble x3 = generateRandomDoubleVariable(10_000, 0.9);
         VarBinary x4 = generateRandomBinaryVariable(10_000, 0.9);
 
-        Var p1 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) + x2.getInt(row));
+        Var p1 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x2.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) + x2.getInt(row);
+        });
         assertTrue(p1.deepEquals(x1.copy().op().plus(x2)));
 
-        Var p2 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) + x3.getInt(row));
+        Var p2 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x3.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) + x3.getInt(row);
+        });
         assertTrue(p2.deepEquals(x1.copy().op().plus(x3)));
 
-        Var p3 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) + 17);
+        Var p3 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) + 17;
+        });
         assertTrue(p3.deepEquals(x1.copy().op().plus(17)));
 
-        Var p4 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) + x4.getInt(row));
+        Var p4 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x4.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) + x4.getInt(row);
+        });
         assertTrue(p4.deepEquals(x1.copy().op().plus(x4)));
 
 
-        Var m1 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) - x2.getInt(row));
+        Var m1 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x2.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) - x2.getInt(row);
+        });
         assertTrue(m1.deepEquals(x1.copy().op().minus(x2)));
 
-        Var m2 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) - x3.getInt(row));
+        Var m2 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x3.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) - x3.getInt(row);
+        });
         assertTrue(m2.deepEquals(x1.copy().op().minus(x3)));
 
-        Var m3 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) - 17);
+        Var m3 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) - 17;
+        });
         assertTrue(m3.deepEquals(x1.copy().op().minus(17)));
 
-        Var m4 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) - x4.getInt(row));
+        Var m4 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x4.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) - x4.getInt(row);
+        });
         assertTrue(m4.deepEquals(x1.copy().op().minus(x4)));
 
 
-        Var t1 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) * x2.getInt(row));
+        Var t1 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x2.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) * x2.getInt(row);
+        });
         assertTrue(t1.deepEquals(x1.copy().op().mult(x2)));
 
-        Var t2 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) * x3.getDouble(row)));
+        Var t2 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x3.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return (int) Math.rint(x1.getInt(row) * x3.getDouble(row));
+        });
         assertTrue(t2.deepEquals(x1.copy().op().mult(x3)));
 
-        Var t3 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) * 17);
+        Var t3 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) * 17;
+        });
         assertTrue(t3.deepEquals(x1.copy().op().mult(17)));
 
-        Var t4 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) * x4.getInt(row));
+        Var t4 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x4.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return x1.getInt(row) * x4.getInt(row);
+        });
         assertTrue(t4.deepEquals(x1.copy().op().mult(x4)));
 
 
-        Var d1 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / x2.getDouble(row)));
+        Var d1 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x2.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return (int) Math.rint(x1.getInt(row) / x2.getDouble(row));
+        });
         assertTrue(d1.deepEquals(x1.copy().op().divide(x2)));
 
-        Var d2 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / x3.getDouble(row)));
+        Var d2 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row) || x3.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return (int) Math.rint(x1.getInt(row) / x3.getDouble(row));
+        });
         assertTrue(d2.deepEquals(x1.copy().op().divide(x3)));
 
-        Var d3 = VarInt.from(x1.rowCount(), row -> (int) Math.rint(x1.getInt(row) / 17.));
+        Var d3 = VarInt.from(x1.rowCount(), row -> {
+            if (x1.isMissing(row)) {
+                return VarInt.MISSING_VALUE;
+            }
+            return (int) Math.rint(x1.getInt(row) / 17.);
+        });
         assertTrue(d3.deepEquals(x1.copy().op().divide(17)));
 
 //        Var d4 = VarInt.from(x1.rowCount(), row -> x1.getInt(row) / x4.getInt(row));

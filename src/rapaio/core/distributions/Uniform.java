@@ -27,7 +27,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.printer.format.Format.floatFlex;
+import static rapaio.printer.Format.floatFlex;
 
 /**
  * Continuous uniform distribution

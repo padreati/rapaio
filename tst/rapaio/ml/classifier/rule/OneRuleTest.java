@@ -165,11 +165,11 @@ public class OneRuleTest {
         OneRule irisModel = OneRule.newModel();
         irisModel.fit(iris, "class");
 
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, " +
-                "fitted=true, rule set: RuleSet {var=petal-length, acc=0.993333333333}, " +
-                "NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}, " +
-                "NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}, " +
-                "NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.980392156863}",
+        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, fitted=true, rule set: RuleSet {" +
+                        "var=petal-length, acc=0.9933333333333333}, " +
+                        "NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}, " +
+                        "NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}, " +
+                        "NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}",
                 irisModel.toString());
 
         assertEquals("OneRule model\n" +
@@ -193,10 +193,11 @@ public class OneRuleTest {
                 "target vars:\n" +
                 "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
                 "\n" +
-                "BestRuleSet {var=petal-length, acc=0.993333333333}\n" +
+                "BestRuleSet {var=petal-length, acc=0.9933333333333333}\n" +
                 "> NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}\n" +
                 "> NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}\n" +
-                "> NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.980392156863}\n", irisModel.toSummary());
+                "> NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}\n",
+                irisModel.toSummary());
 
         Frame mushrooms = Datasets.loadMushrooms();
 
@@ -233,12 +234,12 @@ public class OneRuleTest {
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +
                 "\n" +
-                "BestRuleSet {var=odor, acc=0.985228951256}\n" +
+                "BestRuleSet {var=odor, acc=0.9852289512555391}\n" +
                 "> NominalRule {value=?, class=e, errors=0, total=0, acc=0}\n" +
                 "> NominalRule {value=p, class=p, errors=0, total=256, acc=1}\n" +
                 "> NominalRule {value=a, class=e, errors=0, total=400, acc=1}\n" +
                 "> NominalRule {value=l, class=e, errors=0, total=400, acc=1}\n" +
-                "> NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.965986394558}\n" +
+                "> NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}\n" +
                 "> NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}\n" +
                 "> NominalRule {value=c, class=p, errors=0, total=192, acc=1}\n" +
                 "> NominalRule {value=y, class=p, errors=0, total=576, acc=1}\n" +
@@ -249,13 +250,13 @@ public class OneRuleTest {
         assertEquals(modelMushrooms.toContent(), modelMushrooms.toSummary());
         assertEquals(modelMushrooms.toFullContent(), modelMushrooms.toSummary());
 
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, fitted=true, " +
-                "rule set: RuleSet {var=odor, acc=0.985228951256}, " +
+        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, fitted=true, rule set: " +
+                "RuleSet {var=odor, acc=0.9852289512555391}, " +
                 "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +
                 "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
                 "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
                 "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +
-                "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.965986394558}, " +
+                "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}, " +
                 "NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}, " +
                 "NominalRule {value=c, class=p, errors=0, total=192, acc=1}, " +
                 "NominalRule {value=y, class=p, errors=0, total=576, acc=1}, " +

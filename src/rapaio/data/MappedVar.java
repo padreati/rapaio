@@ -27,7 +27,9 @@
 
 package rapaio.data;
 
-import rapaio.printer.format.TextTable;
+import rapaio.printer.Printer;
+import rapaio.printer.TextTable;
+import rapaio.printer.opt.POption;
 
 import java.util.List;
 
@@ -225,11 +227,11 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options) {
         if (source instanceof AbstractVar) {
-            ((AbstractVar) source).textTablePutValue(tt, i, j, mapping.get(row));
+            ((AbstractVar) source).textTablePutValue(tt, i, j, mapping.get(row), printer, options);
         } else {
-            super.textTablePutValue(tt, i, j, mapping.get(row));
+            tt.textCenter(i, j, getLabel(row));
         }
     }
 

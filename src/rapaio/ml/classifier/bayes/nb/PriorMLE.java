@@ -3,7 +3,7 @@ package rapaio.ml.classifier.bayes.nb;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.util.HashMap;
 import java.util.Map;

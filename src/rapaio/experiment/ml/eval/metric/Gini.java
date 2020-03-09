@@ -34,9 +34,9 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.VCumSum;
 import rapaio.data.filter.VRefSort;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
 import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntComparator;
 

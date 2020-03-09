@@ -180,10 +180,10 @@ public class RidgeRegressionModelTest {
                 "Target <<< Sales >>>\n" +
                 "\n" +
                 "> Coefficients: \n" +
-                "  Name    Estimate \n" +
-                "TV        0.053793 \n" +
-                "Radio     0.222213 \n" +
-                "Newspaper 0.016822 \n" +
+                "  Name    Estimate  \n" +
+                "TV        0.0537927 \n" +
+                "Radio     0.2222129 \n" +
+                "Newspaper 0.0168220 \n" +
                 "\n", model2.fit(df, "Sales").toSummary());
     }
 }

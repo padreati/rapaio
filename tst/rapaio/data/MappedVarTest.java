@@ -224,14 +224,14 @@ public class MappedVarTest {
 
         assertEquals("> summary(name: ?, type: DOUBLE)\n" +
                 "rows: 4, complete: 4, missing: 0\n" +
-                "        ? [dbl]    \n" +
-                "   Min. : 1.000000 \n" +
-                "1st Qu. : 2.500000 \n" +
-                " Median : 4.500000 \n" +
-                "   Mean : 4.750000 \n" +
-                "2nd Qu. : 6.750000 \n" +
-                "   Max. : 9.000000 \n" +
-                "                   \n" +
+                "        ? [dbl]     \n" +
+                "   Min. : 1.0000000 \n" +
+                "1st Qu. : 2.5000000 \n" +
+                " Median : 4.5000000 \n" +
+                "   Mean : 4.7500000 \n" +
+                "2nd Qu. : 6.7500000 \n" +
+                "   Max. : 9.0000000 \n" +
+                "                    \n" +
                 "\n", mapped.toSummary());
 
         assertEquals("MappedVar[type=dbl, name:?, rowCount:4]", mapped.toString());

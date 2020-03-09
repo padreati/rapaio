@@ -32,8 +32,6 @@ import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
 import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
@@ -427,11 +425,23 @@ public interface Var extends Serializable, Printable {
 
         switch (type()) {
             case DOUBLE:
-            case INT:
-            case BINARY:
-            case LONG:
                 for (int i = 0; i < rowCount(); i++) {
                     if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-100) {
+                        return false;
+                    }
+                }
+                break;
+            case INT:
+            case BINARY:
+                for (int i = 0; i < rowCount(); i++) {
+                    if (getInt(i) != var.getInt(i)) {
+                        return false;
+                    }
+                }
+                break;
+            case LONG:
+                for (int i = 0; i < rowCount(); i++) {
+                    if (getLong(i) != var.getLong(i)) {
                         return false;
                     }
                 }
@@ -445,7 +455,4 @@ public interface Var extends Serializable, Printable {
         }
         return true;
     }
-
-    @Override
-    String toSummary(Printer printer, POption... options);
 }

@@ -37,9 +37,9 @@ import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.common.Capabilities;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
-import rapaio.printer.format.Format;
-import rapaio.printer.format.TextTable;
+import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;

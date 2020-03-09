@@ -2,7 +2,7 @@ package rapaio.ml.classifier.bayes.nb;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.printer.format.Format;
+import rapaio.printer.Format;
 
 import java.util.ArrayList;
 import java.util.HashSet;
