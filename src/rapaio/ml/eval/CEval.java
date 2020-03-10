@@ -1,5 +1,7 @@
 package rapaio.ml.eval;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
@@ -139,28 +141,12 @@ public class CEval<M extends ClassifierModel<M, R>, R extends ClassifierResult<M
         return result;
     }
 
+    @AllArgsConstructor
+    @Getter
     private static class Run<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> {
 
         private final Split split;
         private final ClassifierResult<M> trainResult;
         private final ClassifierResult<M> testResult;
-
-        public Run(Split split, ClassifierResult<M> trainResult, ClassifierResult<M> testResult) {
-            this.split = split;
-            this.trainResult = trainResult;
-            this.testResult = testResult;
-        }
-
-        public Split getSplit() {
-            return split;
-        }
-
-        public ClassifierResult<M> getTrainResult() {
-            return trainResult;
-        }
-
-        public ClassifierResult<M> getTestResult() {
-            return testResult;
-        }
     }
 }
