@@ -35,6 +35,7 @@ import rapaio.printer.Printable;
 import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -292,6 +293,27 @@ public interface Var extends Serializable, Printable {
     default void setLevels(List<String> dict) {
         setLevels(dict.toArray(new String[0]));
     }
+
+    /**
+     * Adds an instant value to the last position of the variable.
+     * @param value value to be added
+     */
+    void addInstant(Instant value);
+
+    /**
+     * Sets the instant value ad the position specified by {@param row}
+     * @param row position
+     * @param value instant value
+     */
+    void setInstant(int row, Instant value);
+
+    /**
+     * Gets instant value from the given position
+     *
+     * @param row position
+     * @return instant value
+     */
+    Instant getInstant(int row);
 
     /**
      * Returns true if the value for the observation specified by {@param row} is missing, not available.

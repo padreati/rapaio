@@ -81,7 +81,7 @@ public enum VType {
     /**
      * Instant values
      */
-    TIME("time", VarTime::empty),
+    INSTANT("instant", VarInstant::empty),
     /**
      * Variable type used only to store text.
      */
@@ -107,10 +107,6 @@ public enum VType {
         return isNominal(this);
     }
 
-    public boolean isBinary() {
-        return isBinary(this);
-    }
-
     /**
      * Builds a new empty empty variable of the given type
      *
@@ -128,10 +124,6 @@ public enum VType {
      */
     public Var newInstance(int rows) {
         return newInstanceFunction.apply(rows);
-    }
-
-    public static boolean isBinary(VType type) {
-        return type == BINARY;
     }
 
     public static boolean isNumeric(VType type) {

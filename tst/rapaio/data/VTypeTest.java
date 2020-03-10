@@ -34,13 +34,11 @@ public class VTypeTest {
     @Test
     void testIsCategory() {
         boolean[] numeric = new boolean[]{true, true, false, true, false, false};
-        boolean[] binary = new boolean[]{true, false, false, false, false, false};
         boolean[] nominal = new boolean[]{false, false, false, false, true, false};
         String[] code = new String[]{"bin", "int", "long", "dbl", "nom", "str"};
 
         for (int i = 0; i < types.length; i++) {
             assertEquals(numeric[i], types[i].isNumeric());
-            assertEquals(binary[i], types[i].isBinary());
             assertEquals(nominal[i], types[i].isNominal());
             assertEquals(code[i], types[i].code());
         }

@@ -54,7 +54,7 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
                 .withAllowMissingTargetValues(true)
                 .withInputCount(0, Integer.MAX_VALUE)
                 .withTargetCount(1, 1)
-                .withInputTypes(VType.DOUBLE, VType.INT, VType.NOMINAL, VType.BINARY, VType.LONG, VType.TIME, VType.STRING)
+                .withInputTypes(VType.DOUBLE, VType.INT, VType.NOMINAL, VType.BINARY, VType.LONG, VType.INSTANT, VType.STRING)
                 .withTargetTypes(VType.NOMINAL, VType.BINARY);
     }
 

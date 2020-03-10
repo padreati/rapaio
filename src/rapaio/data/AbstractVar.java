@@ -127,9 +127,9 @@ public abstract class AbstractVar implements Var {
         name = in.readUTF();
     }
 
-    protected abstract String classNameInToString();
+    protected abstract String toStringClassName();
 
-    protected abstract int elementsInToString();
+    protected abstract int toStringDisplayValueCount();
 
     protected abstract void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>[] options);
 
@@ -137,10 +137,10 @@ public abstract class AbstractVar implements Var {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount());
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount());
         sb.append(", values: ");
 
-        int elements = elementsInToString();
+        int elements = toStringDisplayValueCount();
         if (rowCount() <= elements) {
             for (int i = 0; i < rowCount(); i++) {
                 sb.append(getLabel(i));
@@ -302,7 +302,7 @@ public abstract class AbstractVar implements Var {
     @Override
     public String toContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
-        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
 
         if (rowCount() > 100) {
             TextTable tt = TextTable.empty(102, 2, 1, 1);
@@ -329,7 +329,7 @@ public abstract class AbstractVar implements Var {
     @Override
     public String toFullContent(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
-        sb.append(classNameInToString()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
         fullTable(sb, printer, options);
         return sb.toString();
     }

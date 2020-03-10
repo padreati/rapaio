@@ -32,6 +32,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.serializable.SFunction;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -198,6 +199,21 @@ public class VarString extends AbstractVar {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public boolean isMissing(int row) {
         return values.get(row) == null;
     }
@@ -255,12 +271,12 @@ public class VarString extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarText";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 12;
     }
 }

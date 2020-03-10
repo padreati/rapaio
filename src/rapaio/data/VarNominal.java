@@ -34,6 +34,7 @@ import rapaio.printer.opt.POption;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -333,23 +334,34 @@ public final class VarNominal extends AbstractVar {
         }
     }
 
-    private IllegalStateException notImplementedException() {
-        return new IllegalStateException("This operation is not available for nominal variables");
-    }
-
     @Override
     public long getLong(int row) {
-        throw notImplementedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void setLong(int row, long value) {
-        throw notImplementedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
     public void addLong(long value) {
-        throw notImplementedException();
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void addInstant(Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -409,12 +421,12 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarNominal";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 12;
     }
 }

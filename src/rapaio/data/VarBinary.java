@@ -34,6 +34,7 @@ import rapaio.printer.opt.POption;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
@@ -372,6 +373,21 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
     public boolean isMissing(int row) {
         return missing.get(row);
     }
@@ -424,12 +440,12 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarBinary";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 18;
     }
 }

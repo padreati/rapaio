@@ -31,6 +31,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -98,7 +99,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addRows(int rowCount) {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
     }
 
     public Var getSource() {
@@ -136,7 +137,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addInt(int value) {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -151,7 +152,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addLabel(String value) {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -176,7 +177,22 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addLong(long value) {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void addInstant(Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -191,7 +207,7 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void addMissing() {
-        throw nowAllowedException();
+        throw new OperationNotAvailableException();
     }
 
     @Override
@@ -209,19 +225,15 @@ public class MappedVar extends AbstractVar {
         return source.newInstance(rows);
     }
 
-    private IllegalStateException nowAllowedException() {
-        return new IllegalStateException("Operation not available on mapped vectors");
-    }
-
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "MappedVar(type=" + source.type().code() + ")";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         if (source instanceof AbstractVar) {
-            return ((AbstractVar) source).elementsInToString();
+            return ((AbstractVar) source).toStringDisplayValueCount();
         }
         return 12;
     }

@@ -31,6 +31,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -442,6 +443,32 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        if (value == VarInstant.MISSING_VALUE) {
+            addMissing();
+        } else {
+            addLong(value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        if (value == VarInstant.MISSING_VALUE) {
+            setMissing(row);
+        } else {
+            setLong(row, value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        if (isMissing(row)) {
+            return VarInstant.MISSING_VALUE;
+        }
+        return Instant.ofEpochMilli(data[row]);
+    }
+
+    @Override
     public boolean isMissing(int row) {
         return getLong(row) == MISSING_VALUE;
     }
@@ -481,12 +508,12 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarLong";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 12;
     }
 

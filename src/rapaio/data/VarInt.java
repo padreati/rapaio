@@ -38,6 +38,7 @@ import rapaio.util.function.IntIntFunction;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -377,6 +378,32 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        if (value == VarInstant.MISSING_VALUE) {
+            addMissing();
+        } else {
+            addInt((int) value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        if (value == VarInstant.MISSING_VALUE) {
+            setMissing(row);
+        } else {
+            setInt(row, (int) value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        if (isMissing(row)) {
+            return VarInstant.MISSING_VALUE;
+        }
+        return Instant.ofEpochMilli(getInt(row));
+    }
+
+    @Override
     public boolean isMissing(int row) {
         return data[row] == MISSING_VALUE;
     }
@@ -442,12 +469,12 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarInt";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 14;
     }
 

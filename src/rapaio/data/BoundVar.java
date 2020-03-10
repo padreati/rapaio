@@ -31,6 +31,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -238,6 +239,23 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        throw new OperationNotAvailableException();
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        int pos = findIndex(row);
+        vars.get(pos).setInstant(localRow(pos, row), value);
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        int pos = findIndex(row);
+        return vars.get(pos).getInstant(localRow(pos, row));
+    }
+
+    @Override
     public boolean isMissing(int row) {
         int pos = findIndex(row);
         int localRow = localRow(pos, row);
@@ -261,14 +279,14 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "BoundVar(type=" + vars.get(0).type().code() + ")";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         if (vars.get(0) instanceof AbstractVar) {
-            return ((AbstractVar) vars.get(0)).elementsInToString();
+            return ((AbstractVar) vars.get(0)).toStringDisplayValueCount();
         }
         return 10;
     }

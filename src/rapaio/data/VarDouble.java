@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -513,6 +514,32 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
+    public void addInstant(Instant value) {
+        if(value==VarInstant.MISSING_VALUE) {
+            addMissing();
+        } else {
+            addDouble(value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public void setInstant(int row, Instant value) {
+        if(value==VarInstant.MISSING_VALUE) {
+            setMissing(row);
+        } else {
+            setDouble(row, value.toEpochMilli());
+        }
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        if(isMissing(row)) {
+            return VarInstant.MISSING_VALUE;
+        }
+        return Instant.ofEpochMilli((long) data[row]);
+    }
+
+    @Override
     public Var newInstance(int rows) {
         return VarDouble.empty(rows);
     }
@@ -546,12 +573,12 @@ public final class VarDouble extends AbstractVar {
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return "VarDouble";
     }
 
     @Override
-    protected int elementsInToString() {
+    protected int toStringDisplayValueCount() {
         return 12;
     }
 

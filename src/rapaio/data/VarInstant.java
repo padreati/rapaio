@@ -5,7 +5,6 @@ import rapaio.data.format.InstantParser;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.LongArrays;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -19,50 +18,78 @@ import java.util.function.Function;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/29/19.
  */
-public class VarTime extends AbstractVar {
+public class VarInstant extends AbstractVar {
 
-    public static VarTime empty(int rows) {
-        return new VarTime(rows);
+    public static VarInstant empty() {
+        return new VarInstant(0);
     }
 
-    public static VarTime from(int rows, Function<Integer, Long> fun) {
-        VarTime time = VarTime.empty(rows);
+    public static VarInstant empty(int rows) {
+        return new VarInstant(rows);
+    }
+
+    public static VarInstant from(int rows, Function<Integer, Instant> fun) {
+        VarInstant time = VarInstant.empty(rows);
         for (int i = 0; i < rows; i++) {
-            time.setLong(i, fun.apply(i));
+            time.setInstant(i, fun.apply(i));
         }
         return time;
     }
 
-    public static final Instant MISSING_VALUE = Instant.EPOCH;
+    public static VarInstant from(long... values) {
+        VarInstant time = VarInstant.empty(values.length);
+        for (int i = 0; i < time.rowCount(); i++) {
+            time.setLong(i, values[i]);
+        }
+        return time;
+    }
 
     private static final long serialVersionUID = -3619715862394998978L;
+
     private static final String STRING_CLASS_NAME = "VarInstant";
-    private static final long MISSING_VALUE_LONG = MISSING_VALUE.toEpochMilli();
+    public static final Instant MISSING_VALUE = null;
 
     private int rows;
-    private long[] data;
+    private Instant[] data;
     private InstantParser parser = InstantParser.ISO;
     private InstantFormatter formatter = InstantFormatter.ISO;
 
-    private VarTime(int rows) {
+    private VarInstant(int rows) {
         this.rows = rows;
-        this.data = new long[rows];
-        Arrays.fill(data, MISSING_VALUE_LONG);
+        this.data = new Instant[rows];
+    }
+
+    public InstantParser getParser() {
+        return parser;
+    }
+
+    public VarInstant withParser(InstantParser parser) {
+        this.parser = parser;
+        return this;
+    }
+
+    public InstantFormatter getFormatter() {
+        return formatter;
+    }
+
+    public VarInstant withFormatter(InstantFormatter formatter) {
+        this.formatter = formatter;
+        return this;
     }
 
     @Override
-    protected String classNameInToString() {
+    protected String toStringClassName() {
         return STRING_CLASS_NAME;
     }
 
     @Override
-    protected int elementsInToString() {
-        return 14;
+    protected int toStringDisplayValueCount() {
+        return 8;
     }
 
     @Override
     public VType type() {
-        return VType.TIME;
+        return VType.INSTANT;
     }
 
     @Override
@@ -72,58 +99,63 @@ public class VarTime extends AbstractVar {
 
     @Override
     public void addRows(int rowCount) {
-        if (!LongArrays.checkCapacity(data, rows + rowCount)) {
-            data = LongArrays.ensureCapacity(data, rows + rowCount);
-        }
-        LongArrays.fill(data, rows, rows + rowCount, MISSING_VALUE_LONG);
+        ensureCapacity(rows + rowCount);
         rows += rowCount;
+    }
+
+    private void ensureCapacity(int minCapacity) {
+        if (minCapacity > data.length) {
+            int oldCapacity = data.length;
+            int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
+            if (newCapacity - minCapacity < 0)
+                newCapacity = minCapacity;
+            data = Arrays.copyOf(data, newCapacity);
+        }
     }
 
     @Override
     public void removeRow(int row) {
-        LongArrays.delete(data, rows, row);
+        if (rows - row > 0) {
+            System.arraycopy(data, row + 1, data, row, rows - row - 1);
+        }
     }
 
     @Override
     public void clearRows() {
-        data = new long[0];
+        data = new Instant[0];
         rows = 0;
     }
 
     @Override
     public double getDouble(int row) {
-        return data[row];
+        return data[row].toEpochMilli();
     }
 
     @Override
     public void setDouble(int row, double value) {
-        data[row] = (long) value;
+        data[row] = Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public void addDouble(double value) {
-        if (!LongArrays.checkCapacity(data, rows + 1)) {
-            data = LongArrays.ensureCapacity(data, rows + 1);
-        }
-        data[rows++] = (long) value;
+        ensureCapacity(rows + 1);
+        data[rows++] = Instant.ofEpochMilli((long) value);
     }
 
     @Override
     public int getInt(int row) {
-        return (int) data[row];
+        return (int) data[row].toEpochMilli();
     }
 
     @Override
     public void setInt(int row, int value) {
-        data[row] = value;
+        data[row] = Instant.ofEpochMilli(value);
     }
 
     @Override
     public void addInt(int value) {
-        if (!LongArrays.checkCapacity(data, rows + 1)) {
-            data = LongArrays.ensureCapacity(data, rows + 1);
-        }
-        data[rows++] = value;
+        ensureCapacity(rows + 1);
+        data[rows++] = Instant.ofEpochMilli(value);
     }
 
     @Override
@@ -131,7 +163,7 @@ public class VarTime extends AbstractVar {
         if (isMissing(row)) {
             return VarNominal.MISSING_VALUE;
         }
-        return formatter.format(Instant.ofEpochMilli(data[row]));
+        return formatter.format(data[row]);
     }
 
     @Override
@@ -140,7 +172,7 @@ public class VarTime extends AbstractVar {
             setMissing(row);
             return;
         }
-        setLong(row, parser.parse(value).toEpochMilli());
+        setInstant(row, parser.parse(value));
     }
 
     @Override
@@ -148,7 +180,7 @@ public class VarTime extends AbstractVar {
         if (VarNominal.MISSING_VALUE.equals(value)) {
             addMissing();
         } else {
-            addLong(parser.parse(value).toEpochMilli());
+            addInstant(parser.parse(value));
         }
     }
 
@@ -167,7 +199,7 @@ public class VarTime extends AbstractVar {
         if (isMissing(row)) {
             return VarLong.MISSING_VALUE;
         }
-        return data[row];
+        return data[row].toEpochMilli();
     }
 
     @Override
@@ -175,39 +207,51 @@ public class VarTime extends AbstractVar {
         if (VarLong.MISSING_VALUE == value) {
             setMissing(row);
         } else {
-            data[row] = value;
+            data[row] = Instant.ofEpochMilli(value);
         }
     }
 
     @Override
     public void addLong(long value) {
-        if (!LongArrays.checkCapacity(data, rows + 1)) {
-            data = LongArrays.ensureCapacity(data, rows + 1);
-        }
+        ensureCapacity(rows + 1);
+        data[rows++] = Instant.ofEpochMilli(value);
+    }
+
+    @Override
+    public void addInstant(Instant value) {
+        ensureCapacity(rows + 1);
         data[rows++] = value;
     }
 
     @Override
+    public void setInstant(int row, Instant value) {
+        data[row] = value;
+    }
+
+    @Override
+    public Instant getInstant(int row) {
+        return data[row];
+    }
+
+    @Override
     public boolean isMissing(int row) {
-        return MISSING_VALUE_LONG == data[row];
+        return data[row] == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
-        data[row] = MISSING_VALUE_LONG;
+        data[row] = MISSING_VALUE;
     }
 
     @Override
     public void addMissing() {
-        if (!LongArrays.checkCapacity(data, rows + 1)) {
-            data = LongArrays.ensureCapacity(data, rows + 1);
-        }
-        data[rows++] = MISSING_VALUE_LONG;
+        ensureCapacity(rows + 1);
+        data[rows++] = null;
     }
 
     @Override
     public Var newInstance(int rows) {
-        return new VarTime(rows);
+        return new VarInstant(rows);
     }
 
     @Override
