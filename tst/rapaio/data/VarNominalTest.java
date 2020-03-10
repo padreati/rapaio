@@ -244,20 +244,17 @@ public class VarNominalTest {
 
     @Test
     void testInvalidGetLong() {
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").getLong(0));
-        assertEquals("This operation is not available for nominal variables", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarNominal.empty(1, "x").getLong(0));
     }
 
     @Test
     void testInvalidAddLong() {
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").addLong(1));
-        assertEquals("This operation is not available for nominal variables", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarNominal.empty(1, "x").addLong(1));
     }
 
     @Test
     void testInvalidSetLong() {
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> VarNominal.empty(1, "x").setLong(0, 1));
-        assertEquals("This operation is not available for nominal variables", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarNominal.empty(1, "x").setLong(0, 1));
     }
 
     @Test

@@ -71,8 +71,7 @@ public class MappedVarTest {
 
     @Test
     void testInvalidAddRows() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarDouble.scalar(1).mapRows(0).addRows(10));
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarDouble.scalar(1).mapRows(0).addRows(10));
     }
 
     @Test
@@ -82,32 +81,27 @@ public class MappedVarTest {
 
     @Test
     void testInvalidAddInt() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarDouble.scalar(1).mapRows(0).addInt(0));
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarDouble.scalar(1).mapRows(0).addInt(0));
     }
 
     @Test
     void testInvalidAddNominal() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarNominal.copy("1").mapRows(0).addLabel("0"));
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarNominal.copy("1").mapRows(0).addLabel("0"));
     }
 
     @Test
     void testInvalidAddLong() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarLong.scalar(1).mapRows(0).addLong(0));
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarLong.scalar(1).mapRows(0).addLong(0));
     }
 
     @Test
     void testInvalidAddBoolean() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarBinary.fill(1, 1).mapRows(0).addInt(1));
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarBinary.fill(1, 1).mapRows(0).addInt(1));
     }
 
     @Test
     void testInvalidAddMissing() {
-        var ex = assertThrows(IllegalStateException.class, () -> VarBinary.fill(1, 1).mapRows(0).addMissing());
-        assertEquals("Operation not available on mapped vectors", ex.getMessage());
+        assertThrows(OperationNotAvailableException.class, () -> VarBinary.fill(1, 1).mapRows(0).addMissing());
     }
 
     @Test
