@@ -119,16 +119,16 @@ public class DensityTableTest {
         Frame df = Datasets.loadPlay();
 
         var id = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
-        assertEquals(0.694, id.splitByRowAverageEntropy(), 1e-3);
-        assertEquals(0.246, id.splitByRowInfoGain(), 1e-3);
+        assertEquals(0.694, id.getTools().splitByRowAverageEntropy(), 1e-3);
+        assertEquals(0.246, id.getTools().splitByRowInfoGain(), 1e-3);
 
-        assertEquals(0.156, id.splitByRowGainRatio(), 1e-3);
+        assertEquals(0.156, id.getTools().splitByRowGainRatio(), 1e-3);
 
         id = DensityTable.fromLevelCounts(false, df.rvar("windy"), df.rvar("class"));
-        assertEquals(0.892, id.splitByRowAverageEntropy(), 1e-3);
-        assertEquals(0.048, id.splitByRowInfoGain(), 1e-3);
+        assertEquals(0.892, id.getTools().splitByRowAverageEntropy(), 1e-3);
+        assertEquals(0.048, id.getTools().splitByRowInfoGain(), 1e-3);
 
-        assertEquals(0.048, id.splitByRowGainRatio(), 1e-3);
+        assertEquals(0.048, id.getTools().splitByRowGainRatio(), 1e-3);
     }
 
     @Test
@@ -140,10 +140,10 @@ public class DensityTableTest {
         var id = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
         id.printSummary();
 
-        assertEquals(0.747, id.splitByRowAverageEntropy(), 1e-3);
-        assertEquals(0.214, id.splitByRowInfoGain(), 1e-3);
+        assertEquals(0.747, id.getTools().splitByRowAverageEntropy(), 1e-3);
+        assertEquals(0.214, id.getTools().splitByRowInfoGain(), 1e-3);
 
-        assertEquals(0.138, id.splitByRowGainRatio(), 1e-3);
+        assertEquals(0.138, id.getTools().splitByRowGainRatio(), 1e-3);
     }
 
     @Test
@@ -168,9 +168,9 @@ public class DensityTableTest {
         dt2.increment(1, 1, 19);
         dt2.increment(1, 2, 12);
 
-        assertEquals(dt1.splitByRowAverageEntropy(), dt2.splitByRowAverageEntropy(), 1e-30);
-        assertEquals(dt1.splitByRowInfoGain(), dt2.splitByRowInfoGain(), 1e-30);
-        assertEquals(dt1.splitByRowGainRatio(), dt2.splitByRowGainRatio(), 1e-30);
+        assertEquals(dt1.getTools().splitByRowAverageEntropy(), dt2.getTools().splitByRowAverageEntropy(), 1e-30);
+        assertEquals(dt1.getTools().splitByRowInfoGain(), dt2.getTools().splitByRowInfoGain(), 1e-30);
+        assertEquals(dt1.getTools().splitByRowGainRatio(), dt2.getTools().splitByRowGainRatio(), 1e-30);
         assertEquals(dt1.splitByRowGiniGain(), dt2.splitByRowGiniGain(), 1e-30);
         assertEquals(dt1.splitByColGiniGain(), dt2.splitByColGiniGain(), 1e-30);
     }

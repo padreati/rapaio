@@ -27,21 +27,22 @@
 
 package rapaio.core.tools;
 
+import lombok.AllArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
 import rapaio.data.index.IndexLabel;
-import rapaio.experiment.core.tools.ConcreteRowAverageEntropy;
-import rapaio.experiment.core.tools.ConcreteRowIntrinsicInfo;
-import rapaio.experiment.core.tools.ConcreteTotalColEntropy;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.collection.DoubleArrays;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
+import static rapaio.math.MTools.log2;
 
 /**
  * Distribution table.
@@ -234,20 +235,6 @@ public final class DensityTable<U, V> implements Printable, Serializable {
 
     public void increment(U row, V col, double weight) {
         values[rowIndex.getIndex(row)][colIndex.getIndex(col)] += weight;
-    }
-
-    public double splitByRowAverageEntropy() {
-        return new ConcreteRowAverageEntropy().getSplitInfo(0, rowIndex.size(), colIndex.size(), values);
-    }
-
-    public double splitByRowInfoGain() {
-        double totalColEntropy = new ConcreteTotalColEntropy().getSplitInfo(0, rowIndex.size(), colIndex.size(), values);
-        return totalColEntropy - splitByRowAverageEntropy();
-    }
-
-    public double splitByRowGainRatio() {
-        double splitByRowIntrinsicInfo = new ConcreteRowIntrinsicInfo().getSplitInfo(0, rowIndex.size(), colIndex.size(), values);
-        return splitByRowInfoGain() / splitByRowIntrinsicInfo;
     }
 
     /**
@@ -446,4 +433,82 @@ public final class DensityTable<U, V> implements Printable, Serializable {
             }
         }
     }
+
+    public Tools getTools() {
+        return new Tools();
+    }
+
+    public class Tools {
+
+        public double splitByRowAverageEntropy() {
+            return concreteRowAverageEntropy.getSplitInfo();
+        }
+
+        public double splitByRowInfoGain() {
+            double totalColEntropy = concreteTotalColEntropy.getSplitInfo();
+            return totalColEntropy - splitByRowAverageEntropy();
+        }
+
+        public double splitByRowGainRatio() {
+            double splitByRowIntrinsicInfo = concreteRowIntrinsicInfo.getSplitInfo();
+            return splitByRowInfoGain() / splitByRowIntrinsicInfo;
+        }
+    }
+
+    private DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(true,
+            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+                double gain = 0;
+                for (int i = 0; i < rowLength; i++) {
+                    for (int j = 0; j < colLength; j++) {
+                        if (values[i][j] > 0)
+                            gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
+                    }
+                }
+                return gain;
+            });
+
+    private DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(true,
+            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+                double splitInfo = 0;
+                for (double val : totals) {
+                    if (val > 0) {
+                        splitInfo += -log2(val / total) * val / total;
+                    }
+                }
+                return splitInfo;
+            });
+    private DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(false,
+            (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
+                double entropy = 0;
+                for (double val : totals) {
+                    if (val > 0) {
+                        entropy += -log2(val / total) * val / total;
+                    }
+                }
+                return entropy;
+            });
+
+    @AllArgsConstructor
+    class DensityTableFunction {
+
+        private final boolean onRow;
+        private final Function function;
+
+        public double getSplitInfo() {
+            double[] totals = new double[onRow ? rowIndex.size() : colIndex.size()];
+            for (int i = 0; i < rowIndex.size(); i++) {
+                for (int j = 0; j < colIndex.size(); j++) {
+                    totals[onRow ? i : j] += values[i][j];
+                }
+            }
+            double total = DoubleArrays.nansum(totals, 0, totals.length);
+            return function.apply(total, totals, values, rowIndex.size(), colIndex.size());
+        }
+    }
+
+    @FunctionalInterface
+    interface Function {
+        double apply(double total, double[] totals, double[][] values, int rowLength, int colLength);
+    }
 }
+

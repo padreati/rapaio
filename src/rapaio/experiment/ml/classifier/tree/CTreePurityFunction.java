@@ -46,7 +46,7 @@ public interface CTreePurityFunction extends Serializable {
 
         @Override
         public double compute(DensityTable<String, String> dt) {
-            return dt.splitByRowInfoGain();
+            return dt.getTools().splitByRowInfoGain();
         }
 
         @Override
@@ -69,7 +69,7 @@ public interface CTreePurityFunction extends Serializable {
 
         @Override
         public double compute(DensityTable<String, String> dt) {
-            return dt.splitByRowGainRatio();
+            return dt.getTools().splitByRowGainRatio();
         }
 
         @Override

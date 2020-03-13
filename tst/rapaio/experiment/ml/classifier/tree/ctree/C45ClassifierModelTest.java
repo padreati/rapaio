@@ -34,8 +34,6 @@ import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.eval.cmetric.Confusion;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -55,7 +53,7 @@ public class C45ClassifierModelTest {
 
         var dtWindy = DensityTable.fromLevelCounts(false, df.rvar("windy"), df.rvar("class"));
         var dtOutlook = DensityTable.fromLevelCounts(false, df.rvar("outlook"), df.rvar("class"));
-        String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
+        String splitCol = (dtWindy.getTools().splitByRowInfoGain() > dtOutlook.getTools().splitByRowInfoGain()) ? "windy" : "outlook";
         assertTrue(classifier.getRoot().getBestCandidate().getGroupPredicates().get(0).toString().contains(splitCol));
 
         classifier.printSummary();
@@ -65,7 +63,7 @@ public class C45ClassifierModelTest {
     }
 
     @Test
-    public void testNumericInfoGain() throws IOException {
+    public void testNumericInfoGain() {
         Frame df = Datasets.loadPlay();
         df = df.mapVars("temp,humidity,class");
         final String className = "class";
@@ -81,7 +79,7 @@ public class C45ClassifierModelTest {
     }
 
     @Test
-    public void testAllInfoGain() throws IOException {
+    public void testAllInfoGain() {
         Frame df = Datasets.loadPlay();
         final String className = "class";
 

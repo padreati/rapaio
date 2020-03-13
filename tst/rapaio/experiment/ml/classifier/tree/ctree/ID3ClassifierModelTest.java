@@ -56,7 +56,7 @@ public class ID3ClassifierModelTest {
 
         var dtWindy = DensityTable.fromLevelCounts(true, df.rvar("windy"), df.rvar("class"));
         var dtOutlook = DensityTable.fromLevelCounts(true, df.rvar("outlook"), df.rvar("class"));
-        String splitCol = (dtWindy.splitByRowAverageEntropy() < dtOutlook.splitByRowAverageEntropy()) ? "windy" : "outlook";
+        String splitCol = (dtWindy.getTools().splitByRowAverageEntropy() < dtOutlook.getTools().splitByRowAverageEntropy()) ? "windy" : "outlook";
         assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         id3.printSummary();
@@ -78,7 +78,7 @@ public class ID3ClassifierModelTest {
 
         var dtWindy = DensityTable.fromLevelCounts(true, df.rvar("windy"), df.rvar("class"));
         var dtOutlook = DensityTable.fromLevelCounts(true, df.rvar("outlook"), df.rvar("class"));
-        String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
+        String splitCol = (dtWindy.getTools().splitByRowInfoGain() > dtOutlook.getTools().splitByRowInfoGain()) ? "windy" : "outlook";
         assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         id3.printSummary();
