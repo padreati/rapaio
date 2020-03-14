@@ -135,17 +135,17 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     public NaiveBayes withEstimators(Collection<? extends Estimator> estimators) {
         Set<String> varNames = new HashSet<>();
         for (Estimator e : estimatorList) {
-            varNames.addAll(e.getTestVarNames());
+            varNames.addAll(e.getTestNames());
         }
         for (Estimator e : estimators) {
-            for (String testVarName : e.getTestVarNames()) {
+            for (String testVarName : e.getTestNames()) {
                 if (varNames.contains(testVarName)) {
                     throw new IllegalArgumentException("Cannot add estimator since it contains variable: " + testVarName +
                             " which is already handled by " + e.name());
                 }
             }
             estimatorList.add(e);
-            varNames.addAll(e.getTestVarNames());
+            varNames.addAll(e.getTestNames());
         }
         return this;
     }
@@ -161,7 +161,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
         HashSet<String> targetSet = new HashSet<>(targets);
         HashSet<String> allVarsSet = new HashSet<>(Arrays.asList(df.varNames()));
 
-        String[] inputs = estimatorList.stream().flatMap(e -> e.getTestVarNames().stream()).toArray(String[]::new);
+        String[] inputs = estimatorList.stream().flatMap(e -> e.getTestNames().stream()).toArray(String[]::new);
         for (String inputVar : inputs) {
             if (targetSet.contains(inputVar)) {
                 throw new IllegalStateException("Input variable: " + inputVar + " is also a target variable.");

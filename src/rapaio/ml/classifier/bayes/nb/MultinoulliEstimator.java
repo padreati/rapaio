@@ -55,19 +55,19 @@ public class MultinoulliEstimator extends AbstractEstimator {
 
     @Override
     public MultinoulliEstimator newInstance() {
-        return new MultinoulliEstimator(getTestVarNames(), getLaplaceSmoother());
+        return new MultinoulliEstimator(getTestNames(), getLaplaceSmoother());
     }
 
     @Override
     public String name() {
-        return "Multinoulli{tests=[" + String.join(",", getTestVarNames()) + "], " +
+        return "Multinoulli{tests=[" + String.join(",", getTestNames()) + "], " +
                 "lapaceSmoother=" + Format.floatFlex(getLaplaceSmoother()) + "}";
     }
 
     @Override
     public String fittedName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Multinoulli{tests=[").append(String.join(",", getTestVarNames())).append("], ");
+        sb.append("Multinoulli{tests=[").append(String.join(",", getTestNames())).append("], ");
         sb.append("laplaceSmoother=").append(Format.floatFlex(laplaceSmoother));
         sb.append(", values=[");
         if (density != null) {
@@ -103,10 +103,10 @@ public class MultinoulliEstimator extends AbstractEstimator {
     }
 
     private int validate(Frame df, String targetName) {
-        Frame selection = df.mapVars(getTestVarNames());
-        if (getTestVarNames().size() == 1) {
+        Frame selection = df.mapVars(getTestNames());
+        if (getTestNames().size() == 1) {
             // single nominal variable
-            String testVarName = getTestVarNames().get(0);
+            String testVarName = getTestNames().get(0);
             if (selection.type(testVarName).equals(VType.BINARY) || selection.type(testVarName).equals(VType.NOMINAL)) {
                 return 1;
             }
@@ -131,7 +131,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
     }
 
     private boolean fitNominal(Frame df, String targetName) {
-        DensityTable<String, String> dt = DensityTable.fromLevelCounts(true, df, getTestVarNames().get(0), targetName);
+        DensityTable<String, String> dt = DensityTable.fromLevelCounts(true, df, getTestNames().get(0), targetName);
         for (int i = 0; i < dt.rowCount(); i++) {
             for (int j = 0; j < dt.colCount(); j++) {
                 dt.increment(i, j, laplaceSmoother);
@@ -142,7 +142,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
     }
 
     private boolean fitBinary(Frame df, String targetName) {
-        List<String> fullTestVarNames = new ArrayList<>(getTestVarNames());
+        List<String> fullTestVarNames = new ArrayList<>(getTestNames());
 
         DensityTable<String, String> dt = DensityTable.emptyByLabel(true, fullTestVarNames, df.levels(targetName));
 
@@ -180,7 +180,7 @@ public class MultinoulliEstimator extends AbstractEstimator {
         switch (ourCase) {
             case 1:
                 // single nominal variable
-                String testLabelNominal = df.getLabel(row, getTestVarNames().get(0));
+                String testLabelNominal = df.getLabel(row, getTestNames().get(0));
                 if (density.rowIndex().containsValue(testLabelNominal)) {
                     testLabel = testLabelNominal;
                 }

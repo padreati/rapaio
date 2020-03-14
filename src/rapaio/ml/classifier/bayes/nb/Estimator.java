@@ -30,7 +30,7 @@ public interface Estimator extends Serializable {
      * Get test variable names for this estimator
      * @return list of test variable names
      */
-    List<String> getTestVarNames();
+    List<String> getTestNames();
 
     /**
      * Fit the estimator on data

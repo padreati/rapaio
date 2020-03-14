@@ -106,7 +106,7 @@ public class NaiveBayesTest {
                 .withEstimators(GaussianEstimator.forNames("a", "b"))
                 .withEstimators(GaussianEstimator.forName("x"))
                 .withEstimators(KernelEstimator.forName("y"))
-                .getEstimators().stream().flatMap(e -> e.getTestVarNames().stream()).collect(Collectors.toList())
+                .getEstimators().stream().flatMap(e -> e.getTestNames().stream()).collect(Collectors.toList())
         );
 
         var ex = assertThrows(IllegalArgumentException.class, () -> NaiveBayes.newModel()
@@ -144,7 +144,7 @@ public class NaiveBayesTest {
             }
 
             @Override
-            public List<String> getTestVarNames() {
+            public List<String> getTestNames() {
                 return Collections.singletonList("a");
             }
 

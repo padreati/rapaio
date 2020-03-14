@@ -44,7 +44,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Numeric probability estimator, using pdf of gaussian distribution.
+ * Naive Bayes Gaussian estimator uses the Normal distribution to model
+ * a numerical feature. The used Gaussian distribution is fitted on test variable
+ * conditioned by target label. Thus, this event model assumes each conditional
+ * distribution is Gaussian and they are fitted separately.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
@@ -106,15 +109,15 @@ public class GaussianEstimator extends AbstractEstimator {
         String[] varNames = df.varNames();
         boolean foundTest = false;
         boolean foundTarget = false;
-        for (String varName: varNames) {
-            if(varName.equals(testName)) {
+        for (String varName : varNames) {
+            if (varName.equals(testName)) {
                 foundTest = true;
             }
-            if(varName.equals(targetName)) {
+            if (varName.equals(targetName)) {
                 foundTarget = true;
             }
         }
-        if(!(foundTest && foundTarget)) {
+        if (!(foundTest && foundTarget)) {
             return false;
         }
 
@@ -143,7 +146,7 @@ public class GaussianEstimator extends AbstractEstimator {
     @Override
     public double predict(Frame df, int row, String targetLevel) {
         Distribution normal = normals.get(targetLevel);
-        double testValue = df.getDouble(row, getTestVarNames().get(0));
+        double testValue = df.getDouble(row, getTestNames().get(0));
         if (Math.abs(normal.var()) < 1e-20) {
             return (Math.abs(normal.mean() - testValue) < 1e-20) ? 1.0 : 0.0;
         }

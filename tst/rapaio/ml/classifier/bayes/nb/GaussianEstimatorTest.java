@@ -44,12 +44,12 @@ public class GaussianEstimatorTest {
 
 
         assertEquals(Arrays.asList("d1", "d2"), GaussianEstimator.forType(SolidFrame.byVars(d1, d2, b1, b2, n1, n2), VType.DOUBLE)
-                .stream().flatMap(v -> v.getTestVarNames().stream()).collect(Collectors.toList()));
+                .stream().flatMap(v -> v.getTestNames().stream()).collect(Collectors.toList()));
         assertEquals(Arrays.asList("d1", "d2"), GaussianEstimator.forType(SolidFrame.byVars(d1, d2, b1, b2, n1, n2), VType.DOUBLE)
-                .stream().flatMap(v -> v.getTestVarNames().stream()).collect(Collectors.toList()));
+                .stream().flatMap(v -> v.getTestNames().stream()).collect(Collectors.toList()));
 
         assertEquals(Arrays.asList("b1", "n1"), GaussianEstimator.forNames("b1","n1").stream()
-                .flatMap(v -> v.getTestVarNames()
+                .flatMap(v -> v.getTestNames()
                 .stream()).collect(Collectors.toList()));
     }
 
@@ -77,7 +77,7 @@ public class GaussianEstimatorTest {
         GaussianEstimator estimator1 = GaussianEstimator.forName("x");
         estimator1.fit(df, VarDouble.fill(df.rowCount(), 1), "t");
 
-        assertEquals(Collections.singletonList("x"), estimator1.getTestVarNames());
+        assertEquals(Collections.singletonList("x"), estimator1.getTestNames());
         assertEquals("Gaussian{test=x, values=[a:Normal(mu=11.4, sd=1.0198039), b:Normal(mu=2.8, sd=0.7483315)]}", estimator1.fittedName());
 
         assertEquals(Arrays.asList("a", "b"), estimator1.getTargetLevels());
@@ -92,7 +92,7 @@ public class GaussianEstimatorTest {
         GaussianEstimator estimator2 = GaussianEstimator.forName("y");
         estimator2.fit(df, VarDouble.fill(df.rowCount(), 1), "t");
 
-        assertEquals(Collections.singletonList("y"), estimator2.getTestVarNames());
+        assertEquals(Collections.singletonList("y"), estimator2.getTestNames());
         assertEquals("Gaussian{test=y, values=[a:Normal(mu=10.6, sd=1.0198039), b:Normal(mu=5, sd=4.0496913)]}", estimator2.fittedName());
 
         assertEquals(Arrays.asList("a", "b"), estimator2.getTargetLevels());

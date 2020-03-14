@@ -17,7 +17,7 @@ public abstract class AbstractEstimator implements Estimator {
 
     private static final long serialVersionUID = 2641684738382610007L;
 
-    public List<String> getTestVarNames() {
+    public List<String> getTestNames() {
         return testVarNames;
     }
 }

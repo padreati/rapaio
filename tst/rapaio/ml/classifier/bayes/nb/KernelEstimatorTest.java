@@ -64,11 +64,11 @@ public class KernelEstimatorTest {
 
 
         assertEquals(Arrays.asList("d1", "d2"), KernelEstimator.forType(SolidFrame.byVars(d1, d2, b1, b2, n1, n2), VType.DOUBLE)
-                .stream().flatMap(v -> v.getTestVarNames().stream()).collect(Collectors.toList()));
+                .stream().flatMap(v -> v.getTestNames().stream()).collect(Collectors.toList()));
         assertEquals(Arrays.asList("d1", "d2"), KernelEstimator.forType(SolidFrame.byVars(d1, d2, b1, b2, n1, n2), VType.DOUBLE)
-                .stream().flatMap(v -> v.getTestVarNames().stream()).collect(Collectors.toList()));
+                .stream().flatMap(v -> v.getTestNames().stream()).collect(Collectors.toList()));
 
-        assertEquals("n1", KernelEstimator.forName("n1").getTestVarNames().get(0));
+        assertEquals("n1", KernelEstimator.forName("n1").getTestNames().get(0));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class KernelEstimatorTest {
         KernelEstimator estimator1 = KernelEstimator.forName("x");
         estimator1.fit(df, VarDouble.fill(df.rowCount(), 1), "t");
 
-        assertEquals(Collections.singletonList("x"), estimator1.getTestVarNames());
+        assertEquals(Collections.singletonList("x"), estimator1.getTestNames());
         assertEquals("Kernel{test=x, kdes=[a:{kfun=KFuncGaussian,bw=0.8759585},b:{kfun=KFuncGaussian,bw=0.6427778}]}", estimator1.fittedName());
 
         VarDouble pred1 = VarDouble.from(df.rowCount(), row -> estimator1.predict(df, row, "a"));
@@ -87,7 +87,7 @@ public class KernelEstimatorTest {
         KernelEstimator estimator2 = KernelEstimator.forName("y");
         estimator2.fit(df, VarDouble.fill(df.rowCount(), 1), "t");
 
-        assertEquals(Collections.singletonList("y"), estimator2.getTestVarNames());
+        assertEquals(Collections.singletonList("y"), estimator2.getTestNames());
         assertEquals("Kernel{test=y, kdes=[a:{kfun=KFuncGaussian,bw=0.8759585},b:{kfun=KFuncGaussian,bw=3.4784743}]}", estimator2.fittedName());
 
         assertEquals(Double.NaN, estimator2.predict(df, 0, "inexistent"), TOL);
