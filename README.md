@@ -231,7 +231,8 @@ of production ready tools from this field.
 
 * ZeroRule
 * OneRule
-* Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli)
+* Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, 
+Multinomial, Poisson)
 
 **Regression**
 
