@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
 import java.io.Serializable;

@@ -60,6 +60,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,13 +181,14 @@ public class CForest
     @Override
     public Capabilities capabilities() {
         Capabilities cc = c.capabilities();
-        return new Capabilities()
-                .withInputCount(cc.minInputCount(), cc.maxInputCount())
-                .withInputTypes(cc.inputTypes().toArray(new VType[0]))
-                .withAllowMissingInputValues(cc.allowMissingInputValues())
-                .withTargetCount(1, 1)
-                .withTargetTypes(VType.NOMINAL)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(cc.getMinInputCount()).maxInputCount(cc.getMaxInputCount())
+                .inputTypes(Arrays.asList(cc.getInputTypes().toArray(VType[]::new)))
+                .allowMissingInputValues(cc.getAllowMissingInputValues())
+                .minTargetCount(1).maxTargetCount(1)
+                .targetType(VType.NOMINAL)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public List<ClassifierModel> getClassifiers() {

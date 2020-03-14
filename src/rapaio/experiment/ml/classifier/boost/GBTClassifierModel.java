@@ -45,6 +45,7 @@ import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -102,13 +103,14 @@ public class GBTClassifierModel
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(1, 1_000_000)
-                .withInputTypes(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withTargetCount(1, 1)
-                .withTargetTypes(VType.NOMINAL)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(1).maxInputCount(1_000_000)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE))
+                .allowMissingInputValues(true)
+                .minTargetCount(1).maxTargetCount(1)
+                .targetType(VType.NOMINAL)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public GBTClassifierModel withDebug(boolean debug) {

@@ -48,6 +48,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.BitSet;
 
 import static rapaio.printer.Format.floatFlex;
@@ -181,13 +182,14 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputTypes(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE)
-                .withInputCount(1, 100_000)
-                .withAllowMissingInputValues(false)
-                .withTargetTypes(VType.NOMINAL)
-                .withTargetCount(1, oneVsAll ? 10_000 : 1)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE))
+                .minInputCount(1).maxInputCount(100_000)
+                .allowMissingInputValues(false)
+                .targetType(VType.NOMINAL)
+                .minTargetCount(1).maxTargetCount(oneVsAll ? 10_000 : 1)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
 
@@ -207,6 +209,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
         System.arraycopy(sparseWeights, 0, this.sparseWeights, 0, counter);
         System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
     }
+
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 

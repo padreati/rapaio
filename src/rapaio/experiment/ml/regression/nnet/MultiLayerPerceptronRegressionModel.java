@@ -125,13 +125,14 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputTypes(VType.DOUBLE, VType.INT, VType.BINARY)
-                .withTargetTypes(VType.DOUBLE)
-                .withInputCount(1, 1_000_000)
-                .withTargetCount(1, 1_000_000)
-                .withAllowMissingInputValues(false)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY))
+                .targetType(VType.DOUBLE)
+                .minInputCount(1).maxInputCount(1_000_000)
+                .minTargetCount(1).maxTargetCount(1_000_000)
+                .allowMissingInputValues(false)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public MultiLayerPerceptronRegressionModel withFunction(TFunction function) {

@@ -42,6 +42,8 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.util.Arrays;
+
 /**
  * Simple regression which predicts with the median value of the target columns.
  * <p>
@@ -87,13 +89,14 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(0, 1_000_000)
-                .withTargetCount(1, 1_000_000)
-                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING)
-                .withTargetTypes(VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(true);
+        return Capabilities.builder()
+                .minInputCount(0).maxInputCount(1_000_000)
+                .minTargetCount(1).maxTargetCount(1_000_000)
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING))
+                .targetType(VType.DOUBLE)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(true)
+                .build();
     }
 
     @Override

@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.tree;
 
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;

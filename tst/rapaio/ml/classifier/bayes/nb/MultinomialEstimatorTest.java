@@ -111,7 +111,6 @@ public class MultinomialEstimatorTest {
         assertEquals(Binomial.of(0.5, 4).pdf(1), estimator.predict(df, 2, "b"), TOL);
         df.setDouble(6, "x1", -1);
         assertEquals(MultinomialEstimator.eps, estimator.predict(df, 6, "a"), TOL);
-
         assertEquals(Double.NaN, estimator.predict(df, 0, "nonexistent"));
     }
 }

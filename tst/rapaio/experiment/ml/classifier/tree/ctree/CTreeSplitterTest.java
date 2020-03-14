@@ -33,7 +33,7 @@ import rapaio.data.VarDouble;
 import rapaio.data.filter.VApplyDouble;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
 import rapaio.experiment.ml.classifier.tree.CTreeSplitter;
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
 import java.util.List;

@@ -203,7 +203,7 @@ public class NaiveBayesTest {
                 "================\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL,BINARY\n" +
+                "types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +
@@ -234,7 +234,7 @@ public class NaiveBayesTest {
                 "================\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE/NOMINAL,BINARY\n" +
+                "types inputs/targets: NOMINAL,DOUBLE,INT,BINARY/NOMINAL,BINARY\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
                 "\n" +

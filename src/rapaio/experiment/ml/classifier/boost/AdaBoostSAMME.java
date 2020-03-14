@@ -41,6 +41,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -103,13 +104,14 @@ public class AdaBoostSAMME
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputTypes(VType.DOUBLE, VType.NOMINAL, VType.INT, VType.BINARY)
-                .withInputCount(1, 10_000)
-                .withAllowMissingInputValues(true)
-                .withTargetTypes(VType.NOMINAL)
-                .withTargetCount(1, 1)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.NOMINAL, VType.INT, VType.BINARY))
+                .minInputCount(1).maxInputCount(10_000)
+                .allowMissingInputValues(true)
+                .targetType(VType.NOMINAL)
+                .minTargetCount(1).maxTargetCount(1)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public AdaBoostSAMME withClassifier(ClassifierModel weak) {

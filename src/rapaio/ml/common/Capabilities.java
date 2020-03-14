@@ -27,66 +27,53 @@
 
 package rapaio.ml.common;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Singular;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Capabilities describes what a machine learning algorithm can predict and predict.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
+@Getter
+@Builder
 public class Capabilities {
 
+    @NonNull
     private Integer minInputCount;
+
+    @NonNull
     private Integer maxInputCount;
+
+    @Singular
+    @NonNull
     private List<VType> inputTypes;
+
+    @NonNull
     private Boolean allowMissingInputValues;
+
+    @NonNull
     private Integer minTargetCount;
+
+    @NonNull
     private Integer maxTargetCount;
+
+    @Singular
+    @NonNull
     private List<VType> targetTypes;
+
+    @NonNull
     private Boolean allowMissingTargetValues;
-
-    public Capabilities withInputCount(int minInputCount, int maxInputCount) {
-        this.minInputCount = minInputCount;
-        this.maxInputCount = maxInputCount;
-        return this;
-    }
-
-    public Capabilities withInputTypes(VType... types) {
-        this.inputTypes = Arrays.stream(types).collect(toList());
-        Collections.sort(this.inputTypes);
-        return this;
-    }
-
-    public Capabilities withTargetCount(int minTargetCount, int maxTargetCount) {
-        this.minTargetCount = minTargetCount;
-        this.maxTargetCount = maxTargetCount;
-        return this;
-    }
-
-    public Capabilities withTargetTypes(VType... types) {
-        this.targetTypes = Arrays.stream(types).collect(toList());
-        Collections.sort(this.inputTypes);
-        return this;
-    }
-
-    public Capabilities withAllowMissingInputValues(boolean allow) {
-        this.allowMissingInputValues = allow;
-        return this;
-    }
-
-    public Capabilities withAllowMissingTargetValues(boolean allow) {
-        this.allowMissingTargetValues = allow;
-        return this;
-    }
 
     /**
      * This method evaluates the capabilities of the algorithm at the learning phase.
@@ -96,32 +83,6 @@ public class Capabilities {
      * @param targetVars target variable names
      */
     public void checkAtLearnPhase(Frame df, Var weights, String... targetVars) {
-
-        // check if capabilities are well-specified
-        if (inputTypes == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing inputTypes");
-        }
-        if (minInputCount == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing minInputCount");
-        }
-        if (maxInputCount == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing maxInputCount");
-        }
-        if (allowMissingInputValues == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing allowMissingInputValues");
-        }
-        if (targetTypes == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: miaaing targetTypes");
-        }
-        if (minTargetCount == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing minTargetCount");
-        }
-        if (maxTargetCount == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing maxTargetCount");
-        }
-        if (allowMissingTargetValues == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing allowMissingTargetValues");
-        }
 
         // check target type
         checkInputCount(df, weights, targetVars);
@@ -210,48 +171,19 @@ public class Capabilities {
             }
         }
         if (sb.length() > 0)
-            throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; see : " + sb.toString());
-    }
-
-    public Integer minInputCount() {
-        return minInputCount;
-    }
-
-    public Integer maxInputCount() {
-        return maxInputCount;
-    }
-
-    public List<VType> inputTypes() {
-        return inputTypes;
-    }
-
-    public Boolean allowMissingInputValues() {
-        return allowMissingInputValues;
-    }
-
-    public Integer minTargetCount() {
-        return minTargetCount;
-    }
-
-    public Integer maxTargetCount() {
-        return maxTargetCount;
-    }
-
-    public List<VType> targetTypes() {
-        return targetTypes;
-    }
-
-    public Boolean allowMissingTargetValues() {
-        return allowMissingTargetValues;
+            throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; " +
+                    "see : " + sb.toString());
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")
-                .append(minTargetCount).append(",").append(maxTargetCount).append("]\n");
-        sb.append("missing inputs/targets: ").append(allowMissingInputValues).append("/").append(allowMissingTargetValues).append("\n");
+        sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(",")));
+        sb.append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
+        sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] ");
+        sb.append("/ [").append(minTargetCount).append(",").append(maxTargetCount).append("]\n");
+        sb.append("missing inputs/targets: ").append(allowMissingInputValues);
+        sb.append("/").append(allowMissingTargetValues).append("\n");
         return sb.toString();
     }
 }

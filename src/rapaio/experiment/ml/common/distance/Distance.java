@@ -25,44 +25,36 @@
  *
  */
 
-package rapaio.ml.common.distance;
+package rapaio.experiment.ml.common.distance;
 
 import rapaio.data.Frame;
 import rapaio.util.Pair;
 
+import java.io.Serializable;
+
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/17.
+ * Distance interface
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-public class EuclideanDistance implements Distance {
+public interface Distance extends Serializable {
 
-    private static final long serialVersionUID = -8612343329421925879L;
-
-    @Override
-    public String name() {
-        return "Euclidean";
-    }
+    String name();
 
     /**
-     * The distance in the euclidean space is the square root value of the sum of squared differences for each feature.
-     * The Euclidean error is the squared distance
+     * Computes the distance and the error for that distance.
+     * The distance is the value which measures the similarity
+     * between two items, the error is an individual additive value which is used to
+     * assess the performance of an algorithm.
      *
      * @param s first data frame
      * @param sRow row index of the instance from that data frame
      * @param t second data frame
      * @param tRow row index of the instance from the second data frame
      * @param varNames variable names of the features used in computation
-     * @return
+     * @return a pair of values, first in pair is the distance, second in pair is the error
      */
-    @Override
-    public Pair<Double, Double> compute(Frame s, int sRow, Frame t, int tRow, String... varNames) {
-        double total = 0;
-        for (String varName : varNames) {
-            if (s.isMissing(sRow, varName) || t.isMissing(tRow, varName))
-                continue;
-            total += Math.pow(s.getDouble(sRow, varName) - t.getDouble(tRow, varName), 2);
-        }
-        return Pair.from(Math.sqrt(total), total);
-    }
+    Pair<Double, Double> compute(Frame s, int sRow, Frame t, int tRow, String... varNames);
 
-
+    Distance EUCLIDEAN = new EuclideanDistance();
 }

@@ -41,6 +41,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -96,13 +97,14 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withAllowMissingTargetValues(false)
-                .withAllowMissingInputValues(false)
-                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE)
-                .withTargetTypes(VType.NOMINAL)
-                .withInputCount(1, 100_000)
-                .withTargetCount(1, 1);
+        return Capabilities.builder()
+                .allowMissingTargetValues(false)
+                .allowMissingInputValues(false)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE))
+                .targetType(VType.NOMINAL)
+                .minInputCount(1).maxInputCount(100_000)
+                .minTargetCount(1).maxTargetCount(1)
+                .build();
     }
 
     @Override

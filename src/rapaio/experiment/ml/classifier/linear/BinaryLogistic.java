@@ -41,6 +41,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -80,13 +81,14 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
-                .withInputCount(1, 10000)
-                .withTargetTypes(VType.NOMINAL)
-                .withTargetCount(1, 1)
-                .withAllowMissingInputValues(false)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .minInputCount(1).maxInputCount(10000)
+                .targetType(VType.NOMINAL)
+                .minTargetCount(1).maxTargetCount(1)
+                .allowMissingInputValues(false)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public int getMaxRuns() {

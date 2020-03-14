@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.ml.common.predicate;
+package rapaio.experiment.ml.common.predicate;
 
 import rapaio.data.Frame;
 import rapaio.printer.Format;

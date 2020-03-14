@@ -76,7 +76,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      * @return capabilities of the classification algorithm
      */
     default Capabilities capabilities() {
-        return new Capabilities();
+        return Capabilities.builder().build();
     }
 
     /**

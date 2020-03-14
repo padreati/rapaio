@@ -32,7 +32,7 @@ import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
 import rapaio.experiment.ml.classifier.tree.CTreeNode;
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 

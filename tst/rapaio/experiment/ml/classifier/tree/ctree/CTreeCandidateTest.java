@@ -5,7 +5,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
-import rapaio.ml.common.predicate.RowPredicate;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 

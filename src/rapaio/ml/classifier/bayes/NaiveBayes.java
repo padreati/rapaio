@@ -106,13 +106,17 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(0, 1_000_000)
-                .withInputTypes(VType.NOMINAL, VType.DOUBLE, VType.INT, VType.BINARY)
-                .withTargetCount(1, 1)
-                .withTargetTypes(VType.NOMINAL, VType.BINARY)
-                .withAllowMissingTargetValues(false)
-                .withAllowMissingInputValues(true);
+        return Capabilities.builder()
+                .minInputCount(0)
+                .maxInputCount(1_000_000)
+                .inputTypes(Arrays.asList(VType.NOMINAL, VType.DOUBLE, VType.INT, VType.BINARY))
+                .minTargetCount(1)
+                .maxTargetCount(1)
+                .targetType(VType.NOMINAL)
+                .targetType(VType.BINARY)
+                .allowMissingTargetValues(false)
+                .allowMissingInputValues(true)
+                .build();
     }
 
     public Prior getPrior() {
@@ -166,7 +170,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
             if (targetSet.contains(inputVar)) {
                 throw new IllegalStateException("Input variable: " + inputVar + " is also a target variable.");
             }
-            if(!allVarsSet.contains(inputVar)) {
+            if (!allVarsSet.contains(inputVar)) {
                 throw new IllegalStateException("Input variable: " + inputVar + " is not contained in training data frame.");
             }
         }

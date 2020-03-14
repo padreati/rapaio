@@ -42,6 +42,8 @@ import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.util.Arrays;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
@@ -72,13 +74,14 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withAllowMissingInputValues(false)
-                .withAllowMissingTargetValues(false)
-                .withInputCount(1, Integer.MAX_VALUE)
-                .withInputTypes(VType.DOUBLE, VType.INT, VType.BINARY, VType.LONG)
-                .withTargetCount(1, 1)
-                .withTargetTypes(VType.DOUBLE);
+        return Capabilities.builder()
+                .allowMissingInputValues(false)
+                .allowMissingTargetValues(false)
+                .minInputCount(1).maxInputCount(Integer.MAX_VALUE)
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY, VType.LONG))
+                .minTargetCount(1).maxTargetCount(1)
+                .targetType(VType.DOUBLE)
+                .build();
     }
 
     public int getMinCount() {

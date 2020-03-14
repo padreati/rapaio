@@ -1,4 +1,4 @@
-package rapaio.ml.common.predicate;
+package rapaio.experiment.ml.common.predicate;
 
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;

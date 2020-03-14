@@ -10,6 +10,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
+import java.util.Arrays;
+
 /**
  * ZeroR classification algorithm.
  * This basic classification algorithm does not use inputs, only target variable.
@@ -49,13 +51,17 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(true)
-                .withInputCount(0, Integer.MAX_VALUE)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.DOUBLE, VType.INT, VType.NOMINAL, VType.BINARY, VType.LONG, VType.INSTANT, VType.STRING)
-                .withTargetTypes(VType.NOMINAL, VType.BINARY);
+        return Capabilities.builder()
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(true)
+                .minInputCount(0)
+                .maxInputCount(Integer.MAX_VALUE)
+                .minTargetCount(1)
+                .maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.NOMINAL, VType.BINARY, VType.LONG, VType.INSTANT, VType.STRING))
+                .targetType(VType.NOMINAL)
+                .targetType(VType.BINARY)
+                .build();
     }
 
     @Override

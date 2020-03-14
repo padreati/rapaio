@@ -25,36 +25,35 @@
  *
  */
 
-package rapaio.ml.common.distance;
+package rapaio.experiment.ml.common.distance;
 
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
-import rapaio.util.Pair;
 
 import java.io.Serializable;
 
 /**
- * Distance interface
+ * Function which produces initial centroids for KMeans algorithm
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-public interface Distance extends Serializable {
+public interface KMeansInitMethod extends Serializable {
 
     String name();
 
-    /**
-     * Computes the distance and the error for that distance.
-     * The distance is the value which measures the similarity
-     * between two items, the error is an individual additive value which is used to
-     * assess the performance of an algorithm.
-     *
-     * @param s first data frame
-     * @param sRow row index of the instance from that data frame
-     * @param t second data frame
-     * @param tRow row index of the instance from the second data frame
-     * @param varNames variable names of the features used in computation
-     * @return a pair of values, first in pair is the distance, second in pair is the error
-     */
-    Pair<Double, Double> compute(Frame s, int sRow, Frame t, int tRow, String... varNames);
+    Frame init(Frame df, String[] inputs, int k);
 
-    Distance EUCLIDEAN = new EuclideanDistance();
+    KMeansInitMethod Forgy = new KMeansInitMethod() {
+        private static final long serialVersionUID = -6826959777764888621L;
+
+        @Override
+        public String name() {
+            return "forgy";
+        }
+
+        @Override
+        public Frame init(Frame df, String[] inputs, int k) {
+            return df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(df.rowCount(), k)).copy();
+        }
+    };
 }

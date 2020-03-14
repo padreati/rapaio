@@ -35,11 +35,11 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -47,6 +47,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -270,13 +271,14 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputTypes(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BINARY)
-                .withInputCount(1, 1_000_000)
-                .withAllowMissingInputValues(true)
-                .withTargetTypes(VType.NOMINAL)
-                .withTargetCount(1, 1)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .inputTypes(Arrays.asList(VType.NOMINAL, VType.INT, VType.DOUBLE, VType.BINARY))
+                .minInputCount(1).maxInputCount(1_000_000)
+                .allowMissingInputValues(true)
+                .targetType(VType.NOMINAL)
+                .minTargetCount(1).maxTargetCount(1)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     @Override

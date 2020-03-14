@@ -42,6 +42,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -93,13 +94,14 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult<R
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(1, 1_000_000)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
-                .withTargetTypes(VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(1).maxInputCount(1_000_000)
+                .minTargetCount(1).maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .targetType(VType.DOUBLE)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public RForest withRegression(RegressionModel r) {
@@ -111,13 +113,13 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult<R
     protected boolean coreFit(Frame df, Var weights) {
         regressors.clear();
         IntStream.range(0, runs()).forEach(i -> {
-                RegressionModel rnew = r.newInstance();
-                Sample sample = sampler().nextSample(df, weights);
-                rnew.fit(sample.df, sample.weights, firstTargetName());
-                regressors.add(rnew);
-                if (runningHook() != null) {
-                    runningHook().accept(this, i + 1);
-                }
+            RegressionModel rnew = r.newInstance();
+            Sample sample = sampler().nextSample(df, weights);
+            rnew.fit(sample.df, sample.weights, firstTargetName());
+            regressors.add(rnew);
+            if (runningHook() != null) {
+                runningHook().accept(this, i + 1);
+            }
         });
         return true;
     }

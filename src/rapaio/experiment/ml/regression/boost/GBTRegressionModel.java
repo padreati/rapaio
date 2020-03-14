@@ -50,6 +50,7 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static rapaio.printer.Format.floatFlex;
@@ -105,13 +106,14 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(1, 1_000_000)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
-                .withTargetTypes(VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(1).maxInputCount(1_000_000)
+                .minTargetCount(1).maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .targetType(VType.DOUBLE)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public GBTRegressionModel withLossFunction(RegressionLoss lossFunction) {

@@ -38,6 +38,8 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.util.Arrays;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -75,13 +77,16 @@ public class ConstantRegressionModel
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(0, 1_000_000)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING)
-                .withTargetTypes(VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(true);
+        return Capabilities.builder()
+                .minInputCount(0)
+                .maxInputCount(1_000_000)
+                .minTargetCount(1)
+                .maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.DOUBLE, VType.BINARY, VType.INT, VType.NOMINAL, VType.LONG, VType.STRING))
+                .targetType(VType.DOUBLE)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(true)
+                .build();
     }
 
     public double constantValue() {

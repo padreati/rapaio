@@ -44,6 +44,7 @@ import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -139,13 +140,16 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(1, 1_000_000)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG)
-                .withTargetTypes(VType.NOMINAL)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(1)
+                .maxInputCount(1_000_000)
+                .minTargetCount(1)
+                .maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.NOMINAL, VType.DOUBLE, VType.LONG))
+                .targetType(VType.NOMINAL)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     @Override

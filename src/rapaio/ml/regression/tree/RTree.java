@@ -32,11 +32,11 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.common.predicate.RowPredicate;
 import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.loss.RegressionLoss;
 import rapaio.ml.regression.AbstractRegressionModel;
@@ -190,13 +190,14 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withInputCount(1, 1_000_000)
-                .withTargetCount(1, 1)
-                .withInputTypes(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL)
-                .withTargetTypes(VType.DOUBLE)
-                .withAllowMissingInputValues(true)
-                .withAllowMissingTargetValues(false);
+        return Capabilities.builder()
+                .minInputCount(1).maxInputCount(1_000_000)
+                .minTargetCount(1).maxTargetCount(1)
+                .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .targetType(VType.DOUBLE)
+                .allowMissingInputValues(true)
+                .allowMissingTargetValues(false)
+                .build();
     }
 
     public int minCount() {
