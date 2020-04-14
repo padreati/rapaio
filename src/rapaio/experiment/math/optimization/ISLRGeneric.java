@@ -43,7 +43,6 @@ import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +55,7 @@ import static rapaio.graphics.Plotter.*;
  * Implemented using as reference: "Iterative Reweighted Least Squares  - C. Sidney Burrus"
  * link: file:///home/ati/Dropbox/papers/numerical-anlysis/iterative-reweighted-least-squares-12.pdf
  */
-public class ISLRNew {
+public class ISLRGeneric {
 
     /**
      * We minimize ||e||_p, where e = Ax - b
@@ -212,7 +211,7 @@ public class ISLRNew {
         return Pair.from(x, err);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         WS.setPrinter(new IdeaPrinter());
 

@@ -233,6 +233,7 @@ of production ready tools from this field.
 * OneRule
 * Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, 
 Multinomial, Poisson)
+* Linear: BinaryLogistic (optionally L2 penalization)
 
 **Regression**
 
@@ -282,7 +283,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* Linear: BinaryLogistic
 * Decision Trees - CTree: DecisionStump, ID3, C45, CART
   * purity: entropy, infogain, gain ration, gini index
   * weight on instances

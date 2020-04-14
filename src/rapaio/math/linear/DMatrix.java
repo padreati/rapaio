@@ -443,9 +443,26 @@ public interface DMatrix extends Serializable, Printable {
     /**
      * Builds a summary of the matrix.
      *
-     * @return string which contains matrix summary
      * @param printer
      * @param options
+     * @return string which contains matrix summary
      */
     String toSummary(Printer printer, POption... options);
+
+    default boolean deepEquals(DMatrix m) {
+        if (rowCount() != m.rowCount()) {
+            return false;
+        }
+        if (colCount() != m.colCount()) {
+            return false;
+        }
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                if (get(i, j) != m.get(i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

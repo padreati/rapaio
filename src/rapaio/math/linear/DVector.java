@@ -33,6 +33,7 @@ import rapaio.printer.Printable;
 import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
+import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 /**
@@ -235,6 +236,8 @@ public interface DVector extends Serializable, Printable {
 
     DVector apply(DoubleDoubleFunction f);
 
+    DVector apply(BiFunction<Integer, Double, Double> f);
+
     /**
      * Creates a new solid copy of the vector.
      * There are two common reasons why we would need such an operations:
@@ -275,4 +278,16 @@ public interface DVector extends Serializable, Printable {
     DoubleStream valueStream();
 
     VarDouble asVarDouble();
+
+    default boolean deepEquals(DVector v) {
+        if (size() != v.size()) {
+            return false;
+        }
+        for (int i = 0; i < size(); i++) {
+            if (get(i) != v.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

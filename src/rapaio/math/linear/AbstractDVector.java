@@ -6,6 +6,8 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 import rapaio.util.function.DoubleDoubleFunction;
 
+import java.util.function.BiFunction;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
@@ -224,6 +226,13 @@ public abstract class AbstractDVector implements DVector {
         return this;
     }
 
+    @Override
+    public AbstractDVector apply(BiFunction<Integer, Double, Double> f) {
+        for (int i = 0; i < size(); i++) {
+            set(i, f.apply(i, get(i)));
+        }
+        return this;
+    }
 
     @Override
     public String toString() {

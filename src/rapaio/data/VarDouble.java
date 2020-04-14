@@ -60,7 +60,7 @@ import java.util.stream.Collector;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class VarDouble extends AbstractVar {
+public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     /**
      * @return new empty double variable of size 0
@@ -590,5 +590,10 @@ public final class VarDouble extends AbstractVar {
             DecimalFormat format = printer.getOptions().bind(options).floatFormat();
             tt.floatString(i, j, format.format(getDouble(row)));
         }
+    }
+
+    @Override
+    public Iterator<Double> iterator() {
+        return stream().mapToDouble().iterator();
     }
 }

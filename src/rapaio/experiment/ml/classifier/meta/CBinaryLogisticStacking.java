@@ -33,10 +33,10 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.VApplyDouble;
-import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -60,7 +60,7 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
     private static final Logger logger = Logger.getLogger(CBinaryLogisticStacking.class.getName());
 
     private List<ClassifierModel> weaks = new ArrayList<>();
-    private BinaryLogistic log = new BinaryLogistic();
+    private BinaryLogistic log = BinaryLogistic.newModel();
     private double tol = 1e-5;
     private int maxRuns = 1_000_000;
 
@@ -138,8 +138,8 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         logger.config("started learning for binary logistic...");
-        log.withTolerance(tol);
-        log.withMaxRuns(maxRuns);
+        log.withEps(tol);
+        log.withRuns(maxRuns);
         log.fit(df, weights, targetNames());
 
         logger.config("end predict method call");
