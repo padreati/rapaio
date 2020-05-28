@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.eval.metric.MAE;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

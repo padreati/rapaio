@@ -8,7 +8,6 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.eval.metric.RMSE;
 import rapaio.ml.regression.linear.LinearRegressionModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,25 +28,15 @@ public class RMSETest {
         VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
         VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");
 
-        RMSE rmse1 = RMSE.from(x, y);
-        RMSE rmse2 = RMSE.from(x, z);
+        RMSE rmse1 = RMSE.newMetric().compute(x, y);
+        RMSE rmse2 = RMSE.newMetric().compute(x, z);
 
         assertEquals("> Root Mean Squared Error (RMSE):\n" +
-                "\n" +
-                "target rmse mse \n" +
-                " x | y    1   1 \n" +
-                "\n" +
-                "Total RMSE: 1\n" +
-                "Total MSE: 1\n" +
+                "RMSE: 1\n" +
                 "\n", rmse1.toSummary());
 
         assertEquals("> Root Mean Squared Error (RMSE):\n" +
-                "\n" +
-                "target rmse mse \n" +
-                " x | z    2   4 \n" +
-                "\n" +
-                "Total RMSE: 2\n" +
-                "Total MSE: 4\n" +
+                "RMSE: 2\n" +
                 "\n", rmse2.toSummary());
     }
 
@@ -63,12 +52,10 @@ public class RMSETest {
         LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
         lm.fit(df, targets);
 
-        var fit = lm.predict(df, true);
-        RMSE rmse = RMSE.from(df.mapVars(fit.targetNames()), fit.predictionFrame());
-
-        for (int i = 0; i < targets.length; i++) {
-            assertEquals(fit.rss(targets[i]) / df.rowCount(), rmse.mse().getDouble(i), TOL);
-            assertEquals(rmse.totalRmse(), Math.sqrt(rmse.totalMse()), TOL);
+        var prediction = lm.predict(df, true);
+        for (String target : targets) {
+            RMSE rmse = RMSE.newMetric().compute(df.rvar(target), prediction.prediction(target));
+            assertEquals(prediction.rss(target) / df.rowCount(), Math.pow(rmse.score.getValue(), 2), TOL);
         }
     }
 }

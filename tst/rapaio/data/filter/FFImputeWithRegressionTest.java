@@ -37,7 +37,7 @@ public class FFImputeWithRegressionTest {
         double xm = Mean.of(x).value();
         double ym = Mean.of(y).value();
 
-        var model = L2RegressionModel.newL2();
+        var model = L2RegressionModel.newModel();
 
         FFImputeWithRegression xfilter = FFImputeWithRegression.of(model, VRange.of("x"), "x").newInstance();
         FFImputeWithRegression yfilter = FFImputeWithRegression.of(model, VRange.of("y"), "y");

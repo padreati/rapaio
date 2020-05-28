@@ -66,7 +66,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    private RegressionModel initRegressionModel = L2RegressionModel.newL2();
+    private RegressionModel initRegressionModel = L2RegressionModel.newModel();
     private GBTRtree regressor = RTree.newCART().withMaxDepth(2).withMinCount(10);
     private GBTRegressionLoss lossFunction = new GBTRegressionLossL2();
     private RegressionLoss regressionLoss = new L2RegressionLoss();

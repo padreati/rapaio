@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.eval.metric;
+package rapaio.ml.eval.metric;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
@@ -46,12 +46,12 @@ import rapaio.printer.opt.POption;
  */
 public class MAE implements Printable {
 
-    public static MAE from(Var actual, Var fit) {
-        return new MAE(BoundFrame.byVars(actual), BoundFrame.byVars(fit));
+    public static MAE from(Var actual, Var prediction) {
+        return new MAE(BoundFrame.byVars(actual), BoundFrame.byVars(prediction));
     }
 
-    public static MAE from(Frame actual, Frame fit) {
-        return new MAE(actual, fit);
+    public static MAE from(Frame actual, Frame prediction) {
+        return new MAE(actual, prediction);
     }
 
     private final Frame actual;

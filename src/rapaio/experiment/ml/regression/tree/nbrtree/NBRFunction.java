@@ -188,7 +188,7 @@ class ConstantFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        L2RegressionModel model = L2RegressionModel.newL2();
+        L2RegressionModel model = L2RegressionModel.newModel();
 
         Frame map = BoundFrame.byVars(y);
         model.fit(map, weights, y.name());

@@ -1,5 +1,7 @@
 package rapaio.ml.eval.split;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -12,6 +14,8 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
+@AllArgsConstructor
+@Getter
 public class KFold implements SplitStrategy {
 
     private final int rounds;
@@ -21,13 +25,8 @@ public class KFold implements SplitStrategy {
         this(1, folds);
     }
 
-    public KFold(int rounds, int folds) {
-        this.rounds = rounds;
-        this.folds = folds;
-    }
-
     @Override
-    public List<Split> generateSplits(Frame df, Var weights, String targetName) {
+    public List<Split> generateSplits(Frame df, Var weights) {
         if (folds > df.rowCount()) {
             throw new IllegalArgumentException("Cannot generate more folds than actual number of observations.");
         }
@@ -55,11 +54,14 @@ public class KFold implements SplitStrategy {
             // generate splits
             for (int i = 0; i < mappings.length; i++) {
                 Mapping mapping = mappings[i];
-                Split split = new Split(round, i,
-                        targetName,
-                        df.removeRows(mapping), weights.removeRows(mapping),
-                        df.mapRows(mapping), weights.mapRows(mapping));
-                splits.add(split);
+                splits.add(Split.builder()
+                        .round(round)
+                        .fold(i)
+                        .trainDf(df.removeRows(mapping))
+                        .trainWeights(weights == null ? null : weights.removeRows(mapping))
+                        .testDf(df.mapRows(mapping))
+                        .testWeights(weights == null ? null : weights.mapRows(mapping))
+                        .build());
             }
 
         }

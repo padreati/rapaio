@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.ml.eval.cmetric;
+package rapaio.ml.eval.metric;
 
 import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;

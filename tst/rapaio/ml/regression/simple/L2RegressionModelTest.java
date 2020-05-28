@@ -33,7 +33,7 @@ public class L2RegressionModelTest {
 
     @Test
     void testNaming() {
-        L2RegressionModel model = L2RegressionModel.newL2();
+        L2RegressionModel model = L2RegressionModel.newModel();
         assertEquals("L2Regression", model.name());
         assertEquals("L2Regression()", model.fullName());
 
@@ -247,7 +247,7 @@ public class L2RegressionModelTest {
 
     @Test
     void testPrediction() {
-        L2RegressionModel model = L2RegressionModel.newL2().newInstance().fit(df, "Sales");
+        L2RegressionModel model = L2RegressionModel.newModel().newInstance().fit(df, "Sales");
         var result = model.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(model.getMeans()[0], result.firstPrediction().getDouble(i), TOL);

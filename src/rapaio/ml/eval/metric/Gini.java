@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.eval.metric;
+package rapaio.ml.eval.metric;
 
 import rapaio.core.stat.Sum;
 import rapaio.data.RowComparators;

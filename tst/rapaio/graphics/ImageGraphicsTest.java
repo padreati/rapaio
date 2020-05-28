@@ -38,12 +38,12 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.filter.VApplyDouble;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.eval.metric.ROC;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
 import rapaio.io.JavaIO;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 

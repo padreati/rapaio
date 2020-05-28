@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/15/19.
  */
-public class RMetricTest {
+public class RegressionMetricTest {
 
     private static final double TOL = 1e-20;
 

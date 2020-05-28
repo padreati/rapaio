@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface SplitStrategy {
 
-    List<Split> generateSplits(Frame df, Var weights, String targetName);
+    List<Split> generateSplits(Frame df, Var weights);
 }

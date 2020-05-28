@@ -1,5 +1,7 @@
 package rapaio.ml.eval.split;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -12,43 +14,44 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
+@AllArgsConstructor
+@Getter
 public class StratifiedKFold implements SplitStrategy {
 
     private final int rounds;
     private final int folds;
+    private final String strata;
 
-    public StratifiedKFold(int folds) {
-        this(1, folds);
-    }
-
-    public StratifiedKFold(int rounds, int folds) {
-        this.rounds = rounds;
-        this.folds = folds;
+    public StratifiedKFold(int folds, String strata) {
+        this(1, folds, strata);
     }
 
     @Override
-    public List<Split> generateSplits(Frame df, Var weights, String targetName) {
+    public List<Split> generateSplits(Frame df, Var weights) {
 
         List<Split> splits = new ArrayList<>();
         for (int round = 0; round < rounds; round++) {
-            List<Mapping> mappings = buildStrata(df, targetName);
+            List<Mapping> mappings = buildStrata(df, strata);
             for (int i = 0; i < mappings.size(); i++) {
                 Mapping mapping = mappings.get(i);
-                Split split = new Split(round, i,
-                        targetName,
-                        df.removeRows(mapping), weights.removeRows(mapping),
-                        df.mapRows(mapping), weights.mapRows(mapping));
-                splits.add(split);
+                splits.add(Split.builder()
+                        .round(round)
+                        .fold(i)
+                        .trainDf(df.removeRows(mapping))
+                        .trainWeights(weights == null ? null : weights.removeRows(mapping))
+                        .testDf(df.mapRows(mapping))
+                        .testWeights(weights == null ? null : weights.mapRows(mapping))
+                        .build());
             }
         }
         return splits;
     }
 
-    private List<Mapping> buildStrata(Frame df, String targetName) {
-        List<String> dict = df.rvar(targetName).levels();
+    private List<Mapping> buildStrata(Frame df, String strataName) {
+        List<String> dict = df.rvar(strataName).levels();
         List<Mapping> rows = dict.stream().map(name -> Mapping.empty()).collect(Collectors.toList());
         for (int i = 0; i < df.rowCount(); i++) {
-            rows.get(df.getInt(i, targetName)).add(i);
+            rows.get(df.getInt(i, strataName)).add(i);
         }
         Mapping shuffle = Mapping.empty();
         for (int i = 0; i < dict.size(); i++) {

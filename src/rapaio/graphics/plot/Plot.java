@@ -31,7 +31,6 @@ import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.experiment.grid.MeshGrid;
-import rapaio.experiment.ml.eval.metric.ROC;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
@@ -47,6 +46,7 @@ import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.ROCCurve;
 import rapaio.graphics.plot.plotcomp.Segment2D;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.util.serializable.SFunction;
 
 import java.awt.*;

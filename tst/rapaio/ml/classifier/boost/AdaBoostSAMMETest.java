@@ -32,7 +32,7 @@ import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.eval.cmetric.Confusion;
+import rapaio.ml.eval.metric.Confusion;
 import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 

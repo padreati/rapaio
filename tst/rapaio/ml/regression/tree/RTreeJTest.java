@@ -38,9 +38,9 @@ import rapaio.data.VarNominal;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.eval.metric.RMSE;
 import rapaio.experiment.ml.regression.ensemble.RForest;
 import rapaio.ml.common.VarSelector;
+import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.RTreePredictor;
@@ -336,8 +336,8 @@ public class RTreeJTest {
                 .withMaxDepth(10).withMinCount(1);
         tree.fit(df, "target");
         RegressionResult<RTree> result = tree.predict(df);
-        RMSE rmse = RMSE.from(df.rvar("target"), result.firstPrediction());
-        assertEquals(0, rmse.totalMse(), TOL);
+        RMSE rmse = RMSE.newMetric().compute(df.rvar("target"), result);
+        assertEquals(0, Math.pow(rmse.getScore().getValue(), 2), TOL);
     }
 
     @Test

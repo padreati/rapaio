@@ -53,14 +53,15 @@ import rapaio.experiment.ml.classifier.svm.kernel.SphericalKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.SplineKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.WaveKernel;
 import rapaio.experiment.ml.classifier.svm.kernel.WaveletKernel;
-import rapaio.ml.eval.CEval;
-import rapaio.ml.eval.cmetric.CMetric;
+import rapaio.ml.eval.ClassifierEvaluation;
+import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.StratifiedKFold;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -145,9 +146,11 @@ public class BinarySMOTest {
                 .withC(0.1);
 
         RandomSource.setSeed(1);
-        double score = CEval.newInstance(df.fapply(FStandardize.on(VRange.all())), target, smo1)
-                .withSplitStrategy(new StratifiedKFold(10))
-                .withMetrics(CMetric.accuracy()).run().getMeanTrainScore(CMetric.accuracy().name());
+        double score = ClassifierEvaluation.builder().df(df.fapply(FStandardize.on(VRange.all()))).targetName(target).model(smo1)
+                .splitStrategy(new StratifiedKFold(10, target))
+                .metrics(Arrays.asList(Accuracy.newMetric(true)))
+                .build()
+                .run().getMeanTrainScore(Accuracy.newMetric(true).getName());
         assertEquals(0.8750085333940152, score, 1e-7);
     }
 
@@ -187,11 +190,12 @@ public class BinarySMOTest {
 
             BinarySMO smo = new BinarySMO();
             df = df.fapply(FStandardize.on(VRange.all()));
-            double s = CEval.newInstance(df, "Class", smo)
-                    .withSplitStrategy(new KFold(3))
-                    .withMetrics(CMetric.accuracy())
+            double s = ClassifierEvaluation.builder().df(df).targetName("Class").model(smo)
+                    .splitStrategy(new KFold(3))
+                    .metric(Accuracy.newMetric())
+                    .build()
                     .run()
-                    .getMeanTestScore(CMetric.accuracy().name());
+                    .getMeanTestScore(Accuracy.newMetric().getName());
             assertTrue(s > 0.6);
 
             name.addLabel(k.name());

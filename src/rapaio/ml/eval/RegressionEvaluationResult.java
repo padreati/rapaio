@@ -1,5 +1,33 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.eval;
 
+import lombok.Getter;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -11,10 +39,10 @@ import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.group.GroupFun;
-import rapaio.ml.classifier.ClassifierModel;
-import rapaio.ml.classifier.ClassifierResult;
-import rapaio.ml.eval.cmetric.CMetric;
+import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.Split;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -24,53 +52,36 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
+ * Container for the results of a cross validation evaluation on regression
+ * models.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
-public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> implements Printable {
+public class RegressionEvaluationResult<M extends RegressionModel<M,R>, R extends RegressionResult<M>> implements Printable {
 
     private static final String FIELD_ROUND = "round";
     private static final String FIELD_FOLD = "fold";
 
-    private final CEval<M, R> ceval;
-    private ReentrantLock scoresLock = new ReentrantLock();
+    @Getter
+    private final RegressionEvaluation<M, R> eval;
+    @Getter
     private Frame trainScores;
+    @Getter
     private Frame testScores;
 
-    public CEvalResult(CEval<M, R> ceval) {
-        this.ceval = ceval;
+    private final ReentrantLock scoresLock = new ReentrantLock();
+
+    public RegressionEvaluationResult(RegressionEvaluation<M, R> eval) {
+        this.eval = eval;
 
         List<Var> vars = new ArrayList<>();
         vars.add(VarInt.empty().withName(FIELD_ROUND));
         vars.add(VarInt.empty().withName(FIELD_FOLD));
-        for (CMetric metric : ceval.getMetrics()) {
-            vars.add(VarDouble.empty().withName(metric.name()));
+        for (RegressionMetric metric : eval.getMetrics()) {
+            vars.add(VarDouble.empty().withName(metric.getName()));
         }
         trainScores = SolidFrame.byVars(vars).copy();
         testScores = trainScores.copy();
-    }
-
-    public ClassifierModel<M, R> getModel() {
-        return ceval.getModel();
-    }
-
-    public Frame getFrame() {
-        return ceval.getDf();
-    }
-
-    public Var getWeights() {
-        return ceval.getWeights();
-    }
-
-    public String getTargetName() {
-        return ceval.getTargetName();
-    }
-
-    public Frame getTrainScores() {
-        return trainScores;
-    }
-
-    public Frame getTestScores() {
-        return testScores;
     }
 
     public double getMeanTrainScore(String metric) {
@@ -81,7 +92,7 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
         return Mean.of(testScores.rvar(metric)).value();
     }
 
-    void appendRun(Split split, ClassifierResult<M> trainResult, ClassifierResult<M> testResult) {
+    void appendRun(Split split, RegressionResult<M> trainResult, RegressionResult<M> testResult) {
 
         scoresLock.lock();
         try {
@@ -90,8 +101,9 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
             trainScores.addRows(1);
             trainScores.setInt(lastRow, FIELD_ROUND, split.getRound());
             trainScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (CMetric metric : ceval.getMetrics()) {
-                trainScores.setDouble(lastRow, metric.name(), metric.compute(trainResult, split.getTrainDf().rvar(split.getTargetName())));
+            for (RegressionMetric metric : eval.getMetrics()) {
+                trainScores.setDouble(lastRow, metric.getName(),
+                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getScore().getValue());
             }
             trainScores = trainScores.fapply(FRefSort.by(
                     trainScores.rvar(FIELD_ROUND).refComparator(),
@@ -101,8 +113,9 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
             testScores.addRows(1);
             testScores.setInt(lastRow, FIELD_ROUND, split.getRound());
             testScores.setInt(lastRow, FIELD_FOLD, split.getFold());
-            for (CMetric metric : ceval.getMetrics()) {
-                testScores.setDouble(lastRow, metric.name(), metric.compute(trainResult, split.getTrainDf().rvar(split.getTargetName())));
+            for (RegressionMetric metric : eval.getMetrics()) {
+                testScores.setDouble(lastRow, metric.getName(),
+                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getScore().getValue());
             }
 
             testScores = testScores.fapply(FRefSort.by(
@@ -117,7 +130,7 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
     private String toContentName(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(ceval.getModel().fullName()).append("\n");
+        sb.append(eval.getModel().fullName()).append("\n");
         return sb.toString();
     }
 
@@ -130,11 +143,11 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
         Var stdVar = VarDouble.empty().withName("std");
         Frame global = SolidFrame.byVars(metricVar, meanVar, stdVar);
 
-        for (CMetric metric : ceval.getMetrics()) {
+        for (RegressionMetric metric : eval.getMetrics()) {
             global.addRows(1);
-            global.setLabel(global.rowCount() - 1, "metric", metric.name());
-            global.setDouble(global.rowCount() - 1, "mean", Mean.of(trainScores.rvar(metric.name())).value());
-            global.setDouble(global.rowCount() - 1, "std", Variance.of(trainScores.rvar(metric.name())).sdValue());
+            global.setLabel(global.rowCount() - 1, "metric", metric.getName());
+            global.setDouble(global.rowCount() - 1, "mean", Mean.of(trainScores.rvar(metric.getName())).value());
+            global.setDouble(global.rowCount() - 1, "std", Variance.of(trainScores.rvar(metric.getName())).sdValue());
         }
         sb.append(global.toFullContent(printer, options));
         sb.append("\n");
@@ -155,7 +168,7 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
     public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Model:\n");
-        sb.append(ceval.getModel().fullName()).append("\n");
+        sb.append(eval.getModel().fullName()).append("\n");
 
         sb.append("Raw scores:\n");
         sb.append("===========\n");
@@ -165,9 +178,9 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
         sb.append("Round scores:\n");
         sb.append("=============\n");
         List<GroupFun> groupFuns = new ArrayList<>();
-        for (CMetric metric : ceval.getMetrics()) {
-            groupFuns.add(Group.mean(metric.name()));
-            groupFuns.add(Group.std(metric.name()));
+        for (RegressionMetric metric : eval.getMetrics()) {
+            groupFuns.add(Group.mean(metric.getName()));
+            groupFuns.add(Group.std(metric.getName()));
         }
         sb.append(Group.from(trainScores, "round").aggregate(groupFuns.toArray(GroupFun[]::new))
                 .toFrame()
@@ -179,3 +192,4 @@ public class CEvalResult<M extends ClassifierModel<M, R>, R extends ClassifierRe
         return sb.toString();
     }
 }
+

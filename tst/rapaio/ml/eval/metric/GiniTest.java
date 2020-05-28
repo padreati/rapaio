@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.eval.metric.Gini;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

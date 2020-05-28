@@ -33,7 +33,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.experiment.ml.eval.metric.ROC;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
@@ -60,6 +59,7 @@ import rapaio.graphics.plot.plotcomp.Histogram2D;
 import rapaio.graphics.plot.plotcomp.Lines;
 import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.ROCCurve;
+import rapaio.ml.eval.metric.ROC;
 import rapaio.util.serializable.SFunction;
 
 import java.awt.*;

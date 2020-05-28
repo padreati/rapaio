@@ -51,7 +51,7 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
 
     private static final long serialVersionUID = -8666168876139028337L;
 
-    public static L2RegressionModel newL2() {
+    public static L2RegressionModel newModel() {
         return new L2RegressionModel();
     }
 

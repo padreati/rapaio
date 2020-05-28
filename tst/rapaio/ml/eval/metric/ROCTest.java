@@ -30,7 +30,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.eval.metric.ROC;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
