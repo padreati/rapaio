@@ -1,12 +1,9 @@
 package rapaio.util.function;
 
-import java.io.Serializable;
-import java.util.function.BiFunction;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
-public interface IntIntDoubleBiFunction extends BiFunction<Integer, Integer, Double>, Serializable {
+public interface IntIntDoubleBiFunction extends SBiFunction<Integer, Integer, Double> {
 
     @Override
     @Deprecated

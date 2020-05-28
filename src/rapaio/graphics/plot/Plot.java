@@ -47,7 +47,7 @@ import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.ROCCurve;
 import rapaio.graphics.plot.plotcomp.Segment2D;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.util.serializable.SFunction;
+import rapaio.util.function.SFunction;
 
 import java.awt.*;
 import java.util.LinkedList;

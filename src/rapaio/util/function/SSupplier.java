@@ -1,4 +1,4 @@
-package rapaio.util.serializable;
+package rapaio.util.function;
 
 import java.util.function.Supplier;
 

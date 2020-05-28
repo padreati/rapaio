@@ -55,7 +55,6 @@ public class Pair<T1, T2> implements Serializable {
         return "Pair{" + _1 + ", " + _2 + "}";
     }
 
-
     public void update(T1 _1, T2 _2) {
         this._1 = _1;
         this._2 = _2;

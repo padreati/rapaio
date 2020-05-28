@@ -32,7 +32,7 @@ import rapaio.data.VarDouble;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
-import rapaio.util.serializable.SFunction;
+import rapaio.util.function.SFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

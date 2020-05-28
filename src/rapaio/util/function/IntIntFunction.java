@@ -1,12 +1,9 @@
 package rapaio.util.function;
 
-import java.io.Serializable;
-import java.util.function.Function;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/7/19.
  */
-public interface IntIntFunction extends Function<Integer, Integer>, Serializable {
+public interface IntIntFunction extends SFunction<Integer, Integer> {
 
     @Override
     @Deprecated

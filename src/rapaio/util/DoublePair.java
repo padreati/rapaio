@@ -27,37 +27,65 @@
 
 package rapaio.util;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/29/18.
  */
-public class DoublePair {
-    public double p1;
-    public double p2;
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public final class DoublePair {
 
-    protected DoublePair(double p1, double p2) {
-        this.p1 = p1;
-        this.p2 = p2;
-    }
-
-    public static DoublePair from(double u, double v) {
+    public static DoublePair of(double u, double v) {
         return new DoublePair(u, v);
     }
 
-    @Override
-    public String toString() {
-        return "Pair{" + floatFlex(p1) + ", " + floatFlex(p2) + "}";
+    public static DoublePair zeros() {
+        return new DoublePair(0.0, 0.0);
     }
 
+    public double _1;
+    public double _2;
 
-    public void update(double p1, double p2) {
-        this.p1 = p1;
-        this.p2 = p2;
+    @Override
+    public String toString() {
+        return "Pair{" + floatFlex(_1) + ", " + floatFlex(_2) + "}";
+    }
+
+    public void update(double _1, double _2) {
+        this._1 = _1;
+        this._2 = _2;
     }
 
     public void update(DoublePair p) {
-        this.p1 = p.p1;
-        this.p2 = p.p2;
+        this._1 = p._1;
+        this._2 = p._2;
+    }
+
+    public double sum() {
+        return _1 + _2;
+    }
+
+    public void normalize() {
+        double sum = sum();
+        if (sum == 0) {
+            _1 = 0.0;
+            _2 = 0.0;
+        } else {
+            _1 /= sum;
+            _2 /= sum;
+        }
+    }
+
+    public void fill(double value) {
+        this._1 = value;
+        this._2 = value;
+    }
+
+    public void increment(DoublePair p) {
+        this._1 += p._1;
+        this._2 += p._2;
     }
 }

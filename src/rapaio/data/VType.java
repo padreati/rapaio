@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import rapaio.util.serializable.SFunction;
+import rapaio.util.function.SFunction;
 
 /**
  * Represents the type of variable.

@@ -28,7 +28,7 @@
 package rapaio.experiment.ml.classifier.tree;
 
 import rapaio.data.Frame;
-import rapaio.util.ValuePair;
+import rapaio.util.DoublePair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -89,11 +89,11 @@ public interface CTreePruning extends Serializable {
 
             // collect predict produced in each node, in a cumulative way
 
-            HashMap<Integer, ValuePair> bottomUp = new HashMap<>();
-            HashMap<Integer, ValuePair> topDown = new HashMap<>();
+            HashMap<Integer, DoublePair> bottomUp = new HashMap<>();
+            HashMap<Integer, DoublePair> topDown = new HashMap<>();
             nodes.keySet().forEach(id -> {
-                bottomUp.put(id, ValuePair.empty());
-                topDown.put(id, ValuePair.empty());
+                bottomUp.put(id, DoublePair.zeros());
+                topDown.put(id, DoublePair.zeros());
             });
 
             for (int i = 0; i < df.rowCount(); i++) {
@@ -137,7 +137,7 @@ public interface CTreePruning extends Serializable {
                 // if found than prune the tree and clear info on pruned nodes
 
                 if (found) {
-                    updateError(maxId, bottomUp, nodes, ValuePair.of(
+                    updateError(maxId, bottomUp, nodes, DoublePair.of(
                             topDown.get(maxId)._1 - bottomUp.get(maxId)._1,
                             topDown.get(maxId)._2 - bottomUp.get(maxId)._2));
                     addToPruned(maxId, nodes.get(maxId), pruned, topDown, bottomUp, nodes);
@@ -151,15 +151,15 @@ public interface CTreePruning extends Serializable {
 
             return tree;
         }
-        private void updateError(int id, HashMap<Integer, ValuePair> bottomUp, HashMap<Integer, CTreeNode> nodes, ValuePair accDiff) {
+        private void updateError(int id, HashMap<Integer, DoublePair> bottomUp, HashMap<Integer, CTreeNode> nodes, DoublePair accDiff) {
             bottomUp.get(id).increment(accDiff);
             if (nodes.get(id).getParent() != null)
                 updateError(nodes.get(id).getParent().getId(), bottomUp, nodes, accDiff);
         }
 
         private void addToPruned(int id, CTreeNode node, Set<Integer> pruned,
-                                        HashMap<Integer, ValuePair> topDown,
-                                        HashMap<Integer, ValuePair> bottomUp,
+                                        HashMap<Integer, DoublePair> topDown,
+                                        HashMap<Integer, DoublePair> bottomUp,
                                         HashMap<Integer, CTreeNode> nodes) {
             pruned.add(node.getId());
             if (node.getId() != id) {
@@ -179,27 +179,27 @@ public interface CTreePruning extends Serializable {
             return nodes;
         }
 
-        private ValuePair bottomUpCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
+        private DoublePair bottomUpCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, DoublePair> bottomUp) {
 
             if (node.isLeaf()) {
-                ValuePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+                DoublePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? DoublePair.of(1.0, 0.0) : DoublePair.of(0.0, 1.0);
                 bottomUp.get(node.getId()).increment(err);
                 return err;
             }
 
             for (CTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(row, df)) {
-                    ValuePair err = bottomUpCollect(row, df, tree, child, bottomUp);
+                    DoublePair err = bottomUpCollect(row, df, tree, child, bottomUp);
                     bottomUp.get(node.getId()).increment(err);
                     return err;
                 }
             }
-            return ValuePair.empty();
+            return DoublePair.zeros();
         }
 
-        private void topDownCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
+        private void topDownCollect(int row, Frame df, CTree tree, CTreeNode node, HashMap<Integer, DoublePair> topDown) {
 
-            ValuePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
+            DoublePair err = !df.getLabel(row, tree.firstTargetName()).equals(node.getBestLabel()) ? DoublePair.of(1.0, 0.0) : DoublePair.of(0.0, 1.0);
             topDown.get(node.getId()).increment(err);
 
             for (CTreeNode child : node.getChildren()) {

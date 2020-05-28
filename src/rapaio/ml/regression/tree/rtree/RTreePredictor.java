@@ -74,7 +74,7 @@ public interface RTreePredictor extends Serializable {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
-                return DoublePair.from(node.value(), node.weight());
+                return DoublePair.of(node.value(), node.weight());
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
@@ -89,10 +89,10 @@ public interface RTreePredictor extends Serializable {
             VarDouble weights = VarDouble.empty();
             for (RTreeNode child : node.children()) {
                 DoublePair prediction = predict(row, df, child);
-                values.addDouble(prediction.p1);
-                weights.addDouble(prediction.p2);
+                values.addDouble(prediction._1);
+                weights.addDouble(prediction._2);
             }
-            return DoublePair.from(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
+            return DoublePair.of(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
         }
     };
 }

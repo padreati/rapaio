@@ -30,7 +30,7 @@ package rapaio.data;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.serializable.SFunction;
+import rapaio.util.function.SFunction;
 
 import java.time.Instant;
 import java.util.ArrayList;
