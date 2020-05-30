@@ -9,7 +9,6 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarNominal;
-import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.rule.ZeroRule;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
@@ -41,7 +40,7 @@ public class ClassifierEvaluationTest {
     @Test
     void testSmoke() {
         Frame df = SolidFrame.byVars(VarNominal.copy("a", "a", "a", "b").withName(targetName));
-        ClassifierModel model = ZeroRule.newModel();
+        var model = ZeroRule.newModel();
         ClassifierMetric metric = Accuracy.newMetric(true);
 
         doReturn(List.of(
@@ -60,16 +59,16 @@ public class ClassifierEvaluationTest {
         )
                 .when(splitStrategy).generateSplits(any(), any());
 
-        ClassifierEvaluation eval = ClassifierEvaluation.builder()
+        var eval = ClassifierEvaluation.builder()
                 .df(df)
+                .targetName(targetName)
                 .model(model)
                 .splitStrategy(splitStrategy)
                 .threads(1)
                 .metric(metric)
-                .targetName(targetName)
                 .build();
 
-        ClassifierEvaluationResult result = eval.run();
+        var result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());
         assertEquals(0, result.getTrainScores().getDouble(0, "round"));
         assertEquals(0, result.getTrainScores().getDouble(0, "fold"));

@@ -48,9 +48,9 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ClassifierResult<M extends ClassifierModel> implements Printable {
+public class ClassifierResult implements Printable {
 
-    private final M model;
+    private final ClassifierModel model;
     private final Frame df;
     private final List<String> targetNames = new ArrayList<>();
     private final boolean hasClasses;
@@ -61,12 +61,12 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable {
 
     // builder
 
-    public static <T extends ClassifierModel> ClassifierResult<T> build(T model, Frame df, boolean withClasses, boolean withDensities) {
-        return new ClassifierResult<>(model, df, withClasses, withDensities);
+    public static ClassifierResult build(ClassifierModel model, Frame df, boolean withClasses, boolean withDensities) {
+        return new ClassifierResult(model, df, withClasses, withDensities);
     }
 
-    public static <T extends ClassifierModel> ClassifierResult<T> copy(T model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
-        ClassifierResult<T> result = new ClassifierResult<>(model, df, withClasses, withDensities);
+    public static ClassifierResult copy(ClassifierModel model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
+        ClassifierResult result = new ClassifierResult(model, df, withClasses, withDensities);
         for (String key : result.classes.keySet()) {
             result.classes.put(key, (VarNominal) from.classes.get(key));
         }
@@ -78,7 +78,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable {
 
     // private constructor
 
-    private ClassifierResult(final M model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
+    private ClassifierResult(final ClassifierModel model, final Frame df, final boolean hasClasses, final boolean hasDensities) {
         this.model = model;
         this.df = df;
         this.hasClasses = hasClasses;
@@ -97,7 +97,7 @@ public class ClassifierResult<M extends ClassifierModel> implements Printable {
         }
     }
 
-    public M getModel() {
+    public ClassifierModel getModel() {
         return model;
     }
 

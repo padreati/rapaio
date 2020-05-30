@@ -47,8 +47,8 @@ import java.util.Arrays;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/19.
  */
-public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingRTree, RegressionResult<NestedBoostingRTree>>
-        implements GBTRtree<NestedBoostingRTree, RegressionResult<NestedBoostingRTree>> {
+public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingRTree, RegressionResult>
+        implements GBTRtree<NestedBoostingRTree, RegressionResult> {
 
     private static final long serialVersionUID = 1864784340491461993L;
     private int minCount = 5;

@@ -46,7 +46,7 @@ import java.util.function.BiFunction;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>> extends Printable, Serializable {
+public interface ClassifierModel extends Printable, Serializable {
 
     /**
      * Creates a new classifier instance with the same parameters as the original.
@@ -54,7 +54,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *
      * @return new parametrized instance
      */
-    M newInstance();
+    ClassifierModel newInstance();
 
     /**
      * Returns the classifier name.
@@ -92,7 +92,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *
      * @param sampler instance of a new sampler
      */
-    M withSampler(RowSampler sampler);
+    ClassifierModel withSampler(RowSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -209,7 +209,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      * @param df         data set instances
      * @param targetVars target variables
      */
-    M fit(Frame df, String... targetVars);
+    ClassifierModel fit(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetNames
@@ -218,7 +218,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      * @param weights    instance weights
      * @param targetVars target variables
      */
-    M fit(Frame df, Var weights, String... targetVars);
+    ClassifierModel fit(Frame df, Var weights, String... targetVars);
 
     /**
      * Predict classes for new data set instances, with
@@ -226,7 +226,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *
      * @param df data set instances
      */
-    R predict(Frame df);
+    <R extends ClassifierResult> R predict(Frame df);
 
     /**
      * Predict classes for given instances, generating classes if specified and
@@ -236,7 +236,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    R predict(Frame df, boolean withClasses, boolean withDistributions);
+    <R extends ClassifierResult> R predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * set the pool size for fork join tasks
@@ -246,7 +246,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *
      * @param poolSize specified pool size
      */
-    M withPoolSize(int poolSize);
+    <M extends ClassifierModel> M withPoolSize(int poolSize);
 
     /**
      * Gets the configured pool size. Negative values are considered
@@ -274,7 +274,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      * @param runs number of runs
      * @return self-instance, used for builder pattern
      **/
-    M withRuns(int runs);
+    <M extends ClassifierModel> M withRuns(int runs);
 
     /**
      * Get the lambda call hook which will be called after
@@ -283,7 +283,7 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *
      * @return lambda running hook
      */
-    BiConsumer<M, Integer> runningHook();
+    BiConsumer<? extends ClassifierModel, Integer> runningHook();
 
     /**
      * Set up a lambda call hook which will be called after
@@ -295,9 +295,9 @@ public interface ClassifierModel<M extends ClassifierModel<M, R>, R extends Clas
      *                    parameter value is the run value
      * @return self-instance of the model
      */
-    M withRunningHook(BiConsumer<M, Integer> runningHook);
+    <M extends ClassifierModel> M withRunningHook(BiConsumer<? extends ClassifierModel, Integer> runningHook);
 
-    BiFunction<M, Integer, Boolean> stoppingHook();
+    BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook();
 
-    M withStoppingHook(BiFunction<M, Integer, Boolean> stoppingHook);
+    <M extends ClassifierModel> M withStoppingHook(BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook);
 }

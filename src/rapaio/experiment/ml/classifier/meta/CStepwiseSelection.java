@@ -53,7 +53,7 @@ import static java.util.stream.Collectors.toList;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/15.
  */
 public class CStepwiseSelection
-        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult<CStepwiseSelection>> implements Printable {
+        extends AbstractClassifierModel<CStepwiseSelection, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = 2642562123626893974L;
     ClassifierModel best;
@@ -224,7 +224,7 @@ public class CStepwiseSelection
     }
 
     @Override
-    protected ClassifierResult<CStepwiseSelection> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return ClassifierResult.copy(this, df, withClasses, withDistributions, best.predict(df, withClasses, withDistributions));
     }
 

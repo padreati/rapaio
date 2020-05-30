@@ -36,7 +36,7 @@ import rapaio.ml.regression.RegressionResult;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/21/19.
  */
-public interface GBTRtree<M extends RegressionModel<M, R>, R extends RegressionResult<M>> extends RegressionModel<M, R> {
+public interface GBTRtree<M extends RegressionModel, R extends RegressionResult> extends RegressionModel {
 
     void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
 }

@@ -54,7 +54,6 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
@@ -75,9 +74,7 @@ import static java.util.stream.Collectors.toSet;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-public class CForest
-        extends AbstractClassifierModel<CForest, ClassifierResult<CForest>>
-        implements Printable {
+public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> {
 
     private static final long serialVersionUID = -145958939373105497L;
 
@@ -462,12 +459,12 @@ public class CForest
     }
 
     @Override
-    protected ClassifierResult<CForest> corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        ClassifierResult<CForest> cp = ClassifierResult.build(this, df, true, true);
-        var treeFits = predictors.stream().parallel()
-                .map(pred -> pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassifierResult cp = ClassifierResult.build(this, df, true, true);
+        List<ClassifierResult> treeFits = predictors.stream().parallel()
+                .map(pred -> (ClassifierResult) pred.predict(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
-        baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());
+        baggingMode.computeDensity(firstTargetLevels(), treeFits, cp.firstClasses(), cp.firstDensity());
         return cp;
     }
 

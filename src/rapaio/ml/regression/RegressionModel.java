@@ -44,14 +44,14 @@ import java.util.function.BiFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
-public interface RegressionModel<M extends RegressionModel<M, R>, R extends RegressionResult<M>> extends Printable, Serializable {
+public interface RegressionModel extends Printable, Serializable {
     /**
      * Creates a new regression instance with the same parameters as the original.
      * The fitted model and other artifacts are not replicated.
      *
      * @return new parametrized instance
      */
-    M newInstance();
+    <M extends RegressionModel> M newInstance();
 
     /**
      * @return regression model name
@@ -83,7 +83,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      *
      * @param sampler instance to be used as sampling device
      */
-    M withSampler(RowSampler sampler);
+    <M extends RegressionModel> M withSampler(RowSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -183,7 +183,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default M fit(Frame df, String... targetVars) {
+    default <M extends RegressionModel> M fit(Frame df, String... targetVars) {
         return fit(df, VarDouble.fill(df.rowCount(), 1).withName("weights"), targetVars);
     }
 
@@ -194,7 +194,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    M fit(Frame df, Var weights, String... targetVarNames);
+    <M extends RegressionModel> M fit(Frame df, Var weights, String... targetVarNames);
 
     /**
      * Predict results for given data set of instances
@@ -203,7 +203,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      * @param df input data frame
      * @return regression predict result
      */
-    default R predict(final Frame df) {
+    default <R extends RegressionResult> R predict(final Frame df) {
         return predict(df, false);
     }
 
@@ -213,7 +213,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    R predict(Frame df, boolean withResiduals);
+    <R extends RegressionResult> R predict(Frame df, boolean withResiduals);
 
     /**
      * Gets the configured pool size. Negative values are considered
@@ -233,7 +233,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      *
      * @param poolSize specified pool size
      */
-    M withPoolSize(int poolSize);
+    <M extends RegressionModel> M withPoolSize(int poolSize);
 
     /**
      * @return number of runs
@@ -251,7 +251,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      * @param runs number of runs
      * @return self-instance, used for builder pattern
      */
-    M withRuns(int runs);
+    <M extends RegressionModel> M withRuns(int runs);
 
     /**
      * Get the lambda call hook which will be called after
@@ -260,7 +260,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      *
      * @return lambda running hook
      */
-    BiConsumer<M, Integer> runningHook();
+    BiConsumer<? extends RegressionModel, Integer> runningHook();
 
     /**
      * Set up a lambda call hook which will be called after
@@ -272,14 +272,14 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      *                    parameter value is the run value
      * @return self-instance of the model
      */
-    M withRunningHook(BiConsumer<M, Integer> runningHook);
+    <M extends RegressionModel> M withRunningHook(BiConsumer<? extends RegressionModel, Integer> runningHook);
 
     /**
      * Returns the stopping hook
      *
      * @return stopping hook instance
      */
-    BiFunction<M, Integer, Boolean> stoppingHook();
+    BiFunction<? extends RegressionModel, Integer, Boolean> stoppingHook();
 
     /**
      * Set up a lambda call hook which will be called after each iteration and
@@ -293,7 +293,7 @@ public interface RegressionModel<M extends RegressionModel<M, R>, R extends Regr
      *                     iteration counter.
      * @return self instance of the model
      */
-    M withStoppingHook(BiFunction<M, Integer, Boolean> stoppingHook);
+    <M extends RegressionModel> M withStoppingHook(BiFunction<? extends RegressionModel, Integer, Boolean> stoppingHook);
 
     String headerSummary();
 }

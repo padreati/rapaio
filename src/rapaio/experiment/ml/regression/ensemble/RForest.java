@@ -37,7 +37,6 @@ import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -50,8 +49,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
-public class RForest extends AbstractRegressionModel<RForest, RegressionResult<RForest>>
-        implements Printable {
+public class RForest extends AbstractRegressionModel<RForest, RegressionResult> {
 
     private static final long serialVersionUID = -3926256335736143438L;
 
@@ -129,8 +127,8 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult<R
     }
 
     @Override
-    protected RegressionResult<RForest> corePredict(Frame df, boolean withResiduals) {
-        RegressionResult<RForest> fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
         List<VarDouble> results = regressors
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction())

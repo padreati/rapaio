@@ -61,7 +61,7 @@ import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,9 +146,12 @@ public class BinarySMOTest {
                 .withC(0.1);
 
         RandomSource.setSeed(1);
-        double score = ClassifierEvaluation.builder().df(df.fapply(FStandardize.on(VRange.all()))).targetName(target).model(smo1)
+        double score = ClassifierEvaluation.builder()
+                .df(df.fapply(FStandardize.on(VRange.all())))
+                .targetName(target)
+                .model(smo1)
                 .splitStrategy(new StratifiedKFold(10, target))
-                .metrics(Arrays.asList(Accuracy.newMetric(true)))
+                .metrics(Collections.singletonList(Accuracy.newMetric(true)))
                 .build()
                 .run().getMeanTrainScore(Accuracy.newMetric(true).getName());
         assertEquals(0.8750085333940152, score, 1e-7);
@@ -190,7 +193,10 @@ public class BinarySMOTest {
 
             BinarySMO smo = new BinarySMO();
             df = df.fapply(FStandardize.on(VRange.all()));
-            double s = ClassifierEvaluation.builder().df(df).targetName("Class").model(smo)
+            double s = ClassifierEvaluation.builder()
+                    .df(df)
+                    .targetName("Class")
+                    .model(smo)
                     .splitStrategy(new KFold(3))
                     .metric(Accuracy.newMetric())
                     .build()

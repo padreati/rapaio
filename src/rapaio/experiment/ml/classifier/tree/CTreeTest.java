@@ -126,7 +126,7 @@ public interface CTreeTest extends Serializable {
             int[] rows = new int[df.rowCount()];
             int len = 0;
             for (int i = 0; i < df.rowCount(); i++) {
-                if(!df.isMissing(i, testNameIndex)) {
+                if (!df.isMissing(i, testNameIndex)) {
                     rows[len++] = i;
                     dt.increment(1, dt.colIndex().getIndex(df, targetName, i), weights.getDouble(i));
                 }
@@ -250,7 +250,7 @@ public interface CTreeTest extends Serializable {
 
             double[] rowCounts = counts.rowTotals();
             for (int i = 1; i < df.levels(testName).size(); i++) {
-                if (rowCounts[i] < c.minCount())
+                if (rowCounts[i - 1] < c.minCount())
                     continue;
 
                 String testLabel = df.rvar(testName).levels().get(i);

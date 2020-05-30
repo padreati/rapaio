@@ -68,7 +68,7 @@ import static java.util.stream.Collectors.joining;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree>> implements Printable {
+public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = 1203926824359387358L;
     private static final Map<VType, CTreeTest> DEFAULT_TEST_MAP;
@@ -500,8 +500,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult<CTree
     }
 
     @Override
-    protected ClassifierResult<CTree> corePredict(Frame df, boolean withClasses, boolean withDensities) {
-        ClassifierResult<CTree> prediction = ClassifierResult.build(this, df, withClasses, withDensities);
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassifierResult prediction = ClassifierResult.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<String, DensityVector<String>> res = predictPoint(this, root, i, df);
             String label = res._1;

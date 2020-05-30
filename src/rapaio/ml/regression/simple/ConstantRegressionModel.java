@@ -33,7 +33,6 @@ import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -45,9 +44,7 @@ import static rapaio.printer.Format.floatFlex;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegressionModel
-        extends AbstractRegressionModel<ConstantRegressionModel, RegressionResult<ConstantRegressionModel>>
-        implements Printable {
+public class ConstantRegressionModel extends AbstractRegressionModel<ConstantRegressionModel, RegressionResult>{
 
     private static final long serialVersionUID = -2537862585258148528L;
     double constant;
@@ -104,8 +101,8 @@ public class ConstantRegressionModel
     }
 
     @Override
-    protected RegressionResult<ConstantRegressionModel> corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult<ConstantRegressionModel> fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
         for (String targetName : targetNames) {
             fit.prediction(targetName).stream().forEach(s -> s.setDouble(constantValue()));
         }

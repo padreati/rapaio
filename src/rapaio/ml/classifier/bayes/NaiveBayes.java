@@ -60,7 +60,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult<NaiveBayes>> implements Printable {
+public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult> implements Printable {
 
     public static NaiveBayes newModel() {
         return new NaiveBayes();
@@ -202,9 +202,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     @Override
-    protected ClassifierResult<NaiveBayes> corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected ClassifierResult corePredict(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        ClassifierResult<NaiveBayes> pred = ClassifierResult.build(this, df, withClasses, withDensities);
+        ClassifierResult pred = ClassifierResult.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DensityVector<String> dv = DensityVector.emptyByLabels(false, firstTargetLevels());

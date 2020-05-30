@@ -53,7 +53,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogisticStacking, ClassifierResult<CBinaryLogisticStacking>> implements Printable {
+public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogisticStacking, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 
@@ -164,7 +164,7 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
     }
 
     @Override
-    protected ClassifierResult<CBinaryLogisticStacking> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return ClassifierResult.copy(this, df, withClasses, withDistributions, log.predict(df));
     }
 }

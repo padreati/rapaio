@@ -48,8 +48,8 @@ import static java.util.Collections.nCopies;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RegressionResult<M extends RegressionModel> implements Printable {
-    protected final M model;
+public class RegressionResult implements Printable {
+    protected final RegressionModel model;
     protected final Frame df;
     protected final boolean withResiduals;
     protected final Map<String, VarDouble> prediction;
@@ -61,7 +61,7 @@ public class RegressionResult<M extends RegressionModel> implements Printable {
 
     // static builder
 
-    protected RegressionResult(final M model, final Frame df, final boolean withResiduals) {
+    protected RegressionResult(final RegressionModel model, final Frame df, final boolean withResiduals) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
@@ -84,11 +84,11 @@ public class RegressionResult<M extends RegressionModel> implements Printable {
 
     // private constructor
 
-    public static <T extends RegressionModel> RegressionResult<T> build(T model, Frame df, boolean withResiduals) {
-        return new RegressionResult<>(model, df, withResiduals);
+    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals) {
+        return new RegressionResult(model, df, withResiduals);
     }
 
-    public M getModel() {
+    public RegressionModel getModel() {
         return model;
     }
 

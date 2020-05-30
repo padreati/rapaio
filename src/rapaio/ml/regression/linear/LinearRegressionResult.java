@@ -46,9 +46,9 @@ import rapaio.printer.opt.POption;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
  */
-public class LinearRegressionResult<M extends BaseLinearRegressionModel> extends RegressionResult<M> {
+public class LinearRegressionResult<M extends BaseLinearRegressionModel<M>> extends RegressionResult {
 
-    protected final BaseLinearRegressionModel lm;
+    protected final BaseLinearRegressionModel<M> lm;
     protected DMatrix beta_hat;
     protected DMatrix beta_std_error;
     protected DMatrix beta_t_value;

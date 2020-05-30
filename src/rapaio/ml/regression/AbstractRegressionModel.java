@@ -46,8 +46,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
-public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult<M>>
-        implements RegressionModel<M, R> {
+public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult> implements RegressionModel {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
@@ -116,9 +115,9 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     }
 
     @Override
-    public M withRunningHook(BiConsumer<M, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return (M) this;
+    public <T extends RegressionModel> T withRunningHook(BiConsumer<? extends RegressionModel, Integer> runningHook) {
+        this.runningHook = (BiConsumer<M, Integer>) runningHook;
+        return (T) this;
     }
 
     @Override
@@ -127,9 +126,9 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     }
 
     @Override
-    public M withStoppingHook(BiFunction<M, Integer, Boolean> stoppingHook) {
-        this.stoppingHook = stoppingHook;
-        return (M) this;
+    public <T extends RegressionModel>  T withStoppingHook(BiFunction<? extends RegressionModel, Integer, Boolean> stoppingHook) {
+        this.stoppingHook = (BiFunction<M, Integer, Boolean>) stoppingHook;
+        return (T) this;
     }
 
     @Override
@@ -190,6 +189,12 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     @Override
     public R predict(Frame df, boolean withResiduals) {
         PredSetup setup = preparePredict(df, withResiduals);
+        return corePredict(setup.df, setup.withResiduals);
+    }
+
+    @Override
+    public R predict(Frame df) {
+        PredSetup setup = preparePredict(df, false);
         return corePredict(setup.df, setup.withResiduals);
     }
 

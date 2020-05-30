@@ -47,7 +47,6 @@ import rapaio.ml.regression.tree.rtree.RTreePredictor;
 import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 import rapaio.ml.regression.tree.rtree.RTreeTest;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
@@ -71,8 +70,7 @@ import static rapaio.printer.Format.floatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree>>
-        implements GBTRtree<RTree, RegressionResult<RTree>>, Printable {
+public class RTree extends AbstractRegressionModel<RTree, RegressionResult> implements GBTRtree<RTree, RegressionResult> {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
@@ -397,8 +395,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
     }
 
     @Override
-    protected RegressionResult<RTree> corePredict(Frame df, boolean withResiduals) {
-        RegressionResult<RTree> pred = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predictor.predict(i, df, root);
@@ -438,9 +436,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult<RTree
 
     private void buildSummary(StringBuilder sb, RTreeNode node, int level) {
         sb.append("|");
-        for (int i = 0; i < level; i++) {
-            sb.append("   |");
-        }
+        sb.append("   |".repeat(Math.max(0, level)));
         sb.append(node.groupName()).append("  ");
 
         sb.append(floatFlex(node.value()));

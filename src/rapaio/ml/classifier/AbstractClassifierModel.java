@@ -52,8 +52,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R extends ClassifierResult<M>>
-        implements ClassifierModel<M, R> {
+public abstract class AbstractClassifierModel<M extends ClassifierModel, R extends ClassifierResult> implements ClassifierModel {
 
     private static final long serialVersionUID = -6866948033065091047L;
 
@@ -122,18 +121,18 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel<M, R>, R
     }
 
     @Override
-    public M withRunningHook(BiConsumer<M, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return (M) this;
+    public <T extends ClassifierModel> T withRunningHook(BiConsumer<? extends ClassifierModel, Integer> runningHook) {
+        this.runningHook = (BiConsumer<M, Integer>) runningHook;
+        return (T)this;
     }
 
     public BiFunction<M, Integer, Boolean> stoppingHook() {
         return stoppingHook;
     }
 
-    public M withStoppingHook(BiFunction<M, Integer, Boolean> stoppingHook) {
-        this.stoppingHook = stoppingHook;
-        return (M) this;
+    public <T extends ClassifierModel> T withStoppingHook(BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook) {
+        this.stoppingHook = (BiFunction<M, Integer, Boolean>) stoppingHook;
+        return (T) this;
     }
 
     @Override

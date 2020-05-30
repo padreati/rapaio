@@ -53,7 +53,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult<BinaryLogistic>>
+public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, ClassifierResult>
         implements Printable {
 
     public static BinaryLogistic newModel() {
@@ -393,12 +393,12 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     }
 
     @Override
-    protected ClassifierResult<BinaryLogistic> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         if (w == null) {
             throw new IllegalArgumentException("Model has not been trained");
         }
 
-        ClassifierResult<BinaryLogistic> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
+        ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
         int offset = intercept == 0 ? 0 : 1;
 

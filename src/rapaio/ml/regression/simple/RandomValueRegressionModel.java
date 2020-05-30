@@ -35,7 +35,6 @@ import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -47,9 +46,7 @@ import java.util.Arrays;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegressionModel
-        extends AbstractRegressionModel<RandomValueRegressionModel, RegressionResult<RandomValueRegressionModel>>
-        implements Printable {
+public class RandomValueRegressionModel extends AbstractRegressionModel<RandomValueRegressionModel, RegressionResult> {
 
     private static final long serialVersionUID = 819192240406617594L;
 
@@ -104,8 +101,8 @@ public class RandomValueRegressionModel
     }
 
     @Override
-    protected RegressionResult<RandomValueRegressionModel> corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult<RandomValueRegressionModel> pred = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.sampleNext()));
         }

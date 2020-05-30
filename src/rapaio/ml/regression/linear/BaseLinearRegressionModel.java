@@ -66,9 +66,9 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
      * @param intercept if true an intercept variable will be generated, false otherwise
      * @return linear model instance
      */
-    public BaseLinearRegressionModel withIntercept(boolean intercept) {
+    public M withIntercept(boolean intercept) {
         this.intercept = intercept;
-        return this;
+        return (M)this;
     }
 
     public DVector firstCoefficients() {

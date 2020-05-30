@@ -57,7 +57,7 @@ import static rapaio.printer.Format.floatFlex;
 /**
  * Class for building a binary support vector machine.
  */
-public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResult<BinarySMO>> implements Serializable, Printable {
+public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResult> implements Serializable, Printable {
 
     private static final long serialVersionUID = 1208515184777030598L;
 
@@ -442,8 +442,8 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
 
     @Override
-    protected ClassifierResult<BinarySMO> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierResult<BinarySMO> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
 

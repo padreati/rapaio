@@ -170,7 +170,7 @@ public class NaiveBayesTest {
                 VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("t")
         );
         model.fit(df, "t");
-        ClassifierResult<NaiveBayes> result = model.predict(df, true, true);
+        ClassifierResult result = model.predict(df, true, true);
 
 
         Frame densities = result.firstDensity();

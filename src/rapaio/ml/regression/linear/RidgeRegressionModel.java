@@ -164,7 +164,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
 
     @Override
     public RidgeRegressionModel fit(Frame df, Var weights, String... targetVarNames) {
-        return (RidgeRegressionModel) super.fit(df, weights, targetVarNames);
+        return super.fit(df, weights, targetVarNames);
     }
 
     @Override

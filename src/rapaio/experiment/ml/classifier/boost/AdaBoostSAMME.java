@@ -51,9 +51,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME
-        extends AbstractClassifierModel<AdaBoostSAMME, ClassifierResult<AdaBoostSAMME>>
-        implements Printable {
+public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = -9154973036108114765L;
     private static final double delta_error = 10e-10;
@@ -199,8 +197,8 @@ public class AdaBoostSAMME
     }
 
     @Override
-    protected ClassifierResult<AdaBoostSAMME> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierResult<AdaBoostSAMME> fit = ClassifierResult.build(this, df, withClasses, true);
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult fit = ClassifierResult.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
             ClassifierResult hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {

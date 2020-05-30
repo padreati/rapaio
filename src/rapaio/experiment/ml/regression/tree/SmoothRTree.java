@@ -48,8 +48,8 @@ import java.util.Arrays;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
  */
-public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, RegressionResult<SmoothRTree>>
-        implements GBTRtree<SmoothRTree, RegressionResult<SmoothRTree>> {
+public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, RegressionResult>
+        implements GBTRtree<SmoothRTree, RegressionResult> {
 
     private static final long serialVersionUID = 5062591010395009141L;
 
@@ -168,8 +168,8 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    protected RegressionResult<SmoothRTree> corePredict(Frame df, boolean withResiduals) {
-        RegressionResult<SmoothRTree> prediction = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
         for (int i = 0; i < df.rowCount(); i++) {
             prediction.firstPrediction().setDouble(i, root.predict(df, i, this, 1.0));
         }

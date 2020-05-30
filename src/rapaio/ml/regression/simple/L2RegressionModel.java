@@ -38,7 +38,6 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -47,7 +46,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel, RegressionResult<L2RegressionModel>> implements Printable {
+public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel, RegressionResult> {
 
     private static final long serialVersionUID = -8666168876139028337L;
 
@@ -98,8 +97,8 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
     }
 
     @Override
-    protected RegressionResult<L2RegressionModel> corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult<L2RegressionModel> fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
             Var v = fit.prediction(targetName(i));

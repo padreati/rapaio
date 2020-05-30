@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<OneRule>> {
+public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> {
 
     public static OneRule newModel() {
         return new OneRule();
@@ -177,14 +177,14 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult<O
     }
 
     @Override
-    protected ClassifierResult<OneRule> corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
+    protected ClassifierResult corePredict(final Frame test, final boolean withClasses, final boolean withDensities) {
 
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
             throw new IllegalStateException("Best rule not found. Either the classifier was not trained, either something went wrong.");
         }
 
-        ClassifierResult<OneRule> pred = ClassifierResult.build(this, test, withClasses, withDensities);
+        ClassifierResult pred = ClassifierResult.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DensityVector<String>> p = predict(test, i);
             if (withClasses) {

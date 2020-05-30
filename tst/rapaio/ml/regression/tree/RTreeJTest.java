@@ -335,7 +335,7 @@ public class RTreeJTest {
                 .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
                 .withMaxDepth(10).withMinCount(1);
         tree.fit(df, "target");
-        RegressionResult<RTree> result = tree.predict(df);
+        RegressionResult result = tree.predict(df);
         RMSE rmse = RMSE.newMetric().compute(df.rvar("target"), result);
         assertEquals(0, Math.pow(rmse.getScore().getValue(), 2), TOL);
     }

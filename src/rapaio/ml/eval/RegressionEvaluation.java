@@ -53,10 +53,10 @@ import java.util.concurrent.Future;
  */
 @Builder
 @Getter
-public class RegressionEvaluation<M extends RegressionModel<M,R>, R extends RegressionResult<M>> {
+public class RegressionEvaluation {
 
     @NonNull
-    private final RegressionModel<M, R> model;
+    private final RegressionModel model;
     @NonNull
     private final Frame df;
 
@@ -76,33 +76,33 @@ public class RegressionEvaluation<M extends RegressionModel<M,R>, R extends Regr
     @Builder.Default
     private final boolean debug = false;
 
-    public RegressionEvaluationResult<M, R> run() {
+    public RegressionEvaluationResult run() {
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        List<Future<RegressionEvaluation.Run<M, R>>> futures = new LinkedList<>();
+        List<Future<RegressionEvaluation.Run>> futures = new LinkedList<>();
 
         // create features for parallel execution
 
         List<Split> splits = splitStrategy.generateSplits(df, weights);
 
         for (Split split : splits) {
-            Future<RegressionEvaluation.Run<M, R>> futureRun = executorService.submit(() -> {
+            Future<RegressionEvaluation.Run> futureRun = executorService.submit(() -> {
                 var m = model.newInstance();
                 m.fit(split.getTrainDf(), targetName);
                 var trainResult = m.predict(split.getTrainDf());
                 var testResult = m.predict(split.getTestDf());
-                return new RegressionEvaluation.Run<>(split, trainResult, testResult);
+                return new RegressionEvaluation.Run(split, trainResult, testResult);
             });
             futures.add(futureRun);
         }
 
-        RegressionEvaluationResult<M, R> result = new RegressionEvaluationResult<>(this);
+        RegressionEvaluationResult result = new RegressionEvaluationResult(this);
 
         // collect results
 
         while (!futures.isEmpty()) {
-            Iterator<Future<RegressionEvaluation.Run<M, R>>> iterator = futures.iterator();
+            Iterator<Future<RegressionEvaluation.Run>> iterator = futures.iterator();
             while (iterator.hasNext()) {
-                Future<RegressionEvaluation.Run<M, R>> future = iterator.next();
+                Future<RegressionEvaluation.Run> future = iterator.next();
                 if (future.isDone()) {
                     try {
                         var run = future.get();
@@ -122,10 +122,10 @@ public class RegressionEvaluation<M extends RegressionModel<M,R>, R extends Regr
 
     @AllArgsConstructor
     @Getter
-    private static class Run<M extends RegressionModel<M,R>, R extends RegressionResult<M>> {
+    private static class Run {
 
         private final Split split;
-        private final RegressionResult<M> trainResult;
-        private final RegressionResult<M> testResult;
+        private final RegressionResult trainResult;
+        private final RegressionResult testResult;
     }
 }

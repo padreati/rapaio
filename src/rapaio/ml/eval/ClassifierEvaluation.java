@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.Singular;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.eval.metric.ClassifierMetric;
@@ -22,8 +23,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Regreesion
+ * Classifier evaluation tool.
  *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
  */
 @Getter
@@ -32,6 +34,7 @@ public class ClassifierEvaluation {
 
     @NonNull
     private final ClassifierModel model;
+
     @NonNull
     private final Frame df;
 
@@ -97,5 +100,11 @@ public class ClassifierEvaluation {
         private final Split split;
         private final ClassifierResult trainResult;
         private final ClassifierResult testResult;
+    }
+
+    public static void main(String[] args) {
+
+        CForest cForest = CForest.newRF();
+        ClassifierEvaluation.builder().model(cForest).build();
     }
 }

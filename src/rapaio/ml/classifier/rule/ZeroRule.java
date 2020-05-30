@@ -22,7 +22,7 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/24/20.
  */
-public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult<ZeroRule>> {
+public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult> {
 
     public static ZeroRule newModel() {
         return new ZeroRule();
@@ -73,7 +73,7 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
     }
 
     @Override
-    protected ClassifierResult<ZeroRule> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         if (!hasLearned()) {
             throw new IllegalStateException("Model was not trained/fitted on data.");
         }

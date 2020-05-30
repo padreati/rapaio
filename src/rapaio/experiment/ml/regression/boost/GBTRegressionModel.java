@@ -45,7 +45,6 @@ import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2RegressionModel;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -61,8 +60,7 @@ import static rapaio.printer.Format.floatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionModel, RegressionResult<GBTRegressionModel>>
-        implements Printable {
+public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionModel, RegressionResult> {
 
     private static final long serialVersionUID = 4559540258922653130L;
 
@@ -197,9 +195,9 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     }
 
     @Override
-    protected RegressionResult<GBTRegressionModel> corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult<GBTRegressionModel> pred = RegressionResult.build(this, df, withResiduals);
-        RegressionResult<GBTRegressionModel> initPred = initRegressionModel.predict(df, false);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+        RegressionResult initPred = initRegressionModel.predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstPrediction().setDouble(i, initPred.firstPrediction().getDouble(i));
         }

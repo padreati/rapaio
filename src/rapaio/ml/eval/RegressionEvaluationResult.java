@@ -41,7 +41,6 @@ import rapaio.data.filter.FRefSort;
 import rapaio.data.group.GroupFun;
 import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.Split;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -57,13 +56,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/13/19.
  */
-public class RegressionEvaluationResult<M extends RegressionModel<M,R>, R extends RegressionResult<M>> implements Printable {
+public class RegressionEvaluationResult implements Printable {
 
     private static final String FIELD_ROUND = "round";
     private static final String FIELD_FOLD = "fold";
 
     @Getter
-    private final RegressionEvaluation<M, R> eval;
+    private final RegressionEvaluation eval;
     @Getter
     private Frame trainScores;
     @Getter
@@ -71,7 +70,7 @@ public class RegressionEvaluationResult<M extends RegressionModel<M,R>, R extend
 
     private final ReentrantLock scoresLock = new ReentrantLock();
 
-    public RegressionEvaluationResult(RegressionEvaluation<M, R> eval) {
+    public RegressionEvaluationResult(RegressionEvaluation eval) {
         this.eval = eval;
 
         List<Var> vars = new ArrayList<>();
@@ -92,7 +91,7 @@ public class RegressionEvaluationResult<M extends RegressionModel<M,R>, R extend
         return Mean.of(testScores.rvar(metric)).value();
     }
 
-    void appendRun(Split split, RegressionResult<M> trainResult, RegressionResult<M> testResult) {
+    void appendRun(Split split, RegressionResult trainResult, RegressionResult testResult) {
 
         scoresLock.lock();
         try {

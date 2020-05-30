@@ -52,7 +52,7 @@ import java.util.List;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
 public class GBTClassifierModel
-        extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult<GBTClassifierModel>>
+        extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult>
         implements Printable {
 
     private static final long serialVersionUID = -2979235364091072967L;
@@ -191,7 +191,7 @@ public class GBTClassifierModel
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
-            RegressionResult<RTree> rr = tree.predict(df, false);
+            RegressionResult rr = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
                 f.set(k, i, f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
             }
@@ -199,14 +199,14 @@ public class GBTClassifierModel
     }
 
     @Override
-    public ClassifierResult<GBTClassifierModel> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierResult<GBTClassifierModel> cr = ClassifierResult.build(this, df, withClasses, withDistributions);
+    public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
         DMatrix p_f = SolidDMatrix.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
             for (RTree tree : trees.get(k)) {
-                RegressionResult<RTree> rr = tree.predict(df, false);
+                RegressionResult rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     p_f.set(k, i, p_f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
                 }

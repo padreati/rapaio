@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @Deprecated
 public class SplitClassifierModel
-        extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult<SplitClassifierModel>> implements Printable {
+        extends AbstractClassifierModel<SplitClassifierModel, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = 3332377951136731541L;
 
@@ -126,15 +126,15 @@ public class SplitClassifierModel
     }
 
     @Override
-    public ClassifierResult<SplitClassifierModel> corePredict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDensities) {
 
-        ClassifierResult<SplitClassifierModel> pred = ClassifierResult.build(this, df, withClasses, withDensities);
+        ClassifierResult pred = ClassifierResult.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 
                     Frame f = MappedFrame.byRow(df, spot.row());
-                    ClassifierResult<ClassifierModel> p = split.classifierModel.predict(f, withClasses, withDensities);
+                    ClassifierResult p = split.classifierModel.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {

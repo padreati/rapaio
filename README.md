@@ -50,7 +50,6 @@ notebooks or to document the idea you are working on. You have to install jupyte
 on that you can follow the instruction from [here](https://github.com/SpencerPark/IJava#installing). The following notation is
  specific to IJava kernel jupyter notation. 
 
-    %mavenRepo oss-sonatype-snapshots https://oss.sonatype.org/content/repositories/snapshots/
     %maven io.github.padreati:rapaio:2.2.2    
 
 The last option to use the library is do download the release files from this repository. If you use IntelliJ Idea IDE, you can use 

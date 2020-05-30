@@ -53,7 +53,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
-public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult<CStacking>> implements Printable {
+public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = -9087871586729573030L;
 
@@ -155,7 +155,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
     }
 
     @Override
-    protected ClassifierResult<CStacking> corePredict(Frame df, boolean withClasses, boolean withDistributions) {
+    protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         return ClassifierResult.copy(this, df, withClasses, withDistributions, stacker.predict(df));
     }
 }
