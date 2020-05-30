@@ -1,19 +1,20 @@
 package rapaio.ml.eval;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Singular;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.ml.classifier.ensemble.CForest;
+import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
+import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,26 +30,68 @@ import java.util.concurrent.Future;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/26/20.
  */
 @Getter
-@Builder
 public class ClassifierEvaluation {
 
-    @NonNull
-    private final ClassifierModel model;
+    public static ClassifierEvaluation eval(Frame df, String targetName, ClassifierModel model, ClassifierMetric... metrics) {
+        ClassifierEvaluation eval = new ClassifierEvaluation()
+                .withData(df)
+                .withTarget(targetName)
+                .withModel(model);
+        for (ClassifierMetric metric : metrics) {
+            eval.withMetric(metric);
+        }
+        return eval;
+    }
 
-    @NonNull
-    private final Frame df;
+    public static ClassifierEvaluation cv(Frame df, String targetName, ClassifierModel model, int folds, ClassifierMetric... metrics) {
+        ClassifierEvaluation eval = new ClassifierEvaluation()
+                .withData(df)
+                .withTarget(targetName)
+                .withModel(model)
+                .withSplit(new KFold(folds));
+        for (ClassifierMetric metric : metrics) {
+            eval.withMetric(metric);
+        }
+        return eval;
+    }
 
-    private final Var weights;
-    @NonNull
-    private final String targetName;
-    @NonNull
-    private final SplitStrategy splitStrategy;
+    private ClassifierModel model;
+    private Frame data;
+    private Var weights;
+    private String targetName;
+    private SplitStrategy splitStrategy;
+    private int threads = 1;
+    private List<ClassifierMetric> metrics = new ArrayList<>();
 
-    @Builder.Default
-    private final int threads = 1;
+    public ClassifierEvaluation withData(Frame data) {
+        this.data = data;
+        return this;
+    }
 
-    @Singular
-    private final List<ClassifierMetric> metrics;
+    public ClassifierEvaluation withTarget(String targetName) {
+        this.targetName = targetName;
+        return this;
+    }
+
+    public ClassifierEvaluation withModel(ClassifierModel model) {
+        this.model = model;
+        return this;
+    }
+
+    public ClassifierEvaluation withSplit(SplitStrategy splitStrategy) {
+        this.splitStrategy = splitStrategy;
+        return this;
+    }
+
+    public ClassifierEvaluation withThreads(int threads) {
+        this.threads = threads;
+        return this;
+    }
+
+    public ClassifierEvaluation withMetric(ClassifierMetric metric) {
+        this.metrics.add(metric);
+        return this;
+    }
 
     public ClassifierEvaluationResult run() {
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
@@ -56,7 +99,7 @@ public class ClassifierEvaluation {
 
         // create features for parallel execution
 
-        List<Split> splits = splitStrategy.generateSplits(df, weights);
+        List<Split> splits = splitStrategy.generateSplits(data, weights);
 
         for (Split split : splits) {
             Future<Run> futureRun = executorService.submit(() -> {
@@ -103,8 +146,10 @@ public class ClassifierEvaluation {
     }
 
     public static void main(String[] args) {
+        Frame df = Datasets.loadIrisDataset();
+        CTree tree = CTree.newC45().withMaxDepth(3);
+        var result = ClassifierEvaluation.cv(df, "class", tree, 10, Accuracy.newMetric(true)).run();
 
-        CForest cForest = CForest.newRF();
-        ClassifierEvaluation.builder().model(cForest).build();
+        result.printFullContent();
     }
 }

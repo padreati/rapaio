@@ -59,14 +59,9 @@ public class ClassifierEvaluationTest {
         )
                 .when(splitStrategy).generateSplits(any(), any());
 
-        var eval = ClassifierEvaluation.builder()
-                .df(df)
-                .targetName(targetName)
-                .model(model)
-                .splitStrategy(splitStrategy)
-                .threads(1)
-                .metric(metric)
-                .build();
+        var eval = ClassifierEvaluation.eval(df, targetName, model, metric)
+                .withSplit(splitStrategy)
+                .withThreads(1);
 
         var result = eval.run();
         assertEquals(2, result.getTrainScores().rowCount());
