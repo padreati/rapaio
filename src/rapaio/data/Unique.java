@@ -67,6 +67,7 @@ public interface Unique extends Printable {
         switch (var.type()) {
             case DOUBLE:
                 return ofDouble(var, sorted);
+            case STRING:
             case NOMINAL:
                 return ofLabel(var, sorted);
             case INT:

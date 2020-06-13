@@ -37,12 +37,12 @@ library written in Java.*
 
 ## Installation
 
-Library can be used through maven. Last published release on maven central is 2.2.2
+Library can be used through maven. Last published release on maven central is 2.3.0
 
        <dependency>
          <groupId>io.github.padreati</groupId>
          <artifactId>rapaio</artifactId>
-         <version>2.2.2</version>
+         <version>2.3.0</version>
        </dependency>
 
 Another way to use the library is in jupyter / jupyter-lab notebooks. This is excellent for experimenting with short interactive 
@@ -50,7 +50,7 @@ notebooks or to document the idea you are working on. You have to install jupyte
 on that you can follow the instruction from [here](https://github.com/SpencerPark/IJava#installing). The following notation is
  specific to IJava kernel jupyter notation. 
 
-    %maven io.github.padreati:rapaio:2.2.2    
+    %maven io.github.padreati:rapaio:2.3.0    
 
 The last option to use the library is do download the release files from this repository. If you use IntelliJ Idea IDE, you can use 
 also the rapaio-studio plugin, which was developed as a companion for folks who like to use the IDE. The plugin has also a github 

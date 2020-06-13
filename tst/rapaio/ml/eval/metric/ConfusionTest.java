@@ -26,6 +26,8 @@ package rapaio.ml.eval.metric;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
+import rapaio.data.VarBinary;
+import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
@@ -46,11 +48,8 @@ public class ConfusionTest {
         Var actual = VarNominal.empty(0, "cat", "dog", "mouse");
         Var predict = VarNominal.empty(0, "cat", "dog", "mouse");
 
-        actual.addLabels(Arrays.asList("cat", "cat", "dog", "dog", "mouse",
-                "mouse", "mouse", "cat", "cat", "mouse", "mouse"));
-
-        predict.addLabels(Arrays.asList("cat", "dog", "dog", "mouse", "mouse",
-                "mouse", "dog", "cat", "mouse", "mouse", "mouse"));
+        actual.addLabels(Arrays.asList("cat", "cat", "dog", "dog", "mouse", "mouse", "mouse", "cat", "cat", "mouse", "mouse"));
+        predict.addLabels(Arrays.asList("cat", "dog", "dog", "mouse", "mouse", "mouse", "dog", "cat", "mouse", "mouse", "mouse"));
 
         Confusion cm = Confusion.from(actual, predict);
 
@@ -64,7 +63,26 @@ public class ConfusionTest {
     }
 
     @Test
-    void binarySmokeTest() {
+    void validationTest() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> Confusion.from(VarNominal.empty(), VarNominal.empty(2)));
+        assertEquals("Row size does not match.", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> Confusion.from(VarDouble.empty(), VarNominal.empty()));
+        assertEquals("Actual values variable must be nominal or binary.", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> Confusion.from(VarNominal.empty(), VarDouble.empty()));
+        assertEquals("Predicted values variable must be nominal.", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> Confusion.from(VarBinary.empty(), VarNominal.empty(0, "a", "b", "c")));
+        assertEquals("Actual and predict variables does not have the same nominal level size.", e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> Confusion.from(VarBinary.empty(), VarNominal.empty(0, "a", "b")));
+        assertEquals("Actual and prediction does not have same nominal levels (actual:?,true,false, predict:?,a,b).", e.getMessage());
+    }
+
+    @Test
+    void binaryNominalSmokeTest() {
         Var actual = VarNominal.copy("a", "a", "b", "a", "a", "b", "b");
         Var predict = VarNominal.copy("a", "b", "b", "a", "b", "a", "b");
 
@@ -92,6 +110,37 @@ public class ConfusionTest {
         assertEquals(0.5, cm.recall(), TOL);
         assertEquals(0.5773502691896257, cm.gScore(), TOL);
     }
+
+    @Test
+    void binarySmokeTest() {
+        Var actual = VarBinary.copy(0, 0, 1, 0, 0, 1, 1);
+        Var predict = VarBinary.copy(0, 1, 1, 0, 1, 0, 1);
+
+        Confusion cm = Confusion.from(actual, predict);
+
+        DMatrix frequency = SolidDMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
+        assertTrue(frequency.isEqual(cm.frequencyMatrix()));
+        assertTrue(frequency.copy().times(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
+
+        assertEquals(0.5714285714285714, cm.accuracy(), TOL);
+        assertEquals(0.4285714285714286, cm.error(), TOL);
+
+        assertEquals(4, cm.acceptedCases());
+        assertEquals(3, cm.errorCases());
+        assertEquals(7, cm.completeCases());
+
+        // for binary case we have also meaningful
+        assertEquals(2, cm.tp(), TOL);
+        assertEquals(2, cm.tn(), TOL);
+        assertEquals(1, cm.fp(), TOL);
+        assertEquals(2, cm.fn(), TOL);
+        assertEquals(0.5714285714285714, cm.f1(), TOL);
+        assertEquals(0.16666666666666666, cm.mcc(), TOL);
+        assertEquals(0.6666666666666666, cm.precision(), TOL);
+        assertEquals(0.5, cm.recall(), TOL);
+        assertEquals(0.5773502691896257, cm.gScore(), TOL);
+    }
+
 
     @Test
     void testPrinting() {

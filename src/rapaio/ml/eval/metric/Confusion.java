@@ -27,6 +27,7 @@
 
 package rapaio.ml.eval.metric;
 
+import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
@@ -37,6 +38,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.List;
+import java.util.Set;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -52,6 +54,7 @@ public final class Confusion implements Printable {
     }
 
     private static final String TEXT_AC_PR = "Ac\\Pr";
+    private static Set<VType> validTypes = Set.of(VType.NOMINAL, VType.BINARY);
 
     private final Var actual;
     private final Var predict;
@@ -82,19 +85,22 @@ public final class Confusion implements Printable {
     private Confusion(Var actual, Var predict) {
         this.actual = actual;
         this.predict = predict;
+        validate();
         this.factors = actual.levels();
         this.cmFrequency = SolidDMatrix.empty(factors.size() - 1, factors.size() - 1);
         this.cmProbability = SolidDMatrix.empty(factors.size() - 1, factors.size() - 1);
         this.binary = actual.levels().size() == 3;
-        validate();
         compute();
     }
 
     private void validate() {
-        if (!actual.type().isNominal()) {
-            throw new IllegalArgumentException("Actual values variable must be nominal.");
+        if (actual.rowCount() != predict.rowCount()) {
+            throw new IllegalArgumentException("Row size does not match.");
         }
-        if (!predict.type().isNominal()) {
+        if (!validTypes.contains(actual.type())) {
+            throw new IllegalArgumentException("Actual values variable must be nominal or binary.");
+        }
+        if (!validTypes.contains(predict.type())) {
             throw new IllegalArgumentException("Predicted values variable must be nominal.");
         }
         if (actual.levels().size() != predict.levels().size()) {
@@ -103,7 +109,7 @@ public final class Confusion implements Printable {
         for (int i = 0; i < actual.levels().size(); i++) {
             if (!actual.levels().get(i).equals(predict.levels().get(i))) {
                 throw new IllegalArgumentException(
-                        String.format("Actual not the same nominal levels (actual:%s, predict:%s).",
+                        String.format("Actual and prediction does not have same nominal levels (actual:%s, predict:%s).",
                                 String.join(",", actual.levels()),
                                 String.join(",", predict.levels())));
             }
@@ -111,10 +117,12 @@ public final class Confusion implements Printable {
     }
 
     private void compute() {
+        int offsetActual = (actual.type() == VType.NOMINAL) ? 1 : 0;
+        int offsetPredict = (actual.type() == VType.NOMINAL) ? 1 : 0;
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.getInt(i) != 0 && predict.getInt(i) != 0) {
+            if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;
-                cmFrequency.set(actual.getInt(i) - 1, predict.getInt(i) - 1, cmFrequency.get(actual.getInt(i) - 1, predict.getInt(i) - 1) + 1);
+                cmFrequency.increment(actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict, 1);
             }
         }
         acc = cmFrequency.trace();
