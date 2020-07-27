@@ -30,7 +30,6 @@ package rapaio.ml.regression;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
@@ -183,9 +182,7 @@ public interface RegressionModel extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default <M extends RegressionModel> M fit(Frame df, String... targetVars) {
-        return fit(df, VarDouble.fill(df.rowCount(), 1).withName("weights"), targetVars);
-    }
+    <M extends RegressionModel> M fit(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetName

@@ -13,7 +13,13 @@ public final class DataTestingTools {
 
     public static VarDouble generateRandomDoubleVariable(int len, double nonMissing) {
         Normal normal = Normal.std();
-        return VarDouble.from(len, row -> RandomSource.nextDouble() < nonMissing ? normal.sampleNext() : VarDouble.MISSING_VALUE);
+        return VarDouble.from(len, row -> {
+            if(RandomSource.nextDouble() < nonMissing) {
+                double value = normal.sampleNext();
+                return value + Math.signum(value)*2;
+            }
+            return VarDouble.MISSING_VALUE;
+        });
     }
 
     public static VarInt generateRandomIntVariable(int len, int from, int to, double nonMissing) {

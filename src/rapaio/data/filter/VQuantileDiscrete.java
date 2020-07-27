@@ -81,9 +81,9 @@ public class VQuantileDiscrete implements VFilter {
     }
 
     @Override
-    public void fit(Var var) {
+    public VQuantileDiscrete fit(Var var) {
         if (!var.type().isNumeric()) {
-            return;
+            return this;
         }
         qv = Quantiles.of(var, qp).values();
 
@@ -104,6 +104,7 @@ public class VQuantileDiscrete implements VFilter {
 
         dict.add(Format.floatFlexShort(qv[qv.length - 1]) + "~Inf");
         predicates.put(Format.floatFlexShort(qv[qv.length - 1]) + "~Inf", x -> x > qv[qv.length - 1]);
+        return this;
     }
 
     @Override

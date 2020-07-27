@@ -6,8 +6,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.CholeskyDecomposition;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 
 import java.util.ArrayList;

@@ -31,6 +31,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FQuantileDiscrete extends AbstractFF {
+public class FQuantileDiscrete extends AbstractFFilter {
 
     public static FQuantileDiscrete split(VRange vRange, int k) {
         if (k <= 1) {

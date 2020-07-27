@@ -26,13 +26,12 @@ public class RidgeRegressionModelTest {
 
     @Test
     void testNoRegularization() throws IOException {
-
         // test the results for ridge are the same as those for linear regression when lambda equals 0
 
         // when we have intercept, in ridge we have to center, scaling does not matter
 
-        LinearRegressionModel lm1 = LinearRegressionModel.newLm().withIntercept(true).fit(df, "Sales");
-        RidgeRegressionModel rlm1 = RidgeRegressionModel.newRidgeLm(0).withIntercept(true).withCentering(true).withScaling(true)
+        LinearRegressionModel lm1 = LinearRegressionModel.newModel().withIntercept(true).fit(df, "Sales");
+        RidgeRegressionModel rlm1 = RidgeRegressionModel.newModel(0, Centering.MEAN, Scaling.SD).withIntercept(true)
                 .newInstance().fit(df, "Sales");
 
         assertArrayEquals(
@@ -40,8 +39,8 @@ public class RidgeRegressionModelTest {
                 rlm1.firstCoefficients().valueStream().toArray(),
                 TOL);
 
-        LinearRegressionModel lm2 = LinearRegressionModel.newLm().withIntercept(true).fit(df, "Sales");
-        RidgeRegressionModel rlm2 = RidgeRegressionModel.newRidgeLm(0).withIntercept(true).withCentering(true).withScaling(false)
+        LinearRegressionModel lm2 = LinearRegressionModel.newModel().withIntercept(true).fit(df, "Sales");
+        RidgeRegressionModel rlm2 = RidgeRegressionModel.newModel(0, Centering.MEAN, Scaling.NONE).withIntercept(true)
                 .newInstance().fit(df, "Sales");
 
         assertArrayEquals(
@@ -51,20 +50,18 @@ public class RidgeRegressionModelTest {
 
         // when we do not have intercept, then we do not center
 
-        LinearRegressionModel lm3 = LinearRegressionModel.newLm().withIntercept(false).fit(df, "Sales");
-        RidgeRegressionModel rlm3 = RidgeRegressionModel.newRidgeLm(0).withIntercept(false).withCentering(false).withScaling(false)
+        LinearRegressionModel lm3 = LinearRegressionModel.newModel().withIntercept(false).fit(df, "Sales");
+        RidgeRegressionModel rlm3 = RidgeRegressionModel.newModel(0, Centering.NONE, Scaling.NONE).withIntercept(false)
                 .newInstance().fit(df, "Sales");
 
         assertArrayEquals(
                 lm1.firstCoefficients().valueStream().toArray(),
                 rlm1.firstCoefficients().valueStream().toArray(),
                 TOL);
-
     }
 
     @Test
     void ridgeCoefficientsTestedWithR() {
-
         double[] lambdas = new double[]{0, 0.1, 0.5, 1, 5, 10, 100, 1_000_000};
         double[][] coeff = new double[][]{
                 {2.938889369, 0.045764645, 0.188530017, -0.001037493},
@@ -78,7 +75,7 @@ public class RidgeRegressionModelTest {
         };
 
         for (int i = 0; i < lambdas.length; i++) {
-            RidgeRegressionModel rr = RidgeRegressionModel.newRidgeLm(lambdas[i]);
+            RidgeRegressionModel rr = RidgeRegressionModel.newModel(lambdas[i]);
             double[] beta_hat = rr.fit(df, "Sales").firstCoefficients().valueStream().toArray();
             assertArrayEquals(coeff[i], beta_hat, 1e9);
         }
@@ -86,34 +83,34 @@ public class RidgeRegressionModelTest {
 
     @Test
     void testProperties() {
-        RidgeRegressionModel rlm = RidgeRegressionModel.newRidgeLm(0);
+        RidgeRegressionModel rlm = RidgeRegressionModel.newModel(0);
 
         assertTrue(rlm.hasIntercept());
-        assertTrue(rlm.hasCentering());
-        assertTrue(rlm.hasScaling());
+        assertEquals(rlm.getCentering(), Centering.MEAN);
+        assertEquals(rlm.getScaling(), Scaling.SD);
         assertEquals(0, rlm.getLambda(), TOL);
 
-        rlm = rlm.withIntercept(false).withCentering(false).withScaling(false).withLambda(1);
+        rlm = RidgeRegressionModel.newModel(1, Centering.NONE, Scaling.NONE).withIntercept(false);
 
         assertFalse(rlm.hasIntercept());
-        assertFalse(rlm.hasCentering());
-        assertFalse(rlm.hasScaling());
+        assertEquals(rlm.getCentering(), Centering.NONE);
+        assertEquals(rlm.getScaling(), Scaling.NONE);
         assertEquals(1, rlm.getLambda(), TOL);
     }
 
     @Test
     void testCoefficients() {
-        RidgeRegressionModel rlm = RidgeRegressionModel.newRidgeLm(10).fit(df, "Sales");
+        RidgeRegressionModel rlm = RidgeRegressionModel.newModel(10).fit(df, "Sales");
 
         assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.getCoefficients(0).valueStream().toArray(), TOL);
-        assertEquals(1, rlm.allCoefficients().colCount());
-        assertEquals(4, rlm.allCoefficients().rowCount());
-        assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.allCoefficients().mapCol(0).valueStream().toArray(), TOL);
+        assertEquals(1, rlm.getAllCoefficients().colCount());
+        assertEquals(4, rlm.getAllCoefficients().rowCount());
+        assertArrayEquals(rlm.firstCoefficients().valueStream().toArray(), rlm.getAllCoefficients().mapCol(0).valueStream().toArray(), TOL);
     }
 
     @Test
     void testPredictionWithIntercept() {
-        RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).fit(df, "Sales");
+        RidgeRegressionModel model = RidgeRegressionModel.newModel(10).fit(df, "Sales");
         var result = model.predict(df);
         DVector beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(4, beta_hat.size());
@@ -131,8 +128,9 @@ public class RidgeRegressionModelTest {
 
     @Test
     void testPredictionWithOutIntercept() {
-        RidgeRegressionModel model = RidgeRegressionModel.newRidgeLm(10).withIntercept(false).fit(df, "Sales");
+        RidgeRegressionModel model = RidgeRegressionModel.newModel(10, Centering.MEAN, Scaling.SD).withIntercept(false).fit(df, "Sales");
         var result = model.predict(df);
+        model.printSummary();
         DVector beta_hat = result.getBetaHat().mapCol(0);
         assertEquals(3, beta_hat.size());
 
@@ -149,26 +147,22 @@ public class RidgeRegressionModelTest {
 
     @Test
     void testNames() {
-        RidgeRegressionModel model1 = RidgeRegressionModel.newRidgeLm(1.2);
-        RidgeRegressionModel model2 = RidgeRegressionModel.newRidgeLm(Math.PI).withIntercept(false).withCentering(false).withScaling(false);
+        RidgeRegressionModel model1 = RidgeRegressionModel.newModel(1.2);
+        RidgeRegressionModel model2 = RidgeRegressionModel.newModel(Math.PI, Centering.NONE, Scaling.NONE)
+                .withIntercept(false);
 
         assertEquals("RidgeRegression", model1.name());
         assertEquals("RidgeRegression", model2.name());
 
-        assertEquals("RidgeRegression(lambda=1.2,intercept=true,center=true,scaling=true)", model1.fullName());
-        assertEquals("RidgeRegression(lambda=3.1415927,intercept=false,center=false,scaling=false)", model2.fullName());
+        assertEquals("RidgeRegression{lambda=1.2,intercept=true,centering=MEAN,scaling=SD}", model1.fullName());
+        assertEquals("RidgeRegression{lambda=3.1415927,intercept=false,centering=NONE,scaling=NONE}", model2.fullName());
+
+        assertEquals("RidgeRegression{lambda=1.2,intercept=true,centering=MEAN,scaling=SD}, not fitted.", model1.toContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RidgeRegression\n" +
-                "Model instance: RidgeRegression(lambda=1.2,intercept=true,center=true,scaling=true)\n" +
-                "> model not trained.\n" +
-                "\n", model1.toContent());
-
-        assertEquals("Regression predict summary\n" +
-                "=======================\n" +
-                "Model class: RidgeRegression\n" +
-                "Model instance: RidgeRegression(lambda=3.1415927,intercept=false,center=false,scaling=false)\n" +
+                "Model instance: RidgeRegression{lambda=3.1415927,intercept=false,centering=NONE,scaling=NONE}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. TV        dbl \n" +

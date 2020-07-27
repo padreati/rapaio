@@ -25,9 +25,11 @@
  *
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.dense.EigenDecomposition;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 

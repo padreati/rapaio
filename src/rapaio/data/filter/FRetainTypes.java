@@ -30,6 +30,7 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ import java.util.Set;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FRetainTypes extends AbstractFF {
+public class FRetainTypes extends AbstractFFilter {
 
     public static FRetainTypes on(VType... types) {
         return new FRetainTypes(new HashSet<>(Arrays.asList(types)));

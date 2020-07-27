@@ -32,30 +32,36 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.data.filter.FIntercept;
 import rapaio.math.MTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/1/18.
  */
-public class LinearRegressionResult<M extends BaseLinearRegressionModel<M>> extends RegressionResult {
+public class LinearRegressionResult extends RegressionResult {
 
-    protected final BaseLinearRegressionModel<M> lm;
+    protected final BaseLinearRegressionModel lm;
     protected DMatrix beta_hat;
     protected DMatrix beta_std_error;
     protected DMatrix beta_t_value;
     protected DMatrix beta_p_value;
     protected String[][] beta_significance;
 
-    protected LinearRegressionResult(M model, Frame df, boolean withResiduals) {
+    public LinearRegressionResult(BaseLinearRegressionModel model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -89,7 +95,7 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel<M>> exte
         String[] inputs = lm.inputNames();
         String[] targets = lm.targetNames();
 
-        beta_hat = lm.allCoefficients().copy();
+        beta_hat = lm.getAllCoefficients().copy();
         beta_std_error = SolidDMatrix.empty(inputs.length, targets.length);
         beta_t_value = SolidDMatrix.empty(inputs.length, targets.length);
         beta_p_value = SolidDMatrix.empty(inputs.length, targets.length);
@@ -113,7 +119,14 @@ public class LinearRegressionResult<M extends BaseLinearRegressionModel<M>> exte
                 double fpvalue = MTools.fdist(fvalue, fdegree1, degrees);
                  */
 
-                DMatrix X = SolidDMatrix.copy(df.mapVars(model.inputNames()));
+                Frame features = df;
+                Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));
+                for (String inputName : model.inputNames()) {
+                    if (FIntercept.INTERCEPT.equals(inputName) && !availableFeatures.contains(inputName)) {
+                        features = df.bindVars(VarDouble.fill(df.rowCount(), 1).withName(FIntercept.INTERCEPT)).copy();
+                    }
+                }
+                DMatrix X = SolidDMatrix.copy(features.mapVars(model.inputNames()));
                 DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidDMatrix.identity(X.colCount()));
 
                 for (int j = 0; j < model.inputNames().length; j++) {

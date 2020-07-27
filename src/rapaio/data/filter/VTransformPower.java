@@ -52,13 +52,14 @@ public class VTransformPower implements VFilter {
     }
 
     @Override
-    public void fit(Var var) {
+    public VTransformPower fit(Var var) {
         GeometricMean mygm = GeometricMean.of(var);
         if (mygm.isDefined()) {
             gm = mygm.value();
         } else {
             throw new IllegalArgumentException("The source variable " + var.name() + " contains negative values, geometric mean cannot be computed");
         }
+        return this;
     }
 
     @Override

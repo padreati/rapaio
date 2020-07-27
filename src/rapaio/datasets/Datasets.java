@@ -66,6 +66,16 @@ public class Datasets {
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
+    public static Frame loadISLHitters() throws IOException {
+        return Csv.instance()
+                .read(Datasets.class, "ISL/Hitters.csv");
+    }
+
+    public static Frame loadMtcars() throws IOException {
+        return Csv.instance()
+                .read(Datasets.class, "mtcars.csv");
+    }
+
     public static Frame loadChestDataset() throws IOException {
         return Csv.instance()
                 .withSeparatorChar(',')

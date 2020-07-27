@@ -29,6 +29,7 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,14 +50,14 @@ import java.util.Map;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FStandardize extends AbstractFF {
+public class FStandardize extends AbstractFFilter {
 
     public static FStandardize on(VRange vRange) {
         return new FStandardize(vRange);
     }
 
     private static final long serialVersionUID = -2447577449010618416L;
-    private Map<String, VStandardize> filters = new HashMap<>();
+    private final Map<String, VStandardize> filters = new HashMap<>();
 
     private FStandardize(VRange vRange) {
         super(vRange);

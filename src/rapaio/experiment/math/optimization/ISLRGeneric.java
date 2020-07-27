@@ -35,11 +35,10 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Format;
-import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 
@@ -212,8 +211,6 @@ public class ISLRGeneric {
     }
 
     public static void main(String[] args) {
-
-        WS.setPrinter(new IdeaPrinter());
 
         Frame df = Datasets.loasSAheart().removeVars(VRange.of(0)).removeVars("typea,adiposity");
         VarDouble intercept = VarDouble.fill(df.rowCount(), 1).withName("(Intercept)");

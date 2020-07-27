@@ -31,11 +31,12 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
-public class FJitter extends AbstractFF {
+public class FJitter extends AbstractFFilter {
 
     public static FJitter on(VRange vRange) {
         return new FJitter(Normal.of(0, 0.1), vRange);

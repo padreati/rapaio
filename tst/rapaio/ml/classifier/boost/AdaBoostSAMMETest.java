@@ -33,8 +33,6 @@ import rapaio.experiment.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Confusion;
-import rapaio.printer.idea.IdeaPrinter;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 
@@ -43,7 +41,6 @@ public class AdaBoostSAMMETest {
     @Test
     void testBuild() throws IOException {
 
-        WS.setPrinter(new IdeaPrinter());
         AdaBoostSAMME ab = new AdaBoostSAMME()
                 .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withVarSelector(VarSelector.fixed(5)))
                 .withRuns(10);

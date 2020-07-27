@@ -31,6 +31,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.decomposition.QRDecomposition;
 
 import static org.junit.jupiter.api.Assertions.*;
 

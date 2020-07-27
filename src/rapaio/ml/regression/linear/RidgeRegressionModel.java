@@ -1,93 +1,53 @@
-/*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
 package rapaio.ml.regression.linear;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.ml.common.Capabilities;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author VHG6KOR
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegressionModel> {
 
-    private static final long serialVersionUID = -6014222985456365210L;
-
-    /**
-     * Builds a new ridge regression model.
-     *
-     * @param lambda regularization parameter: 0 means no regularization, infinity means all coefficients shrink to 0
-     * @return new ridge regression model
-     */
-    public static RidgeRegressionModel newRidgeLm(double lambda) {
-        return new RidgeRegressionModel()
-                .withLambda(lambda)
-                .withIntercept(true)
-                .withCentering(true)
-                .withScaling(true);
+    public static RidgeRegressionModel newModel(double lambda) {
+        return newModel(lambda, Centering.MEAN, Scaling.SD);
     }
 
-    private boolean centering = false;
-    private boolean scaling = false;
-    /*
-    Regularization strength; must be a positive float. Regularization improves the conditioning
-    of the problem and reduces the variance of the estimates.
-    Larger values specify stronger regularization
-     */
-    private double lambda = 0.0;
+    public static RidgeRegressionModel newModel(double lambda, Centering centering, Scaling scaling) {
+        return new RidgeRegressionModel(lambda, centering, scaling);
+    }
 
-    // learning artifacts
+    private static final long serialVersionUID = 6868244273014714128L;
 
-    private HashMap<String, Double> inputMean = new HashMap<>();
-    private HashMap<String, Double> inputSd = new HashMap<>();
-    private HashMap<String, Double> targetMean = new HashMap<>();
+    @Getter
+    private final double lambda;
+    @Getter
+    private final Centering centering;
+    @Getter
+    private final Scaling scaling;
+
+    private Map<String, Double> inputMean;
+    private Map<String, Double> inputScale;
+    private Map<String, Double> targetMean;
+    private Map<String, Double> targetScale;
 
     @Override
-    public RidgeRegressionModel newInstance() {
-        return newInstanceDecoration(new RidgeRegressionModel())
-                .withLambda(lambda)
-                .withIntercept(intercept)
-                .withCentering(centering)
-                .withScaling(scaling);
+    public <M extends RegressionModel> M newInstance() {
+        return (M) newInstanceDecoration(new RidgeRegressionModel(lambda, centering, scaling))
+                .withIntercept(intercept);
     }
 
     @Override
@@ -98,161 +58,128 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name());
-        sb.append("(");
+        sb.append(name()).append("{");
         sb.append("lambda=").append(Format.floatFlex(lambda)).append(",");
-        sb.append("intercept=").append(intercept).append(",");
-        sb.append("center=").append(centering).append(",");
-        sb.append("scaling=").append(scaling).append(")");
-
+        sb.append("intercept=").append(hasIntercept()).append(",");
+        sb.append("centering=").append(centering.name()).append(",");
+        sb.append("scaling=").append(scaling.name());
+        sb.append("}");
         return sb.toString();
     }
 
     @Override
-    public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY))
-                .targetType(VType.DOUBLE)
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1_000_000)
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .build();
-    }
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
+        // add intercept variable
+        Frame transformed = intercept ? FIntercept.filter().apply(df) : df;
 
-    /**
-     * Configure the model to introduce an intercept or not.
-     *
-     * @param intercept if true an intercept variable will be generated, false otherwise
-     * @return linear model instance
-     */
-    public RidgeRegressionModel withIntercept(boolean intercept) {
-        return (RidgeRegressionModel) super.withIntercept(intercept);
-    }
+        // collect standard information
+        FitSetup fitSetup = super.prepareFit(transformed, weights, targetVarNames);
 
-    public boolean hasCentering() {
-        return centering;
-    }
+        inputMean = new HashMap<>();
+        inputScale = new HashMap<>();
+        targetMean = new HashMap<>();
+        targetScale = new HashMap<>();
 
-    public RidgeRegressionModel withCentering(boolean centering) {
-        this.centering = centering;
-        return this;
-    }
+        for (String inputName : inputNames) {
+            if (FIntercept.INTERCEPT.equals(inputName)) {
+                inputMean.put(inputName, 0.0);
+                inputScale.put(inputName, 1.0);
+            } else {
+                inputMean.put(inputName, centering.compute(fitSetup.df.rvar(inputName)));
+                inputScale.put(inputName, scaling.compute(fitSetup.df.rvar(inputName)));
+            }
+        }
+        for (String targetName : targetNames) {
+            targetMean.put(targetName, centering.compute(fitSetup.df.rvar(targetName)));
+            targetScale.put(targetName, scaling.compute(fitSetup.df.rvar(targetName)));
+        }
 
-    public boolean hasScaling() {
-        return scaling;
-    }
-
-    public RidgeRegressionModel withScaling(boolean scaling) {
-        this.scaling = scaling;
-        return this;
-    }
-
-    public double getLambda() {
-        return lambda;
-    }
-
-    public RidgeRegressionModel withLambda(double lambda) {
-        this.lambda = lambda;
-        return this;
-    }
-
-    @Override
-    public RidgeRegressionModel fit(Frame df, String... targetVarNames) {
-        return (RidgeRegressionModel) super.fit(df, targetVarNames);
-    }
-
-    @Override
-    public RidgeRegressionModel fit(Frame df, Var weights, String... targetVarNames) {
-        return super.fit(df, weights, targetVarNames);
+        return FitSetup.valueOf(fitSetup.df, fitSetup.w, fitSetup.targetVars);
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        if (lambda < 0) {
-            throw new IllegalArgumentException("lambda - regularization strength cannot be negative");
-        }
-        boolean hasIntercept = false;
-        for (String inputName : inputNames) {
-            if (FIntercept.INTERCEPT.equals(inputName)) {
-                hasIntercept = true;
-                inputMean.put(FIntercept.INTERCEPT, 0.0);
-                inputSd.put(FIntercept.INTERCEPT, 1.0);
+        int interceptIndex = -1;
+        String[] selNames = new String[inputNames.length - (intercept ? 1 : 0)];
+        int pos = 0;
+        for (int i = 0; i < inputNames.length; i++) {
+            if (FIntercept.INTERCEPT.equals(inputNames[i])) {
+                interceptIndex = i;
                 continue;
             }
-            inputMean.put(inputName, Mean.of(df.rvar(inputName)).value());
-            inputSd.put(inputName, Variance.of(df.rvar(inputName)).sdValue());
-        }
-        for (String targetName : targetNames) {
-            targetMean.put(targetName, centering ? Mean.of(df.rvar(targetName)).value() : 0);
+            selNames[pos++] = inputNames[i];
         }
 
-        String[] selNames = Arrays.copyOfRange(inputNames, hasIntercept ? 1 : 0, inputNames.length);
-        DMatrix X = SolidDMatrix.empty(df.rowCount() + selNames.length, selNames.length);
-        DMatrix Y = SolidDMatrix.empty(df.rowCount() + selNames.length, targetNames.length);
+        DMatrix X = SolidDMatrix.empty(df.rowCount(), selNames.length);
+        DMatrix Y = SolidDMatrix.empty(df.rowCount(), targetNames.length);
 
-        double sqrt = Math.sqrt(this.lambda);
-        for (int i = 0; i < selNames.length; i++) {
-            int varIndex = df.varIndex(selNames[i]);
-            for (int j = 0; j < df.rowCount(); j++) {
-                X.set(j, i, (df.getDouble(j, varIndex) - (centering ? inputMean.get(selNames[i]) : 0))
-                        / (scaling ? inputSd.get(selNames[i]) : 1));
-            }
-            X.set(i + df.rowCount(), i, sqrt);
-        }
-        for (int i = 0; i < targetNames.length; i++) {
-            int varIndex = df.varIndex(targetNames[i]);
-            for (int j = 0; j < df.rowCount(); j++) {
-                Y.set(j, i, df.getDouble(j, varIndex));
-            }
-        }
-
-        DMatrix rawBeta = QRDecomposition.from(X).solve(Y);
-        int offset = hasIntercept ? 1 : 0;
-        beta = SolidDMatrix.empty(rawBeta.rowCount() + offset, rawBeta.colCount());
-        for (int i = 0; i < rawBeta.rowCount(); i++) {
-            for (int j = 0; j < rawBeta.colCount(); j++) {
-                beta.set(i + offset, j, rawBeta.get(i, j) / (scaling ? inputSd.get(inputNames[i + offset]) : 1));
-            }
-        }
-        if (hasIntercept) {
-            for (int i = 0; i < beta.colCount(); i++) {
-                double ym = targetMean.get(targetNames[i]);
-                for (int j = 0; j < rawBeta.rowCount(); j++) {
-                    ym -= beta.get(j + 1, i) * inputMean.get(inputNames[j + offset]);
+        if (intercept) {
+            // scale in values if we have intercept
+            for (int j = 0; j < selNames.length; j++) {
+                int varIndex = df.varIndex(selNames[j]);
+                double mean = inputMean.get(selNames[j]);
+                double sd = inputScale.get(selNames[j]);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    X.set(i, j, (df.getDouble(i, varIndex) - mean) / sd);
                 }
-                beta.set(0, i, ym);
             }
+            for (int j = 0; j < targetNames.length; j++) {
+                int varIndex = df.varIndex(targetNames[j]);
+                double mean = targetMean.get(targetNames[j]);
+                double sd = targetScale.get(targetNames[j]);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    Y.set(i, j, (df.getDouble(i, varIndex) - mean) / sd);
+                }
+            }
+        } else {
+            // if we do not have intercept we ignore centering and scaling
+            for (int j = 0; j < selNames.length; j++) {
+                int varIndex = df.varIndex(selNames[j]);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    X.set(i, j, df.getDouble(i, varIndex));
+                }
+            }
+            for (int j = 0; j < targetNames.length; j++) {
+                int varIndex = df.varIndex(targetNames[j]);
+                for (int i = 0; i < df.rowCount(); i++) {
+                    Y.set(i, j, df.getDouble(i, varIndex));
+                }
+            }
+        }
+
+        // solve the scaled system
+        DMatrix l = SolidDMatrix.identity(X.colCount()).times(lambda);
+        DMatrix A = X.t().dot(X).plus(l);
+        DMatrix B = X.t().dot(Y);
+        DMatrix scaledBeta = QRDecomposition.from(A).solve(B);
+
+        if (intercept) {
+            beta = SolidDMatrix.fill(scaledBeta.rowCount() + 1, scaledBeta.colCount(), 0);
+
+            for (int i = 0; i < targetNames.length; i++) {
+                String targetName = targetName(i);
+                double targetScale = this.targetScale.get(targetName);
+                for (int j = 0; j < inputNames.length; j++) {
+                    if (FIntercept.INTERCEPT.equals(inputNames[j])) {
+                        double interceptValue = targetMean.get(targetName);
+                        for (int k = 0; k < inputNames.length; k++) {
+                            if (k == j) {
+                                continue;
+                            }
+                            int offset = k >= interceptIndex ? 1 : 0;
+                            interceptValue -= scaledBeta.get(k - offset, i) * targetScale * inputMean.get(inputNames[k]) / inputScale.get(inputNames[k]);
+                        }
+                        beta.set(j, i, interceptValue);
+                    } else {
+                        int offset = j >= interceptIndex ? 1 : 0;
+                        beta.set(j, i, scaledBeta.get(j - offset, i) * targetScale / inputScale.get(inputNames[j]));
+                    }
+                }
+            }
+        } else {
+            beta = scaledBeta;
         }
         return true;
     }
 
-    @Override
-    public String toSummary(Printer printer, POption... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(headerSummary());
-        sb.append("\n");
-
-        if (!hasLearned) {
-            return sb.toString();
-        }
-
-        for (int i = 0; i < targetNames.length; i++) {
-            String targetName = targetNames[i];
-            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
-            sb.append("> Coefficients: \n");
-            DVector coeff = beta.mapCol(i);
-
-            TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
-            tt.textCenter(0, 0, "Name");
-            tt.textCenter(0, 1, "Estimate");
-            for (int j = 0; j < coeff.size(); j++) {
-                tt.textLeft(j + 1, 0, inputNames[j]);
-                tt.floatMedium(j + 1, 1, coeff.get(j));
-            }
-            sb.append(tt.getDynamicText(printer, options));
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
 }

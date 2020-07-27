@@ -32,6 +32,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.SolidDMatrix;
@@ -44,7 +45,7 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
  */
-public class FRandomProjection extends AbstractFF {
+public class FRandomProjection extends AbstractFFilter {
 
     public static FRandomProjection newGaussianSd(int k, VRange vRange) {
         return new FRandomProjection(k, gaussian(k), vRange);

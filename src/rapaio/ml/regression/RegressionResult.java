@@ -49,6 +49,11 @@ import static java.util.Collections.nCopies;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
 public class RegressionResult implements Printable {
+
+    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals) {
+        return new RegressionResult(model, df, withResiduals);
+    }
+
     protected final RegressionModel model;
     protected final Frame df;
     protected final boolean withResiduals;
@@ -58,8 +63,6 @@ public class RegressionResult implements Printable {
     protected final Map<String, Double> ess;
     protected final Map<String, Double> rss;
     protected final Map<String, Double> rsquare;
-
-    // static builder
 
     protected RegressionResult(final RegressionModel model, final Frame df, final boolean withResiduals) {
         this.df = df;
@@ -74,7 +77,7 @@ public class RegressionResult implements Printable {
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
             prediction.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName + "-residual"));
+            residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -83,10 +86,6 @@ public class RegressionResult implements Printable {
     }
 
     // private constructor
-
-    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals) {
-        return new RegressionResult(model, df, withResiduals);
-    }
 
     public RegressionModel getModel() {
         return model;

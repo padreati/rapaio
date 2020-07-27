@@ -31,6 +31,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.util.collection.IntArrays;
 
 import java.util.stream.IntStream;
@@ -38,7 +39,7 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FShuffle extends AbstractFF {
+public class FShuffle extends AbstractFFilter {
 
     public static FShuffle filter() {
         return new FShuffle();

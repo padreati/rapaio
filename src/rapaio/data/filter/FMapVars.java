@@ -29,13 +29,14 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 /**
  * Filter to map vars from a data frame.
  * <p>
  * Created by padreati on 1/15/16.
  */
-public class FMapVars extends AbstractFF {
+public class FMapVars extends AbstractFFilter {
 
     public static FMapVars map(VRange vRange) {
         return new FMapVars(vRange);

@@ -27,42 +27,37 @@
 
 package rapaio.ml.regression.linear;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.ml.common.Capabilities;
-import rapaio.printer.Printer;
-import rapaio.printer.TextTable;
-import rapaio.printer.opt.POption;
-
-import java.util.Arrays;
+import rapaio.ml.regression.RegressionModel;
+import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegressionModel> {
 
     /**
-     * Builds a linear regression model with intercept, no centering and no scaling.
+     * Builds a linear regression model with intercept.
      *
      * @return new instance of linear regression model
      */
-    public static LinearRegressionModel newLm() {
-        return new LinearRegressionModel()
-                .withIntercept(true);
+    public static LinearRegressionModel newModel() {
+        return new LinearRegressionModel();
     }
 
     private static final long serialVersionUID = 8595413796946622895L;
 
-
     @Override
-    public LinearRegressionModel newInstance() {
-        return newInstanceDecoration(new LinearRegressionModel())
-                .withIntercept(intercept);
+    public <M extends RegressionModel> M newInstance() {
+        return (M) newInstanceDecoration(new LinearRegressionModel());
     }
 
     @Override
@@ -73,26 +68,21 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("(intercept=").append(intercept).append(")");
+        sb.append(name()).append("{");
+        sb.append("intercept=").append(hasIntercept());
+        sb.append("}");
         return sb.toString();
     }
 
     @Override
-    public Capabilities capabilities() {
-        return Capabilities.builder()
-                .inputTypes(Arrays.asList(VType.DOUBLE, VType.INT, VType.BINARY))
-                .targetType(VType.DOUBLE)
-                .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1_000_000)
-                .allowMissingInputValues(false)
-                .allowMissingTargetValues(false)
-                .build();
+    protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
+        // add intercept variable
+        Frame transformed = intercept ? FIntercept.filter().apply(df) : df;
+
+        // collect standard information
+        return super.prepareFit(transformed, weights, targetVarNames);
     }
 
-    @Override
-    public LinearRegressionModel withIntercept(boolean intercept) {
-        return (LinearRegressionModel) super.withIntercept(intercept);
-    }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
@@ -100,44 +90,5 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
         DMatrix Y = SolidDMatrix.copy(df.mapVars(targetNames()));
         beta = QRDecomposition.from(X).solve(Y);
         return true;
-    }
-
-    @Override
-    public LinearRegressionModel fit(Frame df, String... targetVarNames) {
-        return (LinearRegressionModel) super.fit(df, targetVarNames);
-    }
-
-    @Override
-    public LinearRegressionModel fit(Frame df, Var weights, String... targetVarNames) {
-        return (LinearRegressionModel) super.fit(df, weights, targetVarNames);
-    }
-
-    @Override
-    public String toSummary(Printer printer, POption... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(headerSummary());
-        sb.append("\n");
-
-        if (!hasLearned) {
-            return sb.toString();
-        }
-
-        for (int i = 0; i < targetNames.length; i++) {
-            String targetName = targetNames[i];
-            sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
-            sb.append("> Coefficients: \n");
-            DVector coeff = beta.mapCol(i);
-
-            TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
-            tt.textCenter(0, 0, "Name");
-            tt.textCenter(0, 1, "Estimate");
-            for (int j = 0; j < coeff.size(); j++) {
-                tt.textLeft(j + 1, 0, inputNames[j]);
-                tt.floatMedium(j + 1, 1, coeff.get(j));
-            }
-            sb.append(tt.getDynamicText(printer, options));
-            sb.append("\n");
-        }
-        return sb.toString();
     }
 }

@@ -118,7 +118,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 }
 
                 // fit a linear regression
-                LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(false);
+                LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(false);
 //                RidgeRegression lm = RidgeRegression.newRidgeLm(100).withIntercept(false).withCentering(false).withScaling(false);
 
                 features.add(y);

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.decomposition.SVDecomposition;
 
 import static org.junit.jupiter.api.Assertions.*;
 

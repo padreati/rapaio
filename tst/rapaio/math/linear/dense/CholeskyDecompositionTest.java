@@ -28,6 +28,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.LUDecomposition;
 
 import static org.junit.jupiter.api.Assertions.*;
 

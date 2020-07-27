@@ -35,7 +35,7 @@ import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.CholeskyDecomposition;
 
 import java.util.ArrayList;
 import java.util.List;

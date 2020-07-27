@@ -104,7 +104,7 @@ class LinearFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
 
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
@@ -144,7 +144,7 @@ class QuadraticFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
 
         if (Unique.of(df.rvar(testVarName), false).uniqueCount() <= 5) {
             return null;
@@ -287,7 +287,7 @@ class SplineFunction implements NBRFunction {
             }
 
             // fit a linear regression
-            LinearRegressionModel rlm = LinearRegressionModel.newLm().withIntercept(true);
+            LinearRegressionModel rlm = LinearRegressionModel.newModel().withIntercept(true);
 //            RidgeRegression rlm = RidgeRegression.newRidgeLm(lambda).withIntercept(true);
 
             List<Var> features = new ArrayList<>(testFeatures);

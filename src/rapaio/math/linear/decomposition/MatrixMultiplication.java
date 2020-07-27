@@ -26,10 +26,12 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.SolidDVector;
 
 import java.util.stream.IntStream;
 

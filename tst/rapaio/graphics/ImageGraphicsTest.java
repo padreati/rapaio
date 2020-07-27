@@ -44,7 +44,6 @@ import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
 import rapaio.io.JavaIO;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.printer.idea.IdeaPrinter;
 import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
@@ -78,7 +77,6 @@ public class ImageGraphicsTest {
     @BeforeEach
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
-        WS.setPrinter(new IdeaPrinter());
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
     }
 

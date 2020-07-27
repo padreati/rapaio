@@ -38,7 +38,7 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.dense.QRDecomposition;
+import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Printable;

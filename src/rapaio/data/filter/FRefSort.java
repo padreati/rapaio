@@ -32,13 +32,14 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntComparator;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public final class FRefSort extends AbstractFF {
+public final class FRefSort extends AbstractFFilter {
 
     public static FRefSort by(IntComparator... comparators) {
         return new FRefSort(comparators);

@@ -3,13 +3,14 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-public class FFImputeWithClassifier extends AbstractFF {
+public class FFImputeWithClassifier extends AbstractFFilter {
 
     public static FFImputeWithClassifier of(ClassifierModel model, VRange inputVars, String targetName) {
         return new FFImputeWithClassifier(model, inputVars, targetName);

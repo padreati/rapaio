@@ -30,6 +30,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.decomposition.MatrixMultiplication;
 
 import java.util.Map;
 

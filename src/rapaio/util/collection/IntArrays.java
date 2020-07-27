@@ -206,6 +206,81 @@ public final class IntArrays {
         return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
     }
 
+    public static void quickSortIndirect(final int[] perm, final int[] x, final int from, final int to) {
+        final int len = to - from;
+        // Selection sort on smallest arrays
+        if (len < QUICKSORT_NO_REC) {
+            insertionSortIndirect(perm, x, from, to);
+            return;
+        }
+        // Choose a partition element, v
+        int m = from + len / 2;
+        int l = from;
+        int n = to - 1;
+        if (len > QUICKSORT_MEDIAN_OF_9) { // Big arrays, pseudomedian of 9
+            int s = len / 8;
+            l = med3Indirect(perm, x, l, l + s, l + 2 * s);
+            m = med3Indirect(perm, x, m - s, m, m + s);
+            n = med3Indirect(perm, x, n - 2 * s, n - s, n);
+        }
+        m = med3Indirect(perm, x, l, m, n); // Mid-size, med of 3
+        final int v = x[perm[m]];
+        // Establish Invariant: v* (<v)* (>v)* v*
+        int a = from, b = a, c = to - 1, d = c;
+        while (true) {
+            int comparison;
+            while (b <= c && (comparison = (Integer.compare((x[perm[b]]), (v)))) <= 0) {
+                if (comparison == 0)
+                    swap(perm, a++, b);
+                b++;
+            }
+            while (c >= b && (comparison = (Double.compare((x[perm[c]]), (v)))) >= 0) {
+                if (comparison == 0)
+                    swap(perm, c, d--);
+                c--;
+            }
+            if (b > c)
+                break;
+            swap(perm, b++, c--);
+        }
+        // Swap partition elements back to middle
+        int s;
+        s = Math.min(a - from, b - a);
+        swapSeq(perm, from, b - s, s);
+        s = Math.min(d - c, to - d - 1);
+        swapSeq(perm, b, to - s, s);
+        // Recursively sort non-partition-elements
+        if ((s = b - a) > 1)
+            quickSortIndirect(perm, x, from, from + s);
+        if ((s = d - c) > 1)
+            quickSortIndirect(perm, x, to - s, to);
+    }
+
+    private static int med3Indirect(final int[] perm, final int[] x, final int a, final int b, final int c) {
+        final int aa = x[perm[a]];
+        final int bb = x[perm[b]];
+        final int cc = x[perm[c]];
+        final int ab = (Integer.compare((aa), (bb)));
+        final int ac = (Integer.compare((aa), (cc)));
+        final int bc = (Integer.compare((bb), (cc)));
+        return (ab < 0 ? (bc < 0 ? b : ac < 0 ? c : a) : (bc > 0 ? b : ac > 0 ? c : a));
+    }
+
+    private static void insertionSortIndirect(final int[] perm, final int[] a, final int from, final int to) {
+        for (int i = from; ++i < to; ) {
+            int t = perm[i];
+            int j = i;
+            for (int u = perm[j - 1]; a[t] < a[u]; u = perm[--j - 1]) {
+                perm[j] = u;
+                if (from == j - 1) {
+                    --j;
+                    break;
+                }
+            }
+            perm[j] = t;
+        }
+    }
+
     /**
      * Swaps two sequences of elements of an array.
      *

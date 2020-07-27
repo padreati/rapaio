@@ -25,9 +25,10 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.decomposition;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.SolidDMatrix;
 
 import java.io.Serializable;
 

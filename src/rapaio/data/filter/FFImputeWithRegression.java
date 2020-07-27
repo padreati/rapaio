@@ -3,13 +3,14 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-public class FFImputeWithRegression extends AbstractFF {
+public class FFImputeWithRegression extends AbstractFFilter {
 
     public static FFImputeWithRegression of(RegressionModel model, VRange inputVars, String targetName) {
         return new FFImputeWithRegression(model, inputVars, targetName);

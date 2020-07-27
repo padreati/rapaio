@@ -31,6 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
 import rapaio.printer.TextTable;
 
@@ -154,6 +155,12 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     @Override
     public boolean isFitted() {
         return hasLearned;
+    }
+
+    @Override
+    public M fit(Frame df, String... targetVarNames) {
+        VarDouble weights = VarDouble.fill(df.rowCount(), 1).withName("weights");
+        return fit(df, weights, targetVarNames);
     }
 
     @Override

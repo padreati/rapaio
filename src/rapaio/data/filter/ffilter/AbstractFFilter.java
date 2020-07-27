@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.data.filter;
+package rapaio.data.filter.ffilter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
@@ -34,13 +34,13 @@ import rapaio.data.filter.FFilter;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public abstract class AbstractFF implements FFilter {
+public abstract class AbstractFFilter implements FFilter {
 
     private static final long serialVersionUID = 5619103016781092137L;
     protected final VRange vRange;
     protected String[] varNames;
 
-    public AbstractFF(VRange vRange) {
+    public AbstractFFilter(VRange vRange) {
         this.vRange = vRange;
     }
 

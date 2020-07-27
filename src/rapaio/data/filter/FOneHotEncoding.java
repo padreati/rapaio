@@ -32,6 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FOneHotEncoding extends AbstractFF {
+public class FOneHotEncoding extends AbstractFFilter {
 
     public static FOneHotEncoding on(String... varNames) {
         return new FOneHotEncoding(VRange.of(varNames), false, true);

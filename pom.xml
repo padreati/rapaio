@@ -129,8 +129,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <fork>true</fork>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>14</source>
+                    <target>14</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

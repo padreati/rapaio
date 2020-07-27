@@ -30,6 +30,7 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
-public class FFillNaDouble extends AbstractFF {
+public class FFillNaDouble extends AbstractFFilter {
 
     public static FFillNaDouble on(double fill, VRange vRange) {
         return new FFillNaDouble(fill, vRange);

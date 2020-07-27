@@ -29,14 +29,14 @@ package rapaio.experiment.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.AbstractFF;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.experiment.ml.analysis.LDA;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
 import java.util.function.BiFunction;
 
-public class FFLDA extends AbstractFF {
+public class FFLDA extends AbstractFFilter {
 
     private static final long serialVersionUID = 2797285371357486124L;
 

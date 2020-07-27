@@ -63,7 +63,8 @@ public interface VFilter extends Serializable, Printable {
      *
      * @param var given data from which values to be fitted
      */
-    default void fit(Var var) {
+    default VFilter fit(Var var) {
+        return this;
     }
 
     /**

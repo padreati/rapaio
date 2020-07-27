@@ -29,11 +29,12 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FTransformBoxCox extends AbstractFF {
+public class FTransformBoxCox extends AbstractFFilter {
 
     public static FTransformBoxCox on(double lambda, double shift, String... varNames) {
         return new FTransformBoxCox(lambda, shift, VRange.of(varNames));

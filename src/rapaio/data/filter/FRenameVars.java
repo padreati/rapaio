@@ -31,6 +31,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/30/19.
  */
-public class FRenameVars extends AbstractFF {
+public class FRenameVars extends AbstractFFilter {
 
     private static final long serialVersionUID = 1697029209693507138L;
 

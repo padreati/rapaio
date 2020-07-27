@@ -1,9 +1,9 @@
 package rapaio.math.linear;
 
 import rapaio.math.MTools;
+import rapaio.math.linear.decomposition.MatrixMultiplication;
+import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.MappedDMatrix;
-import rapaio.math.linear.dense.MatrixMultiplication;
-import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 import rapaio.printer.Format;

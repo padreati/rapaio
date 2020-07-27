@@ -54,24 +54,23 @@ public class LinearRegressionModelTest {
         Frame df = Datasets.loadISLAdvertising()
                 .removeVars(VRange.of("ID", "Sales", "Newspaper"));
 
-        LinearRegressionModel lm = new LinearRegressionModel().withIntercept(true);
-        assertEquals(
-                "Regression predict summary\n" +
-                        "=======================\n" +
-                        "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true)\n" +
-                        "> model not trained.\n" +
-                        "\n", lm.toSummary());
-        assertEquals("LinearRegression(intercept=true), not fitted.",
+        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
+        assertEquals("Regression predict summary\n" +
+                "=======================\n" +
+                "Model class: LinearRegression\n" +
+                "Model instance: LinearRegression{intercept=true}\n" +
+                "> model not trained.\n" +
+                "\n", lm.toSummary());
+        assertEquals("LinearRegression{intercept=true}, not fitted.",
                 lm.toString());
         lm.fit(df, "Radio");
-        assertEquals("LinearRegression(intercept=true), fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
+        assertEquals("LinearRegression{intercept=true}, fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
                 lm.toString());
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true)\n" +
+                        "Model instance: LinearRegression{intercept=true}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -92,7 +91,7 @@ public class LinearRegressionModelTest {
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true)\n" +
+                        "Model instance: LinearRegression{intercept=true}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -138,7 +137,7 @@ public class LinearRegressionModelTest {
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression(intercept=true)\n" +
+                        "Model instance: LinearRegression{intercept=true}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -160,14 +159,14 @@ public class LinearRegressionModelTest {
     void testMultipleTargets() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
-        LinearRegressionModel lm = new LinearRegressionModel().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
 
         lm.fit(df, "Sales", "Radio");
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression(intercept=true)\n" +
+                "Model instance: LinearRegression{intercept=true}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. (Intercept) dbl \n" +
@@ -214,8 +213,8 @@ public class LinearRegressionModelTest {
                 "F-statistic: 14.278 on 2 and 197 DF,  p-value: 0.0000016\n" +
                 "\n", lm.predict(df, true).toSummary());
 
-        assertEquals(lm.toContent(), lm.toSummary());
-        assertEquals(lm.toFullContent(), lm.toSummary());
+        assertEquals(lm.toContent(), lm.toString());
+        assertEquals(lm.toFullContent(), lm.toString());
     }
 
     @Test
@@ -229,21 +228,18 @@ public class LinearRegressionModelTest {
         Frame df1 = BoundFrame.byVars(x, y);
         Frame df2 = BoundFrame.byVars(intercept, x, y);
 
-        LinearRegressionModel lm1 = LinearRegressionModel.newLm().withIntercept(true).fit(df1, "y");
-        LinearRegressionModel lm2 = LinearRegressionModel.newLm().withIntercept(false).fit(df2, "y");
+        LinearRegressionModel lm1 = LinearRegressionModel.newModel().withIntercept(true).fit(df1, "y");
+        LinearRegressionModel lm2 = LinearRegressionModel.newModel().withIntercept(false).fit(df2, "y");
 
         var pred1 = lm1.predict(df1, true);
         var pred2 = lm2.predict(df2, true);
-
-        lm1.printContent();
-        lm2.printContent();
 
         assertTrue(pred1.firstResidual().deepEquals(pred2.firstResidual()));
     }
 
     @Test
     void testNewInstance() {
-        LinearRegressionModel lm1 = LinearRegressionModel.newLm().withIntercept(false);
+        LinearRegressionModel lm1 = LinearRegressionModel.newModel().withIntercept(false);
         LinearRegressionModel lm2 = lm1.newInstance();
 
         assertEquals(lm1.hasIntercept(), lm2.hasIntercept());
@@ -260,10 +256,10 @@ public class LinearRegressionModelTest {
 
         Frame df = BoundFrame.byVars(x, y1, y2);
 
-        LinearRegressionModel lm = LinearRegressionModel.newLm().withIntercept(true).fit(df, "y1,y2");
+        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true).fit(df, "y1,y2");
         var pred = lm.predict(df, true);
 
-        DMatrix betas = lm.allCoefficients();
+        DMatrix betas = lm.getAllCoefficients();
         DVector firstBetas = lm.firstCoefficients();
         DVector secondBetas = lm.getCoefficients(1);
 

@@ -29,11 +29,12 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/1/19.
  */
-public class FTransform extends AbstractFF {
+public class FTransform extends AbstractFFilter {
 
 
     public FTransform(VRange vRange) {

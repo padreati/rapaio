@@ -31,6 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FToDouble extends AbstractFF {
+public class FToDouble extends AbstractFFilter {
 
     public static FToDouble on(VRange vRange) {
         return new FToDouble(vRange);

@@ -27,7 +27,9 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.linear.decomposition.EigenDecompStatistics;
+import rapaio.math.linear.decomposition.EigenDecompStrategy;
 import rapaio.math.linear.dense.SolidDMatrix;
 
 /**

@@ -62,13 +62,14 @@ public class VStandardize implements VFilter {
     }
 
     @Override
-    public void fit(Var var) {
+    public VStandardize fit(Var var) {
         if (Double.isNaN(mean)) {
             mean = Mean.of(var).value();
         }
         if (Double.isNaN(sd)) {
             sd = Variance.of(var).sdValue();
         }
+        return this;
     }
 
     @Override

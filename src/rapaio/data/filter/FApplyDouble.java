@@ -29,6 +29,7 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.function.Function;
 
@@ -37,7 +38,7 @@ import java.util.function.Function;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FApplyDouble extends AbstractFF {
+public class FApplyDouble extends AbstractFFilter {
 
     public static FApplyDouble on(Function<Double, Double> fun, VRange vRange) {
         return new FApplyDouble(fun, vRange);
