@@ -226,8 +226,7 @@ of production ready tools from this field.
 
 * ZeroRule
 * OneRule
-* Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, 
-Multinomial, Poisson)
+* Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)
 * Linear: BinaryLogistic (optionally L2 penalization)
 
 **Regression**
@@ -241,6 +240,7 @@ Multinomial, Poisson)
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
+* RForest
 
 
 ### Experminental Features

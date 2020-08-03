@@ -70,6 +70,14 @@ public interface DVarOp<T extends Var> {
     double nanmean();
 
     /**
+     * Set all values with given fill value.
+     *
+     * @param a fill value
+     * @return reference to the original variable
+     */
+    T fill(double a);
+
+    /**
      * Adds a constant to all values from the variable.
      *
      * @param a constant values to be added

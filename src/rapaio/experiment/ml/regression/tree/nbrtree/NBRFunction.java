@@ -104,12 +104,12 @@ class LinearFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
 
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRegressionResult pred = lm.withIntercept(true).predict(map, false);
+            LinearRegressionResult pred = lm.intercept.set(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.testVarName = testVarName;
@@ -144,7 +144,7 @@ class QuadraticFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
 
         if (Unique.of(df.rvar(testVarName), false).uniqueCount() <= 5) {
             return null;
@@ -155,7 +155,7 @@ class QuadraticFunction implements NBRFunction {
         Frame map = BoundFrame.byVars(df.rvar(testVarName), square, y);
         try {
             lm.fit(map, weights, y.name());
-            LinearRegressionResult pred = lm.withIntercept(true).predict(map, false);
+            LinearRegressionResult pred = lm.intercept.set(true).predict(map, false);
             this.beta_0 = pred.getBetaHat().get(0, 0);
             this.beta_1 = pred.getBetaHat().get(1, 0);
             this.beta_2 = pred.getBetaHat().get(2, 0);
@@ -287,7 +287,7 @@ class SplineFunction implements NBRFunction {
             }
 
             // fit a linear regression
-            LinearRegressionModel rlm = LinearRegressionModel.newModel().withIntercept(true);
+            LinearRegressionModel rlm = LinearRegressionModel.newModel().intercept.set(true);
 //            RidgeRegression rlm = RidgeRegression.newRidgeLm(lambda).withIntercept(true);
 
             List<Var> features = new ArrayList<>(testFeatures);

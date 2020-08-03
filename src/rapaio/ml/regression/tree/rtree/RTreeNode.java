@@ -54,7 +54,7 @@ public class RTreeNode implements Serializable {
     private double value;
     private double weight;
 
-    private List<RTreeNode> children = new ArrayList<>();
+    private final List<RTreeNode> children = new ArrayList<>();
     private RTreeCandidate bestCandidate;
 
     public RTreeNode(int id, RTreeNode parent, String groupName, RowPredicate predicate, int depth) {

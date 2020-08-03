@@ -158,7 +158,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
 
     @Override
     public NestedBoostingRTree newInstance() {
-        return newInstanceDecoration(new NestedBoostingRTree())
+        return new NestedBoostingRTree()
                 .withMaxDepth(getMaxDepth())
                 .withMinCount(getMinCount())
                 .withDiffusion(getDiffusion())

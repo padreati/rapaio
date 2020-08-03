@@ -97,6 +97,14 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
+    public T fill(double a) {
+        for (int i = 0; i < source.rowCount(); i++) {
+            source.setDouble(i, a);
+        }
+        return source;
+    }
+
+    @Override
     public T plus(double a) {
         for (int i = 0; i < source.rowCount(); i++) {
             source.setDouble(i, source.getDouble(i) + a);

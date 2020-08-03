@@ -150,7 +150,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
 
     @Override
     public SmoothRTree newInstance() {
-        return newInstanceDecoration(new SmoothRTree())
+        return new SmoothRTree()
                 .withMinCount(getMinCount())
                 .withMinScore(getMinScore())
                 .withMinWeight(getMinWeight())

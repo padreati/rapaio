@@ -32,6 +32,7 @@ import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.loss.RegressionLoss;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.Serializable;
@@ -63,10 +64,9 @@ public interface RTreeTest extends Serializable {
      * @param w             weights of the instances from the current node
      * @param testVarName   test variable name
      * @param targetVarName target variable name
-     * @param testFunction  test function used to compute the score
      * @return the best candidate
      */
-    Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName, RTreePurityFunction testFunction);
+    Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName);
 
     /**
      * This test deliberately does not compute any reliable candidate which,
@@ -81,8 +81,13 @@ public interface RTreeTest extends Serializable {
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreePurityFunction function) {
+        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName) {
             return Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return name();
         }
     };
 
@@ -95,11 +100,11 @@ public interface RTreeTest extends Serializable {
 
         @Override
         public String name() {
-            return "NumericBinary";
+            return "NumBin";
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName, RTreePurityFunction function) {
+        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName) {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -140,7 +145,7 @@ public interface RTreeTest extends Serializable {
             p.totalVar = rightVar[0];
             p.totalWeight = rightWeight[0];
 
-            for (int i = c.minCount(); i < rows.length - c.minCount() - 1; i++) {
+            for (int i = c.minCount.get(); i < rows.length - c.minCount.get() - 1; i++) {
                 if (df.getDouble(rows[i], testIndex) == df.getDouble(rows[i + 1], testIndex)) continue;
 
                 p.splitVar[0] = leftVar[i];
@@ -148,21 +153,26 @@ public interface RTreeTest extends Serializable {
                 p.splitVar[1] = rightVar[i + 1];
                 p.splitWeight[1] = rightWeight[i + 1];
 
-                double value = c.purityFunction().computeTestValue(p);
-                if (value < bestScore) {
+                double score = LossScore.computeLossScore(c.loss.get(), p);
+                if (score < bestScore) {
                     continue;
                 }
-                if (value == bestScore && RandomSource.nextDouble() < 0.5) {
+                if (score == bestScore && RandomSource.nextDouble() < 0.5) {
                     continue;
                 }
-                bestScore = value;
-                best = new RTreeCandidate(value, testName);
+                bestScore = score;
+                best = new RTreeCandidate(score, testName);
 
                 double testValue = (df.getDouble(rows[i], testName) + df.getDouble(rows[i + 1], testName)) / 2.0;
                 best.addGroup(RowPredicate.numLessEqual(testName, testValue));
                 best.addGroup(RowPredicate.numGreater(testName, testValue));
             }
             return (best != null) ? Optional.of(best) : Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return name();
         }
     };
 
@@ -175,11 +185,11 @@ public interface RTreeTest extends Serializable {
 
         @Override
         public String name() {
-            return "NominalFull";
+            return "NomFull";
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, RTreePurityFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
 
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
@@ -206,7 +216,7 @@ public interface RTreeTest extends Serializable {
             // check to see if we have enough instances in all child nodes
             int validCount = 0;
             for (int i = 0; i < len; i++) {
-                if (onlineStats[i].count() >= tree.minCount()) {
+                if (onlineStats[i].count() >= tree.minCount.get()) {
                     validCount++;
                 }
             }
@@ -228,13 +238,18 @@ public interface RTreeTest extends Serializable {
 
             // compute the candidate score
 
-            double value = tree.purityFunction().computeTestValue(p);
+            double value = LossScore.computeLossScore(tree.loss.get(), p);
             RTreeCandidate candidate = new RTreeCandidate(value, testName);
             for (int i = 0; i < len; i++) {
                 String label = testLevels.get(i + 1);
                 candidate.addGroup(RowPredicate.nomEqual(testName, label));
             }
             return Optional.of(candidate);
+        }
+
+        @Override
+        public String toString() {
+            return name();
         }
     };
 
@@ -248,11 +263,11 @@ public interface RTreeTest extends Serializable {
 
         @Override
         public String name() {
-            return "NominalBinary";
+            return "NomBin";
         }
 
         @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName, RTreePurityFunction testFunction) {
+        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
 
             int testNameIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -284,7 +299,7 @@ public interface RTreeTest extends Serializable {
                 WeightedOnlineStat wosTest = onlineStats[i];
 
                 // check if we have enough instances
-                if (wosTest.count() < tree.minCount() || wos.count() - wosTest.count() < tree.minCount()) {
+                if (wosTest.count() < tree.minCount.get() || wos.count() - wosTest.count() < tree.minCount.get()) {
                     continue;
                 }
 
@@ -308,7 +323,7 @@ public interface RTreeTest extends Serializable {
                 p.splitVar[1] = wosRemain.variance();
                 p.splitWeight[1] = wosRemain.weightSum();
 
-                double value = tree.purityFunction().computeTestValue(p);
+                double value = LossScore.computeLossScore(tree.loss.get(), p);
 
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
@@ -319,5 +334,26 @@ public interface RTreeTest extends Serializable {
             }
             return (best == null) ? Optional.empty() : Optional.of(best);
         }
+
+        @Override
+        public String toString() {
+            return name();
+        }
     };
+}
+
+final class LossScore {
+
+    public static double computeLossScore(RegressionLoss regressionLoss, RTreeTestPayload payload) {
+        if ("L2".equals(regressionLoss.name())) {
+            double down = 0.0;
+            double up = 0.0;
+            for (int i = 0; i < payload.splits; i++) {
+                down += payload.splitWeight[i];
+                up += payload.splitWeight[i] * payload.splitVar[i];
+            }
+            return (down == 0) ? 0.0 : payload.totalVar - up / down;
+        }
+        return Double.NaN;
+    }
 }

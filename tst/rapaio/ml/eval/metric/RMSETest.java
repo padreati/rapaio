@@ -49,7 +49,7 @@ public class RMSETest {
 
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
-        LinearRegressionModel lm = LinearRegressionModel.newModel().withIntercept(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
         lm.fit(df, targets);
 
         var prediction = lm.predict(df, true);

@@ -35,7 +35,6 @@ import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -56,8 +55,10 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     private static final long serialVersionUID = 8595413796946622895L;
 
     @Override
-    public <M extends RegressionModel> M newInstance() {
-        return (M) newInstanceDecoration(new LinearRegressionModel());
+    public LinearRegressionModel newInstance() {
+        LinearRegressionModel lm = new LinearRegressionModel();
+        lm.copyParameterValues(this);
+        return lm;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("intercept=").append(hasIntercept());
+        sb.append("intercept=").append(intercept.get());
         sb.append("}");
         return sb.toString();
     }
@@ -77,7 +78,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
-        Frame transformed = intercept ? FIntercept.filter().apply(df) : df;
+        Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
 
         // collect standard information
         return super.prepareFit(transformed, weights, targetVarNames);

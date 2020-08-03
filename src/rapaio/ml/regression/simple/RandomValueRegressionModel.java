@@ -33,12 +33,14 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A trivial regression which predicts using random
@@ -51,22 +53,23 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
     private static final long serialVersionUID = 819192240406617594L;
 
     public static RandomValueRegressionModel newRVR() {
-        return new RandomValueRegressionModel(Uniform.of(0, 1));
+        return new RandomValueRegressionModel();
     }
 
     public static RandomValueRegressionModel from(Distribution distribution) {
-        return new RandomValueRegressionModel(distribution);
+        return new RandomValueRegressionModel().distribution.set(distribution);
     }
 
-    private final Distribution distribution;
-
-    private RandomValueRegressionModel(Distribution distribution) {
-        this.distribution = distribution;
-    }
+    public final ValueParam<Distribution, RandomValueRegressionModel> distribution = new ValueParam<>(this, Uniform.of(0, 1),
+            "distribution",
+            "Distribution used to generate prediction",
+            Objects::nonNull);
 
     @Override
     public RandomValueRegressionModel newInstance() {
-        return newInstanceDecoration(new RandomValueRegressionModel(distribution));
+        RandomValueRegressionModel model = new RandomValueRegressionModel();
+        model.copyParameterValues(this);
+        return model;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
 
     @Override
     public String fullName() {
-        return name() + String.format("(distribution:%s)", distribution.name());
+        return name() + String.format("(distribution:%s)", distribution.get().name());
     }
 
     @Override
@@ -91,10 +94,6 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
                 .build();
     }
 
-    public Distribution distribution() {
-        return distribution;
-    }
-
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         return true;
@@ -104,7 +103,7 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
         RegressionResult pred = RegressionResult.build(this, df, withResiduals);
         for (String targetName : targetNames()) {
-            pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.sampleNext()));
+            pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.get().sampleNext()));
         }
         pred.buildComplete();
         return pred;

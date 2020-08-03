@@ -31,35 +31,37 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
+import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
 
-import static rapaio.printer.Format.floatFlex;
-
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegressionModel extends AbstractRegressionModel<ConstantRegressionModel, RegressionResult>{
+public class ConstantRegressionModel extends AbstractRegressionModel<ConstantRegressionModel, RegressionResult> {
 
     private static final long serialVersionUID = -2537862585258148528L;
-    double constant;
 
-    public static ConstantRegressionModel with(double constant) {
-        return new ConstantRegressionModel().withConstant(constant);
+    public static ConstantRegressionModel with(double c) {
+        return new ConstantRegressionModel().constant.set(c);
     }
 
-    private ConstantRegressionModel() {
-        this.constant = 0;
-    }
+    public ValueParam<Double, ConstantRegressionModel> constant = new ValueParam<>(this, 0.0,
+            "constant",
+            "Constant value used for prediction.",
+            x -> true);
 
     @Override
     public ConstantRegressionModel newInstance() {
-        return newInstanceDecoration(new ConstantRegressionModel()).withConstant(constant);
+        ConstantRegressionModel model = new ConstantRegressionModel();
+        model.copyParameterValues(this);
+        return model;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
 
     @Override
     public String fullName() {
-        return "ConstantRegression{constant=" + floatFlex(constantValue()) + '}';
+        return "ConstantRegression{constant=" + Format.floatFlex(constant.get()) + '}';
     }
 
     @Override
@@ -86,15 +88,6 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
                 .build();
     }
 
-    public double constantValue() {
-        return constant;
-    }
-
-    public ConstantRegressionModel withConstant(double customValue) {
-        this.constant = customValue;
-        return this;
-    }
-
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         return true;
@@ -104,7 +97,7 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
         RegressionResult fit = RegressionResult.build(this, df, withResiduals);
         for (String targetName : targetNames) {
-            fit.prediction(targetName).stream().forEach(s -> s.setDouble(constantValue()));
+            fit.prediction(targetName).stream().forEach(s -> s.setDouble(constant.get()));
         }
         fit.buildComplete();
         return fit;
@@ -141,7 +134,7 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
 
             for (int i = 0; i < targetNames().length; i++) {
                 tt.textRight(1 + i, 0, targetName(i));
-                tt.floatFlex(1 + i, 1, constant);
+                tt.floatFlex(1 + i, 1, constant.get());
             }
             sb.append(tt.getDynamicText(printer, options));
         }

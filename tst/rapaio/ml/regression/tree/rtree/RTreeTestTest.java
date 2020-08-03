@@ -36,8 +36,7 @@ public class RTreeTestTest {
     void ignoreTest() {
 
         RTreeTest m = RTreeTest.Ignore;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
-                RTreePurityFunction.WEIGHTED_VAR_GAIN);
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
 
         assertEquals("Ignore", m.name());
         assertFalse(cs.isPresent());
@@ -47,10 +46,9 @@ public class RTreeTestTest {
     void nominalFullTest() {
 
         RTreeTest m = RTreeTest.NominalFull;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET,
-                RTreePurityFunction.WEIGHTED_VAR_GAIN);
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
 
-        assertEquals("NominalFull", m.name());
+        assertEquals("NomFull", m.name());
         assertTrue(cs.isPresent());
 
         RTreeCandidate c = cs.get();
@@ -70,10 +68,9 @@ public class RTreeTestTest {
     void nominalFullTestFailed() {
 
         RTreeTest m = RTreeTest.NominalFull;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1),
-                NOM_TEST, TARGET, RTreePurityFunction.WEIGHTED_VAR_GAIN);
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1), NOM_TEST, TARGET);
 
-        assertEquals("NominalFull", m.name());
+        assertEquals("NomFull", m.name());
         assertFalse(cs.isPresent());
     }
 
@@ -81,10 +78,9 @@ public class RTreeTestTest {
     void nominalBinaryTest() {
         RTreeTest m = RTreeTest.NominalBinary;
 
-        assertEquals("NominalBinary", m.name());
+        assertEquals("NomBin", m.name());
 
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w,
-                NOM_TEST, TARGET, RTreePurityFunction.WEIGHTED_VAR_GAIN);
+        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
 
         assertTrue(cs.isPresent());
 
@@ -96,14 +92,13 @@ public class RTreeTestTest {
     void numericBinaryTest() {
         RTreeTest m = RTreeTest.NumericBinary;
 
-        assertEquals("NumericBinary", m.name());
+        assertEquals("NumBin", m.name());
 
         Var target = df.rvar(TARGET).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var test = df.rvar(NUM_TEST).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var weights = w.fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
 
-        Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET,
-                RTreePurityFunction.WEIGHTED_VAR_GAIN);
+        Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET);
 
         assertTrue(c.isPresent());
         assertEquals(32.657653061224515, c.get().getScore(), 1e-12);

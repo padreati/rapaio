@@ -71,12 +71,12 @@ public interface RTreeSplitter extends Serializable {
      * Do the regular split of instances and simply ignores the ones which do not
      * meet any of the predicates.
      */
-    RTreeSplitter REMAINS_IGNORED = new RTreeSplitter() {
+    RTreeSplitter IGNORE = new RTreeSplitter() {
         private static final long serialVersionUID = -3841482294679686355L;
 
         @Override
         public String name() {
-            return "REMAINS_IGNORED";
+            return "Ignore";
         }
 
         @Override
@@ -96,13 +96,13 @@ public interface RTreeSplitter extends Serializable {
      * Instances are splited as usual, all not matched instances are assigned
      * to the rule which has most matched instances.
      */
-    RTreeSplitter REMAINS_TO_MAJORITY = new RTreeSplitter() {
+    RTreeSplitter MAJORITY = new RTreeSplitter() {
 
         private static final long serialVersionUID = 5206066415613740170L;
 
         @Override
         public String name() {
-            return "REMAINS_TO_MAJORITY";
+            return "Majority";
         }
 
         @Override
@@ -146,12 +146,12 @@ public interface RTreeSplitter extends Serializable {
      * Regular splitting and distribute remaining instances
      * randomly between regular nodes.
      */
-    RTreeSplitter REMAINS_TO_RANDOM = new RTreeSplitter() {
+    RTreeSplitter RANDOM = new RTreeSplitter() {
         private static final long serialVersionUID = -592529235216896819L;
 
         @Override
         public String name() {
-            return "REMAINS_TO_RANDOM";
+            return "Random";
         }
 
         @Override

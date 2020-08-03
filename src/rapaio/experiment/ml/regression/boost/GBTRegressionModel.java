@@ -41,7 +41,6 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.loss.RegressionLoss;
 import rapaio.ml.regression.AbstractRegressionModel;
-import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2RegressionModel;
 import rapaio.ml.regression.tree.RTree;
@@ -64,8 +63,8 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    private RegressionModel initRegressionModel = L2RegressionModel.newModel();
-    private GBTRtree regressor = RTree.newCART().withMaxDepth(2).withMinCount(10);
+    private rapaio.ml.regression.RegressionModel initRegressionModel = L2RegressionModel.newModel();
+    private GBTRtree regressor = RTree.newCART().maxDepth.set(2).minCount.set(10);
     private GBTRegressionLoss lossFunction = new GBTRegressionLossL2();
     private RegressionLoss regressionLoss = new L2RegressionLoss();
     private double shrinkage = 1.0;
@@ -76,7 +75,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     @Override
     public GBTRegressionModel newInstance() {
-        return newInstanceDecoration(new GBTRegressionModel())
+        return new GBTRegressionModel()
                 .withInitRegressor(initRegressionModel)
                 .withRegressor(regressor)
                 .withLossFunction(regressionLoss)
@@ -96,8 +95,8 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         sb.append("initRegression=").append(initRegressionModel.fullName()).append(", ");
         sb.append("regression=").append(regressor.fullName()).append(", ");
         sb.append("shrinkage=").append(floatFlex(shrinkage)).append(", ");
-        sb.append("sampler=").append(sampler()).append(", ");
-        sb.append("runs=").append(runs());
+        sb.append("sampler=").append(sampler.get()).append(", ");
+        sb.append("runs=").append(runs.get());
         sb.append("}");
         return sb.toString();
     }
@@ -124,7 +123,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         return this;
     }
 
-    public GBTRegressionModel withInitRegressor(RegressionModel initRegressionModel) {
+    public GBTRegressionModel withInitRegressor(rapaio.ml.regression.RegressionModel initRegressionModel) {
         this.initRegressionModel = initRegressionModel;
         return this;
     }
@@ -149,7 +148,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         initRegressionModel.fit(df, weights, firstTargetName());
         fitValues = initRegressionModel.predict(df, false).firstPrediction().copy();
 
-        for (int i = 1; i <= runs(); i++) {
+        for (int i = 1; i <= runs.get(); i++) {
             Var gradient = lossFunction.gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
@@ -157,7 +156,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
             // frame sampling
 
-            Mapping samplerMapping = sampler().nextSample(xm, weights).mapping;
+            Mapping samplerMapping = sampler.get().nextSample(xm, weights).mapping;
             Frame xmLearn = xm.mapRows(samplerMapping);
 
             // build regions
@@ -187,9 +186,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
                 // add tree in the predictors list
                 trees.add(tree);
             }
-
-            if (runningHook() != null)
-                runningHook().accept(this, i);
+            runningHook.get().accept(this, i);
         }
         return true;
     }
@@ -212,7 +209,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         throw new IllegalArgumentException("not implemented");
     }
 }

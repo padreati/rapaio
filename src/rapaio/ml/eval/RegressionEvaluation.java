@@ -72,7 +72,6 @@ public class RegressionEvaluation {
     @Singular
     private final List<RegressionMetric> metrics;
 
-    @NonNull
     @Builder.Default
     private final boolean debug = false;
 

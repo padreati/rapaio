@@ -33,11 +33,14 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
+import rapaio.ml.param.ParamSet;
+import rapaio.ml.param.ValueParam;
 import rapaio.printer.TextTable;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -47,20 +50,46 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
-public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult> implements RegressionModel {
+public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult>
+        extends ParamSet
+        implements RegressionModel {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
-    public final BiFunction<M, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;
+    public final BiFunction<RegressionModel, Integer, Boolean> DEFAULT_STOPPING_HOOK = (regression, integer) -> false;
 
     // parameters
 
-    protected RowSampler sampler = RowSampler.identity();
-    protected int poolSize = -1;
-    protected int runs = 1;
     protected boolean hasLearned;
-    protected BiFunction<M, Integer, Boolean> stoppingHook = DEFAULT_STOPPING_HOOK;
-    protected BiConsumer<M, Integer> runningHook;
+    public ValueParam<RowSampler, M> sampler = new ValueParam<>((M) this, RowSampler.identity(),
+            "rowSampler",
+            "Row sampler",
+            Objects::nonNull);
+
+    public ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1,
+            "pool",
+            "Number of threads in execution pool to be used for fitting the model.",
+            x -> true
+    );
+
+    public ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
+            "runs",
+            "Number of iterations for iterative iterations or number of sub ensembles.",
+            x -> x > 0
+    );
+
+    public ValueParam<BiConsumer<RegressionModel, Integer>, M> runningHook = new ValueParam<>((M) this, (m, i) -> {
+    },
+            "runningHook",
+            "Hook executed at each iteration.",
+            Objects::nonNull
+    );
+
+    public ValueParam<BiFunction<RegressionModel, Integer, Boolean>, M> stoppingHook = new ValueParam<>((M) this,
+            DEFAULT_STOPPING_HOOK,
+            "stopHook",
+            "Hook queried at each iteration if execution should continue or not.",
+            Objects::nonNull);
 
     // model artifacts
 
@@ -68,69 +97,6 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     protected VType[] inputTypes;
     protected String[] targetNames;
     protected VType[] targetTypes;
-
-    public M newInstanceDecoration(M regression) {
-        return regression
-                .withSampler(sampler)
-                .withPoolSize(poolSize)
-                .withRuns(runs)
-                .withRunningHook(runningHook)
-                .withStoppingHook(stoppingHook);
-    }
-
-    @Override
-    public RowSampler sampler() {
-        return sampler;
-    }
-
-    @Override
-    public M withSampler(RowSampler rowSampler) {
-        this.sampler = rowSampler;
-        return (M) this;
-    }
-
-    @Override
-    public int poolSize() {
-        return poolSize;
-    }
-
-    @Override
-    public M withPoolSize(int poolSize) {
-        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
-        return (M) this;
-    }
-
-    @Override
-    public int runs() {
-        return runs;
-    }
-
-    public M withRuns(int runs) {
-        this.runs = runs;
-        return (M) this;
-    }
-
-    @Override
-    public BiConsumer<M, Integer> runningHook() {
-        return runningHook;
-    }
-
-    @Override
-    public <T extends RegressionModel> T withRunningHook(BiConsumer<? extends RegressionModel, Integer> runningHook) {
-        this.runningHook = (BiConsumer<M, Integer>) runningHook;
-        return (T) this;
-    }
-
-    @Override
-    public BiFunction<M, Integer, Boolean> stoppingHook() {
-        return stoppingHook;
-    }
-
-    @Override
-    public <T extends RegressionModel>  T withStoppingHook(BiFunction<? extends RegressionModel, Integer, Boolean> stoppingHook) {
-        this.stoppingHook = (BiFunction<M, Integer, Boolean>) stoppingHook;
-        return (T) this;
-    }
 
     @Override
     public String[] inputNames() {

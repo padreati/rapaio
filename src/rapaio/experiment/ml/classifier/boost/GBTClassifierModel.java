@@ -39,6 +39,7 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.KDevianceRegressionLoss;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
@@ -67,7 +68,10 @@ public class GBTClassifierModel
 
     private double shrinkage = .2;
     private boolean debug = false;
-    private RTree rTree = RTree.newCART().withMaxDepth(4).withMinCount(5).withRegressionLoss(new KDevianceRegressionLoss(-1));
+    private RTree rTree = RTree.newCART()
+            .maxDepth.set(4)
+            .minCount.set(5)
+            .loss.set(new KDevianceRegressionLoss(-1));
 
     // learning artifacts
 
@@ -84,7 +88,7 @@ public class GBTClassifierModel
         return newInstanceDecoration(new GBTClassifierModel())
                 .withShrinkage(shrinkage)
                 .withDebug(debug)
-                .withRTree(rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(-1)));
+                .withRTree(rTree.newInstance().loss.set(new KDevianceRegressionLoss(-1)));
     }
 
     @Override
@@ -120,7 +124,7 @@ public class GBTClassifierModel
 
     public GBTClassifierModel withRTree(RTree rTree) {
         this.rTree = rTree;
-        this.rTree.withRegressionLoss(new KDevianceRegressionLoss(-1));
+        this.rTree.loss.set(new KDevianceRegressionLoss(-1));
         return this;
     }
 
@@ -187,7 +191,7 @@ public class GBTClassifierModel
             Var resk = residual.mapRow(k).asVarDouble().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
-            RTree tree = rTree.newInstance().withRegressionLoss(new KDevianceRegressionLoss(K));
+            RTree tree = rTree.newInstance().loss.set(new KDevianceRegressionLoss(K));
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 
@@ -205,7 +209,7 @@ public class GBTClassifierModel
         DMatrix p_f = SolidDMatrix.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
-            for (RTree tree : trees.get(k)) {
+            for (RegressionModel tree : trees.get(k)) {
                 RegressionResult rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     p_f.set(k, i, p_f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));

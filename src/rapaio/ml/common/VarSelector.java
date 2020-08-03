@@ -73,7 +73,7 @@ public class VarSelector implements Serializable {
         if (mVars == M_ALL) {
             this.mCount = this.varNames.length;
         } else if (mVars == M_AUTO) {
-            this.mCount = Math.max((int) Math.sqrt(this.varNames.length), 1);
+            this.mCount = Math.max((int) Math.ceil(Math.sqrt(this.varNames.length)), 1);
         } else {
             this.mCount = mVars;
         }

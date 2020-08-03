@@ -96,6 +96,14 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     @Override
+    public VarDouble fill(double a) {
+        for (int i = 0; i < rowCount; i++) {
+            data[i] = a;
+        }
+        return source;
+    }
+
+    @Override
     public VarDouble plus(double a) {
         for (int i = 0; i < rowCount; i++) {
             data[i] += a;

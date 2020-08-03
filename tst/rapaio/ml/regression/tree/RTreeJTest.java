@@ -38,13 +38,11 @@ import rapaio.data.VarNominal;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.regression.ensemble.RForest;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.loss.L2RegressionLoss;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.tree.rtree.RTreePredictor;
-import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 import rapaio.ml.regression.tree.rtree.RTreeTest;
 
@@ -73,133 +71,57 @@ public class RTreeJTest {
 
     @Test
     void testNewInstance() {
-        BiFunction<RTree, Integer, Boolean> myStoppingHook = (rTree, integer) -> false;
-        BiConsumer<RTree, Integer> myRunningHook = (rTree, integer) -> {
+        BiFunction<RegressionModel, Integer, Boolean> myStoppingHook = (rTree, integer) -> false;
+        BiConsumer<RegressionModel, Integer> myRunningHook = (rTree, integer) -> {
         };
         RTree rt1 = RTree.newCART()
-                .withMaxDepth(2)
-                .withMaxSize(10)
-                .withTest(VType.BINARY, RTreeTest.Ignore)
-                .withTest(VType.INT, RTreeTest.Ignore)
-                .withTest(VType.LONG, RTreeTest.Ignore)
-                .withTest(VType.DOUBLE, RTreeTest.Ignore)
-                .withTest(VType.NOMINAL, RTreeTest.Ignore)
-                .withTest(VType.STRING, RTreeTest.Ignore)
-                .withRegressionLoss(new L2RegressionLoss())
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
-                .withSplitter(RTreeSplitter.REMAINS_IGNORED)
-                .withPredictor(RTreePredictor.STANDARD)
-                .withVarSelector(VarSelector.auto())
-                .withRuns(10)
-                .withSampler(RowSampler.bootstrap())
-                .withPoolSize(10)
-                .withStoppingHook(myStoppingHook)
-                .withRunningHook(myRunningHook);
+                .maxDepth.set(2)
+                .maxSize.set(10)
+                .test.set(VType.BINARY, RTreeTest.Ignore)
+                .test.set(VType.INT, RTreeTest.Ignore)
+                .test.set(VType.LONG, RTreeTest.Ignore)
+                .test.set(VType.DOUBLE, RTreeTest.Ignore)
+                .test.set(VType.NOMINAL, RTreeTest.Ignore)
+                .test.set(VType.STRING, RTreeTest.Ignore)
+                .loss.set(new L2RegressionLoss())
+                .splitter.set(RTreeSplitter.IGNORE)
+                .varSelector.set(VarSelector.auto())
+                .runs.set(10)
+                .poolSize.set(10)
+                .sampler.set(RowSampler.bootstrap())
+                .runningHook.set(myRunningHook)
+                .stoppingHook.set(myStoppingHook);
         RTree rt2 = rt1.newInstance();
 
         assertEquals("RTree", rt2.name());
 
-        assertEquals(2, rt2.maxDepth());
-        assertEquals(10, rt2.maxSize());
-        assertEquals(rt1.testMap(), rt2.testMap());
-        assertEquals("L2", rt2.regressionLoss().name());
-        assertEquals("WEIGHTED_VAR_GAIN", rt2.purityFunction().name());
-        assertEquals("REMAINS_IGNORED", rt2.splitter().name());
-        assertEquals("STANDARD", rt2.predictor().name());
-        assertEquals("VarSelector[AUTO]", rt2.varSelector().name());
-        assertEquals(10, rt2.runs());
-        assertEquals("Bootstrap(p=1)", rt2.sampler().name());
-        assertEquals(10, rt2.poolSize());
-        assertEquals(myStoppingHook, rt2.stoppingHook());
-        assertEquals(myRunningHook, rt2.runningHook());
+        assertEquals(2, rt2.maxDepth.get());
+        assertEquals(10, rt2.maxSize.get());
+        assertEquals(rt1.test.get(), rt2.test.get());
+        assertEquals("L2", rt2.loss.get().name());
+        assertEquals("Ignore", rt2.splitter.get().name());
+        assertEquals("VarSelector[AUTO]", rt2.varSelector.get().name());
+        assertEquals(10, rt2.runs.get());
+        assertEquals("Bootstrap(p=1)", rt2.sampler.get().name());
+        assertEquals(10, rt2.poolSize.get());
+        assertEquals(myStoppingHook, rt2.stoppingHook.get());
+        assertEquals(myRunningHook, rt2.runningHook.get());
 
         assertNull(rt2.root());
 
-        assertEquals("TreeClassifier {  minCount=1,\n" +
-                "  minScore=0,\n" +
-                "  maxDepth=2,\n" +
-                "  maxSize=10,\n" +
-                "  test[bin]=Ignore,\n" +
-                "  test[int]=Ignore,\n" +
-                "  test[nom]=Ignore,\n" +
-                "  test[dbl]=Ignore,\n" +
-                "  test[long]=Ignore,\n" +
-                "  test[str]=Ignore,\n" +
-                "  regressionLoss=L2\n" +
-                "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
-                "  splitter=REMAINS_IGNORED,\n" +
-                "  predictor=STANDARD\n" +
-                "  varSelector=VarSelector[AUTO],\n" +
-                "  runs=10,\n" +
-                "  poolSize=10,\n" +
-                "  sampler=Bootstrap(p=1),\n" +
-                "}", rt2.fullName());
+        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2,maxSize=10,tests=[bin:Ignore,int:Ignore,nom:Ignore,dbl:Ignore,long:Ignore],loss=loss,split=splitter,varSelector=varSelector,runs=10,poolSize=10,sampler=Bootstrap(p=1)}", rt2.fullName());
 
         Map<VType, RTreeTest> emptyMap = new HashMap<>();
-        assertEquals(emptyMap, RTree.newDecisionStump().withTests(emptyMap).testMap());
+        assertEquals(emptyMap, RTree.newDecisionStump().test.set(emptyMap).test.get());
     }
 
     @Test
     void testBuilders() {
-        assertEquals("TreeClassifier {  minCount=1,\n" +
-                "  minScore=0,\n" +
-                "  maxDepth=2,\n" +
-                "  maxSize=2147483647,\n" +
-                "  test[bin]=NumericBinary,\n" +
-                "  test[int]=NumericBinary,\n" +
-                "  test[nom]=NominalBinary,\n" +
-                "  test[dbl]=NumericBinary,\n" +
-                "  test[long]=NumericBinary,\n" +
-                "  test[str]=Ignore,\n" +
-                "  regressionLoss=L2\n" +
-                "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
-                "  splitter=REMAINS_TO_MAJORITY,\n" +
-                "  predictor=STANDARD\n" +
-                "  varSelector=VarSelector[ALL],\n" +
-                "  runs=1,\n" +
-                "  poolSize=-1,\n" +
-                "  sampler=Identity,\n" +
-                "}", RTree.newDecisionStump().fullName());
+        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newDecisionStump().fullName());
 
-        assertEquals("TreeClassifier {  minCount=2,\n" +
-                "  minScore=0,\n" +
-                "  maxDepth=2147483647,\n" +
-                "  maxSize=2147483647,\n" +
-                "  test[bin]=NumericBinary,\n" +
-                "  test[int]=NumericBinary,\n" +
-                "  test[nom]=NominalFull,\n" +
-                "  test[dbl]=NumericBinary,\n" +
-                "  test[long]=NumericBinary,\n" +
-                "  test[str]=Ignore,\n" +
-                "  regressionLoss=L2\n" +
-                "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
-                "  splitter=REMAINS_TO_RANDOM,\n" +
-                "  predictor=STANDARD\n" +
-                "  varSelector=VarSelector[ALL],\n" +
-                "  runs=1,\n" +
-                "  poolSize=-1,\n" +
-                "  sampler=Identity,\n" +
-                "}", RTree.newC45().fullName());
+        assertEquals("RTree{minCount=2,minScore=0,maxDepth=2147483647,maxSize=2147483647,tests=[],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newC45().fullName());
 
-        assertEquals("TreeClassifier {  minCount=1,\n" +
-                "  minScore=0,\n" +
-                "  maxDepth=2147483647,\n" +
-                "  maxSize=2147483647,\n" +
-                "  test[bin]=NumericBinary,\n" +
-                "  test[int]=NumericBinary,\n" +
-                "  test[nom]=NominalBinary,\n" +
-                "  test[dbl]=NumericBinary,\n" +
-                "  test[long]=NumericBinary,\n" +
-                "  test[str]=Ignore,\n" +
-                "  regressionLoss=L2\n" +
-                "  purityFunction=WEIGHTED_VAR_GAIN,\n" +
-                "  splitter=REMAINS_TO_RANDOM,\n" +
-                "  predictor=STANDARD\n" +
-                "  varSelector=VarSelector[ALL],\n" +
-                "  runs=1,\n" +
-                "  poolSize=-1,\n" +
-                "  sampler=Identity,\n" +
-                "}", RTree.newCART().fullName());
+        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2147483647,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newCART().fullName());
     }
 
     @Test
@@ -210,74 +132,53 @@ public class RTreeJTest {
         Frame t = FRefSort.by(df.rvar(v).refComparator()).fapply(df);
 
         RTree tree = RTree.newCART()
-                .withMaxDepth(10)
-                .withMinCount(4)
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_SD_GAIN);
+                .maxDepth.set(10)
+                .minCount.set(4);
         tree.fit(t, "Sales");
 
         assertEquals("\n" +
-                " > TreeClassifier {  minCount=4,\n" +
-                "  minScore=0,\n" +
-                "  maxDepth=10,\n" +
-                "  maxSize=2147483647,\n" +
-                "  test[bin]=NumericBinary,\n" +
-                "  test[int]=NumericBinary,\n" +
-                "  test[nom]=NominalBinary,\n" +
-                "  test[dbl]=NumericBinary,\n" +
-                "  test[long]=NumericBinary,\n" +
-                "  test[str]=Ignore,\n" +
-                "  regressionLoss=L2\n" +
-                "  purityFunction=WEIGHTED_SD_GAIN,\n" +
-                "  splitter=REMAINS_TO_RANDOM,\n" +
-                "  predictor=STANDARD\n" +
-                "  varSelector=VarSelector[ALL],\n" +
-                "  runs=1,\n" +
-                "  poolSize=-1,\n" +
-                "  sampler=Identity,\n" +
-                "}\n" +
+                " > RTree{minCount=4,minScore=0,maxDepth=10,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}\n" +
                 " model fitted: true\n" +
                 "\n" +
                 "description:\n" +
                 "split, mean (total weight) [* if is leaf]\n" +
                 "\n" +
                 "|root  14.0225 (200) \n" +
-                "|   |TV <= 108.6  9.3581081 (74) \n" +
+                "|   |TV <= 122.05  9.7759036 (83) \n" +
                 "|   |   |TV <= 30.05  6.7423077 (26) \n" +
-                "|   |   |   |TV <= 15.05  5.2818182 (11) \n" +
-                "|   |   |   |   |TV <= 8.1  4.44 (5)  *\n" +
-                "|   |   |   |   |TV > 8.1  5.9833333 (6)  *\n" +
-                "|   |   |   |TV > 15.05  7.8133333 (15) \n" +
-                "|   |   |   |   |TV <= 21.7  7.475 (8)  *\n" +
+                "|   |   |   |TV <= 8.65  4.6714286 (7)  *\n" +
+                "|   |   |   |TV > 8.65  7.5052632 (19) \n" +
+                "|   |   |   |   |TV <= 21.7  7.1 (12) \n" +
+                "|   |   |   |   |   |TV <= 17.05  6.82 (5)  *\n" +
+                "|   |   |   |   |   |TV > 17.05  7.3 (7)  *\n" +
                 "|   |   |   |   |TV > 21.7  8.2 (7)  *\n" +
-                "|   |   |TV > 30.05  10.775 (48) \n" +
+                "|   |   |TV > 30.05  11.1596491 (57) \n" +
                 "|   |   |   |TV <= 67.35  9.7833333 (18) \n" +
                 "|   |   |   |   |TV <= 49.15  10.14 (10) \n" +
                 "|   |   |   |   |   |TV <= 41.25  9.92 (5)  *\n" +
                 "|   |   |   |   |   |TV > 41.25  10.36 (5)  *\n" +
                 "|   |   |   |   |TV > 49.15  9.3375 (8)  *\n" +
-                "|   |   |   |TV > 67.35  11.37 (30) \n" +
-                "|   |   |   |   |TV <= 94.05  11.647619 (21) \n" +
-                "|   |   |   |   |   |TV <= 77.3  11.5230769 (13) \n" +
+                "|   |   |   |TV > 67.35  11.7948718 (39) \n" +
+                "|   |   |   |   |TV <= 108.6  11.37 (30) \n" +
+                "|   |   |   |   |   |TV <= 94.05  11.647619 (21) \n" +
                 "|   |   |   |   |   |   |TV <= 75.2  11.925 (8)  *\n" +
-                "|   |   |   |   |   |   |TV > 75.2  10.88 (5)  *\n" +
-                "|   |   |   |   |   |TV > 77.3  11.85 (8)  *\n" +
-                "|   |   |   |   |TV > 94.05  10.7222222 (9)  *\n" +
-                "|   |TV > 108.6  16.7619048 (126) \n" +
-                "|   |   |TV <= 181.7  14.2 (43) \n" +
-                "|   |   |   |TV <= 140.8  13.5863636 (22) \n" +
-                "|   |   |   |   |TV <= 122.05  13.2111111 (9)  *\n" +
-                "|   |   |   |   |TV > 122.05  13.8461538 (13) \n" +
-                "|   |   |   |   |   |TV <= 137.05  14.325 (8)  *\n" +
-                "|   |   |   |   |   |TV > 137.05  13.08 (5)  *\n" +
-                "|   |   |   |TV > 140.8  14.8428571 (21) \n" +
-                "|   |   |   |   |TV <= 171.9  15.0333333 (15) \n" +
-                "|   |   |   |   |   |TV <= 150.65  14.5 (5)  *\n" +
-                "|   |   |   |   |   |TV > 150.65  15.3 (10) \n" +
-                "|   |   |   |   |   |   |TV <= 165.05  15.68 (5)  *\n" +
-                "|   |   |   |   |   |   |TV > 165.05  14.92 (5)  *\n" +
-                "|   |   |   |   |TV > 171.9  14.3666667 (6)  *\n" +
-                "|   |   |TV > 181.7  18.0891566 (83) \n" +
-                "|   |   |   |TV <= 240.9  17.1272727 (55) \n" +
+                "|   |   |   |   |   |   |TV > 75.2  11.4769231 (13) \n" +
+                "|   |   |   |   |   |   |   |TV <= 77.3  10.88 (5)  *\n" +
+                "|   |   |   |   |   |   |   |TV > 77.3  11.85 (8)  *\n" +
+                "|   |   |   |   |   |TV > 94.05  10.7222222 (9)  *\n" +
+                "|   |   |   |   |TV > 108.6  13.2111111 (9)  *\n" +
+                "|   |TV > 122.05  17.0350427 (117) \n" +
+                "|   |   |TV <= 240.9  16.1089888 (89) \n" +
+                "|   |   |   |TV <= 181.7  14.4617647 (34) \n" +
+                "|   |   |   |   |TV <= 140.8  13.8461538 (13) \n" +
+                "|   |   |   |   |   |TV <= 135.7  14.4857143 (7)  *\n" +
+                "|   |   |   |   |   |TV > 135.7  13.1 (6)  *\n" +
+                "|   |   |   |   |TV > 140.8  14.8428571 (21) \n" +
+                "|   |   |   |   |   |TV <= 167.6  15.2583333 (12) \n" +
+                "|   |   |   |   |   |   |TV <= 159.95  14.5 (7)  *\n" +
+                "|   |   |   |   |   |   |TV > 159.95  16.32 (5)  *\n" +
+                "|   |   |   |   |   |TV > 167.6  14.2888889 (9)  *\n" +
+                "|   |   |   |TV > 181.7  17.1272727 (55) \n" +
                 "|   |   |   |   |TV <= 221.45  17.8472222 (36) \n" +
                 "|   |   |   |   |   |TV <= 210.15  16.7363636 (22) \n" +
                 "|   |   |   |   |   |   |TV <= 199.45  17.6428571 (14) \n" +
@@ -285,20 +186,20 @@ public class RTreeJTest {
                 "|   |   |   |   |   |   |   |TV > 193.45  18.65 (6)  *\n" +
                 "|   |   |   |   |   |   |TV > 199.45  15.15 (8)  *\n" +
                 "|   |   |   |   |   |TV > 210.15  19.5928571 (14) \n" +
-                "|   |   |   |   |   |   |TV <= 218.05  19.9666667 (9)  *\n" +
-                "|   |   |   |   |   |   |TV > 218.05  18.92 (5)  *\n" +
+                "|   |   |   |   |   |   |TV <= 217.25  20.0375 (8)  *\n" +
+                "|   |   |   |   |   |   |TV > 217.25  19 (6)  *\n" +
                 "|   |   |   |   |TV > 221.45  15.7631579 (19) \n" +
                 "|   |   |   |   |   |TV <= 227.6  12.6 (5)  *\n" +
                 "|   |   |   |   |   |TV > 227.6  16.8928571 (14) \n" +
                 "|   |   |   |   |   |   |TV <= 233.3  18.44 (5)  *\n" +
                 "|   |   |   |   |   |   |TV > 233.3  16.0333333 (9)  *\n" +
-                "|   |   |   |TV > 240.9  19.9785714 (28) \n" +
+                "|   |   |TV > 240.9  19.9785714 (28) \n" +
+                "|   |   |   |TV <= 286.8  19.5045455 (22) \n" +
                 "|   |   |   |   |TV <= 262.8  21.1444444 (9)  *\n" +
-                "|   |   |   |   |TV > 262.8  19.4263158 (19) \n" +
+                "|   |   |   |   |TV > 262.8  18.3692308 (13) \n" +
                 "|   |   |   |   |   |TV <= 276.8  16.6833333 (6)  *\n" +
-                "|   |   |   |   |   |TV > 276.8  20.6923077 (13) \n" +
-                "|   |   |   |   |   |   |TV <= 286.8  19.8142857 (7)  *\n" +
-                "|   |   |   |   |   |   |TV > 286.8  21.7166667 (6)  *\n", tree.toSummary());
+                "|   |   |   |   |   |TV > 276.8  19.8142857 (7)  *\n" +
+                "|   |   |   |TV > 286.8  21.7166667 (6)  *\n", tree.toSummary());
     }
 
     @Test
@@ -332,8 +233,7 @@ public class RTreeJTest {
         Frame df = SolidFrame.byVars(vars);
 
         RTree tree = RTree.newCART()
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
-                .withMaxDepth(10).withMinCount(1);
+                .maxDepth.set(10).minCount.set(1);
         tree.fit(df, "target");
         RegressionResult result = tree.predict(df);
         RMSE rmse = RMSE.newMetric().compute(df.rvar("target"), result);
@@ -350,19 +250,10 @@ public class RTreeJTest {
         Frame test = frames[1];
 
         RTree tree = RTree.newCART()
-                .withMaxDepth(10)
-                .withMinCount(2)
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
+                .maxDepth.set(10)
+                .minCount.set(2);
         tree.fit(train, "Sales");
         double treeRSquare = tree.predict(test, true).rSquare("Sales");
-
-        RForest rf = RForest.newRF()
-                .withRegression(tree)
-                .withSampler(RowSampler.subsampler(0.8))
-                .withRuns(100);
-
-        rf.fit(train, "Sales");
-        double rfRSquare = rf.predict(test, true).rSquare("Sales");
 
         tree = RTree.newDecisionStump();
         tree.fit(train, "Sales");
@@ -370,6 +261,5 @@ public class RTreeJTest {
         double dsRSquare = tree.predict(test, true).rSquare("Sales");
 
         assertTrue(dsRSquare < treeRSquare);
-        assertTrue(treeRSquare < rfRSquare);
     }
 }

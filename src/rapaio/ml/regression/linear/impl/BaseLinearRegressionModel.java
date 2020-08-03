@@ -6,6 +6,7 @@ import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
@@ -13,6 +14,7 @@ import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
@@ -22,33 +24,12 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     private static final long serialVersionUID = -3722395862627404126L;
 
-    protected boolean intercept = true;
+    public ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true,
+            "intercept",
+            "Configures the model to add an intercept term or not",
+            Objects::nonNull);
+
     protected DMatrix beta;
-
-
-    @Override
-    public M newInstanceDecoration(M regression) {
-        return super.newInstanceDecoration(regression)
-                .withIntercept(intercept);
-    }
-
-    /**
-     * @return true if the linear model add an intercept if doesn't exists
-     */
-    public boolean hasIntercept() {
-        return intercept;
-    }
-
-    /**
-     * Configure the model to introduce an intercept or not.
-     *
-     * @param intercept if true an intercept variable will be generated, false otherwise
-     * @return linear model instance
-     */
-    public M withIntercept(boolean intercept) {
-        this.intercept = intercept;
-        return (M)this;
-    }
 
     public DVector firstCoefficients() {
         return beta.mapCol(0);
@@ -76,7 +57,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     @Override
     protected PredSetup preparePredict(Frame df, boolean withResiduals) {
-        Frame transformed = intercept ? FIntercept.filter().apply(df) : df;
+        Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
         return super.preparePredict(transformed, withResiduals);
     }
 
@@ -110,21 +91,21 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             sb.append(", not fitted.");
         } else {
             sb.append(", fitted on: ")
-                    .append(inputNames.length).append(" IVs [").append(joinMax(5, inputNames)).append("], ")
-                    .append(targetNames.length).append(" DVs [").append(joinMax(5, targetNames)).append("].");
+                    .append(inputNames.length).append(" IVs [").append(joinMax(inputNames)).append("], ")
+                    .append(targetNames.length).append(" DVs [").append(joinMax(targetNames)).append("].");
         }
         return sb.toString();
     }
 
-    private String joinMax(int max, String[] tokens) {
-        int len = Math.min(tokens.length, max);
+    private String joinMax(String[] tokens) {
+        int len = Math.min(tokens.length, 5);
         String[] firstTokens = new String[len];
         System.arraycopy(tokens, 0, firstTokens, 0, len);
         return String.join(",", firstTokens);
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");

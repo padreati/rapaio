@@ -79,11 +79,11 @@ public class RTreeSplitterTest {
     @Test
     void testIgnoreMissing() {
 
-        RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
+        RTreeSplitter splitter = RTreeSplitter.IGNORE;
         populate(0, 2, 1);
         populate(1, 2, 2);
         populate(2, 2, 3);
-        assertEquals("REMAINS_IGNORED", splitter.name());
+        assertEquals("Ignore", splitter.name());
 
         List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
         assertEquals(2, result.size());
@@ -101,11 +101,11 @@ public class RTreeSplitterTest {
     @Test
     void testRemainsWithMajority() {
 
-        RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_MAJORITY;
+        RTreeSplitter splitter = RTreeSplitter.MAJORITY;
         populate(0, 10, 1);
         populate(1, 7, 2);
         populate(2, 2, 3);
-        assertEquals("REMAINS_TO_MAJORITY", splitter.name());
+        assertEquals("Majority", splitter.name());
 
         List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
 
@@ -125,11 +125,11 @@ public class RTreeSplitterTest {
 
     @Test
     void testRemainsToAllRandom() {
-        RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_RANDOM;
+        RTreeSplitter splitter = RTreeSplitter.RANDOM;
         populate(0, 10, 1);
         populate(1, 7, 2);
         populate(2, 20, 3);
-        assertEquals("REMAINS_TO_RANDOM", splitter.name());
+        assertEquals("Random", splitter.name());
 
         List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
 

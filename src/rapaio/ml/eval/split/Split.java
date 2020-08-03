@@ -13,9 +13,7 @@ import rapaio.data.Var;
 @Builder
 public class Split {
 
-    @NonNull
     private final int round;
-    @NonNull
     private final int fold;
     @NonNull
     private final Frame trainDf;

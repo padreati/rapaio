@@ -69,7 +69,7 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
 
     @Override
     public L1RegressionModel newInstance() {
-        return newInstanceDecoration(new L1RegressionModel());
+        return new L1RegressionModel();
     }
 
     @Override

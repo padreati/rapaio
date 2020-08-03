@@ -46,7 +46,7 @@ public class RandomValueRegressionModelTest {
         assertEquals("RandomValueRegression", model.name());
         assertEquals("RandomValueRegression(distribution:Uniform(a=0,b=1))", model.newInstance().fullName());
 
-        assertEquals("Normal(mu=10, sd=20)", RandomValueRegressionModel.from(Normal.of(10, 20)).newInstance().distribution().name());
+        assertEquals("Normal(mu=10, sd=20)", RandomValueRegressionModel.from(Normal.of(10, 20)).newInstance().distribution.get().name());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +

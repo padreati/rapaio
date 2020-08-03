@@ -27,11 +27,14 @@
 
 package rapaio.ml.regression.tree;
 
+import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
+import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VType;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
@@ -39,12 +42,12 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.param.MultiParam;
+import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.RTreeCandidate;
 import rapaio.ml.regression.tree.rtree.RTreeNode;
-import rapaio.ml.regression.tree.rtree.RTreePredictor;
-import rapaio.ml.regression.tree.rtree.RTreePurityFunction;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
 import rapaio.ml.regression.tree.rtree.RTreeTest;
 import rapaio.printer.Printer;
@@ -57,8 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,37 +77,34 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     public static RTree newDecisionStump() {
         return new RTree()
-                .withMaxDepth(2)
-                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
-                .withTest(VType.INT, RTreeTest.NumericBinary)
-                .withTest(VType.BINARY, RTreeTest.NumericBinary)
-                .withTest(VType.NOMINAL, RTreeTest.NominalBinary)
-                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN);
+                .maxDepth.set(2)
+                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.set(VType.INT, RTreeTest.NumericBinary)
+                .test.set(VType.BINARY, RTreeTest.NumericBinary)
+                .test.set(VType.NOMINAL, RTreeTest.NominalBinary)
+                .splitter.set(RTreeSplitter.MAJORITY);
     }
 
     public static RTree newC45() {
         return new RTree()
-                .withMaxDepth(Integer.MAX_VALUE)
-                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
-                .withTest(VType.INT, RTreeTest.NumericBinary)
-                .withTest(VType.BINARY, RTreeTest.NumericBinary)
-                .withTest(VType.NOMINAL, RTreeTest.NominalFull)
-                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
-                .withMinCount(2);
+                .maxDepth.set(Integer.MAX_VALUE)
+                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.set(VType.INT, RTreeTest.NumericBinary)
+                .test.set(VType.BINARY, RTreeTest.NumericBinary)
+                .test.set(VType.NOMINAL, RTreeTest.NominalFull)
+                .splitter.set(RTreeSplitter.RANDOM)
+                .minCount.set(2);
     }
 
     public static RTree newCART() {
         return new RTree()
-                .withMaxDepth(Integer.MAX_VALUE)
-                .withTest(VType.DOUBLE, RTreeTest.NumericBinary)
-                .withTest(VType.INT, RTreeTest.NumericBinary)
-                .withTest(VType.BINARY, RTreeTest.NumericBinary)
-                .withTest(VType.NOMINAL, RTreeTest.NominalBinary)
-                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withPurityFunction(RTreePurityFunction.WEIGHTED_VAR_GAIN)
-                .withMinCount(1);
+                .maxDepth.set(Integer.MAX_VALUE)
+                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.set(VType.INT, RTreeTest.NumericBinary)
+                .test.set(VType.BINARY, RTreeTest.NumericBinary)
+                .test.set(VType.NOMINAL, RTreeTest.NominalBinary)
+                .splitter.set(RTreeSplitter.RANDOM)
+                .minCount.set(1);
     }
 
     private static final Map<VType, RTreeTest> DEFAULT_TEST_MAP;
@@ -121,18 +119,45 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         DEFAULT_TEST_MAP.put(VType.STRING, RTreeTest.Ignore);
     }
 
-    private int minCount = 1;
-    private int maxDepth = Integer.MAX_VALUE;
-    private int maxSize = Integer.MAX_VALUE;
-    private double minScore = 1e-320;
+    public final ValueParam<Integer, RTree> minCount = new ValueParam<>(this, 1,
+            "minCount",
+            "Minimum number of observations in a final node",
+            x -> x != null && x >= 1);
 
-    private SortedMap<VType, RTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
+    public final ValueParam<Integer, RTree> maxDepth = new ValueParam<>(this, Integer.MAX_VALUE,
+            "maxDepth",
+            "Maximum depth of the tree",
+            x -> x != null && x > 0);
 
-    private RTreePurityFunction function = RTreePurityFunction.WEIGHTED_VAR_GAIN;
-    private RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
-    private RTreePredictor predictor = RTreePredictor.STANDARD;
-    private VarSelector varSelector = VarSelector.all();
-    private RegressionLoss regressionLoss = new L2RegressionLoss();
+    public final ValueParam<Integer, RTree> maxSize = new ValueParam<>(this, Integer.MAX_VALUE,
+            "maxSize",
+            "Maximum number of nodes a tree is grown",
+            x -> x != null && x > 0);
+
+    public final ValueParam<Double, RTree> minScore = new ValueParam<>(this, 1e-30,
+            "minScore",
+            "Minimum quantity a split must gain to proceed further",
+            Double::isFinite);
+
+    public final ValueParam<RTreeSplitter, RTree> splitter = new ValueParam<>(this, RTreeSplitter.IGNORE,
+            "splitter",
+            "Method used to distribute observations with missing values on test variable on splitting a node",
+            Objects::nonNull);
+
+    public final ValueParam<RegressionLoss, RTree> loss = new ValueParam<>(this, new L2RegressionLoss(),
+            "loss",
+            "Loss function",
+            Objects::nonNull);
+
+    public final ValueParam<VarSelector, RTree> varSelector = new ValueParam<>(this, VarSelector.all(),
+            "varSelector",
+            "Variable selection method used when selecting test variables at each node",
+            Objects::nonNull);
+
+    public final MultiParam<VType, RTreeTest, RTree> test = new MultiParam<>(this, DEFAULT_TEST_MAP,
+            "testMap",
+            "Map with test method for each variable type",
+            Objects::nonNull);
 
     // tree root node
 
@@ -143,17 +168,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     @Override
     public RTree newInstance() {
-        RTree newInstance = newInstanceDecoration(new RTree())
-                .withMinCount(minCount)
-                .withMinScore(minScore)
-                .withMaxDepth(maxDepth)
-                .withMaxSize(maxSize)
-                .withPurityFunction(function)
-                .withSplitter(splitter)
-                .withPredictor(predictor)
-                .withVarSelector(varSelector)
-                .withRegressionLoss(regressionLoss);
-        newInstance.testMap = new TreeMap<>(this.testMap);
+        RTree newInstance = new RTree();
+        newInstance.copyParameterValues(this);
         return newInstance;
     }
 
@@ -165,23 +181,23 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("TreeClassifier {");
-        sb.append("  minCount=").append(minCount).append(",\n");
-        sb.append("  minScore=").append(floatFlex(minScore)).append(",\n");
-        sb.append("  maxDepth=").append(maxDepth).append(",\n");
-        sb.append("  maxSize=").append(maxSize).append(",\n");
-        for (Map.Entry<VType, RTreeTest> e : testMap.entrySet()) {
-            sb.append("  test[").append(e.getKey().code()).append("]=")
-                    .append(e.getValue().name()).append(",\n");
-        }
-        sb.append("  regressionLoss=").append(regressionLoss.name()).append("\n");
-        sb.append("  purityFunction=").append(function.name()).append(",\n");
-        sb.append("  splitter=").append(splitter.name()).append(",\n");
-        sb.append("  predictor=").append(predictor.name()).append("\n");
-        sb.append("  varSelector=").append(varSelector.name()).append(",\n");
-        sb.append("  runs=").append(runs).append(",\n");
-        sb.append("  poolSize=").append(poolSize).append(",\n");
-        sb.append("  sampler=").append(sampler.name()).append(",\n");
+        sb.append("RTree{");
+        sb.append("minCount=").append(minCount.get()).append(",");
+        sb.append("minScore=").append(floatFlex(minScore.get())).append(",");
+        sb.append("maxDepth=").append(maxDepth.get()).append(",");
+        sb.append("maxSize=").append(maxSize.get()).append(",");
+        sb.append("tests=[");
+        sb.append(test.get().entrySet().stream()
+                .filter(e -> DEFAULT_TEST_MAP.get(e.getKey()) != e.getValue())
+                .map(e -> e.getKey().code() + ":" + e.getValue().name())
+                .collect(Collectors.joining(",")));
+        sb.append("],");
+        sb.append("loss=").append(loss.name()).append(",");
+        sb.append("split=").append(splitter.name()).append(",");
+        sb.append("varSelector=").append(varSelector.name()).append(",");
+        sb.append("runs=").append(runs.get()).append(",");
+        sb.append("poolSize=").append(poolSize.get()).append(",");
+        sb.append("sampler=").append(sampler.get().name());
         sb.append("}");
         return sb.toString();
     }
@@ -198,101 +214,6 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
                 .build();
     }
 
-    public int minCount() {
-        return minCount;
-    }
-
-    public RTree withMinCount(int minCount) {
-        this.minCount = minCount;
-        return this;
-    }
-
-    public double minScore() {
-        return minScore;
-    }
-
-    public RTree withMinScore(double minScore) {
-        this.minScore = minScore;
-        return this;
-    }
-
-    public int maxDepth() {
-        return maxDepth;
-    }
-
-    public RTree withMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
-        return this;
-    }
-
-    public int maxSize() {
-        return maxSize;
-    }
-
-    public RTree withMaxSize(int maxSize) {
-        this.maxSize = maxSize;
-        return this;
-    }
-
-    public Map<VType, RTreeTest> testMap() {
-        return testMap;
-    }
-
-    public RTree withTests(Map<VType, RTreeTest> testMap) {
-        this.testMap = new TreeMap<>(testMap);
-        return this;
-    }
-
-    public RTree withTest(VType vType, RTreeTest test) {
-        this.testMap.put(vType, test);
-        return this;
-    }
-
-    public RegressionLoss regressionLoss() {
-        return regressionLoss;
-    }
-
-    public RTree withRegressionLoss(RegressionLoss regressionLoss) {
-        this.regressionLoss = regressionLoss;
-        return this;
-    }
-
-    public RTreeSplitter splitter() {
-        return splitter;
-    }
-
-    public RTree withSplitter(RTreeSplitter splitter) {
-        this.splitter = splitter;
-        return this;
-    }
-
-    public RTreePredictor predictor() {
-        return predictor;
-    }
-
-    public RTree withPredictor(RTreePredictor predictor) {
-        this.predictor = predictor;
-        return this;
-    }
-
-    public RTreePurityFunction purityFunction() {
-        return function;
-    }
-
-    public RTree withPurityFunction(RTreePurityFunction function) {
-        this.function = function;
-        return this;
-    }
-
-    public VarSelector varSelector() {
-        return varSelector;
-    }
-
-    public RTree withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
-        return this;
-    }
-
     public RTreeNode root() {
         return root;
     }
@@ -307,7 +228,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         HashMap<Integer, Frame> frameMap = new HashMap<>();
         HashMap<Integer, Var> weightsMap = new HashMap<>();
 
-        this.varSelector.withVarNames(inputNames());
+        this.varSelector.get().withVarNames(inputNames());
         root = new RTreeNode(id++, null, "root", (row, frame) -> true, 1);
 
         // prepare data for root
@@ -332,7 +253,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             // now that we have a best candidate,do the effective split
 
             List<RowPredicate> predicates = last.bestCandidate().getGroupPredicates();
-            List<Mapping> mappings = splitter.performSplitMapping(lastDf, lastWeights, predicates);
+            List<Mapping> mappings = splitter.get().performSplitMapping(lastDf, lastWeights, predicates);
 
             for (int i = 0; i < predicates.size(); i++) {
                 RowPredicate predicate = predicates.get(i);
@@ -354,7 +275,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     private void learnNode(RTreeNode node, Frame df, Var weights) {
 
         node.setLeaf(true);
-        node.setValue(regressionLoss.computeConstantMinimizer(df, firstTargetName(), weights));
+        node.setValue(loss.get().computeConstantMinimizer(df, firstTargetName(), weights));
         node.setWeight(Sum.of(weights).value());
 
         if (node.weight() == 0) {
@@ -362,18 +283,18 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             node.setWeight(node.getParent() != null ? node.getParent().value() : Double.NaN);
             return;
         }
-        if (df.rowCount() <= minCount() || node.depth() >= (maxDepth == -1 ? Integer.MAX_VALUE : maxDepth)) {
+        if (df.rowCount() <= minCount.get() || node.depth() >= (maxDepth.get() == -1 ? Integer.MAX_VALUE : maxDepth.get())) {
             return;
         }
 
-        Stream<String> stream = Arrays.stream(varSelector.nextVarNames());
-        if (runs > 1) {
+        Stream<String> stream = Arrays.stream(varSelector.get().nextVarNames());
+        if (runs.get() > 1) {
             stream = stream.parallel();
         }
 
         List<RTreeCandidate> candidates = stream
-                .map(testCol -> testMap.get(df.type(testCol))
-                        .computeCandidate(this, df, weights, testCol, firstTargetName(), purityFunction())
+                .map(testCol -> test.get(df.type(testCol))
+                        .computeCandidate(this, df, weights, testCol, firstTargetName())
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -387,7 +308,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
         if (bestCandidate == null
                 || bestCandidate.getGroupNames().isEmpty()
-                || bestCandidate.getScore() <= minScore) {
+                || bestCandidate.getScore() <= minScore.get()) {
             return;
         }
         node.setBestCandidate(bestCandidate);
@@ -396,18 +317,43 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     @Override
     protected RegressionResult corePredict(Frame df, boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
 
         for (int i = 0; i < df.rowCount(); i++) {
-            DoublePair result = predictor.predict(i, df, root);
-            pred.prediction(firstTargetName()).setDouble(i, result._1);
+            DoublePair result = predict(i, df, root);
+            prediction.prediction(firstTargetName()).setDouble(i, result._1);
         }
-        pred.buildComplete();
-        return pred;
+        prediction.buildComplete();
+        return prediction;
+    }
+
+    private DoublePair predict(int row, Frame df, RTreeNode node) {
+
+        // if we are at a leaf node we simply return what we found there
+        if (node.isLeaf())
+            return DoublePair.of(node.value(), node.weight());
+
+        // if is an interior node, we check to see if there is a child
+        // which can handle the instance
+        for (RTreeNode child : node.children())
+            if (child.predicate().test(row, df)) {
+                return predict(row, df, child);
+            }
+
+        // so is a missing value for the current test feature
+
+        VarDouble values = VarDouble.empty();
+        VarDouble weights = VarDouble.empty();
+        for (RTreeNode child : node.children()) {
+            DoublePair prediction = predict(row, df, child);
+            values.addDouble(prediction._1);
+            weights.addDouble(prediction._2);
+        }
+        return DoublePair.of(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName());
         sb.append("\n model fitted: ").append(hasLearned).append("\n");
@@ -425,12 +371,12 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
@@ -453,6 +399,6 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     @Deprecated
     public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
-        root.boostUpdate(x, y, fx, lossFunction, splitter);
+        root.boostUpdate(x, y, fx, lossFunction, splitter.get());
     }
 }
