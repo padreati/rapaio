@@ -114,16 +114,6 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     }
 
     @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("model=").append(model.get().fullName()).append(",");
-        sb.append("runs=").append(runs.get());
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
@@ -142,7 +132,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         Queue<Future<rapaio.ml.regression.RegressionModel>> futures = new LinkedList<>();
         for (int i = 0; i < runs.get(); i++) {
-            Sample sample = sampler.get().nextSample(df, weights);
+            Sample sample = rowSampler.get().nextSample(df, weights);
             RegressionModel m = model.get().newInstance();
             Future<rapaio.ml.regression.RegressionModel> future = pool.submit(new FitTask(sample, m, targetNames));
             futures.add(future);

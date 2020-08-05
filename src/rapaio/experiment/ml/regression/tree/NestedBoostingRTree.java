@@ -30,7 +30,6 @@ package rapaio.experiment.ml.regression.tree;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.experiment.ml.regression.tree.nbrtree.NBRFunction;
 import rapaio.experiment.ml.regression.tree.nbrtree.NBRTreeNode;
 import rapaio.ml.common.Capabilities;
@@ -238,7 +237,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
 
     }
 }

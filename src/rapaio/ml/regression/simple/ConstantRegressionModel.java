@@ -34,7 +34,6 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -67,11 +66,6 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
     @Override
     public String name() {
         return "ConstantRegression";
-    }
-
-    @Override
-    public String fullName() {
-        return "ConstantRegression{constant=" + Format.floatFlex(constant.get()) + '}';
     }
 
     @Override
@@ -109,17 +103,17 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return fullName();
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return fullName();
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");

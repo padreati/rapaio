@@ -61,7 +61,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     // parameters
 
     protected boolean hasLearned;
-    public ValueParam<RowSampler, M> sampler = new ValueParam<>((M) this, RowSampler.identity(),
+    public ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
             "rowSampler",
             "Row sampler",
             Objects::nonNull);
@@ -97,6 +97,11 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     protected VType[] inputTypes;
     protected String[] targetNames;
     protected VType[] targetTypes;
+
+    @Override
+    public String fullName() {
+        return name() + '{' + getParameterValues(true) + '}';
+    }
 
     @Override
     public String[] inputNames() {

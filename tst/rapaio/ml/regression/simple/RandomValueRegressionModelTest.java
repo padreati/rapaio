@@ -44,22 +44,22 @@ public class RandomValueRegressionModelTest {
     void testNaming() {
         RandomValueRegressionModel model = RandomValueRegressionModel.newRVR();
         assertEquals("RandomValueRegression", model.name());
-        assertEquals("RandomValueRegression(distribution:Uniform(a=0,b=1))", model.newInstance().fullName());
+        assertEquals("RandomValueRegression{distribution=Uniform(a=0,b=1)}", model.newInstance().fullName());
 
         assertEquals("Normal(mu=10, sd=20)", RandomValueRegressionModel.from(Normal.of(10, 20)).newInstance().distribution.get().name());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
+                "Model instance: RandomValueRegression{}\n" +
                 "> model not trained.\n", model.toContent());
 
         model = model.fit(df, "Son");
-        assertEquals("RandomValueRegression(distribution:Uniform(a=0,b=1))", model.toString());
+        assertEquals("RandomValueRegression{}", model.toString());
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
+                "Model instance: RandomValueRegression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. Father dbl \n" +
@@ -69,7 +69,7 @@ public class RandomValueRegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
+                "Model instance: RandomValueRegression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. Father dbl \n" +
@@ -79,7 +79,7 @@ public class RandomValueRegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RandomValueRegression\n" +
-                "Model instance: RandomValueRegression(distribution:Uniform(a=0,b=1))\n" +
+                "Model instance: RandomValueRegression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. Father dbl \n" +

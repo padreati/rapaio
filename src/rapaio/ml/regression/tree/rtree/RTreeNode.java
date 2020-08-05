@@ -32,7 +32,7 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.ml.loss.RegressionLoss;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -121,9 +121,9 @@ public class RTreeNode implements Serializable {
         return depth;
     }
 
-    public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction, RTreeSplitter splitter) {
+    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction, RTreeSplitter splitter) {
         if (leaf) {
-            value = lossFunction.findMinimum(y, fx);
+            value = lossFunction.computeConstantMinimumGBT(y, fx);
             return;
         }
 

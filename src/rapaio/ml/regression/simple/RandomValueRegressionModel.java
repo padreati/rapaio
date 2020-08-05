@@ -78,11 +78,6 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
     }
 
     @Override
-    public String fullName() {
-        return name() + String.format("(distribution:%s)", distribution.get().name());
-    }
-
-    @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(0).maxInputCount(1_000_000)

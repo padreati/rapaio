@@ -29,7 +29,7 @@ package rapaio.experiment.ml.regression.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
+import rapaio.ml.loss.RegressionLoss;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 
@@ -38,5 +38,5 @@ import rapaio.ml.regression.RegressionResult;
  */
 public interface GBTRtree<M extends RegressionModel, R extends RegressionResult> extends RegressionModel {
 
-    void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction);
+    void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction);
 }

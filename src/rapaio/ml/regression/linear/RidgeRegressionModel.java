@@ -11,7 +11,6 @@ import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
-import rapaio.printer.Format;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,18 +66,6 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     @Override
     public String name() {
         return "RidgeRegression";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("lambda=").append(Format.floatFlex(lambda.get())).append(",");
-        sb.append("intercept=").append(intercept.get()).append(",");
-        sb.append("centering=").append(centering.get().name()).append(",");
-        sb.append("scaling=").append(scaling.get().name());
-        sb.append("}");
-        return sb.toString();
     }
 
     @Override

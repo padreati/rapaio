@@ -33,10 +33,9 @@ import rapaio.data.VarDouble;
 
 /**
  * Regression loss / objective function.
- *
- * This interface describes various useful operations that a regression loss function
- * should do.
- *
+ * <p>
+ * Interface which describes a regression loss function and connected operations with it.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
 public interface RegressionLoss {
@@ -45,6 +44,13 @@ public interface RegressionLoss {
      * @return name of the loss function
      */
     String name();
+
+    /**
+     * Computes constant value which minimizes the loss function on samples.
+     * @param y target values
+     * @return computed minimum value
+     */
+    double computeConstantMinimizer(Var y);
 
     /**
      * Computes constant value which minimizes the loss function on weighted samples.
@@ -64,26 +70,31 @@ public interface RegressionLoss {
     double computeConstantMinimizer(Frame df, String varName, Var weight);
 
     /**
+     * FIXME: find a better name
+     */
+    double computeConstantMinimumGBT(Var y, Var fx);
+
+    /**
      * Computes vector of values for the gradient of the loss function
      * as a loss derivative of fit function
      *
-     * @param y vector target values
-     * @param y_hat vector of fitted values
-     * @return vector of computed gradients
+     * @param y true target values
+     * @param y_hat fitted values
+     * @return vector of computed gradients for each observation
      */
     VarDouble computeGradient(Var y, Var y_hat);
 
     /**
      * Computes loss vector.
      *
-     * @param y vector of target values
-     * @param y_hat vector of fitted values
+     * @param y true target values
+     * @param y_hat fitted values
      * @return vector with loss for each observation
      */
     VarDouble computeError(Var y, Var y_hat);
 
     /**
-     * Compute a single loss score.
+     * Compute a single loss score .
      * @param y vector of target values
      * @param y_hat vector of fitted values
      * @return aggregate loss score for all observations

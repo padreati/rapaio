@@ -32,6 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.util.Objects;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -58,5 +60,18 @@ final class Bootstrap implements RowSampler {
     @Override
     public String name() {
         return "Bootstrap(p=" + floatFlex(percent) + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bootstrap bootstrap = (Bootstrap) o;
+        return Double.compare(bootstrap.percent, percent) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(percent);
     }
 }

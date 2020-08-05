@@ -88,7 +88,7 @@ public class RTreeJTest {
                 .varSelector.set(VarSelector.auto())
                 .runs.set(10)
                 .poolSize.set(10)
-                .sampler.set(RowSampler.bootstrap())
+                .rowSampler.set(RowSampler.bootstrap())
                 .runningHook.set(myRunningHook)
                 .stoppingHook.set(myStoppingHook);
         RTree rt2 = rt1.newInstance();
@@ -102,14 +102,14 @@ public class RTreeJTest {
         assertEquals("Ignore", rt2.splitter.get().name());
         assertEquals("VarSelector[AUTO]", rt2.varSelector.get().name());
         assertEquals(10, rt2.runs.get());
-        assertEquals("Bootstrap(p=1)", rt2.sampler.get().name());
+        assertEquals("Bootstrap(p=1)", rt2.rowSampler.get().name());
         assertEquals(10, rt2.poolSize.get());
         assertEquals(myStoppingHook, rt2.stoppingHook.get());
         assertEquals(myRunningHook, rt2.runningHook.get());
 
         assertNull(rt2.root());
 
-        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2,maxSize=10,tests=[bin:Ignore,int:Ignore,nom:Ignore,dbl:Ignore,long:Ignore],loss=loss,split=splitter,varSelector=varSelector,runs=10,poolSize=10,sampler=Bootstrap(p=1)}", rt2.fullName());
+        assertEquals("RTree{loss=L2,maxDepth=2,maxSize=10,pool=10,rowSampler=Bootstrap(p=1),runningHook=BiCosumer(),runs=10,stopHook=BiFunction(),testMap={BINARY=Ignore, INT=Ignore, NOMINAL=Ignore, DOUBLE=Ignore, LONG=Ignore, STRING=Ignore},varSelector=VarSelector[AUTO]}", rt2.fullName());
 
         Map<VType, RTreeTest> emptyMap = new HashMap<>();
         assertEquals(emptyMap, RTree.newDecisionStump().test.set(emptyMap).test.get());
@@ -117,11 +117,11 @@ public class RTreeJTest {
 
     @Test
     void testBuilders() {
-        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newDecisionStump().fullName());
+        assertEquals("RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumBin, INT=NumBin, NOMINAL=NomBin, DOUBLE=NumBin, LONG=NumBin, STRING=Ignore}}", RTree.newDecisionStump().fullName());
 
-        assertEquals("RTree{minCount=2,minScore=0,maxDepth=2147483647,maxSize=2147483647,tests=[],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newC45().fullName());
+        assertEquals("RTree{minCount=2,splitter=Random}", RTree.newC45().fullName());
 
-        assertEquals("RTree{minCount=1,minScore=0,maxDepth=2147483647,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}", RTree.newCART().fullName());
+        assertEquals("RTree{splitter=Random,testMap={BINARY=NumBin, INT=NumBin, NOMINAL=NomBin, DOUBLE=NumBin, LONG=NumBin, STRING=Ignore}}", RTree.newCART().fullName());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class RTreeJTest {
         tree.fit(t, "Sales");
 
         assertEquals("\n" +
-                " > RTree{minCount=4,minScore=0,maxDepth=10,maxSize=2147483647,tests=[nom:NomBin],loss=loss,split=splitter,varSelector=varSelector,runs=1,poolSize=-1,sampler=Identity}\n" +
+                " > RTree{maxDepth=10,minCount=4,splitter=Random,testMap={BINARY=NumBin, INT=NumBin, NOMINAL=NomBin, DOUBLE=NumBin, LONG=NumBin, STRING=Ignore}}\n" +
                 " model fitted: true\n" +
                 "\n" +
                 "description:\n" +

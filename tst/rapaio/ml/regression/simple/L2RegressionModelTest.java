@@ -35,16 +35,16 @@ public class L2RegressionModelTest {
     void testNaming() {
         L2RegressionModel model = L2RegressionModel.newModel();
         assertEquals("L2Regression", model.name());
-        assertEquals("L2Regression()", model.fullName());
+        assertEquals("L2Regression{}", model.fullName());
 
-        assertEquals("L2Regression(); not fitted", model.toString());
-        assertEquals("L2Regression(); fitted values={Sales:14.0225,Radio:23.264}", model.fit(df, "Sales,Radio").toString());
-        assertEquals("L2Regression(); fitted values={x1:15,x2:15,x3:15,x4:15,x5:15,...}", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8").toString());
+        assertEquals("L2Regression{}; not fitted", model.toString());
+        assertEquals("L2Regression{}; fitted values={Sales:14.0225,Radio:23.264}", model.fit(df, "Sales,Radio").toString());
+        assertEquals("L2Regression{}; fitted values={x1:15,x2:15,x3:15,x4:15,x5:15,...}", model.fit(bigDf, "x1,x2,x3,x4,x5,x6,x7,x8").toString());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. ID        nom \n" +
@@ -63,7 +63,7 @@ public class L2RegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. ID        nom \n" +
@@ -82,7 +82,7 @@ public class L2RegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. ID        nom \n" +
@@ -101,7 +101,7 @@ public class L2RegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. x23 dbl \n" +
@@ -149,7 +149,7 @@ public class L2RegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. x23 dbl \n" +
@@ -198,7 +198,7 @@ public class L2RegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: L2Regression\n" +
-                "Model instance: L2Regression()\n" +
+                "Model instance: L2Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. x23 dbl \n" +

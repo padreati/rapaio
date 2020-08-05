@@ -70,11 +70,6 @@ public class L2RegressionModel extends AbstractRegressionModel<L2RegressionModel
     }
 
     @Override
-    public String fullName() {
-        return name() + "()";
-    }
-
-    @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(0).maxInputCount(1_000_000)

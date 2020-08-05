@@ -25,8 +25,9 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost;
+package rapaio.ml.regression.boost;
 
+import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
@@ -34,13 +35,13 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLossL2;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.loss.L2RegressionLoss;
 import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
+import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.simple.L2RegressionModel;
 import rapaio.ml.regression.tree.RTree;
@@ -50,91 +51,68 @@ import rapaio.printer.opt.POption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static rapaio.printer.Format.floatFlex;
+import java.util.Objects;
 
 /**
  * Gradient Boosting Tree
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionModel, RegressionResult> {
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-    private rapaio.ml.regression.RegressionModel initRegressionModel = L2RegressionModel.newModel();
-    private GBTRtree regressor = RTree.newCART().maxDepth.set(2).minCount.set(10);
-    private GBTRegressionLoss lossFunction = new GBTRegressionLossL2();
-    private RegressionLoss regressionLoss = new L2RegressionLoss();
-    private double shrinkage = 1.0;
+
+    public final ValueParam<Double, GBTRegressionModel> shrinkage = new ValueParam<>(this, 1.0,
+            "shrinkage",
+            "Shrinkage",
+            x -> Double.isFinite(x) && x > 0 && x <= 1);
+
+    public final ValueParam<RegressionLoss, GBTRegressionModel> loss = new ValueParam<>(this, new L2RegressionLoss(),
+            "loss",
+            "Loss function",
+            Objects::nonNull);
+
+    public final ValueParam<? extends RegressionModel, GBTRegressionModel> initModel = new ValueParam<>(this, L2RegressionModel.newModel(),
+            "initModel",
+            "Initial model",
+            Objects::nonNull);
+
+    public final ValueParam<GBTRtree<? extends RegressionModel, ? extends RegressionResult>, GBTRegressionModel> model =
+            new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10),
+                    "nodeModel",
+                    "Node model",
+                    Objects::nonNull);
 
     // prediction
-    VarDouble fitValues;
-    List<GBTRtree> trees;
+    @Getter
+    private VarDouble fitValues;
+
+    @Getter
+    private List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> trees;
 
     @Override
     public GBTRegressionModel newInstance() {
-        return new GBTRegressionModel()
-                .withInitRegressor(initRegressionModel)
-                .withRegressor(regressor)
-                .withLossFunction(regressionLoss)
-                .withShrinkage(shrinkage);
+        GBTRegressionModel gbt = new GBTRegressionModel();
+        gbt.copyParameterValues(this);
+        return gbt;
     }
 
     @Override
     public String name() {
-        return "GradientBoostingTreeRegressor";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("loss=").append(regressionLoss.name()).append(", ");
-        sb.append("initRegression=").append(initRegressionModel.fullName()).append(", ");
-        sb.append("regression=").append(regressor.fullName()).append(", ");
-        sb.append("shrinkage=").append(floatFlex(shrinkage)).append(", ");
-        sb.append("sampler=").append(sampler.get()).append(", ");
-        sb.append("runs=").append(runs.get());
-        sb.append("}");
-        return sb.toString();
+        return "GradientBoostingTreeRegression";
     }
 
     @Override
     public Capabilities capabilities() {
         return Capabilities.builder()
                 .minInputCount(1).maxInputCount(1_000_000)
-                .minTargetCount(1).maxTargetCount(1)
                 .inputTypes(Arrays.asList(VType.BINARY, VType.INT, VType.DOUBLE, VType.NOMINAL))
+                .minTargetCount(1).maxTargetCount(1)
                 .targetType(VType.DOUBLE)
                 .allowMissingInputValues(true)
                 .allowMissingTargetValues(false)
                 .build();
-    }
-
-    public GBTRegressionModel withLossFunction(RegressionLoss lossFunction) {
-        this.regressionLoss = lossFunction;
-        return this;
-    }
-
-    public GBTRegressionModel withRegressor(GBTRtree regressor) {
-        this.regressor = regressor;
-        return this;
-    }
-
-    public GBTRegressionModel withInitRegressor(rapaio.ml.regression.RegressionModel initRegressionModel) {
-        this.initRegressionModel = initRegressionModel;
-        return this;
-    }
-
-    public GBTRegressionModel withShrinkage(double shrinkage) {
-        this.shrinkage = shrinkage;
-        return this;
-    }
-
-    public List<GBTRtree> getTrees() {
-        return trees;
     }
 
     @Override
@@ -145,18 +123,18 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         Var y = df.rvar(firstTargetName());
         Frame x = df.removeVars(VRange.of(firstTargetName()));
 
-        initRegressionModel.fit(df, weights, firstTargetName());
-        fitValues = initRegressionModel.predict(df, false).firstPrediction().copy();
+        initModel.get().fit(df, weights, firstTargetName());
+        fitValues = initModel.get().predict(df, false).firstPrediction().copy();
 
         for (int i = 1; i <= runs.get(); i++) {
-            Var gradient = lossFunction.gradient(y, fitValues).withName("target");
+            Var gradient = loss.get().computeGradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
-            GBTRtree tree = (GBTRtree) regressor.newInstance();
+            GBTRtree tree = (GBTRtree) model.get().newInstance();
 
             // frame sampling
 
-            Mapping samplerMapping = sampler.get().nextSample(xm, weights).mapping;
+            Mapping samplerMapping = rowSampler.get().nextSample(xm, weights).mapping;
             Frame xmLearn = xm.mapRows(samplerMapping);
 
             // build regions
@@ -169,17 +147,17 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
                     xmLearn,
                     MappedVar.byRows(y, samplerMapping),
                     MappedVar.byRows(fitValues, samplerMapping),
-                    lossFunction);
+                    loss.get());
 
             // add next prediction to the predict values
             RegressionResult treePred = tree.predict(df, false);
             VarDouble nextFit = VarDouble.fill(df.rowCount(), 0.0).withName(fitValues.name());
             for (int j = 0; j < df.rowCount(); j++) {
-                nextFit.setDouble(j, fitValues.getDouble(j) + shrinkage * treePred.firstPrediction().getDouble(j));
+                nextFit.setDouble(j, fitValues.getDouble(j) + shrinkage.get() * treePred.firstPrediction().getDouble(j));
             }
 
-            double initScore = regressionLoss.computeErrorScore(y, fitValues);
-            double nextScore = regressionLoss.computeErrorScore(y, nextFit);
+            double initScore = loss.get().computeErrorScore(y, fitValues);
+            double nextScore = loss.get().computeErrorScore(y, nextFit);
 
             if (initScore >= nextScore) {
                 fitValues = nextFit;
@@ -194,14 +172,14 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
         RegressionResult pred = RegressionResult.build(this, df, withResiduals);
-        RegressionResult initPred = initRegressionModel.predict(df, false);
+        RegressionResult initPred = initModel.get().predict(df, false);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstPrediction().setDouble(i, initPred.firstPrediction().getDouble(i));
         }
         for (GBTRtree tree : trees) {
             RegressionResult treePred = tree.predict(df, false);
             for (int i = 0; i < df.rowCount(); i++) {
-                pred.firstPrediction().setDouble(i, pred.firstPrediction().getDouble(i) + shrinkage * treePred.firstPrediction().getDouble(i));
+                pred.firstPrediction().setDouble(i, pred.firstPrediction().getDouble(i) + shrinkage.get() * treePred.firstPrediction().getDouble(i));
             }
         }
         pred.buildComplete();

@@ -32,6 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 
+import java.util.Objects;
+
 import static rapaio.printer.Format.floatFlex;
 
 /**
@@ -57,5 +59,18 @@ final class SubSampler implements RowSampler {
     @Override
     public String name() {
         return "SubSampler(p=" + floatFlex(percent) + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SubSampler that = (SubSampler) o;
+        return Double.compare(that.percent, percent) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(percent);
     }
 }

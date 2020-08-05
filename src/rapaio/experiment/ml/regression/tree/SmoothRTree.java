@@ -30,7 +30,6 @@ package rapaio.experiment.ml.regression.tree;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.experiment.ml.regression.tree.srt.FixedScaleSmoothSplineRFunction;
 import rapaio.experiment.ml.regression.tree.srt.SmoothRFunction;
 import rapaio.experiment.ml.regression.tree.srt.SmoothRTreeNode;
@@ -207,7 +206,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
 
     }
 }

@@ -67,15 +67,6 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
     }
 
     @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("intercept=").append(intercept.get());
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVarNames) {
         // add intercept variable
         Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;

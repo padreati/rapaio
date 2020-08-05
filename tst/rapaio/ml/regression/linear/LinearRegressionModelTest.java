@@ -58,19 +58,19 @@ public class LinearRegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression{intercept=true}\n" +
+                "Model instance: LinearRegression{}\n" +
                 "> model not trained.\n" +
                 "\n", lm.toSummary());
-        assertEquals("LinearRegression{intercept=true}, not fitted.",
+        assertEquals("LinearRegression{}, not fitted.",
                 lm.toString());
         lm.fit(df, "Radio");
-        assertEquals("LinearRegression{intercept=true}, fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
+        assertEquals("LinearRegression{}, fitted on: 2 IVs [(Intercept),TV], 1 DVs [Radio].",
                 lm.toString());
         assertEquals(
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression{intercept=true}\n" +
+                        "Model instance: LinearRegression{}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -91,7 +91,7 @@ public class LinearRegressionModelTest {
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression{intercept=true}\n" +
+                        "Model instance: LinearRegression{}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -137,7 +137,7 @@ public class LinearRegressionModelTest {
                 "Regression predict summary\n" +
                         "=======================\n" +
                         "Model class: LinearRegression\n" +
-                        "Model instance: LinearRegression{intercept=true}\n" +
+                        "Model instance: LinearRegression{}\n" +
                         "> model is trained.\n" +
                         "> input variables: \n" +
                         "1. (Intercept) dbl \n" +
@@ -166,7 +166,7 @@ public class LinearRegressionModelTest {
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: LinearRegression\n" +
-                "Model instance: LinearRegression{intercept=true}\n" +
+                "Model instance: LinearRegression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. (Intercept) dbl \n" +

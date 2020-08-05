@@ -27,6 +27,7 @@
 
 package rapaio.ml.loss;
 
+import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -43,6 +44,11 @@ public class L2RegressionLoss implements RegressionLoss {
     }
 
     @Override
+    public double computeConstantMinimizer(Var y) {
+        return Mean.of(y).value();
+    }
+
+    @Override
     public double computeConstantMinimizer(Var y, Var weight) {
         return WeightedMean.of(y, weight).value();
     }
@@ -53,28 +59,30 @@ public class L2RegressionLoss implements RegressionLoss {
     }
 
     @Override
+    public double computeConstantMinimumGBT(Var y, Var fx) {
+        return Mean.of(computeGradient(y, fx)).value();
+    }
+
+    @Override
     public VarDouble computeGradient(Var y, Var y_hat) {
-        if (y.rowCount() != y_hat.rowCount()) {
-            throw new IllegalArgumentException("Row count of variables does not match.");
-        }
-        return VarDouble.from(y.rowCount(), row -> 0.5 * (y.getDouble(row) - y_hat.getDouble(row)));
+        int len = Math.min(y.rowCount(), y_hat.rowCount());
+        return VarDouble.from(y.rowCount(), row -> y.getDouble(row) - y_hat.getDouble(row));
     }
 
     @Override
     public VarDouble computeError(Var y, Var y_hat) {
         int len = Math.min(y.rowCount(), y_hat.rowCount());
-        return VarDouble.from(len, row -> Math.pow(y.getDouble(row) - y_hat.getDouble(row), 2));
+        return VarDouble.from(len, row -> Math.pow(y.getDouble(row) - y_hat.getDouble(row), 2) / 2);
     }
 
     @Override
     public double computeErrorScore(Var y, Var y_hat) {
-
         double len = Math.min(y.rowCount(), y_hat.rowCount());
         double sum = 0.0;
         for (int i = 0; i < len; i++) {
             sum += Math.pow(y.getDouble(i) - y_hat.getDouble(i), 2);
         }
-        return Math.sqrt(sum / len);
+        return Math.sqrt(sum / (2 * len));
     }
 
     @Override
@@ -84,6 +92,6 @@ public class L2RegressionLoss implements RegressionLoss {
         for (int i = 0; i < len; i++) {
             sum += Math.pow(residual.getDouble(i), 2);
         }
-        return Math.sqrt(sum / len);
+        return Math.sqrt(sum / (2 * len));
     }
 }

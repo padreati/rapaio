@@ -77,11 +77,6 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
         return "L1Regression";
     }
 
-    @Override
-    public String fullName() {
-        return name() + "()";
-    }
-
     public double[] getMedians() {
         return medians;
     }

@@ -154,15 +154,15 @@ public class RidgeRegressionModelTest {
         assertEquals("RidgeRegression", model1.name());
         assertEquals("RidgeRegression", model2.name());
 
-        assertEquals("RidgeRegression{lambda=1.2,intercept=true,centering=MEAN,scaling=SD}", model1.fullName());
-        assertEquals("RidgeRegression{lambda=3.1415927,intercept=false,centering=NONE,scaling=NONE}", model2.fullName());
+        assertEquals("RidgeRegression{lambda=1.2}", model1.fullName());
+        assertEquals("RidgeRegression{centering=NONE,intercept=false,lambda=3.1415927,scaling=NONE}", model2.fullName());
 
-        assertEquals("RidgeRegression{lambda=1.2,intercept=true,centering=MEAN,scaling=SD}, not fitted.", model1.toContent());
+        assertEquals("RidgeRegression{lambda=1.2}, not fitted.", model1.toContent());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RidgeRegression\n" +
-                "Model instance: RidgeRegression{lambda=3.1415927,intercept=false,centering=NONE,scaling=NONE}\n" +
+                "Model instance: RidgeRegression{centering=NONE,intercept=false,lambda=3.1415927,scaling=NONE}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. TV        dbl \n" +

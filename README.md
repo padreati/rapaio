@@ -241,6 +241,7 @@ of production ready tools from this field.
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 * RForest
+* Gradient Boosting Trees
 
 
 ### Experminental Features

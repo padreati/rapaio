@@ -33,7 +33,7 @@ import rapaio.data.Var;
 
 /**
  * Identity sampling means the sample is identical with the original set of data
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
 public final class Identity implements RowSampler {
@@ -48,5 +48,10 @@ public final class Identity implements RowSampler {
     @Override
     public String name() {
         return "Identity";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Identity;
     }
 }

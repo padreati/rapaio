@@ -36,7 +36,6 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.experiment.ml.regression.boost.gbt.GBTRegressionLoss;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
@@ -176,30 +175,6 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     @Override
     public String name() {
         return "RTree";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RTree{");
-        sb.append("minCount=").append(minCount.get()).append(",");
-        sb.append("minScore=").append(floatFlex(minScore.get())).append(",");
-        sb.append("maxDepth=").append(maxDepth.get()).append(",");
-        sb.append("maxSize=").append(maxSize.get()).append(",");
-        sb.append("tests=[");
-        sb.append(test.get().entrySet().stream()
-                .filter(e -> DEFAULT_TEST_MAP.get(e.getKey()) != e.getValue())
-                .map(e -> e.getKey().code() + ":" + e.getValue().name())
-                .collect(Collectors.joining(",")));
-        sb.append("],");
-        sb.append("loss=").append(loss.name()).append(",");
-        sb.append("split=").append(splitter.name()).append(",");
-        sb.append("varSelector=").append(varSelector.name()).append(",");
-        sb.append("runs=").append(runs.get()).append(",");
-        sb.append("poolSize=").append(poolSize.get()).append(",");
-        sb.append("sampler=").append(sampler.get().name());
-        sb.append("}");
-        return sb.toString();
     }
 
     @Override
@@ -398,7 +373,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     }
 
     @Deprecated
-    public void boostUpdate(Frame x, Var y, Var fx, GBTRegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
         root.boostUpdate(x, y, fx, lossFunction, splitter.get());
     }
 }

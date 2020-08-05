@@ -51,6 +51,21 @@ public class KDevianceRegressionLoss implements RegressionLoss {
     }
 
     @Override
+    public double computeConstantMinimizer(Var y) {
+        double up = 0.0;
+        double down = 0.0;
+
+        for (int i = 0; i < y.rowCount(); i++) {
+            up += y.getDouble(i);
+            down += Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
+        }
+        if (down == 0 || Double.isNaN(up) || Double.isNaN(down)) {
+            return 0;
+        }
+        return ((k - 1) * up) / (k * down);
+    }
+
+    @Override
     public double computeConstantMinimizer(Var y, Var weight) {
         double up = 0.0;
         double down = 0.0;
@@ -81,6 +96,27 @@ public class KDevianceRegressionLoss implements RegressionLoss {
         if (down == 0 || Double.isNaN(up) || Double.isNaN(down)) {
             throw new RuntimeException("Numerical problem");
         }
+        return ((k - 1) * up) / (k * down);
+    }
+
+    @Override
+    public double computeConstantMinimumGBT(Var y, Var fx) {
+        double up = 0.0;
+        double down = 0.0;
+
+        for (int i = 0; i < y.rowCount(); i++) {
+            up += y.getDouble(i);
+            down += Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
+        }
+
+        if (down == 0) {
+            return 0;
+        }
+
+        if (Double.isNaN(up) || Double.isNaN(down)) {
+            return 0;
+        }
+
         return ((k - 1) * up) / (k * down);
     }
 
