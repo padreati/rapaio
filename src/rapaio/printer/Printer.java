@@ -58,7 +58,8 @@ public interface Printer {
 
     /**
      * Configures default graphic image shape (width and height)
-     * @param width image width
+     *
+     * @param width  image width
      * @param height image height
      * @return printer instance
      */
@@ -79,7 +80,7 @@ public interface Printer {
      * Creates a new instance of printing options collection.
      * Any modification on this instance will not affect what
      * is stored as configuration on the printer itself.
-     *
+     * <p>
      * If one wants to modify the printing options from printer instance
      * she must use {@link #withOptions(POption[])} method.
      *
@@ -94,7 +95,7 @@ public interface Printer {
      * @param options options to be applied on this printer instance
      * @return instance of the printer
      */
-    Printer withOptions(POption...options);
+    Printer withOptions(POption<?>... options);
 
     /**
      * Print a message to text output
@@ -110,6 +111,7 @@ public interface Printer {
 
     /**
      * Print a message and append a new line after the message.
+     *
      * @param message message to be printed
      */
     default void println(String message) {
@@ -133,15 +135,15 @@ public interface Printer {
         println(printable.toString());
     }
 
-    default void printSummary(Printable printable, POption... options) {
+    default void printSummary(Printable printable, POption<?>... options) {
         println(printable.toSummary(this, options));
     }
 
-    default void printContent(Printable printable, POption... options) {
+    default void printContent(Printable printable, POption<?>... options) {
         println(printable.toContent(this, options));
     }
 
-    default void printFullContent(Printable printable, POption... options) {
+    default void printFullContent(Printable printable, POption<?>... options) {
         println(printable.toFullContent(this, options));
     }
 }

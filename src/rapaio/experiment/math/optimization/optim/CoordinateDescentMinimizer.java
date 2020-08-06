@@ -47,8 +47,8 @@ import static java.lang.Math.*;
  */
 public class CoordinateDescentMinimizer implements Minimizer {
 
-    private double tol = 1e-10;
-    private int maxIt;
+    private final double tol = 1e-10;
+    private final int maxIt;
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
@@ -58,7 +58,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
 
     private DVector sol;
 
-    private List<DVector> solutions = new ArrayList<>();
+    private final List<DVector> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 

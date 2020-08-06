@@ -218,9 +218,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     private void nodeContent(StringBuilder sb, NBRTreeNode node, int level) {
-        for (int i = 0; i < level; i++) {
-            sb.append("\t");
-        }
+        sb.append("\t".repeat(Math.max(0, level)));
         for (NBRFunction fun : node.getFunctions()) {
             sb.append("model: ").append(fun.toString()).append(";");
         }

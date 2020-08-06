@@ -43,7 +43,7 @@ import java.util.function.Function;
 
 /**
  * Plot sub-component which draws a KDE density estimator.
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class DensityLine extends PlotComponent {

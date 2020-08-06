@@ -35,7 +35,7 @@ import java.io.Serializable;
 
 /**
  * Kernel function used in kernel density estimator
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface KFunc extends Printable, Serializable {
@@ -53,7 +53,7 @@ public interface KFunc extends Printable, Serializable {
     /**
      * Computes smallest x coordinate value for which the kernel function has an influence
      *
-     * @param x        center point of the kernel
+     * @param x         center point of the kernel
      * @param bandwidth bandwidth of the kernel
      * @return minimum value where is an influence
      */
@@ -61,7 +61,8 @@ public interface KFunc extends Printable, Serializable {
 
     /**
      * Computes largest x coordinate value for which the kernel function has an influence
-     * @param x center point of the kernel
+     *
+     * @param x         center point of the kernel
      * @param bandwidth bandwidth of the kernel
      * @return maximum value where is an influence
      */

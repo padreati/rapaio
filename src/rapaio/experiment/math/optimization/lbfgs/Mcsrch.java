@@ -35,23 +35,50 @@ package rapaio.experiment.math.optimization.lbfgs;
  */
 public class Mcsrch {
     private static Mcsrch instance;
-    private Mcsrch () {}
 
-    public static synchronized Mcsrch getInstance () {
+    private Mcsrch() {
+    }
+
+    public static synchronized Mcsrch getInstance() {
         if (instance == null)
             instance = new Mcsrch();
         return instance;
     }
 
-    private  int infoc[] = new int[1], j = 0;
-    private  double dg = 0, dgm = 0, dginit = 0, dgtest = 0, dgx[] = new double[1], dgxm[] = new double[1], dgy[] = new double[1], dgym[] = new double[1], finit = 0, ftest1 = 0, fm = 0, fx[] = new double[1], fxm[] = new double[1], fy[] = new double[1], fym[] = new double[1], p5 = 0, p66 = 0, stx[] = new double[1], sty[] = new double[1], stmin = 0, stmax = 0, width = 0, width1 = 0, xtrapf = 0;
-    private  boolean brackt[] = new boolean[1], stage1 = false;
+    private final int[] infoc = new int[1];
+    private int j = 0;
+    private double dg = 0;
+    private double dgm = 0;
+    private double dginit = 0;
+    private double dgtest = 0;
+    private final double[] dgx = new double[1];
+    private final double[] dgxm = new double[1];
+    private final double[] dgy = new double[1];
+    private final double[] dgym = new double[1];
+    private double finit = 0;
+    private double ftest1 = 0;
+    private double fm = 0;
+    private final double[] fx = new double[1];
+    private final double[] fxm = new double[1];
+    private final double[] fy = new double[1];
+    private final double[] fym = new double[1];
+    private double p5 = 0;
+    private double p66 = 0;
+    private final double[] stx = new double[1];
+    private final double[] sty = new double[1];
+    private double stmin = 0;
+    private double stmax = 0;
+    private double width = 0;
+    private double width1 = 0;
+    private double xtrapf = 0;
+    private final boolean[] brackt = new boolean[1];
+    private boolean stage1 = false;
 
-     double sqr(double x) {
+    double sqr(double x) {
         return x * x;
     }
 
-     double max3(double x, double y, double z) {
+    double max3(double x, double y, double z) {
         return x < y ? (y < z ? z : y) : (x < z ? z : x);
     }
 
@@ -141,7 +168,7 @@ public class Mcsrch {
      * Laboratory. Java translation by Robert Dodier, August 1997.
      */
 
-    public  void mcsrch(int n, double[] x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
+    public void mcsrch(int n, double[] x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
         p5 = 0.5;
         p66 = 0.66;
         xtrapf = 4;
@@ -360,7 +387,7 @@ public class Mcsrch {
      * as part of Minpack project. Argonne Nat'l Laboratory, June 1983.
      * Robert Dodier: Java translation, August 1997.
      */
-    public  void mcstep(double[] stx, double[] fx, double[] dx, double[] sty, double[] fy, double[] dy, double[] stp, double fp, double dp, boolean[] brackt, double stpmin, double stpmax, int[] info) {
+    public void mcstep(double[] stx, double[] fx, double[] dx, double[] sty, double[] fy, double[] dy, double[] stp, double fp, double dp, boolean[] brackt, double stpmin, double stpmax, int[] info) {
         boolean bound;
         double gamma, p, q, r, s, sgnd, stpc, stpf, stpq, theta;
 

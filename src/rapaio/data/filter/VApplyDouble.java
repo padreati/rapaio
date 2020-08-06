@@ -38,7 +38,7 @@ import java.util.function.Function;
  * The double values are updated after transformed. Thus, a variable can be modified
  * after this call, to not update the original variable a copy of
  * the variable must be created before.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public final class VApplyDouble implements VFilter {

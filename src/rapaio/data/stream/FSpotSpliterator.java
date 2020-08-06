@@ -40,7 +40,7 @@ public class FSpotSpliterator extends Spliterators.AbstractSpliterator<FSpot> {
     private static final int CHARACTERISTICS = SIZED | SUBSIZED | CONCURRENT | NONNULL | IMMUTABLE;
 
     private final Frame source;
-    private int end;
+    private final int end;
     private int row;
 
     public FSpotSpliterator(Frame source, int start, int end, int row) {

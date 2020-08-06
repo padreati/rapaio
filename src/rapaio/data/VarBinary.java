@@ -424,7 +424,7 @@ public final class VarBinary extends AbstractVar {
         out.write(buff);
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         byte[] buff = new byte[in.readInt()];
         in.readFully(buff);

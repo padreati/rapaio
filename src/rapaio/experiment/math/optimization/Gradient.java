@@ -259,7 +259,7 @@ class LogisticGradient implements Gradient {
                 double sum = 0.0;
                 if (maxMargin > 0) {
                     for (int i = 0; i < numClasses - 1; i++) {
-                        margins.set(i, margins.get(i)-maxMargin);
+                        margins.set(i, margins.get(i) - maxMargin);
                         if (i == maxMarginIndex) {
                             sum += Math.exp(-maxMargin);
                         } else {

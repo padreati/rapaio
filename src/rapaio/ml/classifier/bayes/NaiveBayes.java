@@ -71,7 +71,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     // algorithm parameters
 
     private Prior prior = new PriorMLE();
-    private List<Estimator> estimatorList = new ArrayList<>();
+    private final List<Estimator> estimatorList = new ArrayList<>();
 
     private NaiveBayes() {
     }

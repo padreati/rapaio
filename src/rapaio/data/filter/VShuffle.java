@@ -27,17 +27,17 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntArrays;
 
 /**
  * Filter which shuffles observations from a given variable. The new variable is
  * a mapped variable over the original one.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VShuffle implements VFilter {
@@ -62,7 +62,7 @@ public class VShuffle implements VFilter {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toString();
     }
 

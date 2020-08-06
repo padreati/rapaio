@@ -27,6 +27,7 @@
 
 package rapaio.ml.eval.metric;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.stat.Sum;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
@@ -38,7 +39,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntComparator;
 
 /**
  * This evaluation tool computes Gini and Normalized Gini Coefficients
@@ -118,7 +118,7 @@ public class Gini implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("> Gini").append(weighted ? " (Weighted):\n" : ":\n");

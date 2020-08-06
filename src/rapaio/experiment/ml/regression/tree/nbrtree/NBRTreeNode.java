@@ -27,6 +27,7 @@
 
 package rapaio.experiment.ml.regression.tree.nbrtree;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.stat.Variance;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
@@ -35,7 +36,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.NestedBoostingRTree;
 import rapaio.ml.common.VarSelector;
-import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -52,8 +52,8 @@ public class NBRTreeNode implements Serializable {
     private final NBRTreeNode parent;
 
     // learning artifacts
-    private List<Double> factors = new ArrayList<>();
-    private List<NBRFunction> functions = new ArrayList<>();
+    private final List<Double> factors = new ArrayList<>();
+    private final List<NBRFunction> functions = new ArrayList<>();
     private boolean isLeaf;
     private String splitVarName;
     private double splitValue;

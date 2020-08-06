@@ -42,7 +42,7 @@ public final class RandomSource implements Serializable {
 
     private static final long serialVersionUID = -1201316989986445607L;
 
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
 
     private RandomSource() {
     }

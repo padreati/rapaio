@@ -27,13 +27,13 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.doubles.Double2IntFunction;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.function.DoubleIntFunction;
-import rapaio.util.function.IntIntFunction;
 
 import java.util.function.Function;
 
@@ -50,11 +50,11 @@ public class VToInt implements VFilter {
         return new VToInt(new TransformSpot(fun));
     }
 
-    public static VToInt fromDouble(DoubleIntFunction fun) {
+    public static VToInt fromDouble(Double2IntFunction fun) {
         return new VToInt(new TransformDouble(fun));
     }
 
-    public static VToInt fromInt(IntIntFunction fun) {
+    public static VToInt fromInt(Int2IntFunction fun) {
         return new VToInt(new TransformInt(fun));
     }
 
@@ -119,9 +119,9 @@ public class VToInt implements VFilter {
     }
 
     static class TransformDouble implements Function<Var, Var> {
-        private final DoubleIntFunction function;
+        private final Double2IntFunction function;
 
-        TransformDouble(DoubleIntFunction function) {
+        TransformDouble(Double2IntFunction function) {
             this.function = function;
         }
 
@@ -136,9 +136,9 @@ public class VToInt implements VFilter {
     }
 
     static class TransformInt implements Function<Var, Var> {
-        private final IntIntFunction function;
+        private final Int2IntFunction function;
 
-        TransformInt(IntIntFunction function) {
+        TransformInt(Int2IntFunction function) {
             this.function = function;
         }
 
@@ -170,7 +170,7 @@ public class VToInt implements VFilter {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return "VToInt";
     }
 

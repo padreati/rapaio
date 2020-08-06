@@ -46,10 +46,10 @@ public class EuclideanDistance implements Distance {
      * The distance in the euclidean space is the square root value of the sum of squared differences for each feature.
      * The Euclidean error is the squared distance
      *
-     * @param s first data frame
-     * @param sRow row index of the instance from that data frame
-     * @param t second data frame
-     * @param tRow row index of the instance from the second data frame
+     * @param s        first data frame
+     * @param sRow     row index of the instance from that data frame
+     * @param t        second data frame
+     * @param tRow     row index of the instance from the second data frame
      * @param varNames variable names of the features used in computation
      * @return
      */

@@ -27,7 +27,7 @@
 
 package rapaio.experiment.ml.classifier.svm.frame;
 
-import rapaio.util.collection.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/16/18.

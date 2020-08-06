@@ -70,7 +70,7 @@ public class ClassifierResult implements Printable {
         for (String key : result.classes.keySet()) {
             result.classes.put(key, (VarNominal) from.classes.get(key));
         }
-        for(String key : result.densities.keySet()) {
+        for (String key : result.densities.keySet()) {
             result.densities.put(key, (Frame) from.densities.get(key));
         }
         return result;

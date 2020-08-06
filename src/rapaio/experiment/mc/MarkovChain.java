@@ -57,7 +57,7 @@ public class MarkovChain implements Printable {
     private DMatrix m;
     private ChainAdapter adapter = new NGram(2);
     //
-    private double smoothEps = 1e-30;
+    private final double smoothEps = 1e-30;
 
     public MarkovChain() {
     }
@@ -94,7 +94,7 @@ public class MarkovChain implements Printable {
 
     public void train(List<String> rowChains) {
 
-        this.states = new ArrayList<>(rowChains.stream().flatMap(chain -> adapter.tokenize(chain).stream()).collect(Collectors.toSet()));
+        this.states = rowChains.stream().flatMap(chain -> adapter.tokenize(chain).stream()).distinct().collect(Collectors.toList());
         this.revert = new HashMap<>();
         for (int i = 0; i < states.size(); i++) {
             revert.put(states.get(i), i);
@@ -197,15 +197,15 @@ public class MarkovChain implements Printable {
         sb.append("States: \n");
         sb.append("count: ").append(states.size()).append("\n");
         sb.append("values: \n");
-        String buff = "";
+        StringBuilder buff = new StringBuilder();
         for (String state : states) {
             if (buff.length() + state.length() + 3 >= WS.getPrinter().getOptions().textWidth()) {
                 sb.append(buff).append("\n");
-                buff = "";
+                buff = new StringBuilder();
             }
-            buff = buff + "'" + state + "',";
+            buff.append("'").append(state).append("',");
         }
-        if (!buff.isEmpty())
+        if (buff.length() > 0)
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");

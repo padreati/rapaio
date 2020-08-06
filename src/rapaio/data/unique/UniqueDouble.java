@@ -27,16 +27,16 @@
 
 package rapaio.data.unique;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.doubles.DoubleComparators;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Format;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.DoubleComparator;
-import rapaio.util.collection.IntArrays;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -51,7 +51,7 @@ public class UniqueDouble extends AbstractUnique {
         return new UniqueDouble(var, sorted);
     }
 
-    private VarDouble values;
+    private final VarDouble values;
 
     private UniqueDouble(Var var, boolean sorted) {
         super(sorted);
@@ -61,11 +61,11 @@ public class UniqueDouble extends AbstractUnique {
         }
         double[] elements = new double[keySet.size()];
         int pos = 0;
-        for(double value : keySet) {
-            elements[pos++]=value;
+        for (double value : keySet) {
+            elements[pos++] = value;
         }
         if (sorted) {
-            DoubleArrays.quickSort(elements, 0, elements.length, new UniqueDoubleComparator());
+            DoubleArrays.quickSort(elements, 0, elements.length, DoubleComparators.NATURAL_COMPARATOR);
         }
         HashMap<Double, Integer> uniqueKeys = new HashMap<>();
         values = VarDouble.wrap(elements);
@@ -99,8 +99,8 @@ public class UniqueDouble extends AbstractUnique {
             if (sorted) {
                 valueSortedIds = VarInt.wrap(ids);
             } else {
-                UniqueDoubleComparator cmp = new UniqueDoubleComparator();
-                IntArrays.quickSort(ids,0, uniqueCount(), (i, j) -> cmp.compare(values.getDouble(i), values.getDouble(j)));
+                DoubleComparator cmp = DoubleComparators.NATURAL_COMPARATOR;
+                IntArrays.quickSort(ids, 0, uniqueCount(), (i, j) -> cmp.compare(values.getDouble(i), values.getDouble(j)));
             }
             valueSortedIds = VarInt.wrap(ids);
         }
@@ -128,20 +128,5 @@ public class UniqueDouble extends AbstractUnique {
     @Override
     protected String stringUniqueValue(int i) {
         return Double.isNaN(values.getDouble(i)) ? "?" : Format.floatFlex(values.getDouble(i));
-    }
-}
-
-class UniqueDoubleComparator implements DoubleComparator, Serializable {
-
-    private static final long serialVersionUID = 1347615489598406390L;
-
-    @Override
-    public int compareDouble(double v1, double v2) {
-        boolean nan1 = Double.isNaN(v1);
-        boolean nan2 = Double.isNaN(v2);
-        if (!(nan1 || nan2)) {
-            return (v1 < v2) ? -1 : 1;
-        }
-        return nan1 ? -1 : 1;
     }
 }

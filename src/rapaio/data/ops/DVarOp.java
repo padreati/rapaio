@@ -27,10 +27,10 @@
 
 package rapaio.data.ops;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.util.collection.IntComparator;
-import rapaio.util.function.DoubleDoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/12/19.
@@ -44,7 +44,7 @@ public interface DVarOp<T extends Var> {
      * @param fun transformation function
      * @return reference to the original variable
      */
-    T apply(DoubleDoubleFunction fun);
+    T apply(Double2DoubleFunction fun);
 
     /**
      * Creates a VarDouble copy with transformed values.
@@ -52,7 +52,7 @@ public interface DVarOp<T extends Var> {
      * @param fun transformation function
      * @return new variable with transformed values
      */
-    VarDouble capply(DoubleDoubleFunction fun);
+    VarDouble capply(Double2DoubleFunction fun);
 
     /**
      * Computes the sum of non missing values.

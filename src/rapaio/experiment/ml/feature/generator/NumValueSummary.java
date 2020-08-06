@@ -62,8 +62,8 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
 
         Frame applyVars = source.mapVars(range);
         Set<String> selection = new HashSet<>(Arrays.asList(applyVars.varNames()));
-        for(String key : keys) {
-            if(selection.contains(key)) {
+        for (String key : keys) {
+            if (selection.contains(key)) {
                 applyVars = applyVars.removeVars(VRange.of(key));
             }
         }
@@ -117,8 +117,8 @@ public class NumValueSummary extends AbstractFeatureGroupGenerator {
         }
     }
 
-    public static Aggregate sum = new Aggregate("sum", v -> Sum.of(v).value());
-    public static Aggregate mean = new Aggregate("mean", v -> Mean.of(v).value());
-    public static Aggregate variance = new Aggregate("variance", v -> Variance.of(v).value());
-    public static Aggregate count = new Aggregate("count", v -> (double) v.rowCount());
+    public static final Aggregate sum = new Aggregate("sum", v -> Sum.of(v).value());
+    public static final Aggregate mean = new Aggregate("mean", v -> Mean.of(v).value());
+    public static final Aggregate variance = new Aggregate("variance", v -> Variance.of(v).value());
+    public static final Aggregate count = new Aggregate("count", v -> (double) v.rowCount());
 }

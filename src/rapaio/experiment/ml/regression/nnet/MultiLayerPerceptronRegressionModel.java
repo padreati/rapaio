@@ -49,6 +49,7 @@ import static rapaio.printer.Format.floatFlex;
 @Deprecated
 public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel implements Printable {
 
+    private static final long serialVersionUID = -7855492977246862795L;
     private final int[] layerSizes;
     private final NetNode[][] net;
     int runs = 0;
@@ -118,7 +119,7 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
         sb.append(name()).append("{");
         sb.append("function=").append(function.name()).append(", ");
         sb.append("learningRate=").append(floatFlex(learningRate)).append(", ");
-        sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).mapToObj(i -> i).toArray()));
+        sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).boxed().toArray()));
         sb.append("}");
         return sb.toString();
     }

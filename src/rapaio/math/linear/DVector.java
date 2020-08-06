@@ -27,10 +27,10 @@
 
 package rapaio.math.linear;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.printer.Printable;
-import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;
@@ -215,6 +215,7 @@ public interface DVector extends Serializable, Printable {
 
     /**
      * Computes non missing (non NaN) values from the vector
+     *
      * @return mean of non missing values
      */
     double nanmean();
@@ -234,7 +235,7 @@ public interface DVector extends Serializable, Printable {
      */
     double nanvariance();
 
-    DVector apply(DoubleDoubleFunction f);
+    DVector apply(Double2DoubleFunction f);
 
     DVector apply(BiFunction<Integer, Double, Double> f);
 

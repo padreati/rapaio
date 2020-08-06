@@ -45,8 +45,9 @@ public interface FeatureGroupGenerator {
 
     /**
      * Build the grouping artifacts required to generate feature
+     *
      * @param source source frame
-     * @param keys variable names which are considered keys
+     * @param keys   variable names which are considered keys
      */
     void fit(Frame source, List<String> keys);
 

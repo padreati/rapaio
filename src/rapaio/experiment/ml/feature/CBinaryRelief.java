@@ -27,6 +27,7 @@
 
 package rapaio.experiment.ml.feature;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
@@ -37,7 +38,6 @@ import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,8 +53,8 @@ public class CBinaryRelief {
 
     private double p = 0.1;
     private int runs = 10;
-    private ReliefDistanceFunction distFun = ReliefDistanceFunction.l2();
-    private ReliefDifferenceFunction diffFun = ReliefDifferenceFunction.standard();
+    private final ReliefDistanceFunction distFun = ReliefDistanceFunction.l2();
+    private final ReliefDifferenceFunction diffFun = ReliefDifferenceFunction.standard();
     private BiConsumer<CBinaryRelief, Integer> runningHook = null;
 
     private List<String> inputNames;

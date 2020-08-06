@@ -45,7 +45,7 @@ public class PoissonEstimator extends AbstractEstimator {
     private static final Logger LOGGER = Logger.getLogger(PoissonEstimator.class.getName());
 
     private final String testName;
-    private HashMap<String, Poisson> lambdaMap = new HashMap<>();
+    private final HashMap<String, Poisson> lambdaMap = new HashMap<>();
 
     private PoissonEstimator(String testName) {
         super(Collections.singletonList(testName));

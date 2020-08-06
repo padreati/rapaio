@@ -27,12 +27,12 @@
 
 package rapaio.data.ops;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VRefSort;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntComparator;
-import rapaio.util.function.DoubleDoubleFunction;
 
 import java.util.Arrays;
 
@@ -48,7 +48,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
-    public T apply(DoubleDoubleFunction fun) {
+    public T apply(Double2DoubleFunction fun) {
         for (int i = 0; i < source.rowCount(); i++) {
             if (!source.isMissing(i)) {
                 source.setDouble(i, fun.applyAsDouble(source.getDouble(i)));
@@ -58,7 +58,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
-    public VarDouble capply(DoubleDoubleFunction fun) {
+    public VarDouble capply(Double2DoubleFunction fun) {
         double[] data = new double[source.rowCount()];
         for (int i = 0; i < source.rowCount(); i++) {
             if (source.isMissing(i)) {

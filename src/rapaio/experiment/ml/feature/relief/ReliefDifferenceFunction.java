@@ -45,7 +45,7 @@ class StandardReliefDifferenceFunction implements ReliefDifferenceFunction {
 
     @Override
     public double difference(DMatrix x, boolean[] numeric, int index, int row1, int row2) {
-        if(Double.isNaN(x.get(row1, index)) || Double.isNaN(x.get(row2, index))) {
+        if (Double.isNaN(x.get(row1, index)) || Double.isNaN(x.get(row2, index))) {
             return Double.NaN;
         }
         if (numeric[index]) {

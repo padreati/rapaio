@@ -70,7 +70,7 @@ public class LDA implements Printable {
     protected DVector mean;
     protected DVector sd;
 
-    protected boolean scaling = true;
+    protected final boolean scaling = true;
 
     public DVector getEigenValues() {
         return eigenValues;
@@ -94,9 +94,9 @@ public class LDA implements Printable {
         this.tol = tol;
         return this;
     }
-    
+
     public void fit(Frame df, String... targetVars) {
-    	validate(df, targetVars);
+        validate(df, targetVars);
 
         logger.fine("start lda predict");
         DMatrix xx = SolidDMatrix.copy(df.removeVars(VRange.of(targetName)));
@@ -158,7 +158,7 @@ public class LDA implements Printable {
         }
 
         // inverse sw
-		DMatrix swi = QRDecomposition.from(sw).solve(SolidDMatrix.identity(inputNames.length));
+        DMatrix swi = QRDecomposition.from(sw).solve(SolidDMatrix.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
@@ -237,7 +237,7 @@ public class LDA implements Printable {
     }
 
     @Override
-	public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption... options) {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.byVars(

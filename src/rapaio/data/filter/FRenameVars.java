@@ -49,7 +49,7 @@ public class FRenameVars extends AbstractFFilter {
         return new FRenameVars(vRange, varNames);
     }
 
-    private Map<String, Integer> inputVarNamesIndex = new HashMap<>();
+    private final Map<String, Integer> inputVarNamesIndex = new HashMap<>();
     private final String[] outputVarNames;
 
     public FRenameVars(VRange vRange, String... outputVarNames) {

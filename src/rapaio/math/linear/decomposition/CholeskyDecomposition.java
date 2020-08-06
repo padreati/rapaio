@@ -59,7 +59,7 @@ public class CholeskyDecomposition implements Serializable {
     /**
      * Row and column dimension (square matrix).
      */
-    private int n;
+    private final int n;
 
     /**
      * Symmetric and positive definite flag.
@@ -193,7 +193,7 @@ public class CholeskyDecomposition implements Serializable {
 
         x = forwardSubstitution(n, nx, x, l);
         x = backwardSubstitution(n, nx, x, l);
-        
+
         return x;
     }
 

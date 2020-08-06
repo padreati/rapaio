@@ -33,11 +33,11 @@ import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.math.linear.dense.SolidDVector;
 
-public class EigenDecompStatistics extends EigenDecompStrategy{
+public class EigenDecompStatistics extends EigenDecompStrategy {
 
-	@Override
-	public EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol) {
-		int n = s.colCount();
+    @Override
+    public EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol) {
+        int n = s.colCount();
         EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
@@ -55,6 +55,6 @@ public class EigenDecompStatistics extends EigenDecompStrategy{
             }
         }
         return EigenPair.from(values, vectors);
-	}
+    }
 
 }

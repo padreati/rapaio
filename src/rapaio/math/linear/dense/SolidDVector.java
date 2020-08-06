@@ -27,12 +27,12 @@
 
 package rapaio.math.linear.dense;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.function.DoubleDoubleFunction;
-import rapaio.util.function.IntDoubleFunction;
+import rapaio.util.collection.DoubleArrayTools;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -49,7 +49,7 @@ public class SolidDVector extends BaseDVector {
      * @return vector instance
      */
     public static SolidDVector zeros(int n) {
-        return new SolidDVector(n, DoubleArrays.newFill(n, 0));
+        return new SolidDVector(n, DoubleArrayTools.newFill(n, 0));
     }
 
     /**
@@ -59,7 +59,7 @@ public class SolidDVector extends BaseDVector {
      * @return vector instance
      */
     public static SolidDVector ones(int n) {
-        return new SolidDVector(n, DoubleArrays.newFill(n, 1));
+        return new SolidDVector(n, DoubleArrayTools.newFill(n, 1));
     }
 
     /**
@@ -71,7 +71,7 @@ public class SolidDVector extends BaseDVector {
      * @return new real dense vector
      */
     public static SolidDVector fill(int n, double fill) {
-        return new SolidDVector(n, DoubleArrays.newFill(n, fill));
+        return new SolidDVector(n, DoubleArrayTools.newFill(n, fill));
     }
 
     /**
@@ -137,8 +137,8 @@ public class SolidDVector extends BaseDVector {
         return new SolidDVector(size, values);
     }
 
-    public static SolidDVector from(int len, IntDoubleFunction fun) {
-        return new SolidDVector(len, DoubleArrays.newFrom(0, len, fun));
+    public static SolidDVector from(int len, Int2DoubleFunction fun) {
+        return new SolidDVector(len, DoubleArrayTools.newFrom(0, len, fun));
     }
 
     protected SolidDVector(int len, double[] values) {
@@ -147,7 +147,7 @@ public class SolidDVector extends BaseDVector {
 
     @Override
     public BaseDVector plus(double x) {
-        DoubleArrays.plus(values, x, 0, size);
+        DoubleArrayTools.plus(values, x, 0, size);
         return this;
     }
 
@@ -156,7 +156,7 @@ public class SolidDVector extends BaseDVector {
         if (b instanceof SolidDVector) {
             checkConformance(b);
             SolidDVector sb = (SolidDVector) b;
-            DoubleArrays.plus(values, sb.values, 0, size);
+            DoubleArrayTools.plus(values, sb.values, 0, size);
             return this;
         }
         super.plus(b);
@@ -168,7 +168,7 @@ public class SolidDVector extends BaseDVector {
         if (b instanceof SolidDVector) {
             checkConformance(b);
             SolidDVector sb = (SolidDVector) b;
-            DoubleArrays.minus(values, sb.values, 0, size);
+            DoubleArrayTools.minus(values, sb.values, 0, size);
             return this;
         }
         super.minus(b);
@@ -177,7 +177,7 @@ public class SolidDVector extends BaseDVector {
 
     @Override
     public DVector times(double scalar) {
-        DoubleArrays.times(values, scalar, 0, size);
+        DoubleArrayTools.times(values, scalar, 0, size);
         return this;
     }
 
@@ -186,7 +186,7 @@ public class SolidDVector extends BaseDVector {
         checkConformance(b);
         if (b instanceof SolidDVector) {
             SolidDVector sb = (SolidDVector) b;
-            DoubleArrays.times(values, sb.values, 0, size);
+            DoubleArrayTools.times(values, sb.values, 0, size);
             return this;
         }
         super.times(b);
@@ -195,7 +195,7 @@ public class SolidDVector extends BaseDVector {
 
     @Override
     public DVector div(double scalar) {
-        DoubleArrays.div(values, scalar, 0, size);
+        DoubleArrayTools.div(values, scalar, 0, size);
         return this;
     }
 
@@ -204,7 +204,7 @@ public class SolidDVector extends BaseDVector {
         checkConformance(b);
         if (b instanceof SolidDVector) {
             SolidDVector sb = (SolidDVector) b;
-            DoubleArrays.div(values, sb.values, 0, size);
+            DoubleArrayTools.div(values, sb.values, 0, size);
             return this;
         }
         for (int i = 0; i < size; i++) {
@@ -263,41 +263,41 @@ public class SolidDVector extends BaseDVector {
 
     @Override
     public double sum() {
-        return DoubleArrays.sum(values, 0, size);
+        return DoubleArrayTools.sum(values, 0, size);
     }
 
     @Override
     public double nansum() {
-        return DoubleArrays.nansum(values, 0, size);
+        return DoubleArrayTools.nansum(values, 0, size);
     }
 
     @Override
     public int nancount() {
-        return DoubleArrays.nancount(values, 0, size);
+        return DoubleArrayTools.nancount(values, 0, size);
     }
 
     @Override
     public double mean() {
-        return DoubleArrays.mean(values, 0, size);
+        return DoubleArrayTools.mean(values, 0, size);
     }
 
     @Override
     public double nanmean() {
-        return DoubleArrays.nanmean(values, 0, size);
+        return DoubleArrayTools.nanmean(values, 0, size);
     }
 
     @Override
     public double variance() {
-        return DoubleArrays.variance(values, 0, size);
+        return DoubleArrayTools.variance(values, 0, size);
     }
 
     @Override
     public double nanvariance() {
-        return DoubleArrays.nanvariance(values, 0, size);
+        return DoubleArrayTools.nanvariance(values, 0, size);
     }
 
     @Override
-    public DVector apply(DoubleDoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f) {
         for (int i = 0; i < size; i++) {
             values[i] = f.applyAsDouble(values[i]);
         }

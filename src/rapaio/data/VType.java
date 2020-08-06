@@ -88,7 +88,7 @@ public enum VType {
     STRING("str", VarString::empty);
 
     private final String code;
-    private SFunction<Integer, ? extends Var> newInstanceFunction;
+    private final SFunction<Integer, ? extends Var> newInstanceFunction;
 
     VType(String code, SFunction<Integer, ? extends Var> newInstanceFunction) {
         this.code = code;

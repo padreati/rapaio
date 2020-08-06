@@ -155,7 +155,7 @@ public class JsonStream implements Stream<JsonValue> {
     @Override
     public JsonValue[] toArray() {
         List<JsonValue> list = collect(toList());
-        return list.toArray(new JsonValue[list.size()]);
+        return list.toArray(new JsonValue[0]);
     }
 
     @Override

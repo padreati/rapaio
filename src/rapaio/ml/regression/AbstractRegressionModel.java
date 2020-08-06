@@ -61,24 +61,24 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     // parameters
 
     protected boolean hasLearned;
-    public ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
             "rowSampler",
             "Row sampler",
             Objects::nonNull);
 
-    public ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1,
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1,
             "pool",
             "Number of threads in execution pool to be used for fitting the model.",
             x -> true
     );
 
-    public ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
             "runs",
             "Number of iterations for iterative iterations or number of sub ensembles.",
             x -> x > 0
     );
 
-    public ValueParam<BiConsumer<RegressionModel, Integer>, M> runningHook = new ValueParam<>((M) this, (m, i) -> {
+    public final ValueParam<BiConsumer<RegressionModel, Integer>, M> runningHook = new ValueParam<>((M) this, (m, i) -> {
     },
             "runningHook",
             "Hook executed at each iteration.",

@@ -64,7 +64,7 @@ public class Pacf implements Printable {
         VarDouble cor = acf.correlation();
 
         double a, b, c;
-        int nlag = cor.rowCount()-1;
+        int nlag = cor.rowCount() - 1;
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];

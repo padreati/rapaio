@@ -40,7 +40,7 @@ public class VSpotSpliterator extends Spliterators.AbstractSpliterator<VSpot> {
     private static final int CHARACTERISTICS = SIZED | SUBSIZED | CONCURRENT | NONNULL | IMMUTABLE;
 
     private final Var source;
-    private int end;
+    private final int end;
     private int row;
 
     public VSpotSpliterator(Var source, int start, int end, int row) {

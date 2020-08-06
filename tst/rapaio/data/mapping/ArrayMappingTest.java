@@ -1,9 +1,9 @@
 package rapaio.data.mapping;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Mapping;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntIterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 

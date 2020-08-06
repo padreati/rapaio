@@ -16,7 +16,7 @@ public class PriorUniform implements Prior {
 
     private static final long serialVersionUID = 4346918440758937122L;
 
-    private Set<String> levels = new HashSet<>();
+    private final Set<String> levels = new HashSet<>();
     private double uniformPrior = Double.NaN;
 
     @Override

@@ -38,7 +38,7 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface RDerivative extends Serializable {
 
-    default DVector apply(double...x) {
+    default DVector apply(double... x) {
         return apply(SolidDVector.wrap(x));
     }
 

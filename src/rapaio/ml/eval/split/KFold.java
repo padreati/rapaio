@@ -1,12 +1,13 @@
 package rapaio.ml.eval.split;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntArrayTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class KFold implements SplitStrategy {
             }
 
             // distribute rows in folds
-            int[] rows = IntArrays.newSeq(0, df.rowCount());
+            int[] rows = IntArrayTools.newSeq(0, df.rowCount());
             IntArrays.shuffle(rows, RandomSource.getRandom());
             int pos = 0;
             for (int row : rows) {

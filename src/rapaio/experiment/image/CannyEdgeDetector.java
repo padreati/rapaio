@@ -229,7 +229,7 @@ public class CannyEdgeDetector {
     public CannyEdgeDetector setGaussianKernelWidth(int gaussianKernelWidth) {
         if (gaussianKernelWidth < 2) throw new IllegalArgumentException();
         this.gaussianKernelWidth = gaussianKernelWidth;
-        
+
         return this;
     }
 
@@ -254,7 +254,7 @@ public class CannyEdgeDetector {
     public CannyEdgeDetector setGaussianKernelRadius(float gaussianKernelRadius) {
         if (gaussianKernelRadius < 0.1f) throw new IllegalArgumentException();
         this.gaussianKernelRadius = gaussianKernelRadius;
-        
+
         return this;
     }
 
@@ -279,7 +279,7 @@ public class CannyEdgeDetector {
 
     public CannyEdgeDetector setContrastNormalized(boolean contrastNormalized) {
         this.contrastNormalized = contrastNormalized;
-        
+
         return this;
     }
 
@@ -425,32 +425,32 @@ public class CannyEdgeDetector {
                 float tmp;
                 /*
                  * An explanation of what's happening here, for those who want
-				 * to understand the source: This performs the "non-maximal
-				 * supression" phase of the Canny edge detection in which we
-				 * need to compare the gradient magnitude to that in the
-				 * direction of the gradient; only if the value is a local
-				 * maximum do we consider the point as an edge candidate.
-				 *
-				 * We need to break the comparison into a number of different
-				 * cases depending on the gradient direction so that the
-				 * appropriate values can be used. To avoid computing the
-				 * gradient direction, we use two simple comparisons: first we
-				 * check that the partial derivatives have the same sign (1)
-				 * and then we check which is larger (2). As a consequence, we
-				 * have reduced the problem to one of four identical cases that
-				 * each test the central gradient magnitude against the values at
-				 * two points with 'identical support'; what this means is that
-				 * the geometry required to accurately interpolate the magnitude
-				 * of gradient function at those points has an identical
-				 * geometry (upto right-angled-rotation/reflection).
-				 *
-				 * When comparing the central gradient to the two interpolated
-				 * values, we avoid performing any divisions by multiplying both
-				 * sides of each inequality by the greater of the two partial
-				 * derivatives. The common comparand is stored in a temporary
-				 * variable (3) and reused in the mirror case (4).
-				 *
-				 */
+                 * to understand the source: This performs the "non-maximal
+                 * supression" phase of the Canny edge detection in which we
+                 * need to compare the gradient magnitude to that in the
+                 * direction of the gradient; only if the value is a local
+                 * maximum do we consider the point as an edge candidate.
+                 *
+                 * We need to break the comparison into a number of different
+                 * cases depending on the gradient direction so that the
+                 * appropriate values can be used. To avoid computing the
+                 * gradient direction, we use two simple comparisons: first we
+                 * check that the partial derivatives have the same sign (1)
+                 * and then we check which is larger (2). As a consequence, we
+                 * have reduced the problem to one of four identical cases that
+                 * each test the central gradient magnitude against the values at
+                 * two points with 'identical support'; what this means is that
+                 * the geometry required to accurately interpolate the magnitude
+                 * of gradient function at those points has an identical
+                 * geometry (upto right-angled-rotation/reflection).
+                 *
+                 * When comparing the central gradient to the two interpolated
+                 * values, we avoid performing any divisions by multiplying both
+                 * sides of each inequality by the greater of the two partial
+                 * derivatives. The common comparand is stored in a temporary
+                 * variable (3) and reused in the mirror case (4).
+                 *
+                 */
                 if (xGrad * yGrad <= (float) 0 /*(1)*/
                         ? Math.abs(xGrad) >= Math.abs(yGrad) /*(2)*/
                         ? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /*(3)*/
@@ -462,7 +462,7 @@ public class CannyEdgeDetector {
                         && tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /*(4)*/
                         : (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /*(3)*/
                         && tmp > Math.abs(xGrad * nwMag + (yGrad - xGrad) * nMag) /*(4)*/
-                        ) {
+                ) {
                     magnitude[index] = gradMag >= MAGNITUDE_LIMIT ? MAGNITUDE_MAX : (int) (MAGNITUDE_SCALE * gradMag);
                     //NOTE: The orientation of the edge is not employed by this
                     //implementation. It is a simple matter to compute it at

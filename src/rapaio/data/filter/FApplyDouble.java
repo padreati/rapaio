@@ -35,7 +35,7 @@ import java.util.function.Function;
 
 /**
  * Update a double variable by changing it's value using a function.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
 public class FApplyDouble extends AbstractFFilter {

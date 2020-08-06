@@ -66,7 +66,7 @@ public class KMeans implements Printable {
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;
     private KMeansInitMethod init = KMeansInitMethod.Forgy;
-    private Distance distance = Distance.EUCLIDEAN;
+    private final Distance distance = Distance.EUCLIDEAN;
     private BiConsumer<KMeans, Integer> runningHook = null;
     private Frame summary;
     private double eps = 1e-20;

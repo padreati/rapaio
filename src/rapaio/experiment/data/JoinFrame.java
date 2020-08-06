@@ -313,7 +313,7 @@ public class JoinFrame extends AbstractFrame {
 
     @Override
     public boolean isMissing(int row, String varName) {
-        if(isMissingRow(row, side[varIndexTree.get(varName)])) {
+        if (isMissingRow(row, side[varIndexTree.get(varName)])) {
             return true;
         }
         return side[varIndexTree.get(varName)]

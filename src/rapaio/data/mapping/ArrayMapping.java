@@ -27,12 +27,16 @@
 
 package rapaio.data.mapping;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntIterator;
-import rapaio.util.function.IntIntFunction;
+import rapaio.util.collection.IntArrayTools;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -41,45 +45,39 @@ import java.util.stream.IntStream;
 public final class ArrayMapping implements Mapping {
 
     private static final long serialVersionUID = 5485844129188037454L;
-    private int[] data;
-    int size;
+    private final IntArrayList data;
 
     public ArrayMapping() {
-        this.size = 0;
-        this.data = new int[0];
+        this.data = new IntArrayList(0);
     }
 
     public ArrayMapping(int[] array, int start, int end) {
-        this.data = new int[end - start];
-        System.arraycopy(array, start, data, 0, end - start);
-        this.size = end - start;
+        this.data = new IntArrayList(array, start, end - start);
     }
 
     public ArrayMapping(int start, int end) {
-        this.data = IntArrays.newSeq(start, end);
-        this.size = end - start;
+        this.data = new IntArrayList(IntArrayTools.newSeq(start, end));
     }
 
-    public ArrayMapping(int[] array, int start, int end, IntIntFunction fun) {
-        this.data = IntArrays.newFrom(array, start, end, fun);
-        this.size = end - start;
+    public ArrayMapping(int[] array, int start, int end, Int2IntFunction fun) {
+        this.data = new IntArrayList(IntArrayTools.newFrom(array, start, end, fun));
     }
 
     public int size() {
-        return size;
+        return data.size();
     }
 
     public int get(int pos) {
-        return data[pos];
+        return data.getInt(pos);
     }
 
+    @Override
     public void add(int value) {
-        if (!IntArrays.checkCapacity(data, size + 1)) {
-            this.data = IntArrays.ensureCapacity(data, size + 1);
-        }
-        this.data[size++] = value;
+        data.ensureCapacity(data.size() + 1);
+        this.data.add(value);
     }
 
+    @Override
     public void addAll(IntIterator it) {
         while (it.hasNext()) {
             add(it.nextInt());
@@ -87,9 +85,15 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
+    public void addAll(IntListIterator it) {
+        while (it.hasNext()) {
+            add(it.nextInt());
+        }
+    }
+
+    @Override
     public void remove(int pos) {
-        IntArrays.delete(data, size, pos);
-        size--;
+        data.removeInt(pos);
     }
 
     @Override
@@ -101,31 +105,32 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public void clear() {
-        size = 0;
+        data.clear();
+    }
+
+    @Override
+    public IntListIterator listIterator() {
+        return data.iterator();
     }
 
     @Override
     public IntIterator iterator() {
-        return IntArrays.iterator(data, 0, size);
-    }
-
-    public IntIterator iterator(int start, int end) {
-        return IntArrays.iterator(data, start, end);
+        return IntArrayTools.iterator(data.elements(), 0, data.size());
     }
 
     @Override
     public int[] elements() {
-        return data;
+        return data.elements();
     }
 
     @Override
     public void shuffle() {
-        IntArrays.shuffle(data, 0, size, RandomSource.getRandom());
+        IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
     }
 
     @Override
     public IntStream stream() {
-        return IntArrays.stream(data, 0, size);
+        return Arrays.stream(data.elements(), 0, data.size());
     }
 }
 

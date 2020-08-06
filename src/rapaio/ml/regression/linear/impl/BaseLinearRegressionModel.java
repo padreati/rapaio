@@ -24,7 +24,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
 
     private static final long serialVersionUID = -3722395862627404126L;
 
-    public ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true,
+    public final ValueParam<Boolean, M> intercept = new ValueParam<>((M) this, true,
             "intercept",
             "Configures the model to add an intercept term or not",
             Objects::nonNull);

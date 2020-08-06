@@ -45,7 +45,7 @@ public class Matrix extends PlotComponent {
 
     private static final long serialVersionUID = -642370269224702175L;
     private final DMatrix m;
-    private boolean contour;
+    private final boolean contour;
 
     public Matrix(DMatrix m, boolean contour, GOption... opts) {
         this.m = m;

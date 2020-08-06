@@ -314,13 +314,14 @@ public class MatrixMultiplication {
             return C;
         }
     }
-    public static DMatrix mul(DMatrix A, double scalar){
-      DMatrix X = SolidDMatrix.empty(A.rowCount(), A.colCount());
-      for(int i=0;i<A.rowCount();i++){
-        for (int j=0;j<A.colCount();j++){
-          X.set(i, j, A.get(i, j)*scalar);
+
+    public static DMatrix mul(DMatrix A, double scalar) {
+        DMatrix X = SolidDMatrix.empty(A.rowCount(), A.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < A.colCount(); j++) {
+                X.set(i, j, A.get(i, j) * scalar);
+            }
         }
-      }
-      return X;
+        return X;
     }
 }

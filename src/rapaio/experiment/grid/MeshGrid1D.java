@@ -40,11 +40,12 @@ import java.util.function.BiFunction;
 @Deprecated
 public class MeshGrid1D implements Serializable {
 
+    private static final long serialVersionUID = 779676910310235832L;
     final Var x;
     final Var y;
     final int len;
 
-    VarDouble grid;
+    final VarDouble grid;
 
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
@@ -93,6 +94,7 @@ public class MeshGrid1D implements Serializable {
 @Deprecated
 class MeshGrid1DImpl implements MeshGrid {
 
+    private static final long serialVersionUID = -2994364050498480136L;
     private final MeshGrid1D g;
     private final double low;
     private final double high;

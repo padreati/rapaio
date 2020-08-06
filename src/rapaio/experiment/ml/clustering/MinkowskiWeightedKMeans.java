@@ -62,7 +62,7 @@ import java.util.stream.IntStream;
 public class MinkowskiWeightedKMeans implements Printable {
 
     private int k = 2;
-    private double p = 2;
+    private final double p = 2;
 
     private int nstart = 1;
     private int runs = Integer.MAX_VALUE;

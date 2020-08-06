@@ -27,15 +27,17 @@
 
 package rapaio.data.ops;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.doubles.DoubleComparators;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.VRefSort;
-import rapaio.util.collection.DoubleArrays;
-import rapaio.util.collection.DoubleComparator;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntComparator;
-import rapaio.util.function.DoubleDoubleFunction;
+import rapaio.util.collection.IntArrayTools;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
@@ -53,7 +55,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     @Override
-    public VarDouble apply(DoubleDoubleFunction fun) {
+    public VarDouble apply(Double2DoubleFunction fun) {
         for (int i = 0; i < rowCount; i++) {
             data[i] = fun.applyAsDouble(data[i]);
         }
@@ -61,7 +63,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     @Override
-    public VarDouble capply(DoubleDoubleFunction fun) {
+    public VarDouble capply(Double2DoubleFunction fun) {
         double[] copy = new double[rowCount];
         for (int i = 0; i < rowCount; i++) {
             copy[i] = fun.applyAsDouble(data[i]);
@@ -266,7 +268,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
         if (!asc) {
             IntArrays.reverse(rows, 0, len);
         }
-        return IntArrays.newCopy(rows, 0, len);
+        return IntArrayTools.newCopy(rows, 0, len);
     }
 
     @Override
@@ -283,6 +285,6 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     }
 
     private DoubleComparator getComparator(boolean asc) {
-        return asc ? DoubleComparator.ASC_COMPARATOR : DoubleComparator.DESC_COMPARATOR;
+        return asc ? DoubleComparators.NATURAL_COMPARATOR : DoubleComparators.OPPOSITE_COMPARATOR;
     }
 }

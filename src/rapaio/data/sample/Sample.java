@@ -33,7 +33,7 @@ import rapaio.data.Var;
 
 /**
  * A sample taken from a data set, eventually from a corresponding set of weights.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
 public final class Sample {

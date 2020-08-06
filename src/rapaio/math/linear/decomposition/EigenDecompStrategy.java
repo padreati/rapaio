@@ -31,5 +31,5 @@ import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.EigenPair;
 
 public abstract class EigenDecompStrategy {
-	public abstract EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol);
+    public abstract EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol);
 }

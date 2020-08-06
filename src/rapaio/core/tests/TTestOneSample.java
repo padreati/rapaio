@@ -126,7 +126,7 @@ public class TTestOneSample implements HTest {
     }
 
     public int getDegrees() {
-        return sampleSize-1;
+        return sampleSize - 1;
     }
 
     public double getSampleMean() {

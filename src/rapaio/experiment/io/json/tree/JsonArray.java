@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  */
 public final class JsonArray extends JsonValue {
 
-    List<JsonValue> array = new ArrayList<>();
+    final List<JsonValue> array = new ArrayList<>();
 
     public void addValue(JsonValue value) {
         array.add(value);

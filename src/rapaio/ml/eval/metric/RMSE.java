@@ -44,6 +44,8 @@ import rapaio.printer.opt.POption;
  */
 public class RMSE extends AbstractRegressionMetric implements Printable {
 
+    private static final long serialVersionUID = -4538721622397952296L;
+
     public static RMSE newMetric() {
         return new RMSE();
     }

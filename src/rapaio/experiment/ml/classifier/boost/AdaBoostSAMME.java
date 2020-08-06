@@ -136,7 +136,7 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
         a = new ArrayList<>();
         w = weights.copy();
 
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        double total = w.stream().mapToDouble().reduce(0.0, Double::sum);
         for (int i = 0; i < w.rowCount(); i++) {
             w.setDouble(i, w.getDouble(i) / total);
         }
@@ -188,7 +188,7 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
                 w.setDouble(j, w.getDouble(j) * Math.exp(alpha * shrinkage));
             }
         }
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        double total = w.stream().mapToDouble().reduce(0.0, Double::sum);
         for (int i = 0; i < w.rowCount(); i++) {
             w.setDouble(i, w.getDouble(i) / total);
         }

@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * updating the underlying values. Thus, a variable can be modified
  * after this call, to not update the original variable a copy of
  * the variable must be created before.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
 public class VApply implements VFilter {

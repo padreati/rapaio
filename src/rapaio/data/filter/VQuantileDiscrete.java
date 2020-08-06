@@ -71,8 +71,8 @@ public class VQuantileDiscrete implements VFilter {
 
     private static final long serialVersionUID = -6702714518094848749L;
 
-    private List<String> dict = new ArrayList<>();
-    private Map<String, Predicate<Double>> predicates = new HashMap<>();
+    private final List<String> dict = new ArrayList<>();
+    private final Map<String, Predicate<Double>> predicates = new HashMap<>();
     private final double[] qp;
     private double[] qv;
 

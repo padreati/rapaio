@@ -39,7 +39,7 @@ public class MapKernelCache implements KernelCache {
 
     private static final long serialVersionUID = -654236501370533888L;
 
-    transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
+    final transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
 
     @Override
     public void store(Frame df1, int row1, Frame df2, int row2, double value) {

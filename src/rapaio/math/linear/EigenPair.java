@@ -34,8 +34,8 @@ import rapaio.math.linear.dense.SolidDMatrix;
  */
 public class EigenPair {
 
-    private DVector DVector;
-    private DMatrix DMatrix;
+    private final DVector DVector;
+    private final DMatrix DMatrix;
 
     public static EigenPair from(DVector values, DMatrix vectors) {
         return new EigenPair(values, vectors);

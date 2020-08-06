@@ -6,7 +6,7 @@ package rapaio.printer.opt;
 public class POptionTextWidth implements POption<Integer> {
 
     private static final long serialVersionUID = 2485016171417227463L;
-    private int textWidth;
+    private final int textWidth;
 
     public POptionTextWidth(int textWidth) {
         this.textWidth = textWidth;

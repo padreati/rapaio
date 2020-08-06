@@ -47,21 +47,13 @@ public class TTestTwoSamples implements HTest {
      * Two unpaired samples t test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
-     * @param xSampleMean
-     *         sample mean for the first sample
-     * @param xSampleSize
-     *         sample size for the first sample
-     * @param ySampleMean
-     *         sample mean for the second sample
-     * @param ySampleSize
-     *         sample size for the second sample
-     * @param mean
-     *         null hypothesis mean
-     * @param xSd
-     *         standard deviation of the first sample
-     * @param ySd
-     *         standard deviation of the second sample
-     *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean,
@@ -73,25 +65,15 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples t test for difference of the means
      *
-     * @param xSampleMean
-     *         sample mean for the first sample
-     * @param xSampleSize
-     *         sample size for the first sample
-     * @param ySampleMean
-     *         sample mean for the second sample
-     * @param ySampleSize
-     *         sample size for the second sample
-     * @param mean
-     *         null hypothesis mean
-     * @param xSd
-     *         standard deviation of the first sample
-     * @param ySd
-     *         standard deviation of the second sample
-     * @param sl
-     *         significance level (usual value 0.05)
-     * @param alt
-     *         alternative hypothesis (usual value two tails)
-     *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
+     * @param sl          significance level (usual value 0.05)
+     * @param alt         alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean,
@@ -105,13 +87,9 @@ public class TTestTwoSamples implements HTest {
      * Two unpaired samples with equal variances t test for difference of the means with default
      * values for significance level (0.05) and alternative (two tails)
      *
-     * @param x
-     *         first given sample
-     * @param y
-     *         second given sample
-     * @param mean
-     *         null hypothesis mean
-     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples test(Var x, Var y, double mean) {
@@ -121,17 +99,11 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples with equal variances t test for difference of the means
      *
-     * @param x
-     *         first given sample
-     * @param y
-     *         second given sample
-     * @param mean
-     *         null hypothesis mean
-     * @param sl
-     *         significance level (usual value 0.05)
-     * @param alt
-     *         alternative hypothesis (usual value two tails)
-     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples test(Var x, Var y, double mean, double sl,
@@ -143,21 +115,13 @@ public class TTestTwoSamples implements HTest {
      * Two unpaired samples with unequal variances Welch t test for difference of the means
      * default values for significance level (0.05) and alternative (two tails)
      *
-     * @param xSampleMean
-     *         sample mean for the first sample
-     * @param xSampleSize
-     *         sample size for the first sample
-     * @param ySampleMean
-     *         sample mean for the second sample
-     * @param ySampleSize
-     *         sample size for the second sample
-     * @param mean
-     *         null hypothesis mean
-     * @param xSd
-     *         standard deviation of the first sample
-     * @param ySd
-     *         standard deviation of the second sample
-     *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples welchTest(double xSampleMean, int xSampleSize, double ySampleMean,
@@ -169,25 +133,15 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples with unequal variances Welch t test for difference of the means
      *
-     * @param xSampleMean
-     *         sample mean for the first sample
-     * @param xSampleSize
-     *         sample size for the first sample
-     * @param ySampleMean
-     *         sample mean for the second sample
-     * @param ySampleSize
-     *         sample size for the second sample
-     * @param mean
-     *         null hypothesis mean
-     * @param xSd
-     *         standard deviation of the first sample
-     * @param ySd
-     *         standard deviation of the second sample
-     * @param sl
-     *         significance level (usual value 0.05)
-     * @param alt
-     *         alternative hypothesis (usual value two tails)
-     *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
+     * @param sl          significance level (usual value 0.05)
+     * @param alt         alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples welchTest(double xSampleMean, int xSampleSize, double ySampleMean,
@@ -201,13 +155,9 @@ public class TTestTwoSamples implements HTest {
      * Two unpaired samples with unequal variances Welch t test for difference of the means with
      * default values for significance level (0.05) and alternative (two tails)
      *
-     * @param x
-     *         first given sample
-     * @param y
-     *         second given sample
-     * @param mean
-     *         null hypothesis mean
-     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples welchTest(Var x, Var y, double mean) {
@@ -217,17 +167,11 @@ public class TTestTwoSamples implements HTest {
     /**
      * Two unpaired samples with unequal variances Welch t test for difference of the means
      *
-     * @param x
-     *         first given sample
-     * @param y
-     *         second given sample
-     * @param mean
-     *         null hypothesis mean
-     * @param sl
-     *         significance level (usual value 0.05)
-     * @param alt
-     *         alternative hypothesis (usual value two tails)
-     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
     public static TTestTwoSamples welchTest(Var x, Var y, double mean, double sl,

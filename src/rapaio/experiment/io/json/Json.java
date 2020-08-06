@@ -69,7 +69,7 @@ public final class Json {
             if (listFiles == null) {
                 return new JsonStream(Stream.empty());
             }
-            files = Arrays.asList(listFiles).stream().filter(ff::accept).collect(Collectors.toList());
+            files = Arrays.stream(listFiles).filter(ff::accept).collect(Collectors.toList());
         } else {
             files.add(root);
         }

@@ -45,10 +45,10 @@ import java.util.Set;
  */
 public class NomLabelCount extends AbstractFeatureGroupGenerator {
 
-    boolean normalize;
-    private List<String> labelKeys = new ArrayList<>();
-    private HashMap<String, List<String>> groups = new HashMap<>();
-    private HashMap<String, HashMap<Key, Double>> counts = new HashMap<>();
+    final boolean normalize;
+    private final List<String> labelKeys = new ArrayList<>();
+    private final HashMap<String, List<String>> groups = new HashMap<>();
+    private final HashMap<String, HashMap<Key, Double>> counts = new HashMap<>();
 
     protected NomLabelCount(VRange range, boolean normalize) {
         super(range);

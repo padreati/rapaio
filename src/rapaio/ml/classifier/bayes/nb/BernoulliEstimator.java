@@ -101,9 +101,9 @@ public class BernoulliEstimator extends AbstractEstimator {
         sb.append(", laplaceSmoother=").append(Format.floatFlex(laplaceSmoother));
         sb.append(", values=[");
         if (density != null) {
-            for(String targetLevel : density.colIndex().getValues()) {
+            for (String targetLevel : density.colIndex().getValues()) {
                 sb.append("{targetLevel:").append(targetLevel).append(",[");
-                for(String testLevel : density.rowIndex().getValues()) {
+                for (String testLevel : density.rowIndex().getValues()) {
                     sb.append(testLevel).append(":").append(Format.floatFlexShort(density.get(testLevel, targetLevel))).append(",");
                 }
                 sb.append("},");
@@ -115,7 +115,7 @@ public class BernoulliEstimator extends AbstractEstimator {
 
     @Override
     public boolean fit(Frame df, Var weights, String targetName) {
-        if(!df.type(testName).equals(VType.BINARY)) {
+        if (!df.type(testName).equals(VType.BINARY)) {
             return false;
         }
         var density = DensityTable.fromLevelCounts(true, df, testName, targetName);

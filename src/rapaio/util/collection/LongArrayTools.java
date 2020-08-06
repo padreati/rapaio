@@ -3,7 +3,7 @@ package rapaio.util.collection;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-public final class LongArrays {
+public final class LongArrayTools {
 
     public static boolean checkCapacity(long[] array, int pos) {
         return pos < array.length;

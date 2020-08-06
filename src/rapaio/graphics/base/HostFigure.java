@@ -242,7 +242,7 @@ public abstract class HostFigure extends BaseFigure {
                         viewport.x - 2 * THICKER_PAD,
                         (int) (viewport.y + viewport.height - leftMarkersPos.get(i)),
                         viewport.x - THICKER_PAD,
-                        (int) (viewport.y +viewport.height - leftMarkersPos.get(i)));
+                        (int) (viewport.y + viewport.height - leftMarkersPos.get(i)));
             }
             if (leftMarkers) {
                 int xx = viewport.x - 3 * THICKER_PAD;

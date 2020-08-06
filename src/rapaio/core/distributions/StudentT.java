@@ -55,7 +55,7 @@ public final class StudentT implements Distribution {
     private final double sigma;
 
     private StudentT(double df, double mu, double sigma) {
-        if(df < 1) {
+        if (df < 1) {
             throw new IllegalArgumentException("degrees of freedom in student t distribution must have a value greater than 0.");
         }
         this.df = df;

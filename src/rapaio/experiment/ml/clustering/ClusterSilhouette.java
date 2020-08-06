@@ -70,7 +70,7 @@ public class ClusterSilhouette implements Printable {
     private double[] s; // silhouette score of each instance
     private int[] n; // neighbour cluster index
 
-    private Map<String, Integer> clusterIndex = new HashMap<>();
+    private final Map<String, Integer> clusterIndex = new HashMap<>();
     private String[] clusterIds;
     private double[] clusterScore;
     private double overallScore;

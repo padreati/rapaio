@@ -35,8 +35,8 @@ import java.io.Serializable;
 public class Range implements Serializable {
 
     private static final long serialVersionUID = -7868093307393360861L;
-    private Range1D xRange = new Range1D();
-    private Range1D yRange = new Range1D();
+    private final Range1D xRange = new Range1D();
+    private final Range1D yRange = new Range1D();
     private static final double extendedFactor = 1.025;
 
     public Range() {

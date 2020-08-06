@@ -40,7 +40,7 @@ public class FFLDA extends AbstractFFilter {
 
     private static final long serialVersionUID = 2797285371357486124L;
 
-    BiFunction<DVector, DMatrix, Integer> kFun;
+    final BiFunction<DVector, DMatrix, Integer> kFun;
     private LDA lda;
 
     public FFLDA(BiFunction<DVector, DMatrix, Integer> kFun, VRange vRange) {

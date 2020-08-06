@@ -35,11 +35,11 @@ package rapaio.ml.regression.tree.rtree;
  */
 public class RTreeTestPayload {
 
-    public int splits;
+    public final int splits;
     public double totalVar;
     public double totalWeight;
-    public double[] splitWeight;
-    public double[] splitVar;
+    public final double[] splitWeight;
+    public final double[] splitVar;
 
     public RTreeTestPayload(int splits) {
         this.splits = splits;

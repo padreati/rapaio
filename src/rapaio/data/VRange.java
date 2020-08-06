@@ -168,7 +168,7 @@ class VRangeByName implements VRange {
                     end = df.varIndex(parts[1]);
                 }
             } else {
-                if(range.trim().isEmpty()) {
+                if (range.trim().isEmpty()) {
                     continue;
                 }
                 if (!colNames.contains(range)) {

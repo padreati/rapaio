@@ -515,7 +515,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public void addInstant(Instant value) {
-        if(value==VarInstant.MISSING_VALUE) {
+        if (value == VarInstant.MISSING_VALUE) {
             addMissing();
         } else {
             addDouble(value.toEpochMilli());
@@ -524,7 +524,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public void setInstant(int row, Instant value) {
-        if(value==VarInstant.MISSING_VALUE) {
+        if (value == VarInstant.MISSING_VALUE) {
             setMissing(row);
         } else {
             setDouble(row, value.toEpochMilli());
@@ -533,7 +533,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public Instant getInstant(int row) {
-        if(isMissing(row)) {
+        if (isMissing(row)) {
             return VarInstant.MISSING_VALUE;
         }
         return Instant.ofEpochMilli((long) data[row]);
@@ -564,7 +564,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
         }
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         data = new double[rows];
         for (int i = 0; i < rows; i++) {

@@ -155,7 +155,7 @@ class HueBlueRed implements ColorPalette.Mapping {
 
     @Override
     public Color getColor(int index) {
-        if(index==0) {
+        if (index == 0) {
             return Color.LIGHT_GRAY;
         }
         return new Color(Color.HSBtoRGB((float) ((250. - index) / 360.), 1f, 1f));

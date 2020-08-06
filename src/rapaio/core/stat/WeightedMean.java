@@ -78,7 +78,7 @@ public final class WeightedMean implements Printable {
                 continue;
             }
             total += weights.getDouble(i);
-            v[completeCount]= var.getDouble(i);
+            v[completeCount] = var.getDouble(i);
             w[completeCount] = weights.getDouble(i);
             completeCount++;
         }

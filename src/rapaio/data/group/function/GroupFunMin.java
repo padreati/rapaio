@@ -28,9 +28,9 @@
 package rapaio.data.group.function;
 
 import rapaio.data.Frame;
+import rapaio.data.Group;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.Group;
 
 import java.util.List;
 

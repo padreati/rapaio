@@ -44,7 +44,7 @@ public class GOpts implements Serializable {
 
     private static final long serialVersionUID = -8407683729055712796L;
 
-    private static GOpts defaults;
+    private static final GOpts defaults;
 
     static {
         defaults = new GOpts();

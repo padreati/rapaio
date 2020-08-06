@@ -32,7 +32,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.DMatrix;
-import rapaio.util.function.IntIntDoubleBiFunction;
+import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.util.Arrays;
 
@@ -104,11 +104,11 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    public static SolidDMatrix fill(int rowCount, int colCount, IntIntDoubleBiFunction fun) {
+    public static SolidDMatrix fill(int rowCount, int colCount, IntInt2DoubleBiFunction fun) {
         SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
-                ret.set(i, j, fun.applyAsDouble(i, j));
+                ret.set(i, j, fun.applyIntIntAsDouble(i, j));
             }
         }
         return ret;

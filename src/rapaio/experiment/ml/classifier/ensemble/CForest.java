@@ -92,9 +92,9 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private Map<Integer, DensityVector<String>> oobDensities;
     private Var oobFit;
     private Var oobTrueClass;
-    private Map<String, List<Double>> freqVIMap = new HashMap<>();
-    private Map<String, List<Double>> gainVIMap = new HashMap<>();
-    private Map<String, List<Double>> permVIMap = new HashMap<>();
+    private final Map<String, List<Double>> freqVIMap = new HashMap<>();
+    private final Map<String, List<Double>> gainVIMap = new HashMap<>();
+    private final Map<String, List<Double>> permVIMap = new HashMap<>();
 
     private CForest() {
         withRuns(10);

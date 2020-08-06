@@ -52,9 +52,9 @@ public abstract class LzJsonAlgorithm {
     protected static final byte TYPE_ARRAY = 0x08;
     protected static final byte TYPE_OBJECT = 0x09;
 
-    protected static JsonValue VALUE_NULL = new JsonNull();
-    protected static JsonValue VALUE_TRUE = new JsonBool("true");
-    protected static JsonValue VALUE_FALSE = new JsonBool("false");
+    protected static final JsonValue VALUE_NULL = new JsonNull();
+    protected static final JsonValue VALUE_TRUE = new JsonBool("true");
+    protected static final JsonValue VALUE_FALSE = new JsonBool("false");
 
-    protected static IntEncoding encoding = IntEncoding.ENCODE_MIX;
+    protected static final IntEncoding encoding = IntEncoding.ENCODE_MIX;
 }

@@ -75,7 +75,7 @@ public class JsonInputFlat implements JsonInput {
                 new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), "utf-8");
     }
 
-    public JsonInputFlat(String text) throws IOException {
+    public JsonInputFlat(String text) {
         this.reader = new CharArrayReader(text.toCharArray());
     }
 
@@ -101,7 +101,7 @@ public class JsonInputFlat implements JsonInput {
         return String.valueOf(buffer, 0, pos);
     }
 
-    private int getNext() throws IOException {
+    private int getNext() {
         try {
             return reader.read();
         } catch (IOException ex) {
@@ -313,7 +313,7 @@ public class JsonInputFlat implements JsonInput {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (reader != null) {
             try {
                 reader.close();

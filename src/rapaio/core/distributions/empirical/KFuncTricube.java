@@ -32,7 +32,7 @@ import rapaio.printer.opt.POption;
 
 /**
  * Tri-cubic kernel function
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncTricube implements KFunc {

@@ -34,12 +34,12 @@ import java.text.DecimalFormat;
  */
 public class Format {
 
-    public static DecimalFormat formatDecShort = new DecimalFormat();
-    public static DecimalFormat formatDecMedium = new DecimalFormat();
-    public static DecimalFormat formatDecLong = new DecimalFormat();
-    public static DecimalFormat formatDecFlex = new DecimalFormat();
-    public static DecimalFormat formatDecFlexShort = new DecimalFormat();
-    public static DecimalFormat formatDecFlexLong = new DecimalFormat();
+    public static final DecimalFormat formatDecShort = new DecimalFormat();
+    public static final DecimalFormat formatDecMedium = new DecimalFormat();
+    public static final DecimalFormat formatDecLong = new DecimalFormat();
+    public static final DecimalFormat formatDecFlex = new DecimalFormat();
+    public static final DecimalFormat formatDecFlexShort = new DecimalFormat();
+    public static final DecimalFormat formatDecFlexLong = new DecimalFormat();
 
     static {
         formatDecShort.setMinimumIntegerDigits(1);
@@ -92,6 +92,7 @@ public class Format {
             return Double.toString(value);
         return formatDecFlexShort.format(value);
     }
+
     public static String floatFlexLong(double value) {
         if (Double.isNaN(value))
             return "?";

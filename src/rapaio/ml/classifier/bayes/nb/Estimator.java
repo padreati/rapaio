@@ -28,6 +28,7 @@ public interface Estimator extends Serializable {
 
     /**
      * Get test variable names for this estimator
+     *
      * @return list of test variable names
      */
     List<String> getTestNames();
@@ -35,8 +36,8 @@ public interface Estimator extends Serializable {
     /**
      * Fit the estimator on data
      *
-     * @param df frame with observations
-     * @param weights vector of weights
+     * @param df         frame with observations
+     * @param weights    vector of weights
      * @param targetName target variable name
      * @return true if estimator fit on data, false for failure
      */
@@ -45,8 +46,8 @@ public interface Estimator extends Serializable {
     /**
      * Predicts p(x|target=targetLevel)
      *
-     * @param df frame with observations
-     * @param row row index of the observation
+     * @param df          frame with observations
+     * @param row         row index of the observation
      * @param targetLevel target level for conditional distribution
      * @return conditioned probability prediction
      */

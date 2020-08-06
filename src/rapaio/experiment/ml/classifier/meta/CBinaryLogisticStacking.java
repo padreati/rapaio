@@ -59,8 +59,8 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
 
     private static final Logger logger = Logger.getLogger(CBinaryLogisticStacking.class.getName());
 
-    private List<ClassifierModel> weaks = new ArrayList<>();
-    private BinaryLogistic log = BinaryLogistic.newModel();
+    private final List<ClassifierModel> weaks = new ArrayList<>();
+    private final BinaryLogistic log = BinaryLogistic.newModel();
     private double tol = 1e-5;
     private int maxRuns = 1_000_000;
 

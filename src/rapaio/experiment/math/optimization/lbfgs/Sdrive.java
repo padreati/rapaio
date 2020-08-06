@@ -32,8 +32,9 @@ package rapaio.experiment.math.optimization.lbfgs;
  */
 public class Sdrive {
 
-    static int ndim = 2000, msave = 7;
-    static int nwork = ndim * (2 * msave + 1) + 2 * msave;
+    static final int ndim = 2000;
+    static final int msave = 7;
+    static final int nwork = ndim * (2 * msave + 1) + 2 * msave;
 
     public static void main(String args[]) {
         double x[], g[], diag[], w[];

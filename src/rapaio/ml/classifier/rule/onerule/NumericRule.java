@@ -66,7 +66,7 @@ public class NumericRule extends Rule {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("NumericRule {");
-        if(missingValue) {
+        if (missingValue) {
             sb.append("missing=true,");
         } else {
             sb.append("minValue=").append(floatFlexLong(minValue)).append(",");

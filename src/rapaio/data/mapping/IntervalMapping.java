@@ -27,9 +27,10 @@
 
 package rapaio.data.mapping;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntIterator;
+import rapaio.util.collection.IntArrayTools;
 
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
@@ -75,6 +76,15 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
+    public void addAll(IntListIterator rows) {
+        if (!onList) {
+            onList = true;
+            listMapping = new ArrayMapping(start, end);
+        }
+        listMapping.addAll(rows);
+    }
+
+    @Override
     public void addAll(IntIterator rows) {
         if (!onList) {
             onList = true;
@@ -111,18 +121,18 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
+    public IntListIterator listIterator() {
+        return onList ? listMapping.listIterator() : new IntervalIterator(start, end);
+    }
+
+    @Override
     public IntIterator iterator() {
         return onList ? listMapping.iterator() : new IntervalIterator(start, end);
     }
 
     @Override
-    public IntIterator iterator(int start, int end) {
-        return onList ? listMapping.iterator(start, end) : new IntervalIterator(this.start + start, this.start + end);
-    }
-
-    @Override
     public int[] elements() {
-        return IntArrays.newSeq(start, end);
+        return IntArrayTools.newSeq(start, end);
     }
 
     @Override
@@ -137,7 +147,7 @@ public final class IntervalMapping implements Mapping {
         return onList ? listMapping.stream() : IntStream.range(start, end);
     }
 
-    static class IntervalIterator implements IntIterator {
+    static class IntervalIterator implements IntListIterator, IntIterator {
         private final int start;
         private final int end;
         private int s;
@@ -155,10 +165,33 @@ public final class IntervalMapping implements Mapping {
 
         @Override
         public int nextInt() {
-            if (s >= end) {
+            if (!(hasNext())) {
                 throw new NoSuchElementException();
             }
             return s++;
+        }
+
+        @Override
+        public int previousInt() {
+            if (!hasPrevious()) {
+                throw new NoSuchElementException();
+            }
+            return s--;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return s > 0;
+        }
+
+        @Override
+        public int nextIndex() {
+            return s - start + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return s - start - 1;
         }
     }
 }

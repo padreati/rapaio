@@ -40,7 +40,7 @@ public class FFPCA extends AbstractFFilter {
 
     private static final long serialVersionUID = 2797285371357486124L;
 
-    BiFunction<DVector, DMatrix, Integer> kFun;
+    final BiFunction<DVector, DMatrix, Integer> kFun;
     private PCA pca;
 
     public FFPCA(BiFunction<DVector, DMatrix, Integer> kFun, VRange vRange) {
@@ -63,7 +63,7 @@ public class FFPCA extends AbstractFFilter {
     public Frame apply(Frame df) {
         Frame rest = df.removeVars(VRange.of(varNames));
         int k = kFun.apply(pca.eigenValues(), pca.eigenVectors());
-        Frame trans =  pca.predict(df.mapVars(varNames), k);
+        Frame trans = pca.predict(df.mapVars(varNames), k);
         return rest.bindVars(trans);
     }
 }

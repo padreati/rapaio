@@ -68,9 +68,9 @@ public class CorrPearson extends AbstractCorrelation {
     private CorrPearson(Var[] vars, String[] names) {
         super(vars, names);
         for (int i = 0; i < vars.length; i++) {
-            d.set(i,i, 1);
+            d.set(i, i, 1);
             for (int j = i + 1; j < vars.length; j++) {
-                d.set(i,j,compute(vars[i], vars[j]));
+                d.set(i, j, compute(vars[i], vars[j]));
             }
         }
     }

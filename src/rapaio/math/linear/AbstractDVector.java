@@ -1,10 +1,10 @@
 package rapaio.math.linear;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.function.DoubleDoubleFunction;
 
 import java.util.function.BiFunction;
 
@@ -219,7 +219,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector apply(DoubleDoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.applyAsDouble(get(i)));
         }
@@ -254,12 +254,12 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         int head = 20;
         int tail = 2;
 
@@ -291,7 +291,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
 
         TextTable tt = TextTable.empty(size(), 2, 0, 1);
         for (int i = 0; i < size(); i++) {

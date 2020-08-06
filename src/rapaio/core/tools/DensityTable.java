@@ -36,7 +36,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleArrayTools;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -455,7 +455,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         }
     }
 
-    private DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(true,
+    private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(true,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double gain = 0;
                 for (int i = 0; i < rowLength; i++) {
@@ -467,7 +467,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 return gain;
             });
 
-    private DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(true,
+    private final DensityTableFunction concreteRowIntrinsicInfo = new DensityTableFunction(true,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double splitInfo = 0;
                 for (double val : totals) {
@@ -477,7 +477,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                 }
                 return splitInfo;
             });
-    private DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(false,
+    private final DensityTableFunction concreteTotalColEntropy = new DensityTableFunction(false,
             (double total, double[] totals, double[][] values, int rowLength, int colLength) -> {
                 double entropy = 0;
                 for (double val : totals) {
@@ -501,7 +501,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                     totals[onRow ? i : j] += values[i][j];
                 }
             }
-            double total = DoubleArrays.nansum(totals, 0, totals.length);
+            double total = DoubleArrayTools.nansum(totals, 0, totals.length);
             return function.apply(total, totals, values, rowIndex.size(), colIndex.size());
         }
     }

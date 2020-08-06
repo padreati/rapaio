@@ -27,6 +27,7 @@
 
 package rapaio.data.unique;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Unique;
 import rapaio.data.VarInt;
@@ -34,7 +35,6 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntArrays;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +116,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         int max = uniqueCount();
         if (max > 40) {
             max = 40;
@@ -146,7 +146,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         TextTable tt = TextTable.empty(uniqueCount() + 1, 3, 1, 0);
         tt.textCenter(0, 0, "Value");
         tt.textCenter(0, 1, "Count");
@@ -162,7 +162,7 @@ public abstract class AbstractUnique implements Unique {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toString();
     }
 }

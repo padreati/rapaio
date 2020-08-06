@@ -49,7 +49,7 @@ public class DVLines extends PlotComponent {
     private final Var values;
     private final Var indexes;
 
-    public DVLines(Var values, Var indexes, GOption...opts) {
+    public DVLines(Var values, Var indexes, GOption... opts) {
         this.values = values;
         this.indexes = indexes;
 
@@ -68,7 +68,7 @@ public class DVLines extends PlotComponent {
 
         double x1 = parent.xScale(indexes.getDouble(0));
         double y1 = parent.yScale(0);
-        double x2 = parent.xScale(indexes.getDouble(indexes.rowCount()-1));
+        double x2 = parent.xScale(indexes.getDouble(indexes.rowCount() - 1));
         double y2 = parent.yScale(0);
         g2d.setColor(Color.BLACK);
         Stroke oldStroke = g2d.getStroke();

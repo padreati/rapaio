@@ -28,12 +28,12 @@
 package rapaio.data.group.function;
 
 import rapaio.data.Frame;
+import rapaio.data.Group;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.data.Group;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             if (normalizeLevel == 0) {
-                result.add(VarBinary.fill(aggregate.rowCount(), 1).withName(aggregate.name()+"_N0"));
+                result.add(VarBinary.fill(aggregate.rowCount(), 1).withName(aggregate.name() + "_N0"));
                 continue;
             }
             result.add(normalize(group, aggregate));

@@ -45,6 +45,8 @@ import java.util.List;
 @Deprecated
 public final class ExperimentalTools implements Serializable {
 
+    private static final long serialVersionUID = 3213473753038938378L;
+
     private ExperimentalTools() {
     }
 

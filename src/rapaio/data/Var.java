@@ -27,12 +27,12 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.VFilter;
 import rapaio.data.ops.DVarOp;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
-import rapaio.util.collection.IntComparator;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -296,13 +296,15 @@ public interface Var extends Serializable, Printable {
 
     /**
      * Adds an instant value to the last position of the variable.
+     *
      * @param value value to be added
      */
     void addInstant(Instant value);
 
     /**
      * Sets the instant value ad the position specified by {@param row}
-     * @param row position
+     *
+     * @param row   position
      * @param value instant value
      */
     void setInstant(int row, Instant value);

@@ -82,7 +82,7 @@ public class Legend extends PlotComponent {
         double xstart = parent.xScale(x);
         double ystart = parent.yScale(y);
 
-        if(place!=-1) {
+        if (place != -1) {
             switch (place) {
                 case UP_LEFT:
                     xstart = parent.xScale(parent.getRange().x1());

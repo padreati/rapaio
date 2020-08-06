@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  */
 public final class JsonObject extends JsonValue {
 
-    private Map<String, JsonValue> map = new HashMap<>();
+    private final Map<String, JsonValue> map = new HashMap<>();
 
     public void addValue(String key, JsonValue value) {
         map.put(key, value);

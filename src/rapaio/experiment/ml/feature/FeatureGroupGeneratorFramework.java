@@ -46,7 +46,7 @@ public class FeatureGroupGeneratorFramework {
     private final Frame source;
     private final List<String> keys;
 
-    private List<FeatureGroupGenerator> generators = new ArrayList<>();
+    private final List<FeatureGroupGenerator> generators = new ArrayList<>();
 
     public FeatureGroupGeneratorFramework(Frame source, String... keys) {
         this.source = source;

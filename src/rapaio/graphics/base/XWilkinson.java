@@ -189,7 +189,7 @@ public class XWilkinson {
 
     private double densityMax(int k, int m) {
         // return 2-(k-1)/(m-1); (paper is wrong)
-        return (k >= m) ? 2 - (k - 1) / (m - 1) : 1;
+        return (k >= m) ? 2 - (k - 1.0) / (m - 1) : 1;
     }
 
     private double legibility(double min, double max, double step) {

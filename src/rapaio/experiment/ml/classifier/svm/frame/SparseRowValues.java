@@ -27,10 +27,10 @@
 
 package rapaio.experiment.ml.classifier.svm.frame;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.data.Frame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntIterator;
 
 import java.util.HashMap;
 
@@ -45,7 +45,7 @@ public class SparseRowValues implements RowValues {
 
     public SparseRowValues(Frame df, int row, String[] inputVarNames) {
         int pos = 0;
-        for (int i=0; i<inputVarNames.length; i++) {
+        for (int i = 0; i < inputVarNames.length; i++) {
             double value = df.getDouble(row, i);
             if (Double.isNaN(value)) {
                 throw new IllegalArgumentException("Does not allow missing values.");
@@ -62,7 +62,7 @@ public class SparseRowValues implements RowValues {
 
     @Override
     public double get(int i) {
-        if(!reverseMap.containsValue(i)) {
+        if (!reverseMap.containsValue(i)) {
             return 0;
         }
         return values.getDouble(reverseMap.get(i));

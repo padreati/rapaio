@@ -56,7 +56,7 @@ public class KDE implements Serializable {
     /**
      * Builds a Gaussian kernel density estimator with given bandwidth.
      *
-     * @param values sample values
+     * @param values    sample values
      * @param bandwidth desired bandwidth
      * @return kernel density estimator instance
      */
@@ -78,8 +78,8 @@ public class KDE implements Serializable {
     /**
      * Builds a kernel density estimator with given bandwidth.
      *
-     * @param values sample values
-     * @param kernel kernel function
+     * @param values    sample values
+     * @param kernel    kernel function
      * @param bandwidth desired bandwidth
      * @return kernel density estimator instance
      */

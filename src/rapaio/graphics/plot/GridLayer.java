@@ -44,8 +44,8 @@ public class GridLayer extends HostFigure {
 
     final int rows;
     final int cols;
-    G[][] assign;
-    private java.util.List<G> list = new ArrayList<>();
+    final G[][] assign;
+    private final java.util.List<G> list = new ArrayList<>();
 
     public GridLayer(int rows, int cols) {
         this.rows = rows;
@@ -116,11 +116,11 @@ final class G implements Serializable {
 
     private static final long serialVersionUID = -2763424578024274986L;
 
-    int row;
-    int col;
-    int width;
-    int height;
-    Figure fig;
+    final int row;
+    final int col;
+    final int width;
+    final int height;
+    final Figure fig;
 
     public G(int row, int col, int width, int height, Figure fig) {
         this.row = row;

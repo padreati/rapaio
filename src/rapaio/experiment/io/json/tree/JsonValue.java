@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  */
 public abstract class JsonValue {
 
-    public static JsonNull NULL = new JsonNull();
+    public static final JsonNull NULL = new JsonNull();
 
     /**
      * @return true if the current instance is of type {@link JsonObject}, false otherwise
@@ -181,9 +181,7 @@ public abstract class JsonValue {
 
     protected String tabs(int level) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            sb.append("\t");
-        }
+        sb.append("\t".repeat(Math.max(0, level)));
         return sb.toString();
     }
 

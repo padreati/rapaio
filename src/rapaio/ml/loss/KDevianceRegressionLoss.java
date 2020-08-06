@@ -33,7 +33,7 @@ import rapaio.data.VarDouble;
 
 /**
  * No weighting implemented for now.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/18.
  */
 @Deprecated

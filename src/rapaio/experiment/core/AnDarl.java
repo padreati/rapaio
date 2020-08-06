@@ -54,7 +54,7 @@ Otherwise, use erfc() if your C compiler has one with adequate accuracy.
         if (t > 150.) return 0.;
         a = 2.22144146907918 * exp(-t) / sqrt(t);
         b = 3.93740248643060 * 2. * cPhi(sqrt(2 * t));/* initialization requires cPhi */
-            /*if you have erfc(), replace 2*cPhi(sqrt(2*t)) with erfc(sqrt(t))*/
+        /*if you have erfc(), replace 2*cPhi(sqrt(2*t)) with erfc(sqrt(t))*/
         r = z * .125;
         f = a + b * r;
         for (i = 1; i < 200; i++) {
@@ -139,10 +139,10 @@ Otherwise, use erfc() if your C compiler has one with adequate accuracy.
     double adinf(double z) {
         if (z < 2.) return exp(-1.2337141 / z) / sqrt(z) * (2.00012 + (.247105 -
                 (.0649821 - (.0347962 - (.011672 - .00168691 * z) * z) * z) * z) * z);
-      /* max |error| < .000002 for z<2, (p=.90816...) */
+        /* max |error| < .000002 for z<2, (p=.90816...) */
         return
                 exp(-exp(1.0776 - (2.30695 - (.43424 - (.082433 - (.008056 - .0003146 * z) * z) * z) * z) * z));
-      /* max |error|<.0000008 for 4<z<infinity */
+        /* max |error|<.0000008 for 4<z<infinity */
     }
 
     /*
@@ -175,7 +175,7 @@ Otherwise, use erfc() if your C compiler has one with adequate accuracy.
     double AD(int n, double z) {
         double c, v, x;
         x = adinf(z);
-   /* now x=adinf(z). Next, get v=errfix(n,x) and return x+v; */
+        /* now x=adinf(z). Next, get v=errfix(n,x) and return x+v; */
         if (x > .8) {
             v = (-130.2137 + (745.2337 - (1705.091 - (1950.646 - (1116.360 - 255.7844 * x) * x) * x) * x) * x) / n;
             return x + v;

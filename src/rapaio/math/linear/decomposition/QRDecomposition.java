@@ -52,8 +52,8 @@ public class QRDecomposition implements Serializable {
 
     private static final long serialVersionUID = -8322866575684242727L;
 
-    private DMatrix QR;
-    private DVector Rdiag;
+    private final DMatrix QR;
+    private final DVector Rdiag;
 
     private QRDecomposition(DMatrix A) {
         // Initialize.

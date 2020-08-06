@@ -24,13 +24,13 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.jupiter.api.Test;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.VarNominal;
-import rapaio.util.collection.IntComparator;
 
 import java.util.ArrayList;
 

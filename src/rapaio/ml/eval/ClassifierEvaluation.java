@@ -61,7 +61,7 @@ public class ClassifierEvaluation {
     private String targetName;
     private SplitStrategy splitStrategy;
     private int threads = 1;
-    private List<ClassifierMetric> metrics = new ArrayList<>();
+    private final List<ClassifierMetric> metrics = new ArrayList<>();
 
     public ClassifierEvaluation withData(Frame data) {
         this.data = data;

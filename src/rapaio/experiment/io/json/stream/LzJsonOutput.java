@@ -58,7 +58,7 @@ import static java.util.stream.Collectors.*;
 public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
 
     private final DataOutputStream os;
-    private LinkedList<JsonValue> objectBuffer = new LinkedList<>();
+    private final LinkedList<JsonValue> objectBuffer = new LinkedList<>();
     private int maxObjectBuffer = 1_000;
     //
     private String[] strTerms;
@@ -138,30 +138,30 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         objectBuffer.clear();
     }
 
-	private void writeAllObject(JsonValue js, boolean write) throws IOException {
-		os.writeByte(BLOCK_VALUE);
-		if (js instanceof JsonNull) {
-		    writeNull();
-		    return;
-		}
-		if (js instanceof JsonBool) {
-		    writeBool((JsonBool) js);
-		    return;
-		}
-		if (js instanceof JsonNumber) {
-		    writeNumeric((JsonNumber) js);
-		    return;
-		}
-		if (js instanceof JsonString) {
-		    writeString((JsonString) js);
-		    return;
-		}
-		if (js instanceof JsonArray) {
-		    writeArray((JsonArray) js);
-		    return;
-		}
-		writeObject((JsonObject) js, write);
-	}
+    private void writeAllObject(JsonValue js, boolean write) throws IOException {
+        os.writeByte(BLOCK_VALUE);
+        if (js instanceof JsonNull) {
+            writeNull();
+            return;
+        }
+        if (js instanceof JsonBool) {
+            writeBool((JsonBool) js);
+            return;
+        }
+        if (js instanceof JsonNumber) {
+            writeNumeric((JsonNumber) js);
+            return;
+        }
+        if (js instanceof JsonString) {
+            writeString((JsonString) js);
+            return;
+        }
+        if (js instanceof JsonArray) {
+            writeArray((JsonArray) js);
+            return;
+        }
+        writeObject((JsonObject) js, write);
+    }
 
     private void buildDictionary() {
         Map<String, Integer> strCounter = new HashMap<>();

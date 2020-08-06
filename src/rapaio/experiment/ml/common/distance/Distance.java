@@ -47,10 +47,10 @@ public interface Distance extends Serializable {
      * between two items, the error is an individual additive value which is used to
      * assess the performance of an algorithm.
      *
-     * @param s first data frame
-     * @param sRow row index of the instance from that data frame
-     * @param t second data frame
-     * @param tRow row index of the instance from the second data frame
+     * @param s        first data frame
+     * @param sRow     row index of the instance from that data frame
+     * @param t        second data frame
+     * @param tRow     row index of the instance from the second data frame
      * @param varNames variable names of the features used in computation
      * @return a pair of values, first in pair is the distance, second in pair is the error
      */

@@ -36,18 +36,18 @@ import java.util.Map;
 
 /**
  * Transform numeric variables into standardized values.
- *
+ * <p>
  * The transformation is f(x) = (x-mu)/sd
- *
+ * <p>
  * where
- *
+ * <p>
  * mu is the mean of the values
  * sd is the standard deviation
- *
+ * <p>
  * Take care that the filter works, as usual, on the same variables, thus if you want
  * to not alter the original vector you have to pass to the filter a solid copy
  * of the original vector.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
 public class FStandardize extends AbstractFFilter {
@@ -80,7 +80,7 @@ public class FStandardize extends AbstractFFilter {
 
     @Override
     public Frame apply(Frame df) {
-       for (String varName : df.varNames()) {
+        for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
                 filters.get(varName).apply(df.rvar(varName));
             }

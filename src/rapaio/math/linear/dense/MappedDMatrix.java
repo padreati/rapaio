@@ -27,10 +27,10 @@
 
 package rapaio.math.linear.dense;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.math.linear.AbstractDMatrix;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.util.function.DoubleDoubleFunction;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -90,7 +90,7 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public void apply(int row, int col, DoubleDoubleFunction function) {
+    public void apply(int row, int col, Double2DoubleFunction function) {
         ref.apply(rowIndexes[row], colIndexes[col], function);
     }
 
@@ -113,7 +113,7 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix apply(DoubleDoubleFunction fun) {
+    public DMatrix apply(Double2DoubleFunction fun) {
         for (int row : rowIndexes) {
             for (int col : colIndexes) {
                 ref.apply(row, col, fun);

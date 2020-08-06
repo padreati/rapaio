@@ -101,7 +101,7 @@ public class ISLRGeneric {
 
             try {
                 x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
-            } catch(RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 System.out.println(ex.getMessage());
                 return Pair.from(x, err);
             }

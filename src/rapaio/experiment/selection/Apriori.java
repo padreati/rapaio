@@ -177,8 +177,8 @@ public class Apriori implements Printable {
         // create coverage
         double count = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            for (int j = 0; j < rules.size(); j++) {
-                if (rules.get(j).matchRow(df, i)) {
+            for (AprioriRule rule : rules) {
+                if (rule.matchRow(df, i)) {
                     count++;
                     break;
                 }

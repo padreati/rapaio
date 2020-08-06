@@ -123,7 +123,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
     @Override
     public <T extends ClassifierModel> T withRunningHook(BiConsumer<? extends ClassifierModel, Integer> runningHook) {
         this.runningHook = (BiConsumer<M, Integer>) runningHook;
-        return (T)this;
+        return (T) this;
     }
 
     public BiFunction<M, Integer, Boolean> stoppingHook() {

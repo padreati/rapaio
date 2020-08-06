@@ -77,19 +77,20 @@ package rapaio.experiment.math.optimization.lbfgs;
  * </pre>
  *
  * @author Jorge Nocedal: original Fortran version, including comments
- *         (July 1990). Robert Dodier: Java translation, August 1997.
+ * (July 1990). Robert Dodier: Java translation, August 1997.
  */
 
 public class LBFGS {
     private static LBFGS instance;
-    private LBFGS () {}
 
-    public static synchronized LBFGS getInstance () {
+    private LBFGS() {
+    }
+
+    public static synchronized LBFGS getInstance() {
         if (instance == null)
             instance = new LBFGS();
         return instance;
     }
-
 
 
     /**
@@ -110,7 +111,7 @@ public class LBFGS {
      * should be increased).
      */
 
-    public  double stpmin = 1e-20;
+    public final double stpmin = 1e-20;
     /**
      * Specify upper bound for the step in the line search.
      * The default value is 1e20. This value need not be modified unless
@@ -119,7 +120,7 @@ public class LBFGS {
      * should be increased).
      */
 
-    public  double stpmax = 1e20;
+    public final double stpmax = 1e20;
     /**
      * The solution vector as it was at the end of the most recently
      * completed line search. This will usually be different from the
@@ -130,11 +131,34 @@ public class LBFGS {
      * of using <tt>x</tt>. When <tt>LBFGS.lbfgs_cimpl</tt> automatically stops,
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
-    public  double[] solution_cache = null;
-    private  double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
-    private  int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
-    private  boolean finish = false;
-    private  double[] w = null;
+    public double[] solution_cache = null;
+    private double gnorm = 0;
+    private double stp1 = 0;
+    private double ftol = 0;
+    private final double[] stp = new double[1];
+    private double ys = 0;
+    private double yy = 0;
+    private double sq = 0;
+    private double yr = 0;
+    private double beta = 0;
+    private double xnorm = 0;
+    private int iter = 0;
+    private int nfun = 0;
+    private int point = 0;
+    private int ispt = 0;
+    private int iypt = 0;
+    private int maxfev = 0;
+    private final int[] info = new int[1];
+    private int bound = 0;
+    private int npt = 0;
+    private int cp = 0;
+    private int i = 0;
+    private final int[] nfev = new int[1];
+    private int inmc = 0;
+    private int iycn = 0;
+    private int iscn = 0;
+    private boolean finish = false;
+    private double[] w = null;
 
     /**
      * This method returns the total number of evaluations of the objective
@@ -142,7 +166,7 @@ public class LBFGS {
      * evaluations increases by the number of evaluations required for the
      * line search; the total is only increased after a successful line search.
      */
-    public  int nfevaluations() {
+    public int nfevaluations() {
         return nfun;
     }
 
@@ -230,8 +254,8 @@ public class LBFGS {
      * @param eps    Determines the accuracy with which the solution
      *               is to be found. The subroutine terminates when
      *               <pre>
-     *                                        ||G|| &lt; EPS max(1,||X||),
-     *                             		</pre>
+     *                                                      ||G|| &lt; EPS max(1,||X||),
+     *                                           		</pre>
      *               where <code>||.||</code> denotes the Euclidean norm.
      * @param xtol   An estimate of the machine precision (e.g. 10e-16 on a
      *               SUN station 3/60). The line search routine will terminate if the
@@ -272,7 +296,7 @@ public class LBFGS {
      * @throws ExceptionWithIflag
      */
 
-    public  void lbfgs(int n, int m, double[] x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
+    public void lbfgs(int n, int m, double[] x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
         boolean execute_entire_while_loop = false;
 
         if (w == null || w.length != n * (2 * m + 1) + 2 * m) {
@@ -494,7 +518,7 @@ public class LBFGS {
      * @param stp    Current stepsize.
      * @param finish Whether this method should print the ``we're done'' message.
      */
-    public  void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, double[] x, double f, double[] g, double[] stp, boolean finish) {
+    public void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, double[] x, double f, double[] g, double[] stp, boolean finish) {
         int i;
 
         if (iter == 0) {
@@ -557,7 +581,7 @@ public class LBFGS {
      * There could well be faster ways to carry out this operation; this
      * code is a straight translation from the Fortran.
      */
-    public  void daxpy(int n, double da, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
+    public void daxpy(int n, double da, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
         int i, ix, iy, m, mp1;
 
         if (n <= 0) return;
@@ -605,7 +629,7 @@ public class LBFGS {
      * There could well be faster ways to carry out this operation; this
      * code is a straight translation from the Fortran.
      */
-    public  double ddot(int n, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
+    public double ddot(int n, double[] dx, int ix0, int incx, double[] dy, int iy0, int incy) {
         double dtemp;
         int i, ix, iy, m, mp1;
 
@@ -649,7 +673,7 @@ public class LBFGS {
 
     public static class ExceptionWithIflag extends Exception {
         private static final long serialVersionUID = -7826713489112275104L;
-        public int iflag;
+        public final int iflag;
 
         public ExceptionWithIflag(int i, String s) {
             super(s);

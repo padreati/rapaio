@@ -72,14 +72,14 @@ public class Csv {
         return new Csv();
     }
 
-    private static VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
+    private static final VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
 
     private boolean trimSpaces = true;
     private boolean header = true;
     private boolean quotes = false;
     private char separatorChar = ',';
     private char escapeChar = '\"';
-    private HashMap<String, VType> typeFieldHints = new HashMap<>();
+    private final HashMap<String, VType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>(Arrays.asList("?", "", " ", "na", "N/A", "NaN"));
     private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.STRING};
     private int startRow = 0;

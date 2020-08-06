@@ -75,6 +75,8 @@ class SimpleUpdater implements Updater {
  */
 @Deprecated
 class L1Updater implements Updater {
+    private static final long serialVersionUID = -581601380754106199L;
+
     public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         // Take gradient step
@@ -101,6 +103,8 @@ class L1Updater implements Updater {
  */
 @Deprecated
 class SquaredL2Updater implements Updater {
+    private static final long serialVersionUID = -9217486067545972690L;
+
     public Pair<DVector, Double> compute(DVector weightsOld, DVector gradient, double stepSize, int iter, double regParam) {
         // add up both updates from the gradient of the loss (= step) as well as
         // the gradient of the regularizer (= regParam * weightsOld)

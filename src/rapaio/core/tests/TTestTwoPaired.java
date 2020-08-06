@@ -101,7 +101,7 @@ public class TTestTwoPaired implements HTest {
             complete.addDouble(x.getDouble(i) - y.getDouble(i));
         }
 
-        df = complete.rowCount()-1;
+        df = complete.rowCount() - 1;
 
         if (complete.rowCount() < 1) {
             // nothing to do

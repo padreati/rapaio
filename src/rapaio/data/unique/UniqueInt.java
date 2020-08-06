@@ -27,10 +27,10 @@
 
 package rapaio.data.unique;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public class UniqueInt extends AbstractUnique {
         return new UniqueInt(var, sorted);
     }
 
-    private VarInt values;
+    private final VarInt values;
 
     private UniqueInt(Var var, boolean sorted) {
         super(sorted);

@@ -32,7 +32,7 @@ import rapaio.graphics.opt.GOpts;
 public abstract class BaseFigure implements Figure {
 
     private static final long serialVersionUID = 4161041064084793962L;
-    protected GOpts options = new GOpts();
+    protected final GOpts options = new GOpts();
     private Range range;
 
     public GOpts getOptions() {
@@ -45,7 +45,7 @@ public abstract class BaseFigure implements Figure {
         if (range == null) {
             range = buildRange();
         }
-        if(range==null)
+        if (range == null)
             return null;
         return range;
     }

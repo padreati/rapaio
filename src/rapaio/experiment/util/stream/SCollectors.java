@@ -99,10 +99,9 @@ public class SCollectors {
             @Override
             public BinaryOperator<Map<K, Long>> combiner() {
                 return (left, right) -> {
-                    right.entrySet()
-                            .forEach(e -> left.put(e.getKey(), left.containsKey(e.getKey())
-                                    ? left.get(e.getKey())
-                                    + e.getValue() : e.getValue()));
+                    right.forEach((key, value) -> left.put(key, left.containsKey(key)
+                            ? left.get(key)
+                            + value : value));
                     return left;
                 };
             }

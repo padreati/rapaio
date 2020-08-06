@@ -385,7 +385,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         if (df.rowCount() < 40) {
             return toFullContent(printer, options);
         }
@@ -453,7 +453,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("group by: ").append(String.join(", ", pkNamesList)).append("\n");
@@ -498,7 +498,7 @@ public class Group implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
@@ -519,7 +519,7 @@ public class Group implements Printable {
         private final List<GroupFun> funs;
 
         // resulted data frame which contains aggregations
-        private Frame aggregateDf;
+        private final Frame aggregateDf;
 
         public Aggregate(Group group, List<GroupFun> funs) {
             this.group = group;
@@ -662,7 +662,7 @@ public class Group implements Printable {
         }
 
         @Override
-        public String toSummary(Printer printer, POption... options) {
+        public String toSummary(Printer printer, POption<?>... options) {
             StringBuilder sb = new StringBuilder();
 
             sb.append("group by: ");
@@ -685,7 +685,7 @@ public class Group implements Printable {
             return sb.toString();
         }
 
-        private String selectedContent(Printer printer, POption[] options, int headRows, int tailRows) {
+        private String selectedContent(Printer printer, POption<?>[] options, int headRows, int tailRows) {
             StringBuilder sb = new StringBuilder();
             sb.append(toSummary(printer, options));
 
@@ -748,12 +748,12 @@ public class Group implements Printable {
         }
 
         @Override
-        public String toContent(Printer printer, POption... options) {
+        public String toContent(Printer printer, POption<?>... options) {
             return selectedContent(printer, options, 30, 10);
         }
 
         @Override
-        public String toFullContent(Printer printer, POption... options) {
+        public String toFullContent(Printer printer, POption<?>... options) {
             return selectedContent(printer, options, group.getGroupCount(), 0);
         }
     }

@@ -32,7 +32,7 @@ import rapaio.printer.opt.POption;
 
 /**
  * Triangular kernel function
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncTriangular implements KFunc {

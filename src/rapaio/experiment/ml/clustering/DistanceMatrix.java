@@ -66,8 +66,8 @@ public class DistanceMatrix implements Serializable {
         return dm;
     }
 
-    private String[] names;
-    private double[] values;
+    private final String[] names;
+    private final double[] values;
 
     private DistanceMatrix(String[] names) {
         this.names = names;

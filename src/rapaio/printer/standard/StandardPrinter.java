@@ -73,7 +73,7 @@ public class StandardPrinter extends AbstractPrinter {
 
     @Override
     public void draw(Figure figure, int width, int height) {
-		FigurePanel figurePanel = new FigurePanel(figure);
+        FigurePanel figurePanel = new FigurePanel(figure);
         JFrame frame = new JFrame("rapaio graphic window");
         frame.setContentPane(figurePanel);
         frame.setVisible(true);

@@ -46,6 +46,7 @@ public interface GBTRegressionLoss extends Serializable {
 
     /**
      * Compute vector of gradients for
+     *
      * @param y
      * @param fx
      * @return

@@ -30,7 +30,6 @@ package rapaio.experiment.mc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
@@ -55,7 +54,7 @@ public class TokenizerChainAdapter implements ChainAdapter {
 
         List<String> result = new ArrayList<>();
         for (int i = n; i < list.size(); i++) {
-            result.add(list.subList(i - n, i).stream().collect(Collectors.joining(" ")));
+            result.add(String.join(" ", list.subList(i - n, i)));
         }
         return result;
     }

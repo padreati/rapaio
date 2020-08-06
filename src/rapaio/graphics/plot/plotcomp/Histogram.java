@@ -122,7 +122,7 @@ public class Histogram extends PlotComponent {
 
         double step = (maxValue - minValue) / (1. * options.getBins());
         freqTable = new double[options.getBins()];
-        if(freqTable.length==0) {
+        if (freqTable.length == 0) {
             return;
         }
         double total = 0;
@@ -137,7 +137,7 @@ public class Histogram extends PlotComponent {
             int index = (int) ((v.getDouble(i) - minValue) / step);
             if (index == freqTable.length)
                 index--;
-            if(index < 0)
+            if (index < 0)
                 index++;
             freqTable[index]++;
         }

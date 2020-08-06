@@ -27,10 +27,10 @@
 
 package rapaio.math.linear;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.function.DoubleDoubleFunction;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;
@@ -86,7 +86,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param col      column index
      * @param function function to be applied
      */
-    void apply(final int row, final int col, DoubleDoubleFunction function);
+    void apply(final int row, final int col, Double2DoubleFunction function);
 
     /**
      * Returns a vector build from values of a row in
@@ -364,7 +364,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param fun function to be applied
      * @return same instance matrix
      */
-    DMatrix apply(DoubleDoubleFunction fun);
+    DMatrix apply(Double2DoubleFunction fun);
 
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
@@ -443,11 +443,11 @@ public interface DMatrix extends Serializable, Printable {
     /**
      * Builds a summary of the matrix.
      *
-     * @param printer
-     * @param options
+     * @param printer printer used in operation
+     * @param options printer options
      * @return string which contains matrix summary
      */
-    String toSummary(Printer printer, POption... options);
+    String toSummary(Printer printer, POption<?>... options);
 
     default boolean deepEquals(DMatrix m) {
         if (rowCount() != m.rowCount()) {

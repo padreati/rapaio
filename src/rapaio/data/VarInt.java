@@ -27,13 +27,13 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.core.RandomSource;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntIterator;
-import rapaio.util.function.IntIntFunction;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -174,7 +174,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
      * @param supplier integer value supplier
      * @return new integer variable
      */
-    public static VarInt from(int rows, IntIntFunction supplier) {
+    public static VarInt from(int rows, Int2IntFunction supplier) {
         VarInt index = new VarInt(rows, rows, 0);
         for (int i = 0; i < index.data.length; i++) {
             index.data[i] = supplier.applyAsInt(i);
@@ -460,7 +460,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
         }
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         data = new int[rows];
         for (int i = 0; i < rows; i++) {
@@ -479,7 +479,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption[] options) {
+    protected void textTablePutValue(TextTable tt, int i, int j, int row, Printer printer, POption<?>... options) {
         tt.textRight(i, j, getLabel(row));
     }
 

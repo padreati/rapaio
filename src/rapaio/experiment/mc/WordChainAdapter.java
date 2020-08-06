@@ -30,14 +30,13 @@ package rapaio.experiment.mc;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
  */
 public class WordChainAdapter implements ChainAdapter {
 
-    int n = 2;
+    final int n = 2;
 
     @Override
     public List<String> tokenize(String rawChain) {
@@ -59,7 +58,7 @@ public class WordChainAdapter implements ChainAdapter {
 
         List<String> result = new ArrayList<>();
         for (int i = n; i < words.size(); i++) {
-            result.add(words.subList(i - n, i).stream().collect(Collectors.joining(" ")));
+            result.add(String.join(" ", words.subList(i - n, i)));
         }
         return result;
     }

@@ -59,7 +59,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
 
     private static final Logger logger = Logger.getLogger(CStacking.class.getName());
 
-    private List<ClassifierModel> weaks = new ArrayList<>();
+    private final List<ClassifierModel> weaks = new ArrayList<>();
     private ClassifierModel stacker = CForest.newRF();
 
     public CStacking withLearners(ClassifierModel... learners) {

@@ -123,8 +123,7 @@ public class ADTestGoodness implements HTest {
     private double pvalue(double x, int n) {
         if (x < 2) {
             x = exp(-1.2337141 / x) / sqrt(x) * (2.00012 + (.247105 - (.0649821 - (.0347962 - (.011672 - .00168691 * x) * x) * x) * x) * x);
-        }
-        else {
+        } else {
             x = exp(-exp(1.0776 - (2.30695 - (.43424 - (.082433 - (.008056 - .0003146 * x) * x) * x) * x) * x));
         }
 

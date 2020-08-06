@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import rapaio.util.collection.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -85,7 +85,7 @@ class AggregateComparator implements IntComparator {
     }
 
     @Override
-    public int compareInt(int row1, int row2) {
+    public int compare(int row1, int row2) {
         for (Comparator<Integer> comparator : comparators) {
             int comp = comparator.compare(row1, row2);
             if (comp != 0) {

@@ -54,20 +54,20 @@ public abstract class AbstractFeatureGroupGenerator implements FeatureGroupGener
 
         public static Key from(int row, Frame df, List<String> keys) {
             Key key = new Key();
-            for(String keyName : keys) {
+            for (String keyName : keys) {
                 key.values.add(df.getLabel(row, keyName));
             }
             return key;
         }
 
-        private List<String> values = new ArrayList<>();
+        private final List<String> values = new ArrayList<>();
 
         @Override
         public int compareTo(Key o) {
             int len = Math.min(values.size(), o.values.size());
             for (int i = 0; i < len; i++) {
                 int compare = values.get(0).compareTo(o.values.get(0));
-                if(compare!=0) {
+                if (compare != 0) {
                     return compare;
                 }
             }

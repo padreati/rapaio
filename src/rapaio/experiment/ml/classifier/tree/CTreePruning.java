@@ -151,6 +151,7 @@ public interface CTreePruning extends Serializable {
 
             return tree;
         }
+
         private void updateError(int id, HashMap<Integer, DoublePair> bottomUp, HashMap<Integer, CTreeNode> nodes, DoublePair accDiff) {
             bottomUp.get(id).increment(accDiff);
             if (nodes.get(id).getParent() != null)
@@ -158,9 +159,9 @@ public interface CTreePruning extends Serializable {
         }
 
         private void addToPruned(int id, CTreeNode node, Set<Integer> pruned,
-                                        HashMap<Integer, DoublePair> topDown,
-                                        HashMap<Integer, DoublePair> bottomUp,
-                                        HashMap<Integer, CTreeNode> nodes) {
+                                 HashMap<Integer, DoublePair> topDown,
+                                 HashMap<Integer, DoublePair> bottomUp,
+                                 HashMap<Integer, CTreeNode> nodes) {
             pruned.add(node.getId());
             if (node.getId() != id) {
                 topDown.remove(node.getId());

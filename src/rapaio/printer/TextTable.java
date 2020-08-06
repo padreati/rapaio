@@ -383,7 +383,7 @@ public class TextTable {
         return getText(-1);
     }
 
-    public String getDynamicText(Printer printer, POption...options) {
+    public String getDynamicText(Printer printer, POption... options) {
         return getText(printer.getOptions().bind(options).textWidth());
     }
 

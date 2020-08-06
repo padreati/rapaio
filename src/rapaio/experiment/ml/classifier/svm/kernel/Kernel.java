@@ -33,7 +33,7 @@ import java.io.Serializable;
 
 /**
  * Kernel function interface
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public interface Kernel extends Serializable {

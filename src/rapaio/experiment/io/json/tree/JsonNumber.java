@@ -27,6 +27,7 @@
 
 package rapaio.experiment.io.json.tree;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -85,7 +86,7 @@ public class JsonNumber extends JsonValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JsonNumber that = (JsonNumber) o;
-        return !(original != null ? !original.equals(that.original) : that.original != null);
+        return !(!Objects.equals(original, that.original));
     }
 
     @Override

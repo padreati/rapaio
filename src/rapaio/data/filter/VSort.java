@@ -45,8 +45,8 @@ public class VSort implements VFilter {
     }
 
     private static final long serialVersionUID = -6260151471065618233L;
-    private boolean asc;
-    
+    private final boolean asc;
+
     public VSort(boolean asc) {
         this.asc = asc;
     }

@@ -54,7 +54,7 @@ public final class Confusion implements Printable {
     }
 
     private static final String TEXT_AC_PR = "Ac\\Pr";
-    private static Set<VType> validTypes = Set.of(VType.NOMINAL, VType.BINARY);
+    private static final Set<VType> validTypes = Set.of(VType.NOMINAL, VType.BINARY);
 
     private final Var actual;
     private final Var predict;

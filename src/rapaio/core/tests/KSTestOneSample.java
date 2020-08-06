@@ -37,21 +37,21 @@ import rapaio.printer.opt.POption;
 import static rapaio.printer.Format.floatFlex;
 
 /**
-* One-sample KS (Kolmogorov-Smirnoff) test.
+ * One-sample KS (Kolmogorov-Smirnoff) test.
  * <p>
  * The null hypothesis of this test is that the given data set belongs to the given densities.
  * The altString hypothesis is that the data set does not belong to the given densities.
- *
+ * <p>
  * This hypothesis test allows one to test if one have
  * strong evidence that a sample does not come from a given distribution.
- *
+ * <p>
  * We can't prove that a sample comes from a given distribution,
  * we can support a case if a sample does not come from a distribution.
- *
+ * <p>
  * D is the maximum distance between ECDF(v) and given cdf.
  * pValue is the computed p-value for the KS test against the given densities
  * <p>
-
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/17.
  */
 public class KSTestOneSample implements HTest {
@@ -59,9 +59,9 @@ public class KSTestOneSample implements HTest {
     private final Distribution cdf;
     private final Var v;
     private double D; // maximum distance between ECDF1 and F
-    private double pValue;
-    private double ciHigh = Double.NaN;
-    private double ciLow = Double.NaN;
+    private final double pValue;
+    private final double ciHigh = Double.NaN;
+    private final double ciLow = Double.NaN;
 
     public static KSTestOneSample from(Var sample, Distribution distribution) {
         return new KSTestOneSample(sample, distribution);

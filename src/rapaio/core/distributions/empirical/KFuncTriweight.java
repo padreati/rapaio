@@ -32,7 +32,7 @@ import rapaio.printer.opt.POption;
 
 /**
  * Triweight kernel function
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncTriweight implements KFunc {

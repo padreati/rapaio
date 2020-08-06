@@ -54,13 +54,14 @@ public class EigenDecomposition implements Serializable {
     private static final long serialVersionUID = 5064091847331016868L;
 
     // Row and column dimension (square matrix).
-    private int dimension;
+    private final int dimension;
 
     // Arrays for internal storage of eigenvalues.
-    private double[] eigenValues1, eigenValues2;
+    private final double[] eigenValues1;
+    private final double[] eigenValues2;
 
     // Array for internal storage of eigenvectors.
-    private DMatrix eigenVectors;
+    private final DMatrix eigenVectors;
 
     //Array for internal storage of nonsymmetric Hessenberg form.
     private double[][] nonSymHessenbergForm;

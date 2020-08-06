@@ -27,10 +27,10 @@
 
 package rapaio.data.unique;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class UniqueLabel extends AbstractUnique {
         return new UniqueLabel(var, sorted);
     }
 
-    private ArrayList<String> values;
+    private final ArrayList<String> values;
 
     private UniqueLabel(Var var, boolean sorted) {
         super(sorted);
@@ -58,7 +58,7 @@ public class UniqueLabel extends AbstractUnique {
             keySet.add(var.getLabel(i));
         }
         values = new ArrayList<>(keySet);
-        if(sorted) {
+        if (sorted) {
             values.sort(new UniqueLabelComparator());
         }
         HashMap<String, Integer> uniqueKeys = new HashMap<>();

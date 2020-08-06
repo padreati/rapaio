@@ -68,7 +68,7 @@ public interface SmoothRFunction {
     /**
      * Compute left weight for given observation on split
      *
-     * @param df observations data frame
+     * @param df  observations data frame
      * @param row observation row
      * @return left weight
      */
@@ -76,7 +76,8 @@ public interface SmoothRFunction {
 
     /**
      * Compute right weight for given observation on split
-     * @param df observations data frame
+     *
+     * @param df  observations data frame
      * @param row observation row
      * @return right weight
      */
@@ -84,7 +85,8 @@ public interface SmoothRFunction {
 
     /**
      * Compute left residual for given observation on split
-     * @param df observations data frame
+     *
+     * @param df  observations data frame
      * @param row observation row
      * @return left residual
      */
@@ -92,7 +94,8 @@ public interface SmoothRFunction {
 
     /**
      * Compute right residual for given observation on split
-     * @param df observations data frame
+     *
+     * @param df  observations data frame
      * @param row observation row
      * @return right residual
      */

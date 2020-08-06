@@ -140,7 +140,7 @@ public class LBFGSOptimizer {
  * </pre>
  *
  * @author Jorge Nocedal: original Fortran version, including comments
- *         (July 1990). Robert Dodier: Java translation, August 1997.
+ * (July 1990). Robert Dodier: Java translation, August 1997.
  */
 
 class LBFGS {
@@ -183,8 +183,31 @@ class LBFGS {
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
     public static DVector solution_cache;
-    private static double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
-    private static int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
+    private static double gnorm = 0;
+    private static double stp1 = 0;
+    private static double ftol = 0;
+    private static final double[] stp = new double[1];
+    private static double ys = 0;
+    private static double yy = 0;
+    private static double sq = 0;
+    private static double yr = 0;
+    private static double beta = 0;
+    private static double xnorm = 0;
+    private static int iter = 0;
+    private static int nfun = 0;
+    private static int point = 0;
+    private static int ispt = 0;
+    private static int iypt = 0;
+    private static int maxfev = 0;
+    private static final int[] info = new int[1];
+    private static int bound = 0;
+    private static int npt = 0;
+    private static int cp = 0;
+    private static int i = 0;
+    private static final int[] nfev = new int[1];
+    private static int inmc = 0;
+    private static int iycn = 0;
+    private static int iscn = 0;
     private static boolean finish = false;
     private static double[] w = null;
 
@@ -282,8 +305,8 @@ class LBFGS {
      * @param eps    Determines the accuracy with which the solution
      *               is to be found. The subroutine terminates when
      *               <pre>
-     *                                                                                  ||G|| &lt; EPS max(1,||X||),
-     *                                                                       		</pre>
+     *                                                                                                ||G|| &lt; EPS max(1,||X||),
+     *                                                                                     		</pre>
      *               where <code>||.||</code> denotes the Euclidean norm.
      * @param xtol   An estimate of the machine precision (e.g. 10e-16 on a
      *               SUN station 3/60). The line search routine will terminate if the
@@ -462,11 +485,11 @@ class LBFGS {
             }
 
             double[] dx = new double[x.size()];
-            
-            for(int i = 0; i < x.size(); i++) {
-            	dx[i] = x.get(i);
+
+            for (int i = 0; i < x.size(); i++) {
+                dx[i] = x.get(i);
             }
-            
+
             Mcsrch.getInstance().mcsrch(n, dx, f, g, w, ispt + point * n, stp, ftol, xtol, maxfev, info, nfev, diag);
 
             if (info[0] == -1) {
@@ -710,7 +733,7 @@ class LBFGS {
 
     public static class ExceptionWithIflag extends Exception {
         private static final long serialVersionUID = -7826713489112275104L;
-        public int iflag;
+        public final int iflag;
 
         public ExceptionWithIflag(int i, String s) {
             super(s);

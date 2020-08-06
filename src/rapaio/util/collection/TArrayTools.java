@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/22/20.
  */
-public class TArrays {
+public class TArrayTools {
 
     public static <T> T[] copyOfRange(T[] source, int from, int to, int len, int offset) {
         T[] copy = (T[]) Array.newInstance(source.getClass().getComponentType(), len);

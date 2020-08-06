@@ -56,10 +56,9 @@ public interface CTreeSplitter extends Serializable {
      * Splits the initial data set into pairs of frame and weights according with the
      * policy for missing values implemented splitter.
      *
-     * @param df initial data set
-     * @param weights initial weights
+     * @param df         initial data set
+     * @param weights    initial weights
      * @param predicates rules/criteria used to perform the splitting
-     *
      * @return a pair with a list of frames and a list of weights
      */
     Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);

@@ -6,7 +6,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleArrayTools;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +27,7 @@ public abstract class StandardDVectorTest {
     void beforeEach() {
         RandomSource.setSeed(123);
         normal = Normal.std();
-        values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
+        values = DoubleArrayTools.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
     }

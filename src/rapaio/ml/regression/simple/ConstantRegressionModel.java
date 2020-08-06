@@ -51,7 +51,7 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
         return new ConstantRegressionModel().constant.set(c);
     }
 
-    public ValueParam<Double, ConstantRegressionModel> constant = new ValueParam<>(this, 0.0,
+    public final ValueParam<Double, ConstantRegressionModel> constant = new ValueParam<>(this, 0.0,
             "constant",
             "Constant value used for prediction.",
             x -> true);

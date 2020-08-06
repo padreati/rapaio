@@ -27,10 +27,10 @@
 
 package rapaio.core;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

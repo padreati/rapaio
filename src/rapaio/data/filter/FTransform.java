@@ -37,6 +37,8 @@ import rapaio.data.filter.ffilter.AbstractFFilter;
 public class FTransform extends AbstractFFilter {
 
 
+    private static final long serialVersionUID = 4547900116700611086L;
+
     public FTransform(VRange vRange) {
         super(vRange);
     }

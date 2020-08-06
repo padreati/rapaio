@@ -189,9 +189,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     private void nodeContent(StringBuilder sb, SmoothRTreeNode node, int level) {
-        for (int i = 0; i < level; i++) {
-            sb.append("\t");
-        }
+        sb.append("\t".repeat(Math.max(0, level)));
         sb.append("model: ").append(node.getFunction().toString()).append(";");
         sb.append("\n");
         if (!node.isLeaf()) {

@@ -172,7 +172,7 @@ public class BoundFrame extends AbstractFrame {
         String[] varNames1 = df1.varNames();
         String[] varNames2 = df2.varNames();
 
-        if(varNames1.length != varNames2.length) {
+        if (varNames1.length != varNames2.length) {
             throw new IllegalArgumentException("Can't bind by rows frames with different variable counts.");
         }
         for (int i = 0; i < varNames1.length; i++) {

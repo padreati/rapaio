@@ -27,13 +27,13 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.function.DoubleDoubleFunction;
-import rapaio.util.function.IntDoubleFunction;
 
 import java.util.function.Function;
 
@@ -68,7 +68,7 @@ public class VToDouble implements VFilter {
      *
      * @return new instance of double variable with transformed values
      */
-    public static VToDouble byValue(DoubleDoubleFunction fun) {
+    public static VToDouble byValue(Double2DoubleFunction fun) {
         return new VToDouble(new TransformDouble(fun));
     }
 
@@ -78,7 +78,7 @@ public class VToDouble implements VFilter {
      *
      * @return new instance of double variable with transformed values
      */
-    public static VToDouble byInt(IntDoubleFunction fun) {
+    public static VToDouble byInt(Int2DoubleFunction fun) {
         return new VToDouble(new TransformInt(fun));
     }
 
@@ -149,9 +149,9 @@ public class VToDouble implements VFilter {
     }
 
     static class TransformDouble implements Function<Var, Var> {
-        private final DoubleDoubleFunction function;
+        private final Double2DoubleFunction function;
 
-        TransformDouble(DoubleDoubleFunction function) {
+        TransformDouble(Double2DoubleFunction function) {
             this.function = function;
         }
 
@@ -166,9 +166,9 @@ public class VToDouble implements VFilter {
     }
 
     static class TransformInt implements Function<Var, Var> {
-        private final IntDoubleFunction function;
+        private final Int2DoubleFunction function;
 
-        TransformInt(IntDoubleFunction function) {
+        TransformInt(Int2DoubleFunction function) {
             this.function = function;
         }
 
@@ -200,7 +200,7 @@ public class VToDouble implements VFilter {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return "VToDouble";
     }
 

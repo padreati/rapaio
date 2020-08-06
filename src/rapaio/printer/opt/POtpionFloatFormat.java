@@ -9,7 +9,7 @@ public class POtpionFloatFormat implements POption<DecimalFormat> {
 
     private static final long serialVersionUID = -6426137730862137730L;
 
-    private DecimalFormat format;
+    private final DecimalFormat format;
 
     public POtpionFloatFormat(DecimalFormat format) {
         this.format = format;

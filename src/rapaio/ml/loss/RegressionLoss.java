@@ -47,6 +47,7 @@ public interface RegressionLoss {
 
     /**
      * Computes constant value which minimizes the loss function on samples.
+     *
      * @param y target values
      * @return computed minimum value
      */
@@ -54,7 +55,8 @@ public interface RegressionLoss {
 
     /**
      * Computes constant value which minimizes the loss function on weighted samples.
-     * @param y target values
+     *
+     * @param y      target values
      * @param weight weights of target values
      * @return computed minimum value
      */
@@ -62,9 +64,10 @@ public interface RegressionLoss {
 
     /**
      * Computes constant value which minimizes the loss function on weighted samples.
-     * @param df frame which contains the variable
+     *
+     * @param df      frame which contains the variable
      * @param varName variable name
-     * @param weight weights of target values
+     * @param weight  weights of target values
      * @return computed minimum value
      */
     double computeConstantMinimizer(Frame df, String varName, Var weight);
@@ -78,7 +81,7 @@ public interface RegressionLoss {
      * Computes vector of values for the gradient of the loss function
      * as a loss derivative of fit function
      *
-     * @param y true target values
+     * @param y     true target values
      * @param y_hat fitted values
      * @return vector of computed gradients for each observation
      */
@@ -87,7 +90,7 @@ public interface RegressionLoss {
     /**
      * Computes loss vector.
      *
-     * @param y true target values
+     * @param y     true target values
      * @param y_hat fitted values
      * @return vector with loss for each observation
      */
@@ -95,7 +98,8 @@ public interface RegressionLoss {
 
     /**
      * Compute a single loss score .
-     * @param y vector of target values
+     *
+     * @param y     vector of target values
      * @param y_hat vector of fitted values
      * @return aggregate loss score for all observations
      */
@@ -103,6 +107,7 @@ public interface RegressionLoss {
 
     /**
      * Compute a single loss score.
+     *
      * @param residual vector of target values
      * @return aggregate loss score for all observations
      */

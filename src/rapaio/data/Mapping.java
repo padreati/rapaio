@@ -27,10 +27,11 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.mapping.ArrayMapping;
 import rapaio.data.mapping.IntervalMapping;
-import rapaio.util.collection.IntIterator;
-import rapaio.util.function.IntIntFunction;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -98,7 +99,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
         return new ArrayMapping(var.elements(), start, end);
     }
 
-    static Mapping from(VarInt var, IntIntFunction fun) {
+    static Mapping from(VarInt var, Int2IntFunction fun) {
         return new ArrayMapping(var.elements(), 0, var.rowCount(), fun);
     }
 
@@ -109,7 +110,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      * @param mapping list of mapped values
      * @return new mapping which is build on a copy of the list of values
      */
-    static Mapping from(Mapping mapping, IntIntFunction fun) {
+    static Mapping from(Mapping mapping, Int2IntFunction fun) {
         return new ArrayMapping(mapping.elements(), 0, mapping.size(), fun);
     }
 
@@ -150,6 +151,13 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param rows collection of row numbers to be added to the mapping
      */
+    void addAll(IntListIterator rows);
+
+    /**
+     * Adds at the end of mapping the given indexes contained in collection
+     *
+     * @param rows collection of row numbers to be added to the mapping
+     */
     void addAll(IntIterator rows);
 
     /**
@@ -171,17 +179,9 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      */
     void clear();
 
-    IntIterator iterator();
+    IntListIterator listIterator();
 
-    /**
-     * Creates an iterator of row elements starting from a given
-     * position (inclusive) to a given position (exclusive).
-     *
-     * @param start start position inclusive
-     * @param end   end position exclusive
-     * @return iterator of int values
-     */
-    IntIterator iterator(int start, int end);
+    IntIterator iterator();
 
     /**
      * Raw array of elements. The length of the array might be longer than
@@ -195,7 +195,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     void shuffle();
 
     static Collector<Integer, VarInt, Mapping> collector() {
-        return new Collector<Integer, VarInt, Mapping>() {
+        return new Collector<>() {
             @Override
             public Supplier<VarInt> supplier() {
                 return VarInt::empty;

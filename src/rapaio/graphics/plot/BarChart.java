@@ -41,7 +41,6 @@ import rapaio.graphics.opt.GOpts;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -163,7 +162,7 @@ public class BarChart extends HostFigure {
                 list.add(i);
             }
 
-            Collections.sort(list, (o1, o2) -> {
+            list.sort((o1, o2) -> {
                 if (totals[o1] == totals[o2])
                     return 0;
                 int sign = (SortType.ASC.equals(sort)) ? 1 : -1;
