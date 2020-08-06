@@ -187,7 +187,7 @@ public class MarkovChain implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
 
         RandomSource.setSeed(1);
 

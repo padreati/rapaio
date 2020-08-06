@@ -98,8 +98,9 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public void removeAll(IntIterator it) {
+        int offset = 0;
         while (it.hasNext()) {
-            remove(it.nextInt());
+            remove(it.nextInt() - (offset++));
         }
     }
 
