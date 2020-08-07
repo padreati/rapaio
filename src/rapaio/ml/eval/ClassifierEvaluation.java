@@ -147,7 +147,7 @@ public class ClassifierEvaluation {
 
     public static void main(String[] args) {
         Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newC45().withMaxDepth(3);
+        CTree tree = CTree.newC45().maxDepth.set(3);
         var result = ClassifierEvaluation.cv(df, "class", tree, 10, Accuracy.newMetric(true)).run();
 
         result.printFullContent();

@@ -30,7 +30,7 @@ public class RForestTest {
     void paramsTest() {
         RForest rf = RForest.newRF(RTree.newCART().minCount.set(1));
         assertEquals("RForest", rf.name());
-        assertEquals("RForest{model=RTree{splitter=Random,testMap={BINARY=NumBin, INT=NumBin, NOMINAL=NomBin, DOUBLE=NumBin, LONG=NumBin, STRING=Ignore}}}", rf.fullName());
+        assertEquals("RForest{model=RTree{splitter=Random,testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}}", rf.fullName());
 
         assertEquals(rf.toSummary(), rf.toContent());
         assertEquals(rf.toSummary(), rf.toFullContent());

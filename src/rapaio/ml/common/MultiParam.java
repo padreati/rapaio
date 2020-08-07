@@ -48,7 +48,12 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
         return params;
     }
 
-    public S set(K key, T value) {
+    public S add(Map<K, T> value) {
+        this.valueMap.putAll(value);
+        return params;
+    }
+
+    public S add(K key, T value) {
         this.valueMap.put(key, value);
         return params;
     }

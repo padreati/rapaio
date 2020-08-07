@@ -77,20 +77,20 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     public static RTree newDecisionStump() {
         return new RTree()
                 .maxDepth.set(2)
-                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.set(VType.INT, RTreeTest.NumericBinary)
-                .test.set(VType.BINARY, RTreeTest.NumericBinary)
-                .test.set(VType.NOMINAL, RTreeTest.NominalBinary)
+                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.add(VType.INT, RTreeTest.NumericBinary)
+                .test.add(VType.BINARY, RTreeTest.NumericBinary)
+                .test.add(VType.NOMINAL, RTreeTest.NominalBinary)
                 .splitter.set(RTreeSplitter.MAJORITY);
     }
 
     public static RTree newC45() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.set(VType.INT, RTreeTest.NumericBinary)
-                .test.set(VType.BINARY, RTreeTest.NumericBinary)
-                .test.set(VType.NOMINAL, RTreeTest.NominalFull)
+                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.add(VType.INT, RTreeTest.NumericBinary)
+                .test.add(VType.BINARY, RTreeTest.NumericBinary)
+                .test.add(VType.NOMINAL, RTreeTest.NominalFull)
                 .splitter.set(RTreeSplitter.RANDOM)
                 .minCount.set(2);
     }
@@ -98,10 +98,10 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     public static RTree newCART() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .test.set(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.set(VType.INT, RTreeTest.NumericBinary)
-                .test.set(VType.BINARY, RTreeTest.NumericBinary)
-                .test.set(VType.NOMINAL, RTreeTest.NominalBinary)
+                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
+                .test.add(VType.INT, RTreeTest.NumericBinary)
+                .test.add(VType.BINARY, RTreeTest.NumericBinary)
+                .test.add(VType.NOMINAL, RTreeTest.NominalBinary)
                 .splitter.set(RTreeSplitter.RANDOM)
                 .minCount.set(1);
     }

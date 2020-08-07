@@ -7,6 +7,7 @@ import rapaio.printer.Format;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -60,14 +61,12 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
             if (sb.length() > 0) {
                 sb.append(",");
             }
-            sb.append(v.name()).append("=").append(format(v));
+            sb.append(v.name()).append("=").append(format(v.get()));
         }
         return sb.toString();
     }
 
-    private String format(Param<?, T> p) {
-
-        Object value = p.get();
+    private String format(Object value) {
         if (value instanceof RegressionModel) {
             return ((RegressionModel) value).fullName();
         }
@@ -84,6 +83,18 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
                 }
             }
         }
+        if (value instanceof Map) {
+            StringBuilder inner = new StringBuilder();
+            inner.append("{");
+            for (var e : ((Map<?, ?>) value).entrySet()) {
+                if (inner.length() > 1) {
+                    inner.append(',');
+                }
+                inner.append(format(e.getKey())).append('=').append(format(e.getValue()));
+            }
+            inner.append("}");
+            return inner.toString();
+        }
         if (value instanceof Function<?, ?>) {
             return "Function()";
         }
@@ -93,6 +104,6 @@ public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
         if (value instanceof BiConsumer<?, ?>) {
             return "BiCosumer()";
         }
-        return p.get().toString();
+        return value.toString();
     }
 }

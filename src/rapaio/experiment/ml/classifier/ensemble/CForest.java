@@ -98,7 +98,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
 
     private CForest() {
         this.baggingMode = BaggingMode.DISTRIBUTION;
-        this.c = CTree.newCART().withVarSelector(VarSelector.auto());
+        this.c = CTree.newCART().varSelector.set(VarSelector.auto());
         this.oobComp = false;
         this.rowSampler.set(RowSampler.bootstrap());
     }
@@ -169,7 +169,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
 
     public CForest withVarSelector(VarSelector varSelector) {
         if (c instanceof CTree) {
-            ((CTree) c).withVarSelector(varSelector);
+            ((CTree) c).varSelector.set(varSelector);
         }
         return this;
     }

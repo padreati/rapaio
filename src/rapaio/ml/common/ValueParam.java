@@ -49,6 +49,9 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
 
     @Override
     public boolean hasDefaultValue() {
+        if (defaultValue == null) {
+            return value == null;
+        }
         return defaultValue().equals(value);
     }
 

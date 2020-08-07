@@ -39,6 +39,8 @@ import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.MultiParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
@@ -54,14 +56,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Tree classifier.
@@ -71,28 +69,52 @@ import static java.util.stream.Collectors.joining;
 public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> implements Printable {
 
     private static final long serialVersionUID = 1203926824359387358L;
-    private static final Map<VType, CTreeTest> DEFAULT_TEST_MAP;
-
-    static {
-        DEFAULT_TEST_MAP = new HashMap<>();
-        DEFAULT_TEST_MAP.put(VType.BINARY, CTreeTest.BinaryBinary);
-        DEFAULT_TEST_MAP.put(VType.INT, CTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.DOUBLE, CTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.NOMINAL, CTreeTest.NominalBinary);
-    }
 
     // parameter default values
 
-    private int minCount = 1;
-    private int maxDepth = -1;
-    private double minGain = -1000;
+    public final ValueParam<Integer, CTree> minCount = new ValueParam<>(this, 1,
+            "minCount",
+            "Minimum number of instances for a node",
+            x -> x != null && x >= 1);
 
-    private VarSelector varSelector = VarSelector.all();
-    private SortedMap<VType, CTreeTest> testMap = new TreeMap<>(DEFAULT_TEST_MAP);
-    private CTreePurityFunction function = CTreePurityFunction.InfoGain;
-    private CTreeSplitter splitter = CTreeSplitter.Ignored;
-    private CTreePruning pruning = CTreePruning.None;
-    private Frame pruningDf = null;
+    public final ValueParam<Integer, CTree> maxDepth = new ValueParam<>(this, -1,
+            "maxDepth",
+            "Maximum depth of a tree");
+
+    public final ValueParam<Double, CTree> minGain = new ValueParam<>(this, -1000.0,
+            "minGain",
+            "Minimum gain to proceed with split into child nodes");
+
+    public final ValueParam<VarSelector, CTree> varSelector = new ValueParam<>(this, VarSelector.all(),
+            "varSelector",
+            "Variable selection method");
+
+    public final MultiParam<VType, CTreeTest, CTree> testMap = new MultiParam<>(this,
+            Map.of(
+                    VType.BINARY, CTreeTest.BinaryBinary,
+                    VType.INT, CTreeTest.NumericBinary,
+                    VType.DOUBLE, CTreeTest.NumericBinary,
+                    VType.NOMINAL, CTreeTest.NominalBinary),
+            "testMap",
+            "Definitions of the test criteria used to select best splits",
+            Objects::nonNull);
+
+    public final ValueParam<CTreePurityFunction, CTree> purity = new ValueParam<>(this, CTreePurityFunction.InfoGain,
+            "purity",
+            "Purity function");
+
+    public final ValueParam<CTreeSplitter, CTree> splitter = new ValueParam<>(this, CTreeSplitter.Ignored,
+            "splitter",
+            "Splitter method");
+
+    public final ValueParam<CTreePruning, CTree> pruning = new ValueParam<>(this, CTreePruning.None,
+            "prunning",
+            "Prunning method");
+
+    public final ValueParam<Frame, CTree> pruningDf = new ValueParam<>(this, null,
+            "pruningDf",
+            "Pruning data frame",
+            x -> true);
 
     // tree root node
     private CTreeNode root;
@@ -106,167 +128,62 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
 
     public static CTree newID3() {
         return new CTree()
-                .withMaxDepth(-1)
-                .withMinCount(1)
-                .withVarSelector(VarSelector.all())
-                .withSplitter(CTreeSplitter.Ignored)
-                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VType.DOUBLE, CTreeTest.Ignore)
-                .withFunction(CTreePurityFunction.InfoGain)
-                .withPruning(CTreePruning.None);
+                .maxDepth.set(-1)
+                .minCount.set(1)
+                .varSelector.set(VarSelector.all())
+                .splitter.set(CTreeSplitter.Ignored)
+                .testMap.add(VType.NOMINAL, CTreeTest.NominalFull)
+                .testMap.add(VType.DOUBLE, CTreeTest.Ignore)
+                .purity.set(CTreePurityFunction.InfoGain)
+                .pruning.set(CTreePruning.None);
     }
 
     public static CTree newC45() {
         return new CTree()
-                .withMaxDepth(-1)
-                .withMinCount(1)
-                .withVarSelector(VarSelector.all())
-                .withSplitter(CTreeSplitter.ToAllWeighted)
-                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
-                .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
-                .withFunction(CTreePurityFunction.GainRatio);
+                .maxDepth.set(-1)
+                .minCount.set(1)
+                .varSelector.set(VarSelector.all())
+                .splitter.set(CTreeSplitter.ToAllWeighted)
+                .testMap.add(VType.NOMINAL, CTreeTest.NominalFull)
+                .testMap.add(VType.DOUBLE, CTreeTest.NumericBinary)
+                .purity.set(CTreePurityFunction.GainRatio);
     }
 
     public static CTree newDecisionStump() {
         return new CTree()
-                .withMaxDepth(1)
-                .withMinCount(1)
-                .withVarSelector(VarSelector.all())
-                .withSplitter(CTreeSplitter.ToAllWeighted)
-                .withFunction(CTreePurityFunction.GainRatio)
-                .withTest(VType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VType.DOUBLE, CTreeTest.NumericBinary);
+                .maxDepth.set(1)
+                .minCount.set(1)
+                .varSelector.set(VarSelector.all())
+                .splitter.set(CTreeSplitter.ToAllWeighted)
+                .purity.set(CTreePurityFunction.GainRatio)
+                .testMap.add(VType.NOMINAL, CTreeTest.NominalBinary)
+                .testMap.add(VType.DOUBLE, CTreeTest.NumericBinary);
     }
 
     public static CTree newCART() {
         return new CTree()
-                .withMaxDepth(-1)
-                .withMinCount(1)
-                .withVarSelector(VarSelector.all())
-                .withSplitter(CTreeSplitter.ToAllWeighted)
-                .withTest(VType.NOMINAL, CTreeTest.NominalBinary)
-                .withTest(VType.DOUBLE, CTreeTest.NumericBinary)
-                .withTest(VType.INT, CTreeTest.NumericBinary)
-                .withFunction(CTreePurityFunction.GiniGain);
+                .maxDepth.set(-1)
+                .minCount.set(1)
+                .varSelector.set(VarSelector.all())
+                .splitter.set(CTreeSplitter.ToAllWeighted)
+                .testMap.add(VType.NOMINAL, CTreeTest.NominalBinary)
+                .testMap.add(VType.DOUBLE, CTreeTest.NumericBinary)
+                .testMap.add(VType.INT, CTreeTest.NumericBinary)
+                .purity.set(CTreePurityFunction.GiniGain);
     }
 
     @Override
     public CTree newInstance() {
-        CTree tree = new CTree().copyParameterValues(this)
-                .withMinCount(minCount)
-                .withMinGain(minGain)
-                .withMaxDepth(maxDepth)
-                .withFunction(function)
-                .withSplitter(splitter)
-                .withVarSelector(varSelector().newInstance());
-        tree.testMap = new TreeMap<>(testMap);
-        return tree;
+        return new CTree().copyParameterValues(this);
     }
 
     public CTreeNode getRoot() {
         return root;
     }
 
-    public VarSelector varSelector() {
-        return varSelector;
-    }
-
-    public CTree withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
-        return this;
-    }
-
-    public int minCount() {
-        return minCount;
-    }
-
-    public CTree withMinCount(int minCount) {
-        if (minCount < 1) {
-            throw new IllegalArgumentException("min cont must be an integer positive number");
-        }
-        this.minCount = minCount;
-        return this;
-    }
-
-    public double minGain() {
-        return minGain;
-    }
-
-    public CTree withMinGain(double minGain) {
-        this.minGain = minGain;
-        return this;
-    }
-
-    public int maxDepth() {
-        return maxDepth;
-    }
-
-    public CTree withMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
-        return this;
-    }
-
-    public Map<VType, CTreeTest> testMap() {
-        return testMap;
-    }
-
-    public CTree withNoTests() {
-        this.testMap.clear();
-        return this;
-    }
-
-    public CTree withTest(VType vType, CTreeTest test) {
-        this.testMap.put(vType, test);
-        return this;
-    }
-
-    public CTree withPruning(CTreePruning pruning) {
-        return withPruning(pruning, null);
-    }
-
-    public CTree withPruning(CTreePruning pruning, Frame pruningDf) {
-        this.pruning = pruning;
-        this.pruningDf = pruningDf;
-        return this;
-    }
-
-    public CTreePurityFunction getFunction() {
-        return function;
-    }
-
-    public CTree withFunction(CTreePurityFunction function) {
-        this.function = function;
-        return this;
-    }
-
-    public CTreeSplitter getSplitter() {
-        return splitter;
-    }
-
-    public CTree withSplitter(CTreeSplitter splitter) {
-        this.splitter = splitter;
-        return this;
-    }
-
     @Override
     public String name() {
         return "CTree";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("CTree {");
-        sb.append("varSelector=").append(varSelector().name()).append(";");
-        sb.append("minCount=").append(minCount).append(";");
-        sb.append("maxDepth=").append(maxDepth).append(";");
-        sb.append("tests=").append(testMap.entrySet().stream()
-                .map(e -> e.getKey().name() + ":" + e.getValue().name()).collect(joining(","))
-        ).append(";");
-        sb.append("func=").append(function.name()).append(";");
-        sb.append("split=").append(splitter.name()).append(";");
-        sb.append("}");
-        return sb.toString();
     }
 
     @Override
@@ -286,7 +203,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
 
         additionalValidation(df);
 
-        this.varSelector.withVarNames(inputNames());
+        this.varSelector.get().withVarNames(inputNames());
 
         int rows = df.rowCount();
 
@@ -318,7 +235,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             String testName = bestCandidate.getTestName();
 
             // now that we have a best candidate, do the effective split
-            Pair<List<Frame>, List<Var>> frames = splitter.performSplit(nodeDf, weightsDf,
+            Pair<List<Frame>, List<Var>> frames = splitter.get().performSplit(nodeDf, weightsDf,
                     bestCandidate.getGroupPredicates());
 
             for (RowPredicate predicate : bestCandidate.getGroupPredicates()) {
@@ -334,7 +251,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             }
         }
 
-        pruning.prune(this, (pruningDf == null) ? df : pruningDf, false);
+        pruning.get().prune(this, (pruningDf.get() == null) ? df : pruningDf.get(), false);
         return true;
     }
 
@@ -348,16 +265,16 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             return;
         }
         if (node.counter.countValues(x -> x > 0) == 1 ||
-                (maxDepth > 0 && node.depth > maxDepth) || df.rowCount() <= minCount) {
+                (maxDepth.get() > 0 && node.depth > maxDepth.get()) || df.rowCount() <= minCount.get()) {
             return;
         }
 
-        String[] nextVarNames = varSelector.nextVarNames();
+        String[] nextVarNames = varSelector.get().nextVarNames();
         List<CTreeCandidate> candidateList = new ArrayList<>();
         Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
         if (poolSize.get() == 0) {
-            int m = varSelector.mCount();
+            int m = varSelector.get().mCount();
             for (String testCol : nextVarNames) {
                 if (m <= 0) {
                     continue;
@@ -367,8 +284,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 }
 
                 CTreeTest test = null;
-                if (testMap.containsKey(df.type(testCol))) {
-                    test = testMap.get(df.type(testCol));
+                if (testMap.get().containsKey(df.type(testCol))) {
+                    test = testMap.get().get(df.type(testCol));
                 }
                 if (test == null) {
                     throw new IllegalArgumentException("can't predict ctree with no " +
@@ -376,7 +293,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                             " [" + df.type(testCol).name() + "]");
                 }
                 CTreeCandidate candidate = test.computeCandidate(
-                        this, df, weights, testCol, firstTargetName(), function);
+                        this, df, weights, testCol, firstTargetName(), purity.get());
                 if (candidate != null) {
                     candidateList.add(candidate);
                     m--;
@@ -385,7 +302,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 }
             }
         } else {
-            int m = varSelector.mCount();
+            int m = varSelector.get().mCount();
             int start = 0;
 
             while (m > 0 && start < nextVarNames.length) {
@@ -395,8 +312,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                         .filter(testCol -> !testCol.equals(firstTargetName()))
                         .map(testCol -> {
                             CTreeTest test = null;
-                            if (testMap.containsKey(df.type(testCol))) {
-                                test = testMap.get(df.type(testCol));
+                            if (testMap.get().containsKey(df.type(testCol))) {
+                                test = testMap.get().get(df.type(testCol));
                             }
                             if (test == null) {
                                 throw new IllegalArgumentException("can't predict ctree with no " +
@@ -404,7 +321,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                                         " [" + df.type(testCol).name() + "]");
                             }
                             CTreeCandidate candidate = test.computeCandidate(
-                                    this, df, weights, testCol, firstTargetName(), function);
+                                    this, df, weights, testCol, firstTargetName(), purity.get());
                             if (candidate == null) {
                                 exhaustList.add(testCol);
                             }
@@ -422,13 +339,13 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             return;
         }
         // leave as leaf if the gain is not bigger than minimum gain
-        if (candidateList.get(0).getScore() <= minGain) {
+        if (candidateList.get(0).getScore() <= minGain.get()) {
             return;
         }
 
         node.leaf = false;
         node.bestCandidate = candidateList.get(0);
-        varSelector.removeVarNames(exhaustList);
+        varSelector.get().removeVarNames(exhaustList);
     }
 
     public void prune(Frame df) {
@@ -436,7 +353,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
     }
 
     public void prune(Frame df, boolean all) {
-        pruning.prune(this, df, all);
+        pruning.get().prune(this, df, all);
     }
 
     /**
@@ -543,7 +460,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
 
     private void additionalValidation(Frame df) {
         df.varStream().forEach(var -> {
-            if (testMap.containsKey(var.type()))
+            if (testMap.get().containsKey(var.type()))
                 return;
             throw new IllegalArgumentException("can't predict ctree with no " +
                     "tests for given variable: " + var.name() +
@@ -564,7 +481,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CTree model\n");
         sb.append("================\n\n");

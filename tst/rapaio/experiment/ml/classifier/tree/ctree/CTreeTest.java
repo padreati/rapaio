@@ -46,7 +46,7 @@ public class CTreeTest {
         Frame df = Datasets.loadIrisDataset();
 
         CTree tree = CTree.newDecisionStump();
-        assertEquals(1, tree.maxDepth());
+        assertEquals(1, tree.maxDepth.get());
 
         tree.fit(df, "class");
 
@@ -87,7 +87,7 @@ public class CTreeTest {
     @Test
     void testPredictorStandard() {
         Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
+        CTree tree = CTree.newCART().maxDepth.set(10000).minCount.set(1);
         tree.fit(df, "class");
 
         var pred = tree.predict(df, true, true);

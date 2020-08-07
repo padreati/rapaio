@@ -83,7 +83,7 @@ public class C45ClassifierModelTest {
         Frame df = Datasets.loadPlay();
         final String className = "class";
 
-        CTree classifier = CTree.newC45().withMinCount(1);
+        CTree classifier = CTree.newC45().minCount.set(1);
         classifier.fit(df, className);
         classifier.printSummary();
 

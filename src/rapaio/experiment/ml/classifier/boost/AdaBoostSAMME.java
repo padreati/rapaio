@@ -58,7 +58,7 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
 
     // parameters
 
-    private ClassifierModel weak = CTree.newCART().withMaxDepth(6).withMinCount(6);
+    private ClassifierModel weak = CTree.newCART().maxDepth.set(6).minCount.set(6);
     private boolean stopOnError = false;
     private double shrinkage = 1.0;
 
@@ -228,7 +228,7 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 

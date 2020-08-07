@@ -154,8 +154,8 @@ public interface CTreeTest extends Serializable {
                 dt.increment(1, index, -w);
                 dt.increment(0, index, +w);
 
-                if (i + 1 >= c.minCount() &&
-                        i < len - c.minCount() &&
+                if (i + 1 >= c.minCount.get() &&
+                        i < len - c.minCount.get() &&
                         values[rows[i]] < values[rows[i + 1]]) {
 
                     double currentScore = function.compute(dt);
@@ -193,7 +193,7 @@ public interface CTreeTest extends Serializable {
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
             var dt = DensityTable.fromLevelCounts(false, test, target);
-            if (!(dt.hasColsWithMinimumCount(c.minCount(), 2))) {
+            if (!(dt.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
 
@@ -216,7 +216,7 @@ public interface CTreeTest extends Serializable {
         @Override
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
             var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
-            if (!counts.hasColsWithMinimumCount(c.minCount(), 2)) {
+            if (!counts.hasColsWithMinimumCount(c.minCount.get(), 2)) {
                 return null;
             }
             var dt = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
@@ -241,7 +241,7 @@ public interface CTreeTest extends Serializable {
         public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
 
             var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
-            if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
+            if (!(counts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
 
@@ -250,7 +250,7 @@ public interface CTreeTest extends Serializable {
 
             double[] rowCounts = counts.rowTotals();
             for (int i = 1; i < df.levels(testName).size(); i++) {
-                if (rowCounts[i - 1] < c.minCount())
+                if (rowCounts[i - 1] < c.minCount.get())
                     continue;
 
                 String testLabel = df.rvar(testName).levels().get(i);

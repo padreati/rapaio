@@ -42,7 +42,10 @@ public class AdaBoostSAMMETest {
     void testBuild() throws IOException {
 
         AdaBoostSAMME ab = new AdaBoostSAMME()
-                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withVarSelector(VarSelector.fixed(5)))
+                .withClassifier(CTree.newC45()
+                        .minCount.set(5)
+                        .maxDepth.set(3)
+                        .varSelector.set(VarSelector.fixed(5)))
                 .runs.set(10);
         Frame df = Datasets.loadSpamBase();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);

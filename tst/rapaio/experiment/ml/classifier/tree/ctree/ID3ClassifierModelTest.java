@@ -70,8 +70,8 @@ public class ID3ClassifierModelTest {
         df.printSummary();
 
         CTree id3 = new CTree()
-                .withTest(VType.NOMINAL, CTreeTest.NominalFull)
-                .withFunction(CTreePurityFunction.InfoGain);
+                .testMap.add(VType.NOMINAL, CTreeTest.NominalFull)
+                .purity.set(CTreePurityFunction.InfoGain);
         id3.fit(df, className);
         id3.predict(df);
         id3.printSummary();
