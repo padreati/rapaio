@@ -82,7 +82,7 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
 
     @Override
     public CBinaryLogisticStacking newInstance() {
-        return newInstanceDecoration(new CBinaryLogisticStacking());
+        return new CBinaryLogisticStacking().copyParameterValues(this);
     }
 
     @Override
@@ -138,8 +138,8 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
     @Override
     protected boolean coreFit(Frame df, Var weights) {
         logger.config("started learning for binary logistic...");
-        log.withEps(tol);
-        log.withRuns(maxRuns);
+        log.eps.set(tol);
+        log.runs.set(maxRuns);
         log.fit(df, weights, targetNames());
 
         logger.config("end predict method call");

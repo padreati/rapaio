@@ -38,7 +38,7 @@ import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.loss.KDevianceRegressionLoss;
+import rapaio.ml.loss.KDevianceLoss;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
@@ -71,7 +71,7 @@ public class GBTClassifierModel
     private RTree rTree = RTree.newCART()
             .maxDepth.set(4)
             .minCount.set(5)
-            .loss.set(new KDevianceRegressionLoss(-1));
+            .loss.set(new KDevianceLoss(-1));
 
     // learning artifacts
 
@@ -85,10 +85,10 @@ public class GBTClassifierModel
 
     @Override
     public GBTClassifierModel newInstance() {
-        return newInstanceDecoration(new GBTClassifierModel())
+        return new GBTClassifierModel().copyParameterValues(this)
                 .withShrinkage(shrinkage)
                 .withDebug(debug)
-                .withRTree(rTree.newInstance().loss.set(new KDevianceRegressionLoss(-1)));
+                .withRTree(rTree.newInstance().loss.set(new KDevianceLoss(-1)));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class GBTClassifierModel
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("runs=").append(runs());
+        sb.append("runs=").append(runs.get());
         sb.append("}");
         return sb.toString();
     }
@@ -124,7 +124,7 @@ public class GBTClassifierModel
 
     public GBTClassifierModel withRTree(RTree rTree) {
         this.rTree = rTree;
-        this.rTree.loss.set(new KDevianceRegressionLoss(-1));
+        this.rTree.loss.set(new KDevianceLoss(-1));
         return this;
     }
 
@@ -153,10 +153,10 @@ public class GBTClassifierModel
             yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
 
-        for (int m = 0; m < runs(); m++) {
+        for (int m = 0; m < runs.get(); m++) {
             buildAdditionalTree(df, weights, yk);
-            if (runningHook() != null) {
-                runningHook().accept(this, m);
+            if (runningHook.get() != null) {
+                runningHook.get().accept(this, m);
             }
         }
         return true;
@@ -184,14 +184,14 @@ public class GBTClassifierModel
         // b)
 
         Frame x = df.removeVars(VRange.of(targetNames()));
-        Sample sample = sampler().nextSample(x, w);
+        Sample sample = rowSampler.get().nextSample(x, w);
 
         for (int k = 0; k < K; k++) {
 
             Var resk = residual.mapRow(k).asVarDouble().withName("##tt##");
             Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
 
-            RTree tree = rTree.newInstance().loss.set(new KDevianceRegressionLoss(K));
+            RTree tree = rTree.newInstance().loss.set(new KDevianceLoss(K));
             tree.fit(train, sample.weights, "##tt##");
             trees.get(k).add(tree);
 

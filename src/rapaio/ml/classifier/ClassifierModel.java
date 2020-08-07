@@ -30,15 +30,12 @@ package rapaio.ml.classifier;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 /**
  * Interface for all classification model algorithms.
@@ -78,21 +75,6 @@ public interface ClassifierModel extends Printable, Serializable {
     default Capabilities capabilities() {
         return Capabilities.builder().build();
     }
-
-    /**
-     * @return the sampler instance used
-     */
-    RowSampler sampler();
-
-    /**
-     * Specifies the sampler to be used at learning time.
-     * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link rapaio.data.sample.Identity}
-     * which gives all the original training instances.
-     *
-     * @param sampler instance of a new sampler
-     */
-    ClassifierModel withSampler(RowSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -237,67 +219,4 @@ public interface ClassifierModel extends Printable, Serializable {
      * @param withDistributions generate densities for classes
      */
     <R extends ClassifierResult> R predict(Frame df, boolean withClasses, boolean withDistributions);
-
-    /**
-     * set the pool size for fork join tasks
-     * - poolSize == 0 it is executed in a single non fork join thread
-     * - poolSize < 0 pool size for fork join pool is the number of CPUs
-     * - poolSize > 0, pool size for fork join pool is this value
-     *
-     * @param poolSize specified pool size
-     */
-    <M extends ClassifierModel> M withPoolSize(int poolSize);
-
-    /**
-     * Gets the configured pool size. Negative values are considered
-     * automatically as pool of number of available CPUs, zero means
-     * no pooling and positive values means pooling with a specified
-     * value.
-     *
-     * @return pool size to be used
-     */
-    int runPoolSize();
-
-    /**
-     * @return the number of runs
-     */
-    int runs();
-
-    /**
-     * Specifies the runs / rounds of learning.
-     * For various models composed of multiple sub-models
-     * the runs represents often the number of sub-models.
-     * <p>
-     * For example for CForest the number of runs is used to specify
-     * the number of decision trees to be built.
-     *
-     * @param runs number of runs
-     * @return self-instance, used for builder pattern
-     **/
-    <M extends ClassifierModel> M withRuns(int runs);
-
-    /**
-     * Get the lambda call hook which will be called after
-     * each sub-component or iteration specified by {@link #withRuns(int)}
-     * is trained.
-     *
-     * @return lambda running hook
-     */
-    BiConsumer<? extends ClassifierModel, Integer> runningHook();
-
-    /**
-     * Set up a lambda call hook which will be called after
-     * each sub-component or iteration specified by {@link #withRuns(int)}
-     * is trained.
-     *
-     * @param runningHook bi consumer method to be called at each iteration, first
-     *                    parameter is the model built at the time and the second
-     *                    parameter value is the run value
-     * @return self-instance of the model
-     */
-    <M extends ClassifierModel> M withRunningHook(BiConsumer<? extends ClassifierModel, Integer> runningHook);
-
-    BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook();
-
-    <M extends ClassifierModel> M withStoppingHook(BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook);
 }

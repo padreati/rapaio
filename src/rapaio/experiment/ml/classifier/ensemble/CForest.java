@@ -97,11 +97,10 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private final Map<String, List<Double>> permVIMap = new HashMap<>();
 
     private CForest() {
-        withRuns(10);
         this.baggingMode = BaggingMode.DISTRIBUTION;
         this.c = CTree.newCART().withVarSelector(VarSelector.auto());
         this.oobComp = false;
-        this.withSampler(RowSampler.bootstrap());
+        this.rowSampler.set(RowSampler.bootstrap());
     }
 
     public static CForest newRF() {
@@ -118,10 +117,10 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         StringBuilder sb = new StringBuilder();
         sb.append(name());
         sb.append("{");
-        sb.append("runs:").append(runs()).append(";");
+        sb.append("runs:").append(runs.get()).append(";");
         sb.append("baggingMode:").append(baggingMode.name()).append(";");
         sb.append("oob:").append(oobComp).append(";");
-        sb.append("sampler:").append(sampler().name()).append(";");
+        sb.append("sampler:").append(rowSampler.get().name()).append(";");
         sb.append("tree:").append(c.fullName());
         sb.append("}");
         return sb.toString();
@@ -129,7 +128,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
 
     @Override
     public CForest newInstance() {
-        return newInstanceDecoration(new CForest())
+        return new CForest().copyParameterValues(this)
                 .withBaggingMode(baggingMode)
                 .withOobComp(oobComp)
                 .withFreqVIComp(freqVIComp)
@@ -275,9 +274,9 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             permVIMap.clear();
         }
 
-        if (runPoolSize() == 0) {
+        if (poolSize.get() == 0) {
             predictors = new ArrayList<>();
-            for (int i = 0; i < runs(); i++) {
+            for (int i = 0; i < runs.get(); i++) {
                 Pair<ClassifierModel, VarInt> weak = buildWeakPredictor(df, weights);
                 predictors.add(weak._1);
                 if (oobComp) {
@@ -292,17 +291,15 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
                 if (permVIComp) {
                     permVICompute(df, weak);
                 }
-                if (runningHook() != null) {
-                    runningHook().accept(this, i + 1);
-                }
+                runningHook.get().accept(this, i + 1);
             }
         } else {
             // build in parallel the trees, than oob and running hook cannot run at the
             // same moment when weak tree was built
             // for a real running hook behavior run without threading
             predictors = new ArrayList<>();
-            IntStream intStream = IntStream.range(0, runs());
-            if (runPoolSize() > 0) {
+            IntStream intStream = IntStream.range(0, runs.get());
+            if (poolSize.get() > 0) {
                 intStream = intStream.parallel();
             }
             List<Pair<ClassifierModel, VarInt>> list = intStream
@@ -324,9 +321,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
                 if (permVIComp) {
                     permVICompute(df, weak);
                 }
-                if (runningHook() != null) {
-                    runningHook().accept(this, i + 1);
-                }
+                runningHook.get().accept(this, i + 1);
             }
         }
         return true;
@@ -444,7 +439,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private Pair<ClassifierModel, VarInt> buildWeakPredictor(Frame df, Var weights) {
         var weak = c.newInstance();
 
-        Sample sample = sampler().nextSample(df, weights);
+        Sample sample = rowSampler.get().nextSample(df, weights);
 
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;
@@ -469,7 +464,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("CForest model\n");
         sb.append("================\n\n");

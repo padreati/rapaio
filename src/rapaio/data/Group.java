@@ -27,6 +27,8 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
@@ -165,10 +167,10 @@ public class Group implements Printable {
     private final List<String> featureNamesList;
 
     // maps rows to group ids
-    private final HashMap<Integer, Integer> rowToGroupId = new HashMap<>();
+    private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
 
     // map group ids to indexes from the last level of the tree
-    private final HashMap<Integer, IndexNode> groupIdToLastLevelIndex = new HashMap<>();
+    private final Int2ObjectOpenHashMap<IndexNode> groupIdToLastLevelIndex = new Int2ObjectOpenHashMap<>();
 
     // sorted group ids
     private VarInt sortedGroupIds = VarInt.empty();
@@ -252,7 +254,7 @@ public class Group implements Printable {
         return featureNamesList;
     }
 
-    public HashMap<Integer, IndexNode> getGroupIdToLastLevelIndex() {
+    public Int2ObjectOpenHashMap<IndexNode> getGroupIdToLastLevelIndex() {
         return groupIdToLastLevelIndex;
     }
 
@@ -540,7 +542,7 @@ public class Group implements Printable {
             Frame df = group.getFrame();
             Mapping rows = Mapping.empty();
             VarInt sortedGroupIds = group.getSortedGroupIds();
-            HashMap<Integer, IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
+            var groupIndex = group.getGroupIdToLastLevelIndex();
             for (int sortedGroupId : sortedGroupIds) {
                 rows.add(groupIndex.get(sortedGroupId).getRows().get(0));
             }

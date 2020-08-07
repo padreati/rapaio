@@ -1,20 +1,28 @@
-package rapaio.ml.param;
+package rapaio.ml.common;
 
-import java.util.function.Function;
+import rapaio.util.function.SFunction;
+
+import java.util.Objects;
 
 /**
+ * This implementation models a parameter which has a single value of given generic type {@link T}.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/29/20.
  */
-public class ValueParam<T, S extends ParamSet> implements Param<T, S> {
+public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
 
     protected final S params;
     protected final T defaultValue;
     protected final String name;
     protected final String description;
     protected T value;
-    protected final Function<T, Boolean> validator;
+    protected final SFunction<T, Boolean> validator;
 
-    public ValueParam(S params, T defaultValue, String name, String description, Function<T, Boolean> validator) {
+    public ValueParam(S params, T defaultValue, String name, String description) {
+        this(params, defaultValue, name, description, Objects::nonNull);
+    }
+
+    public ValueParam(S params, T defaultValue, String name, String description, SFunction<T, Boolean> validator) {
         this.params = params;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -45,8 +53,9 @@ public class ValueParam<T, S extends ParamSet> implements Param<T, S> {
     }
 
     @Override
-    public void clear() {
+    public S clear() {
         value = defaultValue();
+        return params;
     }
 
     @Override

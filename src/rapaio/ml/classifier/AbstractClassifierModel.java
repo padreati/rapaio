@@ -33,17 +33,20 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.function.SBiConsumer;
+import rapaio.util.function.SBiFunction;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,87 +55,80 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractClassifierModel<M extends ClassifierModel, R extends ClassifierResult> implements ClassifierModel {
+@SuppressWarnings("unchecked")
+public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<M, R>, R extends ClassifierResult>
+        extends ParamSet<M> implements ClassifierModel {
 
     private static final long serialVersionUID = -6866948033065091047L;
 
     // parameters
 
-    protected RowSampler sampler = RowSampler.identity();
-    protected boolean learned = false;
-    protected int poolSize = 0;
-    protected int runs = 1;
-    protected BiConsumer<M, Integer> runningHook;
-    protected BiFunction<M, Integer, Boolean> stoppingHook;
+    public final SBiFunction<ClassifierModel, Integer, Boolean> DEFAULT_STOPPING_HOOK = (classifier, integer) -> false;
+    public final SBiConsumer<ClassifierModel, Integer> DEFAULT_RUNNING_HOOK = (m, i) -> {
+    };
+
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
+            "rowSampler",
+            "Method used to sample rows.",
+            Objects::nonNull);
+
+    /**
+     * Number of threads for execution pool size. Negative values are considered
+     * automatically as pool of number of available CPUs, zero means
+     * no pooling and positive values means pooling with a specified
+     * value.
+     */
+    public ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0,
+            "poolSize",
+            "Number of threads in execution pool to be used for fitting the model.",
+            x -> true);
+    /**
+     * Specifies the runs / rounds of learning.
+     * For various models composed of multiple sub-models
+     * the runs represents often the number of sub-models.
+     * <p>
+     * For example for CForest the number of runs is used to specify
+     * the number of decision trees to be built.
+     */
+    public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1,
+            "runs",
+            "Number of iterations for iterative iterations or number of sub ensembles.",
+            x -> x > 0
+    );
+
+    /**
+     * Lambda call hook called after each sub-component or iteration at training time.
+     */
+    public final ValueParam<SBiConsumer<ClassifierModel, Integer>, M> runningHook = new ValueParam<>((M) this,
+            DEFAULT_RUNNING_HOOK,
+            "runningHook",
+            "Hook executed at each iteration.",
+            Objects::nonNull
+    );
+
+    /**
+     * Lambda call hook which can be used to implement a criteria used to stop running
+     * an iterative procedure. If the call hook returns false, the iterative procedure is
+     * stopped, if true it continues until the algorithm stops itself.
+     */
+    public ValueParam<SBiFunction<ClassifierModel, Integer, Boolean>, M> stoppingHook = new ValueParam<>((M) this,
+            DEFAULT_STOPPING_HOOK,
+            "stopHook",
+            "Hook queried at each iteration if execution should continue or not.",
+            Objects::nonNull);
 
     // learning artifacts
 
+    protected boolean learned = false;
     protected String[] inputNames;
     protected VType[] inputTypes;
     protected String[] targetNames;
     protected VType[] targetTypes;
     protected Map<String, List<String>> targetLevels;
 
-    public M newInstanceDecoration(M classifier) {
-        return classifier
-                .withSampler(sampler)
-                .withPoolSize(poolSize)
-                .withRuns(runs)
-                .withRunningHook(runningHook)
-                .withStoppingHook(stoppingHook);
-    }
-
     @Override
-    public RowSampler sampler() {
-        return sampler;
-    }
-
-    @Override
-    public M withSampler(RowSampler sampler) {
-        this.sampler = sampler;
-        return (M) this;
-    }
-
-    @Override
-    public int runPoolSize() {
-        return poolSize;
-    }
-
-    @Override
-    public M withPoolSize(int poolSize) {
-        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
-        return (M) this;
-    }
-
-    @Override
-    public int runs() {
-        return runs;
-    }
-
-    @Override
-    public M withRuns(int runs) {
-        this.runs = runs;
-        return (M) this;
-    }
-
-    @Override
-    public BiConsumer<M, Integer> runningHook() {
-        return runningHook;
-    }
-
-    @Override
-    public <T extends ClassifierModel> T withRunningHook(BiConsumer<? extends ClassifierModel, Integer> runningHook) {
-        this.runningHook = (BiConsumer<M, Integer>) runningHook;
-        return (T) this;
-    }
-
-    public BiFunction<M, Integer, Boolean> stoppingHook() {
-        return stoppingHook;
-    }
-
-    public <T extends ClassifierModel> T withStoppingHook(BiFunction<? extends ClassifierModel, Integer, Boolean> stoppingHook) {
-        this.stoppingHook = (BiFunction<M, Integer, Boolean>) stoppingHook;
-        return (T) this;
+    public String fullName() {
+        return name() + '{' + getStringParameterValues(true) + '}';
     }
 
     @Override
@@ -238,7 +234,7 @@ public abstract class AbstractClassifierModel<M extends ClassifierModel, R exten
         return sb.toString();
     }
 
-    public String inputVarsSummary(Printer printer, POption... options) {
+    public String inputVarsSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("input vars: \n");
 

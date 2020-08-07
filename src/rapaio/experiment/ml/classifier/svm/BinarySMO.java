@@ -108,7 +108,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
     public String fullName() {
         return name() + "\n" +
                 "{\n" +
-                "   sampler=" + sampler().name() + ",\n" +
+                "   sampler=" + rowSampler.get().name() + ",\n" +
                 "   kernel=" + kernel.name() + ",\n" +
                 "   C=" + floatFlex(C) + ",\n" +
                 "   tol=" + floatFlex(tol) + ",\n" +
@@ -121,7 +121,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
     @Override
     public BinarySMO newInstance() {
-        return newInstanceDecoration(new BinarySMO())
+        return new BinarySMO().copyParameterValues(this)
                 .withKernel(kernel.newInstance())
                 .withC(C)
                 .withTol(tol)
@@ -231,7 +231,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
         // perform sampling
 
-        Sample sample = sampler().nextSample(df, weights);
+        Sample sample = rowSampler.get().nextSample(df, weights);
         df = sample.df;
         weights = sample.weights;
 
@@ -687,66 +687,18 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
         }
 
         // Update sets
-        if (a1 > 0) {
-            supportVectors.set(i1, true);
-        } else {
-            supportVectors.set(i1, false);
-        }
-        if ((a1 > 0) && (a1 < C1)) {
-            I0.set(i1, true);
-        } else {
-            I0.set(i1, false);
-        }
-        if ((y1 == 1) && (a1 == 0)) {
-            I1.set(i1, true);
-        } else {
-            I1.set(i1, false);
-        }
-        if ((y1 == -1) && (a1 == C1)) {
-            I2.set(i1, true);
-        } else {
-            I2.set(i1, false);
-        }
-        if ((y1 == 1) && (a1 == C1)) {
-            I3.set(i1, true);
-        } else {
-            I3.set(i1, false);
-        }
-        if ((y1 == -1) && (a1 == 0)) {
-            I4.set(i1, true);
-        } else {
-            I4.set(i1, false);
-        }
-        if (a2 > 0) {
-            supportVectors.set(i2, true);
-        } else {
-            supportVectors.set(i2, false);
-        }
-        if ((a2 > 0) && (a2 < C2)) {
-            I0.set(i2, true);
-        } else {
-            I0.set(i2, false);
-        }
-        if ((y2 == 1) && (a2 == 0)) {
-            I1.set(i2, true);
-        } else {
-            I1.set(i2, false);
-        }
-        if ((y2 == -1) && (a2 == C2)) {
-            I2.set(i2, true);
-        } else {
-            I2.set(i2, false);
-        }
-        if ((y2 == 1) && (a2 == C2)) {
-            I3.set(i2, true);
-        } else {
-            I3.set(i2, false);
-        }
-        if ((y2 == -1) && (a2 == 0)) {
-            I4.set(i2, true);
-        } else {
-            I4.set(i2, false);
-        }
+        supportVectors.set(i1, a1 > 0);
+        I0.set(i1, (a1 > 0) && (a1 < C1));
+        I1.set(i1, (y1 == 1) && (a1 == 0));
+        I2.set(i1, (y1 == -1) && (a1 == C1));
+        I3.set(i1, (y1 == 1) && (a1 == C1));
+        I4.set(i1, (y1 == -1) && (a1 == 0));
+        supportVectors.set(i2, a2 > 0);
+        I0.set(i2, (a2 > 0) && (a2 < C2));
+        I1.set(i2, (y2 == 1) && (a2 == 0));
+        I2.set(i2, (y2 == -1) && (a2 == C2));
+        I3.set(i2, (y2 == 1) && (a2 == C2));
+        I4.set(i2, (y2 == -1) && (a2 == 0));
 
         // Update weight vector to reflect change a1 and a2, if linear SVM
         if (kernel.isLinear()) {
@@ -829,7 +781,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         int printed = 0;
 

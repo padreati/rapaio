@@ -72,12 +72,11 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
     public AdaBoostSAMME() {
         this.a = new ArrayList<>();
         this.h = new ArrayList<>();
-        withRuns(10);
     }
 
     @Override
     public AdaBoostSAMME newInstance() {
-        return newInstanceDecoration(new AdaBoostSAMME())
+        return new AdaBoostSAMME().copyParameterValues(this)
                 .withClassifier(this.weak.newInstance())
                 .withStopOnError(stopOnError)
                 .withShrinkage(shrinkage);
@@ -93,8 +92,8 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
         StringBuilder sb = new StringBuilder();
         sb.append("AdaBoost.SAMME {");
         sb.append("weak: ").append(weak.fullName()).append(", ");
-        sb.append("runs: ").append(runs()).append(", ");
-        sb.append("sampler: ").append(sampler().name()).append(", ");
+        sb.append("runs: ").append(runs.get()).append(", ");
+        sb.append("sampler: ").append(rowSampler.get().name()).append(", ");
         sb.append("stopOnError: ").append(stopOnError).append(", ");
         sb.append("}");
         return sb.toString();
@@ -141,13 +140,13 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
             w.setDouble(i, w.getDouble(i) / total);
         }
 
-        for (int i = 0; i < runs(); i++) {
+        for (int i = 0; i < runs.get(); i++) {
             boolean success = learnRound(df);
             if (!success && stopOnError) {
                 break;
             }
-            if (runningHook() != null) {
-                runningHook().accept(this, i + 1);
+            if (runningHook.get() != null) {
+                runningHook.get().accept(this, i + 1);
             }
         }
         return true;
@@ -157,7 +156,7 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
 
         ClassifierModel hh = weak.newInstance();
 
-        Sample sample = sampler().nextSample(df, w);
+        Sample sample = rowSampler.get().nextSample(df, w);
         hh.fit(sample.df, sample.weights.copy(), targetNames());
 
         ClassifierResult fit = hh.predict(df, true, false);

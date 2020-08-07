@@ -75,7 +75,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
 
     @Override
     public CStacking newInstance() {
-        return newInstanceDecoration(new CStacking())
+        return new CStacking().copyParameterValues(this)
                 .withLearners(weaks.stream().map(ClassifierModel::newInstance).toArray(ClassifierModel[]::new))
                 .withStacker(stacker.newInstance());
     }

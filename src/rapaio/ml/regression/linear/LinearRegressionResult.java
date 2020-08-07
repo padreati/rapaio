@@ -54,14 +54,14 @@ import java.util.Set;
  */
 public class LinearRegressionResult extends RegressionResult {
 
-    protected final BaseLinearRegressionModel lm;
+    protected final BaseLinearRegressionModel<?> lm;
     protected DMatrix beta_hat;
     protected DMatrix beta_std_error;
     protected DMatrix beta_t_value;
     protected DMatrix beta_p_value;
     protected String[][] beta_significance;
 
-    public LinearRegressionResult(BaseLinearRegressionModel model, Frame df, boolean withResiduals) {
+    public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals) {
         super(model, df, withResiduals);
         this.lm = model;
     }
@@ -150,7 +150,7 @@ public class LinearRegressionResult extends RegressionResult {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(lm.headerSummary());
         sb.append("\n");
@@ -223,7 +223,7 @@ public class LinearRegressionResult extends RegressionResult {
         return sb.toString();
     }
 
-    private String getHorizontalSummary5(Var var, Printer printer, POption... options) {
+    private String getHorizontalSummary5(Var var, Printer printer, POption<?>... options) {
         TextTable tt1 = TextTable.empty(2, 5, 1, 0);
 
         String[] headers1 = new String[]{"Min", "1Q", "Median", "3Q", "Max"};

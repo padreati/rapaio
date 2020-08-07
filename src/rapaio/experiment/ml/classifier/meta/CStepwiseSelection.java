@@ -79,7 +79,7 @@ public class CStepwiseSelection
 
     @Override
     public CStepwiseSelection newInstance() {
-        return newInstanceDecoration(new CStepwiseSelection())
+        return new CStepwiseSelection().copyParameterValues(this)
                 .withRestartAfter(restartAfter)
                 .withClassifier(c)
                 .withMaxVars(maxVars)
@@ -140,7 +140,7 @@ public class CStepwiseSelection
         String forwardNext = null;
         String backwardNext = null;
 
-        for (int r = 0; r < runs(); r++) {
+        for (int r = 0; r < runs.get(); r++) {
             boolean found = false;
 
             Set<String> inSet = new HashSet<>(selection);

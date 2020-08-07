@@ -144,8 +144,8 @@ public interface CTreePruning extends Serializable {
                     nodes.get(maxId).cut();
                 }
 
-                if (tree.runningHook() != null) {
-                    tree.runningHook().accept(tree, nodes.size());
+                if (tree.runningHook.get() != null) {
+                    tree.runningHook.get().accept(tree, nodes.size());
                 }
             }
 

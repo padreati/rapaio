@@ -29,14 +29,13 @@ package rapaio.ml.loss;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
-import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
-public class L2RegressionLoss implements RegressionLoss {
+public class L2Loss implements Loss {
 
     @Override
     public String name() {
@@ -54,12 +53,7 @@ public class L2RegressionLoss implements RegressionLoss {
     }
 
     @Override
-    public double computeConstantMinimizer(Frame df, String varName, Var weight) {
-        return WeightedMean.of(df, weight, varName).value();
-    }
-
-    @Override
-    public double computeConstantMinimumGBT(Var y, Var fx) {
+    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
         return Mean.of(computeGradient(y, fx)).value();
     }
 

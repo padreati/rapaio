@@ -21,43 +21,44 @@ public class BinaryLogisticTest {
     void testBuilders() {
         BinaryLogistic defaultModel = BinaryLogistic.newModel();
 
-        assertEquals(1e-10, defaultModel.getEps());
-        assertEquals(1.0, defaultModel.getIntercept());
-        assertEquals(BinaryLogistic.Initialize.EXPECTED_LOG_VAR, defaultModel.getInitialize());
-        assertNull(defaultModel.getNominalLevel());
-        assertEquals(0.0, defaultModel.getL1Factor());
-        assertEquals(0.0, defaultModel.getL2Factor());
-        assertEquals(BinaryLogistic.Method.IRLS, defaultModel.getMethod());
+        assertEquals(1e-10, defaultModel.eps.get());
+        assertEquals(1.0, defaultModel.intercept.get());
+        assertEquals(BinaryLogistic.Initialize.EXPECTED_LOG_VAR, defaultModel.init.get());
+        assertEquals("", defaultModel.nominalLevel.get());
+        assertEquals(0.0, defaultModel.l1Factor.get());
+        assertEquals(0.0, defaultModel.l2Factor.get());
+        assertEquals(BinaryLogistic.Method.IRLS, defaultModel.solver.get());
 
         BinaryLogistic customModel = BinaryLogistic.newModel()
-                .withEps(1e-5)
-                .withInitialize(BinaryLogistic.Initialize.ZERO)
-                .withIntercept(0.0)
-                .withNominalLevel("test")
-                .withL1Factor(2.0)
-                .withL2Factor(3.0)
-                .withMethod(BinaryLogistic.Method.NEWTON);
+                .eps.set(1e-5)
+                .init.set(BinaryLogistic.Initialize.ZERO)
+                .intercept.set(0.0)
+                .nominalLevel.set("test")
+                .l1Factor.set(2.0)
+                .l2Factor.set(3.0)
+                .solver.set(BinaryLogistic.Method.NEWTON);
 
-        assertEquals(1e-5, customModel.getEps());
-        assertEquals(0.0, customModel.getIntercept());
-        assertEquals(BinaryLogistic.Initialize.ZERO, customModel.getInitialize());
-        assertEquals("test", customModel.getNominalLevel());
-        assertEquals(2.0, customModel.getL1Factor());
-        assertEquals(3.0, customModel.getL2Factor());
-        assertEquals(BinaryLogistic.Method.NEWTON, customModel.getMethod());
+        assertEquals(1e-5, customModel.eps.get());
+        assertEquals(0.0, customModel.intercept.get());
+        assertEquals(BinaryLogistic.Initialize.ZERO, customModel.init.get());
+        assertEquals("test", customModel.nominalLevel.get());
+        assertEquals(2.0, customModel.l1Factor.get());
+        assertEquals(3.0, customModel.l2Factor.get());
+        assertEquals(BinaryLogistic.Method.NEWTON, customModel.solver.get());
 
         BinaryLogistic customCopyModel = customModel.newInstance();
 
-        assertEquals(1e-5, customCopyModel.getEps());
-        assertEquals(0.0, customCopyModel.getIntercept());
-        assertEquals(BinaryLogistic.Initialize.ZERO, customCopyModel.getInitialize());
-        assertEquals("test", customCopyModel.getNominalLevel());
-        assertEquals(2.0, customCopyModel.getL1Factor());
-        assertEquals(3.0, customCopyModel.getL2Factor());
-        assertEquals(BinaryLogistic.Method.NEWTON, customCopyModel.getMethod());
+        assertEquals(1e-5, customCopyModel.eps.get());
+        assertEquals(0.0, customCopyModel.intercept.get());
+        assertEquals(BinaryLogistic.Initialize.ZERO, customCopyModel.init.get());
+        assertEquals("test", customCopyModel.nominalLevel.get());
+        assertEquals(2.0, customCopyModel.l1Factor.get());
+        assertEquals(3.0, customCopyModel.l2Factor.get());
+        assertEquals(BinaryLogistic.Method.NEWTON, customCopyModel.solver.get());
 
         assertEquals("BinaryLogistic", customCopyModel.name());
-        assertEquals("BinaryLogistic{intercept=0, initialize=Zero, nominalLevel=test, method=NEWTON, l1factor=2, l2factor=3, eps=1.0E-5, runs=1}", customCopyModel.fullName());
+        assertEquals("BinaryLogistic{eps=0.00001,init=ZERO,intercept=0,l1factor=2,l2factor=3," +
+                "nominalLevel=test,solver=NEWTON}", customCopyModel.fullName());
     }
 
     @Test
@@ -78,9 +79,9 @@ public class BinaryLogisticTest {
     void testSymmetricAroundZeroSeparable() {
 
         var model = BinaryLogistic.newModel()
-                .withRuns(100)
-                .withInitialize(BinaryLogistic.Initialize.ZERO)
-                .withEps(0.000001);
+                .runs.set(100)
+                .init.set(BinaryLogistic.Initialize.ZERO)
+                .eps.set(0.000001);
 
         VarDouble x = VarDouble.copy(-5, -4, -3, -2, -1, 1, 2, 3, 4, 5).withName("x");
         VarNominal y = VarNominal.copy("1", "1", "1", "1", "1", "0", "0", "0", "0", "0").withName("y");

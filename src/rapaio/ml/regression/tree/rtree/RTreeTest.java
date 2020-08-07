@@ -32,7 +32,7 @@ import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.Serializable;
@@ -344,8 +344,8 @@ public interface RTreeTest extends Serializable {
 
 final class LossScore {
 
-    public static double computeLossScore(RegressionLoss regressionLoss, RTreeTestPayload payload) {
-        if ("L2".equals(regressionLoss.name())) {
+    public static double computeLossScore(Loss loss, RTreeTestPayload payload) {
+        if ("L2".equals(loss.name())) {
             double down = 0.0;
             double up = 0.0;
             for (int i = 0; i < payload.splits; i++) {

@@ -40,7 +40,7 @@ import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
-import rapaio.ml.loss.L2RegressionLoss;
+import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.RTreeSplitter;
@@ -83,7 +83,7 @@ public class RTreeJTest {
                 .test.set(VType.DOUBLE, RTreeTest.Ignore)
                 .test.set(VType.NOMINAL, RTreeTest.Ignore)
                 .test.set(VType.STRING, RTreeTest.Ignore)
-                .loss.set(new L2RegressionLoss())
+                .loss.set(new L2Loss())
                 .splitter.set(RTreeSplitter.IGNORE)
                 .varSelector.set(VarSelector.auto())
                 .runs.set(10)
@@ -109,7 +109,10 @@ public class RTreeJTest {
 
         assertNull(rt2.root());
 
-        assertEquals("RTree{loss=L2,maxDepth=2,maxSize=10,pool=10,rowSampler=Bootstrap(p=1),runningHook=BiCosumer(),runs=10,stopHook=BiFunction(),testMap={BINARY=Ignore, INT=Ignore, NOMINAL=Ignore, DOUBLE=Ignore, LONG=Ignore, STRING=Ignore},varSelector=VarSelector[AUTO]}", rt2.fullName());
+        assertEquals("RTree{loss=L2,maxDepth=2,maxSize=10,poolSize=10,rowSampler=Bootstrap(p=1)," +
+                "runningHook=BiCosumer(),runs=10,stopHook=BiFunction()," +
+                "testMap={BINARY=Ignore, INT=Ignore, NOMINAL=Ignore, DOUBLE=Ignore, " +
+                "LONG=Ignore, STRING=Ignore},varSelector=VarSelector[AUTO]}", rt2.fullName());
 
         Map<VType, RTreeTest> emptyMap = new HashMap<>();
         assertEquals(emptyMap, RTree.newDecisionStump().test.set(emptyMap).test.get());

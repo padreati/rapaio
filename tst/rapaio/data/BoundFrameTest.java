@@ -42,28 +42,28 @@ public class BoundFrameTest {
     private static final double TOL = 1e-20;
 
     // frame with first rows
-    private Frame df1 = SolidFrame.byVars(
+    private final Frame df1 = SolidFrame.byVars(
             VarDouble.wrap(1, 2, 3, 4).withName("x"),
             VarDouble.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).withName("1/x")
     );
 
     // frame with second set of rows
-    private Frame df2 = SolidFrame.byVars(
+    private final Frame df2 = SolidFrame.byVars(
             VarDouble.wrap(5, 6).withName("x"),
             VarDouble.wrap(1 / 5., 1 / 6.).withName("1/x")
     );
 
     // empty frame
-    private Frame df3 = SolidFrame.byVars();
+    private final Frame df3 = SolidFrame.byVars();
 
     // frame with different column names
-    private Frame df4 = SolidFrame.byVars(
+    private final Frame df4 = SolidFrame.byVars(
             VarDouble.wrap(7).withName("a"),
             VarDouble.wrap(1 / 7.).withName("b")
     );
 
     // frame with different column types
-    private Frame df5 = SolidFrame.byVars(
+    private final Frame df5 = SolidFrame.byVars(
             VarInt.wrap(7).withName("x"),
             VarDouble.wrap(1 / 7.).withName("1/x")
     );

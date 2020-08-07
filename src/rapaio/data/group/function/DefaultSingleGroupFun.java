@@ -27,6 +27,8 @@
 
 package rapaio.data.group.function;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import rapaio.data.Frame;
 import rapaio.data.Group;
 import rapaio.data.Mapping;
@@ -36,7 +38,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -84,10 +85,10 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
     private Var normalize(Group group, Var agg) {
         int count = group.getGroupCount();
 
-        HashMap<Integer, Group.IndexNode> groupIndex = group.getGroupIdToLastLevelIndex();
+        var groupIndex = group.getGroupIdToLastLevelIndex();
 
-        HashMap<Integer, Group.IndexNode> reducedGroup = new HashMap<>();
-        HashMap<Group.IndexNode, Double> sum = new HashMap<>();
+        Int2ObjectOpenHashMap<Group.IndexNode> reducedGroup = new Int2ObjectOpenHashMap<>();
+        Object2DoubleOpenHashMap<Group.IndexNode> sum = new Object2DoubleOpenHashMap<>();
         for (int i = 0; i < count; i++) {
             Group.IndexNode node = groupIndex.get(i);
             for (int j = 0; j < normalizeLevel; j++) {
@@ -105,8 +106,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             Group.IndexNode node = reducedGroup.get(i);
-            double oldSum = sum.get(node);
-            sum.put(node, oldSum + value);
+            sum.put(node, sum.getDouble(node) + value);
         }
 
         // normalize
@@ -118,7 +118,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             Group.IndexNode node = reducedGroup.get(i);
-            double groupSum = sum.get(node);
+            double groupSum = sum.getDouble(node);
             if (Double.isNaN(groupSum) || Double.isInfinite(groupSum) || groupSum == 0) {
                 continue;
             }

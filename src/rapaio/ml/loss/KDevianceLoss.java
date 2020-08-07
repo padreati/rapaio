@@ -27,7 +27,6 @@
 
 package rapaio.ml.loss;
 
-import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
@@ -37,11 +36,11 @@ import rapaio.data.VarDouble;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/18.
  */
 @Deprecated
-public class KDevianceRegressionLoss implements RegressionLoss {
+public class KDevianceLoss implements Loss {
 
     private final int k;
 
-    public KDevianceRegressionLoss(int k) {
+    public KDevianceLoss(int k) {
         this.k = k;
     }
 
@@ -83,24 +82,7 @@ public class KDevianceRegressionLoss implements RegressionLoss {
     }
 
     @Override
-    public double computeConstantMinimizer(Frame df, String varName, Var weight) {
-        int varNameIndex = df.varIndex(varName);
-        double up = 0.0;
-        double down = 0.0;
-
-        for (int i = 0; i < df.rowCount(); i++) {
-            double y = df.getDouble(i, varNameIndex);
-            up += y;
-            down += Math.abs(y) * (1.0 - Math.abs(y));
-        }
-        if (down == 0 || Double.isNaN(up) || Double.isNaN(down)) {
-            throw new RuntimeException("Numerical problem");
-        }
-        return ((k - 1) * up) / (k * down);
-    }
-
-    @Override
-    public double computeConstantMinimumGBT(Var y, Var fx) {
+    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
         double up = 0.0;
         double down = 0.0;
 

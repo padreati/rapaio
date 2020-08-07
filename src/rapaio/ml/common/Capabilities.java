@@ -50,30 +50,30 @@ import static java.util.stream.Collectors.joining;
 public class Capabilities {
 
     @NonNull
-    private Integer minInputCount;
+    private final Integer minInputCount;
 
     @NonNull
-    private Integer maxInputCount;
-
-    @Singular
-    @NonNull
-    private List<VType> inputTypes;
-
-    @NonNull
-    private Boolean allowMissingInputValues;
-
-    @NonNull
-    private Integer minTargetCount;
-
-    @NonNull
-    private Integer maxTargetCount;
+    private final Integer maxInputCount;
 
     @Singular
     @NonNull
-    private List<VType> targetTypes;
+    private final List<VType> inputTypes;
 
     @NonNull
-    private Boolean allowMissingTargetValues;
+    private final Boolean allowMissingInputValues;
+
+    @NonNull
+    private final Integer minTargetCount;
+
+    @NonNull
+    private final Integer maxTargetCount;
+
+    @Singular
+    @NonNull
+    private final List<VType> targetTypes;
+
+    @NonNull
+    private final Boolean allowMissingTargetValues;
 
     /**
      * This method evaluates the capabilities of the algorithm at the learning phase.

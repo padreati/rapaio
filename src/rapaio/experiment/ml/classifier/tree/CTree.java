@@ -97,7 +97,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
     // tree root node
     private CTreeNode root;
 
-    private transient Map<CTreeNode, Map<String, Mapping>> sortingCache = new HashMap<>();
+    private final transient Map<CTreeNode, Map<String, Mapping>> sortingCache = new HashMap<>();
 
     // static builders
 
@@ -152,7 +152,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
 
     @Override
     public CTree newInstance() {
-        CTree tree = newInstanceDecoration(new CTree())
+        CTree tree = new CTree().copyParameterValues(this)
                 .withMinCount(minCount)
                 .withMinGain(minGain)
                 .withMaxDepth(maxDepth)
@@ -356,7 +356,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
         List<CTreeCandidate> candidateList = new ArrayList<>();
         Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
 
-        if (runPoolSize() == 0) {
+        if (poolSize.get() == 0) {
             int m = varSelector.mCount();
             for (String testCol : nextVarNames) {
                 if (m <= 0) {

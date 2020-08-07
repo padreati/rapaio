@@ -27,6 +27,7 @@
 
 package rapaio.data.unique;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Unique;
@@ -36,16 +37,13 @@ import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/23/18.
  */
 public abstract class AbstractUnique implements Unique {
 
     protected final boolean sorted;
-    protected HashMap<Integer, Mapping> rowLists;
+    protected Int2ObjectOpenHashMap<Mapping> rowLists;
     protected VarInt countSortedIds;
     protected VarInt valueSortedIds;
     protected int[] idsByRow;
@@ -61,9 +59,9 @@ public abstract class AbstractUnique implements Unique {
 
     protected void updateIdsByRow(int len) {
         idsByRow = new int[len];
-        for (Map.Entry<Integer, Mapping> e : rowLists.entrySet()) {
+        for (var e : rowLists.int2ObjectEntrySet()) {
             for (int row : e.getValue()) {
-                idsByRow[row] = e.getKey();
+                idsByRow[row] = e.getIntKey();
             }
         }
     }

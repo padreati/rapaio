@@ -37,9 +37,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.loss.L2RegressionLoss;
-import rapaio.ml.loss.RegressionLoss;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ValueParam;
+import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
@@ -68,7 +68,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
             "Shrinkage",
             x -> Double.isFinite(x) && x > 0 && x <= 1);
 
-    public final ValueParam<RegressionLoss, GBTRegressionModel> loss = new ValueParam<>(this, new L2RegressionLoss(),
+    public final ValueParam<Loss, GBTRegressionModel> loss = new ValueParam<>(this, new L2Loss(),
             "loss",
             "Loss function",
             Objects::nonNull);
@@ -93,9 +93,7 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     @Override
     public GBTRegressionModel newInstance() {
-        GBTRegressionModel gbt = new GBTRegressionModel();
-        gbt.copyParameterValues(this);
-        return gbt;
+        return new GBTRegressionModel().copyParameterValues(this);
     }
 
     @Override
@@ -186,8 +184,22 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         return pred;
     }
 
+    public String toString() {
+        return fullName();
+    }
+
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
         throw new IllegalArgumentException("not implemented");
+    }
+
+    @Override
+    public String toContent(POption<?>... options) {
+        return null;
+    }
+
+    @Override
+    public String toFullContent(POption<?>... options) {
+        return null;
     }
 }

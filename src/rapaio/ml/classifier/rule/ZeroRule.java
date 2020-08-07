@@ -36,17 +36,12 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
 
     @Override
     public ZeroRule newInstance() {
-        return newInstanceDecoration(new ZeroRule());
+        return new ZeroRule();
     }
 
     @Override
     public String name() {
         return "ZeroRule";
-    }
-
-    @Override
-    public String fullName() {
-        return name();
     }
 
     @Override
@@ -93,26 +88,25 @@ public class ZeroRule extends AbstractClassifierModel<ZeroRule, ClassifierResult
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{hasLearned=").append(hasLearned());
+        sb.append(fullName()).append("; fitted=").append(hasLearned());
         if (hasLearned()) {
             sb.append(", fittedClass=").append(prediction);
         }
-        sb.append('}');
         return sb.toString();
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toString();
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toString();
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toString();
     }
 }

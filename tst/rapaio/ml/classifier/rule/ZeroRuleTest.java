@@ -29,25 +29,25 @@ public class ZeroRuleTest {
         ZeroRule copy = fitted.newInstance();
 
         assertEquals("ZeroRule", notFitted.name());
-        assertEquals("ZeroRule", notFitted.fullName());
-        assertEquals("ZeroRule{hasLearned=false}", notFitted.toString());
-        assertEquals("ZeroRule{hasLearned=false}", notFitted.toContent());
-        assertEquals("ZeroRule{hasLearned=false}", notFitted.toFullContent());
-        assertEquals("ZeroRule{hasLearned=false}", notFitted.toSummary());
+        assertEquals("ZeroRule{}", notFitted.fullName());
+        assertEquals("ZeroRule{}; fitted=false", notFitted.toString());
+        assertEquals("ZeroRule{}; fitted=false", notFitted.toContent());
+        assertEquals("ZeroRule{}; fitted=false", notFitted.toFullContent());
+        assertEquals("ZeroRule{}; fitted=false", notFitted.toSummary());
 
         assertEquals("ZeroRule", fitted.name());
-        assertEquals("ZeroRule", fitted.fullName());
-        assertEquals("ZeroRule{hasLearned=true, fittedClass=a}", fitted.toString());
-        assertEquals("ZeroRule{hasLearned=true, fittedClass=a}", fitted.toContent());
-        assertEquals("ZeroRule{hasLearned=true, fittedClass=a}", fitted.toFullContent());
-        assertEquals("ZeroRule{hasLearned=true, fittedClass=a}", fitted.toSummary());
+        assertEquals("ZeroRule{}", fitted.fullName());
+        assertEquals("ZeroRule{}; fitted=true, fittedClass=a", fitted.toString());
+        assertEquals("ZeroRule{}; fitted=true, fittedClass=a", fitted.toContent());
+        assertEquals("ZeroRule{}; fitted=true, fittedClass=a", fitted.toFullContent());
+        assertEquals("ZeroRule{}; fitted=true, fittedClass=a", fitted.toSummary());
 
         assertEquals("ZeroRule", copy.name());
-        assertEquals("ZeroRule", copy.fullName());
-        assertEquals("ZeroRule{hasLearned=false}", copy.toString());
-        assertEquals("ZeroRule{hasLearned=false}", copy.toContent());
-        assertEquals("ZeroRule{hasLearned=false}", copy.toFullContent());
-        assertEquals("ZeroRule{hasLearned=false}", copy.toSummary());
+        assertEquals("ZeroRule{}", copy.fullName());
+        assertEquals("ZeroRule{}; fitted=false", copy.toString());
+        assertEquals("ZeroRule{}; fitted=false", copy.toContent());
+        assertEquals("ZeroRule{}; fitted=false", copy.toFullContent());
+        assertEquals("ZeroRule{}; fitted=false", copy.toSummary());
     }
 
     @Test

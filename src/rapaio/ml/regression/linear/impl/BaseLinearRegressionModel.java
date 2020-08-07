@@ -6,7 +6,7 @@ import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.printer.Printer;
@@ -19,6 +19,7 @@ import java.util.Objects;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
+@SuppressWarnings("unchecked")
 public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionModel<M>>
         extends AbstractRegressionModel<M, LinearRegressionResult> {
 

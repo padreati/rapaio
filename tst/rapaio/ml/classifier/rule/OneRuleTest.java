@@ -68,10 +68,10 @@ public class OneRuleTest {
 
     @Test
     void testNaming() {
-        OneRule model = OneRule.newModel().withBinning(new HolteBinning(1));
+        OneRule model = OneRule.newModel().binning.set(new HolteBinning(1));
         assertEquals("OneRule", model.name());
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=1)}", model.fullName());
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=1)}", model.newInstance().fullName());
+        assertEquals("OneRule{binning=HolteBinning(minCount=1)}", model.fullName());
+        assertEquals("OneRule{binning=HolteBinning(minCount=1)}", model.newInstance().fullName());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class OneRuleTest {
         String[] labels;
         OneRule oneRule = OneRule.newModel();
 
-        oneRule = oneRule.withBinning(new HolteBinning(1));
+        oneRule = oneRule.binning.set(new HolteBinning(1));
         oneRule.fit(df, "class");
         var pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
@@ -89,7 +89,7 @@ public class OneRuleTest {
             assertEquals(labels[i], pred.firstClasses().getLabel(i));
         }
 
-        oneRule.withBinning(new HolteBinning(2));
+        oneRule.binning.set(new HolteBinning(2));
         oneRule.fit(df, "class");
         pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
@@ -97,7 +97,7 @@ public class OneRuleTest {
             assertTrue(labels[i].contains(pred.firstClasses().getLabel(i)));
         }
 
-        oneRule.withBinning(new HolteBinning(3));
+        oneRule.binning.set(new HolteBinning(3));
         oneRule.fit(df, "class");
         pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
@@ -105,7 +105,7 @@ public class OneRuleTest {
             assertEquals(labels[i], pred.firstClasses().getLabel(i));
         }
 
-        oneRule.withBinning(new HolteBinning(4));
+        oneRule.binning.set(new HolteBinning(4));
         oneRule.fit(df, "class");
         pred = oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
@@ -150,22 +150,22 @@ public class OneRuleTest {
 
         df.setMissing(0, 0);
 
-        model.withMissingHandler(OneRule.MissingHandler.MAJORITY);
+        model.missingHandler.set(OneRule.MissingHandler.MAJORITY);
         var resultMajority = model.predict(df);
         assertEquals("x", resultMajority.firstClasses().getLabel(0));
 
-        model.withMissingHandler(OneRule.MissingHandler.CATEGORY);
+        model.missingHandler.set(OneRule.MissingHandler.CATEGORY);
         var resultCategory = model.predict(df);
         assertEquals("y", resultCategory.firstClasses().getLabel(0));
     }
 
-        @Test
+    @Test
     public void testSummary() {
         Frame iris = Datasets.loadIrisDataset();
         OneRule irisModel = OneRule.newModel();
         irisModel.fit(iris, "class");
 
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, fitted=true, rule set: RuleSet {" +
+        assertEquals("OneRule{}, fitted=true, rule set: RuleSet {" +
                         "var=petal-length, acc=0.9933333333333333}, " +
                         "NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}, " +
                         "NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}, " +
@@ -173,30 +173,30 @@ public class OneRuleTest {
                 irisModel.toString());
 
         assertEquals("OneRule model\n" +
-                "================\n" +
-                "\n" +
-                "Description:\n" +
-                "OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}\n" +
-                "\n" +
-                "Capabilities:\n" +
-                "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL\n" +
-                "counts inputs/targets: [1,1000000] / [1,1]\n" +
-                "missing inputs/targets: true/false\n" +
-                "\n" +
-                "Model fitted: true\n" +
-                "input vars: \n" +
-                "0. sepal-length : DOUBLE  | \n" +
-                "1.  sepal-width : DOUBLE  | \n" +
-                "2. petal-length : DOUBLE  | \n" +
-                "3.  petal-width : DOUBLE  | \n" +
-                "\n" +
-                "target vars:\n" +
-                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
-                "\n" +
-                "BestRuleSet {var=petal-length, acc=0.9933333333333333}\n" +
-                "> NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}\n" +
-                "> NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}\n" +
-                "> NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}\n",
+                        "================\n" +
+                        "\n" +
+                        "Description:\n" +
+                        "OneRule{}\n" +
+                        "\n" +
+                        "Capabilities:\n" +
+                        "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL\n" +
+                        "counts inputs/targets: [1,1000000] / [1,1]\n" +
+                        "missing inputs/targets: true/false\n" +
+                        "\n" +
+                        "Model fitted: true\n" +
+                        "input vars: \n" +
+                        "0. sepal-length : DOUBLE  | \n" +
+                        "1.  sepal-width : DOUBLE  | \n" +
+                        "2. petal-length : DOUBLE  | \n" +
+                        "3.  petal-width : DOUBLE  | \n" +
+                        "\n" +
+                        "target vars:\n" +
+                        "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
+                        "\n" +
+                        "BestRuleSet {var=petal-length, acc=0.9933333333333333}\n" +
+                        "> NumericRule {minValue=-Infinity,maxValue=2.45,class=setosa,errors=0,total=50,accuracy=1}\n" +
+                        "> NumericRule {minValue=2.45,maxValue=4.85,class=versicolor,errors=0,total=49,accuracy=1}\n" +
+                        "> NumericRule {minValue=4.85,maxValue=Infinity,class=virginica,errors=1,total=51,accuracy=0.9803921568627451}\n",
                 irisModel.toSummary());
 
         Frame mushrooms = Datasets.loadMushrooms();
@@ -210,7 +210,7 @@ public class OneRuleTest {
                 "================\n" +
                 "\n" +
                 "Description:\n" +
-                "OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}\n" +
+                "OneRule{}\n" +
                 "\n" +
                 "Capabilities:\n" +
                 "types inputs/targets: BINARY,INT,NOMINAL,DOUBLE,LONG/NOMINAL\n" +
@@ -250,18 +250,18 @@ public class OneRuleTest {
         assertEquals(modelMushrooms.toContent(), modelMushrooms.toSummary());
         assertEquals(modelMushrooms.toFullContent(), modelMushrooms.toSummary());
 
-        assertEquals("OneRule{missingHandler=MAJORITY,binning=HolteBinning(minCount=3)}, fitted=true, rule set: " +
-                "RuleSet {var=odor, acc=0.9852289512555391}, " +
-                "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +
-                "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
-                "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
-                "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +
-                "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}, " +
-                "NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}, " +
-                "NominalRule {value=c, class=p, errors=0, total=192, acc=1}, " +
-                "NominalRule {value=y, class=p, errors=0, total=576, acc=1}, " +
-                "NominalRule {value=s, class=p, errors=0, total=576, acc=1}, " +
-                "NominalRule {value=m, class=p, errors=0, total=36, acc=1}", modelMushrooms.toString());
+        assertEquals("OneRule{}, fitted=true, rule set: RuleSet {var=odor, acc=0.9852289512555391}, " +
+                        "NominalRule {value=?, class=e, errors=0, total=0, acc=0}, " +
+                        "NominalRule {value=p, class=p, errors=0, total=256, acc=1}, " +
+                        "NominalRule {value=a, class=e, errors=0, total=400, acc=1}, " +
+                        "NominalRule {value=l, class=e, errors=0, total=400, acc=1}, " +
+                        "NominalRule {value=n, class=e, errors=120, total=3,528, acc=0.9659863945578231}, " +
+                        "NominalRule {value=f, class=p, errors=0, total=2,160, acc=1}, " +
+                        "NominalRule {value=c, class=p, errors=0, total=192, acc=1}, " +
+                        "NominalRule {value=y, class=p, errors=0, total=576, acc=1}, " +
+                        "NominalRule {value=s, class=p, errors=0, total=576, acc=1}, " +
+                        "NominalRule {value=m, class=p, errors=0, total=36, acc=1}",
+                modelMushrooms.toString());
 
     }
 

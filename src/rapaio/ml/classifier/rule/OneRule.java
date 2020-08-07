@@ -39,6 +39,7 @@ import rapaio.ml.classifier.rule.onerule.NumericRule;
 import rapaio.ml.classifier.rule.onerule.Rule;
 import rapaio.ml.classifier.rule.onerule.RuleSet;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.Pair;
@@ -46,6 +47,7 @@ import rapaio.util.Pair;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -57,32 +59,21 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
         return new OneRule();
     }
 
-    public enum MissingHandler {
-        /**
-         * Missing values are treated as a separate category and the prediction is computed only
-         * from the target values which corresponds to missing test values.
-         */
-        CATEGORY,
-        /**
-         * Missing values are ignored from calculations and at prediction time when a missing
-         * value is encountered in test variable the predicted value is the overall training
-         * set maximal value.
-         */
-        MAJORITY
-    }
-
-    public interface Binning extends Serializable {
-
-        String name();
-
-        RuleSet compute(String testVarName, OneRule parent, Frame df, Var weights);
-    }
-
     private static final long serialVersionUID = 6220103690711818091L;
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
 
-    private MissingHandler missingHandler = MissingHandler.MAJORITY;
-    private Binning binning = new HolteBinning(3);
+    private static final Binning DEFAULT_BINNING = new HolteBinning(3);
+
+    public final ValueParam<MissingHandler, OneRule> missingHandler = new ValueParam<>(this, MissingHandler.MAJORITY,
+            "missingHandler",
+            "Method of handling missing values",
+            Objects::nonNull);
+
+    public final ValueParam<Binning, OneRule> binning = new ValueParam<>(this, DEFAULT_BINNING,
+            "binning",
+            "Binning method used in the algorithm.",
+            Objects::nonNull);
+
     private RuleSet bestRuleSet;
     private DensityVector<String> missingDensity;
 
@@ -95,38 +86,8 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
     }
 
     @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("OneRule{");
-        sb.append("missingHandler=").append(getMissingHandler().name()).append(",");
-        sb.append("binning=").append(getBinning().name());
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
     public OneRule newInstance() {
-        return newInstanceDecoration(new OneRule())
-                .withMissingHandler(getMissingHandler())
-                .withBinning(getBinning());
-    }
-
-    public MissingHandler getMissingHandler() {
-        return missingHandler;
-    }
-
-    public OneRule withMissingHandler(MissingHandler missingHandler) {
-        this.missingHandler = missingHandler;
-        return this;
-    }
-
-    public Binning getBinning() {
-        return binning;
-    }
-
-    public OneRule withBinning(Binning binning) {
-        this.binning = binning;
-        return this;
+        return new OneRule().copyParameterValues(this);
     }
 
     /**
@@ -161,7 +122,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
                 case INT:
                 case DOUBLE:
                 case LONG:
-                    ruleSet = binning.compute(testCol, this, df, weights);
+                    ruleSet = binning.get().compute(testCol, this, df, weights);
                     break;
                 default:
                     ruleSet = buildNominal(testCol, df, weights);
@@ -205,7 +166,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
         String testVar = bestRuleSet.getVarName();
 
         boolean missing = df.rvar(testVar).isMissing(row);
-        if (missing && missingHandler.equals(MissingHandler.MAJORITY)) {
+        if (missing && missingHandler.get().equals(MissingHandler.MAJORITY)) {
             return Pair.from(testVar, missingDensity);
         }
 
@@ -275,7 +236,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(fullNameSummary());
         sb.append(capabilitiesSummary());
@@ -297,13 +258,34 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
+    }
+
+    public enum MissingHandler {
+        /**
+         * Missing values are treated as a separate category and the prediction is computed only
+         * from the target values which corresponds to missing test values.
+         */
+        CATEGORY,
+        /**
+         * Missing values are ignored from calculations and at prediction time when a missing
+         * value is encountered in test variable the predicted value is the overall training
+         * set maximal value.
+         */
+        MAJORITY
+    }
+
+    public interface Binning extends Serializable {
+
+        String name();
+
+        RuleSet compute(String testVarName, OneRule parent, Frame df, Var weights);
     }
 }
 

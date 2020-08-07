@@ -66,10 +66,9 @@ public class SplitClassifierModel
 
     @Override
     public SplitClassifierModel newInstance() {
-        return newInstanceDecoration(new SplitClassifierModel())
+        return new SplitClassifierModel().copyParameterValues(this)
                 .withIgnoreUncovered(ignoreUncovered)
-                .withSplits(splits)
-                .withRuns(runs());
+                .withSplits(splits);
     }
 
     public SplitClassifierModel withSplit(Predicate<FSpot> predicate, ClassifierModel c) {
@@ -119,7 +118,8 @@ public class SplitClassifierModel
 
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);
-            split.classifierModel.withRuns(runs());
+            // FIX THIS
+//            split.classifierModel.runs(runs());
             split.classifierModel.fit(frames.get(i), weightList.get(i), targetNames());
         }
         return true;

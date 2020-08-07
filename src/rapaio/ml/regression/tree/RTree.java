@@ -38,11 +38,11 @@ import rapaio.data.VarDouble;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.experiment.ml.regression.tree.GBTRtree;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.MultiParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.loss.L2RegressionLoss;
-import rapaio.ml.loss.RegressionLoss;
-import rapaio.ml.param.MultiParam;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.rtree.RTreeCandidate;
@@ -143,7 +143,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             "Method used to distribute observations with missing values on test variable on splitting a node",
             Objects::nonNull);
 
-    public final ValueParam<RegressionLoss, RTree> loss = new ValueParam<>(this, new L2RegressionLoss(),
+    public final ValueParam<Loss, RTree> loss = new ValueParam<>(this, new L2Loss(),
             "loss",
             "Loss function",
             Objects::nonNull);
@@ -167,9 +167,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
     @Override
     public RTree newInstance() {
-        RTree newInstance = new RTree();
-        newInstance.copyParameterValues(this);
-        return newInstance;
+        return new RTree().copyParameterValues(this);
     }
 
     @Override
@@ -250,7 +248,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     private void learnNode(RTreeNode node, Frame df, Var weights) {
 
         node.setLeaf(true);
-        node.setValue(loss.get().computeConstantMinimizer(df, firstTargetName(), weights));
+        node.setValue(loss.get().computeConstantMinimizer(df.rvar(firstTargetName()), weights));
         node.setWeight(Sum.of(weights).value());
 
         if (node.weight() == 0) {
@@ -373,7 +371,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     }
 
     @Deprecated
-    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
         root.boostUpdate(x, y, fx, lossFunction, splitter.get());
     }
 }

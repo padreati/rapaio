@@ -61,18 +61,18 @@ public class NaiveBayesTest {
         NaiveBayes nb = NaiveBayes.newModel();
         assertEquals("NaiveBayes", nb.name());
         assertEquals("NaiveBayes{prior=MLE{},estimators=[]}", nb.fullName());
-        assertEquals("MLE", nb.getPrior().name());
+        assertEquals("MLE", nb.prior.get().name());
 
         // change default parameters
 
-        nb.withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
-        nb.withPriorSupplier(new PriorUniform());
+        nb.estimators.add(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
+        nb.prior.set(new PriorUniform());
 
         assertEquals("NaiveBayes", nb.name());
         assertEquals("NaiveBayes{prior=Uniform{value=?,targetLevels=[]}," +
                 "estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]}," +
                 "Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}", nb.fullName());
-        assertEquals("Uniform", nb.getPrior().name());
+        assertEquals("Uniform", nb.prior.get().name());
 
         // fit it to see changes
 
@@ -92,32 +92,31 @@ public class NaiveBayesTest {
 
         var copy = nb.newInstance();
 
-        assertEquals("NaiveBayes{prior=Uniform{value=?,targetLevels=[]}," +
-                "estimators=[Gaussian{test=sepal-length, values=[]},Gaussian{test=sepal-width, values=[]}," +
-                "Gaussian{test=petal-length, values=[]},Gaussian{test=petal-width, values=[]}]}", copy.fullName());
+        assertEquals("NaiveBayes{prior=Uniform{value=0.3333333,targetLevels=[virginica,setosa,versicolor]},estimators=[]}", copy.fullName());
     }
 
     @Test
     void testEstimatorsHandling() {
 
-        assertEquals(0, NaiveBayes.newModel().getEstimators().size());
+        assertEquals(0, NaiveBayes.newModel().estimators.get().size());
 
         assertEquals(Arrays.asList("a", "b", "x", "y"), NaiveBayes.newModel()
-                .withEstimators(GaussianEstimator.forNames("a", "b"))
-                .withEstimators(GaussianEstimator.forName("x"))
-                .withEstimators(KernelEstimator.forName("y"))
-                .getEstimators().stream().flatMap(e -> e.getTestNames().stream()).collect(Collectors.toList())
+                .estimators.add(GaussianEstimator.forNames("a", "b").toArray(new Estimator[0]))
+                .estimators.add(GaussianEstimator.forName("x"))
+                .estimators.add(KernelEstimator.forName("y"))
+                .estimators.get().stream().flatMap(e -> e.getTestNames().stream()).collect(Collectors.toList())
         );
 
         var ex = assertThrows(IllegalArgumentException.class, () -> NaiveBayes.newModel()
-                .withEstimators(GaussianEstimator.forName("a")).withEstimators(GaussianEstimator.forName("a")));
-        assertEquals("Cannot add estimator since it contains variable: a which is already handled by Gaussian{test=a}", ex.getMessage());
+                .estimators.add(GaussianEstimator.forName("a"))
+                .estimators.add(GaussianEstimator.forName("a")));
+        assertEquals("Parameter values are invalid.", ex.getMessage());
     }
 
     @Test
     void testInvalidFit() {
         var ex = assertThrows(IllegalStateException.class, () -> NaiveBayes.newModel()
-                .withEstimators(GaussianEstimator.forName("a"))
+                .estimators.add(GaussianEstimator.forName("a"))
                 .fit(SolidFrame.byVars(VarNominal.copy("a", "b").withName("y")), "y"));
         assertEquals("Input variable: a is not contained in training data frame.", ex.getMessage());
     }
@@ -162,8 +161,7 @@ public class NaiveBayesTest {
                 }
             }
         };
-        NaiveBayes model = NaiveBayes.newModel()
-                .withEstimators(estimator);
+        NaiveBayes model = NaiveBayes.newModel().estimators.add(estimator);
 
         Frame df = SolidFrame.byVars(
                 VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("a"),
@@ -177,8 +175,8 @@ public class NaiveBayesTest {
         for (int i = 0; i < densities.rowCount(); i++) {
             assertEquals(0, densities.getDouble(i, 0), TOLERANCE);
 
-            double r1 = 1 / (1 + Math.exp(i / 10.)) * model.getPrior().computePrior("a");
-            double r2 = 1 / (1 + Math.exp(-i / 10.)) * model.getPrior().computePrior("b");
+            double r1 = 1 / (1 + Math.exp(i / 10.)) * model.prior.get().computePrior("a");
+            double r2 = 1 / (1 + Math.exp(-i / 10.)) * model.prior.get().computePrior("b");
             double sum = r1 + r2;
             r1 /= sum;
             r2 /= sum;
@@ -191,7 +189,7 @@ public class NaiveBayesTest {
     @Test
     void testPrinter() {
         Frame iris = Datasets.loadIrisDataset();
-        NaiveBayes model = NaiveBayes.newModel().withEstimators(GaussianEstimator.forType(iris, VType.DOUBLE));
+        NaiveBayes model = NaiveBayes.newModel().estimators.add(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
 
         assertEquals("NaiveBayes{prior=MLE{},estimators=[" +
                 "Gaussian{test=sepal-length, values=[]}," +

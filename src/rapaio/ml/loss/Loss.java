@@ -27,7 +27,6 @@
 
 package rapaio.ml.loss;
 
-import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
@@ -38,7 +37,7 @@ import rapaio.data.VarDouble;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
-public interface RegressionLoss {
+public interface Loss {
 
     /**
      * @return name of the loss function
@@ -47,6 +46,8 @@ public interface RegressionLoss {
 
     /**
      * Computes constant value which minimizes the loss function on samples.
+     * <p>
+     * argmax_{c} sum loss(y_i, c)
      *
      * @param y target values
      * @return computed minimum value
@@ -56,6 +57,8 @@ public interface RegressionLoss {
     /**
      * Computes constant value which minimizes the loss function on weighted samples.
      *
+     * argmax_{c} sum weight_i * loss(y_i, c)
+     *
      * @param y      target values
      * @param weight weights of target values
      * @return computed minimum value
@@ -63,19 +66,12 @@ public interface RegressionLoss {
     double computeConstantMinimizer(Var y, Var weight);
 
     /**
-     * Computes constant value which minimizes the loss function on weighted samples.
-     *
-     * @param df      frame which contains the variable
-     * @param varName variable name
-     * @param weight  weights of target values
-     * @return computed minimum value
+     * Computes additive constant value which minimize the loss function
+     * given an already partial fit.
+     * <p>
+     * argmax_{c} sum loss(y_i, y^hat_i + c)
      */
-    double computeConstantMinimizer(Frame df, String varName, Var weight);
-
-    /**
-     * FIXME: find a better name
-     */
-    double computeConstantMinimumGBT(Var y, Var fx);
+    double computeAdditiveConstantMinimizer(Var y, Var fx);
 
     /**
      * Computes vector of values for the gradient of the loss function
@@ -88,7 +84,9 @@ public interface RegressionLoss {
     VarDouble computeGradient(Var y, Var y_hat);
 
     /**
-     * Computes loss vector.
+     * Computes loss errors.
+     *
+     * err_i = loss(y_i, y^hat_i)
      *
      * @param y     true target values
      * @param y_hat fitted values

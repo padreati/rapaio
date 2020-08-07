@@ -34,8 +34,8 @@ import rapaio.data.Unique;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DVector;
-import rapaio.ml.loss.L2RegressionLoss;
-import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.LinearRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
@@ -251,7 +251,7 @@ class SplineFunction implements NBRFunction {
         double bestRef = Double.NaN;
         double bestError = Double.NaN;
         VarDouble bestYHat = null;
-        RegressionLoss loss = new L2RegressionLoss();
+        Loss loss = new L2Loss();
 
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), (int) Math.ceil(df.rowCount() * trialPercentage));
 //        int[] rows = new int[] {df.rowCount()/2};

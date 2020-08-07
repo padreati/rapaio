@@ -41,7 +41,7 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticIRLS;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticNewton;
 import rapaio.ml.common.Capabilities;
-import rapaio.printer.Format;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -62,15 +62,48 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     private static final long serialVersionUID = 1609956190070125059L;
 
-    // parameters
+    /**
+     * Defines the scaling value of the intercept, by default being 1. If the configured value
+     * for the intercept is 0, than no intercept is added to the input features.
+     */
+    public ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0,
+            "intercept",
+            "Value of the intercept column, if zero than no intercept will be added to regression.");
 
-    private double intercept = 1.0;
-    private Initialize initialize = Initialize.EXPECTED_LOG_VAR;
-    private String nominalLevel;
-    private Method method = Method.IRLS;
-    private double l1Factor = 0;
-    private double l2Factor = 0;
-    private double eps = 1e-10;
+    /**
+     * Initialization method is used to give initial weights at the first iteration.
+     */
+    public final ValueParam<Initialize, BinaryLogistic> init = new ValueParam<>(this, Initialize.EXPECTED_LOG_VAR,
+            "init",
+            "Initialization method used at first iteration of the algorithm.");
+    /**
+     * Gets the nominal level used in one vs all strategy. If the target variable
+     * is a nominal variable with more than 2 levels (ignoring missing value level),
+     * then the logistic regression is transformed into a binary classification
+     * problem by considering this specified target level as the positive case, and
+     * all the other levels as the negative case.
+     */
+    public ValueParam<String, BinaryLogistic> nominalLevel = new ValueParam<>(this, "",
+            "nominalLevel",
+            "Nominal level used in one vs all strategy. If the target variable is a nominal variable with more than 2 levels " +
+                    "(ignoring missing value level) then the logistic regression is transformed into a binary classification problem" +
+                    " by considering this specified target level as the positive case, and all the other levels as the negative case.");
+
+    public final ValueParam<Method, BinaryLogistic> solver = new ValueParam<>(this, Method.IRLS,
+            "solver",
+            "Solver used to fit binary logistic regression.");
+
+    public final ValueParam<Double, BinaryLogistic> l1Factor = new ValueParam<>(this, 0.0,
+            "l1factor",
+            "L1 regularization factor");
+
+    public final ValueParam<Double, BinaryLogistic> l2Factor = new ValueParam<>(this, 0.0,
+            "l2factor",
+            "L2 regularization factor");
+
+    public final ValueParam<Double, BinaryLogistic> eps = new ValueParam<>(this, 1e-10,
+            "eps",
+            "Tolerance threshold used to signal when fit iterative procedure converged");
 
     // learning artifacts
 
@@ -84,34 +117,12 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     @Override
     public BinaryLogistic newInstance() {
-        return newInstanceDecoration(new BinaryLogistic())
-                .withIntercept(intercept)
-                .withInitialize(initialize)
-                .withNominalLevel(nominalLevel)
-                .withMethod(method)
-                .withL1Factor(l1Factor)
-                .withL2Factor(l2Factor)
-                .withEps(eps);
+        return new BinaryLogistic().copyParameterValues(this);
     }
 
     @Override
     public String name() {
         return "BinaryLogistic";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("intercept=").append(Format.floatFlexLong(intercept)).append(", ");
-        sb.append("initialize=").append(initialize.getName()).append(", ");
-        sb.append("nominalLevel=").append(nominalLevel).append(", ");
-        sb.append("method=").append(method.name()).append(", ");
-        sb.append("l1factor=").append(Format.floatFlexLong(l1Factor)).append(", ");
-        sb.append("l2factor=").append(Format.floatFlexLong(l2Factor)).append(", ");
-        sb.append("eps=").append(eps).append(", ");
-        sb.append("runs=").append(runs).append("}");
-        return sb.toString();
     }
 
     @Override
@@ -125,156 +136,6 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                 .allowMissingInputValues(false)
                 .allowMissingTargetValues(false)
                 .build();
-    }
-
-    /**
-     * The value of the intercept column. If this is zero, than no intercept is added to original inputs.
-     *
-     * @return true if the model add intercept variable, false otherwise.
-     */
-    public double getIntercept() {
-        return intercept;
-    }
-
-    /**
-     * Defines the scaling value of the intercept, by default being 1. If the configured value
-     * for the intercept is 0, than no intercept is added to the input features.
-     *
-     * @param intercept true if model adds intercept variable, false otherwise
-     * @return binary logistic instance
-     */
-    public BinaryLogistic withIntercept(double intercept) {
-        this.intercept = intercept;
-        return this;
-    }
-
-    /**
-     * Gets initialization method. Initialization method is used to give
-     * initial weights at the first iteration.
-     *
-     * @return initialization method
-     */
-    public Initialize getInitialize() {
-        return initialize;
-    }
-
-    /**
-     * Specifies initialization method for the first iteration.
-     *
-     * @param initialize initialization method
-     * @return initialization method algorithm
-     */
-    public BinaryLogistic withInitialize(Initialize initialize) {
-        this.initialize = initialize;
-        return this;
-    }
-
-    /**
-     * Gets the nominal level used in one vs all strategy. If the target variable
-     * is a nominal variable with more than 2 levels (ignoring missing value level),
-     * then the logistic regression is transformed into a binary classification
-     * problem by considering this specified target level as the positive case, and
-     * all the other levels as the negative case.
-     *
-     * @return nominal level
-     */
-    public String getNominalLevel() {
-        return nominalLevel;
-    }
-
-    /**
-     * Configures the nominal level used in one vs all strategy. If the target variable
-     * is a nominal variable with more than 2 levels (ignoring missing value level),
-     * then the logistic regression is transformed into a binary classification
-     * problem by considering this specified target level as the positive case, and
-     * all the other levels as the negative case.
-     *
-     * @return nominal level
-     */
-    public BinaryLogistic withNominalLevel(String nominalLevel) {
-        this.nominalLevel = nominalLevel;
-        return this;
-    }
-
-    /**
-     * Method used to fit the binary logistic model.
-     *
-     * @return fit method
-     */
-    public Method getMethod() {
-        return method;
-    }
-
-    /**
-     * Configures the fit method used.
-     *
-     * @param method method specifier
-     * @return binary logistic model
-     */
-    public BinaryLogistic withMethod(Method method) {
-        this.method = method;
-        return this;
-    }
-
-    /**
-     * L1 penalty factor. If equals 0 than no L1 penalty is applied.
-     * Check method used to see if this penalty is implemented in the fitting method.
-     *
-     * @return l1 penalty factor
-     */
-    public double getL1Factor() {
-        return l1Factor;
-    }
-
-    /**
-     * Configures L1 penalty factor. If equals 0 than no L1 penalty is applied.
-     * Check method used to see if this penalty is implemented.
-     *
-     * @param l1Factor l1 penalty factor
-     * @return binary logistic model
-     */
-    public BinaryLogistic withL1Factor(double l1Factor) {
-        this.l1Factor = l1Factor;
-        return this;
-    }
-
-    /**
-     * L2 penalty factor. If equals 0 than no L2 penalty is applied.
-     * Check method used to see if this penalty is implemented in the fitting method.
-     *
-     * @return l2 penalty factor
-     */
-    public double getL2Factor() {
-        return l2Factor;
-    }
-
-    /**
-     * Configures L2 penalty factor. If equals 0 than no L2 penalty is applied.
-     * Check method used to see if this penalty is implemented.
-     *
-     * @param l2Factor l2penalty factor
-     * @return binary logistic model
-     */
-    public BinaryLogistic withL2Factor(double l2Factor) {
-        this.l2Factor = l2Factor;
-        return this;
-    }
-
-    /**
-     * Tolerance used to check the solution optimality. If the cost function
-     * does progress with less than eps than we stop iterations.
-     */
-    public double getEps() {
-        return eps;
-    }
-
-    /**
-     * Tolerance used to check the solution optimality. If the cost function
-     * does progress with less than eps than we stop iterations.
-     */
-    public BinaryLogistic withEps(double eps) {
-        this.eps = eps;
-        return this;
     }
 
     /**
@@ -327,7 +188,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                     }
                 } else {
                     for (int i = 0; i < target.rowCount(); i++) {
-                        result.set(i, target.getLabel(i).equals(nominalLevel) ? 1 : 0);
+                        result.set(i, target.getLabel(i).equals(nominalLevel.get()) ? 1 : 0);
                     }
                 }
                 return result;
@@ -338,8 +199,8 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     private SolidDMatrix computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
-        if (intercept != 0) {
-            variables.add(VarDouble.fill(df.rowCount(), intercept).withName("Intercept"));
+        if (intercept.get() != 0) {
+            variables.add(VarDouble.fill(df.rowCount(), intercept.get()).withName("Intercept"));
         }
         df.varStream()
                 .filter(v -> !firstTargetName().equals(v.name()))
@@ -352,14 +213,14 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
         SolidDMatrix x = computeInputMatrix(df, firstTargetName());
         SolidDVector y = computeTargetVector(df.rvar(firstTargetName()));
-        SolidDVector w0 = SolidDVector.fill(x.colCount(), initialize.getFunction().apply(y));
+        SolidDVector w0 = SolidDVector.fill(x.colCount(), init.get().getFunction().apply(y));
 
-        switch (method) {
+        switch (solver.get()) {
             case IRLS:
                 BinaryLogisticIRLS.Result irlsResult = BinaryLogisticIRLS.builder()
-                        .withEps(eps)
-                        .withMaxIter(runs)
-                        .withLambda(l2Factor)
+                        .withEps(eps.get())
+                        .withMaxIter(runs.get())
+                        .withLambda(l2Factor.get())
                         .withX(x)
                         .withY(y)
                         .withW0(w0)
@@ -372,9 +233,9 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                 break;
             case NEWTON:
                 BinaryLogisticNewton.Result newtonResult = BinaryLogisticNewton.builder()
-                        .withEps(eps)
-                        .withMaxIter(runs)
-                        .withLambda(l2Factor)
+                        .withEps(eps.get())
+                        .withMaxIter(runs.get())
+                        .withLambda(l2Factor.get())
                         .withX(x)
                         .withY(y)
                         .withW0(w0)
@@ -400,9 +261,9 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        int offset = intercept == 0 ? 0 : 1;
+        int offset = intercept.get() == 0 ? 0 : 1;
 
-        VarDouble p = VarDouble.fill(df.rowCount(), intercept * w.getDouble(0));
+        VarDouble p = VarDouble.fill(df.rowCount(), intercept.get() * w.getDouble(0));
         for (int i = 0; i < inputNames.length; i++) {
             double wvalue = w.getDouble(i + offset);
             VarDouble z = df.rvar(inputName(i)).op().capply(v -> 1 / (1 + Math.exp(-v * wvalue)));
@@ -425,7 +286,6 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     public enum Method {
         IRLS,
         NEWTON
-
     }
 
     @Getter

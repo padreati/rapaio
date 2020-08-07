@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
@@ -67,9 +67,7 @@ public class RandomValueRegressionModel extends AbstractRegressionModel<RandomVa
 
     @Override
     public RandomValueRegressionModel newInstance() {
-        RandomValueRegressionModel model = new RandomValueRegressionModel();
-        model.copyParameterValues(this);
-        return model;
+        return new RandomValueRegressionModel().copyParameterValues(this);
     }
 
     @Override

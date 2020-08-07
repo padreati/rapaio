@@ -33,8 +33,8 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.sample.RowSampler;
-import rapaio.ml.param.ParamSet;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.TextTable;
 
 import java.util.Arrays;
@@ -50,8 +50,9 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/20/14.
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<M, R>, R extends RegressionResult>
-        extends ParamSet
+        extends ParamSet<M>
         implements RegressionModel {
 
     private static final long serialVersionUID = 5544999078321108408L;
@@ -60,14 +61,13 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     // parameters
 
-    protected boolean hasLearned;
     public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
             "rowSampler",
             "Row sampler",
             Objects::nonNull);
 
     public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, -1,
-            "pool",
+            "poolSize",
             "Number of threads in execution pool to be used for fitting the model.",
             x -> true
     );
@@ -93,6 +93,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     // model artifacts
 
+    protected boolean hasLearned;
     protected String[] inputNames;
     protected VType[] inputTypes;
     protected String[] targetNames;
@@ -100,7 +101,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     @Override
     public String fullName() {
-        return name() + '{' + getParameterValues(true) + '}';
+        return name() + '{' + getStringParameterValues(true) + '}';
     }
 
     @Override

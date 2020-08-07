@@ -9,7 +9,7 @@ import rapaio.data.filter.FIntercept;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
 import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
 import java.util.HashMap;
@@ -58,9 +58,7 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
 
     @Override
     public RidgeRegressionModel newInstance() {
-        RidgeRegressionModel model = new RidgeRegressionModel();
-        model.copyParameterValues(this);
-        return model;
+        return new RidgeRegressionModel().copyParameterValues(this);
     }
 
     @Override

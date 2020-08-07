@@ -34,9 +34,9 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.sample.Sample;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.Param;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.param.Param;
-import rapaio.ml.param.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
@@ -103,9 +103,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
 
     @Override
     public RForest newInstance() {
-        RForest copy = new RForest();
-        copy.copyParameterValues(this);
-        return copy;
+        return new RForest().copyParameterValues(this);
     }
 
     @Override

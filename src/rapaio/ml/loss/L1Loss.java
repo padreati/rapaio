@@ -25,17 +25,18 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost.gbt;
+package rapaio.ml.loss;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
+import java.io.Serializable;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
  */
-@Deprecated
-public class GBTRegressionLossL1 implements GBTRegressionLoss {
+public class L1Loss implements Loss, Serializable {
 
     private static final long serialVersionUID = 2596472667917498236L;
 
@@ -45,20 +46,37 @@ public class GBTRegressionLossL1 implements GBTRegressionLoss {
     }
 
     @Override
-    public double findMinimum(Var y, Var fx) {
-        VarDouble values = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
-            values.addDouble(y.getDouble(i) - fx.getDouble(i));
-        }
-        return Quantiles.of(values, 0.5).values()[0];
+    public double computeConstantMinimizer(Var y) {
+        return Quantiles.of(y, 0.5).values()[0];
     }
 
     @Override
-    public VarDouble gradient(Var y, Var fx) {
-        VarDouble gradient = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
-            gradient.addDouble(y.getDouble(i) - fx.getDouble(i) < 0 ? -1. : 1.);
-        }
-        return gradient;
+    public double computeConstantMinimizer(Var y, Var weight) {
+        return Quantiles.of(y, 0.5).values()[0];
+    }
+
+    @Override
+    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
+        return Quantiles.of(y.copy().op().minus(fx), 0.5).values()[0];
+    }
+
+    @Override
+    public VarDouble computeGradient(Var y, Var y_hat) {
+        return VarDouble.from(y.rowCount(), row -> y.getDouble(row) - y_hat.getDouble(row) < 0 ? -1.0 : 1.0);
+    }
+
+    @Override
+    public VarDouble computeError(Var y, Var y_hat) {
+        return y.copy().op().minus(y_hat).op().capply(Math::abs);
+    }
+
+    @Override
+    public double computeErrorScore(Var y, Var y_hat) {
+        return computeError(y, y_hat).op().nansum();
+    }
+
+    @Override
+    public double computeResidualErrorScore(Var residual) {
+        return residual.op().capply(Math::abs).op().nansum();
     }
 }

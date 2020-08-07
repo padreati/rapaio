@@ -27,6 +27,8 @@
 
 package rapaio.ml.classifier.bayes;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
@@ -38,17 +40,15 @@ import rapaio.ml.classifier.bayes.nb.Estimator;
 import rapaio.ml.classifier.bayes.nb.Prior;
 import rapaio.ml.classifier.bayes.nb.PriorMLE;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ListParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,6 +60,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierResult> implements Printable {
 
     public static NaiveBayes newModel() {
@@ -70,23 +71,32 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
     // algorithm parameters
 
-    private Prior prior = new PriorMLE();
-    private final List<Estimator> estimatorList = new ArrayList<>();
+    public final ValueParam<Prior, NaiveBayes> prior = new ValueParam<>(this, new PriorMLE(),
+            "prior",
+            "Prior maximum likelihood estimator used");
 
-    private NaiveBayes() {
-    }
+    public final ListParam<Estimator, NaiveBayes> estimators = new ListParam<>(this, List.of(),
+            "estimators",
+            "Naive base estimators",
+            (existentValues, newValues) -> {
+                Set<String> varNames = new HashSet<>();
+                for (Estimator e : existentValues) {
+                    varNames.addAll(e.getTestNames());
+                }
+                for (Estimator e : newValues) {
+                    for (String testVarName : e.getTestNames()) {
+                        if (varNames.contains(testVarName)) {
+                            return false;
+                        }
+                    }
+                    varNames.addAll(e.getTestNames());
+                }
+                return true;
+            });
 
     @Override
     public NaiveBayes newInstance() {
-        NaiveBayes copy = newInstanceDecoration(new NaiveBayes());
-        copy.withPriorSupplier(getPrior().newInstance());
-
-        LinkedList<Estimator> copyEstimators = new LinkedList<>();
-        for (Estimator estimator : estimatorList) {
-            copyEstimators.add(estimator.newInstance());
-        }
-        copy.withEstimators(copyEstimators);
-        return copy;
+        return new NaiveBayes().copyParameterValues(this);
     }
 
     @Override
@@ -97,9 +107,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{prior=").append(prior.fittedName()).append(",");
+        sb.append(name()).append("{prior=").append(prior.get().fittedName()).append(",");
         sb.append("estimators=[")
-                .append(estimatorList.stream().map(Estimator::fittedName).collect(Collectors.joining(",")))
+                .append(estimators.get().stream().map(Estimator::fittedName).collect(Collectors.joining(",")))
                 .append("]}");
         return sb.toString();
     }
@@ -119,41 +129,6 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
                 .build();
     }
 
-    public Prior getPrior() {
-        return prior;
-    }
-
-    public NaiveBayes withPriorSupplier(Prior prior) {
-        this.prior = prior;
-        return this;
-    }
-
-    public List<Estimator> getEstimators() {
-        return Collections.unmodifiableList(estimatorList);
-    }
-
-    public NaiveBayes withEstimators(Estimator... estimator) {
-        return withEstimators(Arrays.asList(estimator));
-    }
-
-    public NaiveBayes withEstimators(Collection<? extends Estimator> estimators) {
-        Set<String> varNames = new HashSet<>();
-        for (Estimator e : estimatorList) {
-            varNames.addAll(e.getTestNames());
-        }
-        for (Estimator e : estimators) {
-            for (String testVarName : e.getTestNames()) {
-                if (varNames.contains(testVarName)) {
-                    throw new IllegalArgumentException("Cannot add estimator since it contains variable: " + testVarName +
-                            " which is already handled by " + e.name());
-                }
-            }
-            estimatorList.add(e);
-            varNames.addAll(e.getTestNames());
-        }
-        return this;
-    }
-
     @Override
     protected FitSetup prepareFit(Frame df, Var weights, String... targetVars) {
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
@@ -165,7 +140,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
         HashSet<String> targetSet = new HashSet<>(targets);
         HashSet<String> allVarsSet = new HashSet<>(Arrays.asList(df.varNames()));
 
-        String[] inputs = estimatorList.stream().flatMap(e -> e.getTestNames().stream()).toArray(String[]::new);
+        String[] inputs = estimators.get().stream().flatMap(e -> e.getTestNames().stream()).toArray(String[]::new);
         for (String inputVar : inputs) {
             if (targetSet.contains(inputVar)) {
                 throw new IllegalStateException("Input variable: " + inputVar + " is also a target variable.");
@@ -186,14 +161,13 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
         // build priors
 
-        prior.fitPriors(df, weights, firstTargetName());
+        prior.get().fitPriors(df, weights, firstTargetName());
 
         // build conditional probabilities
 
-        for (Estimator estimator : estimatorList) {
+        for (Estimator estimator : estimators.get()) {
             boolean fitted = estimator.fit(df, weights, firstTargetName());
-            if (fitted) {
-            } else {
+            if (!fitted) {
                 String message = "Estimator: " + estimator.fittedName() + " cannot be fitted.";
                 throw new IllegalStateException(message);
             }
@@ -209,9 +183,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
                 i -> {
                     DensityVector<String> dv = DensityVector.emptyByLabels(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().size(); j++) {
-                        double sumLog = Math.log(prior.computePrior(firstTargetLevel(j)));
+                        double sumLog = Math.log(prior.get().computePrior(firstTargetLevel(j)));
 
-                        for (Estimator estimator : estimatorList) {
+                        for (Estimator estimator : estimators.get()) {
                             sumLog += Math.log(estimator.predict(df, i, firstTargetLevel(j)));
                         }
                         dv.increment(firstTargetLevel(j), Math.exp(sumLog));
@@ -231,7 +205,7 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append(" model\n");
         sb.append("================\n\n");
@@ -240,9 +214,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
 
         if (!hasLearned()) {
             sb.append("Model not fitted.\n\n");
-            sb.append("Prior: ").append(prior.name()).append("\n");
+            sb.append("Prior: ").append(prior.get().name()).append("\n");
             sb.append("Estimators: \n");
-            for (Estimator estimator : estimatorList) {
+            for (Estimator estimator : estimators.get()) {
                 sb.append("\t- ").append(estimator.fittedName()).append("\n");
             }
         } else {
@@ -251,9 +225,9 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
             sb.append(inputVarsSummary(printer, options));
             sb.append(targetVarsSummary());
 
-            sb.append("Prior: ").append(prior.fittedName()).append("\n");
+            sb.append("Prior: ").append(prior.get().fittedName()).append("\n");
             sb.append("Estimators: \n");
-            for (Estimator estimator : estimatorList) {
+            for (Estimator estimator : estimators.get()) {
                 sb.append("\t- ").append(estimator.fittedName()).append("\n");
             }
         }
@@ -261,12 +235,12 @@ public class NaiveBayes extends AbstractClassifierModel<NaiveBayes, ClassifierRe
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 

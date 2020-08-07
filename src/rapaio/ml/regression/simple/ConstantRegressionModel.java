@@ -31,7 +31,7 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.param.ValueParam;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
@@ -58,9 +58,7 @@ public class ConstantRegressionModel extends AbstractRegressionModel<ConstantReg
 
     @Override
     public ConstantRegressionModel newInstance() {
-        ConstantRegressionModel model = new ConstantRegressionModel();
-        model.copyParameterValues(this);
-        return model;
+        return new ConstantRegressionModel().copyParameterValues(this);
     }
 
     @Override

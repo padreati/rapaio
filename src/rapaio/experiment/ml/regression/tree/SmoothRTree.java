@@ -35,8 +35,8 @@ import rapaio.experiment.ml.regression.tree.srt.SmoothRFunction;
 import rapaio.experiment.ml.regression.tree.srt.SmoothRTreeNode;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.loss.L2RegressionLoss;
-import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
@@ -58,7 +58,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     private int maxDepth = 3;
     private VarSelector varSelector = VarSelector.all();
     private SmoothRFunction smoothRFunction = FixedScaleSmoothSplineRFunction.fromScales(1, 5, 0.1, new double[]{0.001, 0.01, 0.1});
-    private RegressionLoss loss = new L2RegressionLoss();
+    private Loss loss = new L2Loss();
 
     private SmoothRTreeNode root;
 
@@ -138,11 +138,11 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
         return this;
     }
 
-    public RegressionLoss getLoss() {
+    public Loss getLoss() {
         return loss;
     }
 
-    public SmoothRTree withLoss(RegressionLoss loss) {
+    public SmoothRTree withLoss(Loss loss) {
         this.loss = loss;
         return this;
     }
@@ -204,7 +204,7 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
 
     }
 }

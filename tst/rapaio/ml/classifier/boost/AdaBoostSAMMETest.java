@@ -43,7 +43,7 @@ public class AdaBoostSAMMETest {
 
         AdaBoostSAMME ab = new AdaBoostSAMME()
                 .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withVarSelector(VarSelector.fixed(5)))
-                .withRuns(10);
+                .runs.set(10);
         Frame df = Datasets.loadSpamBase();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
         Frame tr = df.mapRows(rows);
@@ -55,7 +55,7 @@ public class AdaBoostSAMMETest {
         VarDouble errTr = VarDouble.empty().withName("tr");
         VarDouble errTe = VarDouble.empty().withName("te");
 
-        ab.withRunningHook((c, run) -> {
+        ab.runningHook.set((c, run) -> {
             runs.addDouble(run);
             errTr.addDouble(Confusion.from(tr.rvar(target), ab.predict(tr).classes(target)).error());
             errTe.addDouble(Confusion.from(te.rvar(target), ab.predict(te).classes(target)).error());

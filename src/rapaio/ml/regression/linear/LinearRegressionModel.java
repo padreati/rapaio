@@ -56,9 +56,7 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     public LinearRegressionModel newInstance() {
-        LinearRegressionModel lm = new LinearRegressionModel();
-        lm.copyParameterValues(this);
-        return lm;
+        return new LinearRegressionModel().copyParameterValues(this);
     }
 
     @Override

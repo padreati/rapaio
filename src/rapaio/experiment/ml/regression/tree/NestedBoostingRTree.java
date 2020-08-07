@@ -34,8 +34,8 @@ import rapaio.experiment.ml.regression.tree.nbrtree.NBRFunction;
 import rapaio.experiment.ml.regression.tree.nbrtree.NBRTreeNode;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.loss.L2RegressionLoss;
-import rapaio.ml.loss.RegressionLoss;
+import rapaio.ml.loss.L2Loss;
+import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Printer;
@@ -54,7 +54,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     private int maxDepth = 3;
     private VarSelector varSelector = VarSelector.all();
     private NBRFunction nbrFunction = NBRFunction.LINEAR;
-    private RegressionLoss loss = new L2RegressionLoss();
+    private Loss loss = new L2Loss();
     private int basisCount = 1;
     private double learningRate = 1;
     private double diffusion = 0.05;
@@ -119,11 +119,11 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
         return this;
     }
 
-    public RegressionLoss getLoss() {
+    public Loss getLoss() {
         return loss;
     }
 
-    public NestedBoostingRTree withLoss(RegressionLoss loss) {
+    public NestedBoostingRTree withLoss(Loss loss) {
         this.loss = loss;
         return this;
     }
@@ -235,7 +235,7 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    public void boostUpdate(Frame x, Var y, Var fx, RegressionLoss lossFunction) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
 
     }
 }

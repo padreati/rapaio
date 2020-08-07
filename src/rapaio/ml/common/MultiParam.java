@@ -1,23 +1,27 @@
-package rapaio.ml.param;
+package rapaio.ml.common;
+
+import rapaio.util.function.SFunction;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 
 /**
+ * This implementation models a parameter which is a map of keys and values.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/3/20.
  */
-public class MultiParam<K, T, S extends ParamSet> implements Param<Map<K, T>, S> {
+public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>, S> {
 
+    private static final long serialVersionUID = 6971154885891319057L;
     private final S params;
     private final TreeMap<K, T> defaultValue;
     private final TreeMap<K, T> valueMap;
     private final String name;
     private final String description;
-    private final Function<Map<K, T>, Boolean> validator;
+    private final SFunction<Map<K, T>, Boolean> validator;
 
     public MultiParam(S params, Map<K, T> defaultValue, String name, String description,
-                      Function<Map<K, T>, Boolean> validator) {
+                      SFunction<Map<K, T>, Boolean> validator) {
         this.params = params;
         this.defaultValue = new TreeMap<>(defaultValue);
         this.valueMap = new TreeMap<>(defaultValue);
@@ -60,9 +64,10 @@ public class MultiParam<K, T, S extends ParamSet> implements Param<Map<K, T>, S>
     }
 
     @Override
-    public void clear() {
+    public S clear() {
         valueMap.clear();
         valueMap.putAll(defaultValue);
+        return params;
     }
 
     @Override

@@ -25,33 +25,29 @@
  *
  */
 
-package rapaio.experiment.ml.regression.boost.gbt;
+package rapaio.ml.loss;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+
+import java.io.Serializable;
 
 import static rapaio.printer.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
  */
-@Deprecated
-public class GBTRegressionLossHuber implements GBTRegressionLoss {
+public class HuberLoss implements Loss, Serializable {
 
     private static final long serialVersionUID = -8624877244857556563L;
     private double alpha = 0.25;
-
-    @Override
-    public String name() {
-        return "Huber(alpha=" + floatFlex(alpha) + ")";
-    }
 
     public double getAlpha() {
         return alpha;
     }
 
-    public GBTRegressionLoss withAlpha(double alpha) {
+    public HuberLoss withAlpha(double alpha) {
         if (alpha < 0 || alpha > 1)
             throw new IllegalArgumentException("alpha quantile must be in interval [0, 1]");
         this.alpha = alpha;
@@ -59,7 +55,39 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
     }
 
     @Override
-    public double findMinimum(Var y, Var fx) {
+    public String name() {
+        return "Huber(alpha=" + floatFlex(alpha) + ")";
+    }
+
+    @Override
+    public double computeConstantMinimizer(Var y) {
+
+        double r_bar = Quantiles.of(y, 0.5).values()[0];
+        var abs = y.op().capply(Math::abs);
+
+        // compute rho as an alpha-quantile of absolute residuals
+
+        double rho = Quantiles.of(abs, alpha).values()[0];
+
+        // compute one-iteration approximation
+
+        double gamma = r_bar;
+        double count = y.rowCount();
+        for (int i = 0; i < y.rowCount(); i++) {
+            gamma += (y.getDouble(i) - r_bar <= 0 ? -1 : 1)
+                    * Math.min(rho, Math.abs(y.getDouble(i) - r_bar))
+                    / count;
+        }
+        return gamma;
+    }
+
+    @Override
+    public double computeConstantMinimizer(Var y, Var weight) {
+        return computeConstantMinimizer(y);
+    }
+
+    @Override
+    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
 
         // compute residuals
 
@@ -70,7 +98,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute median of residuals
 
-        double r_bar = Quantiles.of(residual, new double[]{0.5}).values()[0];
+        double r_bar = Quantiles.of(residual, 0.5).values()[0];
 
         // compute absolute residuals
 
@@ -81,7 +109,7 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = Quantiles.of(absResidual, new double[]{alpha}).values()[0];
+        double rho = Quantiles.of(absResidual, alpha).values()[0];
 
         // compute one-iteration approximation
 
@@ -96,32 +124,53 @@ public class GBTRegressionLossHuber implements GBTRegressionLoss {
     }
 
     @Override
-    public VarDouble gradient(Var y, Var fx) {
+    public VarDouble computeGradient(Var y, Var y_hat) {
 
         // compute absolute residuals
 
         VarDouble absResidual = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
+            absResidual.addDouble(Math.abs(y.getDouble(i) - y_hat.getDouble(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = Quantiles.of(absResidual, new double[]{alpha}).values()[0];
+        double rho = Quantiles.of(absResidual, alpha).values()[0];
 
         // now compute gradient
 
         VarDouble gradient = VarDouble.empty();
         for (int i = 0; i < y.rowCount(); i++) {
             if (absResidual.getDouble(i) <= rho) {
-                gradient.addDouble(y.getDouble(i) - fx.getDouble(i));
+                gradient.addDouble(y.getDouble(i) - y_hat.getDouble(i));
             } else {
-                gradient.addDouble(rho * ((y.getDouble(i) - fx.getDouble(i) <= 0) ? -1 : 1));
+                gradient.addDouble(rho * ((y.getDouble(i) - y_hat.getDouble(i) <= 0) ? -1 : 1));
             }
         }
-
-        // return gradient
-
         return gradient;
     }
+
+    @Override
+    public VarDouble computeError(Var y, Var y_hat) {
+        return VarDouble.from(y.rowCount(), row -> {
+            double a = Math.abs(y.getDouble(row) - y_hat.getDouble(row));
+            return (a < alpha) ? (a * a / 2.0) : (alpha * a - alpha * alpha / 2);
+        });
+    }
+
+    @Override
+    public double computeErrorScore(Var y, Var y_hat) {
+        return computeError(y, y_hat).op().nansum();
+    }
+
+    @Override
+    public double computeResidualErrorScore(Var residual) {
+        double score = 0.0;
+        for (int i = 0; i < residual.rowCount(); i++) {
+            double a = Math.abs(residual.getDouble(i));
+            score += (a < alpha) ? (a * a / 2.0) : (alpha * a - alpha * alpha / 2);
+        }
+        return score;
+    }
+
 }
