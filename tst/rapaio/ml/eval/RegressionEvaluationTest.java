@@ -15,7 +15,7 @@ import rapaio.ml.eval.metric.RegressionMetric;
 import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.simple.L2RegressionModel;
+import rapaio.ml.regression.simple.L2Regression;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class RegressionEvaluationTest {
     @Test
     void testSmoke() {
         Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).withName(targetName));
-        RegressionModel model = L2RegressionModel.newModel();
+        RegressionModel model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 
         doReturn(List.of(

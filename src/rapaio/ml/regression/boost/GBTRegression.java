@@ -27,9 +27,10 @@
 
 package rapaio.ml.regression.boost;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.VRange;
 import rapaio.data.VType;
@@ -43,7 +44,7 @@ import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.simple.L2RegressionModel;
+import rapaio.ml.regression.simple.L2Regression;
 import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -58,33 +59,41 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionModel, RegressionResult> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class GBTRegression extends AbstractRegressionModel<GBTRegression, RegressionResult> {
+
+    public static GBTRegression newModel() {
+        return new GBTRegression();
+    }
 
     private static final long serialVersionUID = 4559540258922653130L;
 
-
-    public final ValueParam<Double, GBTRegressionModel> shrinkage = new ValueParam<>(this, 1.0,
+    public final ValueParam<Double, GBTRegression> shrinkage = new ValueParam<>(this, 1.0,
             "shrinkage",
             "Shrinkage",
             x -> Double.isFinite(x) && x > 0 && x <= 1);
 
-    public final ValueParam<Loss, GBTRegressionModel> loss = new ValueParam<>(this, new L2Loss(),
+    public final ValueParam<Loss, GBTRegression> loss = new ValueParam<>(this, new L2Loss(),
             "loss",
             "Loss function",
             Objects::nonNull);
 
-    public final ValueParam<? extends RegressionModel, GBTRegressionModel> initModel = new ValueParam<>(this, L2RegressionModel.newModel(),
+    public final ValueParam<? extends RegressionModel, GBTRegression> initModel = new ValueParam<>(this, L2Regression.newModel(),
             "initModel",
             "Initial model",
             Objects::nonNull);
 
-    public final ValueParam<GBTRtree<? extends RegressionModel, ? extends RegressionResult>, GBTRegressionModel> model =
+    public final ValueParam<GBTRtree<? extends RegressionModel, ? extends RegressionResult>, GBTRegression> model =
             new ValueParam<>(this, RTree.newCART().maxDepth.set(2).minCount.set(10),
                     "nodeModel",
                     "Node model",
                     Objects::nonNull);
 
-    // prediction
+    public final ValueParam<Double, GBTRegression> eps = new ValueParam<>(this, 1e-10,
+            "eps",
+            "Threshold to stop growing trees if gain is not met.",
+            Double::isFinite);
+
     @Getter
     private VarDouble fitValues;
 
@@ -92,13 +101,13 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
     private List<GBTRtree<? extends RegressionModel, ? extends RegressionResult>> trees;
 
     @Override
-    public GBTRegressionModel newInstance() {
-        return new GBTRegressionModel().copyParameterValues(this);
+    public GBTRegression newInstance() {
+        return new GBTRegression().copyParameterValues(this);
     }
 
     @Override
     public String name() {
-        return "GradientBoostingTreeRegression";
+        return "GBTRegression";
     }
 
     @Override
@@ -125,15 +134,16 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
         fitValues = initModel.get().predict(df, false).firstPrediction().copy();
 
         for (int i = 1; i <= runs.get(); i++) {
+
             Var gradient = loss.get().computeGradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
-            GBTRtree tree = (GBTRtree) model.get().newInstance();
+            var tree = (GBTRtree<? extends RegressionModel, ? extends RegressionResult>) model.get().newInstance();
 
             // frame sampling
 
-            Mapping samplerMapping = rowSampler.get().nextSample(xm, weights).mapping;
-            Frame xmLearn = xm.mapRows(samplerMapping);
+            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).mapping;
+            Frame xmLearn = xm.mapRows(sampleRows);
 
             // build regions
 
@@ -141,23 +151,20 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
             // predict residuals
 
-            tree.boostUpdate(
-                    xmLearn,
-                    MappedVar.byRows(y, samplerMapping),
-                    MappedVar.byRows(fitValues, samplerMapping),
-                    loss.get());
+            tree.boostUpdate(xmLearn, y.mapRows(sampleRows), fitValues.mapRows(sampleRows), loss.get());
 
             // add next prediction to the predict values
-            RegressionResult treePred = tree.predict(df, false);
-            VarDouble nextFit = VarDouble.fill(df.rowCount(), 0.0).withName(fitValues.name());
-            for (int j = 0; j < df.rowCount(); j++) {
-                nextFit.setDouble(j, fitValues.getDouble(j) + shrinkage.get() * treePred.firstPrediction().getDouble(j));
-            }
+            var pred = tree.predict(df, false).firstPrediction();
+            VarDouble nextFit = fitValues.copy().op().plus(pred.op().mult(shrinkage.get()));
 
             double initScore = loss.get().computeErrorScore(y, fitValues);
             double nextScore = loss.get().computeErrorScore(y, nextFit);
 
-            if (initScore >= nextScore) {
+            if (Math.abs(initScore - nextScore) < eps.get()) {
+                break;
+            }
+
+            if (initScore > nextScore) {
                 fitValues = nextFit;
                 // add tree in the predictors list
                 trees.add(tree);
@@ -169,37 +176,50 @@ public class GBTRegressionModel extends AbstractRegressionModel<GBTRegressionMod
 
     @Override
     protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
-        RegressionResult initPred = initModel.get().predict(df, false);
-        for (int i = 0; i < df.rowCount(); i++) {
-            pred.firstPrediction().setDouble(i, initPred.firstPrediction().getDouble(i));
+        RegressionResult result = RegressionResult.build(this, df, withResiduals);
+        var prediction = result.firstPrediction();
+
+        prediction.op().fill(0);
+        prediction.op().plus(initModel.get().predict(df, false).firstPrediction());
+        for (var tree : trees) {
+            prediction.op().plus(tree.predict(df, false).firstPrediction().op().mult(shrinkage.get()));
         }
-        for (GBTRtree tree : trees) {
-            RegressionResult treePred = tree.predict(df, false);
-            for (int i = 0; i < df.rowCount(); i++) {
-                pred.firstPrediction().setDouble(i, pred.firstPrediction().getDouble(i) + shrinkage.get() * treePred.firstPrediction().getDouble(i));
-            }
-        }
-        pred.buildComplete();
-        return pred;
+        result.buildComplete();
+        return result;
     }
 
     public String toString() {
-        return fullName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName()).append("; fitted=").append(isFitted());
+        if (isFitted()) {
+            sb.append(", fitted trees:").append(trees.size());
+        }
+        return sb.toString();
     }
 
     @Override
     public String toSummary(Printer printer, POption<?>... options) {
-        throw new IllegalArgumentException("not implemented");
+        StringBuilder sb = new StringBuilder();
+        sb.append(headerSummary());
+        sb.append("\n");
+
+        if (!hasLearned) {
+            return sb.toString();
+        }
+
+        sb.append("Target <<< ").append(firstTargetName()).append(" >>>\n\n");
+        sb.append("> Number of fitted trees: ").append(trees.size()).append("\n");
+
+        return sb.toString();
     }
 
     @Override
     public String toContent(POption<?>... options) {
-        return null;
+        return toSummary();
     }
 
     @Override
     public String toFullContent(POption<?>... options) {
-        return null;
+        return toSummary();
     }
 }

@@ -9,7 +9,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
-import rapaio.ml.regression.simple.L2RegressionModel;
+import rapaio.ml.regression.simple.L2Regression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,7 +37,7 @@ public class FFImputeWithRegressionTest {
         double xm = Mean.of(x).value();
         double ym = Mean.of(y).value();
 
-        var model = L2RegressionModel.newModel();
+        var model = L2Regression.newModel();
 
         FFImputeWithRegression xfilter = FFImputeWithRegression.of(model, VRange.of("x"), "x").newInstance();
         FFImputeWithRegression yfilter = FFImputeWithRegression.of(model, VRange.of("y"), "y");

@@ -37,9 +37,9 @@ import rapaio.math.linear.DVector;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.regression.linear.LinearRegression;
 import rapaio.ml.regression.linear.LinearRegressionResult;
-import rapaio.ml.regression.simple.L2RegressionModel;
+import rapaio.ml.regression.simple.L2Regression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +104,7 @@ class LinearFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
 
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
@@ -144,7 +144,7 @@ class QuadraticFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
 
         if (Unique.of(df.rvar(testVarName), false).uniqueCount() <= 5) {
             return null;
@@ -188,7 +188,7 @@ class ConstantFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        L2RegressionModel model = L2RegressionModel.newModel();
+        L2Regression model = L2Regression.newModel();
 
         Frame map = BoundFrame.byVars(y);
         model.fit(map, weights, y.name());
@@ -287,7 +287,7 @@ class SplineFunction implements NBRFunction {
             }
 
             // fit a linear regression
-            LinearRegressionModel rlm = LinearRegressionModel.newModel().intercept.set(true);
+            LinearRegression rlm = LinearRegression.newModel().intercept.set(true);
 //            RidgeRegression rlm = RidgeRegression.newRidgeLm(lambda).withIntercept(true);
 
             List<Var> features = new ArrayList<>(testFeatures);

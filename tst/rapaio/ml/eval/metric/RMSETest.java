@@ -8,7 +8,7 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.linear.LinearRegressionModel;
+import rapaio.ml.regression.linear.LinearRegression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,7 +49,7 @@ public class RMSETest {
 
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
         lm.fit(df, targets);
 
         var prediction = lm.predict(df, true);

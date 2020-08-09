@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
 
+    private static final long serialVersionUID = -199987098272932206L;
     protected final S params;
     protected final T defaultValue;
     protected final String name;
@@ -48,9 +49,13 @@ public class ValueParam<T, S extends ParamSet<S>> implements Param<T, S> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean hasDefaultValue() {
         if (defaultValue == null) {
             return value == null;
+        }
+        if (defaultValue instanceof ParametricEquals) {
+            return ((ParametricEquals<T>) defaultValue).equalOnParams(value);
         }
         return defaultValue().equals(value);
     }

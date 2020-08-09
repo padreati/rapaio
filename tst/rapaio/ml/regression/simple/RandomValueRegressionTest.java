@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
  */
-public class RandomValueRegressionModelTest {
+public class RandomValueRegressionTest {
 
     private String father = "Father";
     private String son = "Son";
@@ -28,8 +28,8 @@ public class RandomValueRegressionModelTest {
 
     @Test
     void testRandomValueRegression() {
-        var fit1 = RandomValueRegressionModel.newRVR().fit(df, father).predict(df);
-        var fit2 = RandomValueRegressionModel.from(Normal.of(10, 0.1)).fit(df, father).predict(df);
+        var fit1 = RandomValueRegression.newRVR().fit(df, father).predict(df);
+        var fit2 = RandomValueRegression.from(Normal.of(10, 0.1)).fit(df, father).predict(df);
 
         // unsignificant if test on true distribution
         assertTrue(KSTestOneSample.from(fit1.firstPrediction(), Uniform.of(0, 1)).pValue() > 0.01);
@@ -42,11 +42,11 @@ public class RandomValueRegressionModelTest {
 
     @Test
     void testNaming() {
-        RandomValueRegressionModel model = RandomValueRegressionModel.newRVR();
+        RandomValueRegression model = RandomValueRegression.newRVR();
         assertEquals("RandomValueRegression", model.name());
         assertEquals("RandomValueRegression{distribution=Uniform(a=0,b=1)}", model.newInstance().fullName());
 
-        assertEquals("Normal(mu=10, sd=20)", RandomValueRegressionModel.from(Normal.of(10, 20)).newInstance().distribution.get().name());
+        assertEquals("Normal(mu=10, sd=20)", RandomValueRegression.from(Normal.of(10, 20)).newInstance().distribution.get().name());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +

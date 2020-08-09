@@ -31,14 +31,12 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
-import java.io.Serializable;
-
 import static rapaio.printer.Format.floatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/17.
  */
-public class HuberLoss implements Loss, Serializable {
+public class HuberLoss implements Loss {
 
     private static final long serialVersionUID = -8624877244857556563L;
     private double alpha = 0.25;
@@ -173,4 +171,11 @@ public class HuberLoss implements Loss, Serializable {
         return score;
     }
 
+    @Override
+    public boolean equalOnParams(Loss object) {
+        if (!(object instanceof HuberLoss)) {
+            return false;
+        }
+        return Double.valueOf(alpha).equals(((HuberLoss) object).alpha);
+    }
 }

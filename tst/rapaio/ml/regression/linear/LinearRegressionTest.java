@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
-public class LinearRegressionModelTest {
+public class LinearRegressionTest {
 
     private static final double TOL = 1e-20;
 
@@ -54,7 +54,7 @@ public class LinearRegressionModelTest {
         Frame df = Datasets.loadISLAdvertising()
                 .removeVars(VRange.of("ID", "Sales", "Newspaper"));
 
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: LinearRegression\n" +
@@ -159,7 +159,7 @@ public class LinearRegressionModelTest {
     void testMultipleTargets() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars(VRange.of("ID"));
 
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
 
         lm.fit(df, "Sales", "Radio");
 
@@ -228,8 +228,8 @@ public class LinearRegressionModelTest {
         Frame df1 = BoundFrame.byVars(x, y);
         Frame df2 = BoundFrame.byVars(intercept, x, y);
 
-        LinearRegressionModel lm1 = LinearRegressionModel.newModel().intercept.set(true).fit(df1, "y");
-        LinearRegressionModel lm2 = LinearRegressionModel.newModel().intercept.set(false).fit(df2, "y");
+        LinearRegression lm1 = LinearRegression.newModel().intercept.set(true).fit(df1, "y");
+        LinearRegression lm2 = LinearRegression.newModel().intercept.set(false).fit(df2, "y");
 
         var pred1 = lm1.predict(df1, true);
         var pred2 = lm2.predict(df2, true);
@@ -239,8 +239,8 @@ public class LinearRegressionModelTest {
 
     @Test
     void testNewInstance() {
-        LinearRegressionModel lm1 = LinearRegressionModel.newModel().intercept.set(false);
-        LinearRegressionModel lm2 = lm1.newInstance();
+        LinearRegression lm1 = LinearRegression.newModel().intercept.set(false);
+        LinearRegression lm2 = lm1.newInstance();
 
         assertEquals(lm1.intercept.get(), lm2.intercept.get());
     }
@@ -256,7 +256,7 @@ public class LinearRegressionModelTest {
 
         Frame df = BoundFrame.byVars(x, y1, y2);
 
-        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true).fit(df, "y1,y2");
+        LinearRegression lm = LinearRegression.newModel().intercept.set(true).fit(df, "y1,y2");
         var pred = lm.predict(df, true);
 
         DMatrix betas = lm.getAllCoefficients();

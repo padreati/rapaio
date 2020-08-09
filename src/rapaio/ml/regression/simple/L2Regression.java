@@ -27,7 +27,7 @@
 
 package rapaio.ml.regression.simple;
 
-import rapaio.core.stat.Quantiles;
+import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VType;
@@ -35,6 +35,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ParametricEquals;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.printer.Format;
@@ -44,41 +45,30 @@ import rapaio.printer.opt.POption;
 import java.util.Arrays;
 
 /**
- * Simple regression which predicts with the median value of the target columns.
- * <p>
- * This simple regression is used alone for simple prediction or as a
- * starting point for other more complex regression algorithms.
- * <p>
- * This regression implements the regression by a constant paradigm using
- * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
- * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel, RegressionResult> {
+public class L2Regression extends AbstractRegressionModel<L2Regression, RegressionResult>
+        implements ParametricEquals<L2Regression> {
 
-    private static final long serialVersionUID = 6125284399953219419L;
+    private static final long serialVersionUID = -8666168876139028337L;
 
-    public static L1RegressionModel newL1() {
-        return new L1RegressionModel();
+    public static L2Regression newModel() {
+        return new L2Regression();
     }
 
-    private double[] medians;
+    private double[] means;
 
-    private L1RegressionModel() {
+    private L2Regression() {
     }
 
     @Override
-    public L1RegressionModel newInstance() {
-        return new L1RegressionModel();
+    public L2Regression newInstance() {
+        return new L2Regression();
     }
 
     @Override
     public String name() {
-        return "L1Regression";
-    }
-
-    public double[] getMedians() {
-        return medians;
+        return "L2Regression";
     }
 
     @Override
@@ -95,24 +85,28 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        medians = new double[targetNames().length];
+        means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
-            String target = targetName(i);
-            medians[i] = Quantiles.of(df.rvar(target), 0.5).values()[0];
+            double mean = Mean.of(df.rvar(targetName(i))).value();
+            means[i] = mean;
         }
         return true;
     }
 
     @Override
-    public RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
-            String target = targetName(i);
-            double median = medians[i];
-            pred.prediction(target).stream().forEach(s -> s.setDouble(median));
+            double mean = means[i];
+            Var v = fit.prediction(targetName(i));
+            v.stream().forEach(s -> s.setDouble(mean));
         }
-        pred.buildComplete();
-        return pred;
+        fit.buildComplete();
+        return fit;
+    }
+
+    public double[] getMeans() {
+        return means;
     }
 
     @Override
@@ -122,7 +116,7 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
             sb.append(fullName());
             sb.append("; fitted values={");
             for (int i = 0; i < Math.min(5, targetNames.length); i++) {
-                sb.append(targetName(i)).append(":").append(Format.floatFlex(medians[i]));
+                sb.append(targetName(i)).append(":").append(Format.floatFlex(means[i]));
                 if (i < targetNames.length - 1) {
                     sb.append(",");
                 }
@@ -137,7 +131,7 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -148,9 +142,9 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
 
             Var target = VarNominal.empty().withName("Target");
             Var median = VarDouble.empty().withName("Fitted value");
-            for (int i = 0; i < medians.length; i++) {
+            for (int i = 0; i < means.length; i++) {
                 target.addLabel(targetName(i));
-                median.addDouble(medians[i]);
+                median.addDouble(means[i]);
             }
             sb.append(SolidFrame.byVars(target, median).toContent(printer, options));
         }
@@ -159,7 +153,7 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -170,9 +164,9 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
 
             Var target = VarNominal.empty().withName("Target");
             Var median = VarDouble.empty().withName("Fitted value");
-            for (int i = 0; i < medians.length; i++) {
+            for (int i = 0; i < means.length; i++) {
                 target.addLabel(targetName(i));
-                median.addDouble(medians[i]);
+                median.addDouble(means[i]);
             }
             sb.append(SolidFrame.byVars(target, median).toFullContent(printer, options));
         }
@@ -183,5 +177,10 @@ public class L1RegressionModel extends AbstractRegressionModel<L1RegressionModel
     @Override
     public String toSummary(Printer printer, POption... options) {
         return toContent(printer, options);
+    }
+
+    @Override
+    public boolean equalOnParams(L2Regression object) {
+        return true;
     }
 }

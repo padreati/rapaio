@@ -109,10 +109,9 @@ public class RTreeJTest {
 
         assertNull(rt2.root());
 
-        assertEquals("RTree{loss=L2,maxDepth=2,maxSize=10,poolSize=10," +
-                "rowSampler=Bootstrap(p=1),runningHook=BiCosumer(),runs=10," +
-                "stopHook=BiFunction(),testMap={BINARY=Ignore,INT=Ignore," +
-                "NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
+        assertEquals("RTree{maxDepth=2,maxSize=10,poolSize=10,rowSampler=Bootstrap(p=1)," +
+                "runningHook=BiCosumer(),runs=10,stopHook=BiFunction()," +
+                "testMap={BINARY=Ignore,INT=Ignore,NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
         Map<VType, RTreeTest> emptyMap = new HashMap<>();

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/7/16.
  */
-public class ConstantRegressionModelTest {
+public class ConstantRegressionTest {
 
     private String father = "Father";
     private String son = "Son";
@@ -52,7 +52,7 @@ public class ConstantRegressionModelTest {
     @Test
     void testConstantRegression() {
 
-        ConstantRegressionModel r1 = ConstantRegressionModel.with(66).newInstance();
+        ConstantRegression r1 = ConstantRegression.with(66).newInstance();
         r1.fit(df, father);
         var fit1 = r1.predict(df);
         assertEquals("Regression predict summary\n" +
@@ -71,7 +71,7 @@ public class ConstantRegressionModelTest {
                 "Father    66    \n" +
                 "\n", r1.toSummary());
 
-        ConstantRegressionModel r2 = ConstantRegressionModel.with(1);
+        ConstantRegression r2 = ConstantRegression.with(1);
         r2.fit(df, father);
         var fit2 = r2.predict(df, true);
 

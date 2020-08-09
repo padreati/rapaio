@@ -37,6 +37,8 @@ import rapaio.data.VarDouble;
  */
 public class L2Loss implements Loss {
 
+    private static final long serialVersionUID = 5089493401870663231L;
+
     @Override
     public String name() {
         return "L2";
@@ -87,5 +89,10 @@ public class L2Loss implements Loss {
             sum += Math.pow(residual.getDouble(i), 2);
         }
         return Math.sqrt(sum / (2 * len));
+    }
+
+    @Override
+    public boolean equalOnParams(Loss object) {
+        return true;
     }
 }

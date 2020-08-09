@@ -38,6 +38,7 @@ import rapaio.data.VarDouble;
 @Deprecated
 public class KDevianceLoss implements Loss {
 
+    private static final long serialVersionUID = 3608607822562742621L;
     private final int k;
 
     public KDevianceLoss(int k) {
@@ -120,5 +121,13 @@ public class KDevianceLoss implements Loss {
     @Override
     public double computeResidualErrorScore(Var residual) {
         throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equalOnParams(Loss object) {
+        if (!(object instanceof KDevianceLoss)) {
+            return false;
+        }
+        return Integer.valueOf(k).equals(((KDevianceLoss) object).k);
     }
 }

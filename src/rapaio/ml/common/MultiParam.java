@@ -3,6 +3,7 @@ package rapaio.ml.common;
 import rapaio.util.function.SFunction;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -64,8 +65,36 @@ public class MultiParam<K, T, S extends ParamSet<S>> implements Param<Map<K, T>,
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean hasDefaultValue() {
-        return defaultValue.equals(valueMap);
+        if (defaultValue == null) {
+            return valueMap == null;
+        }
+        if (valueMap == null) {
+            return false;
+        }
+        if (defaultValue.size() != valueMap.size()) {
+            return false;
+        }
+
+        for (var entry : defaultValue.entrySet()) {
+            var ref = entry.getValue();
+            var comp = valueMap.get(entry.getKey());
+            if (comp == null) {
+                return false;
+            }
+            if (ref instanceof ParametricEquals) {
+                boolean eq = ((ParametricEquals<T>) ref).equalOnParams(comp);
+                if (!eq) {
+                    return false;
+                }
+            } else {
+                if (!Objects.equals(ref, comp)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

@@ -20,14 +20,14 @@ import java.util.Objects;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/26/20.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegressionModel> {
+public class RidgeRegression extends BaseLinearRegressionModel<RidgeRegression> {
 
-    public static RidgeRegressionModel newModel(double lambda) {
+    public static RidgeRegression newModel(double lambda) {
         return newModel(lambda, Centering.MEAN, Scaling.SD);
     }
 
-    public static RidgeRegressionModel newModel(double lambda, Centering centering, Scaling scaling) {
-        return new RidgeRegressionModel()
+    public static RidgeRegression newModel(double lambda, Centering centering, Scaling scaling) {
+        return new RidgeRegression()
                 .lambda.set(lambda)
                 .centering.set(centering)
                 .scaling.set(scaling);
@@ -36,17 +36,17 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     private static final long serialVersionUID = 6868244273014714128L;
 
     @Getter
-    public final ValueParam<Double, RidgeRegressionModel> lambda = new ValueParam<>(this, 1.0,
+    public final ValueParam<Double, RidgeRegression> lambda = new ValueParam<>(this, 1.0,
             "lambda",
             "Coefficient of the ridge penalry term.",
             Double::isFinite);
 
-    public final ValueParam<Centering, RidgeRegressionModel> centering = new ValueParam<>(this, Centering.MEAN,
+    public final ValueParam<Centering, RidgeRegression> centering = new ValueParam<>(this, Centering.MEAN,
             "centering",
             "Type of variable centering",
             Objects::nonNull);
 
-    public final ValueParam<Scaling, RidgeRegressionModel> scaling = new ValueParam<>(this, Scaling.SD,
+    public final ValueParam<Scaling, RidgeRegression> scaling = new ValueParam<>(this, Scaling.SD,
             "scaling",
             "Type if the variable scaling.",
             Objects::nonNull);
@@ -57,8 +57,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
     private Map<String, Double> targetScale;
 
     @Override
-    public RidgeRegressionModel newInstance() {
-        return new RidgeRegressionModel().copyParameterValues(this);
+    public RidgeRegression newInstance() {
+        return new RidgeRegression().copyParameterValues(this);
     }
 
     @Override

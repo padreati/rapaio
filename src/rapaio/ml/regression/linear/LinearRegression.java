@@ -41,22 +41,22 @@ import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegressionModel> {
+public class LinearRegression extends BaseLinearRegressionModel<LinearRegression> {
 
     /**
      * Builds a linear regression model with intercept.
      *
      * @return new instance of linear regression model
      */
-    public static LinearRegressionModel newModel() {
-        return new LinearRegressionModel();
+    public static LinearRegression newModel() {
+        return new LinearRegression();
     }
 
     private static final long serialVersionUID = 8595413796946622895L;
 
     @Override
-    public LinearRegressionModel newInstance() {
-        return new LinearRegressionModel().copyParameterValues(this);
+    public LinearRegression newInstance() {
+        return new LinearRegression().copyParameterValues(this);
     }
 
     @Override

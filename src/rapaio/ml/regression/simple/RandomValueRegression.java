@@ -48,26 +48,26 @@ import java.util.Objects;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegressionModel extends AbstractRegressionModel<RandomValueRegressionModel, RegressionResult> {
+public class RandomValueRegression extends AbstractRegressionModel<RandomValueRegression, RegressionResult> {
 
     private static final long serialVersionUID = 819192240406617594L;
 
-    public static RandomValueRegressionModel newRVR() {
-        return new RandomValueRegressionModel();
+    public static RandomValueRegression newRVR() {
+        return new RandomValueRegression();
     }
 
-    public static RandomValueRegressionModel from(Distribution distribution) {
-        return new RandomValueRegressionModel().distribution.set(distribution);
+    public static RandomValueRegression from(Distribution distribution) {
+        return new RandomValueRegression().distribution.set(distribution);
     }
 
-    public final ValueParam<Distribution, RandomValueRegressionModel> distribution = new ValueParam<>(this, Uniform.of(0, 1),
+    public final ValueParam<Distribution, RandomValueRegression> distribution = new ValueParam<>(this, Uniform.of(0, 1),
             "distribution",
             "Distribution used to generate prediction",
             Objects::nonNull);
 
     @Override
-    public RandomValueRegressionModel newInstance() {
-        return new RandomValueRegressionModel().copyParameterValues(this);
+    public RandomValueRegression newInstance() {
+        return new RandomValueRegression().copyParameterValues(this);
     }
 
     @Override

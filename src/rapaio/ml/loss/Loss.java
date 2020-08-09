@@ -29,6 +29,9 @@ package rapaio.ml.loss;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.ml.common.ParametricEquals;
+
+import java.io.Serializable;
 
 /**
  * Regression loss / objective function.
@@ -37,7 +40,7 @@ import rapaio.data.VarDouble;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
-public interface Loss {
+public interface Loss extends ParametricEquals<Loss>, Serializable {
 
     /**
      * @return name of the loss function

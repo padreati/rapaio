@@ -43,22 +43,22 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class ConstantRegressionModel extends AbstractRegressionModel<ConstantRegressionModel, RegressionResult> {
+public class ConstantRegression extends AbstractRegressionModel<ConstantRegression, RegressionResult> {
 
     private static final long serialVersionUID = -2537862585258148528L;
 
-    public static ConstantRegressionModel with(double c) {
-        return new ConstantRegressionModel().constant.set(c);
+    public static ConstantRegression with(double c) {
+        return new ConstantRegression().constant.set(c);
     }
 
-    public final ValueParam<Double, ConstantRegressionModel> constant = new ValueParam<>(this, 0.0,
+    public final ValueParam<Double, ConstantRegression> constant = new ValueParam<>(this, 0.0,
             "constant",
             "Constant value used for prediction.",
             x -> true);
 
     @Override
-    public ConstantRegressionModel newInstance() {
-        return new ConstantRegressionModel().copyParameterValues(this);
+    public ConstantRegression newInstance() {
+        return new ConstantRegression().copyParameterValues(this);
     }
 
     @Override

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/19.
  */
-public class L2RegressionModelTest {
+public class L2RegressionTest {
 
     private static final double TOL = 1e-20;
     private Frame df;
@@ -33,7 +33,7 @@ public class L2RegressionModelTest {
 
     @Test
     void testNaming() {
-        L2RegressionModel model = L2RegressionModel.newModel();
+        L2Regression model = L2Regression.newModel();
         assertEquals("L2Regression", model.name());
         assertEquals("L2Regression{}", model.fullName());
 
@@ -247,7 +247,7 @@ public class L2RegressionModelTest {
 
     @Test
     void testPrediction() {
-        L2RegressionModel model = L2RegressionModel.newModel().newInstance().fit(df, "Sales");
+        L2Regression model = L2Regression.newModel().newInstance().fit(df, "Sales");
         var result = model.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(model.getMeans()[0], result.firstPrediction().getDouble(i), TOL);
