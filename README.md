@@ -228,6 +228,7 @@ of production ready tools from this field.
 * OneRule
 * Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)
 * Linear: BinaryLogistic (optionally L2 penalization)
+* Boosting: AdaBoost
 
 **Regression**
 
@@ -240,8 +241,8 @@ of production ready tools from this field.
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
-* RForest
-* Gradient Boosting Trees
+* Ensemble: RForest
+* Boost: Gradient Boosting Trees
 
 
 ### Experminental Features
@@ -287,14 +288,12 @@ ready state. Until that happens, these are the experimental features:
   * reduced-error pruning
   * variable importance: frequency, gain and permutation based
 * Ensemble: CForest - Bagging, Random Forests
-* Boosting: AdaBoost.SAMME
 * SVM: BinarySMO (Platt)
 * Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
 
 **Regression**
 
-* Boost: GBT (Gradient Boosting Tree) Regressor
 * NNet: MultiLayer Perceptron Regressor
 
 **Clustering**

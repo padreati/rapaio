@@ -7,6 +7,7 @@ import rapaio.ml.classifier.ClassifierResult;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/20.
  */
 public class Accuracy extends AbstractClassifierMetric implements ClassifierMetric {
+    public static final String ID = "Accuracy";
 
     public static Accuracy newMetric(boolean normalize) {
         return new Accuracy(normalize);
@@ -21,7 +22,7 @@ public class Accuracy extends AbstractClassifierMetric implements ClassifierMetr
     private final boolean normalize;
 
     private Accuracy(boolean normalize) {
-        super("Accuracy");
+        super(ID);
         this.normalize = normalize;
     }
 

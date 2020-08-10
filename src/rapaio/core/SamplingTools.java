@@ -31,6 +31,9 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarInt;
+import rapaio.util.collection.IntArrayTools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -317,6 +320,16 @@ public final class SamplingTools {
     }
 
     public static Frame[] randomSampleStratifiedSplit(Frame df, String strataName, double... freq) {
+        Mapping[] maps = getMappingsForStratifiedSplit(df, strataName, freq);
+
+        Frame[] list = new Frame[freq.length];
+        for (int i = 0; i < freq.length; i++) {
+            list[i] = df.mapRows(maps[i]);
+        }
+        return list;
+    }
+
+    private static Mapping[] getMappingsForStratifiedSplit(Frame df, String strataName, double[] freq) {
         normalize(freq);
         List<Mapping> groups = new ArrayList<>();
         for (int i = 0; i < df.levels(strataName).size(); i++) {
@@ -343,11 +356,57 @@ public final class SamplingTools {
         for (int i = 0; i < freq.length; i++) {
             maps[i].shuffle();
         }
+        return maps;
+    }
 
-        Frame[] list = new Frame[freq.length];
-        for (int i = 0; i < freq.length; i++) {
-            list[i] = df.mapRows(maps[i]);
+    public static class TrainTestSplit {
+
+        public final Frame trainDf;
+        public final Var trainW;
+
+        public final Frame testDf;
+        public final Var testW;
+
+        public TrainTestSplit(Frame trainDf, Var trainW, Frame testDf, Var testW) {
+            this.trainDf = trainDf;
+            this.trainW = trainW;
+            this.testDf = testDf;
+            this.testW = testW;
         }
-        return list;
+    }
+
+    public static TrainTestSplit trainTestSplit(Frame df, double p) {
+        return trainTestSplit(df, null, p, true, null);
+    }
+
+    public static TrainTestSplit trainTestSplit(Frame df, Var w, double p) {
+        return trainTestSplit(df, w, p, true, null);
+    }
+
+    public static TrainTestSplit trainTestSplit(Frame df, Var w, double p, boolean shuffle) {
+        return trainTestSplit(df, w, p, shuffle, null);
+    }
+
+    public static TrainTestSplit trainTestSplit(Frame df, Var w, double p, boolean shuffle, String strata) {
+
+        int trainSize = (int) (df.rowCount() * p);
+        int testSize = df.rowCount() - trainSize;
+
+        if (w == null) {
+            w = VarInt.seq(df.rowCount());
+        }
+
+        if (strata == null) {
+            int[] rows = IntArrayTools.newSeq(0, df.rowCount());
+            if (shuffle) {
+                IntArrays.shuffle(rows, RandomSource.getRandom());
+            }
+            var trainMapping = Mapping.wrap(IntArrayTools.newCopy(rows, 0, trainSize));
+            var testMapping = Mapping.wrap(IntArrayTools.newCopy(rows, trainSize, trainSize + testSize));
+            return new TrainTestSplit(df.mapRows(trainMapping), w.mapRows(trainMapping), df.mapRows(testMapping), w.mapRows(testMapping));
+        }
+
+        var mappings = getMappingsForStratifiedSplit(df, strata, new double[]{p, 1 - p});
+        return new TrainTestSplit(df.mapRows(mappings[0]), w.mapRows(mappings[0]), df.mapRows(mappings[1]), w.mapRows(mappings[1]));
     }
 }

@@ -25,8 +25,11 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.boost;
+package rapaio.ml.classifier.boost;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
@@ -36,6 +39,7 @@ import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -43,6 +47,7 @@ import rapaio.printer.opt.POption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * AdaBoost SAMME classifier is the classical version of AdaBoost which has
@@ -51,52 +56,53 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, ClassifierResult> implements Printable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult> implements Printable {
+
+    public static AdaBoost newModel() {
+        return new AdaBoost();
+    }
 
     private static final long serialVersionUID = -9154973036108114765L;
-    private static final double delta_error = 10e-10;
 
     // parameters
 
-    private ClassifierModel weak = CTree.newCART().maxDepth.set(6).minCount.set(6);
-    private boolean stopOnError = false;
-    private double shrinkage = 1.0;
+    public final ValueParam<ClassifierModel, AdaBoost> model = new ValueParam<>(this,
+            CTree.newCART().maxDepth.set(6).minCount.set(6),
+            "model",
+            "Weak learner model",
+            Objects::nonNull);
+
+    public final ValueParam<Double, AdaBoost> eps = new ValueParam<>(this, 10e-10,
+            "eps",
+            "Threshold value used to decide convergence on fit",
+            Double::isFinite);
+
+    public final ValueParam<Boolean, AdaBoost> stopOnError = new ValueParam<>(this, false,
+            "stopOnError",
+            "Flag to stop fitting on learning error of weak classifier");
+
+    public final ValueParam<Double, AdaBoost> shrinkage = new ValueParam<>(this, 1.0,
+            "shrinkage",
+            "Shrinkage coefficient for regularization",
+            Double::isFinite);
 
     // model artifacts
 
-    private List<Double> a;
-    private List<ClassifierModel> h;
-    private Var w;
-    private double k;
+    @Getter
+    private final List<Double> alphas = new ArrayList<>();
 
-    public AdaBoostSAMME() {
-        this.a = new ArrayList<>();
-        this.h = new ArrayList<>();
-    }
+    @Getter
+    private final List<ClassifierModel> learners = new ArrayList<>();
 
     @Override
-    public AdaBoostSAMME newInstance() {
-        return new AdaBoostSAMME().copyParameterValues(this)
-                .withClassifier(this.weak.newInstance())
-                .withStopOnError(stopOnError)
-                .withShrinkage(shrinkage);
+    public AdaBoost newInstance() {
+        return new AdaBoost().copyParameterValues(this);
     }
 
     @Override
     public String name() {
-        return "AdaBoost.SAMME";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("AdaBoost.SAMME {");
-        sb.append("weak: ").append(weak.fullName()).append(", ");
-        sb.append("runs: ").append(runs.get()).append(", ");
-        sb.append("sampler: ").append(rowSampler.get().name()).append(", ");
-        sb.append("stopOnError: ").append(stopOnError).append(", ");
-        sb.append("}");
-        return sb.toString();
+        return "AdaBoost";
     }
 
     @Override
@@ -111,86 +117,59 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
                 .build();
     }
 
-    public AdaBoostSAMME withClassifier(ClassifierModel weak) {
-        this.weak = weak;
-        return this;
-    }
-
-    public AdaBoostSAMME withStopOnError(boolean stopOnError) {
-        this.stopOnError = stopOnError;
-        return this;
-    }
-
-    public AdaBoostSAMME withShrinkage(double shrinkage) {
-        this.shrinkage = shrinkage;
-        return this;
-    }
-
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        k = firstTargetLevels().size() - 1;
+        Var w = weights.copy().op().divide(weights.op().nansum());
+        double k = firstTargetLevels().size() - 1;
 
-        h = new ArrayList<>();
-        a = new ArrayList<>();
-        w = weights.copy();
-
-        double total = w.stream().mapToDouble().reduce(0.0, Double::sum);
-        for (int i = 0; i < w.rowCount(); i++) {
-            w.setDouble(i, w.getDouble(i) / total);
-        }
+        learners.clear();
+        alphas.clear();
 
         for (int i = 0; i < runs.get(); i++) {
-            boolean success = learnRound(df);
-            if (!success && stopOnError) {
+            if (!learnRound(df, w, k)) {
                 break;
             }
             if (runningHook.get() != null) {
-                runningHook.get().accept(this, i + 1);
+                runningHook.get().accept(this, i);
             }
         }
         return true;
     }
 
-    private boolean learnRound(Frame df) {
+    private boolean learnRound(Frame df, Var w, double k) {
 
-        ClassifierModel hh = weak.newInstance();
+        ClassifierModel hh = model.get().newInstance();
 
         Sample sample = rowSampler.get().nextSample(df, w);
-        hh.fit(sample.df, sample.weights.copy(), targetNames());
+        hh.fit(sample.df, sample.weights, targetNames());
 
-        ClassifierResult fit = hh.predict(df, true, false);
+        var predict = hh.predict(df, true, false).firstClasses();
 
         double err = 0;
-        for (int j = 0; j < df.rowCount(); j++) {
-            if (fit.firstClasses().getInt(j) != df.getInt(j, firstTargetName())) {
-                err += w.getDouble(j);
+        for (int i = 0; i < df.rowCount(); i++) {
+            if (predict.getInt(i) != df.getInt(i, firstTargetName())) {
+                err += w.getDouble(i);
             }
         }
-        err /= w.stream().mapToDouble().sum();
-        double alpha = Math.log((1.0 - err) / err) + Math.log(k - 1.0);
-        if (err == 0) {
-            if (h.isEmpty()) {
-                h.add(hh);
-                a.add(alpha);
-            }
+        err /= w.op().nansum();
+        double alpha = shrinkage.get() * (Math.log((1.0 - err) / err) + Math.log(k - 1.0));
+        if (stopOnError.get() && err > (1.0 - 1.0 / k) + 1e-10) {
             return false;
         }
-        if (stopOnError && err > (1.0 - 1.0 / k) + delta_error) {
+        learners.add(hh);
+        alphas.add(alpha);
+        if (err < eps.get()) {
             return false;
         }
-        h.add(hh);
-        a.add(alpha);
 
+        double factor = Math.exp(alpha);
         for (int j = 0; j < w.rowCount(); j++) {
-            if (fit.firstClasses().getInt(j) != df.getInt(j, firstTargetName())) {
-                w.setDouble(j, w.getDouble(j) * Math.exp(alpha * shrinkage));
+            if (predict.getInt(j) != df.getInt(j, firstTargetName())) {
+                w.setDouble(j, w.getDouble(j) * factor);
             }
         }
-        double total = w.stream().mapToDouble().reduce(0.0, Double::sum);
-        for (int i = 0; i < w.rowCount(); i++) {
-            w.setDouble(i, w.getDouble(i) / total);
-        }
+        w.op().divide(w.op().nansum());
 
         return true;
     }
@@ -198,11 +177,11 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
     @Override
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult fit = ClassifierResult.build(this, df, withClasses, true);
-        for (int i = 0; i < h.size(); i++) {
-            ClassifierResult hp = h.get(i).predict(df, true, false);
+        for (int i = 0; i < learners.size(); i++) {
+            ClassifierResult hp = learners.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().getInt(j);
-                fit.firstDensity().setDouble(j, index, fit.firstDensity().getDouble(j, index) + a.get(i));
+                fit.firstDensity().setDouble(j, index, fit.firstDensity().getDouble(j, index) + alphas.get(i));
             }
         }
 
@@ -228,12 +207,32 @@ public class AdaBoostSAMME extends AbstractClassifierModel<AdaBoostSAMME, Classi
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName()).append("; fitted=").append(hasLearned());
+        if (hasLearned()) {
+            sb.append(", fitted trees=").append(learners.size());
+        }
+        return sb.toString();
+    }
+
+    @Override
     public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
-        sb.append("weak learners built: ").append(h.size()).append("\n");
+        sb.append("weak learners built: ").append(learners.size()).append("\n");
         return sb.toString();
+    }
+
+    @Override
+    public String toContent(POption<?>... options) {
+        return toSummary();
+    }
+
+    @Override
+    public String toFullContent(POption<?>... options) {
+        return toSummary();
     }
 }
