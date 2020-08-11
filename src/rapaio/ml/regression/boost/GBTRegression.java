@@ -135,7 +135,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
         for (int i = 1; i <= runs.get(); i++) {
 
-            Var gradient = loss.get().computeGradient(y, fitValues).withName("target");
+            Var gradient = loss.get().gradient(y, fitValues).withName("target");
 
             Frame xm = x.bindVars(gradient);
             var tree = (GBTRtree<? extends RegressionModel, ? extends RegressionResult>) model.get().newInstance();
@@ -157,8 +157,8 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
             var pred = tree.predict(df, false).firstPrediction();
             VarDouble nextFit = fitValues.copy().op().plus(pred.op().mult(shrinkage.get()));
 
-            double initScore = loss.get().computeErrorScore(y, fitValues);
-            double nextScore = loss.get().computeErrorScore(y, nextFit);
+            double initScore = loss.get().errorScore(y, fitValues);
+            double nextScore = loss.get().errorScore(y, nextFit);
 
             if (Math.abs(initScore - nextScore) < eps.get()) {
                 break;

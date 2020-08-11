@@ -313,7 +313,7 @@ class SplineFunction implements NBRFunction {
             }
             LinearRegressionResult pred = rlm.predict(bf, false);
             VarDouble y_hat = pred.firstPrediction();
-            double error = loss.computeErrorScore(y, y_hat);
+            double error = loss.errorScore(y, y_hat);
 
             if (Double.isNaN(bestError) || bestError > error) {
                 bestError = error;

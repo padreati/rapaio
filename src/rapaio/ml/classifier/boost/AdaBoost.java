@@ -221,8 +221,9 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
-        sb.append("prediction:\n");
-        sb.append("weak learners built: ").append(learners.size()).append("\n");
+        if (hasLearned()) {
+            sb.append("weak learners built: ").append(learners.size()).append("\n");
+        }
         return sb.toString();
     }
 

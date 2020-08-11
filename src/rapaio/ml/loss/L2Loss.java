@@ -45,34 +45,34 @@ public class L2Loss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y) {
+    public double scalarMinimizer(Var y) {
         return Mean.of(y).value();
     }
 
     @Override
-    public double computeConstantMinimizer(Var y, Var weight) {
+    public double scalarMinimizer(Var y, Var weight) {
         return WeightedMean.of(y, weight).value();
     }
 
     @Override
-    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
-        return Mean.of(computeGradient(y, fx)).value();
+    public double additiveScalarMinimizer(Var y, Var fx) {
+        return Mean.of(gradient(y, fx)).value();
     }
 
     @Override
-    public VarDouble computeGradient(Var y, Var y_hat) {
+    public VarDouble gradient(Var y, Var y_hat) {
         int len = Math.min(y.rowCount(), y_hat.rowCount());
         return VarDouble.from(y.rowCount(), row -> y.getDouble(row) - y_hat.getDouble(row));
     }
 
     @Override
-    public VarDouble computeError(Var y, Var y_hat) {
+    public VarDouble error(Var y, Var y_hat) {
         int len = Math.min(y.rowCount(), y_hat.rowCount());
         return VarDouble.from(len, row -> Math.pow(y.getDouble(row) - y_hat.getDouble(row), 2) / 2);
     }
 
     @Override
-    public double computeErrorScore(Var y, Var y_hat) {
+    public double errorScore(Var y, Var y_hat) {
         double len = Math.min(y.rowCount(), y_hat.rowCount());
         double sum = 0.0;
         for (int i = 0; i < len; i++) {
@@ -82,7 +82,7 @@ public class L2Loss implements Loss {
     }
 
     @Override
-    public double computeResidualErrorScore(Var residual) {
+    public double residualErrorScore(Var residual) {
         double len = residual.rowCount();
         double sum = 0.0;
         for (int i = 0; i < len; i++) {

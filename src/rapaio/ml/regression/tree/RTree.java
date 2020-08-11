@@ -248,7 +248,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     private void learnNode(RTreeNode node, Frame df, Var weights) {
 
         node.setLeaf(true);
-        node.setValue(loss.get().computeConstantMinimizer(df.rvar(firstTargetName()), weights));
+        node.setValue(loss.get().scalarMinimizer(df.rvar(firstTargetName()), weights));
         node.setWeight(Sum.of(weights).value());
 
         if (node.weight() == 0) {
@@ -370,7 +370,19 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         }
     }
 
-    @Deprecated
+    /**
+     * Implements boosting additive update.
+     * <p>
+     * The procedure consists of fitting in each terminal node the additive optimizer of the loos function
+     * where the target function is y and current fitted value is fx.
+     * <p>
+     * loss(y, fx + c)
+     *
+     * @param x            input features
+     * @param y            target features
+     * @param fx           current fitted function
+     * @param lossFunction loss function used to compute additive gradient
+     */
     public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction) {
         root.boostUpdate(x, y, fx, lossFunction, splitter.get());
     }

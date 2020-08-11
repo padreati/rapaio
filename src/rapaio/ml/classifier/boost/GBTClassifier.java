@@ -25,10 +25,12 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.boost;
+package rapaio.ml.classifier.boost;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
-import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.sample.Sample;
@@ -38,71 +40,64 @@ import rapaio.math.linear.dense.SolidDMatrix;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.ValueParam;
 import rapaio.ml.loss.KDevianceLoss;
+import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.RegressionModel;
-import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.printer.Printable;
-import rapaio.sys.WS;
+import rapaio.printer.Printer;
+import rapaio.printer.opt.POption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
-public class GBTClassifierModel
-        extends AbstractClassifierModel<GBTClassifierModel, ClassifierResult>
-        implements Printable {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, ClassifierResult> {
+
+    public static GBTClassifier newModel() {
+        return new GBTClassifier();
+    }
 
     private static final long serialVersionUID = -2979235364091072967L;
 
-    // builders
+    public final ValueParam<Double, GBTClassifier> shrinkage = new ValueParam<>(this, 1.0,
+            "shrinkage",
+            "Shrinkage factor",
+            Double::isFinite);
 
-    public static GBTClassifierModel newGBT() {
-        return new GBTClassifierModel();
-    }
+    public final ValueParam<Boolean, GBTClassifier> debug = new ValueParam<>(this, false,
+            "debug",
+            "debug");
 
-    // parameters
-
-    private double shrinkage = .2;
-    private boolean debug = false;
-    private RTree rTree = RTree.newCART()
-            .maxDepth.set(4)
-            .minCount.set(5)
-            .loss.set(new KDevianceLoss(-1));
+    public final ValueParam<RTree, GBTClassifier> model = new ValueParam<>(this,
+            RTree.newCART().maxDepth.set(2).minCount.set(5).loss.set(new L2Loss()),
+            "model",
+            "Model");
 
     // learning artifacts
 
     private int K;
     private DMatrix f;
+    private DMatrix p;
     private DMatrix residual;
+
+    @Getter
     private List<List<RTree>> trees;
 
-    private GBTClassifierModel() {
-    }
-
     @Override
-    public GBTClassifierModel newInstance() {
-        return new GBTClassifierModel().copyParameterValues(this)
-                .withShrinkage(shrinkage)
-                .withDebug(debug)
-                .withRTree(rTree.newInstance().loss.set(new KDevianceLoss(-1)));
+    public GBTClassifier newInstance() {
+        return new GBTClassifier().copyParameterValues(this);
     }
 
     @Override
     public String name() {
         return "GBTClassifier";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("runs=").append(runs.get());
-        sb.append("}");
-        return sb.toString();
     }
 
     @Override
@@ -117,22 +112,6 @@ public class GBTClassifierModel
                 .build();
     }
 
-    public GBTClassifierModel withDebug(boolean debug) {
-        this.debug = debug;
-        return this;
-    }
-
-    public GBTClassifierModel withRTree(RTree rTree) {
-        this.rTree = rTree;
-        this.rTree.loss.set(new KDevianceLoss(-1));
-        return this;
-    }
-
-    public GBTClassifierModel withShrinkage(double shrinkage) {
-        this.shrinkage = shrinkage;
-        return this;
-    }
-
     @Override
     public boolean coreFit(Frame df, Var weights) {
 
@@ -140,15 +119,14 @@ public class GBTClassifierModel
 
         K = firstTargetLevels().size() - 1;
         f = SolidDMatrix.empty(K, df.rowCount());
+        p = SolidDMatrix.empty(K, df.rowCount());
         residual = SolidDMatrix.empty(K, df.rowCount());
-        trees = new ArrayList<>();
-        for (int i = 0; i < K; i++) {
-            trees.add(new ArrayList<>());
-        }
+
+        trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        SolidDMatrix yk = SolidDMatrix.empty(K, df.rowCount());
+        final SolidDMatrix yk = SolidDMatrix.fill(K, df.rowCount(), 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
@@ -167,37 +145,36 @@ public class GBTClassifierModel
         // a) Set p_k(x)
 
         DVector max = f.t().rowMaxValues();
+
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
             for (int k = 0; k < K; k++) {
                 sum += Math.exp(f.get(k, i) - max.get(i));
-                if (!Double.isFinite(sum)) {
-                    WS.println("ERROR");
-                }
             }
             for (int k = 0; k < K; k++) {
-                residual.set(k, i, yk.get(k, i) -
-                        Math.exp(f.get(k, i) - max.get(i)) / Math.exp(sum));
+                p.set(k, i, Math.exp(f.get(k, i) - max.get(i)) / sum);
             }
         }
+        residual = yk.copy().minus(p);
 
         // b)
 
-        Frame x = df.removeVars(VRange.of(targetNames()));
+        Frame x = df.removeVars(targetNames);
         Sample sample = rowSampler.get().nextSample(x, w);
 
         for (int k = 0; k < K; k++) {
 
-            Var resk = residual.mapRow(k).asVarDouble().withName("##tt##");
-            Frame train = sample.df.bindVars(resk.mapRows(sample.mapping));
+            Var residual_k = residual.mapRow(k).asVarDouble().mapRows(sample.mapping).withName("##tt##");
 
-            RTree tree = rTree.newInstance().loss.set(new KDevianceLoss(K));
-            tree.fit(train, sample.weights, "##tt##");
+            var tree = model.get().newInstance();
+            tree.fit(sample.df.bindVars(residual_k), sample.weights, "##tt##");
+            tree.boostUpdate(df, yk.mapRow(k).asVarDouble(), p.mapRow(k).asVarDouble(), new KDevianceLoss(K));
+
             trees.get(k).add(tree);
 
-            RegressionResult rr = tree.predict(df, false);
+            var prediction = tree.predict(df, false).firstPrediction();
             for (int i = 0; i < df.rowCount(); i++) {
-                f.set(k, i, f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
+                f.set(k, i, f.get(k, i) + shrinkage.get() * prediction.getDouble(i));
             }
         }
     }
@@ -210,9 +187,9 @@ public class GBTClassifierModel
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel tree : trees.get(k)) {
-                RegressionResult rr = tree.predict(df, false);
+                var rr = tree.predict(df, false).firstPrediction();
                 for (int i = 0; i < df.rowCount(); i++) {
-                    p_f.set(k, i, p_f.get(k, i) + shrinkage * rr.firstPrediction().getDouble(i));
+                    p_f.set(k, i, p_f.get(k, i) + shrinkage.get() * rr.getDouble(i));
                 }
             }
         }
@@ -245,6 +222,36 @@ public class GBTClassifierModel
             cr.firstClasses().setInt(i, maxIndex);
         }
         return cr;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fullName()).append("; fitted=").append(hasLearned());
+        if (hasLearned()) {
+            sb.append(", fitted trees=").append(trees.get(0).size());
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toSummary(Printer printer, POption<?>... options) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n > ").append(fullName()).append("\n");
+        if (hasLearned()) {
+            sb.append("weak learners built: ").append(trees.get(0).size()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toContent(POption<?>... options) {
+        return toSummary();
+    }
+
+    @Override
+    public String toFullContent(POption<?>... options) {
+        return toSummary();
     }
 }
 

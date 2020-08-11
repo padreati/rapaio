@@ -44,37 +44,37 @@ public class L1Loss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y) {
+    public double scalarMinimizer(Var y) {
         return Quantiles.of(y, 0.5).values()[0];
     }
 
     @Override
-    public double computeConstantMinimizer(Var y, Var weight) {
+    public double scalarMinimizer(Var y, Var weight) {
         return Quantiles.of(y, 0.5).values()[0];
     }
 
     @Override
-    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
+    public double additiveScalarMinimizer(Var y, Var fx) {
         return Quantiles.of(y.copy().op().minus(fx), 0.5).values()[0];
     }
 
     @Override
-    public VarDouble computeGradient(Var y, Var y_hat) {
+    public VarDouble gradient(Var y, Var y_hat) {
         return VarDouble.from(y.rowCount(), row -> y.getDouble(row) - y_hat.getDouble(row) < 0 ? -1.0 : 1.0);
     }
 
     @Override
-    public VarDouble computeError(Var y, Var y_hat) {
+    public VarDouble error(Var y, Var y_hat) {
         return y.copy().op().minus(y_hat).op().capply(Math::abs);
     }
 
     @Override
-    public double computeErrorScore(Var y, Var y_hat) {
-        return computeError(y, y_hat).op().nansum();
+    public double errorScore(Var y, Var y_hat) {
+        return error(y, y_hat).op().nansum();
     }
 
     @Override
-    public double computeResidualErrorScore(Var residual) {
+    public double residualErrorScore(Var residual) {
         return residual.op().capply(Math::abs).op().nansum();
     }
 

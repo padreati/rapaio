@@ -31,11 +31,13 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 
 /**
- * No weighting implemented for now.
+ * Deviance loss function. The formula for deviance loss is -sum_{k=1}^{K} y_k log(p_k(x))
+ * where y_k = 1(class==k), 0 otherwise.
+ *
+ *
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/9/18.
  */
-@Deprecated
 public class KDevianceLoss implements Loss {
 
     private static final long serialVersionUID = 3608607822562742621L;
@@ -51,7 +53,7 @@ public class KDevianceLoss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y) {
+    public double scalarMinimizer(Var y) {
         double up = 0.0;
         double down = 0.0;
 
@@ -66,7 +68,7 @@ public class KDevianceLoss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y, Var weight) {
+    public double scalarMinimizer(Var y, Var weight) {
         double up = 0.0;
         double down = 0.0;
 
@@ -83,13 +85,14 @@ public class KDevianceLoss implements Loss {
     }
 
     @Override
-    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
+    public double additiveScalarMinimizer(Var y, Var fx) {
         double up = 0.0;
         double down = 0.0;
 
         for (int i = 0; i < y.rowCount(); i++) {
-            up += y.getDouble(i);
-            down += Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
+            double delta = y.getDouble(i) - fx.getDouble(i);
+            up += delta;
+            down += Math.abs(delta) * (1.0 - Math.abs(delta));
         }
 
         if (down == 0) {
@@ -104,22 +107,22 @@ public class KDevianceLoss implements Loss {
     }
 
     @Override
-    public VarDouble computeGradient(Var y, Var y_hat) {
+    public VarDouble gradient(Var y, Var y_hat) {
         throw new IllegalStateException("This method is not available for KDevianceLoss");
     }
 
     @Override
-    public VarDouble computeError(Var y, Var y_hat) {
+    public VarDouble error(Var y, Var y_hat) {
         throw new IllegalStateException("This method is not available for KDevianceLoss");
     }
 
     @Override
-    public double computeErrorScore(Var y, Var y_hat) {
+    public double errorScore(Var y, Var y_hat) {
         throw new IllegalStateException("This method is not available for KDevianceLoss");
     }
 
     @Override
-    public double computeResidualErrorScore(Var residual) {
+    public double residualErrorScore(Var residual) {
         throw new IllegalStateException();
     }
 

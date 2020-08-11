@@ -106,7 +106,7 @@ public class SmoothRTreeNode {
         // find best fit function
         String[] testVarNames = varSelector.nextVarNames();
 
-        double errorScore = tree.getLoss().computeResidualErrorScore(y);
+        double errorScore = tree.getLoss().residualErrorScore(y);
 
         Pin<Candidate> bc = new Pin<>(null);
         for (String testVarName : testVarNames) {
@@ -203,7 +203,7 @@ public class SmoothRTreeNode {
         if (pred == null) {
             return new Candidate(Double.NaN, testVarName, function, null);
         }
-        double score = tree.getLoss().computeErrorScore(y, pred);
+        double score = tree.getLoss().errorScore(y, pred);
         return new Candidate(score, testVarName, function, pred);
     }
 }

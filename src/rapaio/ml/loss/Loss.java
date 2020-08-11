@@ -55,18 +55,18 @@ public interface Loss extends ParametricEquals<Loss>, Serializable {
      * @param y target values
      * @return computed minimum value
      */
-    double computeConstantMinimizer(Var y);
+    double scalarMinimizer(Var y);
 
     /**
      * Computes constant value which minimizes the loss function on weighted samples.
-     *
+     * <p>
      * argmax_{c} sum weight_i * loss(y_i, c)
      *
      * @param y      target values
      * @param weight weights of target values
      * @return computed minimum value
      */
-    double computeConstantMinimizer(Var y, Var weight);
+    double scalarMinimizer(Var y, Var weight);
 
     /**
      * Computes additive constant value which minimize the loss function
@@ -74,7 +74,7 @@ public interface Loss extends ParametricEquals<Loss>, Serializable {
      * <p>
      * argmax_{c} sum loss(y_i, y^hat_i + c)
      */
-    double computeAdditiveConstantMinimizer(Var y, Var fx);
+    double additiveScalarMinimizer(Var y, Var fx);
 
     /**
      * Computes vector of values for the gradient of the loss function
@@ -84,18 +84,18 @@ public interface Loss extends ParametricEquals<Loss>, Serializable {
      * @param y_hat fitted values
      * @return vector of computed gradients for each observation
      */
-    VarDouble computeGradient(Var y, Var y_hat);
+    VarDouble gradient(Var y, Var y_hat);
 
     /**
      * Computes loss errors.
-     *
+     * <p>
      * err_i = loss(y_i, y^hat_i)
      *
      * @param y     true target values
      * @param y_hat fitted values
      * @return vector with loss for each observation
      */
-    VarDouble computeError(Var y, Var y_hat);
+    VarDouble error(Var y, Var y_hat);
 
     /**
      * Compute a single loss score .
@@ -104,7 +104,7 @@ public interface Loss extends ParametricEquals<Loss>, Serializable {
      * @param y_hat vector of fitted values
      * @return aggregate loss score for all observations
      */
-    double computeErrorScore(Var y, Var y_hat);
+    double errorScore(Var y, Var y_hat);
 
     /**
      * Compute a single loss score.
@@ -112,5 +112,5 @@ public interface Loss extends ParametricEquals<Loss>, Serializable {
      * @param residual vector of target values
      * @return aggregate loss score for all observations
      */
-    double computeResidualErrorScore(Var residual);
+    double residualErrorScore(Var residual);
 }

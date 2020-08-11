@@ -58,7 +58,7 @@ public class HuberLoss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y) {
+    public double scalarMinimizer(Var y) {
 
         double r_bar = Quantiles.of(y, 0.5).values()[0];
         var abs = y.op().capply(Math::abs);
@@ -80,12 +80,12 @@ public class HuberLoss implements Loss {
     }
 
     @Override
-    public double computeConstantMinimizer(Var y, Var weight) {
-        return computeConstantMinimizer(y);
+    public double scalarMinimizer(Var y, Var weight) {
+        return scalarMinimizer(y);
     }
 
     @Override
-    public double computeAdditiveConstantMinimizer(Var y, Var fx) {
+    public double additiveScalarMinimizer(Var y, Var fx) {
 
         // compute residuals
 
@@ -122,7 +122,7 @@ public class HuberLoss implements Loss {
     }
 
     @Override
-    public VarDouble computeGradient(Var y, Var y_hat) {
+    public VarDouble gradient(Var y, Var y_hat) {
 
         // compute absolute residuals
 
@@ -149,7 +149,7 @@ public class HuberLoss implements Loss {
     }
 
     @Override
-    public VarDouble computeError(Var y, Var y_hat) {
+    public VarDouble error(Var y, Var y_hat) {
         return VarDouble.from(y.rowCount(), row -> {
             double a = Math.abs(y.getDouble(row) - y_hat.getDouble(row));
             return (a < alpha) ? (a * a / 2.0) : (alpha * a - alpha * alpha / 2);
@@ -157,12 +157,12 @@ public class HuberLoss implements Loss {
     }
 
     @Override
-    public double computeErrorScore(Var y, Var y_hat) {
-        return computeError(y, y_hat).op().nansum();
+    public double errorScore(Var y, Var y_hat) {
+        return error(y, y_hat).op().nansum();
     }
 
     @Override
-    public double computeResidualErrorScore(Var residual) {
+    public double residualErrorScore(Var residual) {
         double score = 0.0;
         for (int i = 0; i < residual.rowCount(); i++) {
             double a = Math.abs(residual.getDouble(i));

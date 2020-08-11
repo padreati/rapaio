@@ -229,6 +229,7 @@ of production ready tools from this field.
 * Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)
 * Linear: BinaryLogistic (optionally L2 penalization)
 * Boosting: AdaBoost
+* Boosting: GBT Classifier
 
 **Regression**
 
@@ -289,7 +290,6 @@ ready state. Until that happens, these are the experimental features:
   * variable importance: frequency, gain and permutation based
 * Ensemble: CForest - Bagging, Random Forests
 * SVM: BinarySMO (Platt)
-* Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
 
 **Regression**

@@ -40,7 +40,7 @@ public class GBTRegressionTest {
                         err.addMissing();
                         return;
                     }
-                    double e = loss.computeErrorScore(advertise.rvar("Sales"),
+                    double e = loss.errorScore(advertise.rvar("Sales"),
                             m.predict(advertise).firstPrediction());
                     err.addDouble(e);
                 });

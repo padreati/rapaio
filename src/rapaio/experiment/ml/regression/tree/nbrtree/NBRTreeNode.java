@@ -119,7 +119,7 @@ public class NBRTreeNode implements Serializable {
         String[] testVarNames = varSelector.nextVarNames();
         VarDouble prediction = VarDouble.fill(df.rowCount(), 0.0);
 
-        double residualErrorScore = tree.getLoss().computeResidualErrorScore(y);
+        double residualErrorScore = tree.getLoss().residualErrorScore(y);
 
         for (int k = 0; k < tree.getBasisCount(); k++) {
             Candidate bestCandidate = null;
@@ -151,7 +151,7 @@ public class NBRTreeNode implements Serializable {
                     factor * tree.getLearningRate() * bc.prediction.getDouble(r));
             prediction = VarDouble.from(y.rowCount(), r -> oldPrediction.getDouble(r) +
                     factor * tree.getLearningRate() * bc.prediction.getDouble(r));
-            residualErrorScore = tree.getLoss().computeResidualErrorScore(y);
+            residualErrorScore = tree.getLoss().residualErrorScore(y);
         }
 
         // check if we found something
@@ -284,7 +284,7 @@ public class NBRTreeNode implements Serializable {
         if (pred == null) {
             return new Candidate(Double.NaN, testVarName, function, null);
         }
-        double score = tree.getLoss().computeErrorScore(y, pred);
+        double score = tree.getLoss().errorScore(y, pred);
         return new Candidate(score, testVarName, function, pred);
     }
 }

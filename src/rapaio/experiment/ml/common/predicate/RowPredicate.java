@@ -47,8 +47,6 @@ public interface RowPredicate extends Serializable {
      */
     boolean test(int row, Frame df);
 
-    String toString();
-
     static RowPredicate all() {
         return new All();
     }

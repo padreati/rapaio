@@ -121,9 +121,9 @@ public class RTreeNode implements Serializable {
         return depth;
     }
 
-    public void boostUpdate(Frame x, Var y, Var fx, Loss lossFunction, RTreeSplitter splitter) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, RTreeSplitter splitter) {
         if (leaf) {
-            value = lossFunction.computeAdditiveConstantMinimizer(y, fx);
+            value = loss.additiveScalarMinimizer(y, fx);
             return;
         }
 
@@ -139,7 +139,7 @@ public class RTreeNode implements Serializable {
                     x.mapRows(mappings.get(i)),
                     y.mapRows(mappings.get(i)),
                     fx.mapRows(mappings.get(i)),
-                    lossFunction, splitter);
+                    loss, splitter);
         }
     }
 }
