@@ -31,11 +31,14 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.ml.regression.tree.RTreeLoss;
+import rapaio.ml.regression.tree.rtree.SearchPayload;
+import rapaio.util.collection.DoubleArrayTools;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
  */
-public class L2Loss implements Loss {
+public class L2Loss implements Loss, RTreeLoss {
 
     private static final long serialVersionUID = 5089493401870663231L;
 
@@ -94,5 +97,15 @@ public class L2Loss implements Loss {
     @Override
     public boolean equalOnParams(Loss object) {
         return true;
+    }
+
+    @Override
+    public double computeSplitLossScore(SearchPayload payload) {
+        double down = DoubleArrayTools.sum(payload.splitWeight, 0, payload.splitWeight.length);
+        double up = 0.0;
+        for (int i = 0; i < payload.splits; i++) {
+            up += payload.splitWeight[i] * payload.splitVar[i];
+        }
+        return (down == 0) ? 0.0 : payload.totalVar - up / down;
     }
 }

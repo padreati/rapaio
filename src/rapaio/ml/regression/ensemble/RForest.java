@@ -41,7 +41,7 @@ import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
+import rapaio.ml.regression.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 
@@ -70,7 +70,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
                 .model.set(RTree
                         .newCART()
                         .varSelector.set(VarSelector.all())
-                        .splitter.set(RTreeSplitter.RANDOM)
+                        .splitter.set(Splitter.Random)
                         .minCount.set(1)
                 );
     }
@@ -79,7 +79,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return new RForest()
                 .model.set(RTree.newCART()
                         .varSelector.set(VarSelector.auto())
-                        .splitter.set(RTreeSplitter.RANDOM)
+                        .splitter.set(Splitter.Random)
                         .minCount.set(1)
                 );
     }
@@ -93,7 +93,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     public final Param<RegressionModel, RForest> model = new ValueParam<>(this,
             RTree.newCART()
                     .varSelector.set(VarSelector.auto())
-                    .splitter.set(RTreeSplitter.RANDOM)
+                    .splitter.set(Splitter.Random)
                     .minCount.set(1),
             "model",
             "Weak learner model",

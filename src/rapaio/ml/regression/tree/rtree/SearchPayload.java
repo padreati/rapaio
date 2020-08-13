@@ -28,12 +28,11 @@
 package rapaio.ml.regression.tree.rtree;
 
 /**
- * Class used to pass information computed by
- * test function to the method used to evaluate split
+ * Class used to pass information computed by search function to the method used to evaluate split
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
  */
-public class RTreeTestPayload {
+public class SearchPayload {
 
     public final int splits;
     public double totalVar;
@@ -41,7 +40,7 @@ public class RTreeTestPayload {
     public final double[] splitWeight;
     public final double[] splitVar;
 
-    public RTreeTestPayload(int splits) {
+    public SearchPayload(int splits) {
         this.splits = splits;
         this.splitVar = new double[splits];
         this.splitWeight = new double[splits];

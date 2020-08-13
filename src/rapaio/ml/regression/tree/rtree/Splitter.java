@@ -50,68 +50,37 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/14.
  */
-public interface RTreeSplitter extends Serializable {
-
-    /**
-     * @return name of the splitter class
-     */
-    String name();
-
-    /**
-     * Perform the splitting but returns only the mappings for each branch
-     *
-     * @param df              source data frame
-     * @param weights         source weights
-     * @param groupPredicates predicates used for splitting
-     * @return a list of mappings, one for each rule
-     */
-    List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates);
+public enum Splitter implements Serializable {
 
     /**
      * Do the regular split of instances and simply ignores the ones which do not
      * meet any of the predicates.
      */
-    RTreeSplitter IGNORE = new RTreeSplitter() {
-        private static final long serialVersionUID = -3841482294679686355L;
-
-        @Override
-        public String name() {
-            return "Ignore";
-        }
-
+    Ignore {
         @Override
         public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            List<Mapping> mapList = Util.createMapList(df.rowCount(), groupPredicates);
+            List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
             for (int row = 0; row < df.rowCount(); row++) {
-                int group = Util.getMatchedPredicate(df, row, groupPredicates);
+                int group = getMatchedPredicate(df, row, groupPredicates);
                 if (group != -1) {
                     mapList.get(group).add(row);
                 }
             }
             return mapList;
         }
-    };
-
+    },
     /**
      * Instances are splited as usual, all not matched instances are assigned
      * to the rule which has most matched instances.
      */
-    RTreeSplitter MAJORITY = new RTreeSplitter() {
-
-        private static final long serialVersionUID = 5206066415613740170L;
-
-        @Override
-        public String name() {
-            return "Majority";
-        }
-
+    Majority {
         @Override
         public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            List<Mapping> mapList = Util.createMapList(df.rowCount(), groupPredicates);
+            List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
             double[] w = new double[mapList.size()];
             Mapping missing = Mapping.empty();
             for (int row = 0; row < df.rowCount(); row++) {
-                int group = Util.getMatchedPredicate(df, row, groupPredicates);
+                int group = getMatchedPredicate(df, row, groupPredicates);
                 if (group != -1) {
                     mapList.get(group).add(row);
                     w[group] += weights.getDouble(row);
@@ -140,25 +109,17 @@ public interface RTreeSplitter extends Serializable {
             }
             return mapList;
         }
-    };
-
+    },
     /**
      * Regular splitting and distribute remaining instances
      * randomly between regular nodes.
      */
-    RTreeSplitter RANDOM = new RTreeSplitter() {
-        private static final long serialVersionUID = -592529235216896819L;
-
-        @Override
-        public String name() {
-            return "Random";
-        }
-
+    Random {
         @Override
         public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            List<Mapping> mapList = Util.createMapList(df.rowCount(), groupPredicates);
+            List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
             for (int row = 0; row < df.rowCount(); row++) {
-                int group = Util.getMatchedPredicate(df, row, groupPredicates);
+                int group = getMatchedPredicate(df, row, groupPredicates);
                 if (group != -1) {
                     mapList.get(group).add(row);
                 } else {
@@ -169,21 +130,22 @@ public interface RTreeSplitter extends Serializable {
             return mapList;
         }
     };
-}
 
-/*
-Regular splitting performs a split for each candidate rule and keep the missing rows into a separate list.
- */
-final class Util {
+    /**
+     * Perform the splitting but returns only the mappings for each branch
+     *
+     * @param df              source data frame
+     * @param weights         source weights
+     * @param groupPredicates predicates used for splitting
+     * @return a list of mappings, one for each rule
+     */
+    public abstract List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates);
 
-    private Util() {
-    }
-
-    public static List<Mapping> createMapList(int capacity, List<RowPredicate> groupPredicates) {
+    private static List<Mapping> createMapList(int capacity, List<RowPredicate> groupPredicates) {
         return IntStream.range(0, groupPredicates.size()).boxed().map(i -> new ArrayMapping()).collect(Collectors.toList());
     }
 
-    public static int getMatchedPredicate(Frame df, int row, List<RowPredicate> predicates) {
+    private static int getMatchedPredicate(Frame df, int row, List<RowPredicate> predicates) {
         for (int i = 0; i < predicates.size(); i++) {
             RowPredicate predicate = predicates.get(i);
             if (predicate.test(row, df)) {

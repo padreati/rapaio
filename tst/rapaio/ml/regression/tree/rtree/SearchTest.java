@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
-public class RTreeTestTest {
+public class SearchTest {
 
     private static final String TARGET = "humidity";
     private static final String NUM_TEST = "temp";
@@ -35,23 +35,20 @@ public class RTreeTestTest {
     @Test
     void ignoreTest() {
 
-        RTreeTest m = RTreeTest.Ignore;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
-
-        assertEquals("Ignore", m.name());
+        Search m = Search.Ignore;
+        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
         assertFalse(cs.isPresent());
     }
 
     @Test
     void nominalFullTest() {
 
-        RTreeTest m = RTreeTest.NominalFull;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
+        Search m = Search.NominalFull;
+        Optional<Candidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
 
-        assertEquals("NomFull", m.name());
         assertTrue(cs.isPresent());
 
-        RTreeCandidate c = cs.get();
+        Candidate c = cs.get();
         assertEquals(NOM_TEST, c.getTestName());
 
         assertEquals(3, c.getGroupNames().size());
@@ -66,39 +63,25 @@ public class RTreeTestTest {
 
     @Test
     void nominalFullTestFailed() {
-
-        RTreeTest m = RTreeTest.NominalFull;
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df.mapRows(1), w.mapRows(1), NOM_TEST, TARGET);
-
-        assertEquals("NomFull", m.name());
+        Optional<Candidate> cs = Search.NominalFull.computeCandidate(tree, df.mapRows(1), w.mapRows(1), NOM_TEST, TARGET);
         assertFalse(cs.isPresent());
     }
 
     @Test
     void nominalBinaryTest() {
-        RTreeTest m = RTreeTest.NominalBinary;
-
-        assertEquals("NomBin", m.name());
-
-        Optional<RTreeCandidate> cs = m.computeCandidate(tree, df, w, NOM_TEST, TARGET);
-
+        Optional<Candidate> cs = Search.NominalBinary.computeCandidate(tree, df, w, NOM_TEST, TARGET);
         assertTrue(cs.isPresent());
-
         assertEquals("Candidate{score=4.318367346938771, testName='outlook', groupNames=[outlook = 'overcast', outlook != 'overcast']}",
                 cs.get().toString());
     }
 
     @Test
     void numericBinaryTest() {
-        RTreeTest m = RTreeTest.NumericBinary;
-
-        assertEquals("NumBin", m.name());
-
         Var target = df.rvar(TARGET).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var test = df.rvar(NUM_TEST).fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
         Var weights = w.fapply(new VRefSort(df.rvar(NUM_TEST).refComparator()));
 
-        Optional<RTreeCandidate> c = m.computeCandidate(tree, df, w, NUM_TEST, TARGET);
+        Optional<Candidate> c = Search.NumericBinary.computeCandidate(tree, df, w, NUM_TEST, TARGET);
 
         assertTrue(c.isPresent());
         assertEquals(32.657653061224515, c.get().getScore(), 1e-12);

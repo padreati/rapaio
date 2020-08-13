@@ -46,11 +46,11 @@ import rapaio.data.filter.FRefSort;
 import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
 import rapaio.data.sample.Sample;
-import rapaio.experiment.ml.classifier.tree.CTree;
-import rapaio.experiment.ml.classifier.tree.CTreeNode;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.ctree.Node;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.Confusion;
@@ -199,11 +199,11 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         return Confusion.from(oobTrueClass, oobFit);
     }
 
-    public Frame getFreqVIInfo() {
+    private Frame getVIInfo(Map<String, List<Double>> viMap) {
         Var name = VarNominal.empty().withName("name");
         Var score = VarDouble.empty().withName("score mean");
         Var sd = VarDouble.empty().withName("score sd");
-        for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
+        for (Map.Entry<String, List<Double>> e : viMap.entrySet()) {
             name.addLabel(e.getKey());
             VarDouble scores = VarDouble.copy(e.getValue());
             sd.addDouble(Variance.of(scores).sdValue());
@@ -214,19 +214,12 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
     }
 
+    public Frame getFreqVInfo() {
+        return getVIInfo(freqVIMap);
+    }
+
     public Frame getGainVIInfo() {
-        Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("score mean");
-        Var sd = VarDouble.empty().withName("score sd");
-        for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
-            name.addLabel(e.getKey());
-            VarDouble scores = VarDouble.copy(e.getValue());
-            sd.addDouble(Variance.of(scores).sdValue());
-            score.addDouble(Mean.of(scores).value());
-        }
-        double maxScore = Maximum.of(score).value();
-        Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
-        return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
+        return getVIInfo(gainVIMap);
     }
 
     public Frame getPermVIInfo() {
@@ -378,13 +371,13 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         }
     }
 
-    private void collectGainVI(CTreeNode node, DensityVector<String> dv) {
-        if (node.isLeaf())
+    private void collectGainVI(Node node, DensityVector<String> dv) {
+        if (node.leaf)
             return;
-        String varName = node.getBestCandidate().getTestName();
-        double score = Math.abs(node.getBestCandidate().getScore());
-        dv.increment(varName, score * node.getDensity().sum());
-        node.getChildren().forEach(child -> collectGainVI(child, dv));
+        String varName = node.bestCandidate.testName;
+        double score = Math.abs(node.bestCandidate.score);
+        dv.increment(varName, score * node.density.sum());
+        node.children.forEach(child -> collectGainVI(child, dv));
     }
 
     private void freqVICompute(Pair<ClassifierModel, VarInt> weak) {
@@ -400,13 +393,13 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         }
     }
 
-    private void collectFreqVI(CTreeNode node, DensityVector<String> dv) {
-        if (node.isLeaf())
+    private void collectFreqVI(Node node, DensityVector<String> dv) {
+        if (node.leaf)
             return;
-        String varName = node.getBestCandidate().getTestName();
-        double score = Math.abs(node.getBestCandidate().getScore());
-        dv.increment(varName, node.getDensity().sum());
-        node.getChildren().forEach(child -> collectFreqVI(child, dv));
+        String varName = node.bestCandidate.testName;
+        double score = Math.abs(node.bestCandidate.score);
+        dv.increment(varName, node.density.sum());
+        node.children.forEach(child -> collectFreqVI(child, dv));
     }
 
     private void oobCompute(Frame df, Pair<ClassifierModel, VarInt> weak) {

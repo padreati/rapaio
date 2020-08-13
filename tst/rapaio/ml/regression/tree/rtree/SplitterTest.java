@@ -38,20 +38,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RTreeSplitterTest {
+public class SplitterTest {
 
     private static final double TOL = 1e-20;
 
     private Frame df;
     private Var w;
-    private RTreeCandidate candidate;
+    private Candidate candidate;
 
     @BeforeEach
     void setUp() {
         w = VarDouble.empty();
         df = SolidFrame.byVars(VarDouble.empty().withName("x"));
 
-        candidate = new RTreeCandidate(0, "");
+        candidate = new Candidate(0, "");
         candidate.addGroup(RowPredicate.numLess("x", 10));
         candidate.addGroup(RowPredicate.numGreater("x", 20));
     }
@@ -79,13 +79,11 @@ public class RTreeSplitterTest {
     @Test
     void testIgnoreMissing() {
 
-        RTreeSplitter splitter = RTreeSplitter.IGNORE;
         populate(0, 2, 1);
         populate(1, 2, 2);
         populate(2, 2, 3);
-        assertEquals("Ignore", splitter.name());
 
-        List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Ignore.performSplitMapping(df, w, candidate.getGroupPredicates());
         assertEquals(2, result.size());
 
         assertEquals(2, df.mapRows(result.get(0)).rowCount());
@@ -101,13 +99,11 @@ public class RTreeSplitterTest {
     @Test
     void testRemainsWithMajority() {
 
-        RTreeSplitter splitter = RTreeSplitter.MAJORITY;
         populate(0, 10, 1);
         populate(1, 7, 2);
         populate(2, 2, 3);
-        assertEquals("Majority", splitter.name());
 
-        List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Majority.performSplitMapping(df, w, candidate.getGroupPredicates());
 
         // groups
         assertEquals(2, result.size());
@@ -125,13 +121,11 @@ public class RTreeSplitterTest {
 
     @Test
     void testRemainsToAllRandom() {
-        RTreeSplitter splitter = RTreeSplitter.RANDOM;
         populate(0, 10, 1);
         populate(1, 7, 2);
         populate(2, 20, 3);
-        assertEquals("Random", splitter.name());
 
-        List<Mapping> result = splitter.performSplitMapping(df, w, candidate.getGroupPredicates());
+        List<Mapping> result = Splitter.Random.performSplitMapping(df, w, candidate.getGroupPredicates());
 
         // groups
         assertEquals(2, result.size());

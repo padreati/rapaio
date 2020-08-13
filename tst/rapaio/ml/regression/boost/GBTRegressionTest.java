@@ -8,7 +8,7 @@ import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
+import rapaio.ml.regression.tree.rtree.Splitter;
 
 import java.io.IOException;
 
@@ -64,18 +64,18 @@ public class GBTRegressionTest {
         assertEquals("GBTRegression", model.name());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}," +
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}," +
                 "runs=100}", model.fullName());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}," +
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}," +
                 "runs=100}; fitted=false", model.toString());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: GBTRegression\n" +
                 "Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}},runs=100}\n" +
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}\n" +
                 "> model not trained.\n" +
                 "\n", model.toSummary());
 
@@ -87,17 +87,18 @@ public class GBTRegressionTest {
         assertEquals("GBTRegression", model.name());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}," +
-                "runs=100}", model.fullName());
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary," +
+                "STRING=Ignore}},runs=100}", model.fullName());
 
         assertEquals("GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority," +
-                "testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}," +
+                "testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}," +
                 "runs=100}; fitted=true, fitted trees:100", model.toString());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: GBTRegression\n" +
-                "Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}},runs=100}\n" +
+                "Model instance: GBTRegression{nodeModel=RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary," +
+                "NOMINAL=NominalBinary,DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}},runs=100}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. TV        dbl \n" +
@@ -125,7 +126,7 @@ public class GBTRegressionTest {
 
         model = GBTRegression.newModel()
                 .runs.set(120)
-                .model.set(RTree.newCART().splitter.set(RTreeSplitter.IGNORE));
+                .model.set(RTree.newCART().splitter.set(Splitter.Ignore));
         copy = model.newInstance();
 
         assertEquals(model.toString(), copy.toString());

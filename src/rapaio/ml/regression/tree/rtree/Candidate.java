@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.
  */
-public class RTreeCandidate implements Serializable {
+public class Candidate implements Serializable {
 
     private static final long serialVersionUID = 6698766675237089849L;
     private final double score;
@@ -44,7 +44,7 @@ public class RTreeCandidate implements Serializable {
     private final List<String> groupNames = new ArrayList<>();
     private final List<RowPredicate> groupPredicates = new ArrayList<>();
 
-    public RTreeCandidate(double score, String testName) {
+    public Candidate(double score, String testName) {
         this.score = score;
         this.testName = testName;
     }

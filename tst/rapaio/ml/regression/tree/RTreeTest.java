@@ -43,8 +43,8 @@ import rapaio.ml.eval.metric.RMSE;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
-import rapaio.ml.regression.tree.rtree.RTreeTest;
+import rapaio.ml.regression.tree.rtree.Search;
+import rapaio.ml.regression.tree.rtree.Splitter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/5/15.
  */
-public class RTreeJTest {
+public class RTreeTest {
 
     public static final String Sales = "Sales";
     private static final double TOL = 1e-20;
@@ -77,14 +77,14 @@ public class RTreeJTest {
         RTree rt1 = RTree.newCART()
                 .maxDepth.set(2)
                 .maxSize.set(10)
-                .test.add(VType.BINARY, RTreeTest.Ignore)
-                .test.add(VType.INT, RTreeTest.Ignore)
-                .test.add(VType.LONG, RTreeTest.Ignore)
-                .test.add(VType.DOUBLE, RTreeTest.Ignore)
-                .test.add(VType.NOMINAL, RTreeTest.Ignore)
-                .test.add(VType.STRING, RTreeTest.Ignore)
+                .search.add(VType.BINARY, Search.Ignore)
+                .search.add(VType.INT, Search.Ignore)
+                .search.add(VType.LONG, Search.Ignore)
+                .search.add(VType.DOUBLE, Search.Ignore)
+                .search.add(VType.NOMINAL, Search.Ignore)
+                .search.add(VType.STRING, Search.Ignore)
                 .loss.set(new L2Loss())
-                .splitter.set(RTreeSplitter.IGNORE)
+                .splitter.set(Splitter.Ignore)
                 .varSelector.set(VarSelector.auto())
                 .runs.set(10)
                 .poolSize.set(10)
@@ -97,7 +97,7 @@ public class RTreeJTest {
 
         assertEquals(2, rt2.maxDepth.get());
         assertEquals(10, rt2.maxSize.get());
-        assertEquals(rt1.test.get(), rt2.test.get());
+        assertEquals(rt1.search.get(), rt2.search.get());
         assertEquals("L2", rt2.loss.get().name());
         assertEquals("Ignore", rt2.splitter.get().name());
         assertEquals("VarSelector[AUTO]", rt2.varSelector.get().name());
@@ -114,17 +114,19 @@ public class RTreeJTest {
                 "testMap={BINARY=Ignore,INT=Ignore,NOMINAL=Ignore,DOUBLE=Ignore,LONG=Ignore,STRING=Ignore}," +
                 "varSelector=VarSelector[AUTO]}", rt2.fullName());
 
-        Map<VType, RTreeTest> emptyMap = new HashMap<>();
-        assertEquals(emptyMap, RTree.newDecisionStump().test.set(emptyMap).test.get());
+        Map<VType, Search> emptyMap = new HashMap<>();
+        assertEquals(emptyMap, RTree.newDecisionStump().search.set(emptyMap).search.get());
     }
 
     @Test
     void testBuilders() {
-        assertEquals("RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}", RTree.newDecisionStump().fullName());
+        assertEquals("RTree{maxDepth=2,splitter=Majority,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary," +
+                "DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}", RTree.newDecisionStump().fullName());
 
         assertEquals("RTree{minCount=2,splitter=Random}", RTree.newC45().fullName());
 
-        assertEquals("RTree{splitter=Random,testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}", RTree.newCART().fullName());
+        assertEquals("RTree{splitter=Random,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary," +
+                "DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}", RTree.newCART().fullName());
     }
 
     @Test
@@ -140,7 +142,8 @@ public class RTreeJTest {
         tree.fit(t, "Sales");
 
         assertEquals("\n" +
-                " > RTree{maxDepth=10,minCount=4,splitter=Random,testMap={BINARY=NumBin,INT=NumBin,NOMINAL=NomBin,DOUBLE=NumBin,LONG=NumBin,STRING=Ignore}}\n" +
+                " > RTree{maxDepth=10,minCount=4,splitter=Random,testMap={BINARY=NumericBinary,INT=NumericBinary,NOMINAL=NominalBinary," +
+                "DOUBLE=NumericBinary,LONG=NumericBinary,STRING=Ignore}}\n" +
                 " model fitted: true\n" +
                 "\n" +
                 "description:\n" +

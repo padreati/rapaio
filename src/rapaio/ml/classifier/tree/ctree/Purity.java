@@ -25,80 +25,38 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.tree;
+package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.core.tests.ChiSqIndependence;
 import rapaio.core.tools.DensityTable;
+import rapaio.util.collection.DoubleArrayTools;
 
 import java.io.Serializable;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-public interface CTreePurityFunction extends Serializable {
+public enum Purity implements Serializable {
 
-    String name();
-
-    double compute(DensityTable<String, String> dt);
-
-    CTreePurityFunction InfoGain = new CTreePurityFunction() {
-        private static final long serialVersionUID = 152790997381399918L;
-
+    InfoGain {
         @Override
         public double compute(DensityTable<String, String> dt) {
-            return dt.getTools().splitByRowInfoGain();
+            return dt.splitByRowInfoGain();
         }
-
-        @Override
-        public String name() {
-            return "InfoGain";
-        }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-    CTreePurityFunction GainRatio = new CTreePurityFunction() {
-        private static final long serialVersionUID = -2478996054579932911L;
-
-        @Override
-        public String name() {
-            return "GainRatio";
-        }
-
+    },
+    GainRatio {
         @Override
         public double compute(DensityTable<String, String> dt) {
-            return dt.getTools().splitByRowGainRatio();
+            return dt.splitByRowGainRatio();
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-
-    CTreePurityFunction GiniGain = new CTreePurityFunction() {
-        private static final long serialVersionUID = 3547209320599654633L;
-
-        @Override
-        public String name() {
-            return "GiniGain";
-        }
-
+    },
+    GiniGain {
         @Override
         public double compute(DensityTable<String, String> dt) {
-            double[] rowTotals = new double[dt.rowCount()];
-            double[] colTotals = new double[dt.colCount()];
-            double total = 0.0;
-            for (int i = 0; i < dt.rowCount(); i++) {
-                // j = 1 just for optimization, we know that we should not have missing targets
-                for (int j = 0; j < dt.colCount(); j++) {
-                    rowTotals[i] += dt.get(i, j);
-                    colTotals[j] += dt.get(i, j);
-                    total += dt.get(i, j);
-                }
-            }
+
+            double[] rowTotals = dt.rowTotals();
+            double[] colTotals = dt.colTotals();
+            double total = DoubleArrayTools.nansum(rowTotals, 0, rowTotals.length);
             if (total <= 0) {
                 // no instances | all missing on test
                 return 0;
@@ -121,29 +79,13 @@ public interface CTreePurityFunction extends Serializable {
             }
             return gini;
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-    CTreePurityFunction ChiSquare = new CTreePurityFunction() {
-        private static final long serialVersionUID = 3547209320599654633L;
-
-        @Override
-        public String name() {
-            return "ChiSquare";
-        }
-
+    },
+    ChiSquare {
         @Override
         public double compute(DensityTable<String, String> dt) {
             return 1 - ChiSqIndependence.from(dt, false).pValue();
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
     };
 
+    public abstract double compute(DensityTable<String, String> dt);
 }

@@ -32,7 +32,6 @@ import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
-import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.tree.RTree;
 
 import java.io.Serializable;
@@ -48,63 +47,25 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/20/19.
  */
-public interface RTreeTest extends Serializable {
+public enum Search implements Serializable {
 
     /**
-     * @return name of the test method
-     */
-    String name();
-
-    /**
-     * Computes a list of candidates for the given test variable and target
-     * and selects the best one.
-     *
-     * @param tree          tree model
-     * @param df            instances from the current node
-     * @param w             weights of the instances from the current node
-     * @param testVarName   test variable name
-     * @param targetVarName target variable name
-     * @return the best candidate
-     */
-    Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName);
-
-    /**
-     * This test deliberately does not compute any reliable candidate which,
+     * This search deliberately does not compute any reliable candidate which,
      * as a consequence, determines the ignoring of the variable.
      */
-    RTreeTest Ignore = new RTreeTest() {
-        private static final long serialVersionUID = -5982576265221513285L;
-
+    Ignore {
         @Override
-        public String name() {
-            return "Ignore";
-        }
-
-        @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName) {
+        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName) {
             return Optional.empty();
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-
+    },
     /**
      * Selects the best candidate which splits instances in two child nodes
      * based on a test defined using double value representation.
      */
-    RTreeTest NumericBinary = new RTreeTest() {
-        private static final long serialVersionUID = 7573765926645246027L;
-
+    NumericBinary {
         @Override
-        public String name() {
-            return "NumBin";
-        }
-
-        @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree c, Frame df, Var weights, String testName, String targetName) {
 
             int testIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -137,10 +98,10 @@ public interface RTreeTest extends Serializable {
                 rightVar[i] = so.variance();
             }
 
-            RTreeCandidate best = null;
+            Candidate best = null;
             double bestScore = -1e100;
 
-            RTreeTestPayload p = new RTreeTestPayload(2);
+            SearchPayload p = new SearchPayload(2);
 
             p.totalVar = rightVar[0];
             p.totalWeight = rightWeight[0];
@@ -153,7 +114,7 @@ public interface RTreeTest extends Serializable {
                 p.splitVar[1] = rightVar[i + 1];
                 p.splitWeight[1] = rightWeight[i + 1];
 
-                double score = LossScore.computeLossScore(c.loss.get(), p);
+                double score = c.loss.get().computeSplitLossScore(p);
                 if (score < bestScore) {
                     continue;
                 }
@@ -161,7 +122,7 @@ public interface RTreeTest extends Serializable {
                     continue;
                 }
                 bestScore = score;
-                best = new RTreeCandidate(score, testName);
+                best = new Candidate(score, testName);
 
                 double testValue = (df.getDouble(rows[i], testName) + df.getDouble(rows[i + 1], testName)) / 2.0;
                 best.addGroup(RowPredicate.numLessEqual(testName, testValue));
@@ -169,27 +130,14 @@ public interface RTreeTest extends Serializable {
             }
             return (best != null) ? Optional.of(best) : Optional.empty();
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-
+    },
     /**
      * Builds one node for each label of the test variable, if at least
      * two of them have enough instances, empty list otherwise.
      */
-    RTreeTest NominalFull = new RTreeTest() {
-        private static final long serialVersionUID = 2733570883914611103L;
-
+    NominalFull {
         @Override
-        public String name() {
-            return "NomFull";
-        }
-
-        @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
 
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
@@ -226,7 +174,7 @@ public interface RTreeTest extends Serializable {
 
             // make the payload
             WeightedOnlineStat wos = WeightedOnlineStat.of(onlineStats);
-            RTreeTestPayload p = new RTreeTestPayload(len);
+            SearchPayload p = new SearchPayload(len);
 
             p.totalWeight = wos.weightSum();
             p.totalVar = wos.variance();
@@ -238,36 +186,23 @@ public interface RTreeTest extends Serializable {
 
             // compute the candidate score
 
-            double value = LossScore.computeLossScore(tree.loss.get(), p);
-            RTreeCandidate candidate = new RTreeCandidate(value, testName);
+            double value = tree.loss.get().computeSplitLossScore(p);
+            Candidate candidate = new Candidate(value, testName);
             for (int i = 0; i < len; i++) {
                 String label = testLevels.get(i + 1);
                 candidate.addGroup(RowPredicate.nomEqual(testName, label));
             }
             return Optional.of(candidate);
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-    };
-
+    },
     /**
      * Builds one candidate for each label of the test nominal
      * variable against all other labels, in the case when
      * for selected labels there are instances
      */
-    RTreeTest NominalBinary = new RTreeTest() {
-        private static final long serialVersionUID = -4703727362952157041L;
-
+    NominalBinary {
         @Override
-        public String name() {
-            return "NomBin";
-        }
-
-        @Override
-        public Optional<RTreeCandidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
+        public Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testName, String targetName) {
 
             int testNameIndex = df.varIndex(testName);
             int targetIndex = df.varIndex(targetName);
@@ -290,7 +225,7 @@ public interface RTreeTest extends Serializable {
 
             WeightedOnlineStat wos = WeightedOnlineStat.of(onlineStats);
 
-            RTreeCandidate best = null;
+            Candidate best = null;
             double bestScore = Double.NaN;
 
             // for each class compute a possible split
@@ -311,7 +246,7 @@ public interface RTreeTest extends Serializable {
                 }
 
                 // build payload to compute score
-                RTreeTestPayload p = new RTreeTestPayload(2);
+                SearchPayload p = new SearchPayload(2);
                 p.totalVar = wos.variance();
                 p.totalWeight = wos.weightSum();
 
@@ -323,37 +258,29 @@ public interface RTreeTest extends Serializable {
                 p.splitVar[1] = wosRemain.variance();
                 p.splitWeight[1] = wosRemain.weightSum();
 
-                double value = LossScore.computeLossScore(tree.loss.get(), p);
+                double value = tree.loss.get().computeSplitLossScore(p);
 
                 if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
-                    best = new RTreeCandidate(value, testName);
+                    best = new Candidate(value, testName);
                     best.addGroup(RowPredicate.nomEqual(testName, testLevels.get(i + 1)));
                     best.addGroup(RowPredicate.nomNotEqual(testName, testLevels.get(i + 1)));
                 }
             }
             return (best == null) ? Optional.empty() : Optional.of(best);
         }
-
-        @Override
-        public String toString() {
-            return name();
-        }
     };
-}
 
-final class LossScore {
-
-    public static double computeLossScore(Loss loss, RTreeTestPayload payload) {
-        if ("L2".equals(loss.name())) {
-            double down = 0.0;
-            double up = 0.0;
-            for (int i = 0; i < payload.splits; i++) {
-                down += payload.splitWeight[i];
-                up += payload.splitWeight[i] * payload.splitVar[i];
-            }
-            return (down == 0) ? 0.0 : payload.totalVar - up / down;
-        }
-        return Double.NaN;
-    }
+    /**
+     * Computes a list of candidates for the given test variable and target
+     * and selects the best one.
+     *
+     * @param tree          tree model
+     * @param df            instances from the current node
+     * @param w             weights of the instances from the current node
+     * @param testVarName   test variable name
+     * @param targetVarName target variable name
+     * @return the best candidate
+     */
+    public abstract Optional<Candidate> computeCandidate(RTree tree, Frame df, Var w, String testVarName, String targetVarName);
 }

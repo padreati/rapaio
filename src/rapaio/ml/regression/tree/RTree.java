@@ -45,10 +45,10 @@ import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.AbstractRegressionModel;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.tree.rtree.RTreeCandidate;
-import rapaio.ml.regression.tree.rtree.RTreeNode;
-import rapaio.ml.regression.tree.rtree.RTreeSplitter;
-import rapaio.ml.regression.tree.rtree.RTreeTest;
+import rapaio.ml.regression.tree.rtree.Candidate;
+import rapaio.ml.regression.tree.rtree.Node;
+import rapaio.ml.regression.tree.rtree.Search;
+import rapaio.ml.regression.tree.rtree.Splitter;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.util.DoublePair;
@@ -77,45 +77,45 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     public static RTree newDecisionStump() {
         return new RTree()
                 .maxDepth.set(2)
-                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.add(VType.INT, RTreeTest.NumericBinary)
-                .test.add(VType.BINARY, RTreeTest.NumericBinary)
-                .test.add(VType.NOMINAL, RTreeTest.NominalBinary)
-                .splitter.set(RTreeSplitter.MAJORITY);
+                .search.add(VType.DOUBLE, Search.NumericBinary)
+                .search.add(VType.INT, Search.NumericBinary)
+                .search.add(VType.BINARY, Search.NumericBinary)
+                .search.add(VType.NOMINAL, Search.NominalBinary)
+                .splitter.set(Splitter.Majority);
     }
 
     public static RTree newC45() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.add(VType.INT, RTreeTest.NumericBinary)
-                .test.add(VType.BINARY, RTreeTest.NumericBinary)
-                .test.add(VType.NOMINAL, RTreeTest.NominalFull)
-                .splitter.set(RTreeSplitter.RANDOM)
+                .search.add(VType.DOUBLE, Search.NumericBinary)
+                .search.add(VType.INT, Search.NumericBinary)
+                .search.add(VType.BINARY, Search.NumericBinary)
+                .search.add(VType.NOMINAL, Search.NominalFull)
+                .splitter.set(Splitter.Random)
                 .minCount.set(2);
     }
 
     public static RTree newCART() {
         return new RTree()
                 .maxDepth.set(Integer.MAX_VALUE)
-                .test.add(VType.DOUBLE, RTreeTest.NumericBinary)
-                .test.add(VType.INT, RTreeTest.NumericBinary)
-                .test.add(VType.BINARY, RTreeTest.NumericBinary)
-                .test.add(VType.NOMINAL, RTreeTest.NominalBinary)
-                .splitter.set(RTreeSplitter.RANDOM)
+                .search.add(VType.DOUBLE, Search.NumericBinary)
+                .search.add(VType.INT, Search.NumericBinary)
+                .search.add(VType.BINARY, Search.NumericBinary)
+                .search.add(VType.NOMINAL, Search.NominalBinary)
+                .splitter.set(Splitter.Random)
                 .minCount.set(1);
     }
 
-    private static final Map<VType, RTreeTest> DEFAULT_TEST_MAP;
+    private static final Map<VType, Search> DEFAULT_TEST_MAP;
 
     static {
         DEFAULT_TEST_MAP = new HashMap<>();
-        DEFAULT_TEST_MAP.put(VType.DOUBLE, RTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.INT, RTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.LONG, RTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.BINARY, RTreeTest.NumericBinary);
-        DEFAULT_TEST_MAP.put(VType.NOMINAL, RTreeTest.NominalFull);
-        DEFAULT_TEST_MAP.put(VType.STRING, RTreeTest.Ignore);
+        DEFAULT_TEST_MAP.put(VType.DOUBLE, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.INT, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.LONG, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.BINARY, Search.NumericBinary);
+        DEFAULT_TEST_MAP.put(VType.NOMINAL, Search.NominalFull);
+        DEFAULT_TEST_MAP.put(VType.STRING, Search.Ignore);
     }
 
     public final ValueParam<Integer, RTree> minCount = new ValueParam<>(this, 1,
@@ -138,12 +138,12 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             "Minimum quantity a split must gain to proceed further",
             Double::isFinite);
 
-    public final ValueParam<RTreeSplitter, RTree> splitter = new ValueParam<>(this, RTreeSplitter.IGNORE,
+    public final ValueParam<Splitter, RTree> splitter = new ValueParam<>(this, Splitter.Ignore,
             "splitter",
             "Method used to distribute observations with missing values on test variable on splitting a node",
             Objects::nonNull);
 
-    public final ValueParam<Loss, RTree> loss = new ValueParam<>(this, new L2Loss(),
+    public final ValueParam<RTreeLoss, RTree> loss = new ValueParam<>(this, new L2Loss(),
             "loss",
             "Loss function",
             Objects::nonNull);
@@ -153,14 +153,14 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             "Variable selection method used when selecting test variables at each node",
             Objects::nonNull);
 
-    public final MultiParam<VType, RTreeTest, RTree> test = new MultiParam<>(this, DEFAULT_TEST_MAP,
+    public final MultiParam<VType, Search, RTree> search = new MultiParam<>(this, DEFAULT_TEST_MAP,
             "testMap",
             "Map with test method for each variable type",
             Objects::nonNull);
 
     // tree root node
 
-    private RTreeNode root;
+    private Node root;
 
     private RTree() {
     }
@@ -187,7 +187,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
                 .build();
     }
 
-    public RTreeNode root() {
+    public Node root() {
         return root;
     }
 
@@ -202,61 +202,61 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         HashMap<Integer, Var> weightsMap = new HashMap<>();
 
         this.varSelector.get().withVarNames(inputNames());
-        root = new RTreeNode(id++, null, "root", (row, frame) -> true, 1);
+        root = new Node(null, id++, "root", (row, frame) -> true, 1);
 
         // prepare data for root
-        frameMap.put(root.id(), df);
-        weightsMap.put(root.id(), weights);
+        frameMap.put(root.id, df);
+        weightsMap.put(root.id, weights);
 
         // make queue and initialize it
 
-        Queue<RTreeNode> queue = new ConcurrentLinkedQueue<>();
+        Queue<Node> queue = new ConcurrentLinkedQueue<>();
         queue.add(root);
 
         while (!queue.isEmpty()) {
-            RTreeNode last = queue.poll();
-            int lastId = last.id();
+            Node last = queue.poll();
+            int lastId = last.id;
             Frame lastDf = frameMap.get(lastId);
             Var lastWeights = weightsMap.get(lastId);
             learnNode(last, lastDf, lastWeights);
 
-            if (last.isLeaf()) {
+            if (last.leaf) {
                 continue;
             }
             // now that we have a best candidate,do the effective split
 
-            List<RowPredicate> predicates = last.bestCandidate().getGroupPredicates();
+            List<RowPredicate> predicates = last.bestCandidate.getGroupPredicates();
             List<Mapping> mappings = splitter.get().performSplitMapping(lastDf, lastWeights, predicates);
 
             for (int i = 0; i < predicates.size(); i++) {
                 RowPredicate predicate = predicates.get(i);
-                RTreeNode child = new RTreeNode(id++, last, predicate.toString(), predicate, last.depth() + 1);
-                last.children().add(child);
+                Node child = new Node(last, id++, predicate.toString(), predicate, last.depth + 1);
+                last.children.add(child);
 
-                frameMap.put(child.id(), lastDf.mapRows(mappings.get(i)));
-                weightsMap.put(child.id(), lastWeights.mapRows(mappings.get(i)).copy());
+                frameMap.put(child.id, lastDf.mapRows(mappings.get(i)));
+                weightsMap.put(child.id, lastWeights.mapRows(mappings.get(i)).copy());
 
                 queue.add(child);
             }
 
-            frameMap.remove(last.id());
-            weightsMap.remove(last.id());
+            frameMap.remove(last.id);
+            weightsMap.remove(last.id);
         }
         return true;
     }
 
-    private void learnNode(RTreeNode node, Frame df, Var weights) {
+    private void learnNode(Node node, Frame df, Var weights) {
 
-        node.setLeaf(true);
-        node.setValue(loss.get().scalarMinimizer(df.rvar(firstTargetName()), weights));
-        node.setWeight(Sum.of(weights).value());
+        node.leaf = true;
+        node.value = loss.get().scalarMinimizer(df.rvar(firstTargetName()), weights);
+        node.weight = Sum.of(weights).value();
 
-        if (node.weight() == 0) {
-            node.setValue(node.getParent() != null ? node.getParent().value() : Double.NaN);
-            node.setWeight(node.getParent() != null ? node.getParent().value() : Double.NaN);
+        if (node.weight == 0) {
+            node.value = node.parent != null ? node.parent.value : Double.NaN;
+            node.weight = node.parent != null ? node.parent.value : Double.NaN;
             return;
         }
-        if (df.rowCount() <= minCount.get() || node.depth() >= (maxDepth.get() == -1 ? Integer.MAX_VALUE : maxDepth.get())) {
+        if (df.rowCount() <= minCount.get() || node.depth >= (maxDepth.get() == -1 ? Integer.MAX_VALUE : maxDepth.get())) {
             return;
         }
 
@@ -265,15 +265,15 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
             stream = stream.parallel();
         }
 
-        List<RTreeCandidate> candidates = stream
-                .map(testCol -> test.get(df.type(testCol))
+        List<Candidate> candidates = stream
+                .map(testCol -> search.get(df.type(testCol))
                         .computeCandidate(this, df, weights, testCol, firstTargetName())
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        RTreeCandidate bestCandidate = null;
-        for (RTreeCandidate candidate : candidates) {
+        Candidate bestCandidate = null;
+        for (Candidate candidate : candidates) {
             if (bestCandidate == null || candidate.getScore() >= bestCandidate.getScore()) {
                 bestCandidate = candidate;
             }
@@ -284,8 +284,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
                 || bestCandidate.getScore() <= minScore.get()) {
             return;
         }
-        node.setBestCandidate(bestCandidate);
-        node.setLeaf(false);
+        node.bestCandidate = bestCandidate;
+        node.leaf = false;
     }
 
     @Override
@@ -300,16 +300,16 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         return prediction;
     }
 
-    private DoublePair predict(int row, Frame df, RTreeNode node) {
+    private DoublePair predict(int row, Frame df, Node node) {
 
         // if we are at a leaf node we simply return what we found there
-        if (node.isLeaf())
-            return DoublePair.of(node.value(), node.weight());
+        if (node.leaf)
+            return DoublePair.of(node.value, node.weight);
 
         // if is an interior node, we check to see if there is a child
         // which can handle the instance
-        for (RTreeNode child : node.children())
-            if (child.predicate().test(row, df)) {
+        for (Node child : node.children)
+            if (child.predicate.test(row, df)) {
                 return predict(row, df, child);
             }
 
@@ -317,7 +317,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
         VarDouble values = VarDouble.empty();
         VarDouble weights = VarDouble.empty();
-        for (RTreeNode child : node.children()) {
+        for (Node child : node.children) {
             DoublePair prediction = predict(row, df, child);
             values.addDouble(prediction._1);
             weights.addDouble(prediction._2);
@@ -353,20 +353,20 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         return toSummary(printer, options);
     }
 
-    private void buildSummary(StringBuilder sb, RTreeNode node, int level) {
+    private void buildSummary(StringBuilder sb, Node node, int level) {
         sb.append("|");
         sb.append("   |".repeat(Math.max(0, level)));
-        sb.append(node.groupName()).append("  ");
+        sb.append(node.groupName).append("  ");
 
-        sb.append(floatFlex(node.value()));
-        sb.append(" (").append(floatFlex(node.weight())).append(") ");
-        if (node.isLeaf()) sb.append(" *");
+        sb.append(floatFlex(node.value));
+        sb.append(" (").append(floatFlex(node.weight)).append(") ");
+        if (node.leaf) sb.append(" *");
         sb.append("\n");
 
 //        children
 
-        if (!node.isLeaf()) {
-            node.children().forEach(child -> buildSummary(sb, child, level + 1));
+        if (!node.leaf) {
+            node.children.forEach(child -> buildSummary(sb, child, level + 1));
         }
     }
 

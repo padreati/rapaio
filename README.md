@@ -228,6 +228,13 @@ of production ready tools from this field.
 * OneRule
 * Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)
 * Linear: BinaryLogistic (optionally L2 penalization)
+* Decision Trees - CTree: DecisionStump, ID3, C45, CART
+  * purity: entropy, infogain, gain ration, gini index
+  * weight on instances
+  * split: numeric binary, nominal binary, nominal full
+  * missing value handling: ignore, random, majority, weighted
+  * reduced-error pruning
+  * variable importance: frequency, gain and permutation based
 * Boosting: AdaBoost
 * Boosting: GBT Classifier
 
@@ -281,13 +288,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* Decision Trees - CTree: DecisionStump, ID3, C45, CART
-  * purity: entropy, infogain, gain ration, gini index
-  * weight on instances
-  * split: numeric binary, nominal binary, nominal full
-  * missing value handling: ignore, random, majority, weighted
-  * reduced-error pruning
-  * variable importance: frequency, gain and permutation based
 * Ensemble: CForest - Bagging, Random Forests
 * SVM: BinarySMO (Platt)
 * Ensemble: SplitClassifier

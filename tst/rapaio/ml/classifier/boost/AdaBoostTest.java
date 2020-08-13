@@ -26,7 +26,7 @@ package rapaio.ml.classifier.boost;
 
 import org.junit.jupiter.api.Test;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
 
 import java.io.IOException;

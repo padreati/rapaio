@@ -259,68 +259,6 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         return false;
     }
 
-    public double splitByRowGiniGain() {
-        double[] rowTotals = new double[rowIndex.size()];
-        double[] colTotals = new double[colIndex.size()];
-        double total = 0.0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                rowTotals[i] += values[i][j];
-                colTotals[j] += values[i][j];
-                total += values[i][j];
-            }
-        }
-        if (total <= 0) {
-            return 1;
-        }
-
-        double gini = 1.0;
-        for (int i = 0; i < colIndex.size(); i++) {
-            gini -= Math.pow(colTotals[i] / total, 2);
-        }
-
-        for (int i = 0; i < rowIndex.size(); i++) {
-            double gini_k = 1;
-            for (int j = 0; j < colIndex.size(); j++) {
-                if (rowTotals[i] > 0)
-                    gini_k -= Math.pow(values[i][j] / rowTotals[i], 2);
-            }
-            gini -= gini_k * rowTotals[i] / total;
-        }
-        return gini;
-    }
-
-    public double splitByColGiniGain() {
-        double[] rowTotals = new double[rowIndex.size()];
-        double[] colTotals = new double[colIndex.size()];
-        double total = 0.0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            for (int j = 0; j < colIndex.size(); j++) {
-                rowTotals[i] += values[i][j];
-                colTotals[j] += values[i][j];
-                total += values[i][j];
-            }
-        }
-        if (total <= 0) {
-            return 1;
-        }
-
-        double gini = 1.0;
-        for (int i = 0; i < rowIndex.size(); i++) {
-            gini -= Math.pow(rowTotals[i] / total, 2);
-        }
-
-        for (int i = 0; i < colIndex.size(); i++) {
-            double gini_k = 1;
-            for (int j = 0; j < rowIndex.size(); j++) {
-                if (colTotals[i] > 0)
-                    gini_k -= Math.pow(values[j][i] / colTotals[i], 2);
-            }
-            gini -= gini_k * colTotals[i] / total;
-        }
-        return gini;
-    }
-
     public double[] rowTotals() {
         double[] totals = new double[rowIndex.size()];
         for (int i = 0; i < rowIndex.size(); i++) {
@@ -398,7 +336,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         TextTable tt = TextTable.empty(rowIndex.size() + 2, colIndex.size() + 2, 1, 0);
         putLevels(tt);
         tt.textRight(0, colIndex.size() + 1, "total");
@@ -434,25 +372,63 @@ public final class DensityTable<U, V> implements Printable, Serializable {
         }
     }
 
-    public Tools getTools() {
-        return new Tools();
+    public double splitByRowAverageEntropy() {
+        return concreteRowAverageEntropy.getSplitInfo();
     }
 
-    public class Tools {
+    public double splitByRowInfoGain() {
+        double totalColEntropy = concreteTotalColEntropy.getSplitInfo();
+        return totalColEntropy - splitByRowAverageEntropy();
+    }
 
-        public double splitByRowAverageEntropy() {
-            return concreteRowAverageEntropy.getSplitInfo();
+    public double splitByRowGainRatio() {
+        double splitByRowIntrinsicInfo = concreteRowIntrinsicInfo.getSplitInfo();
+        return splitByRowInfoGain() / splitByRowIntrinsicInfo;
+    }
+
+    public double splitByRowGiniGain() {
+        return giniGain(true);
+    }
+
+    public double splitByColGiniGain() {
+        return giniGain(false);
+    }
+
+    private double giniGain(boolean splitByRows) {
+        double[] rowTotals = new double[rowIndex.size()];
+        double[] colTotals = new double[colIndex.size()];
+        double total = 0.0;
+        for (int i = 0; i < rowIndex.size(); i++) {
+            for (int j = 0; j < colIndex.size(); j++) {
+                rowTotals[i] += values[i][j];
+                colTotals[j] += values[i][j];
+                total += values[i][j];
+            }
+        }
+        if (total <= 0) {
+            return 1;
         }
 
-        public double splitByRowInfoGain() {
-            double totalColEntropy = concreteTotalColEntropy.getSplitInfo();
-            return totalColEntropy - splitByRowAverageEntropy();
+        double[] splitByTotals = splitByRows ? rowTotals : colTotals;
+        double[] straightTotals = splitByRows ? colTotals : rowTotals;
+
+        double gini = 1.0;
+        for (double straightTotal : straightTotals) {
+            gini -= Math.pow(straightTotal / total, 2);
         }
 
-        public double splitByRowGainRatio() {
-            double splitByRowIntrinsicInfo = concreteRowIntrinsicInfo.getSplitInfo();
-            return splitByRowInfoGain() / splitByRowIntrinsicInfo;
+        for (int i = 0; i < splitByTotals.length; i++) {
+            double gini_k = 1;
+            for (int j = 0; j < straightTotals.length; j++) {
+                if (splitByTotals[i] > 0) {
+                    var value = splitByRows ? values[i][j] : values[j][i];
+                    gini_k -= Math.pow(value / splitByTotals[i], 2);
+                }
+            }
+            gini -= gini_k * splitByTotals[i] / total;
         }
+
+        return gini;
     }
 
     private final DensityTableFunction concreteRowAverageEntropy = new DensityTableFunction(true,

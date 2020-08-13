@@ -1,31 +1,4 @@
-/*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
-package rapaio.experiment.ml.classifier.tree;
+package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
@@ -46,35 +19,14 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/11/20.
  */
-public interface CTreeSplitter extends Serializable {
-
-    String name();
-
-    /**
-     * Splits the initial data set into pairs of frame and weights according with the
-     * policy for missing values implemented splitter.
-     *
-     * @param df         initial data set
-     * @param weights    initial weights
-     * @param predicates rules/criteria used to perform the splitting
-     * @return a pair with a list of frames and a list of weights
-     */
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);
+public enum Splitter implements Serializable {
 
     /**
      * Simply ignores the missing values, it will propagate only the instances which are accepted by a rule
      */
-    CTreeSplitter Ignored = new CTreeSplitter() {
-        private static final long serialVersionUID = -9017265383541294518L;
-
-        @Override
-        public String name() {
-            return "Ignored";
-        }
-
-        @Override
+    Ignore {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
@@ -94,21 +46,8 @@ public interface CTreeSplitter extends Serializable {
                     mappings.stream().map(weights::mapRows).collect(toList())
             );
         }
-
-    };
-
-    /**
-     * Put all missing values to the node with the highest weight
-     */
-    CTreeSplitter ToMajority = new CTreeSplitter() {
-        private static final long serialVersionUID = -5858151664805703831L;
-
-        @Override
-        public String name() {
-            return "ToMajority";
-        }
-
-        @Override
+    },
+    Majority {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> p) {
             List<Mapping> mappings = new ArrayList<>(p.size());
             for (int i = 0; i < p.size(); i++) {
@@ -147,15 +86,11 @@ public interface CTreeSplitter extends Serializable {
                     mappings.stream().map(weights::mapRows).collect(toList())
             );
         }
-    };
-
+    },
     /**
      * Put instances with missing value on test variable to all branches, with diminished weights
      */
-    CTreeSplitter ToAllWeighted = new CTreeSplitter() {
-        private static final long serialVersionUID = 5936044048099571710L;
-
-        @Override
+    Weighted {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
 
             List<Mapping> mappings = new ArrayList<>();
@@ -199,20 +134,11 @@ public interface CTreeSplitter extends Serializable {
             List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
             return Pair.from(frames, weighting);
         }
-
-        @Override
-        public String name() {
-            return "ToAllWeighted";
-        }
-    };
-
+    },
     /**
      * Assign randomly to any child the instances with missing value on test variable
      */
-    CTreeSplitter ToRandom = new CTreeSplitter() {
-        private static final long serialVersionUID = -4762758695801141929L;
-
-        @Override
+    Random {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
             List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
@@ -234,10 +160,18 @@ public interface CTreeSplitter extends Serializable {
             List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
             return Pair.from(frameList, weightList);
         }
-
-        @Override
-        public String name() {
-            return "ToRandom";
-        }
     };
+
+    /**
+     * Splits the initial data set into pairs of frame and weights according with the
+     * policy for missing values implemented splitter.
+     *
+     * @param df         initial data set
+     * @param weights    initial weights
+     * @param predicates rules/criteria used to perform the splitting
+     * @return a pair with a list of frames and a list of weights
+     */
+    public abstract Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> predicates);
+
+
 }

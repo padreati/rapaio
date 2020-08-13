@@ -27,6 +27,7 @@
 
 package rapaio.ml.regression.tree.rtree;
 
+import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -41,95 +42,33 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/2/17.
  */
-public class RTreeNode implements Serializable {
+@RequiredArgsConstructor
+public class Node implements Serializable {
 
     private static final long serialVersionUID = 385363626560575837L;
-    private final RTreeNode parent;
-    private final int id;
-    private final String groupName;
-    private final RowPredicate predicate;
-    private final int depth;
 
-    private boolean leaf = true;
-    private double value;
-    private double weight;
+    public final Node parent;
+    public final int id;
+    public final String groupName;
+    public final RowPredicate predicate;
+    public final int depth;
 
-    private final List<RTreeNode> children = new ArrayList<>();
-    private RTreeCandidate bestCandidate;
+    public boolean leaf = true;
+    public double value;
+    public double weight;
 
-    public RTreeNode(int id, RTreeNode parent, String groupName, RowPredicate predicate, int depth) {
-        this.id = id;
-        this.parent = parent;
-        this.groupName = groupName;
-        this.predicate = predicate;
-        this.depth = depth;
-    }
+    public final List<Node> children = new ArrayList<>();
+    public Candidate bestCandidate;
 
-    public RTreeNode getParent() {
-        return parent;
-    }
-
-    public int id() {
-        return id;
-    }
-
-    public String groupName() {
-        return groupName;
-    }
-
-    public RowPredicate predicate() {
-        return predicate;
-    }
-
-    public boolean isLeaf() {
-        return leaf;
-    }
-
-    public void setLeaf(boolean leaf) {
-        this.leaf = leaf;
-    }
-
-    public List<RTreeNode> children() {
-        return children;
-    }
-
-    public void setBestCandidate(RTreeCandidate bestCandidate) {
-        this.bestCandidate = bestCandidate;
-    }
-
-    public RTreeCandidate bestCandidate() {
-        return bestCandidate;
-    }
-
-    public double value() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public double weight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public int depth() {
-        return depth;
-    }
-
-    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, RTreeSplitter splitter) {
+    public void boostUpdate(Frame x, Var y, Var fx, Loss loss, Splitter splitter) {
         if (leaf) {
             value = loss.additiveScalarMinimizer(y, fx);
             return;
         }
 
         List<RowPredicate> groupPredicates = new ArrayList<>();
-        for (RTreeNode child : children) {
-            groupPredicates.add(child.predicate());
+        for (Node child : children) {
+            groupPredicates.add(child.predicate);
         }
 
         List<Mapping> mappings = splitter.performSplitMapping(x, VarDouble.fill(x.rowCount(), 1), groupPredicates);

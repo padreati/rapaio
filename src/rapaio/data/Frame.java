@@ -27,7 +27,9 @@
 
 package rapaio.data;
 
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.FFilter;
+import rapaio.data.filter.FRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.printer.Printable;
@@ -533,6 +535,20 @@ public interface Frame extends Serializable, Printable {
             df = filter.apply(df);
         }
         return df;
+    }
+
+    /**
+     * Sorts data frame ordered by given columns in ascending orders
+     *
+     * @param names list of columns
+     * @return sorted frame
+     */
+    default Frame refSort(String... names) {
+        IntComparator[] comparators = new IntComparator[names.length];
+        for (int i = 0; i < names.length; i++) {
+            comparators[i] = this.rvar(names[i]).refComparator();
+        }
+        return this.fapply(FRefSort.by(comparators));
     }
 
     String head();

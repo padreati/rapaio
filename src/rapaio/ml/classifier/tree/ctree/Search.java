@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.tree;
+package rapaio.ml.classifier.tree.ctree;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -34,6 +34,7 @@ import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
+import rapaio.ml.classifier.tree.CTree;
 
 import java.io.Serializable;
 
@@ -42,42 +43,17 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/15.
  */
-public interface CTreeTest extends Serializable {
+public enum Search implements Serializable {
 
-    String name();
-
-    CTreeCandidate computeCandidate(
-            CTree c, Frame df, Var w,
-            String testName, String targetName, CTreePurityFunction function);
-
-    CTreeTest Ignore = new CTreeTest() {
-
-        private static final long serialVersionUID = 2862814158096438654L;
-
+    Ignore {
         @Override
-        public String name() {
-            return "Ignore";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreePurityFunction function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function) {
             return null;
         }
-    };
-
-    CTreeTest NumericRandom = new CTreeTest() {
-
-        private static final long serialVersionUID = -4118895856520232216L;
-
+    },
+    NumericRandom {
         @Override
-        public String name() {
-            return "NumericRandom";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(
-                CTree c, Frame df, Var w, String testName, String targetName,
-                CTreePurityFunction function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function) {
 
             int split;
             while (true) {
@@ -96,28 +72,20 @@ public interface CTreeTest extends Serializable {
                     misCount++;
                     continue;
                 }
-                dt.increment(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName), w.getDouble(i));
+                dt.increment(df.getDouble(i, testName) <= testValue ? 0 : 1, df.getInt(i, targetName) - 1, w.getDouble(i));
             }
 
             double score = function.compute(dt);
-            CTreeCandidate best = new CTreeCandidate(score, testName);
+            Candidate best = new Candidate(score, testName);
             best.addGroup(RowPredicate.numLessEqual(testName, testValue));
             best.addGroup(RowPredicate.numGreater(testName, testValue));
 
             return best;
         }
-    };
-
-    CTreeTest NumericBinary = new CTreeTest() {
-        private static final long serialVersionUID = -2093990830002355963L;
-
+    },
+    NumericBinary {
         @Override
-        public String name() {
-            return "NumericBinary";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
             int testNameIndex = df.varIndex(testName);
             int targetNameIndex = df.varIndex(targetName);
@@ -141,7 +109,7 @@ public interface CTreeTest extends Serializable {
             IntComparator comparator = (i, j) -> Double.compare(values[i], values[j]);
             IntArrays.quickSort(rows, 0, len, comparator);
 
-            CTreeCandidate best = null;
+            Candidate best = null;
             double bestScore = 0.0;
 
             for (int i = 0; i < len; i++) {
@@ -164,7 +132,7 @@ public interface CTreeTest extends Serializable {
                         if (comp > 0) continue;
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                     }
-                    best = new CTreeCandidate(bestScore, testName);
+                    best = new Candidate(bestScore, testName);
                     double testValue = (values[rows[i]] + values[rows[i + 1]]) / 2.0;
                     best.addGroup(RowPredicate.numLessEqual(testName, testValue));
                     best.addGroup(RowPredicate.numGreater(testName, testValue));
@@ -174,21 +142,12 @@ public interface CTreeTest extends Serializable {
             }
             return best;
         }
-    };
-
-    CTreeTest BinaryBinary = new CTreeTest() {
-
-        private static final long serialVersionUID = 1771541941375729870L;
-
+    },
+    BinaryBinary {
         @Override
-        public String name() {
-            return "BinaryBinary";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(
+        public Candidate computeCandidate(
                 CTree c, Frame df, Var w, String testName, String targetName,
-                CTreePurityFunction function) {
+                Purity function) {
 
             Var test = df.rvar(testName);
             Var target = df.rvar(targetName);
@@ -197,55 +156,36 @@ public interface CTreeTest extends Serializable {
                 return null;
             }
 
-            CTreeCandidate best = new CTreeCandidate(function.compute(dt), testName);
+            Candidate best = new Candidate(function.compute(dt), testName);
             best.addGroup(RowPredicate.binEqual(testName, true));
             best.addGroup(RowPredicate.binEqual(testName, false));
             return best;
-
         }
-    };
-
-    CTreeTest NominalFull = new CTreeTest() {
-        private static final long serialVersionUID = 2261155834044153945L;
-
+    },
+    NominalFull {
         @Override
-        public String name() {
-            return "NominalFull";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
             var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
             if (!counts.hasColsWithMinimumCount(c.minCount.get(), 2)) {
                 return null;
             }
             var dt = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
             double value = function.compute(dt);
-            CTreeCandidate candidate = new CTreeCandidate(value, testName);
+            Candidate candidate = new Candidate(value, testName);
             df.levels(testName).stream().skip(1).forEach(label -> candidate.addGroup(RowPredicate.nomEqual(testName, label)));
             return candidate;
         }
-
-    };
-
-    CTreeTest NominalBinary = new CTreeTest() {
-
-        private static final long serialVersionUID = -1257733788317891040L;
-
+    },
+    NominalBinary {
         @Override
-        public String name() {
-            return "NominalBinary";
-        }
-
-        @Override
-        public CTreeCandidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTreePurityFunction function) {
+        public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
             var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
             if (!(counts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
 
-            CTreeCandidate best = null;
+            Candidate best = null;
             double bestScore = 0.0;
 
             double[] rowCounts = counts.rowTotals();
@@ -262,11 +202,13 @@ public interface CTreeTest extends Serializable {
                     if (comp > 0) continue;
                     if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                 }
-                best = new CTreeCandidate(currentScore, testName);
+                best = new Candidate(currentScore, testName);
                 best.addGroup(RowPredicate.nomEqual(testName, testLabel));
                 best.addGroup(RowPredicate.nomNotEqual(testName, testLabel));
             }
             return best;
         }
     };
+
+    public abstract Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, Purity function);
 }

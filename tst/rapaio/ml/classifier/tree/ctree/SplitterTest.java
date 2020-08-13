@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.tree.ctree;
+package rapaio.ml.classifier.tree.ctree;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +31,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VApplyDouble;
-import rapaio.experiment.ml.classifier.tree.CTreeCandidate;
-import rapaio.experiment.ml.classifier.tree.CTreeSplitter;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
@@ -45,25 +43,25 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
  */
-public class CTreeSplitterTest {
+public class SplitterTest {
 
     private Frame df;
     private Var w;
-    private CTreeCandidate c;
+    private Candidate c;
 
     @BeforeEach
     void beforeEach() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.copy().withName("x"));
         w = values.fapply(VApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
-        c = new CTreeCandidate(1, "test");
+        c = new Candidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));
         c.addGroup(RowPredicate.numLess("x", 0));
     }
 
     @Test
     void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.Ignored.performSplit(df, w, c.getGroupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Ignore.performSplit(df, w, c.groupPredicates);
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
@@ -76,7 +74,7 @@ public class CTreeSplitterTest {
 
     @Test
     void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToMajority.performSplit(df, w, c.getGroupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Majority.performSplit(df, w, c.groupPredicates);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -90,7 +88,7 @@ public class CTreeSplitterTest {
 
     @Test
     void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToAllWeighted.performSplit(df, w, c.getGroupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Weighted.performSplit(df, w, c.groupPredicates);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -107,7 +105,7 @@ public class CTreeSplitterTest {
 
     @Test
     void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.ToRandom.performSplit(df, w, c.getGroupPredicates());
+        Pair<List<Frame>, List<Var>> pairs = Splitter.Random.performSplit(df, w, c.groupPredicates);
 
         df.printHead();
 
