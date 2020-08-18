@@ -67,7 +67,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
     public final SBiConsumer<ClassifierModel, Integer> DEFAULT_RUNNING_HOOK = (m, i) -> {
     };
 
-    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
+    public ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
             "rowSampler",
             "Method used to sample rows.",
             Objects::nonNull);

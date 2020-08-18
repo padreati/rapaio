@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.SolidDMatrix;
@@ -160,7 +160,7 @@ public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, Classi
         // b)
 
         Frame x = df.removeVars(targetNames);
-        Sample sample = rowSampler.get().nextSample(x, w);
+        RowSampler.Sample sample = rowSampler.get().nextSample(x, w);
 
         for (int k = 0; k < K; k++) {
 

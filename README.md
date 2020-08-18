@@ -235,6 +235,7 @@ of production ready tools from this field.
   * missing value handling: ignore, random, majority, weighted
   * reduced-error pruning
   * variable importance: frequency, gain and permutation based
+* Ensemble: CForest - Bagging, Random Forests
 * Boosting: AdaBoost
 * Boosting: GBT Classifier
 
@@ -288,7 +289,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* Ensemble: CForest - Bagging, Random Forests
 * SVM: BinarySMO (Platt)
 * Ensemble: SplitClassifier
 

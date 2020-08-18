@@ -54,7 +54,7 @@ final class Bootstrap implements RowSampler {
     @Override
     public Sample nextSample(Frame df, Var weights) {
         Mapping map = Mapping.wrap(SamplingTools.sampleWR(df.rowCount(), (int) (percent * df.rowCount())));
-        return new Sample(df.mapRows(map), weights.mapRows(map), map);
+        return new Sample(df.mapRows(map), weights.mapRows(map), map, df.rowCount());
     }
 
     @Override

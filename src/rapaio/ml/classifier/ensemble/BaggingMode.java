@@ -25,8 +25,10 @@
  *
  */
 
-package rapaio.experiment.ml.classifier.ensemble;
+package rapaio.ml.classifier.ensemble;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.VarNominal;
@@ -36,16 +38,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Describes and implements how a class is obtained from density for ensemble methods.
+ * Describes and implements how a class is obtained from ensemble results.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
+@RequiredArgsConstructor
+@Getter
 public enum BaggingMode implements Serializable {
 
-    VOTING {
+    VOTING(true, false) {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities) {
-            treeFits.stream().map(ClassifierResult::firstClasses).forEach(d -> {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> predictions, VarNominal classes, Frame densities) {
+            predictions.stream().map(ClassifierResult::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
                     int best = d.getInt(i);
                     densities.setDouble(i, best, densities.getDouble(i, best) + 1);
@@ -63,26 +67,16 @@ public enum BaggingMode implements Serializable {
                 classes.setDouble(i, dv.findBestIndex() + 1);
             }
         }
-
-        @Override
-        boolean needsClass() {
-            return true;
-        }
-
-        @Override
-        boolean needsDensity() {
-            return false;
-        }
     },
-    DISTRIBUTION {
+    DISTRIBUTION(false, true) {
         @Override
-        public void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities) {
+        public void computeDensity(List<String> dictionary, List<ClassifierResult> results, VarNominal classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setDouble(i, j, 0);
                 }
             }
-            treeFits.stream().map(ClassifierResult::firstDensity).forEach(d -> {
+            results.stream().map(ClassifierResult::firstDensity).forEach(d -> {
                 for (int i = 0; i < densities.rowCount(); i++) {
                     double t = 0.0;
                     for (int j = 0; j < densities.varCount(); j++) {
@@ -105,21 +99,10 @@ public enum BaggingMode implements Serializable {
                 classes.setDouble(i, dv.findBestIndex() + 1);
             }
         }
-
-        @Override
-        boolean needsClass() {
-            return false;
-        }
-
-        @Override
-        boolean needsDensity() {
-            return true;
-        }
     };
 
+    private final boolean useClass;
+    private final boolean useDensities;
+
     abstract void computeDensity(List<String> dictionary, List<ClassifierResult> treeFits, VarNominal classes, Frame densities);
-
-    abstract boolean needsClass();
-
-    abstract boolean needsDensity();
 }

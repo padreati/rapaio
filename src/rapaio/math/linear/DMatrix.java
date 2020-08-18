@@ -405,6 +405,16 @@ public interface DMatrix extends Serializable, Printable {
     DVector rowMaxValues();
 
     /**
+     * Builds a vector with indexes of the maximum values from rows.
+     * Thus if a matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the maximum
+     * value from the row with that position.
+     *
+     * @return vector with indexes of max value values
+     */
+    int[] rowMaxIndexes();
+
+    /**
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.
      *

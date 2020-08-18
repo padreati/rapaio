@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -141,7 +141,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
 
         ClassifierModel hh = model.get().newInstance();
 
-        Sample sample = rowSampler.get().nextSample(df, w);
+        RowSampler.Sample sample = rowSampler.get().nextSample(df, w);
         hh.fit(sample.df, sample.weights, targetNames());
 
         var predict = hh.predict(df, true, false).firstClasses();

@@ -31,10 +31,10 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.ml.classifier.ensemble.CForest;
 import rapaio.io.Csv;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.metric.Confusion;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,8 +77,8 @@ public class PCATest {
 
         Frame fit = pca.predict(x, 4).bindVars(iris.rvar("class"));
 
-        CForest rf1 = CForest.newRF().poolSize.set(0).runs.set(2);
-        CForest rf2 = CForest.newRF().poolSize.set(0).runs.set(2);
+        CForest rf1 = CForest.newModel().poolSize.set(0).runs.set(2);
+        CForest rf2 = CForest.newModel().poolSize.set(0).runs.set(2);
 
         rf1.fit(iris, "class");
         var fit1 = rf1.predict(iris);

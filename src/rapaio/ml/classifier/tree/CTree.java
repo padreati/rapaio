@@ -43,6 +43,7 @@ import rapaio.ml.classifier.tree.ctree.Search;
 import rapaio.ml.classifier.tree.ctree.Splitter;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.MultiParam;
+import rapaio.ml.common.ParametricEquals;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.common.VarSelector;
 import rapaio.printer.Format;
@@ -67,7 +68,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> implements Printable {
+public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> implements Printable, ParametricEquals<CTree> {
 
     public static CTree newID3() {
         return new CTree()
@@ -448,6 +449,11 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
     @Override
     public String toString() {
         return fullName();
+    }
+
+    @Override
+    public boolean equalOnParams(CTree tree) {
+        return fullName().equals(tree.fullName());
     }
 }
 

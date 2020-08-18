@@ -349,6 +349,19 @@ public abstract class AbstractDMatrix implements DMatrix {
         return max;
     }
 
+    @Override
+    public int[] rowMaxIndexes() {
+        int[] max = new int[rowCount()];
+        for (int i = 1; i < colCount(); i++) {
+            for (int j = 0; j < rowCount(); j++) {
+                if (get(j, max[j]) < get(j, i)) {
+                    max[j] = i;
+                }
+            }
+        }
+        return max;
+    }
+
     /**
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.

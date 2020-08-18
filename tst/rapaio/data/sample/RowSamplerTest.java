@@ -57,7 +57,7 @@ public class RowSamplerTest {
 
     @Test
     void identitySamplerTest() {
-        Sample s = RowSampler.identity().nextSample(df, w);
+        RowSampler.Sample s = RowSampler.identity().nextSample(df, w);
         assertTrue(s.df.deepEquals(df));
         assertTrue(s.weights.deepEquals(w));
     }
@@ -69,7 +69,7 @@ public class RowSamplerTest {
         int N = 1_000;
         VarDouble count = VarDouble.empty().withName("bcount");
         for (int i = 0; i < N; i++) {
-            Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
+            RowSampler.Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
             count.addDouble(1.0 * s.mapping.stream().distinct().count() / df.rowCount());
         }
 
@@ -84,7 +84,7 @@ public class RowSamplerTest {
         int N = 1_000;
         VarDouble count = VarDouble.fill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
-            Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
+            RowSampler.Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
             s.mapping.stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));
         }
 

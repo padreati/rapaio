@@ -36,7 +36,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.experiment.ml.classifier.svm.kernel.Kernel;
 import rapaio.experiment.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.math.MTools;
@@ -231,7 +231,7 @@ public class BinarySMO extends AbstractClassifierModel<BinarySMO, ClassifierResu
 
         // perform sampling
 
-        Sample sample = rowSampler.get().nextSample(df, weights);
+        RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
         df = sample.df;
         weights = sample.weights;
 

@@ -32,7 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.Param;
 import rapaio.ml.common.ValueParam;
@@ -130,7 +130,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         ExecutorService pool = Executors.newFixedThreadPool(threads);
         Queue<Future<rapaio.ml.regression.RegressionModel>> futures = new LinkedList<>();
         for (int i = 0; i < runs.get(); i++) {
-            Sample sample = rowSampler.get().nextSample(df, weights);
+            RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
             RegressionModel m = model.get().newInstance();
             Future<rapaio.ml.regression.RegressionModel> future = pool.submit(new FitTask(sample, m, targetNames));
             futures.add(future);
@@ -182,7 +182,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
 
         private static final long serialVersionUID = -5432992679557031337L;
 
-        private final Sample sample;
+        private final RowSampler.Sample sample;
         private final rapaio.ml.regression.RegressionModel model;
         private final String[] targetNames;
 

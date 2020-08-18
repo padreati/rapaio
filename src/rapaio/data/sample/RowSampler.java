@@ -28,6 +28,7 @@
 package rapaio.data.sample;
 
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -67,6 +68,35 @@ public interface RowSampler extends Serializable {
 
     static RowSampler subsampler(double p) {
         return new SubSampler(p);
+    }
+
+
+    /**
+     * A sample taken from a data set, eventually from a corresponding set of weights.
+     * <p>
+     * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
+     */
+    final class Sample {
+
+        public final Frame df;
+        public final Var weights;
+        public final Mapping mapping;
+        public final Mapping complementMapping = Mapping.empty();
+
+        Sample(Frame df, Var weights, Mapping mapping, int rowCunt) {
+            this.df = df;
+            this.weights = weights;
+            this.mapping = mapping;
+
+            boolean[] in = new boolean[rowCunt];
+            mapping.iterator().forEachRemaining((int i) -> in[i] = true);
+            for (int i = 0; i < df.rowCount(); i++) {
+                if (!in[i]) {
+                    complementMapping.add(i);
+                }
+            }
+
+        }
     }
 }
 
