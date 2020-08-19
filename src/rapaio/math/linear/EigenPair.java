@@ -27,42 +27,42 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.DMStripe;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
 public class EigenPair {
 
-    private final DVector DVector;
-    private final DMatrix DMatrix;
+    private final DV DV;
+    private final DM DM;
 
-    public static EigenPair from(DVector values, DMatrix vectors) {
+    public static EigenPair from(DV values, DM vectors) {
         return new EigenPair(values, vectors);
     }
 
-    private EigenPair(DVector values, DMatrix vectors) {
-        this.DVector = values;
-        this.DMatrix = vectors;
+    private EigenPair(DV values, DM vectors) {
+        this.DV = values;
+        this.DM = vectors;
     }
 
-    public DVector getRV() {
-        return DVector;
+    public DV getRV() {
+        return DV;
     }
 
-    public DMatrix getRM() {
-        return DMatrix;
+    public DM getRM() {
+        return DM;
     }
 
-    public DMatrix expandedValues() {
-        DMatrix expandedRV = SolidDMatrix.empty(DVector.size(), DVector.size());
-        for (int i = 0; i < DVector.size(); i++) {
-            expandedRV.set(i, i, DVector.get(i));
+    public DM expandedValues() {
+        DM expandedRV = DMStripe.empty(DV.size(), DV.size());
+        for (int i = 0; i < DV.size(); i++) {
+            expandedRV.set(i, i, DV.get(i));
         }
         return expandedRV;
     }
 
-    public DVector vector(int colNum) {
-        return DMatrix.mapCol(colNum);
+    public DV vector(int colNum) {
+        return DM.mapCol(colNum);
     }
 }

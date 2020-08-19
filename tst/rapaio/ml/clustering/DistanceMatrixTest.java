@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,7 +28,7 @@ public class DistanceMatrixTest {
         Normal normal = Normal.of(0, 10);
 
         // generate symmetric matrix
-        DMatrix sym = SolidDMatrix.empty(4, 4);
+        DM sym = DMStripe.empty(4, 4);
         for (int i = 0; i < 4; i++) {
             for (int j = i; j < 4; j++) {
                 double next = normal.sampleNext();

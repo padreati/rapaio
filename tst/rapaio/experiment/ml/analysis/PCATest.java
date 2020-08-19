@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.metric.Confusion;
 
@@ -55,7 +55,7 @@ public class PCATest {
 
     @Test
     void pcaTest() {
-        DMatrix x = SolidDMatrix.copy(df.removeVars(VRange.of("y")));
+        DM x = DMStripe.copy(df.removeVars(VRange.of("y")));
 
         PCA pca = new PCA();
         pca.fit(df.removeVars(VRange.of("y")));

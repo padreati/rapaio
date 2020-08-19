@@ -28,9 +28,9 @@
 package rapaio.math.linear.dense;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import rapaio.math.linear.AbstractDMatrix;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.base.AbstractDM;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -38,15 +38,15 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class MappedDMatrix extends AbstractDMatrix {
+public class DMMap extends AbstractDM {
 
     private static final long serialVersionUID = -3840785397560969659L;
 
-    private final DMatrix ref;
+    private final DM ref;
     private final int[] rowIndexes;
     private final int[] colIndexes;
 
-    public MappedDMatrix(DMatrix ref, boolean byRow, int... indexes) {
+    public DMMap(DM ref, boolean byRow, int... indexes) {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;
@@ -62,6 +62,11 @@ public class MappedDMatrix extends AbstractDMatrix {
             }
             this.colIndexes = indexes;
         }
+    }
+
+    @Override
+    public Type type() {
+        return Type.MAP;
     }
 
     @Override
@@ -90,13 +95,8 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public void apply(int row, int col, Double2DoubleFunction function) {
-        ref.apply(rowIndexes[row], colIndexes[col], function);
-    }
-
-    @Override
-    public SolidDVector mapCol(int i) {
-        SolidDVector v = SolidDVector.zeros(rowIndexes.length);
+    public DVDense mapCol(int i) {
+        DVDense v = DVDense.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
         }
@@ -104,8 +104,8 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public DVector mapRow(int i) {
-        SolidDVector v = SolidDVector.zeros(colIndexes.length);
+    public DV mapRow(int i) {
+        DVDense v = DVDense.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
@@ -113,18 +113,18 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public DMatrix apply(Double2DoubleFunction fun) {
+    public DM apply(Double2DoubleFunction fun) {
         for (int row : rowIndexes) {
             for (int col : colIndexes) {
-                ref.apply(row, col, fun);
+                ref.set(row, col, fun.applyAsDouble(ref.get(row, col)));
             }
         }
         return this;
     }
 
     @Override
-    public SolidDMatrix t() {
-        SolidDMatrix copy = SolidDMatrix.empty(colIndexes.length, rowIndexes.length);
+    public DMStripe t() {
+        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(colIndexes.length, rowIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(j, i, ref.get(rowIndexes[i], colIndexes[j]));
@@ -142,8 +142,8 @@ public class MappedDMatrix extends AbstractDMatrix {
     }
 
     @Override
-    public SolidDMatrix copy() {
-        SolidDMatrix copy = SolidDMatrix.empty(rowIndexes.length, colIndexes.length);
+    public DMStripe copy() {
+        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));

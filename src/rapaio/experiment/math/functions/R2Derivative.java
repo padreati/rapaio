@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
 
 import java.util.function.BiFunction;
 
@@ -38,19 +38,19 @@ public class R2Derivative implements RDerivative {
 
     private static final long serialVersionUID = -8662264063600073136L;
 
-    private final BiFunction<Double, Double, DVector> f;
+    private final BiFunction<Double, Double, DV> f;
 
-    public R2Derivative(BiFunction<Double, Double, DVector> f) {
+    public R2Derivative(BiFunction<Double, Double, DV> f) {
         this.f = f;
     }
 
     @Override
-    public DVector apply(double... x) {
+    public DV apply(double... x) {
         return f.apply(x[0], x[1]);
     }
 
     @Override
-    public DVector apply(DVector x) {
+    public DV apply(DV x) {
         return f.apply(x.get(0), x.get(1));
     }
 }

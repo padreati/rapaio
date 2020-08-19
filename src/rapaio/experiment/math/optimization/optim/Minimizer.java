@@ -27,7 +27,7 @@
 
 package rapaio.experiment.math.optimization.optim;
 
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
 
 import java.util.List;
 
@@ -38,9 +38,9 @@ public interface Minimizer {
 
     void compute();
 
-    List<DVector> solutions();
+    List<DV> solutions();
 
-    DVector solution();
+    DV solution();
 
     boolean hasConverged();
 }

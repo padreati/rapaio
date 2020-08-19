@@ -6,6 +6,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.util.collection.DoubleArrayTools;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,15 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public abstract class StandardDVectorTest {
+public abstract class StandardDVTest {
 
     protected static final double TOL = 1e-12;
     protected Normal normal;
     protected double[] values;
     protected static final int N = 100;
 
-    protected DVector x;
-    protected DVector z;
+    protected DV x;
+    protected DV z;
 
     @BeforeEach
     void beforeEach() {
@@ -32,16 +33,16 @@ public abstract class StandardDVectorTest {
         z = generateFill(100, 10);
     }
 
-    public abstract DVector generateWrap(double[] values);
+    public abstract DV.Type type();
 
-    public abstract DVector generateFill(int size, double fill);
+    public abstract DV generateWrap(double[] values);
 
-    public abstract DVector generateZeros(int size);
+    public abstract DV generateFill(int size, double fill);
 
     public abstract String className();
 
-    public DVector generateOnesWithMissing() {
-        DVector v = generateFill(10, 1);
+    public DV generateOnesWithMissing() {
+        DV v = generateFill(10, 1);
         for (int i = 0; i < 10; i++) {
             if (i % 2 == 0) {
                 v.set(i, Double.NaN);
@@ -51,8 +52,13 @@ public abstract class StandardDVectorTest {
     }
 
     @Test
+    void typeTest() {
+        assertEquals(type(), generateFill(10, 1).type());
+    }
+
+    @Test
     void scalarPlusTest() {
-        DVector y = x.copy().plus(10);
+        DV y = x.copy().plus(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
@@ -60,7 +66,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorPlusTest() {
-        DVector y = x.copy().plus(z);
+        DV y = x.copy().plus(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
         }
@@ -68,13 +74,13 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorPlusNonconformantTest() {
-        DVector y = generateFill(50, 10);
+        DV y = generateFill(50, 10);
         assertThrows(IllegalArgumentException.class, () -> x.plus(y));
     }
 
     @Test
     void scalarMinusTest() {
-        DVector y = x.copy().minus(10);
+        DV y = x.copy().minus(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
@@ -82,7 +88,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorMinusTest() {
-        DVector y = x.copy().minus(z);
+        DV y = x.copy().minus(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
         }
@@ -90,13 +96,13 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorMinusNonconformantTest() {
-        DVector y = generateZeros(50);
+        DV y = generateFill(50, 0);
         assertThrows(IllegalArgumentException.class, () -> x.minus(y));
     }
 
     @Test
     void scalarTimesTest() {
-        DVector y = x.copy().times(10);
+        DV y = x.copy().times(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
@@ -104,7 +110,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorTimesTest() {
-        DVector y = x.copy().times(z);
+        DV y = x.copy().times(z);
         assertEquals(100, y.size());
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
@@ -114,7 +120,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void scalarDivTest() {
-        DVector y = x.copy().div(10);
+        DV y = x.copy().div(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / 10, y.get(i), TOL);
         }
@@ -122,7 +128,7 @@ public abstract class StandardDVectorTest {
 
     @Test
     void vectorDivTest() {
-        DVector y = x.copy().div(z);
+        DV y = x.copy().div(z);
         assertEquals(100, y.size());
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / 10, y.get(i), TOL);
@@ -152,6 +158,10 @@ public abstract class StandardDVectorTest {
     void meanVarTest() {
         assertEquals(Mean.of(x.asVarDouble()).value(), x.mean(), 1e-12);
         assertEquals(Variance.of(x.asVarDouble()).value(), x.variance(), 1e-12);
+        assertTrue(Double.isNaN(generateWrap(new double[0]).mean()));
+        assertTrue(Double.isNaN(generateWrap(new double[0]).nanmean()));
+        assertTrue(Double.isNaN(generateWrap(new double[0]).variance()));
+        assertTrue(Double.isNaN(generateWrap(new double[0]).nanvariance()));
     }
 
     @Test
@@ -160,6 +170,56 @@ public abstract class StandardDVectorTest {
         assertEquals(5, generateOnesWithMissing().nancount(), TOL);
         assertEquals(1, generateOnesWithMissing().nanmean(), TOL);
         assertEquals(0, generateOnesWithMissing().nanvariance(), TOL);
+    }
+
+    @Test
+    void copyTest() {
+        var v = generateFill(10, 1);
+
+        var copy1 = v.copy(DV.Type.BASE);
+        var copy2 = v.copy(DV.Type.DENSE);
+
+        assertTrue(v.deepEquals(copy1));
+        assertTrue(v.deepEquals(copy2));
+
+        assertEquals(DV.Type.BASE, copy1.type());
+        assertEquals(DV.Type.DENSE, copy2.type());
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(DV.Type.VIEW));
+        assertNotNull(ex);
+        assertEquals("DVType.VIEW cannot be used to create a copy.", ex.getMessage());
+    }
+
+    @Test
+    void applyTest() {
+        var v1 = generateFill(100, 1);
+        var v2 = v1.copy();
+
+        assertTrue(v2.deepEquals(v1.apply(x -> x - 10).apply(x -> x + 10)));
+        assertTrue(v2.deepEquals(v1.apply((i, x) -> x - i).apply(Double::sum)));
+    }
+
+    @Test
+    void asMatrixTest() {
+
+        var v1 = generateWrap(new double[]{1, 3, 9});
+        var m1 = DMStripe.wrap(new double[][]{{1}, {3}, {9}});
+
+        assertTrue(m1.deepEquals(v1.asMatrix()));
+    }
+
+    @Test
+    void deepEqualsTest() {
+
+        var v1 = generateFill(10, 1);
+        var v2 = generateFill(10, 1);
+
+        assertTrue(v1.deepEquals(v2));
+        v2.increment(2, 1);
+
+        assertFalse(v1.deepEquals(v2));
+
+        assertFalse(generateFill(100, 1).deepEquals(v1));
     }
 
     @Test

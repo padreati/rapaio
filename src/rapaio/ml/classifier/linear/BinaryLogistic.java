@@ -33,9 +33,9 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.linear.binarylogistic.BinaryLogisticIRLS;
@@ -109,7 +109,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     private boolean converged = false;
     private VarDouble w;
-    private List<DVector> iterationWeights;
+    private List<DV> iterationWeights;
     private List<Double> iterationLoss;
 
     private BinaryLogistic() {
@@ -161,7 +161,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
      *
      * @return coefficients from each iteration
      */
-    public List<DVector> getIterationWeights() {
+    public List<DV> getIterationWeights() {
         return iterationWeights;
     }
 
@@ -176,12 +176,12 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         return converged;
     }
 
-    private SolidDVector computeTargetVector(Var target) {
+    private DVDense computeTargetVector(Var target) {
         switch (target.type()) {
             case BINARY:
-                return SolidDVector.from(target);
+                return DVDense.from(target);
             case NOMINAL:
-                SolidDVector result = SolidDVector.zeros(target.rowCount());
+                DVDense result = DVDense.zeros(target.rowCount());
                 if (targetLevels.get(firstTargetName()).size() == 3) {
                     for (int i = 0; i < target.rowCount(); i++) {
                         result.set(i, target.getInt(i) - 1);
@@ -197,7 +197,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         }
     }
 
-    private SolidDMatrix computeInputMatrix(Frame df, String targetName) {
+    private DMStripe computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
         if (intercept.get() != 0) {
             variables.add(VarDouble.fill(df.rowCount(), intercept.get()).withName("Intercept"));
@@ -205,15 +205,15 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         df.varStream()
                 .filter(v -> !firstTargetName().equals(v.name()))
                 .forEach(variables::add);
-        return SolidDMatrix.copy(variables.toArray(Var[]::new));
+        return rapaio.math.linear.dense.DMStripe.copy(variables.toArray(Var[]::new));
     }
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
 
-        SolidDMatrix x = computeInputMatrix(df, firstTargetName());
-        SolidDVector y = computeTargetVector(df.rvar(firstTargetName()));
-        SolidDVector w0 = SolidDVector.fill(x.colCount(), init.get().getFunction().apply(y));
+        DMStripe x = computeInputMatrix(df, firstTargetName());
+        DVDense y = computeTargetVector(df.rvar(firstTargetName()));
+        DVDense w0 = DVDense.fill(x.colCount(), init.get().getFunction().apply(y));
 
         switch (solver.get()) {
             case IRLS:
@@ -298,9 +298,9 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
         private final String name;
         private static final long serialVersionUID = 8945270404852488614L;
 
-        private final Function<DVector, Double> function;
+        private final Function<DV, Double> function;
 
-        Initialize(String name, Function<DVector, Double> function) {
+        Initialize(String name, Function<DV, Double> function) {
             this.name = name;
             this.function = function;
         }

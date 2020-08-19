@@ -45,8 +45,8 @@ import rapaio.data.VarNominal;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.filter.VShuffle;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
@@ -108,7 +108,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     @Getter
     private double oobError = Double.NaN;
     @Getter
-    private DMatrix oobDensities;
+    private DM oobDensities;
     @Getter
     private Var oobPredictedClasses;
     @Getter
@@ -197,7 +197,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
         double totalOobInstances = 0;
         double totalOobError = 0;
         if (oob.get()) {
-            oobDensities = SolidDMatrix.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
+            oobDensities = DMStripe.fill(df.rowCount(), firstTargetLevels().size() - 1, 0.0);
             oobTrueClass = df.rvar(firstTargetName()).copy();
             oobPredictedClasses = VarNominal.empty(df.rowCount(), firstTargetLevels());
         }

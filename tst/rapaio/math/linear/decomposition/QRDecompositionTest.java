@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.decomposition;
 
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.QRDecomposition;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,16 +54,16 @@ public class QRDecompositionTest {
 
             int off = RandomSource.nextInt(n);
 
-            DMatrix a = SolidDMatrix.random(n + off, n);
+            DM a = DMStripe.random(n + off, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
-            DMatrix q = qr.getQ();
-            DMatrix r = qr.getR();
+            DM q = qr.getQ();
+            DM r = qr.getR();
 
             // test various properties of the decomposition
 
-            DMatrix I = SolidDMatrix.identity(n);
-            assertTrue(I.isEqual(q.t().dot(q), TOL));
+            DM I = rapaio.math.linear.dense.DMStripe.identity(n);
+            assertTrue(I.deepEquals(q.t().dot(q), TOL));
 
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
@@ -73,7 +73,7 @@ public class QRDecompositionTest {
                 }
             }
 
-            assertTrue(a.isEqual(q.dot(r), TOL));
+            assertTrue(a.deepEquals(q.dot(r), TOL));
 
             // in general a random matrix is of full rank
 
@@ -92,14 +92,14 @@ public class QRDecompositionTest {
 
             // generate a random matrix
 
-            DMatrix a = SolidDMatrix.random(n, n);
+            DM a = rapaio.math.linear.dense.DMStripe.random(n, n);
             QRDecomposition qr = QRDecomposition.from(a);
 
-            DMatrix h = qr.getH();
-            DMatrix p = SolidDMatrix.identity(10).minus(h.times(2).dot(h.t()));
+            DM h = qr.getH();
+            DM p = rapaio.math.linear.dense.DMStripe.identity(10).minus(h.times(2).dot(h.t()));
 
             // p is hermitian
-            assertTrue(p.isEqual(p.t(), TOL));
+            assertTrue(p.deepEquals(p.t(), TOL));
         }
     }
 
@@ -119,8 +119,8 @@ public class QRDecompositionTest {
             // and take some samples
 
             int rows = 8_000;
-            DMatrix a = SolidDMatrix.empty(rows, 3);
-            DMatrix b = SolidDMatrix.empty(rows, 1);
+            DM a = rapaio.math.linear.dense.DMStripe.empty(rows, 3);
+            DM b = rapaio.math.linear.dense.DMStripe.empty(rows, 1);
 
             for (int i = 0; i < rows; i++) {
                 double x1 = unif.sampleNext();
@@ -135,7 +135,7 @@ public class QRDecompositionTest {
                 b.set(i, 0, y);
             }
 
-            DMatrix x = QRDecomposition.from(a).solve(b);
+            DM x = QRDecomposition.from(a).solve(b);
 
             double c0 = x.get(0, 0);
             double c1 = x.get(1, 0);
@@ -149,11 +149,11 @@ public class QRDecompositionTest {
 
     @Test
     void testIncompatible() {
-        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(SolidDMatrix.random(10, 10)).solve(SolidDMatrix.random(12, 1)));
+        assertThrows(IllegalArgumentException.class, () -> QRDecomposition.from(rapaio.math.linear.dense.DMStripe.random(10, 10)).solve(rapaio.math.linear.dense.DMStripe.random(12, 1)));
     }
 
     @Test
     void testSingular() {
-        assertThrows(RuntimeException.class, () -> QRDecomposition.from(SolidDMatrix.fill(10, 10, 2)).solve(SolidDMatrix.random(10, 1)));
+        assertThrows(RuntimeException.class, () -> QRDecomposition.from(rapaio.math.linear.dense.DMStripe.fill(10, 10, 2)).solve(rapaio.math.linear.dense.DMStripe.random(10, 1)));
     }
 }

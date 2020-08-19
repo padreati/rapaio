@@ -1,19 +1,24 @@
-package rapaio.math.linear.dense;
+package rapaio.math.linear.base;
 
 import org.junit.jupiter.api.Test;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.StandardDMatrixTest;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.StandardDMTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/16/20.
  */
-public class BaseDMatrixTest extends StandardDMatrixTest {
+public class DMBaseTest extends StandardDMTest {
 
     @Override
-    protected DMatrix generateSequential(int n, int m) {
-        BaseDMatrix matrix = BaseDMatrix.empty(n, m);
+    protected DM.Type type() {
+        return DM.Type.BASE;
+    }
+
+    @Override
+    protected DM generateSequential(int n, int m) {
+        DMBase matrix = DMBase.empty(n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, i * m + j);
@@ -23,8 +28,8 @@ public class BaseDMatrixTest extends StandardDMatrixTest {
     }
 
     @Override
-    protected DMatrix generateFill(int n, int m, double fill) {
-        BaseDMatrix matrix = BaseDMatrix.empty(n, m);
+    protected DM generateFill(int n, int m, double fill) {
+        DMBase matrix = DMBase.empty(n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, fill);
@@ -34,8 +39,8 @@ public class BaseDMatrixTest extends StandardDMatrixTest {
     }
 
     @Override
-    protected DMatrix generateIdentity(int n) {
-        BaseDMatrix matrix = BaseDMatrix.empty(n, n);
+    protected DM generateIdentity(int n) {
+        DMBase matrix = DMBase.empty(n, n);
         for (int i = 0; i < n; i++) {
             matrix.set(i, i, 1);
         }
@@ -43,18 +48,18 @@ public class BaseDMatrixTest extends StandardDMatrixTest {
     }
 
     @Override
-    protected DMatrix generateWrap(double[][] values) {
-        return BaseDMatrix.wrap(values);
+    protected DM generateWrap(double[][] values) {
+        return DMBase.wrap(values);
     }
 
     @Override
     protected String className() {
-        return "BaseDMatrix";
+        return "DMBase";
     }
 
     @Test
     void testBuilders() {
-        DMatrix m = BaseDMatrix.empty(10, 11);
+        DM m = DMBase.empty(10, 11);
         assertEquals(10, m.rowCount());
         assertEquals(11, m.colCount());
 

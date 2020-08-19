@@ -27,9 +27,9 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DVDense;
 
 import java.io.Serializable;
 
@@ -39,9 +39,9 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface RHessian extends Serializable {
 
-    default DMatrix apply(double... x) {
-        return apply(SolidDVector.wrap(x));
+    default DM apply(double... x) {
+        return apply(DVDense.wrap(x));
     }
 
-    DMatrix apply(DVector x);
+    DM apply(DV x);
 }

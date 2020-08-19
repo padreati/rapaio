@@ -1,6 +1,9 @@
-package rapaio.math.linear;
+package rapaio.math.linear.base;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -11,11 +14,11 @@ import java.util.function.BiFunction;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
-public abstract class AbstractDVector implements DVector {
+public abstract class AbstractDV implements DV {
 
     private static final long serialVersionUID = 4164614372206348682L;
 
-    protected void checkConformance(DVector vector) {
+    protected void checkConformance(DV vector) {
         if (size() != vector.size()) {
             throw new IllegalArgumentException(
                     String.format("Vectors are not conform for operation: [%d] vs [%d]", size(), vector.size()));
@@ -23,7 +26,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector plus(double x) {
+    public DV plus(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + x);
         }
@@ -31,7 +34,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector plus(DVector b) {
+    public DV plus(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + b.get(i));
@@ -40,7 +43,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector minus(double x) {
+    public DV minus(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - x);
         }
@@ -48,7 +51,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector minus(DVector b) {
+    public DV minus(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - b.get(i));
@@ -57,7 +60,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector times(double scalar) {
+    public DV times(double scalar) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * scalar);
         }
@@ -65,7 +68,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector times(DVector b) {
+    public DV times(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * b.get(i));
@@ -74,7 +77,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector div(double scalar) {
+    public DV div(double scalar) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / scalar);
         }
@@ -82,7 +85,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector div(DVector b) {
+    public DV div(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / b.get(i));
@@ -91,7 +94,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public double dot(DVector b) {
+    public double dot(DV b) {
         checkConformance(b);
         double s = 0;
         for (int i = 0; i < size(); i++) {
@@ -124,7 +127,7 @@ public abstract class AbstractDVector implements DVector {
         return Math.pow(s, 1.0 / p);
     }
 
-    public DVector normalize(double p) {
+    public DV normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
             times(1.0 / norm);
@@ -219,7 +222,7 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f) {
+    public DV apply(Double2DoubleFunction f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.applyAsDouble(get(i)));
         }
@@ -227,11 +230,33 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public AbstractDVector apply(BiFunction<Integer, Double, Double> f) {
+    public AbstractDV apply(BiFunction<Integer, Double, Double> f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.apply(i, get(i)));
         }
         return this;
+    }
+
+    @Override
+    public boolean deepEquals(DV v) {
+        if (size() != v.size()) {
+            return false;
+        }
+        for (int i = 0; i < size(); i++) {
+            if (get(i) != v.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public DM asMatrix() {
+        DMStripe res = rapaio.math.linear.dense.DMStripe.empty(size(), 1);
+        for (int i = 0; i < size(); i++) {
+            res.set(i, 0, get(i));
+        }
+        return res;
     }
 
     @Override

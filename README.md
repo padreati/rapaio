@@ -101,7 +101,7 @@ Solid variable and frames defined dense array data type implementations. Mapped 
 implementations which relays on other data structures for storing data. Those looks like concept of views from 
 relational data bases.  
 * Data access using streams is available on variables and frames.
-* DVector - vector of frequencies
+* DensityVector - vector of frequencies
 * Unique - data structure to collect and manipulate unique values of a variable
 * Group - data structure to build and manipulate group by aggregations
 * Index - data structure for transforming value domains into dense indexes

@@ -22,14 +22,14 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.decomposition;
 
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.EigenDecomposition;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,28 +46,28 @@ public class EigenDecompositionTest {
     @Test
     void testSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = SolidDMatrix.random(10, 10).scatter();
+            DM a = DMStripe.random(10, 10).scatter();
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            DMatrix v = evd.getV();
-            DMatrix d = evd.getD();
-            DMatrix vt = evd.getV().t();
+            DM v = evd.getV();
+            DM d = evd.getD();
+            DM vt = evd.getV().t();
 
-            assertTrue(a.isEqual(v.dot(d).dot(vt), TOL));
+            assertTrue(a.deepEquals(v.dot(d).dot(vt), TOL));
         }
     }
 
     @Test
     void testNonSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DMatrix a = SolidDMatrix.random(10, 10);
+            DM a = rapaio.math.linear.dense.DMStripe.random(10, 10);
 
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            DMatrix v = evd.getV();
-            DMatrix d = evd.getD();
+            DM v = evd.getV();
+            DM d = evd.getD();
 
-            assertTrue(a.dot(v).isEqual(v.dot(d), TOL));
+            assertTrue(a.dot(v).deepEquals(v.dot(d), TOL));
         }
     }
 

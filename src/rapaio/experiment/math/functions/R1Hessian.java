@@ -27,9 +27,9 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.util.function.Function;
 
@@ -47,12 +47,12 @@ public class R1Hessian implements RHessian {
     }
 
     @Override
-    public DMatrix apply(double... x) {
-        return SolidDMatrix.fill(1, 1, f.apply(x[0]));
+    public DM apply(double... x) {
+        return DMStripe.fill(1, 1, f.apply(x[0]));
     }
 
     @Override
-    public DMatrix apply(DVector x) {
-        return SolidDMatrix.fill(1, 1, f.apply(x.get(0)));
+    public DM apply(DV x) {
+        return rapaio.math.linear.dense.DMStripe.fill(1, 1, f.apply(x.get(0)));
     }
 }

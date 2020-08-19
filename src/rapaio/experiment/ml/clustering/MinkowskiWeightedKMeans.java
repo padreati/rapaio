@@ -38,8 +38,8 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.FRefSort;
 import rapaio.experiment.ml.common.distance.KMeansInitMethod;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
@@ -261,7 +261,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     private void weightsUpdate(Frame df) {
-        SolidDMatrix d = SolidDMatrix.fill(k, inputs.length, 0.0);
+        DMStripe d = rapaio.math.linear.dense.DMStripe.fill(k, inputs.length, 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < inputs.length; j++) {
                 int c = arrows.getInt(i);
@@ -281,7 +281,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         // compute normalizing sums
 
-        SolidDVector rv = SolidDVector.fill(k, 0.0);
+        DVDense rv = DVDense.fill(k, 0.0);
         for (int i = 0; i < d.rowCount(); i++) {
             double sum = 0.0;
             for (int j = 0; j < d.colCount(); j++) {

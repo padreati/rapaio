@@ -22,15 +22,15 @@
  *
  */
 
-package rapaio.math.linear.dense;
+package rapaio.math.linear.decomposition;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.decomposition.MatrixMultiplication;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.util.Map;
 
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MatrixMultiplicationTest {
 
-    private static double TOL = 1e-12;
+    private static final double TOL = 1e-12;
 
     @BeforeEach
     void setUp() {
@@ -50,32 +50,32 @@ public class MatrixMultiplicationTest {
     void basicTestMM() {
 
         Normal normal = Normal.std();
-        DMatrix A = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DM A = DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DM B = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        DMatrix c1 = A.dot(B);
-        DMatrix c2 = MatrixMultiplication.ikjAlgorithm(A, B);
+        DM c1 = A.dot(B);
+        DM c2 = MatrixMultiplication.ikjAlgorithm(A, B);
 
-        assertTrue(c1.isEqual(c2));
-        assertFalse(c1.isEqual(c2.t()));
+        assertTrue(c1.deepEquals(c2));
+        assertFalse(c1.deepEquals(c2.t()));
     }
 
     @Test
     void testDifferentMethods() {
 
         Normal normal = Normal.std();
-        DMatrix A = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
-        DMatrix B = SolidDMatrix.fill(100, 100, (r, c) -> normal.sampleNext());
+        DM A = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DM B = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        DMatrix c = A.dot(B);
+        DM c = A.dot(B);
 
-        assertTrue(c.isEqual(MatrixMultiplication.ijkAlgorithm(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.ijkParallel(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.ikjAlgorithm(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.ikjParallel(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.tiledAlgorithm(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.jama(A, B), TOL));
-        assertTrue(c.isEqual(MatrixMultiplication.strassen(A, B, 8), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.ijkAlgorithm(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.ijkParallel(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.ikjAlgorithm(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.ikjParallel(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.tiledAlgorithm(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.jama(A, B), TOL));
+        assertTrue(c.deepEquals(MatrixMultiplication.strassen(A, B, 8), TOL));
     }
 
     private void put(Map<String, VarDouble> map, String key, Long value) {

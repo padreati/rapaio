@@ -32,7 +32,7 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.linear.LinearRegression;
@@ -57,7 +57,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
     private final double trialPercentage;
 
     private String testVarName;
-    private DVector coeff;
+    private DV coeff;
     private double ref;
     private double sigma;
     private double leftMargin;
@@ -85,7 +85,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
         int index = df.varIndex(testVarName);
         Var testVar = df.rvar(testVarName);
 
-        DVector bestBeta = null;
+        DV bestBeta = null;
         double bestRef = Double.NaN;
         double bestSigma = Double.NaN;
         double bestError = Double.NaN;

@@ -27,24 +27,24 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.EigenPair;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 
 public class EigenDecompStatistics extends EigenDecompStrategy {
 
     @Override
-    public EigenPair getEigenDecomp(DMatrix s, int maxRuns, double tol) {
+    public EigenPair getEigenDecomp(DM s, int maxRuns, double tol) {
         int n = s.colCount();
         EigenDecomposition evd = EigenDecomposition.from(s);
 
         double[] _values = evd.getRealEigenvalues();
-        DMatrix _vectors = evd.getV();
+        DM _vectors = evd.getV();
 
-        DVector values = SolidDVector.zeros(n);
-        DMatrix vectors = SolidDMatrix.empty(n, n);
+        DV values = DVDense.zeros(n);
+        DM vectors = DMStripe.empty(n, n);
 
         for (int i = 0; i < values.size(); i++) {
             values.set(values.size() - i - 1, _values[i]);

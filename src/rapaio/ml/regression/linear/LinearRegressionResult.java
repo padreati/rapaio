@@ -34,10 +34,10 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.FIntercept;
 import rapaio.math.MTools;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 import rapaio.printer.Format;
@@ -55,10 +55,10 @@ import java.util.Set;
 public class LinearRegressionResult extends RegressionResult {
 
     protected final BaseLinearRegressionModel<?> lm;
-    protected DMatrix beta_hat;
-    protected DMatrix beta_std_error;
-    protected DMatrix beta_t_value;
-    protected DMatrix beta_p_value;
+    protected DM beta_hat;
+    protected DM beta_std_error;
+    protected DM beta_t_value;
+    protected DM beta_p_value;
     protected String[][] beta_significance;
 
     public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals) {
@@ -66,19 +66,19 @@ public class LinearRegressionResult extends RegressionResult {
         this.lm = model;
     }
 
-    public DMatrix getBetaHat() {
+    public DM getBetaHat() {
         return beta_hat;
     }
 
-    public DMatrix getBetaStdError() {
+    public DM getBetaStdError() {
         return beta_std_error;
     }
 
-    public DMatrix getBetaTValue() {
+    public DM getBetaTValue() {
         return beta_t_value;
     }
 
-    public DMatrix getBetaPValue() {
+    public DM getBetaPValue() {
         return beta_p_value;
     }
 
@@ -96,9 +96,9 @@ public class LinearRegressionResult extends RegressionResult {
         String[] targets = lm.targetNames();
 
         beta_hat = lm.getAllCoefficients().copy();
-        beta_std_error = SolidDMatrix.empty(inputs.length, targets.length);
-        beta_t_value = SolidDMatrix.empty(inputs.length, targets.length);
-        beta_p_value = SolidDMatrix.empty(inputs.length, targets.length);
+        beta_std_error = DMStripe.empty(inputs.length, targets.length);
+        beta_t_value = rapaio.math.linear.dense.DMStripe.empty(inputs.length, targets.length);
+        beta_p_value = rapaio.math.linear.dense.DMStripe.empty(inputs.length, targets.length);
         beta_significance = new String[inputs.length][targets.length];
 
         if (withResiduals) {
@@ -111,7 +111,7 @@ public class LinearRegressionResult extends RegressionResult {
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
-                DVector coeff = beta_hat.mapCol(i);
+                DV coeff = beta_hat.mapCol(i);
 
                 /*
                 int fdegree1 = model.inputNames().length - 1;
@@ -126,8 +126,8 @@ public class LinearRegressionResult extends RegressionResult {
                         features = df.bindVars(VarDouble.fill(df.rowCount(), 1).withName(FIntercept.INTERCEPT)).copy();
                     }
                 }
-                DMatrix X = SolidDMatrix.copy(features.mapVars(model.inputNames()));
-                DMatrix m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(SolidDMatrix.identity(X.colCount()));
+                DM X = rapaio.math.linear.dense.DMStripe.copy(features.mapVars(model.inputNames()));
+                DM m_beta_hat = QRDecomposition.from(X.t().dot(X)).solve(rapaio.math.linear.dense.DMStripe.identity(X.colCount()));
 
                 for (int j = 0; j < model.inputNames().length; j++) {
                     beta_std_error.set(j, i, Math.sqrt(m_beta_hat.get(j, j) * var));
@@ -161,7 +161,7 @@ public class LinearRegressionResult extends RegressionResult {
 
             if (!withResiduals) {
                 sb.append("> Coefficients: \n");
-                DVector coeff = lm.getCoefficients(i);
+                DV coeff = lm.getCoefficients(i);
 
                 TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
                 tt.textCenter(0, 0, "Name");
@@ -177,7 +177,7 @@ public class LinearRegressionResult extends RegressionResult {
                 int degrees = res.rowCount() - model.inputNames().length;
                 double var = rss.get(targetName) / degrees;
                 double rs = rsquare.get(targetName);
-                DVector coeff = lm.getCoefficients(i);
+                DV coeff = lm.getCoefficients(i);
                 double rsa = (rs * (res.rowCount() - 1) - coeff.size() + 1) / degrees;
 
                 int fdegree1 = model.inputNames().length - 1;

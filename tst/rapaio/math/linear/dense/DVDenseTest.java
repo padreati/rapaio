@@ -26,41 +26,41 @@ package rapaio.math.linear.dense;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.StandardDVectorTest;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.StandardDVTest;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SolidDVectorTest extends StandardDVectorTest {
+public class DVDenseTest extends StandardDVTest {
 
     private static final double TOL = 1e-15;
 
     @Override
-    public DVector generateZeros(int size) {
-        return SolidDVector.zeros(size);
+    public DV.Type type() {
+        return DV.Type.DENSE;
     }
 
     @Override
-    public DVector generateFill(int size, double fill) {
-        return SolidDVector.fill(size, fill);
+    public DV generateFill(int size, double fill) {
+        return DVDense.fill(size, fill);
     }
 
     @Override
-    public DVector generateWrap(double[] values) {
-        return SolidDVector.wrap(values);
+    public DV generateWrap(double[] values) {
+        return DVDense.wrap(values);
     }
 
     @Override
     public String className() {
-        return "SolidDVector";
+        return "DVDense";
     }
 
 
     @Test
     void testBuilderZeros() {
-        var zeros = SolidDVector.zeros(N);
+        var zeros = DVDense.zeros(N);
         assertNotNull(zeros);
         for (int i = 0; i < N; i++) {
             assertEquals(0, zeros.get(i), TOL);
@@ -69,7 +69,7 @@ public class SolidDVectorTest extends StandardDVectorTest {
 
     @Test
     void testBuildersOnes() {
-        var ones = SolidDVector.ones(N);
+        var ones = DVDense.ones(N);
         assertNotNull(ones);
         assertEquals(N, ones.size());
         for (int i = 0; i < ones.size(); i++) {
@@ -79,7 +79,7 @@ public class SolidDVectorTest extends StandardDVectorTest {
 
     @Test
     void testBuildersFill() {
-        var fill = SolidDVector.fill(N, 13);
+        var fill = DVDense.fill(N, 13);
         assertNotNull(fill);
         assertEquals(N, fill.size());
         for (int i = 0; i < fill.size(); i++) {
@@ -89,33 +89,33 @@ public class SolidDVectorTest extends StandardDVectorTest {
 
     @Test
     void testBuilders() {
-        x = SolidDVector.from(VarDouble.seq(N - 1));
+        x = DVDense.from(VarDouble.seq(N - 1));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        DVector y = SolidDVector.from(VarDouble.seq(N - 1));
-        x = SolidDVector.copy(y);
+        DV y = DVDense.from(VarDouble.seq(N - 1));
+        x = DVDense.copy(y);
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidDVector.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
+        x = DVDense.from(VarDouble.fill(N, 1).bindRows(VarDouble.seq(N - 1)));
         assertNotNull(x);
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
             assertEquals(i, x.get(i + N), TOL);
         }
 
-        x = SolidDVector.wrap(0, 1, 2, 3, 4, 5);
+        x = DVDense.wrap(0, 1, 2, 3, 4, 5);
         assertNotNull(x);
         for (int i = 0; i < 6; i++) {
             assertEquals(i, x.get(i), TOL);
         }
 
-        x = SolidDVector.from(10, Math::sqrt);
+        x = DVDense.from(10, Math::sqrt);
         assertNotNull(x);
         for (int i = 0; i < 10; i++) {
             assertEquals(Math.sqrt(i), x.get(i), TOL);
@@ -129,7 +129,7 @@ public class SolidDVectorTest extends StandardDVectorTest {
         for (int i = 0; i < x.length; i++) {
             x[i] = i;
         }
-        DVector y = SolidDVector.wrap(x);
+        DV y = DVDense.wrap(x);
 
         double xsum = Arrays.stream(x).sum();
         double ysum = y.valueStream().sum();

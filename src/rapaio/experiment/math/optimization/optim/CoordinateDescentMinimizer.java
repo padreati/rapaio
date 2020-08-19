@@ -32,8 +32,8 @@ import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DVDense;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +52,13 @@ public class CoordinateDescentMinimizer implements Minimizer {
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
-    private final DVector x;
+    private final DV x;
     private final RFunction f;
     private final RDerivative d1f;
 
-    private DVector sol;
+    private DV sol;
 
-    private final List<DVector> solutions = new ArrayList<>();
+    private final List<DV> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
@@ -66,7 +66,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
         return errors;
     }
 
-    public CoordinateDescentMinimizer(DVector x, RFunction f, RDerivative d1f, int maxInt) {
+    public CoordinateDescentMinimizer(DV x, RFunction f, RDerivative d1f, int maxInt) {
         this.x = x;
         this.f = f;
         this.d1f = d1f;
@@ -80,7 +80,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            DVector d1fx = d1f.apply(sol);
+            DV d1fx = d1f.apply(sol);
             double max = abs(d1fx.get(0));
             int index = 0;
             for (int j = 1; j < d1fx.size(); j++) {
@@ -89,7 +89,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
                     index = j;
                 }
             }
-            DVector deltaX = SolidDVector.fill(d1fx.size(), 0);
+            DV deltaX = DVDense.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
             if (abs(deltaX.norm(2)) < tol) {
@@ -108,11 +108,11 @@ public class CoordinateDescentMinimizer implements Minimizer {
         return sb.toString();
     }
 
-    public List<DVector> solutions() {
+    public List<DV> solutions() {
         return solutions;
     }
 
-    public DVector solution() {
+    public DV solution() {
         return sol;
     }
 

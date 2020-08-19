@@ -29,7 +29,7 @@ package rapaio.experiment.math.optimization.optim.linesearch;
 
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
@@ -47,7 +47,7 @@ public class FixedLineSearch implements LineSearch {
     }
 
     @Override
-    public double find(RFunction f, RDerivative d1f, DVector x, DVector delta_f) {
+    public double find(RFunction f, RDerivative d1f, DV x, DV delta_f) {
         return fixedValue;
     }
 }

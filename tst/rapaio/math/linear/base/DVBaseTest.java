@@ -1,51 +1,51 @@
-package rapaio.math.linear.dense;
+package rapaio.math.linear.base;
 
 import org.junit.jupiter.api.Test;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.StandardDVectorTest;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.StandardDVTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public class BaseDVectorTest extends StandardDVectorTest {
+public class DVBaseTest extends StandardDVTest {
 
     @Override
-    public DVector generateWrap(double[] values) {
-        return BaseDVector.wrap(values);
+    public DV.Type type() {
+        return DV.Type.BASE;
     }
 
     @Override
-    public DVector generateFill(int size, double fill) {
+    public DV generateWrap(double[] values) {
+        return DVBase.wrap(values);
+    }
+
+    @Override
+    public DV generateFill(int size, double fill) {
         double[] array = new double[size];
         for (int i = 0; i < size; i++) {
             array[i] = fill;
         }
-        return BaseDVector.wrap(array);
-    }
-
-    @Override
-    public DVector generateZeros(int size) {
-        return BaseDVector.wrap(new double[size]);
+        return DVBase.wrap(array);
     }
 
     @Override
     public String className() {
-        return "BaseDVector";
+        return "DVBase";
     }
 
     @Test
     void testBuilders() {
-        DVector vector = BaseDVector.wrap(values);
+        DV vector = DVBase.wrap(values);
 
         assertEquals(100, vector.size());
         for (int i = 0; i < 100; i++) {
             assertEquals(values[i], vector.get(i), TOL);
         }
 
-        DVector copy = vector.copy();
+        DV copy = vector.copy();
         for (int i = 0; i < copy.size(); i++) {
             copy.set(i, 10);
             assertEquals(10, copy.get(i));

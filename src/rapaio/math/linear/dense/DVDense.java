@@ -31,14 +31,15 @@ import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.base.DVBase;
 import rapaio.util.collection.DoubleArrayTools;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
-public class SolidDVector extends BaseDVector {
+public class DVDense extends DVBase {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
@@ -48,8 +49,8 @@ public class SolidDVector extends BaseDVector {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static SolidDVector zeros(int n) {
-        return new SolidDVector(n, DoubleArrayTools.newFill(n, 0));
+    public static DVDense zeros(int n) {
+        return new DVDense(n, DoubleArrayTools.newFill(n, 0));
     }
 
     /**
@@ -58,8 +59,8 @@ public class SolidDVector extends BaseDVector {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static SolidDVector ones(int n) {
-        return new SolidDVector(n, DoubleArrayTools.newFill(n, 1));
+    public static DVDense ones(int n) {
+        return new DVDense(n, DoubleArrayTools.newFill(n, 1));
     }
 
     /**
@@ -70,8 +71,8 @@ public class SolidDVector extends BaseDVector {
      * @param fill fill value
      * @return new real dense vector
      */
-    public static SolidDVector fill(int n, double fill) {
-        return new SolidDVector(n, DoubleArrayTools.newFill(n, fill));
+    public static DVDense fill(int n, double fill) {
+        return new DVDense(n, DoubleArrayTools.newFill(n, fill));
     }
 
     /**
@@ -82,17 +83,17 @@ public class SolidDVector extends BaseDVector {
      * @param v given variable
      * @return new real dense vector
      */
-    public static SolidDVector from(Var v) {
+    public static DVDense from(Var v) {
         if (v instanceof VarDouble) {
             VarDouble vd = (VarDouble) v;
             double[] array = vd.elements();
-            return new SolidDVector(vd.rowCount(), array);
+            return new DVDense(vd.rowCount(), array);
         }
         double[] values = new double[v.rowCount()];
         for (int i = 0; i < values.length; i++) {
             values[i] = v.getDouble(i);
         }
-        return new SolidDVector(values.length, values);
+        return new DVDense(values.length, values);
     }
 
     /**
@@ -102,10 +103,10 @@ public class SolidDVector extends BaseDVector {
      * @param source source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    public static SolidDVector copy(DVector source) {
-        SolidDVector v = zeros(source.size());
-        if (source instanceof SolidDVector) {
-            System.arraycopy(((SolidDVector) source).values, 0, v.values, 0, source.size());
+    public static DVDense copy(DV source) {
+        DVDense v = zeros(source.size());
+        if (source instanceof DVDense) {
+            System.arraycopy(((DVDense) source).values, 0, v.values, 0, source.size());
             return v;
         }
         for (int i = 0; i < v.values.length; i++) {
@@ -121,7 +122,7 @@ public class SolidDVector extends BaseDVector {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static SolidDVector wrap(double... values) {
+    public static DVDense wrap(double... values) {
         return wrapArray(values.length, values);
     }
 
@@ -132,30 +133,35 @@ public class SolidDVector extends BaseDVector {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static SolidDVector wrapArray(int size, double[] values) {
+    public static DVDense wrapArray(int size, double[] values) {
         Objects.requireNonNull(values);
-        return new SolidDVector(size, values);
+        return new DVDense(size, values);
     }
 
-    public static SolidDVector from(int len, Int2DoubleFunction fun) {
-        return new SolidDVector(len, DoubleArrayTools.newFrom(0, len, fun));
+    public static DVDense from(int len, Int2DoubleFunction fun) {
+        return new DVDense(len, DoubleArrayTools.newFrom(0, len, fun));
     }
 
-    protected SolidDVector(int len, double[] values) {
+    protected DVDense(int len, double[] values) {
         super(len, values);
     }
 
     @Override
-    public BaseDVector plus(double x) {
+    public Type type() {
+        return Type.DENSE;
+    }
+
+    @Override
+    public DVBase plus(double x) {
         DoubleArrayTools.plus(values, x, 0, size);
         return this;
     }
 
     @Override
-    public BaseDVector plus(DVector b) {
-        if (b instanceof SolidDVector) {
+    public DVBase plus(DV b) {
+        if (b instanceof DVDense) {
             checkConformance(b);
-            SolidDVector sb = (SolidDVector) b;
+            DVDense sb = (DVDense) b;
             DoubleArrayTools.plus(values, sb.values, 0, size);
             return this;
         }
@@ -164,10 +170,10 @@ public class SolidDVector extends BaseDVector {
     }
 
     @Override
-    public BaseDVector minus(DVector b) {
-        if (b instanceof SolidDVector) {
+    public DVBase minus(DV b) {
+        if (b instanceof DVDense) {
             checkConformance(b);
-            SolidDVector sb = (SolidDVector) b;
+            DVDense sb = (DVDense) b;
             DoubleArrayTools.minus(values, sb.values, 0, size);
             return this;
         }
@@ -176,16 +182,16 @@ public class SolidDVector extends BaseDVector {
     }
 
     @Override
-    public DVector times(double scalar) {
+    public DV times(double scalar) {
         DoubleArrayTools.times(values, scalar, 0, size);
         return this;
     }
 
     @Override
-    public DVector times(DVector b) {
+    public DV times(DV b) {
         checkConformance(b);
-        if (b instanceof SolidDVector) {
-            SolidDVector sb = (SolidDVector) b;
+        if (b instanceof DVDense) {
+            DVDense sb = (DVDense) b;
             DoubleArrayTools.times(values, sb.values, 0, size);
             return this;
         }
@@ -194,16 +200,16 @@ public class SolidDVector extends BaseDVector {
     }
 
     @Override
-    public DVector div(double scalar) {
+    public DV div(double scalar) {
         DoubleArrayTools.div(values, scalar, 0, size);
         return this;
     }
 
     @Override
-    public DVector div(DVector b) {
+    public DV div(DV b) {
         checkConformance(b);
-        if (b instanceof SolidDVector) {
-            SolidDVector sb = (SolidDVector) b;
+        if (b instanceof DVDense) {
+            DVDense sb = (DVDense) b;
             DoubleArrayTools.div(values, sb.values, 0, size);
             return this;
         }
@@ -214,11 +220,11 @@ public class SolidDVector extends BaseDVector {
     }
 
     @Override
-    public double dot(DVector b) {
+    public double dot(DV b) {
         checkConformance(b);
         double s = 0;
-        if (b instanceof SolidDVector) {
-            SolidDVector sb = (SolidDVector) b;
+        if (b instanceof DVDense) {
+            DVDense sb = (DVDense) b;
             for (int i = 0; i < size; i++) {
                 s = Math.fma(values[i], sb.values[i], s);
             }
@@ -254,7 +260,7 @@ public class SolidDVector extends BaseDVector {
         return Math.pow(s, 1.0 / p);
     }
 
-    public DVector normalize(double p) {
+    public DV normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
             times(1.0 / norm);
@@ -297,15 +303,15 @@ public class SolidDVector extends BaseDVector {
     }
 
     @Override
-    public DVector apply(Double2DoubleFunction f) {
+    public DV apply(Double2DoubleFunction f) {
         for (int i = 0; i < size; i++) {
             values[i] = f.applyAsDouble(values[i]);
         }
         return this;
     }
 
-    public SolidDVector copy() {
-        SolidDVector copy = SolidDVector.zeros(size);
+    public DVDense copy() {
+        DVDense copy = DVDense.zeros(size);
         System.arraycopy(values, 0, copy.values, 0, size);
         return copy;
     }

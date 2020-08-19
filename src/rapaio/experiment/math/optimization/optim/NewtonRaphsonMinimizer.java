@@ -33,8 +33,8 @@ import rapaio.experiment.math.functions.RFunction;
 import rapaio.experiment.math.functions.RHessian;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 
 import java.util.ArrayList;
@@ -52,19 +52,19 @@ public class NewtonRaphsonMinimizer implements Minimizer {
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
-    private final DVector x;
+    private final DV x;
     private final RFunction f;
     private final RDerivative d1f;
     private final RHessian d2f;
 
-    private DVector sol;
+    private DV sol;
 
-    private final List<DVector> solutions = new ArrayList<>();
+    private final List<DV> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
     public NewtonRaphsonMinimizer(
-            DVector x,
+            DV x,
             RFunction f,
             RDerivative d1f,
             RHessian d2f,
@@ -86,11 +86,11 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            DVector d1f_x = d1f.apply(sol);
-            DMatrix d2f_x = d2f.apply(sol);
-            DVector d1f_x_n = d1f_x.copy().times(-1);
+            DV d1f_x = d1f.apply(sol);
+            DM d2f_x = d2f.apply(sol);
+            DV d1f_x_n = d1f_x.copy().times(-1);
 
-            DVector delta_x;
+            DV delta_x;
 
             // try LU decomposition, otherwise work with QR
 //            LUDecomposition lu = LUDecomposition.from(d2f_x);
@@ -116,7 +116,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         }
     }
 
-    private CholeskyDecomposition modifiedCholesky(DMatrix A) {
+    private CholeskyDecomposition modifiedCholesky(DM A) {
         double beta = 0.001;
 
         // find minimum diagonal element
@@ -130,7 +130,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         double sigma = (minac > 0) ? 0 : -minac + beta;
 
         // update matrix
-        DMatrix Ac = A.copy();
+        DM Ac = A.copy();
         for (int i = 0; i < Ac.rowCount(); i++) {
             Ac.set(i, i, A.get(i, i) + sigma);
         }
@@ -145,7 +145,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             // update sigma
             sigma = max(100 * sigma, beta);
             // update matrix
-            DMatrix Acc = Ac.copy();
+            DM Acc = Ac.copy();
             for (int i = 0; i < Acc.rowCount(); i++) {
                 Acc.set(i, i, Ac.get(i, i) + sigma);
             }
@@ -165,11 +165,11 @@ public class NewtonRaphsonMinimizer implements Minimizer {
         return sb.toString();
     }
 
-    public List<DVector> solutions() {
+    public List<DV> solutions() {
         return solutions;
     }
 
-    public DVector solution() {
+    public DV solution() {
         return sol;
     }
 

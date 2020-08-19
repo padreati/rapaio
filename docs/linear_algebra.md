@@ -43,7 +43,7 @@ column or row oriented arrays
 
 Let's take double matrices. The following classes are involved:
 
-* *DMatrix interface*: contains the documented API any implementation must obey
+* *DM interface*: contains the documented API any implementation must obey
 * *AbstractDMatrix class*: contains implementations based solely on getter, setter and rowCount and colCount, 
 this is an abstract class
 * *BaseDMatrix class*: contains base implementation of methods on which AbstractDMatrix relies and 

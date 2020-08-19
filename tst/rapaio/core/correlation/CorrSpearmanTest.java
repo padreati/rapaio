@@ -32,8 +32,8 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 import rapaio.sys.WS;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,7 +123,7 @@ public class CorrSpearmanTest {
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
-        DMatrix exp = SolidDMatrix.copy(3, 3,
+        DM exp = DMStripe.copy(3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
                 0.8789432182134321, 1, 0.999999997876,
                 0.8789431613694316, 0.999999997876, 1);

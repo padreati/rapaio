@@ -27,10 +27,8 @@
 
 package rapaio.math.linear;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import rapaio.math.linear.interfaces.DMMathOps;
 import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;
@@ -40,7 +38,26 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DMatrix extends Serializable, Printable {
+public interface DM extends DMMathOps, Serializable, Printable {
+
+    enum Type {
+        /**
+         * Base implementation using only the set/get API used as reference for
+         * performance benchmarks and as a starting point for new implementations
+         */
+        BASE,
+        /**
+         * Array of arrays implementation of a matrix. I can use row major or column
+         * major ordering.
+         */
+        STRIPE,
+        /**
+         * Mapped view over dense array
+         */
+        MAP
+    }
+
+    Type type();
 
     /**
      * @return number of rows of the matrix
@@ -80,15 +97,6 @@ public interface DMatrix extends Serializable, Printable {
     void increment(final int row, final int col, final double value);
 
     /**
-     * Set the value at given position with the result of the applied function.
-     *
-     * @param row      row index
-     * @param col      column index
-     * @param function function to be applied
-     */
-    void apply(final int row, final int col, Double2DoubleFunction function);
-
-    /**
      * Returns a vector build from values of a row in
      * the original matrix. Depending on implementation,
      * the vector can be a view over the original data.
@@ -98,7 +106,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param row row index
      * @return result vector reference
      */
-    DVector mapRow(final int row);
+    DV mapRow(final int row);
 
     /**
      * Returns a vector build from values of a row
@@ -108,7 +116,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param row row index
      * @return result vector reference
      */
-    DVector mapRowCopy(final int row);
+    DV mapRowCopy(final int row);
 
     /**
      * Creates a new matrix which contains only the rows
@@ -119,7 +127,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param rows row indexes
      * @return result matrix reference
      */
-    DMatrix mapRows(int... rows);
+    DM mapRows(int... rows);
 
     /**
      * Creates a new matrix which contains only the rows
@@ -129,7 +137,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param rows row indexes
      * @return result matrix reference
      */
-    DMatrix mapRowsCopy(int... rows);
+    DM mapRowsCopy(int... rows);
 
     /**
      * Creates a new matrix which contains only rows with
@@ -142,7 +150,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeRows(int start, int end);
+    DM rangeRows(int start, int end);
 
     /**
      * Creates a new matrix which contains only rows with
@@ -154,7 +162,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeRowsCopy(int start, int end);
+    DM rangeRowsCopy(int start, int end);
 
     /**
      * Builds a new matrix having all columns and all the rows not specified by given indexes.
@@ -164,7 +172,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param rows rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeRows(int... rows);
+    DM removeRows(int... rows);
 
     /**
      * Builds a new matrix having all columns and all the rows not specified by given indexes.
@@ -173,7 +181,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeRowsCopy(int... indexes);
+    DM removeRowsCopy(int... indexes);
 
     /**
      * Returns a vector build from values of a column in
@@ -185,7 +193,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param col column index
      * @return result vector reference
      */
-    DVector mapCol(final int col);
+    DV mapCol(final int col);
 
     /**
      * Returns a vector build from values of a column
@@ -195,7 +203,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param col column index
      * @return result vector reference
      */
-    DVector mapColCopy(final int col);
+    DV mapColCopy(final int col);
 
     /**
      * Creates a new matrix which contains only the cols
@@ -206,7 +214,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param indexes column indexes
      * @return result matrix reference
      */
-    DMatrix mapCols(int... indexes);
+    DM mapCols(int... indexes);
 
     /**
      * Creates a new matrix which contains only the cols
@@ -216,7 +224,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param cols column indexes
      * @return result matrix reference
      */
-    DMatrix mapColsCopy(int... cols);
+    DM mapColsCopy(int... cols);
 
     /**
      * Creates a new matrix which contains only cols with
@@ -229,7 +237,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end column index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeCols(int start, int end);
+    DM rangeCols(int start, int end);
 
     /**
      * Creates a new matrix which contains only columns with
@@ -241,7 +249,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param end   end column index (exclusive)
      * @return result matrix reference
      */
-    DMatrix rangeColsCopy(int start, int end);
+    DM rangeColsCopy(int start, int end);
 
     /**
      * Builds a new matrix having all columns not specified by given indexes.
@@ -251,7 +259,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param cols columns which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeCols(int... cols);
+    DM removeCols(int... cols);
 
     /**
      * Builds a new matrix having all columns not specified by given indexes.
@@ -260,180 +268,7 @@ public interface DMatrix extends Serializable, Printable {
      * @param cols columns which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DMatrix removeColsCopy(int... cols);
-
-    /**
-     * Creates an instance of a transposed matrix. Depending on implementation
-     * this can be a view of the original data.
-     *
-     * @return new transposed matrix
-     */
-    DMatrix t();
-
-    /**
-     * Adds a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param x value to be added
-     * @return instance of the result matrix
-     */
-    DMatrix plus(double x);
-
-    /**
-     * Adds element wise values from given matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param b matrix with elements to be added
-     * @return instance of the result matrix
-     */
-    DMatrix plus(DMatrix b);
-
-    /**
-     * Substract a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param x value to be substracted
-     * @return instance of the result matrix
-     */
-    DMatrix minus(double x);
-
-    /**
-     * Substracts element wise values from given matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param b matrix with elements to be substracted
-     * @return instance of the result matrix
-     */
-    DMatrix minus(DMatrix b);
-
-    /**
-     * Multiply a scalar value to all elements of a matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param x value to be multiplied with
-     * @return instance of the result matrix
-     */
-    DMatrix times(double x);
-
-    /**
-     * Multiplies element wise values from given matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param b matrix with elements to be multiplied with
-     * @return instance of the result matrix
-     */
-    DMatrix times(DMatrix b);
-
-    /**
-     * Divide a scalar value from all elements of a matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param x divisor value
-     * @return instance of the result matrix
-     */
-    DMatrix div(double x);
-
-    /**
-     * Divides element wise values from given matrix. If possible,
-     * the operation is realized in place.
-     *
-     * @param b matrix with division elements
-     * @return instance of the result matrix
-     */
-    DMatrix div(DMatrix b);
-
-    /**
-     * Computes matrix vector multiplication.
-     *
-     * @param b vector to be multiplied with
-     * @return result vector
-     */
-    DVector dot(DVector b);
-
-    /**
-     * Computes matrix - matrix multiplication.
-     *
-     * @param b matrix to be multiplied with
-     * @return matrix result
-     */
-    DMatrix dot(DMatrix b);
-
-    /**
-     * Apply the given function to all elements of the matrix.
-     *
-     * @param fun function to be applied
-     * @return same instance matrix
-     */
-    DMatrix apply(Double2DoubleFunction fun);
-
-    /**
-     * Trace of the matrix, if the matrix is square. The trace of a squared
-     * matrix is the sum of the elements from the main diagonal.
-     * Otherwise returns an exception.
-     *
-     * @return value of the matrix trace
-     */
-    double trace();
-
-    /**
-     * Matrix rank obtained using singular value decomposition.
-     *
-     * @return effective numerical rank, obtained from SVD.
-     */
-    int rank();
-
-    /**
-     * Vector with values from main diagonal
-     */
-    DVector diag();
-
-    /**
-     * Computes scatter matrix.
-     *
-     * @return scatter matrix instance
-     */
-    DMatrix scatter();
-
-    /**
-     * Builds a vector with maximum values from rows.
-     * Thus if a matrix has m rows and n columns, the resulted vector
-     * will have size m and will contain in each position the maximum
-     * value from the row with that position.
-     *
-     * @return vector with result values
-     */
-    DVector rowMaxValues();
-
-    /**
-     * Builds a vector with indexes of the maximum values from rows.
-     * Thus if a matrix has m rows and n columns, the resulted vector
-     * will have size m and will contain in each position the maximum
-     * value from the row with that position.
-     *
-     * @return vector with indexes of max value values
-     */
-    int[] rowMaxIndexes();
-
-    /**
-     * Does not override equals since this is a costly
-     * algorithm and can slow down processing as a side effect.
-     *
-     * @param DMatrix given matrix
-     * @return true if dimension and elements are equal
-     */
-    boolean isEqual(DMatrix DMatrix);
-
-    /**
-     * Compares matrices using a tolerance for values.
-     * If the absolute difference between two values is less
-     * than the specified tolerance, than the values are
-     * considered equal.
-     *
-     * @param DMatrix matrix to compare with
-     * @param tol     tolerance
-     * @return true if dimensions and elements are equal
-     */
-    boolean isEqual(DMatrix DMatrix, double tol);
+    DM removeColsCopy(int... cols);
 
     /**
      * Stream of double values, the element order is not guaranteed,
@@ -448,31 +283,30 @@ public interface DMatrix extends Serializable, Printable {
      *
      * @return copy matrix reference
      */
-    DMatrix copy();
+    DM copy();
 
     /**
-     * Builds a summary of the matrix.
+     * Compares matrices using a tolerance of 1e-12 for values.
+     * If the absolute difference between two values is less
+     * than the specified tolerance, than the values are
+     * considered equal.
      *
-     * @param printer printer used in operation
-     * @param options printer options
-     * @return string which contains matrix summary
+     * @param m matrix to compare with
+     * @return true if dimensions and elements are equal
      */
-    String toSummary(Printer printer, POption<?>... options);
-
-    default boolean deepEquals(DMatrix m) {
-        if (rowCount() != m.rowCount()) {
-            return false;
-        }
-        if (colCount() != m.colCount()) {
-            return false;
-        }
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                if (get(i, j) != m.get(i, j)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    default boolean deepEquals(DM m) {
+        return deepEquals(m, 1e-12);
     }
+
+    /**
+     * Compares matrices using a tolerance for values.
+     * If the absolute difference between two values is less
+     * than the specified tolerance, than the values are
+     * considered equal.
+     *
+     * @param m   matrix to compare with
+     * @param eps tolerance
+     * @return true if dimensions and elements are equal
+     */
+    boolean deepEquals(DM m, double eps);
 }

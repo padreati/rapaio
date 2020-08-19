@@ -3,14 +3,16 @@ package rapaio.math.linear;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.base.DMBase;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
  */
-public abstract class StandardDMatrixTest {
+public abstract class StandardDMTest {
 
     protected static final double TOL = 1e-15;
 
@@ -19,21 +21,28 @@ public abstract class StandardDMatrixTest {
         RandomSource.setSeed(123);
     }
 
-    protected abstract DMatrix generateSequential(int n, int m);
+    protected abstract DM.Type type();
 
-    protected abstract DMatrix generateIdentity(int n);
+    protected abstract DM generateSequential(int n, int m);
 
-    protected abstract DMatrix generateFill(int n, int m, double fill);
+    protected abstract DM generateIdentity(int n);
 
-    protected abstract DMatrix generateWrap(double[][] values);
+    protected abstract DM generateFill(int n, int m, double fill);
+
+    protected abstract DM generateWrap(double[][] values);
 
     protected abstract String className();
 
     @Test
+    void typeTest() {
+        assertEquals(type(), generateSequential(10, 3).type());
+    }
+
+    @Test
     void testMapRow() {
-        DMatrix m = generateSequential(10, 11);
-        DVector vector1 = m.mapRow(3);
-        DVector vector2 = m.mapRowCopy(3);
+        DM m = generateSequential(10, 11);
+        DV vector1 = m.mapRow(3);
+        DV vector2 = m.mapRowCopy(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(33.0 + i, vector1.get(i), TOL);
             assertEquals(33.0 + i, vector2.get(i), TOL);
@@ -42,10 +51,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testMapRows() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.mapRows(3, 4);
-        DMatrix copy = m.mapRowsCopy(3, 4);
+        DM view = m.mapRows(3, 4);
+        DM copy = m.mapRowsCopy(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -63,10 +72,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testRangeRows() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.rangeRows(3, 5);
-        DMatrix copy = m.rangeRowsCopy(3, 5);
+        DM view = m.rangeRows(3, 5);
+        DM copy = m.rangeRowsCopy(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -84,10 +93,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testRemoveRows() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DMatrix copy = m.removeRowsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DM view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DM copy = m.removeRowsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -105,9 +114,9 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testMapCol() {
-        DMatrix m = generateSequential(10, 11);
-        DVector vector1 = m.mapCol(3);
-        DVector vector2 = m.mapColCopy(3);
+        DM m = generateSequential(10, 11);
+        DV vector1 = m.mapCol(3);
+        DV vector2 = m.mapColCopy(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(3.0 + i * 11, vector1.get(i), TOL);
             assertEquals(3.0 + i * 11, vector2.get(i), TOL);
@@ -116,10 +125,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testMapCols() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.mapCols(3, 4);
-        DMatrix copy = m.mapColsCopy(3, 4);
+        DM view = m.mapCols(3, 4);
+        DM copy = m.mapColsCopy(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -137,10 +146,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testRangeCols() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.rangeCols(3, 5);
-        DMatrix copy = m.rangeColsCopy(3, 5);
+        DM view = m.rangeCols(3, 5);
+        DM copy = m.rangeColsCopy(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -158,10 +167,10 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testRemoveCols() {
-        DMatrix m = generateSequential(10, 11);
+        DM m = generateSequential(10, 11);
 
-        DMatrix view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DMatrix copy = m.removeColsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DM view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DM copy = m.removeColsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -179,12 +188,12 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testPlus() {
-        DMatrix m1 = generateSequential(20, 10);
-        DMatrix m2 = generateSequential(20, 10);
+        DM m1 = generateSequential(20, 10);
+        DM m2 = generateSequential(20, 10);
 
-        DMatrix t1 = m1.copy().plus(m2);
-        DMatrix t2 = m1.copy().plus(1);
-        DMatrix t3 = m1.plus(1).plus(m2);
+        DM t1 = m1.copy().plus(m2);
+        DM t2 = m1.copy().plus(1);
+        DM t3 = m1.plus(1).plus(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -208,12 +217,12 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testMinus() {
-        DMatrix m1 = generateSequential(20, 10);
-        DMatrix m2 = generateSequential(20, 10);
+        DM m1 = generateSequential(20, 10);
+        DM m2 = generateSequential(20, 10);
 
-        DMatrix t1 = m1.copy().minus(m2);
-        DMatrix t2 = m1.copy().minus(1);
-        DMatrix t3 = m1.minus(1).minus(m2);
+        DM t1 = m1.copy().minus(m2);
+        DM t2 = m1.copy().minus(1);
+        DM t3 = m1.minus(1).minus(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -237,12 +246,12 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testTimes() {
-        DMatrix m1 = generateSequential(20, 10);
-        DMatrix m2 = generateSequential(20, 10);
+        DM m1 = generateSequential(20, 10);
+        DM m2 = generateSequential(20, 10);
 
-        DMatrix t1 = m1.copy().times(m2);
-        DMatrix t2 = m1.copy().times(2);
-        DMatrix t3 = m1.times(2).times(m2);
+        DM t1 = m1.copy().times(m2);
+        DM t2 = m1.copy().times(2);
+        DM t3 = m1.times(2).times(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -267,12 +276,12 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void testDiv() {
-        DMatrix m1 = generateSequential(20, 10);
-        DMatrix m2 = generateSequential(20, 10);
+        DM m1 = generateSequential(20, 10);
+        DM m2 = generateSequential(20, 10);
 
-        DMatrix t1 = m1.copy().div(m2);
-        DMatrix t2 = m1.copy().div(2);
-        DMatrix t3 = m1.div(2).div(m2);
+        DM t1 = m1.copy().div(m2);
+        DM t2 = m1.copy().div(2);
+        DM t3 = m1.div(2).div(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -300,18 +309,26 @@ public abstract class StandardDMatrixTest {
     }
 
     @Test
+    void testApply() {
+        var m = generateSequential(10, 10);
+        var copy = m.copy();
+        m.apply(x -> x - 10).apply(x -> x + 10);
+        assertTrue(m.deepEquals(m));
+    }
+
+    @Test
     void testDot() {
 
-        DVector v = SolidDVector.ones(10);
-        DMatrix m = generateSequential(10, 10);
+        DV v = DVDense.ones(10);
+        DM m = generateSequential(10, 10);
 
         var m1 = m.dot(v);
         for (int i = 0; i < m1.size(); i++) {
             assertEquals(45 + 100 * i, m1.get(i), TOL);
         }
 
-        DMatrix n1 = generateSequential(10, 20);
-        DMatrix n2 = generateSequential(20, 30);
+        DM n1 = generateSequential(10, 20);
+        DM n2 = generateSequential(20, 30);
 
         var m2 = n1.dot(n2);
         assertEquals(10, m2.rowCount());
@@ -354,8 +371,21 @@ public abstract class StandardDMatrixTest {
             var c = generateIdentity(i).minus(generateFill(i, i, 1.0 / i));
             var s2 = x.t().dot(c).dot(x);
 
-            assertTrue(s2.isEqual(s, 1e-11));
+            assertTrue(s2.deepEquals(s, 1e-11));
         }
+    }
+
+    @Test
+    void testRank() {
+
+        assertEquals(1, generateFill(10, 10, 1).rank());
+        assertEquals(2, generateSequential(7, 3).rank());
+        assertEquals(1, generateSequential(2, 1).rank());
+        assertEquals(3, generateWrap(new double[][]{
+                {1, 1, 1},
+                {1, 2, 4},
+                {3, 2, 1}
+        }).rank());
     }
 
     @Test
@@ -370,26 +400,55 @@ public abstract class StandardDMatrixTest {
     }
 
     @Test
-    void testIsEqual() {
-        var m1 = generateWrap(new double[][]{
+    void rowMaxIndexesTest() {
+        double[][] m = new double[][]{
+                {1, -1, 2},
+                {2, 1, 1},
+                {1, 2, 2},
+                {2, 2, 1}
+        };
+
+        assertArrayEquals(new int[]{2, 0, 1, 0}, generateWrap(m).rowMaxIndexes());
+    }
+
+    @Test
+    void deepEqualsTest() {
+        DM m1 = generateIdentity(2);
+
+        DM m2 = DMBase.wrap(new double[][]{{1, 0}, {0, 1}});
+        DMStripe m3 = rapaio.math.linear.dense.DMStripe.identity(2);
+
+        assertTrue(m1.deepEquals(m2));
+        assertTrue(m2.deepEquals(m3));
+
+        m2.increment(1, 1, 1);
+        m3.increment(0, 1, 2);
+
+        assertFalse(m1.deepEquals(m2));
+        assertFalse(m1.deepEquals(m3));
+
+        var m4 = rapaio.math.linear.dense.DMStripe.fill(2, 3, 0);
+        var m5 = rapaio.math.linear.dense.DMStripe.fill(3, 2, 0);
+
+        assertFalse(m4.deepEquals(m1));
+        assertFalse(m5.deepEquals(m1));
+
+        m1 = generateWrap(new double[][]{
                 {1, 1, 2},
                 {1, 2, 4}
         });
-        var m2 = generateWrap(new double[][]{
+        m2 = generateWrap(new double[][]{
                 {1d + 0x1.0p-47, 1, 2},
                 {1, 2, 4}
         });
 
-        System.out.println(String.format("%.100f", m1.get(0, 0)));
-        System.out.println(String.format("%.100f", m2.get(0, 0)));
+        assertTrue(m1.deepEquals(m2));
+        assertTrue(m2.deepEquals(m1));
+        assertTrue(m1.deepEquals(m2, 1e-14));
+        assertFalse(m1.deepEquals(m2, 1e-30));
 
-        assertTrue(m1.isEqual(m2));
-        assertTrue(m2.isEqual(m1));
-        assertTrue(m1.isEqual(m2, 1e-14));
-        assertFalse(m1.isEqual(m2, 1e-30));
-
-        assertFalse(m1.isEqual(generateSequential(2, 2)));
-        assertFalse(m1.isEqual(generateSequential(3, 3)));
+        assertFalse(m1.deepEquals(generateSequential(2, 2)));
+        assertFalse(m1.deepEquals(generateSequential(3, 3)));
     }
 
     @Test
@@ -486,31 +545,31 @@ public abstract class StandardDMatrixTest {
                 id25.toContent());
 
         assertEquals("     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] \n" +
-                " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                " [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0    0    0    0    0    0   \n" +
-                "[15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0    0    0    0    0    0   \n" +
-                "[16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0    0    0    0    0    0   \n" +
-                "[17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0    0    0    0    0    0   \n" +
-                "[18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0    0    0    0    0    0   \n" +
-                "[19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1    0    0    0    0    0   \n" +
-                "[20]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    1    0    0    0    0   \n" +
-                "[21]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    1    0    0    0   \n" +
-                "[22]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    1    0    0   \n" +
-                "[23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    1    0   \n" +
-                "[24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    1   \n",
+                        " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [1]  0   1   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [2]  0   0   1   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [3]  0   0   0   1   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [4]  0   0   0   0   1   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [5]  0   0   0   0   0   1   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [6]  0   0   0   0   0   0   1   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [7]  0   0   0   0   0   0   0   1   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [8]  0   0   0   0   0   0   0   0   1   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        " [9]  0   0   0   0   0   0   0   0   0   1   0    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[10]  0   0   0   0   0   0   0   0   0   0   1    0    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[11]  0   0   0   0   0   0   0   0   0   0   0    1    0    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[12]  0   0   0   0   0   0   0   0   0   0   0    0    1    0    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[13]  0   0   0   0   0   0   0   0   0   0   0    0    0    1    0    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[14]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    1    0    0    0    0    0    0    0    0    0    0   \n" +
+                        "[15]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    1    0    0    0    0    0    0    0    0    0   \n" +
+                        "[16]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    1    0    0    0    0    0    0    0    0   \n" +
+                        "[17]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    1    0    0    0    0    0    0    0   \n" +
+                        "[18]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    1    0    0    0    0    0    0   \n" +
+                        "[19]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    1    0    0    0    0    0   \n" +
+                        "[20]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    1    0    0    0    0   \n" +
+                        "[21]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    1    0    0    0   \n" +
+                        "[22]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    1    0    0   \n" +
+                        "[23]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    1    0   \n" +
+                        "[24]  0   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0    0    0    0    0    1   \n",
                 id25.toFullContent());
 
 

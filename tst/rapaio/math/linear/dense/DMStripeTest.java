@@ -30,16 +30,21 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.StandardDMatrixTest;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.StandardDMTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SolidDMatrixTest extends StandardDMatrixTest {
+public class DMStripeTest extends StandardDMTest {
 
     @Override
-    protected DMatrix generateSequential(int n, int m) {
-        SolidDMatrix matrix = SolidDMatrix.empty(n, m);
+    protected DM.Type type() {
+        return DM.Type.STRIPE;
+    }
+
+    @Override
+    protected DM generateSequential(int n, int m) {
+        DMStripe matrix = rapaio.math.linear.dense.DMStripe.empty(n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, i * m + j);
@@ -49,29 +54,29 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
     }
 
     @Override
-    protected DMatrix generateIdentity(int n) {
-        return SolidDMatrix.identity(n);
+    protected DM generateIdentity(int n) {
+        return rapaio.math.linear.dense.DMStripe.identity(n);
     }
 
     @Override
-    protected DMatrix generateFill(int n, int m, double fill) {
-        return SolidDMatrix.fill(n, m, fill);
+    protected DM generateFill(int n, int m, double fill) {
+        return rapaio.math.linear.dense.DMStripe.fill(n, m, fill);
     }
 
     @Override
-    protected DMatrix generateWrap(double[][] values) {
-        return SolidDMatrix.wrap(values);
+    protected DM generateWrap(double[][] values) {
+        return rapaio.math.linear.dense.DMStripe.wrap(values);
     }
 
     @Override
     protected String className() {
-        return "SolidDMatrix";
+        return "DMStripe";
     }
 
     @Test
     void buildersTest() {
 
-        DMatrix i3 = SolidDMatrix.identity(3);
+        DM i3 = rapaio.math.linear.dense.DMStripe.identity(3);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -82,7 +87,7 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
             }
         }
 
-        DMatrix empty = SolidDMatrix.empty(3, 4);
+        DM empty = rapaio.math.linear.dense.DMStripe.empty(3, 4);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(0, empty.get(i, j), TOL);
@@ -90,14 +95,14 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
         }
 
 
-        DMatrix fill = SolidDMatrix.fill(3, 4, 12);
+        DM fill = rapaio.math.linear.dense.DMStripe.fill(3, 4, 12);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(12, fill.get(i, j), TOL);
             }
         }
 
-        DMatrix fillFun = SolidDMatrix.fill(3, 4, (i, j) -> Math.sqrt(i * j));
+        DM fillFun = rapaio.math.linear.dense.DMStripe.fill(3, 4, (i, j) -> Math.sqrt(i * j));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(Math.sqrt(i * j), fillFun.get(i, j), TOL);
@@ -105,14 +110,14 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
         }
 
         Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
-        DMatrix copy1 = SolidDMatrix.copy(iris);
+        DM copy1 = rapaio.math.linear.dense.DMStripe.copy(iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {
                 assertEquals(iris.getDouble(j, i), copy1.get(j, i), TOL);
             }
         }
 
-        DMatrix copy2 = SolidDMatrix.copy(iris.varStream().toArray(Var[]::new));
+        DM copy2 = rapaio.math.linear.dense.DMStripe.copy(iris.varStream().toArray(Var[]::new));
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
                 assertEquals(copy1.get(i, j), copy2.get(i, j), TOL);
@@ -124,7 +129,7 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        DMatrix copy3 = SolidDMatrix.copy(3, 4, values);
+        DM copy3 = rapaio.math.linear.dense.DMStripe.copy(3, 4, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
@@ -136,17 +141,17 @@ public class SolidDMatrixTest extends StandardDMatrixTest {
                 {5, 6, 7, 8},
                 {9, 10, 11, 12}
         };
-        DMatrix copy4 = SolidDMatrix.copy(m);
+        DM copy4 = rapaio.math.linear.dense.DMStripe.copy(m);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(m[i][j], copy4.get(i, j), TOL);
             }
         }
 
-        DMatrix copy5 = SolidDMatrix.copy(m, 1, 3, 1, 4);
-        assertTrue(copy5.isEqual(SolidDMatrix.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        DM copy5 = rapaio.math.linear.dense.DMStripe.copy(m, 1, 3, 1, 4);
+        assertTrue(copy5.deepEquals(rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
-        DMatrix copy6 = SolidDMatrix.random(2, 2);
+        DM copy6 = rapaio.math.linear.dense.DMStripe.random(2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());
     }
 }

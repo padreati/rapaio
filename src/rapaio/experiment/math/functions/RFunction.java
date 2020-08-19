@@ -27,8 +27,8 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.DV;
+import rapaio.math.linear.dense.DVDense;
 
 import java.io.Serializable;
 
@@ -39,8 +39,8 @@ import java.io.Serializable;
 public interface RFunction extends Serializable {
 
     default double apply(double... x) {
-        return apply(SolidDVector.wrap(x));
+        return apply(DVDense.wrap(x));
     }
 
-    double apply(DVector x);
+    double apply(DV x);
 }

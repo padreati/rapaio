@@ -26,7 +26,7 @@ package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,7 +202,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        SolidDMatrix rm = SolidDMatrix.wrap(new double[][]{
+        DMStripe rm = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 5}
@@ -235,7 +235,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        SolidDMatrix rm = SolidDMatrix.wrap(new double[][]{
+        DMStripe rm = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 5}

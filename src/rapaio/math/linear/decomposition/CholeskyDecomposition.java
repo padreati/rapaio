@@ -28,8 +28,8 @@
 package rapaio.math.linear.decomposition;
 
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.io.Serializable;
 
@@ -45,7 +45,7 @@ import java.io.Serializable;
  */
 public class CholeskyDecomposition implements Serializable {
 
-    public static CholeskyDecomposition from(DMatrix a) {
+    public static CholeskyDecomposition from(DM a) {
         return new CholeskyDecomposition(a);
     }
 
@@ -72,7 +72,7 @@ public class CholeskyDecomposition implements Serializable {
      * @param A Square, symmetric matrix.
      */
 
-    private CholeskyDecomposition(DMatrix A) {
+    private CholeskyDecomposition(DM A) {
 
         // Initialize.
         n = A.rowCount();
@@ -166,8 +166,8 @@ public class CholeskyDecomposition implements Serializable {
     /**
      * @return L triangular factor
      */
-    public DMatrix getL() {
-        return SolidDMatrix.wrap(l);
+    public DM getL() {
+        return DMStripe.wrap(l);
     }
 
     /**
@@ -179,7 +179,7 @@ public class CholeskyDecomposition implements Serializable {
      * @throws RuntimeException         Matrix is not symmetric positive definite.
      */
 
-    public DMatrix solve(DMatrix B) {
+    public DM solve(DM B) {
         if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -188,7 +188,7 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        DMatrix x = B.copy();
+        DM x = B.copy();
         int nx = B.colCount();
 
         x = forwardSubstitution(n, nx, x, l);
@@ -197,7 +197,7 @@ public class CholeskyDecomposition implements Serializable {
         return x;
     }
 
-    public static DMatrix backwardSubstitution(int n, int nx, DMatrix X, double[][] L) {
+    public static DM backwardSubstitution(int n, int nx, DM X, double[][] L) {
 
         // Solve L'*X = Y;
         for (int k = n - 1; k >= 0; k--) {
@@ -211,7 +211,7 @@ public class CholeskyDecomposition implements Serializable {
         return X;
     }
 
-    public static DMatrix forwardSubstitution(int n, int nx, DMatrix X, double[][] L) {
+    public static DM forwardSubstitution(int n, int nx, DM X, double[][] L) {
 
         // Solve L*Y = B;
         for (int k = 0; k < n; k++) {

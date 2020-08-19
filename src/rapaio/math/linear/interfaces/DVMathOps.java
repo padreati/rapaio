@@ -1,68 +1,14 @@
-/*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
-package rapaio.math.linear;
+package rapaio.math.linear.interfaces;
 
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import rapaio.data.VarDouble;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.printer.Printable;
+import rapaio.math.linear.DV;
 
-import java.io.Serializable;
 import java.util.function.BiFunction;
-import java.util.stream.DoubleStream;
 
 /**
- * Vector of values in double floating precision.
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/19/20.
  */
-public interface DVector extends Serializable, Printable {
-
-    /**
-     * @return length of vector
-     */
-    int size();
-
-    /**
-     * Gets value from zero-based position index
-     *
-     * @param i given position
-     * @return value stored at the given position
-     */
-    double get(int i);
-
-    /**
-     * Sets a value to the given position
-     *
-     * @param i     zero based index
-     * @param value value to be stored
-     */
-    void set(int i, double value);
+public interface DVMathOps {
 
     /**
      * Adds to all elements the value of x
@@ -70,7 +16,7 @@ public interface DVector extends Serializable, Printable {
      * @param x value to be incremented with
      * @return same object
      */
-    DVector plus(double x);
+    DV plus(double x);
 
     /**
      * Adds to to all positions values from the
@@ -84,7 +30,7 @@ public interface DVector extends Serializable, Printable {
      * @param B vector which contains values used for increment operation
      * @return same object
      */
-    DVector plus(DVector B);
+    DV plus(DV B);
 
     /**
      * Substracts from all elements the value of x, it is
@@ -94,7 +40,7 @@ public interface DVector extends Serializable, Printable {
      * @param x value to be decremented with
      * @return same object
      */
-    DVector minus(double x);
+    DV minus(double x);
 
     /**
      * Substracts from all positions values from the
@@ -108,7 +54,7 @@ public interface DVector extends Serializable, Printable {
      * @param b vector which contains values used for increment operation
      * @return same object
      */
-    DVector minus(DVector b);
+    DV minus(DV b);
 
     /**
      * Scalar multiplication. All the values from vector
@@ -117,7 +63,7 @@ public interface DVector extends Serializable, Printable {
      * @param scalar scaar value
      * @return the same object
      */
-    DVector times(double scalar);
+    DV times(double scalar);
 
     /**
      * Element wise multiplication between two vectors.
@@ -125,7 +71,7 @@ public interface DVector extends Serializable, Printable {
      * @param b factor vector
      * @return element wise multiplication result vector
      */
-    DVector times(DVector b);
+    DV times(DV b);
 
     /**
      * Scalar division. All values from vector will be divided by scalar value.
@@ -133,7 +79,7 @@ public interface DVector extends Serializable, Printable {
      * @param scalar value
      * @return reference to original vector
      */
-    DVector div(double scalar);
+    DV div(double scalar);
 
     /**
      * Element wise division between two vectors.
@@ -141,7 +87,7 @@ public interface DVector extends Serializable, Printable {
      * @param b factor vector
      * @return element wise division result vector
      */
-    DVector div(DVector b);
+    DV div(DV b);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -152,7 +98,7 @@ public interface DVector extends Serializable, Printable {
      * @param b the vector used to compute dot product
      * @return same vector object
      */
-    double dot(DVector b);
+    double dot(DV b);
 
     /**
      * Computes the p norm of the vector.
@@ -180,7 +126,7 @@ public interface DVector extends Serializable, Printable {
      * @param p order of the p norm used at normalization.
      * @return normalized vector
      */
-    DVector normalize(double p);
+    DV normalize(double p);
 
     /**
      * Computes the sum of all elements in vector. If there is
@@ -235,60 +181,7 @@ public interface DVector extends Serializable, Printable {
      */
     double nanvariance();
 
-    DVector apply(Double2DoubleFunction f);
+    DV apply(Double2DoubleFunction f);
 
-    DVector apply(BiFunction<Integer, Double, Double> f);
-
-    /**
-     * Creates a new solid copy of the vector.
-     * There are two common reasons why we would need such an operations:
-     *
-     * <ul>
-     * <li>the current vector could be the result of multiple
-     * mapping or binding operations and we would like to have a solid
-     * copy of all those values</li>
-     * <li>most of the operations work on the current instance, if we want
-     * to avoid altering this instance than we need a new copy</li>
-     * </ul>
-     *
-     * @return a new solid copy of the vector
-     */
-    DVector copy();
-
-    /**
-     * A vector is also a matrix, but for implementation
-     * reasons the objects are not the same. This method
-     * creates a new copy of the vector in the form of a matrix
-     * with n rows and 1 column.
-     *
-     * @return a matrix corresponding with the current vector
-     */
-    default DMatrix asMatrix() {
-        SolidDMatrix res = SolidDMatrix.empty(size(), 1);
-        for (int i = 0; i < size(); i++) {
-            res.set(i, 0, get(i));
-        }
-        return res;
-    }
-
-    /**
-     * Creates a stream of values to visit all the elements of the vector
-     *
-     * @return a stream of values
-     */
-    DoubleStream valueStream();
-
-    VarDouble asVarDouble();
-
-    default boolean deepEquals(DVector v) {
-        if (size() != v.size()) {
-            return false;
-        }
-        for (int i = 0; i < size(); i++) {
-            if (get(i) != v.get(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    DV apply(BiFunction<Integer, Double, Double> f);
 }

@@ -29,7 +29,7 @@ package rapaio.experiment.math.optimization.optim.linesearch;
 
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
@@ -44,7 +44,7 @@ public class BacktrackLineSearch implements LineSearch {
     private static final double c = 0.9;
 
     @Override
-    public double find(RFunction f, RDerivative d1f, DVector x, DVector delta_f) {
+    public double find(RFunction f, RDerivative d1f, DV x, DV delta_f) {
         double fx = f.apply(x);
         double m = d1f.apply(x).dot(delta_f);
 

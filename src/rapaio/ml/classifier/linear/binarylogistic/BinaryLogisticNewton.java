@@ -4,11 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +29,11 @@ public class BinaryLogisticNewton {
     @Builder.Default
     private final double lambda = 0.0;
     @NonNull
-    private final DMatrix x;
+    private final DM x;
     @NonNull
-    private final DVector y;
+    private final DV y;
     @NonNull
-    private final DVector w0;
+    private final DV w0;
 
     @Builder
     @Getter
@@ -41,13 +41,13 @@ public class BinaryLogisticNewton {
     public static class Result {
 
         @NonNull
-        private final DVector w;
+        private final DV w;
 
         @NonNull
         private final List<Double> nll;
 
         @NonNull
-        private final List<DVector> ws;
+        private final List<DV> ws;
 
         private final boolean converged;
     }
@@ -55,14 +55,14 @@ public class BinaryLogisticNewton {
     public Result fit() {
         int it = 0;
         // current solution
-        DVector w = w0.copy();
-        ArrayList<DVector> ws = new ArrayList<>();
+        DV w = w0.copy();
+        ArrayList<DV> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
         nlls.add(negativeLogLikelihood(x, y, w));
 
         while (it++ < maxIter) {
-            DVector wnew = iterate(w);
+            DV wnew = iterate(w);
             double nll = negativeLogLikelihood(x, y, wnew);
 
             double nll_delta = nll - nlls.get(nlls.size() - 1);
@@ -86,7 +86,7 @@ public class BinaryLogisticNewton {
                 .build();
     }
 
-    private double negativeLogLikelihood(DMatrix x, DVector y, DVector w) {
+    private double negativeLogLikelihood(DM x, DV y, DV w) {
         return -x.dot(w)
                 .apply((i, v) -> (y.get(i) == 1) ? (1. / (1. + exp(-v))) : (1 - 1. / (1. + exp(-v))))
                 .apply(this::cut)
@@ -98,21 +98,21 @@ public class BinaryLogisticNewton {
         return Math.min(1 - 1e-12, value);
     }
 
-    private DVector iterate(DVector w) {
+    private DV iterate(DV w) {
 
         // compute delta weights first as (X^t I_{p(1-p)} X)^{-1} X^t (y-p)
 
         // Xw dot product
-        DVector xw = x.dot(w);
+        DV xw = x.dot(w);
 
         // p diag = 1/(1+exp(-Xw))
-        DVector p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
+        DV p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
 
         // p(1-p) diag from p diag
-        DVector pvars = p.copy().apply(value -> value * (1 - value));
+        DV pvars = p.copy().apply(value -> value * (1 - value));
 
         // Xt(p(1-p)
-        DMatrix xpvar = x.copy();
+        DM xpvar = x.copy();
         for (int i = 0; i < xpvar.rowCount(); i++) {
             double pvar = pvars.get(i);
             for (int j = 0; j < xpvar.colCount(); j++) {
@@ -121,19 +121,19 @@ public class BinaryLogisticNewton {
         }
 
         // X^t * I(p(1-p))^T * X
-        DMatrix mA = xpvar.t().dot(x);
+        DM mA = xpvar.t().dot(x);
 
-        DMatrix invA;
+        DM invA;
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
         if (chol.isSPD()) {
-            invA = chol.solve(SolidDMatrix.identity(w.size()));
+            invA = chol.solve(DMStripe.identity(w.size()));
         } else {
             QRDecomposition qr = QRDecomposition.from(mA);
-            invA = qr.solve(SolidDMatrix.identity(w.size()));
+            invA = qr.solve(rapaio.math.linear.dense.DMStripe.identity(w.size()));
         }
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DVector delta = invA.dot(x.t().dot(y.copy().minus(p)));
+        DV delta = invA.dot(x.t().dot(y.copy().minus(p)));
 
 
         // otherwise we fall in QR decomposition

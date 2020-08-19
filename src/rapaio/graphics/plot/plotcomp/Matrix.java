@@ -30,7 +30,7 @@ package rapaio.graphics.plot.plotcomp;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.PlotComponent;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DM;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -44,10 +44,10 @@ import java.awt.geom.Point2D;
 public class Matrix extends PlotComponent {
 
     private static final long serialVersionUID = -642370269224702175L;
-    private final DMatrix m;
+    private final DM m;
     private final boolean contour;
 
-    public Matrix(DMatrix m, boolean contour, GOption... opts) {
+    public Matrix(DM m, boolean contour, GOption... opts) {
         this.m = m;
         this.contour = contour;
         this.options.bind(opts);

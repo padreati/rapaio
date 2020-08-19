@@ -29,8 +29,8 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.util.Arrays;
 
@@ -53,13 +53,13 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = SolidDMatrix.wrap(new double[][]{
+        DM frequency = DMStripe.wrap(new double[][]{
                 {2, 1, 1},
                 {0, 1, 1},
                 {0, 1, 4}});
 
-        assertTrue(frequency.isEqual(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1 / 11.0).isEqual(cm.probabilityMatrix()));
+        assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
+        assertTrue(frequency.copy().times(1 / 11.0).deepEquals(cm.probabilityMatrix()));
     }
 
     @Test
@@ -88,9 +88,9 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = SolidDMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
-        assertTrue(frequency.isEqual(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
+        DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
+        assertTrue(frequency.copy().times(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);
@@ -118,9 +118,9 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DMatrix frequency = SolidDMatrix.wrap(new double[][]{{2, 2}, {1, 2}});
-        assertTrue(frequency.isEqual(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1.0 / 7.0).isEqual(cm.probabilityMatrix()));
+        DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
+        assertTrue(frequency.copy().times(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);

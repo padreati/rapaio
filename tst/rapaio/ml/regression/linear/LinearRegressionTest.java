@@ -32,8 +32,8 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 
 import java.io.IOException;
 
@@ -259,9 +259,9 @@ public class LinearRegressionTest {
         LinearRegression lm = LinearRegression.newModel().intercept.set(true).fit(df, "y1,y2");
         var pred = lm.predict(df, true);
 
-        DMatrix betas = lm.getAllCoefficients();
-        DVector firstBetas = lm.firstCoefficients();
-        DVector secondBetas = lm.getCoefficients(1);
+        DM betas = lm.getAllCoefficients();
+        DV firstBetas = lm.firstCoefficients();
+        DV secondBetas = lm.getCoefficients(1);
 
         for (int i = 0; i < 2; i++) {
             assertEquals(betas.get(i, 0), firstBetas.get(i), TOL);

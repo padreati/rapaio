@@ -27,8 +27,8 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.dense.DMStripe;
 
 import java.io.Serializable;
 
@@ -47,7 +47,7 @@ import java.io.Serializable;
  */
 public class EigenDecomposition implements Serializable {
 
-    public static EigenDecomposition from(DMatrix a) {
+    public static EigenDecomposition from(DM a) {
         return new EigenDecomposition(a);
     }
 
@@ -61,7 +61,7 @@ public class EigenDecomposition implements Serializable {
     private final double[] eigenValues2;
 
     // Array for internal storage of eigenvectors.
-    private final DMatrix eigenVectors;
+    private final DM eigenVectors;
 
     //Array for internal storage of nonsymmetric Hessenberg form.
     private double[][] nonSymHessenbergForm;
@@ -75,9 +75,9 @@ public class EigenDecomposition implements Serializable {
      *
      * @param a Square matrix
      */
-    private EigenDecomposition(DMatrix a) {
+    private EigenDecomposition(DM a) {
         dimension = a.colCount();
-        eigenVectors = SolidDMatrix.empty(dimension, dimension);
+        eigenVectors = DMStripe.empty(dimension, dimension);
         eigenValues1 = new double[dimension];
         eigenValues2 = new double[dimension];
 
@@ -104,7 +104,7 @@ public class EigenDecomposition implements Serializable {
         }
     }
 
-    private boolean isSymmetric(DMatrix a) {
+    private boolean isSymmetric(DM a) {
 
         boolean returnValue = true;
         for (int row = 0; (row < dimension) & returnValue; row++) {
@@ -918,7 +918,7 @@ public class EigenDecomposition implements Serializable {
      *
      * @return V
      */
-    public DMatrix getV() {
+    public DM getV() {
         return eigenVectors;
     }
 
@@ -945,8 +945,8 @@ public class EigenDecomposition implements Serializable {
      *
      * @return D the block diagonal eigenvalue matrix
      */
-    public DMatrix getD() {
-        DMatrix d = SolidDMatrix.empty(dimension, dimension);
+    public DM getD() {
+        DM d = rapaio.math.linear.dense.DMStripe.empty(dimension, dimension);
         for (int i = 0; i < dimension; i++) {
             d.set(i, i, eigenValues1[i]);
             if (eigenValues2[i] > 0) {

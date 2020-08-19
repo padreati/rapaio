@@ -31,8 +31,8 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.experiment.ml.analysis.PCA;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 
 import java.util.function.BiFunction;
 
@@ -40,10 +40,10 @@ public class FFPCA extends AbstractFFilter {
 
     private static final long serialVersionUID = 2797285371357486124L;
 
-    final BiFunction<DVector, DMatrix, Integer> kFun;
+    final BiFunction<DV, DM, Integer> kFun;
     private PCA pca;
 
-    public FFPCA(BiFunction<DVector, DMatrix, Integer> kFun, VRange vRange) {
+    public FFPCA(BiFunction<DV, DM, Integer> kFun, VRange vRange) {
         super(vRange);
         this.kFun = kFun;
     }

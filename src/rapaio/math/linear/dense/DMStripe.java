@@ -31,7 +31,8 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.base.DMBase;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import java.util.Arrays;
  * Values are stored in arrays of arrays with first array holding row references
  * and secondary level arrays being the row arrays.
  */
-public class SolidDMatrix extends BaseDMatrix {
+public class DMStripe extends DMBase {
 
     private static final long serialVersionUID = -2186520026933442642L;
 
@@ -52,8 +53,8 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param colCount number of columns
      * @return a new instance of the matrix object
      */
-    public static SolidDMatrix empty(int rowCount, int colCount) {
-        return new SolidDMatrix(rowCount, colCount);
+    public static DMStripe empty(int rowCount, int colCount) {
+        return new DMStripe(rowCount, colCount);
     }
 
     /**
@@ -64,17 +65,17 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param n number of rows and also number of columns
      * @return a new instance of identity matrix of order n
      */
-    public static SolidDMatrix identity(int n) {
-        SolidDMatrix m = new SolidDMatrix(n, n);
+    public static DMStripe identity(int n) {
+        DMStripe m = new DMStripe(n, n);
         for (int i = 0; i < n; i++) {
             m.set(i, i, 1.0);
         }
         return m;
     }
 
-    public static SolidDMatrix random(int rowCount, int colCount) {
+    public static DMStripe random(int rowCount, int colCount) {
         Normal normal = Normal.std();
-        return SolidDMatrix.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
+        return rapaio.math.linear.dense.DMStripe.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
     }
 
     /**
@@ -85,8 +86,8 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param fill     value which fills all cells of the matrix
      * @return new matrix filled with value
      */
-    public static SolidDMatrix fill(int rowCount, int colCount, double fill) {
-        SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
+    public static DMStripe fill(int rowCount, int colCount, double fill) {
+        DMStripe ret = new DMStripe(rowCount, colCount);
         if (fill != 0.0) {
             for (int i = 0; i < rowCount; i++) {
                 Arrays.fill(ret.values[i], fill);
@@ -104,8 +105,8 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    public static SolidDMatrix fill(int rowCount, int colCount, IntInt2DoubleBiFunction fun) {
-        SolidDMatrix ret = new SolidDMatrix(rowCount, colCount);
+    public static DMStripe fill(int rowCount, int colCount, IntInt2DoubleBiFunction fun) {
+        DMStripe ret = new DMStripe(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
                 ret.set(i, j, fun.applyIntIntAsDouble(i, j));
@@ -125,32 +126,32 @@ public class SolidDMatrix extends BaseDMatrix {
      * @param source   value array
      * @return new matrix which contains a copy of the source
      */
-    public static SolidDMatrix copy(int rowCount, int colCount, double... source) {
-        SolidDMatrix m = empty(rowCount, colCount);
+    public static DMStripe copy(int rowCount, int colCount, double... source) {
+        DMStripe m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source, i * colCount, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static SolidDMatrix wrap(double[][] source) {
+    public static DMStripe wrap(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        return new SolidDMatrix(rowCount, colCount, source);
+        return new DMStripe(rowCount, colCount, source);
     }
 
-    public static SolidDMatrix copy(double[][] source) {
+    public static DMStripe copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        SolidDMatrix m = empty(rowCount, colCount);
+        DMStripe m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source[i], 0, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static DMatrix copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
-        DMatrix mm = new SolidDMatrix(rowEnd - rowStart, colEnd - colStart);
+    public static DM copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
+        DM mm = new DMStripe(rowEnd - rowStart, colEnd - colStart);
         for (int i = rowStart; i < rowEnd; i++) {
             for (int j = colStart; j < colEnd; j++) {
                 mm.set(i - rowStart, j - colStart, source[i][j]);
@@ -159,8 +160,8 @@ public class SolidDMatrix extends BaseDMatrix {
         return mm;
     }
 
-    public static SolidDMatrix copy(Frame df) {
-        SolidDMatrix m = empty(df.rowCount(), df.varCount());
+    public static DMStripe copy(Frame df) {
+        DMStripe m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -169,9 +170,9 @@ public class SolidDMatrix extends BaseDMatrix {
         return m;
     }
 
-    public static SolidDMatrix copy(Var... vars) {
+    public static DMStripe copy(Var... vars) {
         Frame df = BoundFrame.byVars(vars);
-        SolidDMatrix m = empty(df.rowCount(), df.varCount());
+        DMStripe m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -180,17 +181,22 @@ public class SolidDMatrix extends BaseDMatrix {
         return m;
     }
 
-    private SolidDMatrix(int rowCount, int colCount) {
+    private DMStripe(int rowCount, int colCount) {
         super(rowCount, colCount);
     }
 
-    private SolidDMatrix(int rowCount, int colCount, double[][] values) {
+    private DMStripe(int rowCount, int colCount, double[][] values) {
         super(rowCount, colCount, values);
     }
 
     @Override
-    public DMatrix t() {
-        SolidDMatrix t = new SolidDMatrix(colCount, rowCount);
+    public Type type() {
+        return Type.STRIPE;
+    }
+
+    @Override
+    public DM t() {
+        DMStripe t = new DMStripe(colCount, rowCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 t.values[j][i] = get(i, j);
@@ -200,8 +206,8 @@ public class SolidDMatrix extends BaseDMatrix {
     }
 
     @Override
-    public SolidDMatrix copy() {
-        SolidDMatrix copy = new SolidDMatrix(rowCount, colCount);
+    public DMStripe copy() {
+        DMStripe copy = new DMStripe(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
         }

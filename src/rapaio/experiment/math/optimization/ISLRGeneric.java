@@ -33,11 +33,11 @@ import rapaio.data.VRange;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.DVector;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 import rapaio.printer.Format;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
@@ -65,7 +65,7 @@ public class ISLRGeneric {
      * @param maxIt number of maximum iterations
      * @param tol   tolerance
      */
-    public static Pair<DVector, VarDouble> basicISLR(DMatrix A, DVector b, double p, int maxIt, double tol) {
+    public static Pair<DV, VarDouble> basicISLR(DM A, DV b, double p, int maxIt, double tol) {
 
         if (A.colCount() < 4) {
             maxIt = 10;
@@ -73,31 +73,31 @@ public class ISLRGeneric {
 
         // initial L2 solution
 
-        DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+        DV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
         VarDouble err = VarDouble.empty().withName("errors");
 
         for (int it = 0; it < maxIt; it++) {
 
             // error vector
-            DVector e = A.dot(x).minus(b);
+            DV e = A.dot(x).minus(b);
 
             // error weights for IRLS
-            DVector w = SolidDVector.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
+            DV w = DVDense.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
 
             // normalize weight matrix
-            DMatrix W = SolidDMatrix.empty(w.size(), w.size());
+            DM W = DMStripe.empty(w.size(), w.size());
             double wsum = w.sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 
             // apply weights
-            DMatrix WA = W.dot(A);
+            DM WA = W.dot(A);
 
             // weighted L2 solution
 
-            DMatrix A1 = WA.t().dot(WA);
-            DVector b1 = WA.t().dot(W).dot(b);
+            DM A1 = WA.t().dot(WA);
+            DV b1 = WA.t().dot(W).dot(b);
 
             try {
                 x = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
@@ -134,7 +134,7 @@ public class ISLRGeneric {
      * @param iterMax
      * @return
      */
-    public static Pair<DVector, VarDouble> islrH(DMatrix A, DVector b, double p, double K, int iterMax, double tol) {
+    public static Pair<DV, VarDouble> islrH(DM A, DV b, double p, double K, int iterMax, double tol) {
 
         if (A.colCount() < 5) {
             iterMax = 10;
@@ -151,7 +151,7 @@ public class ISLRGeneric {
         double pk = 2;
 
         // initial L2 solution
-        DVector x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
+        DV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
 
         VarDouble err = VarDouble.empty().withName("errors");
 
@@ -163,28 +163,28 @@ public class ISLRGeneric {
             }
 
             // error vector
-            DVector e = A.dot(x).minus(b);
+            DV e = A.dot(x).minus(b);
 
             // error weights for IRLS
             double pkk = pk;
-            DVector w = SolidDVector.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
+            DV w = DVDense.from(e.size(), pos -> pow(abs(e.get(pos)), (pkk - 2) / 2));
 
             // normalize weight matrix
-            DMatrix W = SolidDMatrix.empty(w.size(), w.size());
+            DM W = rapaio.math.linear.dense.DMStripe.empty(w.size(), w.size());
             double wsum = w.valueStream().sum();
             for (int i = 0; i < w.size(); i++) {
                 W.set(i, i, w.get(i) / wsum);
             }
 
             // apply weights
-            DMatrix WA = W.dot(A);
+            DM WA = W.dot(A);
 
             // weighted L2 solution
 
-            DMatrix A1 = WA.t().dot(WA);
-            DVector b1 = WA.t().dot(W).dot(b);
+            DM A1 = WA.t().dot(WA);
+            DV b1 = WA.t().dot(W).dot(b);
 
-            DVector x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
+            DV x1 = QRDecomposition.from(A1).solve(b1.asMatrix()).mapCol(0);
 
             // Newton's parameter
             double q = 1.0 / (pk - 1);
@@ -218,20 +218,20 @@ public class ISLRGeneric {
 
         dfa.printSummary();
 
-        DMatrix A = SolidDMatrix.copy(dfa);
-        DVector b = SolidDMatrix.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
+        DM A = rapaio.math.linear.dense.DMStripe.copy(dfa);
+        DV b = rapaio.math.linear.dense.DMStripe.copy(df.mapVars(VRange.of("chd"))).mapCol(0);
 
 
         double[] pp = new double[]{1, 1.5, 2, 2.5, 5, 10, 100};
         double[] k = new double[]{0.8, 0.8, 0.8, 1.01, 1.1, 1.1, 2.01};
 
-        List<Pair<DVector, VarDouble>> numVars = new ArrayList<>();
+        List<Pair<DV, VarDouble>> numVars = new ArrayList<>();
 
         Plot plot = plot();
         for (int i = 0; i < pp.length; i++) {
             double prob = pp[i];
             double h = k[i];
-            Pair<DVector, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
+            Pair<DV, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
             plot.lines(pair._2);
 
             WS.println("Solution 1 for p=" + Format.floatFlex(prob));
@@ -240,7 +240,7 @@ public class ISLRGeneric {
             WS.println();
 
 
-            Pair<DVector, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
+            Pair<DV, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
             plot.lines(pair2._2, color(1));
 
             WS.println("Solution 2 for p=" + Format.floatFlex(prob));

@@ -1,11 +1,13 @@
-package rapaio.math.linear;
+package rapaio.math.linear.base;
 
 import rapaio.math.MTools;
+import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.decomposition.MatrixMultiplication;
 import rapaio.math.linear.decomposition.SVDecomposition;
-import rapaio.math.linear.dense.MappedDMatrix;
-import rapaio.math.linear.dense.SolidDMatrix;
-import rapaio.math.linear.dense.SolidDVector;
+import rapaio.math.linear.dense.DMMap;
+import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DVDense;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -18,24 +20,24 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
-public abstract class AbstractDMatrix implements DMatrix {
+public abstract class AbstractDM implements DM {
 
     private static final long serialVersionUID = -8475836385935066885L;
 
-    protected void checkMatrixSameSize(DMatrix b) {
+    protected void checkMatrixSameSize(DM b) {
         if ((rowCount() != b.rowCount()) || (colCount() != b.colCount())) {
             throw new IllegalArgumentException("Matrices are not conform with this operation.");
         }
     }
 
     @Override
-    public DVector mapRow(final int row) {
+    public DV mapRow(final int row) {
         return mapRowCopy(row);
     }
 
     @Override
-    public DVector mapRowCopy(final int row) {
-        SolidDVector v = SolidDVector.zeros(colCount());
+    public DV mapRowCopy(final int row) {
+        DVDense v = DVDense.zeros(colCount());
         for (int j = 0; j < colCount(); j++) {
             v.set(j, get(row, j));
         }
@@ -43,13 +45,13 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mapRows(final int... indexes) {
-        return new MappedDMatrix(this, true, indexes);
+    public DM mapRows(final int... indexes) {
+        return new DMMap(this, true, indexes);
     }
 
     @Override
-    public DMatrix mapRowsCopy(final int... rows) {
-        SolidDMatrix copy = SolidDMatrix.empty(rows.length, colCount());
+    public DM mapRowsCopy(final int... rows) {
+        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(rows.length, colCount());
         for (int i = 0; i < rows.length; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i, j, get(rows[i], j));
@@ -59,17 +61,17 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix rangeRows(final int start, final int end) {
+    public DM rangeRows(final int start, final int end) {
         int[] rows = new int[end - start];
         for (int i = start; i < end; i++) {
             rows[i - start] = i;
         }
-        return new MappedDMatrix(this, true, rows);
+        return new DMMap(this, true, rows);
     }
 
     @Override
-    public DMatrix rangeRowsCopy(int start, int end) {
-        SolidDMatrix copy = SolidDMatrix.empty(end - start, colCount());
+    public DM rangeRowsCopy(int start, int end) {
+        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(end - start, colCount());
         for (int i = start; i < end; i++) {
             for (int j = 0; j < colCount(); j++) {
                 copy.set(i - start, j, get(i, j));
@@ -79,7 +81,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix removeRows(int... indexes) {
+    public DM removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed()
                 .filter(v -> v >= 0)
                 .filter(v -> v < rowCount())
@@ -92,11 +94,11 @@ public abstract class AbstractDMatrix implements DMatrix {
             }
             rows[pos++] = i;
         }
-        return new MappedDMatrix(this, true, rows);
+        return new DMMap(this, true, rows);
     }
 
     @Override
-    public DMatrix removeRowsCopy(int... indexes) {
+    public DM removeRowsCopy(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed()
                 .filter(v -> v >= 0)
                 .filter(v -> v < rowCount())
@@ -113,13 +115,13 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector mapCol(int col) {
+    public DV mapCol(int col) {
         return mapColCopy(col);
     }
 
     @Override
-    public DVector mapColCopy(int col) {
-        SolidDVector v = SolidDVector.zeros(rowCount());
+    public DV mapColCopy(int col) {
+        DVDense v = DVDense.zeros(rowCount());
         for (int j = 0; j < rowCount(); j++) {
             v.set(j, get(j, col));
         }
@@ -127,13 +129,13 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix mapCols(int... indexes) {
-        return new MappedDMatrix(this, false, indexes);
+    public DM mapCols(int... indexes) {
+        return new DMMap(this, false, indexes);
     }
 
     @Override
-    public DMatrix mapColsCopy(int... cols) {
-        SolidDMatrix copy = SolidDMatrix.empty(rowCount(), cols.length);
+    public DM mapColsCopy(int... cols) {
+        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(rowCount(), cols.length);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < cols.length; j++) {
                 copy.set(i, j, get(i, cols[j]));
@@ -143,16 +145,16 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix rangeCols(int start, int end) {
+    public DM rangeCols(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
             cols[i - start] = i;
         }
-        return new MappedDMatrix(this, false, cols);
+        return new DMMap(this, false, cols);
     }
 
     @Override
-    public DMatrix rangeColsCopy(int start, int end) {
+    public DM rangeColsCopy(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
             cols[i - start] = i;
@@ -161,7 +163,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix removeCols(int... indexes) {
+    public DM removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
@@ -170,11 +172,11 @@ public abstract class AbstractDMatrix implements DMatrix {
                 continue;
             cols[pos++] = i;
         }
-        return new MappedDMatrix(this, false, cols);
+        return new DMMap(this, false, cols);
     }
 
     @Override
-    public DMatrix removeColsCopy(int... indexes) {
+    public DM removeColsCopy(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
@@ -187,7 +189,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix plus(double x) {
+    public DM plus(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) + x);
@@ -197,7 +199,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix plus(DMatrix b) {
+    public DM plus(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -208,12 +210,12 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix minus(double x) {
+    public DM minus(double x) {
         return plus(-x);
     }
 
     @Override
-    public DMatrix minus(DMatrix b) {
+    public DM minus(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -224,7 +226,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix times(double x) {
+    public DM times(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * x);
@@ -234,7 +236,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix times(DMatrix b) {
+    public DM times(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -245,7 +247,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix div(double x) {
+    public DM div(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) / x);
@@ -255,7 +257,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix div(DMatrix b) {
+    public DM div(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -266,12 +268,12 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DMatrix dot(DMatrix B) {
+    public DM dot(DM B) {
         return MatrixMultiplication.ikjParallel(this, B);
     }
 
     @Override
-    public DVector dot(DVector b) {
+    public DV dot(DV b) {
         return MatrixMultiplication.ikjParallel(this, b);
     }
 
@@ -308,17 +310,17 @@ public abstract class AbstractDMatrix implements DMatrix {
      * Diagonal vector of values
      */
     @Override
-    public DVector diag() {
-        DVector DVector = SolidDVector.zeros(rowCount());
+    public DV diag() {
+        DV DV = DVDense.zeros(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            DVector.set(i, get(i, i));
+            DV.set(i, get(i, i));
         }
-        return DVector;
+        return DV;
     }
 
     @Override
-    public DMatrix scatter() {
-        DMatrix scatter = SolidDMatrix.empty(colCount(), colCount());
+    public DM scatter() {
+        DM scatter = rapaio.math.linear.dense.DMStripe.empty(colCount(), colCount());
         double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
             mean[i] = mapCol(i).mean();
@@ -337,8 +339,8 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public DVector rowMaxValues() {
-        SolidDVector max = SolidDVector.copy(mapCol(0));
+    public DV rowMaxValues() {
+        DVDense max = DVDense.copy(mapCol(0));
         for (int i = 1; i < colCount(); i++) {
             for (int j = 0; j < rowCount(); j++) {
                 if (max.get(j) < get(j, i)) {
@@ -362,28 +364,19 @@ public abstract class AbstractDMatrix implements DMatrix {
         return max;
     }
 
-    /**
-     * Does not override equals since this is a costly
-     * algorithm and can slow down processing as a side effect.
-     *
-     * @param m given matrix
-     * @return true if dimension and elements are equal
-     */
     @Override
-    public boolean isEqual(DMatrix m) {
-        return isEqual(m, MTools.SMALL_ERR);
-    }
-
-    @Override
-    public boolean isEqual(DMatrix m, double tol) {
-        if (rowCount() != m.rowCount())
+    public boolean deepEquals(DM m, double eps) {
+        if (rowCount() != m.rowCount()) {
             return false;
-        if (colCount() != m.colCount())
+        }
+        if (colCount() != m.colCount()) {
             return false;
+        }
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MTools.eq(get(i, j), m.get(i, j), tol))
+                if (!MTools.eq(get(i, j), m.get(i, j), eps)) {
                     return false;
+                }
             }
         }
         return true;
@@ -419,12 +412,12 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         int headRows = 20;
         int headCols = 20;
         int tailRows = 2;
@@ -494,7 +487,7 @@ public abstract class AbstractDMatrix implements DMatrix {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
 
         TextTable tt = TextTable.empty(rowCount() + 1, colCount() + 1, 1, 1);
         for (int i = 0; i < rowCount(); i++) {
