@@ -32,7 +32,9 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.DM;
+import rapaio.math.linear.DV;
 import rapaio.math.linear.base.DMBase;
+import rapaio.util.collection.DoubleArrayTools;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.util.Arrays;
@@ -192,6 +194,32 @@ public class DMStripe extends DMBase {
     @Override
     public Type type() {
         return Type.STRIPE;
+    }
+
+    @Override
+    public DM dotDiag(DV v) {
+        if (v instanceof DVDense) {
+            var array = ((DVDense) v).elements();
+            var len = v.size();
+            for (int i = 0; i < rowCount; i++) {
+                DoubleArrayTools.times(values[i], array, 0, len);
+            }
+            return this;
+        }
+        return super.dotDiag(v);
+    }
+
+    @Override
+    public DM dotDiagT(DV v) {
+        if (v instanceof DVDense) {
+            var array = ((DVDense) v).elements();
+            var len = v.size();
+            for (int i = 0; i < rowCount; i++) {
+                DoubleArrayTools.times(values[i], array[i], 0, colCount);
+            }
+            return this;
+        }
+        return super.dotDiagT(v);
     }
 
     @Override

@@ -81,21 +81,6 @@ public interface DMMathOps {
      */
     DM div(DM b);
 
-    /**
-     * Computes matrix vector multiplication.
-     *
-     * @param b vector to be multiplied with
-     * @return result vector
-     */
-    DV dot(DV b);
-
-    /**
-     * Computes matrix - matrix multiplication.
-     *
-     * @param b matrix to be multiplied with
-     * @return matrix result
-     */
-    DM dot(DM b);
 
     /**
      * Apply the given function to all elements of the matrix.

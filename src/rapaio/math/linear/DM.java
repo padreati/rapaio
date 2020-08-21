@@ -27,7 +27,11 @@
 
 package rapaio.math.linear;
 
+import rapaio.math.linear.interfaces.DMAggegateOps;
+import rapaio.math.linear.interfaces.DMAlgebraOps;
 import rapaio.math.linear.interfaces.DMMathOps;
+import rapaio.math.linear.interfaces.DMOrderingOps;
+import rapaio.math.linear.interfaces.DMTransformDataOps;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -38,7 +42,8 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DM extends DMMathOps, Serializable, Printable {
+public interface DM extends DMMathOps, DMAlgebraOps, DMAggegateOps, DMOrderingOps, DMTransformDataOps,
+        Serializable, Printable {
 
     enum Type {
         /**

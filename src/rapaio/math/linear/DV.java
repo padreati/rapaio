@@ -28,7 +28,11 @@
 package rapaio.math.linear;
 
 import rapaio.data.VarDouble;
+import rapaio.math.linear.interfaces.DVAggregateOps;
+import rapaio.math.linear.interfaces.DVAlgebraOps;
 import rapaio.math.linear.interfaces.DVMathOps;
+import rapaio.math.linear.interfaces.DVOrderingOps;
+import rapaio.math.linear.interfaces.DVTransformDataOps;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -39,7 +43,8 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DV extends DVMathOps, Serializable, Printable {
+public interface DV extends DVMathOps, DVAggregateOps, DVAlgebraOps, DVOrderingOps, DVTransformDataOps,
+        Serializable, Printable {
 
     enum Type {
 

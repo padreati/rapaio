@@ -247,6 +247,7 @@ of production ready tools from this field.
 * Simple: RandomValueRegression
 * LinearRegression
 * RidgeRegression
+* WeightedLinearRegression
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump

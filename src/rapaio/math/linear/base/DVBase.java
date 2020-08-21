@@ -12,7 +12,7 @@ import java.util.stream.DoubleStream;
  */
 public class DVBase extends AbstractDV {
 
-    public static DVBase wrap(double[] values) {
+    public static DVBase wrap(double... values) {
         return new DVBase(values.length, values);
     }
 

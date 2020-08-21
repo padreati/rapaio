@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.base.DMBase;
+import rapaio.math.linear.base.DVBase;
 import rapaio.math.linear.dense.DMStripe;
 import rapaio.math.linear.dense.DVDense;
 
@@ -339,6 +340,23 @@ public abstract class StandardDMTest {
                 assertEquals(n1.mapRow(i).dot(n2.mapCol(j)), m2.get(i, j), TOL);
             }
         }
+    }
+
+    @Test
+    void dotDiagTest() {
+        var m = generateFill(10, 3, 1);
+        var v1 = DVDense.wrap(1, 2, 3);
+        var v2 = DVBase.wrap(1, 2, 3);
+
+        var d = DMStripe.wrap(new double[][]{
+                {1, 0, 0},
+                {0, 2, 0},
+                {0, 0, 3}
+        });
+        var r1 = m.copy().dot(d);
+        var r2 = m.copy().dot(d);
+
+        assertTrue(r1.deepEquals(m.copy().dotDiag(v1)));
     }
 
     @Test

@@ -277,6 +277,36 @@ public abstract class AbstractDM implements DM {
         return MatrixMultiplication.ikjParallel(this, b);
     }
 
+    @Override
+    public DM dotDiag(DV v) {
+        if (colCount() != v.size()) {
+            throw new IllegalArgumentException("Matrix and diagonal vector are " +
+                    "not compatible for multiplication.");
+        }
+        DM result = DMBase.empty(rowCount(), colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                result.set(i, j, get(i, j) * v.get(j));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public DM dotDiagT(DV v) {
+        if (rowCount() != v.size()) {
+            throw new IllegalArgumentException("Matrix and diagonal vector are " +
+                    "not compatible for multiplication.");
+        }
+        DM result = DMBase.empty(rowCount(), colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                result.set(i, j, get(i, j) * v.get(i));
+            }
+        }
+        return result;
+    }
+
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
      * matrix is the sum of the elements from the main diagonal.

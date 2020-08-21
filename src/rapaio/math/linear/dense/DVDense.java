@@ -325,4 +325,8 @@ public class DVDense extends DVBase {
     public VarDouble asVarDouble() {
         return VarDouble.wrapArray(size, values);
     }
+
+    public double[] elements() {
+        return values;
+    }
 }
