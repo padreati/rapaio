@@ -447,35 +447,32 @@ public interface Var extends Serializable, Printable {
         if (type() != var.type())
             return false;
 
-        switch (type()) {
-            case DOUBLE:
-                for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < rowCount(); i++) {
+            if (isMissing(i) != var.isMissing(i)) {
+                return false;
+            }
+            switch (type()) {
+                case DOUBLE:
                     if (Math.abs(getDouble(i) - var.getDouble(i)) > 1e-100) {
                         return false;
                     }
-                }
-                break;
-            case INT:
-            case BINARY:
-                for (int i = 0; i < rowCount(); i++) {
+                    break;
+                case INT:
+                case BINARY:
                     if (getInt(i) != var.getInt(i)) {
                         return false;
                     }
-                }
-                break;
-            case LONG:
-                for (int i = 0; i < rowCount(); i++) {
+                    break;
+                case LONG:
                     if (getLong(i) != var.getLong(i)) {
                         return false;
                     }
-                }
-                break;
-            default:
-                for (int i = 0; i < rowCount(); i++) {
+                    break;
+                default:
                     if (!Objects.equals(getLabel(i), var.getLabel(i))) {
                         return false;
                     }
-                }
+            }
         }
         return true;
     }

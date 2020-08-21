@@ -294,8 +294,7 @@ public class BoundFrameTest {
     @Test
     void testInvalidVarName() {
         Frame df = Datasets.loadRandom();
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> BoundFrame.byVars(df).rvar("uu"));
-        assertEquals("Variable with name: uu does not exists.", ex.getMessage());
+        assertNull(BoundFrame.byVars(df).rvar("uu"));
     }
 
     @Test

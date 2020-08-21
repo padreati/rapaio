@@ -222,6 +222,9 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
+        if (!indexes.containsKey(name)) {
+            return -1;
+        }
         return indexes.get(name);
     }
 
@@ -233,7 +236,7 @@ public class BoundFrame extends AbstractFrame {
     @Override
     public Var rvar(String name) {
         if (!indexes.containsKey(name)) {
-            throw new IllegalArgumentException("Variable with name: " + name + " does not exists.");
+            return null;
         }
         return vars.get(indexes.get(name));
     }

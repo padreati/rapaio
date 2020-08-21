@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.data.filter.VApplyDouble;
+import rapaio.data.filter.VApply;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.util.Pair;
 
@@ -53,7 +53,7 @@ public class SplitterTest {
     void beforeEach() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.byVars(values.copy().withName("x"));
-        w = values.fapply(VApplyDouble.with(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
+        w = values.fapply(VApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
         c = new Candidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));
         c.addGroup(RowPredicate.numLess("x", 0));

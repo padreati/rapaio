@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Utility tool to ease the specification of selection of variable,
+ * Utility tool to ease the specification of selection of variables
  * based on lists or ranges of variable names.
  * Variable ranges can be specified directly as a list of variable indexes
  * or as a list of variable ranges.
@@ -96,7 +96,7 @@ public interface VRange {
 class VRangeByName implements VRange {
 
     public static final String DELIMITER = ",";
-    public static final String RANGE = "~";
+    public static final String RANGE_SEPARATOR = "~";
     public static final String ALL = "all";
     private final String rawColumnRange;
 
@@ -136,6 +136,7 @@ class VRangeByName implements VRange {
 
     /**
      * Apply a var range over a frame, obtaining the list of var indexes for that frame.
+     * If a variable is not found, than it will be omitted.
      *
      * @param df target frame
      * @return a list of column indexes which corresponds to column range
@@ -155,15 +156,15 @@ class VRangeByName implements VRange {
         for (String range : ranges) {
             int start, end;
 
-            if (range.contains(RANGE)) {
-                String[] parts = range.split(RANGE);
+            if (range.contains(RANGE_SEPARATOR)) {
+                String[] parts = range.split(RANGE_SEPARATOR);
                 if (!colNames.contains(parts[0])) {
-                    start = Integer.parseInt(parts[0]);
+                    start = parseInt(parts[0]);
                 } else {
                     start = df.varIndex(parts[0]);
                 }
                 if (!colNames.contains(parts[1])) {
-                    end = Integer.parseInt(parts[1]);
+                    end = parseInt(parts[1]);
                 } else {
                     end = df.varIndex(parts[1]);
                 }
@@ -172,18 +173,28 @@ class VRangeByName implements VRange {
                     continue;
                 }
                 if (!colNames.contains(range)) {
-                    start = Integer.parseInt(range);
+                    start = parseInt(range);
                 } else {
                     start = df.varIndex(range);
                 }
                 end = start;
             }
-
+            if (start == -1 || end == -1) {
+                continue;
+            }
             for (int j = start; j <= end; j++) {
                 colIndexes.add(j);
             }
         }
         return colIndexes;
+    }
+
+    private int parseInt(String token) {
+        try {
+            return Integer.parseInt(token);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
     }
 
     @Override

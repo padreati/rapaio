@@ -3,17 +3,16 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.ml.classifier.ClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-public class FFImputeWithClassifier extends AbstractFFilter {
+public class FImputeClassifier extends AbstractFFilter {
 
-    public static FFImputeWithClassifier of(ClassifierModel model, VRange inputVars, String targetName) {
-        return new FFImputeWithClassifier(model, inputVars, targetName);
+    public static FImputeClassifier of(ClassifierModel model, VRange inputVars, String targetName) {
+        return new FImputeClassifier(model, inputVars, targetName);
     }
 
     private static final long serialVersionUID = 7428989420235407246L;
@@ -21,7 +20,7 @@ public class FFImputeWithClassifier extends AbstractFFilter {
     private final ClassifierModel model;
     private final String targetName;
 
-    private FFImputeWithClassifier(ClassifierModel model, VRange inputVars, String targetName) {
+    private FImputeClassifier(ClassifierModel model, VRange inputVars, String targetName) {
         super(inputVars);
         this.model = model;
         this.targetName = targetName;
@@ -45,7 +44,7 @@ public class FFImputeWithClassifier extends AbstractFFilter {
     }
 
     @Override
-    public FFImputeWithClassifier newInstance() {
-        return new FFImputeWithClassifier(model.newInstance(), vRange, targetName);
+    public FImputeClassifier newInstance() {
+        return new FImputeClassifier(model.newInstance(), vRange, targetName);
     }
 }

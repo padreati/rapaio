@@ -87,13 +87,7 @@ public class SortedFrameTest {
         assertEquals(3, sort.varCount());
         assertEquals(4, sort.rowCount());
 
-        boolean exceptional = false;
-        try {
-            sort.rvar("wrong-getCol-name");
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertTrue(exceptional);
+        assertNull(sort.rvar("wrong-getCol-name"));
     }
 
     @Test

@@ -27,46 +27,32 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Var;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
-
-import java.util.function.Function;
+import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 /**
- * Apply a given transformation function over each double value of the variable.
- * The double values are updated after transformed. Thus, a variable can be modified
- * after this call, to not update the original variable a copy of
- * the variable must be created before.
- * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public final class VApplyDouble implements VFilter {
+public abstract class AbstractFFilter implements FFilter {
 
-    public static VApplyDouble with(Function<Double, Double> f) {
-        return new VApplyDouble(f);
-    }
+    private static final long serialVersionUID = 5619103016781092137L;
+    protected final VRange vRange;
+    protected String[] varNames;
 
-    private static final long serialVersionUID = 3929781693784001199L;
-    private final Function<Double, Double> f;
-
-    private VApplyDouble(Function<Double, Double> f) {
-        this.f = f;
+    public AbstractFFilter(VRange vRange) {
+        this.vRange = vRange;
     }
 
     @Override
-    public Var apply(Var var) {
-        var.stream().forEach(s -> s.setDouble(f.apply(s.getDouble())));
-        return var;
+    public String[] varNames() {
+        return varNames;
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
-        return toString();
+    public void fit(Frame df) {
+        varNames = vRange.parseVarNames(df).toArray(new String[0]);
+        coreFit(df);
     }
 
-    @Override
-    public String toString() {
-        return "VApplyDouble";
-    }
+    protected abstract void coreFit(Frame df);
 }

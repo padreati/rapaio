@@ -31,7 +31,6 @@ import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.
  */
-public class FFImputeWithClassifierTest {
+public class FImputeClassifierTest {
 
     private static final String[] xd = new String[]{"a", "b", "c", "d", "?"};
     private static final String[] yd = new String[]{"x", "y", "?"};
@@ -32,8 +32,8 @@ public class FFImputeWithClassifierTest {
 
         var model = OneRule.newModel();
 
-        FFImputeWithClassifier xfilter = FFImputeWithClassifier.of(model, VRange.of("x,y"), "x").newInstance();
-        FFImputeWithClassifier yfilter = FFImputeWithClassifier.of(model, VRange.of("x,y"), "y");
+        FImputeClassifier xfilter = FImputeClassifier.of(model, VRange.of("x,y"), "x").newInstance();
+        FImputeClassifier yfilter = FImputeClassifier.of(model, VRange.of("x,y"), "y");
 
         Frame df = SolidFrame.byVars(x, y);
 

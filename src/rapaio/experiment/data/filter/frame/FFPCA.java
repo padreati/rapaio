@@ -29,7 +29,7 @@ package rapaio.experiment.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.ffilter.AbstractFFilter;
+import rapaio.data.filter.AbstractFFilter;
 import rapaio.experiment.ml.analysis.PCA;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;

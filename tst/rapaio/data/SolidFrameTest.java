@@ -64,7 +64,7 @@ public class SolidFrameTest {
 
     @Test
     void testInvalidVarName() {
-        assertThrows(NullPointerException.class, () -> df1.varIndex("q"));
+        assertEquals(-1, df1.varIndex("q"));
     }
 
     @Test

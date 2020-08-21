@@ -3,17 +3,16 @@ package rapaio.data.filter;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
-public class FFImputeWithRegression extends AbstractFFilter {
+public class FImputeRegression extends AbstractFFilter {
 
-    public static FFImputeWithRegression of(RegressionModel model, VRange inputVars, String targetName) {
-        return new FFImputeWithRegression(model, inputVars, targetName);
+    public static FImputeRegression of(RegressionModel model, VRange inputVars, String targetName) {
+        return new FImputeRegression(model, inputVars, targetName);
     }
 
     private static final long serialVersionUID = 7428989420235407246L;
@@ -21,7 +20,7 @@ public class FFImputeWithRegression extends AbstractFFilter {
     private final RegressionModel model;
     private final String targetName;
 
-    private FFImputeWithRegression(RegressionModel model, VRange inputVars, String targetName) {
+    private FImputeRegression(RegressionModel model, VRange inputVars, String targetName) {
         super(inputVars);
         this.model = model;
         this.targetName = targetName;
@@ -45,7 +44,7 @@ public class FFImputeWithRegression extends AbstractFFilter {
     }
 
     @Override
-    public FFImputeWithRegression newInstance() {
-        return new FFImputeWithRegression(model.newInstance(), vRange, targetName);
+    public FImputeRegression newInstance() {
+        return new FImputeRegression(model.newInstance(), vRange, targetName);
     }
 }

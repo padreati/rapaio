@@ -27,10 +27,13 @@
 
 package rapaio.data.filter;
 
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Apply a given consumer function over each spot of the variable.
@@ -43,25 +46,73 @@ import java.util.function.Consumer;
  */
 public class VApply implements VFilter {
 
-    public static VApply with(Consumer<VSpot> consumer) {
-        return new VApply(consumer);
+    public static VApply onSpot(Consumer<VSpot> consumer) {
+        return new VApply(Type.SPOT, consumer, F_DOUBLE, F_INT, F_STRING);
+    }
+
+    public static VApply onDouble(Double2DoubleFunction function) {
+        return new VApply(Type.DOUBLE, F_SPOT, function, F_INT, F_STRING);
+    }
+
+    public static VApply onInt(Int2IntFunction function) {
+        return new VApply(Type.INT, F_SPOT, F_DOUBLE, function, F_STRING);
+    }
+
+    public static VApply onLabel(Function<String, String> function) {
+        return new VApply(Type.LABEL, F_SPOT, F_DOUBLE, F_INT, function);
     }
 
     private static final long serialVersionUID = 3929781693784001199L;
-    private final Consumer<VSpot> consumer;
 
-    private VApply(Consumer<VSpot> consumer) {
-        this.consumer = consumer;
+    private static final Consumer<VSpot> F_SPOT = vSpot -> {
+    };
+    private static final Double2DoubleFunction F_DOUBLE = key -> key;
+    private static final Int2IntFunction F_INT = key -> key;
+    private static final Function<String, String> F_STRING = key -> key;
+
+    private final Type type;
+    private final Consumer<VSpot> spotConsumer;
+    private final Double2DoubleFunction doubleFunction;
+    private final Int2IntFunction intFunction;
+    private final Function<String, String> stringFunction;
+
+    private VApply(Type type,
+                   Consumer<VSpot> spotConsumer,
+                   Double2DoubleFunction doubleFunction,
+                   Int2IntFunction intFunction,
+                   Function<String, String> stringFunction) {
+        this.type = type;
+        this.spotConsumer = spotConsumer;
+        this.doubleFunction = doubleFunction;
+        this.intFunction = intFunction;
+        this.stringFunction = stringFunction;
     }
 
     @Override
     public Var apply(Var var) {
-        var.stream().forEach(consumer);
+        switch (type) {
+            case SPOT:
+                var.stream().forEach(spotConsumer);
+                break;
+            case DOUBLE:
+                var.stream().forEach(s -> s.setDouble(doubleFunction.applyAsDouble(s.getDouble())));
+                break;
+            case INT:
+                var.stream().forEach(s -> s.setInt(intFunction.applyAsInt(s.getInt())));
+                break;
+            case LABEL:
+                var.stream().forEach(s -> s.setLabel(stringFunction.apply(s.getLabel())));
+                break;
+            default:
+
+        }
         return var;
     }
 
-    @Override
-    public String toString() {
-        return "VApply";
+    private enum Type {
+        SPOT,
+        DOUBLE,
+        INT,
+        LABEL
     }
 }

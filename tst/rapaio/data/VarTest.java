@@ -26,7 +26,7 @@ package rapaio.data;
 
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.filter.VApplyDouble;
+import rapaio.data.filter.VApply;
 import rapaio.data.filter.VRefSort;
 import rapaio.data.filter.VSort;
 import rapaio.data.filter.VStandardize;
@@ -113,7 +113,7 @@ public class VarTest {
         double[] log1px = Arrays.stream(x).map(Math::log1p).toArray();
 
         VarDouble vx = VarDouble.wrap(x);
-        Var vlog1px = vx.copy().fapply(VApplyDouble.with(Math::log1p));
+        Var vlog1px = vx.copy().fapply(VApply.onDouble(Math::log1p));
 
         assertTrue(vx.deepEquals(VarDouble.wrap(x)));
         assertTrue(vlog1px.deepEquals(VarDouble.wrap(log1px)));

@@ -32,7 +32,6 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.VRange;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.stream.IntStream;
 

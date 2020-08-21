@@ -116,7 +116,7 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public int varIndex(String name) {
         if (!colReverse.containsKey(name)) {
-            throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
+            return -1;
         }
         return colReverse.get(name);
     }
@@ -128,7 +128,8 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Var rvar(String varName) {
-        return rvar(varIndex(varName));
+        int index = varIndex(varName);
+        return index < 0 ? null : rvar(index);
     }
 
     @Override

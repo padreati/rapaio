@@ -32,7 +32,6 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.dense.DMStripe;

@@ -29,7 +29,6 @@ package rapaio.data.filter;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 
 import java.util.HashMap;
 import java.util.Map;

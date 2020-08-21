@@ -36,7 +36,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.filter.VApplyDouble;
+import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
@@ -70,7 +70,7 @@ public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
     private static final boolean show = false;
-    private static String root = "/home/ati/work/rapaio/tst";
+    private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
 
@@ -198,7 +198,7 @@ public class ImageGraphicsTest {
     @Test
     void testLines() throws IOException {
 
-        Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x").stream().complete().toMappedVar();
+        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
         double min = Minimum.of(x).value();
         double max = Maximum.of(x).value();
@@ -218,8 +218,8 @@ public class ImageGraphicsTest {
     @Test
     void testPoints() throws IOException {
 
-        Var x = df.rvar(0).fapply(VApplyDouble.with(Math::log1p)).withName("x");
-        Var y = df.rvar(1).fapply(VApplyDouble.with(Math::log1p)).withName("y");
+        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).withName("x");
+        Var y = df.rvar(1).fapply(VApply.onDouble(Math::log1p)).withName("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))

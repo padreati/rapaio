@@ -156,9 +156,7 @@ public class MappedFrameTest {
 
     @Test
     void testInvalidVarIndex() {
-        var ex = assertThrows(IllegalArgumentException.class,
-                () -> SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y"));
-        assertEquals("var name: y does not exist", ex.getMessage());
+        assertNull(SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y"));
     }
 
     @Test

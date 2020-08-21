@@ -142,7 +142,7 @@ public class VToDouble implements VFilter {
         public Var apply(Var var) {
             double[] value = new double[var.rowCount()];
             for (int i = 0; i < var.rowCount(); i++) {
-                value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.apply(new VSpot(i, var));
+                value[i] = function.apply(new VSpot(i, var));
             }
             return VarDouble.wrap(value).withName(var.name());
         }

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/28/19.
  */
-public class FFImputeWithRegressionTest {
+public class FImputeRegressionTest {
 
     private static final double TOL = 1e-20;
 
@@ -39,8 +39,8 @@ public class FFImputeWithRegressionTest {
 
         var model = L2Regression.newModel();
 
-        FFImputeWithRegression xfilter = FFImputeWithRegression.of(model, VRange.of("x"), "x").newInstance();
-        FFImputeWithRegression yfilter = FFImputeWithRegression.of(model, VRange.of("y"), "y");
+        FImputeRegression xfilter = FImputeRegression.of(model, VRange.of("x"), "x").newInstance();
+        FImputeRegression yfilter = FImputeRegression.of(model, VRange.of("y"), "y");
 
         Frame df = SolidFrame.byVars(x, y);
 

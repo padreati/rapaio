@@ -100,7 +100,7 @@ public class VRangeTest {
     }
 
     @Test
-    public void testWrongNumber() {
+    public void testInvalidRanges() {
         Frame df = SolidFrame.byVars(
                 VarDouble.empty().withName("a"),
                 VarDouble.empty().withName("b"),
@@ -110,10 +110,7 @@ public class VRangeTest {
                 VarNominal.empty(0, "C", "D").withName("y")
         );
 
-        assertThrows(NumberFormatException.class, () -> test(VRange.of("0~af"), df,
-                new int[]{0, 1, 2, 3},
-                new String[]{"a", "b", "c", "d"},
-                new String[]{"x", "y"}));
+        test(VRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);
     }
 
     @Test

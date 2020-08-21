@@ -174,6 +174,9 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
+        if (!colIndex.containsKey(name)) {
+            return -1;
+        }
         return colIndex.get(name);
     }
 
@@ -184,7 +187,8 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Var rvar(String name) {
-        return rvar(varIndex(name));
+        int index = varIndex(name);
+        return index < 0 ? null : rvar(index);
     }
 
     @Override

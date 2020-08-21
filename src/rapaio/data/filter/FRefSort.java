@@ -34,7 +34,6 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.VRange;
-import rapaio.data.filter.ffilter.AbstractFFilter;
 import rapaio.util.collection.IntArrayTools;
 
 /**
