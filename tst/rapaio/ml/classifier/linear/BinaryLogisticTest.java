@@ -78,7 +78,7 @@ public class BinaryLogisticTest {
     @Test
     void testSymmetricAroundZeroSeparable() {
 
-        var model = BinaryLogistic.newModel()
+        var model1 = BinaryLogistic.newModel()
                 .runs.set(100)
                 .init.set(BinaryLogistic.Initialize.ZERO)
                 .eps.set(0.000001);
@@ -87,10 +87,14 @@ public class BinaryLogisticTest {
         VarNominal y = VarNominal.copy("1", "1", "1", "1", "1", "0", "0", "0", "0", "0").withName("y");
         Frame df = SolidFrame.byVars(x, y);
 
-        var result = model.fit(df, "y").predict(df);
-        assertTrue(model.isConverged());
+        var result1 = model1.fit(df, "y").predict(df);
+        assertTrue(model1.isConverged());
+        assertTrue(result1.firstClasses().deepEquals(y));
 
-        assertTrue(result.firstClasses().deepEquals(y));
+        var model2 = model1.newInstance().solver.set(BinaryLogistic.Method.NEWTON);
+        var result2 = model2.fit(df, "y").predict(df);
+        assertTrue(model2.isConverged());
+        assertTrue(result2.firstClasses().deepEquals(y));
     }
 
 }

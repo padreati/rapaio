@@ -28,7 +28,7 @@
 package rapaio.ml.classifier.linear;
 
 import lombok.Getter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
@@ -107,9 +107,23 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     // learning artifacts
 
+    /**
+     * True if the model is trained and it has converged to a solution in less than
+     * maximum number of iterations (runs), false otherwise.
+     */
+    @Getter
     private boolean converged = false;
     private VarDouble w;
+    /**
+     * List of coefficients computed at each iteration.
+     */
+    @Getter
     private List<DV> iterationWeights;
+
+    /**
+     * List of loss function values evaluated after each iteration.
+     */
+    @Getter
     private List<Double> iterationLoss;
 
     private BinaryLogistic() {
@@ -136,76 +150,6 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                 .allowMissingInputValues(false)
                 .allowMissingTargetValues(false)
                 .build();
-    }
-
-    /**
-     * Numbers of iterations used to fit the model.
-     *
-     * @return number of iterations used to fit the model
-     */
-    public int getIterations() {
-        return iterationLoss != null ? iterationLoss.size() : 0;
-    }
-
-    /**
-     * List of loss function values evaluated after each iteration.
-     *
-     * @return list loss function values
-     */
-    public List<Double> getIterationLoss() {
-        return iterationLoss;
-    }
-
-    /**
-     * List of coefficients computed at each iteration.
-     *
-     * @return coefficients from each iteration
-     */
-    public List<DV> getIterationWeights() {
-        return iterationWeights;
-    }
-
-    /**
-     * True if the model is trained and it has converged to a solution in less than
-     * maximum number of iterations (runs), false otherwise.
-     *
-     * @return true if the model is trained and has converged to a solution in less than maximum
-     * number of iterations
-     */
-    public boolean isConverged() {
-        return converged;
-    }
-
-    private DVDense computeTargetVector(Var target) {
-        switch (target.type()) {
-            case BINARY:
-                return DVDense.from(target);
-            case NOMINAL:
-                DVDense result = DVDense.zeros(target.rowCount());
-                if (targetLevels.get(firstTargetName()).size() == 3) {
-                    for (int i = 0; i < target.rowCount(); i++) {
-                        result.set(i, target.getInt(i) - 1);
-                    }
-                } else {
-                    for (int i = 0; i < target.rowCount(); i++) {
-                        result.set(i, target.getLabel(i).equals(nominalLevel.get()) ? 1 : 0);
-                    }
-                }
-                return result;
-            default:
-                throw new IllegalArgumentException("Target variable must be nominal or binary.");
-        }
-    }
-
-    private DMStripe computeInputMatrix(Frame df, String targetName) {
-        List<Var> variables = new ArrayList<>();
-        if (intercept.get() != 0) {
-            variables.add(VarDouble.fill(df.rowCount(), intercept.get()).withName("Intercept"));
-        }
-        df.varStream()
-                .filter(v -> !firstTargetName().equals(v.name()))
-                .forEach(variables::add);
-        return rapaio.math.linear.dense.DMStripe.copy(variables.toArray(Var[]::new));
     }
 
     @Override
@@ -246,16 +190,44 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
                 iterationWeights = new ArrayList<>(newtonResult.getWs());
                 converged = newtonResult.isConverged();
                 break;
-
-            default:
-                throw new IllegalArgumentException("Method not implemented.");
         }
         return true;
     }
 
+    private DVDense computeTargetVector(Var target) {
+        switch (target.type()) {
+            case BINARY:
+                return DVDense.from(target);
+            case NOMINAL:
+                DVDense result = DVDense.zeros(target.rowCount());
+                if (targetLevels.get(firstTargetName()).size() == 3) {
+                    for (int i = 0; i < target.rowCount(); i++) {
+                        result.set(i, target.getInt(i) - 1);
+                    }
+                } else {
+                    for (int i = 0; i < target.rowCount(); i++) {
+                        result.set(i, target.getLabel(i).equals(nominalLevel.get()) ? 1 : 0);
+                    }
+                }
+                return result;
+        }
+        return null;
+    }
+
+    private DMStripe computeInputMatrix(Frame df, String targetName) {
+        List<Var> variables = new ArrayList<>();
+        if (intercept.get() != 0) {
+            variables.add(VarDouble.fill(df.rowCount(), intercept.get()).withName("Intercept"));
+        }
+        df.varStream()
+                .filter(v -> !firstTargetName().equals(v.name()))
+                .forEach(variables::add);
+        return rapaio.math.linear.dense.DMStripe.copy(variables.toArray(Var[]::new));
+    }
+
     @Override
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        if (w == null) {
+        if (hasLearned()) {
             throw new IllegalArgumentException("Model has not been trained");
         }
 
@@ -289,20 +261,13 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     }
 
     @Getter
-    @ToString(exclude = {"function"})
+    @RequiredArgsConstructor
     public enum Initialize implements Serializable {
-        ZERO("Zero", v -> 0.0),
-        ONE("One", v -> 1.0),
-        EXPECTED_LOG_VAR("ExpectedLogVariance", v -> Math.log(v.mean() * (1 - v.mean())));
+        ZERO(v -> 0.0),
+        ONE(v -> 1.0),
+        EXPECTED_LOG_VAR(v -> Math.log(v.mean() * (1 - v.mean())));
 
-        private final String name;
         private static final long serialVersionUID = 8945270404852488614L;
-
         private final Function<DV, Double> function;
-
-        Initialize(String name, Function<DV, Double> function) {
-            this.name = name;
-            this.function = function;
-        }
     }
 }
