@@ -255,6 +255,13 @@ public class MTools {
             0.005554733551962801371038690 /* 15.0 */
     };
 
+    public static double cut(double x, double min, double max) {
+        if (x < min) {
+            return min;
+        }
+        return Math.min(x, max);
+    }
+
     /**
      * Returns the base 2 logarithm of a {@code double} value.
      *

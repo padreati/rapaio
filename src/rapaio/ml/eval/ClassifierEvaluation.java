@@ -10,9 +10,10 @@ import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.metric.Accuracy;
 import rapaio.ml.eval.metric.ClassifierMetric;
-import rapaio.ml.eval.split.KFold;
 import rapaio.ml.eval.split.Split;
 import rapaio.ml.eval.split.SplitStrategy;
+import rapaio.ml.eval.split.StratifiedKFold;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +49,7 @@ public class ClassifierEvaluation {
                 .withData(df)
                 .withTarget(targetName)
                 .withModel(model)
-                .withSplit(new KFold(folds));
+                .withSplit(new StratifiedKFold(folds, targetName));
         for (ClassifierMetric metric : metrics) {
             eval.withMetric(metric);
         }
@@ -126,6 +127,10 @@ public class ClassifierEvaluation {
                         iterator.remove();
                     } catch (InterruptedException | ExecutionException e) {
                         // do nothing
+                        WS.println("ERROR:" + e.getMessage());
+                        e.printStackTrace();
+                        futures.clear();
+                        break;
                     }
                 }
             }

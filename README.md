@@ -238,6 +238,7 @@ of production ready tools from this field.
 * Ensemble: CForest - Bagging, Random Forests
 * Boosting: AdaBoost
 * Boosting: GBT Classifier
+* SVM: BinarySMO (Platt, Keerthi & all)
 
 **Regression**
 
@@ -290,7 +291,6 @@ ready state. Until that happens, these are the experimental features:
 
 **Classification**
 
-* SVM: BinarySMO (Platt)
 * Ensemble: SplitClassifier
 
 **Regression**
