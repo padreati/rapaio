@@ -227,7 +227,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
 
     @Override
     protected ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
-        if (hasLearned()) {
+        if (!hasLearned()) {
             throw new IllegalArgumentException("Model has not been trained");
         }
 

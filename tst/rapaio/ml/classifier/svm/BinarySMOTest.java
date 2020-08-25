@@ -121,7 +121,7 @@ public class BinarySMOTest {
 
         for (Kernel k : kernels) {
             RandomSource.setSeed(1);
-            BinarySMO smo = BinarySMO.newModel().maxRuns.set(100);
+            BinarySMO smo = BinarySMO.newModel().maxRuns.set(30);
             df = df.fapply(FStandardize.on(VRange.all()));
             double s = ClassifierEvaluation.cv(df, "Class", smo, 3, Accuracy.newMetric())
                     .run()
