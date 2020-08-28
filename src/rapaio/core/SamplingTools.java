@@ -33,7 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
-import rapaio.util.collection.IntArrayTools;
+import rapaio.util.collection.IArrays;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -304,7 +304,7 @@ public final class SamplingTools {
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        IntArrays.shuffle(rows, RandomSource.getRandom());
+        it.unimi.dsi.fastutil.ints.IntArrays.shuffle(rows, RandomSource.getRandom());
 
         Frame[] result = new Frame[freq.length];
         int start = 0;
@@ -397,12 +397,12 @@ public final class SamplingTools {
         }
 
         if (strata == null) {
-            int[] rows = IntArrayTools.newSeq(0, df.rowCount());
+            int[] rows = IArrays.newSeq(0, df.rowCount());
             if (shuffle) {
                 IntArrays.shuffle(rows, RandomSource.getRandom());
             }
-            var trainMapping = Mapping.wrap(IntArrayTools.newCopy(rows, 0, trainSize));
-            var testMapping = Mapping.wrap(IntArrayTools.newCopy(rows, trainSize, trainSize + testSize));
+            var trainMapping = Mapping.wrap(IArrays.newCopy(rows, 0, trainSize));
+            var testMapping = Mapping.wrap(IArrays.newCopy(rows, trainSize, testSize));
             return new TrainTestSplit(df.mapRows(trainMapping), w.mapRows(trainMapping), df.mapRows(testMapping), w.mapRows(testMapping));
         }
 

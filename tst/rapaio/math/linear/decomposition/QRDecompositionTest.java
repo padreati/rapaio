@@ -96,7 +96,7 @@ public class QRDecompositionTest {
             QRDecomposition qr = QRDecomposition.from(a);
 
             DM h = qr.getH();
-            DM p = rapaio.math.linear.dense.DMStripe.identity(10).minus(h.times(2).dot(h.t()));
+            DM p = rapaio.math.linear.dense.DMStripe.identity(10).sub(h.mult(2).dot(h.t()));
 
             // p is hermitian
             assertTrue(p.deepEquals(p.t(), TOL));

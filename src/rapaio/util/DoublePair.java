@@ -46,46 +46,46 @@ public final class DoublePair {
         return new DoublePair(0.0, 0.0);
     }
 
-    public double _1;
-    public double _2;
+    public double v1;
+    public double v2;
 
     @Override
     public String toString() {
-        return "Pair{" + floatFlex(_1) + ", " + floatFlex(_2) + "}";
+        return "Pair{" + floatFlex(v1) + ", " + floatFlex(v2) + "}";
     }
 
-    public void update(double _1, double _2) {
-        this._1 = _1;
-        this._2 = _2;
+    public void update(double v1, double v2) {
+        this.v1 = v1;
+        this.v2 = v2;
     }
 
     public void update(DoublePair p) {
-        this._1 = p._1;
-        this._2 = p._2;
+        this.v1 = p.v1;
+        this.v2 = p.v2;
     }
 
     public double sum() {
-        return _1 + _2;
+        return v1 + v2;
     }
 
     public void normalize() {
         double sum = sum();
         if (sum == 0) {
-            _1 = 0.0;
-            _2 = 0.0;
+            v1 = 0.0;
+            v2 = 0.0;
         } else {
-            _1 /= sum;
-            _2 /= sum;
+            v1 /= sum;
+            v2 /= sum;
         }
     }
 
     public void fill(double value) {
-        this._1 = value;
-        this._2 = value;
+        this.v1 = value;
+        this.v2 = value;
     }
 
     public void increment(DoublePair p) {
-        this._1 += p._1;
-        this._2 += p._2;
+        this.v1 += p.v1;
+        this.v2 += p.v2;
     }
 }

@@ -81,14 +81,14 @@ class LeastSquareGradient implements Gradient {
         double diff = data.dot(weights) - label;
         double loss = diff * diff / 2.0;
         DV gradient = data.copy();
-        gradient.times(diff);
+        gradient.mult(diff);
         return Pair.from(gradient, loss);
     }
 
     @Override
     public Double compute(DV data, double label, DV weights, DV cumGradient) {
         double diff = data.dot(weights) - label;
-        cumGradient.plus(data.copy().times(diff));
+        cumGradient.add(data.copy().mult(diff));
         return diff * diff / 2.0;
     }
 }
@@ -216,7 +216,7 @@ class LogisticGradient implements Gradient {
                  */
                 double margin2 = -1.0 * data.dot(weights);
                 double multiplier2 = (1.0 / (1.0 + Math.exp(margin2))) - label;
-                cumGradient.plus(data.copy().times(multiplier2));
+                cumGradient.add(data.copy().mult(multiplier2));
                 if (label > 0) {
                     // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
                     return MTools.log1pExp(margin2);
@@ -310,7 +310,7 @@ class HingeGradient implements Gradient {
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
             DV gradient = data.copy();
-            gradient.times(-labelScaled);
+            gradient.mult(-labelScaled);
             return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
             return Pair.from(DVDense.zeros(weights.size()), 0.0);
@@ -325,7 +325,7 @@ class HingeGradient implements Gradient {
 
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            cumGradient.plus(data.copy().times(-labelScaled));
+            cumGradient.add(data.copy().mult(-labelScaled));
             return 1.0 - labelScaled * dotProduct;
         }
         return 0.0;

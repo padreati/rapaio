@@ -27,11 +27,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.interfaces.DMAggegateOps;
-import rapaio.math.linear.interfaces.DMAlgebraOps;
-import rapaio.math.linear.interfaces.DMMathOps;
-import rapaio.math.linear.interfaces.DMOrderingOps;
-import rapaio.math.linear.interfaces.DMTransformDataOps;
+import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -42,8 +38,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DM extends DMMathOps, DMAlgebraOps, DMAggegateOps, DMOrderingOps, DMTransformDataOps,
-        Serializable, Printable {
+public interface DM extends Serializable, Printable {
 
     enum Type {
         /**
@@ -99,7 +94,7 @@ public interface DM extends DMMathOps, DMAlgebraOps, DMAggegateOps, DMOrderingOp
      * @param col   column index
      * @param value value to be added
      */
-    void increment(final int row, final int col, final double value);
+    void inc(final int row, final int col, final double value);
 
     /**
      * Returns a vector build from values of a row in
@@ -274,6 +269,238 @@ public interface DM extends DMMathOps, DMAlgebraOps, DMAggegateOps, DMOrderingOp
      * @return new mapped matrix containing all rows not specified by indexes
      */
     DM removeColsCopy(int... cols);
+
+    /**
+     * Adds a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be added
+     * @return instance of the result matrix
+     */
+    DM add(double x);
+
+    /**
+     * Add vector values to all rows (axis 0) or vectors (axis 1).
+     *
+     * @param x    vector to be added
+     * @param axis axis addition
+     * @return same matrix with added values
+     */
+    DM add(DV x, int axis);
+
+    /**
+     * Adds element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be added
+     * @return instance of the result matrix
+     */
+    DM add(DM b);
+
+    /**
+     * Subtract a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be substracted
+     * @return instance of the result matrix
+     */
+    DM sub(double x);
+
+    /**
+     * Subtract vector values to all rows (axis 0) or vectors (axis 1).
+     *
+     * @param x    vector to be added
+     * @param axis axis addition
+     * @return same matrix with added values
+     */
+    DM sub(DV x, int axis);
+
+    /**
+     * Subtracts element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be substracted
+     * @return instance of the result matrix
+     */
+    DM sub(DM b);
+
+    /**
+     * Multiply a scalar value to all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x value to be multiplied with
+     * @return instance of the result matrix
+     */
+    DM mult(double x);
+
+    /**
+     * Multiplies element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with elements to be multiplied with
+     * @return instance of the result matrix
+     */
+    DM mult(DM b);
+
+    /**
+     * Divide a scalar value from all elements of a matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param x divisor value
+     * @return instance of the result matrix
+     */
+    DM div(double x);
+
+    /**
+     * Divides element wise values from given matrix. If possible,
+     * the operation is realized in place.
+     *
+     * @param b matrix with division elements
+     * @return instance of the result matrix
+     */
+    DM div(DM b);
+
+    /**
+     * Apply the given function to all elements of the matrix.
+     *
+     * @param fun function to be applied
+     * @return same instance matrix
+     */
+    DM apply(Double2DoubleFunction fun);
+
+    /**
+     * Computes matrix vector multiplication.
+     *
+     * @param b vector to be multiplied with
+     * @return result vector
+     */
+    DV dot(DV b);
+
+    /**
+     * Compute matrix multiplication between the current
+     * matrix and the diagonal matrix obtained from the given vector.
+     * <p>
+     * A * I * v
+     *
+     * @param v diagonal vector
+     * @return result matrix
+     */
+    DM dotDiag(DV v);
+
+    /**
+     * Compute matrix multiplication between the current
+     * matrix and the diagonal matrix obtained from the given vector.
+     * <p>
+     * v^T * I * A
+     *
+     * @param v diagonal vector
+     * @return result matrix
+     */
+    DM dotDiagT(DV v);
+
+    /**
+     * Computes matrix - matrix multiplication.
+     *
+     * @param b matrix to be multiplied with
+     * @return matrix result
+     */
+    DM dot(DM b);
+
+    /**
+     * Trace of the matrix, if the matrix is square. The trace of a squared
+     * matrix is the sum of the elements from the main diagonal.
+     * Otherwise returns an exception.
+     *
+     * @return value of the matrix trace
+     */
+    double trace();
+
+    /**
+     * Matrix rank obtained using singular value decomposition.
+     *
+     * @return effective numerical rank, obtained from SVD.
+     */
+    int rank();
+
+    /**
+     * Creates an instance of a transposed matrix. Depending on implementation
+     * this can be a view of the original data.
+     *
+     * @return new transposed matrix
+     */
+    DM t();
+
+    /**
+     * Vector with values from main diagonal
+     */
+    DV diag();
+
+    /**
+     * Computes scatter matrix.
+     *
+     * @return scatter matrix instance
+     */
+    DM scatter();
+
+    /**
+     * Builds a vector with maximum values from rows/cols.
+     * If axis = 0 and matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the maximum
+     * value from the row with that position.
+     *
+     * @param axis axis for which to compute maximal values
+     * @return vector with result values
+     */
+    DV amax(int axis);
+
+    /**
+     * Builds a vector with indexes of the maximum values from rows/columns.
+     * Thus if a matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the maximum
+     * value from the row with that position.
+     *
+     * @return vector with indexes of max value values
+     */
+    int[] argmax(int axis);
+
+    /**
+     * Builds a vector with minimum values from rows/cols.
+     * If axis = 0 and matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the minimum
+     * value from the row with that position.
+     *
+     * @param axis axis for which to compute maximal values
+     * @return vector with result values
+     */
+    DV amin(int axis);
+
+    /**
+     * Builds a vector with indexes of the minimum value index from rows/columns.
+     * Thus if a matrix has m rows and n columns, the resulted vector
+     * will have size m and will contain in each position the minimum
+     * value index from the row with that position.
+     *
+     * @return vector with indexes of max value values
+     */
+    int[] argmin(int axis);
+
+    /**
+     * Computes the sum of all elements from the matrix
+     *
+     * @return scalar value with sum
+     */
+    double sum();
+
+    /**
+     * Computes the sum of all elements on the given axis. If axis
+     * is 0 it will compute sum on rows, the resulting vector having size
+     * as the number of rows and on each position the sum of elements from
+     * that row. If the axis is 1 it will compute sums on columns.
+     *
+     * @param axis specifies the dimension used for summing
+     * @return vector of sums on the given axis
+     */
+    DV sum(int axis);
 
     /**
      * Stream of double values, the element order is not guaranteed,

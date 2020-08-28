@@ -146,8 +146,8 @@ public class VSpotsTest {
     @Test
     void testClose() {
         Pair<Integer, Integer> pair = Pair.from(1, 2);
-        SolidFrame.byVars(VarDouble.wrap(1, 2, 3, 4)).stream().onClose(() -> pair._1 = 3).close();
-        assertEquals(3, pair._1.intValue());
+        SolidFrame.byVars(VarDouble.wrap(1, 2, 3, 4)).stream().onClose(() -> pair.v1 = 3).close();
+        assertEquals(3, pair.v1.intValue());
     }
 
     @Test

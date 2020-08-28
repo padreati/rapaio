@@ -144,7 +144,7 @@ public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, Classi
 
         // a) Set p_k(x)
 
-        DV max = f.t().rowMaxValues();
+        DV max = f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -155,7 +155,7 @@ public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, Classi
                 p.set(k, i, Math.exp(f.get(k, i) - max.get(i)) / sum);
             }
         }
-        residual = yk.copy().minus(p);
+        residual = yk.copy().sub(p);
 
         // b)
 
@@ -174,7 +174,7 @@ public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, Classi
 
             var prediction = tree.predict(df, false).firstPrediction();
             for (int i = 0; i < df.rowCount(); i++) {
-                f.set(k, i, f.get(k, i) + shrinkage.get() * prediction.getDouble(i));
+                f.inc(k, i, shrinkage.get() * prediction.getDouble(i));
             }
         }
     }
@@ -196,7 +196,7 @@ public class GBTClassifier extends AbstractClassifierModel<GBTClassifier, Classi
 
         // make probabilities
 
-        DV max = p_f.t().rowMaxValues();
+        DV max = p_f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

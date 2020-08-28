@@ -294,7 +294,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predict(i, df, root);
-            prediction.prediction(firstTargetName()).setDouble(i, result._1);
+            prediction.prediction(firstTargetName()).setDouble(i, result.v1);
         }
         prediction.buildComplete();
         return prediction;
@@ -319,8 +319,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         VarDouble weights = VarDouble.empty();
         for (Node child : node.children) {
             DoublePair prediction = predict(row, df, child);
-            values.addDouble(prediction._1);
-            weights.addDouble(prediction._2);
+            values.addDouble(prediction.v1);
+            weights.addDouble(prediction.v2);
         }
         return DoublePair.of(WeightedMean.of(values, weights).value(), Mean.of(weights).value());
     }

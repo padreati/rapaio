@@ -77,7 +77,7 @@ public class DMBase extends AbstractDM {
     }
 
     @Override
-    public void increment(int row, int col, double value) {
+    public void inc(int row, int col, double value) {
         values[row][col] += value;
     }
 

@@ -39,8 +39,8 @@ public class FFTTest {
     // display an array of Complex numbers to standard output
     public static void show(Pair<Var, Var> x) {
         System.out.println("-------------------");
-        for (int i = 0; i < x._1.rowCount(); i++) {
-            System.out.println(x._1.getDouble(i) + " , " + x._2.getDouble(i));
+        for (int i = 0; i < x.v1.rowCount(); i++) {
+            System.out.println(x.v1.getDouble(i) + " , " + x.v2.getDouble(i));
         }
         System.out.println();
     }
@@ -129,8 +129,8 @@ public class FFTTest {
 
             Pair<Var, Var> y = FFT.ifft(FFT.fft(Pair.from(x1, x2)));
 
-            Var y1 = y._1;
-            Var y2 = y._2;
+            Var y1 = y.v1;
+            Var y2 = y.v2;
 
             for (int j = 0; j < N; j++) {
                 assertEquals(x1.getDouble(i), y1.getDouble(i), 1e-12);

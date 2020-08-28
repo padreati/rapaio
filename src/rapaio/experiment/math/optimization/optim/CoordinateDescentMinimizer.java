@@ -97,7 +97,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
                 break;
             }
             double t = lineSearch.find(f, d1f, x, deltaX);
-            sol.plus(deltaX.times(t));
+            sol.add(deltaX.mult(t));
         }
     }
 

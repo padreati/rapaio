@@ -134,7 +134,7 @@ public class PCA implements Printable {
     public Frame predict(Frame df, int k) {
         // TODO check if we have all the initial columns
 
-        DM x = rapaio.math.linear.dense.DMStripe.copy(df.mapVars(inputNames));
+        DM x = DMStripe.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {

@@ -59,7 +59,7 @@ public class ConfusionTest {
                 {0, 1, 4}});
 
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1 / 11.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mult(1 / 11.0).deepEquals(cm.probabilityMatrix()));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ConfusionTest {
 
         DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);
@@ -120,7 +120,7 @@ public class ConfusionTest {
 
         DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
-        assertTrue(frequency.copy().times(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
+        assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
         assertEquals(0.5714285714285714, cm.accuracy(), TOL);
         assertEquals(0.4285714285714286, cm.error(), TOL);

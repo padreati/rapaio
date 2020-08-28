@@ -29,12 +29,11 @@ package rapaio.data.mapping;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrayTools;
+import rapaio.util.collection.IArrays;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -56,11 +55,11 @@ public final class ArrayMapping implements Mapping {
     }
 
     public ArrayMapping(int start, int end) {
-        this.data = new IntArrayList(IntArrayTools.newSeq(start, end));
+        this.data = new IntArrayList(IArrays.newSeq(start, end));
     }
 
     public ArrayMapping(int[] array, int start, int end, Int2IntFunction fun) {
-        this.data = new IntArrayList(IntArrayTools.newFrom(array, start, end, fun));
+        this.data = new IntArrayList(IArrays.newFrom(array, start, end, fun));
     }
 
     public int size() {
@@ -116,7 +115,7 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public IntIterator iterator() {
-        return IntArrayTools.iterator(data.elements(), 0, data.size());
+        return IArrays.iterator(data.elements(), 0, data.size());
     }
 
     @Override
@@ -126,7 +125,7 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public void shuffle() {
-        IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
+        it.unimi.dsi.fastutil.ints.IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
     }
 
     @Override

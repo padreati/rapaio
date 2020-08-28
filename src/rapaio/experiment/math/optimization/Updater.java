@@ -51,7 +51,7 @@ class SimpleUpdater implements Updater {
     public Pair<DV, Double> compute(DV weightsOld, DV gradient, double stepSize, int iter, double regParam) {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         DV brzWeights = weightsOld.copy();
-        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
+        brzWeights.add(gradient.copy().mult(-thisIterStepSize));
         return Pair.from(brzWeights, 0.0);
     }
 }
@@ -81,7 +81,7 @@ class L1Updater implements Updater {
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         // Take gradient step
         DV brzWeights = weightsOld.copy();
-        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
+        brzWeights.add(gradient.copy().mult(-thisIterStepSize));
         // Apply proximal operator (soft thresholding)
         double shrinkageVal = regParam * thisIterStepSize;
         int i = 0;
@@ -112,8 +112,8 @@ class SquaredL2Updater implements Updater {
         // w' = (1 - thisIterStepSize * regParam) * w - thisIterStepSize * gradient
         double thisIterStepSize = stepSize / Math.sqrt(iter);
         DV brzWeights = weightsOld.copy();
-        brzWeights.minus(brzWeights.copy().times(thisIterStepSize * regParam));
-        brzWeights.plus(gradient.copy().times(-thisIterStepSize));
+        brzWeights.sub(brzWeights.copy().mult(thisIterStepSize * regParam));
+        brzWeights.add(gradient.copy().mult(-thisIterStepSize));
         double norm = brzWeights.norm(2.0);
 
         return Pair.from(brzWeights, 0.5 * regParam * norm * norm);

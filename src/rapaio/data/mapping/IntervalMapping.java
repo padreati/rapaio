@@ -30,7 +30,7 @@ package rapaio.data.mapping;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IntArrayTools;
+import rapaio.util.collection.IArrays;
 
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
@@ -132,7 +132,7 @@ public final class IntervalMapping implements Mapping {
 
     @Override
     public int[] elements() {
-        return IntArrayTools.newSeq(start, end);
+        return IArrays.newSeq(start, end);
     }
 
     @Override

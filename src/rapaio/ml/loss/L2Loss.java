@@ -33,7 +33,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.ml.regression.tree.RTreeLoss;
 import rapaio.ml.regression.tree.rtree.SearchPayload;
-import rapaio.util.collection.DoubleArrayTools;
+
+import static rapaio.util.collection.DArrays.sum;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.
@@ -101,7 +102,7 @@ public class L2Loss implements Loss, RTreeLoss {
 
     @Override
     public double computeSplitLossScore(SearchPayload payload) {
-        double down = DoubleArrayTools.sum(payload.splitWeight, 0, payload.splitWeight.length);
+        double down = sum(payload.splitWeight, 0, payload.splitWeight.length);
         double up = 0.0;
         for (int i = 0; i < payload.splits; i++) {
             up += payload.splitWeight[i] * payload.splitVar[i];

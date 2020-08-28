@@ -122,7 +122,7 @@ public final class Confusion implements Printable {
         for (int i = 0; i < actual.rowCount(); i++) {
             if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;
-                cmFrequency.increment(actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict, 1);
+                cmFrequency.inc(actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict, 1);
             }
         }
         acc = cmFrequency.trace();
@@ -134,7 +134,7 @@ public final class Confusion implements Printable {
         } else {
             acc = acc / completeCases;
         }
-        cmProbability.plus(cmFrequency).times(1.0 / completeCases);
+        cmProbability.add(cmFrequency).mult(1.0 / completeCases);
 
         if (binary) {
             tp = cmFrequency.get(0, 0);

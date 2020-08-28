@@ -84,14 +84,14 @@ public class CFeatureSelectionSummary implements Printable {
             df.varStream()
                     .filter(v -> !v.name().equals(targetVar))
                     .forEach(v -> topPearson.add(Pair.from(v.name(), CorrPearson.of(df.rvar(targetVar), v).singleValue())));
-            topPearson.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
+            topPearson.sort((o1, o2) -> -Double.compare(o1.v2, o2.v2));
         }
 
         if (usePearson) {
             df.varStream()
                     .filter(v -> !v.name().equals(targetVar))
                     .forEach(v -> topSpearman.add(Pair.from(v.name(), CorrSpearman.of(df.rvar(targetVar), v).singleValue())));
-            topSpearman.sort((o1, o2) -> -Double.compare(o1._2, o2._2));
+            topSpearman.sort((o1, o2) -> -Double.compare(o1.v2, o2.v2));
         }
 
     }
@@ -111,7 +111,7 @@ public class CFeatureSelectionSummary implements Printable {
 
             for (int i = 0; i < topPearson.size(); i++) {
                 Pair<String, Double> p = topPearson.get(i);
-                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, Format.floatFlex(p._2)));
+                sb.append(String.format("%3d. %s %s\n", i + 1, p.v1, Format.floatFlex(p.v2)));
             }
             sb.append("\n");
         }
@@ -123,7 +123,7 @@ public class CFeatureSelectionSummary implements Printable {
 
             for (int i = 0; i < topSpearman.size(); i++) {
                 Pair<String, Double> p = topSpearman.get(i);
-                sb.append(String.format("%3d. %s %s\n", i + 1, p._1, Format.floatFlex(p._2)));
+                sb.append(String.format("%3d. %s %s\n", i + 1, p.v1, Format.floatFlex(p.v2)));
             }
             sb.append("\n");
         }

@@ -231,7 +231,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
             }
             for (int i = 0; i < node.children.size(); i++) {
                 var child = node.children.get(i);
-                queue.add(Triple.of(child, frames._1.get(i), frames._2.get(i)));
+                queue.add(Triple.of(child, frames.v1.get(i), frames.v2.get(i)));
             }
         }
 
@@ -308,8 +308,8 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
         ClassifierResult prediction = ClassifierResult.build(this, df, withClasses, withDensities);
         for (int i = 0; i < df.rowCount(); i++) {
             Pair<String, DensityVector<String>> res = predictPoint(this, root, i, df);
-            String label = res._1;
-            var dv = res._2;
+            String label = res.v1;
+            var dv = res.v2;
             if (withClasses)
                 prediction.firstClasses().setLabel(i, label);
             if (withDensities)
@@ -334,7 +334,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
         var dv = DensityVector.emptyByLabels(false, dict);
         double w = 0.0;
         for (Node child : node.children) {
-            var d = this.predictPoint(tree, child, row, df)._2;
+            var d = this.predictPoint(tree, child, row, df).v2;
             double wc = child.density.sum();
             dv.plus(d, wc);
             w += wc;

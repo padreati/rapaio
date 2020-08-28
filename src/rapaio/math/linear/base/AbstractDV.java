@@ -26,7 +26,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV plus(double x) {
+    public DV add(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + x);
         }
@@ -34,7 +34,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV plus(DV b) {
+    public DV add(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + b.get(i));
@@ -43,7 +43,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV minus(double x) {
+    public DV sub(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - x);
         }
@@ -51,7 +51,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV minus(DV b) {
+    public DV sub(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - b.get(i));
@@ -60,7 +60,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV times(double scalar) {
+    public DV mult(double scalar) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * scalar);
         }
@@ -68,7 +68,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV times(DV b) {
+    public DV mult(DV b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * b.get(i));
@@ -130,7 +130,7 @@ public abstract class AbstractDV implements DV {
     public DV normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
-            times(1.0 / norm);
+            mult(1.0 / norm);
         return this;
     }
 
@@ -154,6 +154,44 @@ public abstract class AbstractDV implements DV {
             nansum += value;
         }
         return nansum;
+    }
+
+    @Override
+    public DV cumsum() {
+        for (int i = 1; i < size(); i++) {
+            increment(i, get(i - 1));
+        }
+        return this;
+    }
+
+    @Override
+    public double prod() {
+        double prod = 0;
+        for (int i = 0; i < size(); i++) {
+            prod *= get(i);
+        }
+        return prod;
+    }
+
+    @Override
+    public double nanprod() {
+        double nanprod = 0;
+        for (int i = 0; i < size(); i++) {
+            double value = get(i);
+            if (Double.isNaN(value)) {
+                continue;
+            }
+            nanprod += value;
+        }
+        return nanprod;
+    }
+
+    @Override
+    public DV cumprod() {
+        for (int i = 1; i < size(); i++) {
+            set(i, get(i - 1) * get(i));
+        }
+        return this;
     }
 
     @Override
@@ -266,7 +304,7 @@ public abstract class AbstractDV implements DV {
         sb.append("size:").append(size()).append(", values:");
         sb.append("[");
         for (int i = 0; i < Math.min(20, size()); i++) {
-            sb.append(Format.floatFlexLong(get(i)));
+            sb.append(Format.floatFlex(get(i)));
             if (i != size() - 1) {
                 sb.append(",");
             }

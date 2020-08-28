@@ -90,8 +90,8 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public void increment(int row, int col, double value) {
-        ref.increment(rowIndexes[row], colIndexes[col], value);
+    public void inc(int row, int col, double value) {
+        ref.inc(rowIndexes[row], colIndexes[col], value);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class DMMap extends AbstractDM {
         return Arrays.stream(rowIndexes)
                 .boxed()
                 .flatMap(r -> Arrays.stream(colIndexes).boxed().map(c -> rapaio.util.Pair.from(r, c)))
-                .mapToDouble(p -> ref.get(p._1, p._2));
+                .mapToDouble(p -> ref.get(p.v1, p.v2));
     }
 
     @Override

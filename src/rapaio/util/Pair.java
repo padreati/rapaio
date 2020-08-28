@@ -38,12 +38,12 @@ public class Pair<T1, T2> implements Serializable {
 
     private static final long serialVersionUID = -1594916059995575867L;
 
-    public T1 _1;
-    public T2 _2;
+    public T1 v1;
+    public T2 v2;
 
-    protected Pair(T1 _1, T2 _2) {
-        this._1 = _1;
-        this._2 = _2;
+    protected Pair(T1 v1, T2 v2) {
+        this.v1 = v1;
+        this.v2 = v2;
     }
 
     public static <U, V> Pair<U, V> from(U u, V v) {
@@ -52,15 +52,15 @@ public class Pair<T1, T2> implements Serializable {
 
     @Override
     public String toString() {
-        return "Pair{" + _1 + ", " + _2 + "}";
+        return "Pair{" + v1 + ", " + v2 + "}";
     }
 
     public void update(T1 _1, T2 _2) {
-        this._1 = _1;
-        this._2 = _2;
+        this.v1 = _1;
+        this.v2 = _2;
     }
 
     public void update(Pair<T1, T2> p) {
-        update(_1, _2);
+        update(v1, v2);
     }
 }

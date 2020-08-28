@@ -118,7 +118,7 @@ public class BinaryLogisticIRLS {
         DV pvars = p.copy().apply(value -> value * (1 - value));
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DV z = xw.plus(y.copy().minus(p).div(pvars));
+        DV z = xw.add(y.copy().sub(p).div(pvars));
 
         // Xt(p(1-p)
         DM xpvar = x.copy();
@@ -135,7 +135,7 @@ public class BinaryLogisticIRLS {
         // for L2 regularization we inflate main diagonal
         if (lambda != 0) {
             for (int i = 0; i < mA.rowCount(); i++) {
-                mA.increment(i, i, lambda);
+                mA.inc(i, i, lambda);
             }
         }
 

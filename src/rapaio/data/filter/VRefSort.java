@@ -27,14 +27,13 @@
 
 package rapaio.data.filter;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Mapping;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IntArrayTools;
+import rapaio.util.collection.IArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
@@ -58,8 +57,8 @@ public class VRefSort implements VFilter {
 
     @Override
     public Var apply(Var var) {
-        int[] rows = IntArrayTools.newSeq(0, var.rowCount());
-        IntArrays.quickSort(rows, 0, var.rowCount(), aggregateComparator == null ? var.refComparator() : aggregateComparator);
+        int[] rows = IArrays.newSeq(0, var.rowCount());
+        it.unimi.dsi.fastutil.ints.IntArrays.quickSort(rows, 0, var.rowCount(), aggregateComparator == null ? var.refComparator() : aggregateComparator);
         return var.mapRows(Mapping.wrap(rows));
     }
 

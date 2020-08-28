@@ -100,7 +100,7 @@ public enum Pruning implements Serializable {
                         it.remove();
                         continue;
                     }
-                    double delta = topDown.get(id)._2 / topDown.get(id).sum() - bottomUp.get(id)._2 / bottomUp.get(id).sum();
+                    double delta = topDown.get(id).v2 / topDown.get(id).sum() - bottomUp.get(id).v2 / bottomUp.get(id).sum();
                     if (delta >= maxAcc) {
                         maxAcc = delta;
                         maxId = id;
@@ -115,8 +115,8 @@ public enum Pruning implements Serializable {
 
                 if (found) {
                     updateError(maxId, bottomUp, nodes, DoublePair.of(
-                            topDown.get(maxId)._1 - bottomUp.get(maxId)._1,
-                            topDown.get(maxId)._2 - bottomUp.get(maxId)._2));
+                            topDown.get(maxId).v1 - bottomUp.get(maxId).v1,
+                            topDown.get(maxId).v2 - bottomUp.get(maxId).v2));
                     addToPruned(maxId, nodes.get(maxId), pruned, topDown, bottomUp, nodes);
                     nodes.get(maxId).cut();
                 }

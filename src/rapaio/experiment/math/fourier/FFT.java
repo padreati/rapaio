@@ -42,7 +42,7 @@ public class FFT {
     // compute the FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> fft(Pair<Var, Var> x) {
 
-        int N = x._1.rowCount();
+        int N = x.v1.rowCount();
 
         // base case
         if (N == 1) return x;
@@ -57,7 +57,7 @@ public class FFT {
         for (int k = 0; k < N / 2; k++) {
             evenMap[k] = 2 * k;
         }
-        Pair<Var, Var> even = Pair.from(x._1.mapRows(evenMap), x._2.mapRows(evenMap));
+        Pair<Var, Var> even = Pair.from(x.v1.mapRows(evenMap), x.v2.mapRows(evenMap));
         Pair<Var, Var> q = fft(even);
 
         // fft of odd terms
@@ -65,7 +65,7 @@ public class FFT {
         for (int k = 0; k < N / 2; k++) {
             oddMap[k] = 2 * k + 1;
         }
-        Pair<Var, Var> r = fft(Pair.from(x._1.mapRows(oddMap), x._2.mapRows(oddMap)));
+        Pair<Var, Var> r = fft(Pair.from(x.v1.mapRows(oddMap), x.v2.mapRows(oddMap)));
 
         // combine
         Var rey = VarDouble.fill(N, 0.0);
@@ -75,11 +75,11 @@ public class FFT {
             double coskth = Math.cos(kth);
             double sinkth = Math.sin(kth);
 
-            rey.setDouble(k, q._1.getDouble(k) + coskth * r._1.getDouble(k) - sinkth * r._2.getDouble(k));
-            imy.setDouble(k, q._2.getDouble(k) + coskth * r._2.getDouble(k) + sinkth * r._1.getDouble(k));
+            rey.setDouble(k, q.v1.getDouble(k) + coskth * r.v1.getDouble(k) - sinkth * r.v2.getDouble(k));
+            imy.setDouble(k, q.v2.getDouble(k) + coskth * r.v2.getDouble(k) + sinkth * r.v1.getDouble(k));
 
-            rey.setDouble(k + N / 2, q._1.getDouble(k) - coskth * r._1.getDouble(k) + sinkth * r._2.getDouble(k));
-            imy.setDouble(k + N / 2, q._2.getDouble(k) - coskth * r._2.getDouble(k) - sinkth * r._1.getDouble(k));
+            rey.setDouble(k + N / 2, q.v1.getDouble(k) - coskth * r.v1.getDouble(k) + sinkth * r.v2.getDouble(k));
+            imy.setDouble(k + N / 2, q.v2.getDouble(k) - coskth * r.v2.getDouble(k) - sinkth * r.v1.getDouble(k));
         }
         return Pair.from(rey, imy);
     }
@@ -87,31 +87,31 @@ public class FFT {
 
     // compute the inverse FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
-        int N = x._1.rowCount();
+        int N = x.v1.rowCount();
 
-        Var im2 = VarDouble.from(N, row -> -x._2.getDouble(row));
+        Var im2 = VarDouble.from(N, row -> -x.v2.getDouble(row));
 
         // compute forward FFT
-        Pair<Var, Var> y = fft(Pair.from(x._1, im2));
+        Pair<Var, Var> y = fft(Pair.from(x.v1, im2));
 
         // take conjugate again and divide by N
-        Var re3 = VarDouble.from(N, row -> y._1.getDouble(row) / N);
-        Var im3 = VarDouble.from(N, row -> -y._2.getDouble(row) / N);
+        Var re3 = VarDouble.from(N, row -> y.v1.getDouble(row) / N);
+        Var im3 = VarDouble.from(N, row -> -y.v2.getDouble(row) / N);
         return Pair.from(re3, im3);
     }
 
     // compute the circular convolution of x and y
     public static Pair<Var, Var> cconvolve(Pair<Var, Var> x, Pair<Var, Var> y) {
 
-        int len = x._1.rowCount();
+        int len = x.v1.rowCount();
 
         // should probably pad x and y with 0s so that they have same length
         // and are powers of 2
-        if ((x._2.rowCount() != len)) {
+        if ((x.v2.rowCount() != len)) {
             throw new RuntimeException("Dimensions don't agree");
         }
 
-        int N = x._1.rowCount();
+        int N = x.v1.rowCount();
 
         // compute FFT of each sequence
         Pair<Var, Var> a = fft(x);
@@ -120,8 +120,8 @@ public class FFT {
         // point-wise multiply
         Pair<Var, Var> c = Pair.from(VarDouble.fill(len, 0.0), VarDouble.fill(len, 0.0));
         for (int i = 0; i < N; i++) {
-            c._1.setDouble(i, a._1.getDouble(i) * b._1.getDouble(i) - a._2.getDouble(i) * b._2.getDouble(i));
-            c._2.setDouble(i, a._1.getDouble(i) * b._2.getDouble(i) + a._1.getDouble(i) * b._2.getDouble(i));
+            c.v1.setDouble(i, a.v1.getDouble(i) * b.v1.getDouble(i) - a.v2.getDouble(i) * b.v2.getDouble(i));
+            c.v2.setDouble(i, a.v1.getDouble(i) * b.v2.getDouble(i) + a.v1.getDouble(i) * b.v2.getDouble(i));
         }
 
         // compute inverse FFT
@@ -131,14 +131,14 @@ public class FFT {
 
     // compute the linear convolution of x and y
     public static Pair<Var, Var> convolve(Pair<Var, Var> x, Pair<Var, Var> y) {
-        Pair<Var, Var> a = Pair.from(x._1.copy(), x._2.copy());
-        Pair<Var, Var> b = Pair.from(y._1.copy(), y._2.copy());
+        Pair<Var, Var> a = Pair.from(x.v1.copy(), x.v2.copy());
+        Pair<Var, Var> b = Pair.from(y.v1.copy(), y.v2.copy());
 
-        for (int i = 0; i < x._1.rowCount(); i++) {
-            a._1.addDouble(0.0);
-            a._2.addDouble(0.0);
-            b._1.addDouble(0.0);
-            b._2.addDouble(0.0);
+        for (int i = 0; i < x.v1.rowCount(); i++) {
+            a.v1.addDouble(0.0);
+            a.v2.addDouble(0.0);
+            b.v1.addDouble(0.0);
+            b.v2.addDouble(0.0);
         }
         return cconvolve(a, b);
     }

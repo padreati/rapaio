@@ -95,20 +95,20 @@ public class Apriori implements Printable {
 
         for (int i = 0; i < df.rowCount(); i++) {
             for (Pair<AprioriRule, DensityVector<String>> cnt : counts) {
-                if (cnt._1.matchRow(df, i)) {
-                    cnt._2.increment(df.getLabel(i, target), 1);
+                if (cnt.v1.matchRow(df, i)) {
+                    cnt.v2.increment(df.getLabel(i, target), 1);
                 }
             }
         }
 
         P.add(counts.stream()
-                .filter(pair -> filter.test(df.rowCount(), pair._2))
-                .sorted((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()))
+                .filter(pair -> filter.test(df.rowCount(), pair.v2))
+                .sorted((o1, o2) -> -Double.compare(o1.v2.sum(), o2.v2.sum()))
                 .collect(Collectors.toList()));
 
         // do iterations
 
-        List<AprioriRule> base = P.get(0).stream().map(pair -> pair._1).collect(Collectors.toList());
+        List<AprioriRule> base = P.get(0).stream().map(pair -> pair.v1).collect(Collectors.toList());
 
         while (true) {
             int k = P.size();
@@ -121,28 +121,28 @@ public class Apriori implements Printable {
                     if (!b.matchRow(df, i))
                         continue;
                     for (Pair<AprioriRule, DensityVector<String>> tPrev : P.get(k - 1)) {
-                        if (!tPrev._1.isExtention(b))
+                        if (!tPrev.v1.isExtention(b))
                             continue;
-                        if (!tPrev._1.matchRow(df, i))
+                        if (!tPrev.v1.matchRow(df, i))
                             continue;
-                        AprioriRule next = tPrev._1.extend(b);
+                        AprioriRule next = tPrev.v1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
                             cnts.put(next.toString(), Pair.from(next, DensityVector.emptyByLabels(false, df.levels(target))));
                         }
-                        cnts.get(next.toString())._2.increment(df.getInt(i, target), 1);
+                        cnts.get(next.toString()).v2.increment(df.getInt(i, target), 1);
                     }
                 }
             }
 
             // keep only survivors
             List<Pair<AprioriRule, DensityVector<String>>> top = cnts.values().stream()
-                    .filter(pair -> filter.test(df.rowCount(), pair._2))
+                    .filter(pair -> filter.test(df.rowCount(), pair.v2))
                     .collect(Collectors.toList());
 
             if (top.isEmpty()) {
                 break;
             }
-            top.sort((o1, o2) -> -Double.compare(o1._2.sum(), o2._2.sum()));
+            top.sort((o1, o2) -> -Double.compare(o1.v2.sum(), o2.v2.sum()));
             P.add(top);
         }
 
@@ -154,7 +154,7 @@ public class Apriori implements Printable {
                 boolean out = false;
                 for (int j = i + 1; j < P.size(); j++) {
                     for (Pair<AprioriRule, DensityVector<String>> pair : P.get(j)) {
-                        if (pair._1.contains(next._1)) {
+                        if (pair.v1.contains(next.v1)) {
                             out = true;
                             break;
                         }
@@ -171,7 +171,7 @@ public class Apriori implements Printable {
 
         rules = new ArrayList<>();
         for (List<Pair<AprioriRule, DensityVector<String>>> aP : P) {
-            rules.addAll(aP.stream().map(pair -> pair._1).collect(Collectors.toSet()));
+            rules.addAll(aP.stream().map(pair -> pair.v1).collect(Collectors.toSet()));
         }
 
         // create coverage
@@ -198,11 +198,11 @@ public class Apriori implements Printable {
         for (int i = 0; i < P.size(); i++) {
             sb.append("## rules of size: ").append(i + 1).append("\n");
             for (int j = 0; j < P.get(i).size(); j++) {
-                sb.append(j + 1).append(". ").append(P.get(i).get(j)._1.toString())
+                sb.append(j + 1).append(". ").append(P.get(i).get(j).v1.toString())
                         .append(" ")
-                        .append(Format.floatFlex(P.get(i).get(j)._2.sum())).append(" [");
+                        .append(Format.floatFlex(P.get(i).get(j).v2.sum())).append(" [");
                 for (int k = 1; k < targetLevels.size(); k++) {
-                    sb.append(Format.floatShort(P.get(i).get(j)._2.get(k))).append(",");
+                    sb.append(Format.floatShort(P.get(i).get(j).v2.get(k))).append(",");
                 }
                 sb.append("]\n");
             }

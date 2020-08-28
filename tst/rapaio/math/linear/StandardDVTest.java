@@ -7,7 +7,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.math.linear.dense.DMStripe;
-import rapaio.util.collection.DoubleArrayTools;
+import rapaio.util.collection.DArrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +28,7 @@ public abstract class StandardDVTest {
     void beforeEach() {
         RandomSource.setSeed(123);
         normal = Normal.std();
-        values = DoubleArrayTools.newFrom(0, 100, row -> normal.sampleNext());
+        values = DArrays.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
     }
@@ -57,60 +57,60 @@ public abstract class StandardDVTest {
     }
 
     @Test
-    void scalarPlusTest() {
-        DV y = x.copy().plus(10);
+    void testAddScalar() {
+        DV y = x.copy().add(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
     }
 
     @Test
-    void vectorPlusTest() {
-        DV y = x.copy().plus(z);
+    void testAddVector() {
+        DV y = x.copy().add(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
         }
     }
 
     @Test
-    void vectorPlusNonconformantTest() {
+    void testVectorAddNonconformant() {
         DV y = generateFill(50, 10);
-        assertThrows(IllegalArgumentException.class, () -> x.plus(y));
+        assertThrows(IllegalArgumentException.class, () -> x.add(y));
     }
 
     @Test
-    void scalarMinusTest() {
-        DV y = x.copy().minus(10);
+    void testScalarSubtract() {
+        DV y = x.copy().sub(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
     }
 
     @Test
-    void vectorMinusTest() {
-        DV y = x.copy().minus(z);
+    void testVectorSubtract() {
+        DV y = x.copy().sub(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
         }
     }
 
     @Test
-    void vectorMinusNonconformantTest() {
+    void testVectorMinusNonconformant() {
         DV y = generateFill(50, 0);
-        assertThrows(IllegalArgumentException.class, () -> x.minus(y));
+        assertThrows(IllegalArgumentException.class, () -> x.sub(y));
     }
 
     @Test
-    void scalarTimesTest() {
-        DV y = x.copy().times(10);
+    void testScalarMultiply() {
+        DV y = x.copy().mult(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
     }
 
     @Test
-    void vectorTimesTest() {
-        DV y = x.copy().times(z);
+    void testVectorMultiply() {
+        DV y = x.copy().mult(z);
         assertEquals(100, y.size());
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
@@ -119,7 +119,7 @@ public abstract class StandardDVTest {
 
 
     @Test
-    void scalarDivTest() {
+    void testScalarDivide() {
         DV y = x.copy().div(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / 10, y.get(i), TOL);

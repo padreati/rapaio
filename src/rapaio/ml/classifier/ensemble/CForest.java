@@ -224,7 +224,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
                 .collect(Collectors.toList());
         for (int i = 0; i < list.size(); i++) {
             Pair<ClassifierModel, Mapping> weak = list.get(i);
-            predictors.add(weak._1);
+            predictors.add(weak.v1);
             if (oob.get()) {
                 oobCompute(df, weak);
             }
@@ -243,8 +243,8 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     private void permVICompute(Frame df, Pair<ClassifierModel, Mapping> weak) {
-        ClassifierModel c = weak._1;
-        Mapping oobIndexes = weak._2;
+        ClassifierModel c = weak.v1;
+        Mapping oobIndexes = weak.v2;
 
         // build oob data frame
         Frame oobFrame = df.mapRows(oobIndexes);
@@ -281,7 +281,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     private void gainVICompute(Pair<ClassifierModel, Mapping> weak) {
-        CTree weakTree = (CTree) weak._1;
+        CTree weakTree = (CTree) weak.v1;
         var scores = DensityVector.emptyByLabels(true, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
@@ -303,7 +303,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     private void freqVICompute(Pair<ClassifierModel, Mapping> pair) {
-        CTree weak = (CTree) pair._1;
+        CTree weak = (CTree) pair.v1;
         var scores = DensityVector.emptyByLabels(true, inputNames());
         collectFreqVI(weak.getRoot(), scores);
         for (String varName : inputNames) {
@@ -324,19 +324,19 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private void oobCompute(Frame df, Pair<ClassifierModel, Mapping> pair) {
         double totalOobError;
         double totalOobInstances;
-        Mapping oobMap = pair._2;
+        Mapping oobMap = pair.v2;
         Frame oobTest = df.mapRows(oobMap);
 
-        var fit = pair._1.predict(oobTest);
+        var fit = pair.v1.predict(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().getInt(j);
-            oobDensities.increment(oobMap.get(j), fitIndex - 1, 1.0);
+            oobDensities.inc(oobMap.get(j), fitIndex - 1, 1.0);
         }
         oobPredictedClasses.clearRows();
         totalOobError = 0.0;
         totalOobInstances = 0.0;
 
-        int[] indexes = oobDensities.rowMaxIndexes();
+        int[] indexes = oobDensities.argmax(1);
         for (int i = 0; i < indexes.length; i++) {
             String bestLevel = firstTargetLevels().get(indexes[i] + 1);
             oobPredictedClasses.setLabel(i, bestLevel);

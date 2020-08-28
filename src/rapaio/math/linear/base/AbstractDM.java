@@ -8,7 +8,6 @@ import rapaio.math.linear.decomposition.SVDecomposition;
 import rapaio.math.linear.dense.DMMap;
 import rapaio.math.linear.dense.DMStripe;
 import rapaio.math.linear.dense.DVDense;
-import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -189,7 +188,7 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DM plus(double x) {
+    public DM add(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) + x);
@@ -199,7 +198,31 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DM plus(DM b) {
+    public DM add(DV v, int axis) {
+        if (axis == 0) {
+            if (v.size() != colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    inc(i, j, v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    inc(i, j, v.get(i));
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public DM add(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -210,12 +233,36 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DM minus(double x) {
-        return plus(-x);
+    public DM sub(double x) {
+        return add(-x);
     }
 
     @Override
-    public DM minus(DM b) {
+    public DM sub(DV v, int axis) {
+        if (axis == 0) {
+            if (v.size() != colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    inc(i, j, -v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    inc(i, j, -v.get(i));
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public DM sub(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -226,7 +273,7 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DM times(double x) {
+    public DM mult(double x) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * x);
@@ -236,7 +283,7 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DM times(DM b) {
+    public DM mult(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -369,12 +416,54 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public DV rowMaxValues() {
+    public double sum() {
+        double sum = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                sum += get(i, j);
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public DV sum(int axis) {
+        if (axis == 0) {
+            double[] sum = new double[colCount()];
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    sum[j] += get(i, j);
+                }
+            }
+            return DVDense.wrap(sum);
+        }
+        double[] sum = new double[rowCount()];
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                sum[i] += get(i, j);
+            }
+        }
+        return DVDense.wrap(sum);
+    }
+
+    @Override
+    public DV amax(int axis) {
+        if (axis == 0) {
+            DVDense max = DVDense.copy(mapRow(0));
+            for (int i = 1; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    if (max.get(j) < get(i, j)) {
+                        max.set(j, get(i, j));
+                    }
+                }
+            }
+            return max;
+        }
         DVDense max = DVDense.copy(mapCol(0));
-        for (int i = 1; i < colCount(); i++) {
-            for (int j = 0; j < rowCount(); j++) {
-                if (max.get(j) < get(j, i)) {
-                    max.set(j, get(j, i));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 1; j < colCount(); j++) {
+                if (max.get(i) < get(i, j)) {
+                    max.set(i, get(i, j));
                 }
             }
         }
@@ -382,12 +471,71 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
-    public int[] rowMaxIndexes() {
+    public int[] argmax(int axis) {
+        if (axis == 0) {
+            int[] max = new int[colCount()];
+            for (int i = 1; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    if (get(max[j], j) < get(i, j)) {
+                        max[j] = i;
+                    }
+                }
+            }
+            return max;
+        }
         int[] max = new int[rowCount()];
-        for (int i = 1; i < colCount(); i++) {
-            for (int j = 0; j < rowCount(); j++) {
-                if (get(j, max[j]) < get(j, i)) {
-                    max[j] = i;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 1; j < colCount(); j++) {
+                if (get(i, max[i]) < get(i, j)) {
+                    max[i] = j;
+                }
+            }
+        }
+        return max;
+    }
+
+    @Override
+    public DV amin(int axis) {
+        if (axis == 0) {
+            DVDense max = DVDense.copy(mapRow(0));
+            for (int i = 1; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    if (max.get(j) > get(i, j)) {
+                        max.set(j, get(i, j));
+                    }
+                }
+            }
+            return max;
+        }
+        DVDense max = DVDense.copy(mapCol(0));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 1; j < colCount(); j++) {
+                if (max.get(i) > get(i, j)) {
+                    max.set(i, get(i, j));
+                }
+            }
+        }
+        return max;
+    }
+
+    @Override
+    public int[] argmin(int axis) {
+        if (axis == 0) {
+            int[] max = new int[colCount()];
+            for (int i = 1; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    if (get(max[j], j) > get(i, j)) {
+                        max[j] = i;
+                    }
+                }
+            }
+            return max;
+        }
+        int[] max = new int[rowCount()];
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 1; j < colCount(); j++) {
+                if (get(i, max[i]) > get(i, j)) {
+                    max[i] = j;
                 }
             }
         }
@@ -416,28 +564,39 @@ public abstract class AbstractDM implements DM {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getSimpleName()).append("{");
-        sb.append("rowCount:").append(rowCount()).append(", colCount:").append(colCount()).append(", values:");
-        sb.append("[");
-        for (int i = 0; i < Math.min(10, rowCount()); i++) {
-            sb.append("[");
-            for (int j = 0; j < Math.min(10, colCount()); j++) {
-                sb.append(Format.floatFlexLong(get(i, j)));
-                if (j != colCount() - 1) {
-                    sb.append(",");
+        sb.append("rowCount:").append(rowCount()).append(", colCount:").append(colCount()).append(", values:\n");
+        sb.append("[\n");
+
+        int minCols = 10;
+        int minRows = 24;
+        int ttRows = Math.min(minRows, rowCount());
+        int ttCols = Math.min(minCols, colCount());
+        int extraRow = rowCount() > minRows ? 1 : 0;
+        int extraCol = colCount() > minCols ? 1 : 0;
+        TextTable tt = TextTable.empty(ttRows + extraRow, ttCols + extraCol + 2);
+
+        for (int i = 0; i < ttRows + extraRow; i++) {
+            for (int j = 0; j < ttCols + extraCol + 2; j++) {
+                if (j == 0) {
+                    tt.textCenter(i, j, " [");
+                    continue;
                 }
-            }
-            if (colCount() > 10) {
-                sb.append("...");
-            }
-            sb.append("]");
-            if (i != rowCount() - 1) {
-                sb.append(",");
+                if (j == ttCols + extraCol + 1) {
+                    tt.textCenter(i, j, " ]" + ((i != ttRows + extraRow) ? ',' : ""));
+                    continue;
+                }
+                if (extraCol == 1 && j == ttCols + extraCol) {
+                    tt.textCenter(i, j, "..");
+                    continue;
+                }
+                if (extraRow == 1 && i == ttRows + extraRow - 1) {
+                    tt.textCenter(i, j, "..");
+                    continue;
+                }
+                tt.floatFlex(i, j, get(i, j - 1));
             }
         }
-        if (rowCount() > 10) {
-            sb.append("...");
-        }
-        sb.append("}");
+        sb.append(tt.getRawText()).append("]}");
         return sb.toString();
     }
 

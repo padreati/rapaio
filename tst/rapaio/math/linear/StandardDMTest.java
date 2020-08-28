@@ -188,13 +188,13 @@ public abstract class StandardDMTest {
     }
 
     @Test
-    void testPlus() {
+    void testAdd() {
         DM m1 = generateSequential(20, 10);
         DM m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().plus(m2);
-        DM t2 = m1.copy().plus(1);
-        DM t3 = m1.plus(1).plus(m2);
+        DM t1 = m1.copy().add(m2);
+        DM t2 = m1.copy().add(1);
+        DM t3 = m1.add(1).add(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -212,18 +212,29 @@ public abstract class StandardDMTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> generateSequential(10, 10).plus(generateSequential(11, 11)));
+                () -> generateSequential(10, 10).add(generateSequential(11, 11)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
     }
 
     @Test
-    void testMinus() {
+    void testAddAxis() {
+        DM m1 = generateFill(20, 10, 1);
+
+        DV v1 = DVDense.fill(10, 1);
+        DV v2 = DVDense.fill(20, 1);
+
+        assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v1, 0)));
+        assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v2, 1)));
+    }
+
+    @Test
+    void testSubtract() {
         DM m1 = generateSequential(20, 10);
         DM m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().minus(m2);
-        DM t2 = m1.copy().minus(1);
-        DM t3 = m1.minus(1).minus(m2);
+        DM t1 = m1.copy().sub(m2);
+        DM t2 = m1.copy().sub(1);
+        DM t3 = m1.sub(1).sub(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -241,18 +252,29 @@ public abstract class StandardDMTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> generateSequential(10, 10).minus(generateSequential(9, 10)));
+                () -> generateSequential(10, 10).sub(generateSequential(9, 10)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
     }
 
     @Test
-    void testTimes() {
+    void testSubtractAxis() {
+        DM m1 = generateFill(20, 10, 1);
+
+        DV v1 = DVDense.fill(10, 1);
+        DV v2 = DVDense.fill(20, 1);
+
+        assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v1, 0)));
+        assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v2, 1)));
+    }
+
+    @Test
+    void testMultiply() {
         DM m1 = generateSequential(20, 10);
         DM m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().times(m2);
-        DM t2 = m1.copy().times(2);
-        DM t3 = m1.times(2).times(m2);
+        DM t1 = m1.copy().mult(m2);
+        DM t2 = m1.copy().mult(2);
+        DM t3 = m1.mult(2).mult(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -270,13 +292,13 @@ public abstract class StandardDMTest {
         }
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> generateSequential(10, 10).times(generateSequential(10, 9)));
+                () -> generateSequential(10, 10).mult(generateSequential(10, 9)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
 
     }
 
     @Test
-    void testDiv() {
+    void testDivide() {
         DM m1 = generateSequential(20, 10);
         DM m2 = generateSequential(20, 10);
 
@@ -307,6 +329,14 @@ public abstract class StandardDMTest {
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> generateSequential(10, 10).div(generateSequential(9, 9)));
         assertEquals("Matrices are not conform with this operation.", ex.getMessage());
+    }
+
+    @Test
+    void testSum() {
+        var m1 = generateSequential(5, 3);
+        assertEquals(105, m1.sum());
+        assertTrue(DVDense.wrap(30, 35, 40).deepEquals(m1.sum(0)));
+        assertTrue(DVDense.wrap(3, 12, 21, 30, 39).deepEquals(m1.sum(1)));
     }
 
     @Test
@@ -386,7 +416,7 @@ public abstract class StandardDMTest {
             var x = generateSequential(i, i);
             var s = x.scatter();
 
-            var c = generateIdentity(i).minus(generateFill(i, i, 1.0 / i));
+            var c = generateIdentity(i).sub(generateFill(i, i, 1.0 / i));
             var s2 = x.t().dot(c).dot(x);
 
             assertTrue(s2.deepEquals(s, 1e-11));
@@ -407,18 +437,21 @@ public abstract class StandardDMTest {
     }
 
     @Test
-    void testRowMaxValues() {
-        for (int i = 1; i < 10; i++) {
-            var m = generateSequential(i, i);
-            var max = m.rowMaxValues();
-            for (int j = 0; j < max.size(); j++) {
-                assertEquals((j + 1) * i - 1, max.get(j), TOL);
-            }
-        }
+    void maxValues() {
+        var m = generateWrap(new double[][]{
+                {1, 2, 3, 4},
+                {5, 6, 7, 8}
+        });
+        var max0 = m.amax(0);
+        assertArrayEquals(new double[]{5, 6, 7, 8}, m.amax(0).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[]{4, 8}, m.amax(1).asVarDouble().stream().mapToDouble().toArray());
+
+        assertArrayEquals(new double[]{1, 2, 3, 4}, m.amin(0).asVarDouble().stream().mapToDouble().toArray());
+        assertArrayEquals(new double[]{1, 5}, m.amin(1).asVarDouble().stream().mapToDouble().toArray());
     }
 
     @Test
-    void rowMaxIndexesTest() {
+    void testArgMaxArgMin() {
         double[][] m = new double[][]{
                 {1, -1, 2},
                 {2, 1, 1},
@@ -426,7 +459,11 @@ public abstract class StandardDMTest {
                 {2, 2, 1}
         };
 
-        assertArrayEquals(new int[]{2, 0, 1, 0}, generateWrap(m).rowMaxIndexes());
+        assertArrayEquals(new int[]{1, 2, 0}, generateWrap(m).argmax(0));
+        assertArrayEquals(new int[]{2, 0, 1, 0}, generateWrap(m).argmax(1));
+
+        assertArrayEquals(new int[]{0, 0, 1}, generateWrap(m).argmin(0));
+        assertArrayEquals(new int[]{1, 1, 0, 2}, generateWrap(m).argmin(1));
     }
 
     @Test
@@ -439,8 +476,8 @@ public abstract class StandardDMTest {
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
 
-        m2.increment(1, 1, 1);
-        m3.increment(0, 1, 2);
+        m2.inc(1, 1, 1);
+        m3.inc(0, 1, 2);
 
         assertFalse(m1.deepEquals(m2));
         assertFalse(m1.deepEquals(m3));
@@ -472,12 +509,14 @@ public abstract class StandardDMTest {
     @Test
     void testPrintable() {
 
-        var id3 = generateIdentity(3).plus(0x.1p-22);
+        var id3 = generateIdentity(3).add(0x.1p-22);
 
-        assertEquals(className() + "{rowCount:3, colCount:3, values:[" +
-                "[1.0000000149011612,0.000000014901161193847656,0.000000014901161193847656]," +
-                "[0.000000014901161193847656,1.0000000149011612,0.000000014901161193847656]," +
-                "[0.000000014901161193847656,0.000000014901161193847656,1.0000000149011612]}", id3.toString());
+        assertEquals(className() + "{rowCount:3, colCount:3, values:\n" +
+                "[\n" +
+                " [ 1 0 0  ], \n" +
+                " [ 0 1 0  ], \n" +
+                " [ 0 0 1  ], \n" +
+                "]}", id3.toString());
 
         assertEquals("                           [0]                        [1]                        [2] \n" +
                 "[0] 1.0000000149011612         0.000000014901161193847656 0.000000014901161193847656 \n" +
@@ -497,18 +536,34 @@ public abstract class StandardDMTest {
 
         var id25 = generateIdentity(25);
 
-        assertEquals(className() + "{rowCount:25, colCount:25, values:[" +
-                "[1,0,0,0,0,0,0,0,0,0,...]," +
-                "[0,1,0,0,0,0,0,0,0,0,...]," +
-                "[0,0,1,0,0,0,0,0,0,0,...]," +
-                "[0,0,0,1,0,0,0,0,0,0,...]," +
-                "[0,0,0,0,1,0,0,0,0,0,...]," +
-                "[0,0,0,0,0,1,0,0,0,0,...]," +
-                "[0,0,0,0,0,0,1,0,0,0,...]," +
-                "[0,0,0,0,0,0,0,1,0,0,...]," +
-                "[0,0,0,0,0,0,0,0,1,0,...]," +
-                "[0,0,0,0,0,0,0,0,0,1,...]," +
-                "...}", id25.toString());
+        assertEquals(className() + "{rowCount:25, colCount:25, values:\n" +
+                "[\n" +
+                " [ 1  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  1  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  1  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  1  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  1  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  1  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  1  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  1  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  1  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  1  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ 0  0  0  0  0  0  0  0  0  0  ..  ], \n" +
+                " [ .. .. .. .. .. .. .. .. .. .. ..  ], \n" +
+                "]}", id25.toString());
 
         assertEquals("     [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] ... [23] [24] \n" +
                         " [0]  1   0   0   0   0   0   0   0   0   0   0    0    0    0    0    0    0    0    0    0   ...  0    0   \n" +

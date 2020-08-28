@@ -60,7 +60,7 @@ public class DistanceMatrix implements Serializable {
         DistanceMatrix dm = new DistanceMatrix(names);
         IntStream.range(0, df.rowCount()).parallel().forEach(i -> {
             for (int j = i + 1; j < df.rowCount(); j++) {
-                dm.set(i, j, dist.compute(df, i, df, j, varNames)._1);
+                dm.set(i, j, dist.compute(df, i, df, j, varNames).v1);
             }
         });
         return dm;

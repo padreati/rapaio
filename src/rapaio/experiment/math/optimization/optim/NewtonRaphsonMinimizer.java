@@ -88,7 +88,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             solutions.add(sol.copy());
             DV d1f_x = d1f.apply(sol);
             DM d2f_x = d2f.apply(sol);
-            DV d1f_x_n = d1f_x.copy().times(-1);
+            DV d1f_x_n = d1f_x.copy().mult(-1);
 
             DV delta_x;
 
@@ -112,7 +112,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
             }
 
             double t = lineSearch.find(f, d1f, x, delta_x);
-            sol.plus(delta_x.times(t));
+            sol.add(delta_x.mult(t));
         }
     }
 

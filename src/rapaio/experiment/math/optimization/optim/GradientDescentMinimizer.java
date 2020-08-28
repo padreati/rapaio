@@ -76,13 +76,13 @@ public class GradientDescentMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            DV delta_x = d1f.apply(sol).times(-1);
+            DV delta_x = d1f.apply(sol).mult(-1);
             if (abs(delta_x.norm(2)) < tol) {
                 converged = true;
                 break;
             }
             double t = lineSearch.find(f, d1f, x, delta_x);
-            sol.plus(delta_x.times(t));
+            sol.add(delta_x.mult(t));
         }
     }
 

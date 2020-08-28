@@ -2,6 +2,8 @@ package rapaio.util.collection;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -13,10 +15,8 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/8/19.
  */
-public final class IntArrayTools {
-
-    private IntArrayTools() {
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class IArrays {
 
     /**
      * Creates a new array filled with given value. If the filled value is 0,
@@ -68,9 +68,9 @@ public final class IntArrayTools {
         return data;
     }
 
-    public static int[] newCopy(int[] array, int start, int end) {
-        int[] data = new int[end - start];
-        System.arraycopy(array, start, data, 0, end - start);
+    public static int[] newCopy(int[] array, int start, int len) {
+        int[] data = new int[len];
+        System.arraycopy(array, start, data, 0, len);
         return data;
     }
 
@@ -101,25 +101,20 @@ public final class IntArrayTools {
      * Substracts from values of vector a the values of vector b from start (inclusive)
      * to end (exclusive). It returns the substracted vector.
      *
-     * @param a     first vector
-     * @param b     second vector
-     * @param start start position (inclusive)
-     * @param end   end position (exclusive)
      * @return instance of the first version
      */
-    public static int[] minus(int[] a, int[] b, int start, int end) {
-        for (int i = start; i < end; i++) {
-            a[i] -= b[i];
+    public static void sub(int[] a, int aStart, int[] b, int bStart, int len) {
+        for (int i = 0; i < len; i++) {
+            a[aStart++] -= b[bStart++];
         }
-        return a;
     }
 
     /**
      * Returns the multiplication of all elements starting with start (inclusive) till end (exclusive)
      */
-    public static int product(int[] a, int start, int end) {
+    public static int prod(int[] a, int start, int len) {
         int prod = 1;
-        for (int i = start; i < end; i++) {
+        for (int i = start; i < start + len; i++) {
             prod *= a[i];
         }
         return prod;
@@ -128,16 +123,17 @@ public final class IntArrayTools {
     /**
      * Computes sum_{i=start}^{end} a[i]*b[i].
      *
-     * @param a     first array
-     * @param b     second array
-     * @param start start position (inclusive)
-     * @param end   end position (exclusive)
+     * @param a      first array
+     * @param aStart start for the first array
+     * @param b      second array
+     * @param bStart start position
+     * @param len    size of the operation
      * @return computed value
      */
-    public static int product(int[] a, int[] b, int start, int end) {
+    public static int prod(int[] a, int aStart, int[] b, int bStart, int len) {
         int sum = 0;
-        for (int i = start; i < end; i++) {
-            sum += a[i] * b[i];
+        for (int i = 0; i < len; i++) {
+            sum += a[aStart++] * b[bStart++];
         }
         return sum;
     }

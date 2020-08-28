@@ -79,7 +79,7 @@ public class ISLRGeneric {
         for (int it = 0; it < maxIt; it++) {
 
             // error vector
-            DV e = A.dot(x).minus(b);
+            DV e = A.dot(x).sub(b);
 
             // error weights for IRLS
             DV w = DVDense.from(e.size(), pos -> pow(abs(e.get(pos)), (p - 2) / 2));
@@ -163,7 +163,7 @@ public class ISLRGeneric {
             }
 
             // error vector
-            DV e = A.dot(x).minus(b);
+            DV e = A.dot(x).sub(b);
 
             // error weights for IRLS
             double pkk = pk;
@@ -192,7 +192,7 @@ public class ISLRGeneric {
             double nn;
             if (p > 2) {
                 // partial update for p>2
-                x = x1.times(q).plus(x.times(1 - q));
+                x = x1.mult(q).add(x.mult(1 - q));
                 nn = p;
             } else {
                 // no partial update for p<=2
@@ -232,20 +232,20 @@ public class ISLRGeneric {
             double prob = pp[i];
             double h = k[i];
             Pair<DV, VarDouble> pair = basicISLR(A, b, prob, 1000, 1e-20);
-            plot.lines(pair._2);
+            plot.lines(pair.v2);
 
             WS.println("Solution 1 for p=" + Format.floatFlex(prob));
-            WS.println("Min :" + Format.floatFlex(A.dot(pair._1).minus(b).norm(prob)));
-            pair._1.printSummary();
+            WS.println("Min :" + Format.floatFlex(A.dot(pair.v1).sub(b).norm(prob)));
+            pair.v1.printSummary();
             WS.println();
 
 
             Pair<DV, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
-            plot.lines(pair2._2, color(1));
+            plot.lines(pair2.v2, color(1));
 
             WS.println("Solution 2 for p=" + Format.floatFlex(prob));
-            WS.println("Min :" + Format.floatFlex(A.dot(pair2._1).minus(b).norm(prob)));
-            pair2._1.printSummary();
+            WS.println("Min :" + Format.floatFlex(A.dot(pair2.v1).sub(b).norm(prob)));
+            pair2.v1.printSummary();
             WS.println();
 
         }

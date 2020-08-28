@@ -147,8 +147,8 @@ public class RidgeRegression extends BaseLinearRegressionModel<RidgeRegression> 
         }
 
         // solve the scaled system
-        DM l = rapaio.math.linear.dense.DMStripe.identity(X.colCount()).times(lambda.get());
-        DM A = X.t().dot(X).plus(l);
+        DM l = rapaio.math.linear.dense.DMStripe.identity(X.colCount()).mult(lambda.get());
+        DM A = X.t().dot(X).add(l);
         DM B = X.t().dot(Y);
         DM scaledBeta = QRDecomposition.from(A).solve(B);
 

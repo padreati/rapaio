@@ -146,15 +146,15 @@ public class LDA implements Printable {
 
         DM sw = rapaio.math.linear.dense.DMStripe.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
-            sw.plus(x[i].scatter());
+            sw.add(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
         DM sb = rapaio.math.linear.dense.DMStripe.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
-            DM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
-            sb.plus(cm.dot(cm.t()).times(x[i].rowCount()));
+            DM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
+            sb.add(cm.dot(cm.t()).mult(x[i].rowCount()));
         }
 
         // inverse sw

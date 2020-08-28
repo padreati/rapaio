@@ -29,9 +29,10 @@ package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.core.tests.ChiSqIndependence;
 import rapaio.core.tools.DensityTable;
-import rapaio.util.collection.DoubleArrayTools;
 
 import java.io.Serializable;
+
+import static rapaio.util.collection.DArrays.nanSum;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
@@ -56,7 +57,7 @@ public enum Purity implements Serializable {
 
             double[] rowTotals = dt.rowTotals();
             double[] colTotals = dt.colTotals();
-            double total = DoubleArrayTools.nansum(rowTotals, 0, rowTotals.length);
+            double total = nanSum(rowTotals, 0, rowTotals.length);
             if (total <= 0) {
                 // no instances | all missing on test
                 return 0;

@@ -133,10 +133,10 @@ public class BinaryLogisticNewton {
         }
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DV delta = invA.dot(x.t().dot(y.copy().minus(p)));
+        DV delta = invA.dot(x.t().dot(y.copy().sub(p)));
 
 
         // otherwise we fall in QR decomposition
-        return delta.plus(w);
+        return delta.add(w);
     }
 }

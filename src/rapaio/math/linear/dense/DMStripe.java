@@ -34,7 +34,7 @@ import rapaio.data.Var;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.base.DMBase;
-import rapaio.util.collection.DoubleArrayTools;
+import rapaio.util.collection.DArrays;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.util.Arrays;
@@ -199,10 +199,10 @@ public class DMStripe extends DMBase {
     @Override
     public DM dotDiag(DV v) {
         if (v instanceof DVDense) {
-            var array = ((DVDense) v).elements();
+            var array = v.asDense().elements();
             var len = v.size();
             for (int i = 0; i < rowCount; i++) {
-                DoubleArrayTools.times(values[i], array, 0, len);
+                DArrays.mult(values[i], 0, array, 0, len);
             }
             return this;
         }
@@ -211,11 +211,11 @@ public class DMStripe extends DMBase {
 
     @Override
     public DM dotDiagT(DV v) {
-        if (v instanceof DVDense) {
-            var array = ((DVDense) v).elements();
+        if (v.isDense()) {
+            var array = v.asDense().elements();
             var len = v.size();
             for (int i = 0; i < rowCount; i++) {
-                DoubleArrayTools.times(values[i], array[i], 0, colCount);
+                DArrays.mult(values[i], 0, array[i], colCount);
             }
             return this;
         }

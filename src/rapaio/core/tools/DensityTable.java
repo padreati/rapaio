@@ -36,13 +36,13 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.DoubleArrayTools;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 import static rapaio.math.MTools.log2;
+import static rapaio.util.collection.DArrays.nanSum;
 
 /**
  * Distribution table.
@@ -477,7 +477,7 @@ public final class DensityTable<U, V> implements Printable, Serializable {
                     totals[onRow ? i : j] += values[i][j];
                 }
             }
-            double total = DoubleArrayTools.nansum(totals, 0, totals.length);
+            double total = nanSum(totals, 0, totals.length);
             return function.apply(total, totals, values, rowIndex.size(), colIndex.size());
         }
     }

@@ -213,7 +213,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         return IntStream.range(0, df.rowCount()).parallel().mapToDouble(j -> {
             double d = Double.NaN;
             for (int c = 0; c < centroids.rowCount(); c++) {
-                double dd = distance(df, j, centroids, c, weights)._2;
+                double dd = distance(df, j, centroids, c, weights).v2;
                 if (!Double.isFinite(dd)) continue;
                 d = Double.isNaN(d) ? dd : Math.min(dd, d);
             }
@@ -232,17 +232,17 @@ public class MinkowskiWeightedKMeans implements Printable {
             int cluster = -1;
             for (int j = 0; j < centroids.rowCount(); j++) {
                 Pair<Double, Double> comp = distance(df, i, centroids, j, weights);
-                double dd = comp._1;
+                double dd = comp.v1;
                 if (!Double.isFinite(dd)) continue;
                 if (!Double.isNaN(d)) {
                     if (dd < d) {
                         d = dd;
-                        err = comp._2;
+                        err = comp.v2;
                         cluster = j;
                     }
                 } else {
                     d = dd;
-                    err = comp._2;
+                    err = comp.v2;
                     cluster = j;
                 }
             }
@@ -427,7 +427,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         Map<Integer, VarDouble> errors = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
-            double d = distance(df, i, centroids, arrows.getInt(i), weights)._2;
+            double d = distance(df, i, centroids, arrows.getInt(i), weights).v2;
             if (!errors.containsKey(arrows.getInt(i)))
                 errors.put(arrows.getInt(i), VarDouble.empty());
             errors.get(arrows.getInt(i)).addDouble(d);
