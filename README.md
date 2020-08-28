@@ -35,9 +35,31 @@ library written in Java.*
 </tr>
 </table>
 
+## Short story
+
+Back in time. It's 2012. I'm a software engineer participating at a contest
+about cold start problem in movie recommender systems. Zero knowledge about
+probabilities, statistics or machine learning. Solving the problem with bare
+hands without reading nothing on the topic was an unstoppable trap. The contest
+held a year, quarterly prizes. I won enough money to buy books to learn
+about those topics. Soon, I discovered that many of my imaginations and systems
+lied there in those books, analyzed by admirable people. Many other admirable
+people buried their years in libraries and systems which tackles data adventures.
+
+Many books and libraries after, I started to collect my own implementations 
+into what is now named rapaio. Write and rewrite many times, to find better
+ tools, useful into those great data quests out there. Into this quests I would 
+ like to invite you too. Some of you already have done timid steps. 
+ I am thankful for that. Still, it's plenty of space. You are welcomed.
+ 
+ There are no rules because we are still small in number. We can talk 
+ to each other. If we feel the need for rules, we will create them. 
+ Until then, you can follow your feelings, common sense and regards each 
+ of us deserves. 
+ 
 ## Installation
 
-Library can be used through maven. Last published release on maven central is 2.3.0
+Last published release on maven central is 2.3.0
 
        <dependency>
          <groupId>io.github.padreati</groupId>
@@ -45,10 +67,14 @@ Library can be used through maven. Last published release on maven central is 2.
          <version>2.3.0</version>
        </dependency>
 
-Another way to use the library is in jupyter / jupyter-lab notebooks. This is excellent for experimenting with short interactive 
-notebooks or to document the idea you are working on. You have to install jupyter / jupyter-lab and IJava kernel. For more information
-on that you can follow the instruction from [here](https://github.com/SpencerPark/IJava#installing). The following notation is
- specific to IJava kernel jupyter notation. 
+The best way for exploration is through jupyter / jupyter-lab notebooks. 
+This is excellent for experimenting with interactive notebooks or 
+to document the ideas you are working on. 
+
+You have to install jupyter / jupyter-lab and IJava kernel. For more information
+on that you can follow the instruction from 
+[here](https://github.com/SpencerPark/IJava#installing). The following 
+notation is specific to IJava kernel jupyter notation. 
 
     %maven io.github.padreati:rapaio:2.3.0  
 
@@ -61,22 +87,6 @@ Please inspect the tutorials folder of
 There is also a [Tutorial on Kaggle's Titanic Competition
 ](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
-## What gap *rapaio* tries to fill?
-
-There are a lot of software stacks out there which provides plenty of 
-nicely crafted tools for statistics, machine learning, data mining or 
-pattern recognition. Many of them are available as open source, 
-quality is high and they are full of reach features.
-
-It appears like a legitimate question to ask *"Why another library for statistics 
-and machine learning, when there are many available already?"*. 
-My answer is because none of them covers the taste and needs of everybody.
-
-I would really love to have an environment, a box full with 
-plenty of tools, which can be extended, which allows me to experiment, 
-study and learn. And I want to do all those things in an interactive way, 
-where I would program my ideas. Java community deserves such kind of tool 
-and this library aims to fill the gap.
 
 ## Features provided
 
