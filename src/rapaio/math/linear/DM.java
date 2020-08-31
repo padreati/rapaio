@@ -334,6 +334,15 @@ public interface DM extends Serializable, Printable {
     DM mult(double x);
 
     /**
+     * Multiply vector values to all rows (axis 0) or columns (axis 1).
+     *
+     * @param x    vector to be added
+     * @param axis axis addition
+     * @return same matrix with added values
+     */
+    DM mult(DV x, int axis);
+
+    /**
      * Multiplies element wise values from given matrix. If possible,
      * the operation is realized in place.
      *
@@ -350,6 +359,15 @@ public interface DM extends Serializable, Printable {
      * @return instance of the result matrix
      */
     DM div(double x);
+
+    /**
+     * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
+     *
+     * @param x    vector to be added
+     * @param axis axis addition
+     * @return same matrix with added values
+     */
+    DM div(DV x, int axis);
 
     /**
      * Divides element wise values from given matrix. If possible,
@@ -501,6 +519,59 @@ public interface DM extends Serializable, Printable {
      * @return vector of sums on the given axis
      */
     DV sum(int axis);
+
+    /**
+     * Computes the mean of all elements of the matrix.
+     *
+     * @return mean of all matrix elements
+     */
+    default double mean() {
+        return sum() / (rowCount() * colCount());
+    }
+
+    /**
+     * Computes vector of means along the specified axis.
+     *
+     * @param axis 0 for rows,  for columns
+     * @return vector of means along axis
+     */
+    default DV mean(int axis) {
+        return sum(axis).div(axis == 0 ? rowCount() : colCount());
+    }
+
+    /**
+     * Compute the variance of all elements of the matrix
+     *
+     * @return variance of all elements of the matrix
+     */
+    double variance();
+
+    /**
+     * Computes vector of variances along the given axis of the matrix
+     *
+     * @param axis 0 for rows, 1 for columns
+     * @return vector of variances computed along given axis
+     */
+    DV variance(int axis);
+
+    /**
+     * Compute the standard deviation of all elements of the matrix
+     *
+     * @return standard deviation of all elements of the matrix
+     */
+    default double sd() {
+        return Math.sqrt(variance());
+    }
+
+    /**
+     * Computes vector of standard deviations along the given axis of the matrix
+     *
+     * @param axis 0 for rows, 1 for columns
+     * @return vector of standard deviations computed along given axis
+     */
+    default DV sd(int axis) {
+        return variance(axis).apply(Math::sqrt);
+    }
 
     /**
      * Stream of double values, the element order is not guaranteed,

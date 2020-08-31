@@ -88,7 +88,7 @@ public interface DV extends Serializable, Printable {
     /**
      * Increments the value at the given position
      */
-    void increment(int i, double value);
+    void inc(int i, double value);
 
     /**
      * Adds to all elements the value of x
@@ -335,5 +335,9 @@ public interface DV extends Serializable, Printable {
 
     VarDouble asVarDouble();
 
-    boolean deepEquals(DV v);
+    default boolean deepEquals(DV v) {
+        return deepEquals(v, 1e-12);
+    }
+
+    boolean deepEquals(DV v, double eps);
 }

@@ -283,6 +283,30 @@ public abstract class AbstractDM implements DM {
     }
 
     @Override
+    public DM mult(DV v, int axis) {
+        if (axis == 0) {
+            if (v.size() != colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    set(i, j, get(i, j) * v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    set(i, j, get(i, j) * v.get(i));
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
     public DM mult(DM b) {
         checkMatrixSameSize(b);
         for (int i = 0; i < rowCount(); i++) {
@@ -298,6 +322,30 @@ public abstract class AbstractDM implements DM {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) / x);
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public DM div(DV v, int axis) {
+        if (axis == 0) {
+            if (v.size() != colCount()) {
+                throw new IllegalArgumentException("Vector has different size then the number of columns.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    set(i, j, get(i, j) / v.get(j));
+                }
+            }
+        } else {
+            if (v.size() != rowCount()) {
+                throw new IllegalArgumentException("Vector has different size than the number of rows.");
+            }
+            for (int i = 0; i < rowCount(); i++) {
+                for (int j = 0; j < colCount(); j++) {
+                    set(i, j, get(i, j) / v.get(i));
+                }
             }
         }
         return this;
@@ -444,6 +492,43 @@ public abstract class AbstractDM implements DM {
             }
         }
         return DVDense.wrap(sum);
+    }
+
+    @Override
+    public double variance() {
+        if (rowCount() == 0 || colCount() == 0) {
+            return Double.NaN;
+        }
+        double mean = mean();
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                sum2 += Math.pow(get(i, j) - mean, 2);
+                sum3 += get(i, j) - mean;
+            }
+        }
+        double size = rowCount() * colCount();
+        return (sum2 - Math.pow(sum3, 2) / size) / (size - 1.0);
+    }
+
+    @Override
+    public DV variance(int axis) {
+        if (rowCount() == 0 || colCount() == 0) {
+            return DVDense.fill(axis == 0 ? colCount() : rowCount(), Double.NaN);
+        }
+        if (axis == 0) {
+            DVDense variance = DVDense.fill(colCount(), 0);
+            for (int i = 0; i < colCount(); i++) {
+                variance.inc(i, mapCol(i).variance());
+            }
+            return variance;
+        }
+        DVDense variance = DVDense.fill(rowCount(), 0);
+        for (int i = 0; i < rowCount(); i++) {
+            variance.inc(i, mapRow(i).variance());
+        }
+        return variance;
     }
 
     @Override

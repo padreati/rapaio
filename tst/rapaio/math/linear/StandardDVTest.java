@@ -215,7 +215,7 @@ public abstract class StandardDVTest {
         var v2 = generateFill(10, 1);
 
         assertTrue(v1.deepEquals(v2));
-        v2.increment(2, 1);
+        v2.inc(2, 1);
 
         assertFalse(v1.deepEquals(v2));
 

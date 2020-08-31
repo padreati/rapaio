@@ -265,6 +265,8 @@ of production ready tools from this field.
 * Ensemble: RForest
 * Boost: Gradient Boosting Trees
 
+**Analysis**
+* Principal Components Analysis
 
 ### Experminental Features
 
@@ -296,7 +298,6 @@ ready state. Until that happens, these are the experimental features:
 **Analysis**
 
 * Fast Fourier Transform
-* Principal Components Analysis
 * Fischer Linear Discriminant Analysis
 
 **Classification**

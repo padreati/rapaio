@@ -30,9 +30,9 @@ package rapaio.experiment.data.filter.frame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.filter.AbstractFFilter;
-import rapaio.experiment.ml.analysis.PCA;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
+import rapaio.ml.analysis.PCA;
 
 import java.util.function.BiFunction;
 
@@ -55,15 +55,15 @@ public class FFPCA extends AbstractFFilter {
 
     @Override
     public void coreFit(Frame df) {
-        pca = new PCA();
+        pca = PCA.newModel();
         pca.fit(df.mapVars(varNames));
     }
 
     @Override
     public Frame apply(Frame df) {
         Frame rest = df.removeVars(VRange.of(varNames));
-        int k = kFun.apply(pca.eigenValues(), pca.eigenVectors());
-        Frame trans = pca.predict(df.mapVars(varNames), k);
+        int k = kFun.apply(pca.getEigenValues(), pca.getEigenVectors());
+        Frame trans = pca.transform(df.mapVars(varNames), k);
         return rest.bindVars(trans);
     }
 }

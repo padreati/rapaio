@@ -47,7 +47,7 @@ public class DVBase extends AbstractDV {
     }
 
     @Override
-    public void increment(int i, double value) {
+    public void inc(int i, double value) {
         values[i] += value;
     }
 

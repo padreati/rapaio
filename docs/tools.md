@@ -14,7 +14,8 @@
 
 #### Creating a Detached Signature File
 Problem: 
-* You want to sign a file digitally, but have the signature reside in a separate file.
+* You want to sign a file digitally, but have the signature reside in 
+a separate file.
 
 Solution:
 * To create a binary-format detached signature, myfile.sig:

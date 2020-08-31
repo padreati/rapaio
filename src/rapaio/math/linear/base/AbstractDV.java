@@ -159,7 +159,7 @@ public abstract class AbstractDV implements DV {
     @Override
     public DV cumsum() {
         for (int i = 1; i < size(); i++) {
-            increment(i, get(i - 1));
+            inc(i, get(i - 1));
         }
         return this;
     }
@@ -276,12 +276,12 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public boolean deepEquals(DV v) {
+    public boolean deepEquals(DV v, double eps) {
         if (size() != v.size()) {
             return false;
         }
         for (int i = 0; i < size(); i++) {
-            if (get(i) != v.get(i)) {
+            if (Math.abs(get(i) - v.get(i)) > eps) {
                 return false;
             }
         }
