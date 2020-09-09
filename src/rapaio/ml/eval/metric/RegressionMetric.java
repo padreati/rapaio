@@ -12,9 +12,7 @@ public interface RegressionMetric extends Serializable {
 
     String getName();
 
-    RegressionMetric compute(Var actual, RegressionResult prediction);
+    RegressionScore compute(Var actual, RegressionResult prediction);
 
-    RegressionMetric compute(Var actual, Var prediction);
-
-    RegressionScore getScore();
+    RegressionScore compute(Var actual, Var prediction);
 }

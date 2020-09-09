@@ -8,3 +8,5 @@
 /rapaio.iml
 mvnsettings.xml
 .gitignore
+/.github/
+/mkdocs/site/

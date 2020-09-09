@@ -35,7 +35,7 @@ import rapaio.data.VarDouble;
 import rapaio.math.linear.DV;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
-import rapaio.ml.regression.linear.LinearRegression;
+import rapaio.ml.regression.linear.LinearRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 
 import java.util.ArrayList;
@@ -118,7 +118,7 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 }
 
                 // fit a linear regression
-                LinearRegression lm = LinearRegression.newModel().intercept.set(false);
+                LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(false);
 //                RidgeRegression lm = RidgeRegression.newRidgeLm(100).withIntercept(false).withCentering(false).withScaling(false);
 
                 features.add(y);

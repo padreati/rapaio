@@ -112,9 +112,6 @@ final class NumLessEqual implements RowPredicate {
 
     @Override
     public boolean test(int row, Frame df) {
-        if (df.isMissing(row, testName)) {
-            return false;
-        }
         return df.getDouble(row, testName) <= testValue;
     }
 

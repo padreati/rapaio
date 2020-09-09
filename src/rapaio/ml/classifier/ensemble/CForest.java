@@ -351,8 +351,8 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     private Pair<ClassifierModel, Mapping> buildWeakPredictor(Frame df, Var weights) {
         var weak = model.get().newInstance();
         RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
-        weak.fit(sample.df, sample.weights, firstTargetName());
-        return Pair.from(weak, sample.complementMapping);
+        weak.fit(sample.getDf(), sample.getWeights(), firstTargetName());
+        return Pair.from(weak, sample.getComplementMapping());
     }
 
     @Override

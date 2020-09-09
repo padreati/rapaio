@@ -40,6 +40,7 @@ import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.metric.RMSE;
+import rapaio.ml.eval.metric.RegressionScore;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.regression.RegressionModel;
 import rapaio.ml.regression.RegressionResult;
@@ -242,8 +243,8 @@ public class RTreeTest {
                 .maxDepth.set(10).minCount.set(1);
         tree.fit(df, "target");
         RegressionResult result = tree.predict(df);
-        RMSE rmse = RMSE.newMetric().compute(df.rvar("target"), result);
-        assertEquals(0, Math.pow(rmse.getScore().getValue(), 2), TOL);
+        RegressionScore score = RMSE.newMetric().compute(df.rvar("target"), result);
+        assertEquals(0, Math.pow(score.getValue(), 2), TOL);
     }
 
     @Test

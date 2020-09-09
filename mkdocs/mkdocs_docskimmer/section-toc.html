@@ -1,0 +1,15 @@
+<ul>
+    {% if nav|length>1 %}
+    {% for nav_item1 in nav %}
+    {% if nav_item1.children %}
+    {% for nav_item2 in nav_item1.children %}
+    {% if nav_item1.active%}
+    <li class="section-toc__item{% if nav_item2.active%} section-toc__item--active{%endif%}"><a href="{{ nav_item2.url|url }}"
+                                                                                                class="section-toc__link{% if nav_item2.active%} section-toc__link--active{%endif%}">{%
+        if nav_item2.active%}<span class="visually-hidden">Current: </span> {%endif%}{{ nav_item2.title }}</a></li>
+    {%endif%}
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</ul>

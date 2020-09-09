@@ -60,7 +60,7 @@
 % 	"Letter Recognition Using Holland-style Adaptive Classifiers".
 % 
 %    	The research for this article investigated the ability of several
-% 	variations of Holland-style adaptive classifier systems to learn to
+% 	variations of Holland-style adaptive classifierModel systems to learn to
 % 	correctly guess the letter categories associated with vectors of 16
 % 	integer attributes extracted from raster scan images of the letters.
 % 	The best accuracy obtained was a little over 80%.  It would be

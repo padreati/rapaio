@@ -113,7 +113,7 @@
 % Not surprisingly, the network's performance on the test set was somewhat
 % better when the aspect angles in the training and test sets were balanced.
 % 
-% Gorman and Sejnowski further report that a nearest neighbor classifier on
+% Gorman and Sejnowski further report that a nearest neighbor classifierModel on
 % the same data gave an 82.7% probability of correct classification.
 % 
 % Three trained human subjects were each tested on 100 signals, chosen at

@@ -76,6 +76,16 @@ public class Datasets {
                 .read(Datasets.class, "mtcars.csv");
     }
 
+    public static Frame loadOldFaithful() {
+        try {
+            return Csv.instance()
+                    .withSeparatorChar('\t')
+                    .read(Datasets.class, "old_faithful.tsv");
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading old_faithful.tsv datasets.", e);
+        }
+    }
+
     public static Frame loadChestDataset() throws IOException {
         return Csv.instance()
                 .withSeparatorChar(',')

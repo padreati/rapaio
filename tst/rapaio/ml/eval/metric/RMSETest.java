@@ -8,7 +8,7 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.VarDouble;
 import rapaio.datasets.Datasets;
-import rapaio.ml.regression.linear.LinearRegression;
+import rapaio.ml.regression.linear.LinearRegressionModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,16 +28,11 @@ public class RMSETest {
         VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
         VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");
 
-        RMSE rmse1 = RMSE.newMetric().compute(x, y);
-        RMSE rmse2 = RMSE.newMetric().compute(x, z);
+        RegressionScore rmse1 = RMSE.newMetric().compute(x, y);
+        RegressionScore rmse2 = RMSE.newMetric().compute(x, z);
 
-        assertEquals("> Root Mean Squared Error (RMSE):\n" +
-                "RMSE: 1\n" +
-                "\n", rmse1.toSummary());
-
-        assertEquals("> Root Mean Squared Error (RMSE):\n" +
-                "RMSE: 2\n" +
-                "\n", rmse2.toSummary());
+        assertEquals("RMSE: 1\n", rmse1.toSummary());
+        assertEquals("RMSE: 2\n", rmse2.toSummary());
     }
 
     @Test
@@ -49,13 +44,13 @@ public class RMSETest {
 
         String[] targets = new String[]{"sepal-length", "sepal-width", "petal-length"};
 
-        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
         lm.fit(df, targets);
 
         var prediction = lm.predict(df, true);
         for (String target : targets) {
-            RMSE rmse = RMSE.newMetric().compute(df.rvar(target), prediction.prediction(target));
-            assertEquals(prediction.rss(target) / df.rowCount(), Math.pow(rmse.score.getValue(), 2), TOL);
+            RegressionScore rmse = RMSE.newMetric().compute(df.rvar(target), prediction.prediction(target));
+            assertEquals(prediction.rss(target) / df.rowCount(), Math.pow(rmse.getValue(), 2), TOL);
         }
     }
 }

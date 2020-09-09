@@ -142,7 +142,7 @@ public class AdaBoost extends AbstractClassifierModel<AdaBoost, ClassifierResult
         ClassifierModel hh = model.get().newInstance();
 
         RowSampler.Sample sample = rowSampler.get().nextSample(df, w);
-        hh.fit(sample.df, sample.weights, targetNames());
+        hh.fit(sample.getDf(), sample.getWeights(), targetNames());
 
         var predict = hh.predict(df, true, false).firstClasses();
 

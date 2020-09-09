@@ -63,10 +63,12 @@ public class Capabilities {
     private final Boolean allowMissingInputValues;
 
     @NonNull
-    private final Integer minTargetCount;
+    @Builder.Default
+    private final Integer minTargetCount = 0;
 
     @NonNull
-    private final Integer maxTargetCount;
+    @Builder.Default
+    private final Integer maxTargetCount = 0;
 
     @Singular
     @NonNull

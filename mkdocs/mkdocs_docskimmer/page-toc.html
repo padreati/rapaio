@@ -1,0 +1,11 @@
+<h2 class="page-toc__heading">On this Page:</h2>
+<ul>
+    {% for toc_item in page.toc %}
+    <li class="page-toc__item"><a href="{{ toc_item.url|url }}" class="page-toc__link" data-js="tocLink" tabindex="0">{{ toc_item.title
+        }}</a></li>
+    {% for toc_item in toc_item.children %}
+    <li class="page-toc__item"><a href="{{ page.url|url }}#{{ toc_item.title|lower|replace(' ', '-') }}" class="page-toc__link"
+                                  data-js="tocLink" tabindex="0">{{ toc_item.title }}</a></li>
+    {% endfor %}
+    {% endfor %}
+</ul>

@@ -102,7 +102,7 @@ public class RegressionEvaluationResult implements Printable {
             trainScores.setInt(lastRow, FIELD_FOLD, split.getFold());
             for (RegressionMetric metric : eval.getMetrics()) {
                 trainScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getScore().getValue());
+                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getValue());
             }
             trainScores = trainScores.fapply(FRefSort.by(
                     trainScores.rvar(FIELD_ROUND).refComparator(),
@@ -114,7 +114,7 @@ public class RegressionEvaluationResult implements Printable {
             testScores.setInt(lastRow, FIELD_FOLD, split.getFold());
             for (RegressionMetric metric : eval.getMetrics()) {
                 testScores.setDouble(lastRow, metric.getName(),
-                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getScore().getValue());
+                        metric.compute(split.getTrainDf().rvar(eval.getTargetName()), trainResult).getValue());
             }
 
             testScores = testScores.fapply(FRefSort.by(

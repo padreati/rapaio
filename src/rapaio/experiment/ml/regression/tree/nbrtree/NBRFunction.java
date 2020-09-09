@@ -37,7 +37,7 @@ import rapaio.math.linear.DV;
 import rapaio.ml.loss.L2Loss;
 import rapaio.ml.loss.Loss;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.ml.regression.linear.LinearRegression;
+import rapaio.ml.regression.linear.LinearRegressionModel;
 import rapaio.ml.regression.linear.LinearRegressionResult;
 import rapaio.ml.regression.simple.L2Regression;
 
@@ -104,7 +104,7 @@ class LinearFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
 
         Frame map = BoundFrame.byVars(df.rvar(testVarName), y);
         try {
@@ -144,7 +144,7 @@ class QuadraticFunction implements NBRFunction {
 
     @Override
     public VarDouble fit(Frame df, Var weights, Var y, String testVarName) {
-        LinearRegression lm = LinearRegression.newModel().intercept.set(true);
+        LinearRegressionModel lm = LinearRegressionModel.newModel().intercept.set(true);
 
         if (Unique.of(df.rvar(testVarName), false).uniqueCount() <= 5) {
             return null;
@@ -287,7 +287,7 @@ class SplineFunction implements NBRFunction {
             }
 
             // fit a linear regression
-            LinearRegression rlm = LinearRegression.newModel().intercept.set(true);
+            LinearRegressionModel rlm = LinearRegressionModel.newModel().intercept.set(true);
 //            RidgeRegression rlm = RidgeRegression.newRidgeLm(lambda).withIntercept(true);
 
             List<Var> features = new ArrayList<>(testFeatures);

@@ -544,9 +544,13 @@ public interface Frame extends Serializable, Printable {
      * @return sorted frame
      */
     default Frame refSort(String... names) {
+        return refSort(true, names);
+    }
+
+    default Frame refSort(boolean asc, String... names) {
         IntComparator[] comparators = new IntComparator[names.length];
         for (int i = 0; i < names.length; i++) {
-            comparators[i] = this.rvar(names[i]).refComparator();
+            comparators[i] = this.rvar(names[i]).refComparator(asc);
         }
         return this.fapply(FRefSort.by(comparators));
     }

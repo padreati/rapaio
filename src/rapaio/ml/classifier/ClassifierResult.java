@@ -68,10 +68,10 @@ public class ClassifierResult implements Printable {
     public static ClassifierResult copy(ClassifierModel model, Frame df, boolean withClasses, boolean withDensities, ClassifierResult from) {
         ClassifierResult result = new ClassifierResult(model, df, withClasses, withDensities);
         for (String key : result.classes.keySet()) {
-            result.classes.put(key, (VarNominal) from.classes.get(key));
+            result.classes.put(key, from.classes.get(key));
         }
         for (String key : result.densities.keySet()) {
-            result.densities.put(key, (Frame) from.densities.get(key));
+            result.densities.put(key, from.densities.get(key));
         }
         return result;
     }

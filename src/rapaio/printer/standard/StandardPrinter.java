@@ -79,7 +79,7 @@ public class StandardPrinter extends AbstractPrinter {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+//        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setAutoRequestFocus(true);
         frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
 

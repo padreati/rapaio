@@ -142,7 +142,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
             // frame sampling
 
-            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).mapping;
+            Mapping sampleRows = rowSampler.get().nextSample(xm, weights).getMapping();
             Frame xmLearn = xm.mapRows(sampleRows);
 
             // build regions

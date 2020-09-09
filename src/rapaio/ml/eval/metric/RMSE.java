@@ -29,10 +29,6 @@ package rapaio.ml.eval.metric;
 
 import rapaio.data.Var;
 import rapaio.ml.regression.RegressionResult;
-import rapaio.printer.Format;
-import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import rapaio.printer.opt.POption;
 
 /**
  * Regression evaluation tool which enables one to compute
@@ -42,7 +38,7 @@ import rapaio.printer.opt.POption;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class RMSE extends AbstractRegressionMetric implements Printable {
+public class RMSE extends AbstractRegressionMetric {
 
     private static final long serialVersionUID = -4538721622397952296L;
 
@@ -60,12 +56,12 @@ public class RMSE extends AbstractRegressionMetric implements Printable {
     }
 
     @Override
-    public RMSE compute(Var actual, RegressionResult result) {
+    public RegressionScore compute(Var actual, RegressionResult result) {
         return compute(actual, result.firstPrediction());
     }
 
     @Override
-    public RMSE compute(Var actual, Var prediction) {
+    public RegressionScore compute(Var actual, Var prediction) {
         this.actual = actual;
         this.prediction = prediction;
 
@@ -78,16 +74,6 @@ public class RMSE extends AbstractRegressionMetric implements Printable {
             count++;
             sum += Math.pow(actual.getDouble(j) - prediction.getDouble(j), 2);
         }
-        score = RegressionScore.builder().value(Math.sqrt(sum / count)).build();
-        return this;
-    }
-
-    @Override
-    public String toSummary(Printer printer, POption... options) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("> Root Mean Squared Error (RMSE):\n");
-        sb.append("RMSE: ").append(Format.floatFlex(score.getValue())).append("\n");
-        sb.append("\n");
-        return sb.toString();
+        return RegressionScore.builder().metric(this).value(Math.sqrt(sum / count)).build();
     }
 }

@@ -1,0 +1,16 @@
+site_name: Rapaio
+site_url: https://padreati.github.io/rapaio/
+repo_url: https://github.com/padreati/rapaio
+site_author: Aurelian Tutuianu
+nav:
+  - Home: index.md
+  - Features: library-features.md
+  - Source: https://github.com/padreati/rapaio
+theme:
+  #  name: mkdocs
+  name: null
+  #  custom_dir: 'mkdocs_docskimmer'
+  custom_dir: 'cinder'
+  hljs_languages:
+    - java
+use_directory_urls: true

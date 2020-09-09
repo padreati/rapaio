@@ -11,7 +11,6 @@ public abstract class AbstractRegressionMetric implements RegressionMetric {
     private static final long serialVersionUID = -1936941004623984728L;
 
     private final String name;
-    protected RegressionScore score;
 
     protected AbstractRegressionMetric(String name) {
         this.name = name;

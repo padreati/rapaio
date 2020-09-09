@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    {% block htmltitle %}
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>
+    {% endblock htmltitle %}
+
+    {%- block site_meta %}
+    {% if config.site_description %}
+    <meta name="description" content="{{ config.site_description }}">
+    {% endif %}
+    {% if config.site_author %}
+    <meta name="author" content="{{ config.site_author }}">
+    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    {%- endblock %}
+
+    {% block styles %}
+    <link rel="stylesheet" href="{{ 'css/reset.css'|url }}" type="text/css">
+    <link rel="stylesheet" href="{{ 'css/docskimmer.css'|url }}" type="text/css">
+
+    {# enable customization #}
+    {%- for path in config['extra_css'] %}
+    <link href="{{ path|url }}" rel="stylesheet">
+    {%- endfor %}
+    {% endblock styles %}
+
+    <link rel="shortcut icon" href="{{ 'img/favicon.ico'|url }}">
+    <link rel="apple-touch-icon" href="{{ 'img/apple-touch-icon.png'|url }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ 'img/apple-touch-icon-72x72.png'|url }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ 'img/apple-touch-icon-114x114.png'|url }}">
+</head>
+
+<body>
+<a class="skiptocontent" href="#maincontent" title="Skip to content (when browsing via audio)" accesskey="2" tabindex="1">skip to main
+    content</a>
+<div id="top" class="wrapper">
+    {% include "logo.html" %}
+
+    {% block search %}
+    {% if 'search' in config['plugins'] %}{% include "searchbox.html" %}{% endif %}
+    {% endblock search %}
+
+    {% include "nav-main.html" %}
+
+    <!-- BEGIN subnav -->
+    {# conditionally display 2nd level of navigation only if current section of site contains (sub)pages #}
+    {% for nav_item in nav %}
+    {% if nav_item.children %}
+    {% set site_sections = nav_item.children %}
+    {% for section in site_sections %}
+    {% if section.active %}
+    <aside class="section-toc" role="complementary" aria-label="Table of Contents for this section">
+        {% include "section-toc.html" %}
+    </aside>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+
+    <button class="menu-hamburger" data-js="menuOpenCtrl" aria-label="Open menu table of contents for this page" type="button" title="Menu">
+        &#9776; open
+    </button>
+    <!-- END subnav -->
+
+    {% block content %}
+    <main class="maincontent" data-js="mainContent" role="main">
+        {{ page.content }}
+    </main>
+
+    <aside class="page-toc" data-js="toc" role="complementary" aria-label="Table of Contents for this page">
+        <button aria-label="Close" class="page-toc__closebtn" data-js="tocCloseCtrl">X</button>
+        {% include "page-toc.html" %}
+    </aside>
+    {% endblock content %}
+
+    {% block next_prev %}
+    {% if page.previous_page %}
+    <a href="{{ page.previous_page.url|url }}" class="maincontent__link maincontent__link--previous-page">Previous:
+        {{page.previous_page.title}}</a>
+    {% endif %}
+    {% if page.next_page %}
+    <a href="{{ page.next_page.url|url }}" class="maincontent__link maincontent__link--next-page">Next: {{page.next_page.title}}</a>
+    {% endif %}
+    {% endblock next_prev %}
+
+    {% block footer %}
+    <footer class="footer-main" role="contentinfo">
+        {% if config.copyright %}
+        <p>{{ config.copyright }}. Built with <a href="http://www.mkdocs.org/">MkDocs</a> using <a
+                href="https://hfagerlund.github.io/mkdocs-docskimmer/">docSkimmer theme</a>.</p>
+        {% endif %}
+    </footer>
+    {% endblock footer %}
+</div><!-- END .wrapper -->
+<a class="skiptotop" href="#top">back to top</a>
+
+{% block analytics %}
+{% if config.google_analytics %}
+<script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', '{{ config.google_analytics[0] }}', '{{ config.google_analytics[1] }}');
+          ga('send', 'pageview');
+
+</script>
+{% endif %}
+{% endblock analytics %}
+
+{%- block scripts %}
+<script>var base_url = '{{ base_url }}';</script>
+<script src="{{ 'js/jquery-2.1.1.min.js'|url }}"></script>
+<script src="{{ 'js/theme.js'|url }}"></script>
+{# enable customization #}
+{%- for path in config['extra_javascript'] %}
+<script src="{{ path|url }}"></script>
+{%- endfor %}
+{% endblock scripts %}
+
+<!--
+MkDocs version : {{ mkdocs_version }}
+docSkimmer theme version: {{ config.extra.version }}
+Build Date UTC : {{ build_date_utc }}
+-->
+</body>
+</html>

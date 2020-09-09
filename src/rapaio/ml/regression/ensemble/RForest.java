@@ -128,19 +128,19 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         regressions.clear();
         int threads = poolSize.get() < 0 ? Runtime.getRuntime().availableProcessors() - 1 : poolSize.get();
         ExecutorService pool = Executors.newFixedThreadPool(threads);
-        Queue<Future<rapaio.ml.regression.RegressionModel>> futures = new LinkedList<>();
+        Queue<Future<RegressionModel>> futures = new LinkedList<>();
         for (int i = 0; i < runs.get(); i++) {
             RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
             RegressionModel m = model.get().newInstance();
-            Future<rapaio.ml.regression.RegressionModel> future = pool.submit(new FitTask(sample, m, targetNames));
+            Future<RegressionModel> future = pool.submit(new FitTask(sample, m, targetNames));
             futures.add(future);
         }
 
         int run = 1;
         while (!futures.isEmpty()) {
-            Iterator<Future<rapaio.ml.regression.RegressionModel>> it = futures.iterator();
+            Iterator<Future<RegressionModel>> it = futures.iterator();
             while (it.hasNext()) {
-                Future<rapaio.ml.regression.RegressionModel> future = it.next();
+                Future<RegressionModel> future = it.next();
                 if (future.isDone()) {
                     try {
                         RegressionModel m = future.get();
@@ -155,7 +155,7 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
         return true;
     }
 
-    public List<rapaio.ml.regression.RegressionModel> getFittedModels() {
+    public List<RegressionModel> getFittedModels() {
         return regressions;
     }
 
@@ -178,17 +178,17 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     }
 
     @AllArgsConstructor
-    private static class FitTask implements Callable<rapaio.ml.regression.RegressionModel>, Serializable {
+    private static class FitTask implements Callable<RegressionModel>, Serializable {
 
         private static final long serialVersionUID = -5432992679557031337L;
 
         private final RowSampler.Sample sample;
-        private final rapaio.ml.regression.RegressionModel model;
+        private final RegressionModel model;
         private final String[] targetNames;
 
         @Override
-        public rapaio.ml.regression.RegressionModel call() {
-            return model.fit(sample.df, sample.weights, targetNames);
+        public RegressionModel call() {
+            return model.fit(sample.getDf(), sample.getWeights(), targetNames);
         }
     }
 

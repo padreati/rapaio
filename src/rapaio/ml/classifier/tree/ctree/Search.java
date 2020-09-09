@@ -37,6 +37,7 @@ import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.classifier.tree.CTree;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Impurity test implementation
@@ -180,22 +181,34 @@ public enum Search implements Serializable {
         @Override
         public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, Purity function) {
 
-            var counts = DensityTable.fromLevelCounts(false, df, testName, targetName);
-            if (!(counts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
+            var tableCounts = DensityTable.fromLevelCounts(false, df, testName, targetName);
+            if (!(tableCounts.hasColsWithMinimumCount(c.minCount.get(), 2))) {
                 return null;
             }
+
+            var tableWeights = DensityTable.fromLevelWeights(false, df, testName, targetName, weights);
+            var colTotalsWeights = tableWeights.colTotals();
+
+
+            double[] rowCounts = tableCounts.rowTotals();
+            List<String> targetLevels = df.levels(targetName);
+            targetLevels = targetLevels.subList(1, targetLevels.size());
+
+            var dt = DensityTable.emptyByLabel(true, List.of("testLevel", "other"), targetLevels);
 
             Candidate best = null;
             double bestScore = 0.0;
 
-            double[] rowCounts = counts.rowTotals();
-            for (int i = 1; i < df.levels(testName).size(); i++) {
-                if (rowCounts[i - 1] < c.minCount.get())
+            for (int i = 0; i < tableWeights.rowIndex().size(); i++) {
+                if (rowCounts[i] < c.minCount.get()) {
                     continue;
+                }
+                String testLabel = tableWeights.rowIndex().getValue(i);
+                for (int j = 0; j < targetLevels.size(); j++) {
+                    dt.increment(0, j, tableWeights.get(i, j));
+                    dt.increment(1, j, colTotalsWeights[j] - tableWeights.get(i, j));
+                }
 
-                String testLabel = df.rvar(testName).levels().get(i);
-
-                var dt = DensityTable.fromBinaryLevelWeights(false, df, testName, targetName, weights, testLabel);
                 double currentScore = function.compute(dt);
                 if (best != null) {
                     int comp = Double.compare(bestScore, currentScore);

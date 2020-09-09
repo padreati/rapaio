@@ -27,6 +27,7 @@
 
 package rapaio.data.sample;
 
+import lombok.Getter;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -76,26 +77,43 @@ public interface RowSampler extends Serializable {
      * <p>
      * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
      */
+    @Getter
     final class Sample {
 
-        public final Frame df;
-        public final Var weights;
-        public final Mapping mapping;
-        public final Mapping complementMapping = Mapping.empty();
+        private final Frame df;
+        private final Var weights;
+        private final Mapping mapping;
+        private final int originalRowCount;
+        private Mapping complementMapping;
 
-        Sample(Frame df, Var weights, Mapping mapping, int rowCunt) {
+        Sample(Frame df, Var weights, Mapping mapping, int originalRowCount) {
             this.df = df;
             this.weights = weights;
             this.mapping = mapping;
+            this.originalRowCount = originalRowCount;
+        }
 
-            boolean[] in = new boolean[rowCunt];
-            mapping.iterator().forEachRemaining((int i) -> in[i] = true);
-            for (int i = 0; i < df.rowCount(); i++) {
-                if (!in[i]) {
-                    complementMapping.add(i);
+        public Mapping getComplementMapping() {
+            if (complementMapping == null) {
+                boolean[] in = new boolean[originalRowCount];
+                int[] elements = mapping.elements();
+                int len = 0;
+                for (int i = 0; i < mapping.size(); i++) {
+                    if (!in[elements[i]]) {
+                        len++;
+                    }
+                    in[elements[i]] = true;
                 }
+                int pos = 0;
+                int[] complement = new int[len];
+                for (int i = 0; i < df.rowCount(); i++) {
+                    if (!in[i]) {
+                        complement[pos++] = i;
+                    }
+                }
+                complementMapping = Mapping.wrap(complement);
             }
-
+            return complementMapping;
         }
     }
 }

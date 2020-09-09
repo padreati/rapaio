@@ -27,11 +27,7 @@
 
 package rapaio.experiment.ml.clustering;
 
-import rapaio.data.Frame;
-import rapaio.experiment.ml.common.distance.Distance;
-
 import java.io.Serializable;
-import java.util.stream.IntStream;
 
 /**
  * Holds a matrix with distances between instances for a given metric.
@@ -50,20 +46,6 @@ public class DistanceMatrix implements Serializable {
 
     public static DistanceMatrix empty(String[] names) {
         return new DistanceMatrix(names);
-    }
-
-    public static DistanceMatrix from(Frame df, String[] varNames, Distance dist) {
-        String[] names = new String[df.rowCount()];
-        for (int i = 0; i < df.rowCount(); i++) {
-            names[i] = "" + i;
-        }
-        DistanceMatrix dm = new DistanceMatrix(names);
-        IntStream.range(0, df.rowCount()).parallel().forEach(i -> {
-            for (int j = i + 1; j < df.rowCount(); j++) {
-                dm.set(i, j, dist.compute(df, i, df, j, varNames).v1);
-            }
-        });
-        return dm;
     }
 
     private final String[] names;

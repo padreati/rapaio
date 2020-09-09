@@ -109,7 +109,7 @@ public class CTree extends AbstractClassifierModel<CTree, ClassifierResult> impl
                 .maxDepth.set(-1)
                 .minCount.set(1)
                 .varSelector.set(VarSelector.all())
-                .splitter.set(Splitter.Weighted)
+                .splitter.set(Splitter.Random)
                 .testMap.add(VType.NOMINAL, Search.NominalBinary)
                 .testMap.add(VType.DOUBLE, Search.NumericBinary)
                 .testMap.add(VType.INT, Search.NumericBinary)

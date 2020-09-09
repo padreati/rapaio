@@ -11,10 +11,7 @@ import rapaio.util.Pair;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -140,24 +137,47 @@ public enum Splitter implements Serializable {
      */
     Random {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, List<RowPredicate> pred) {
-            List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
-
-            final Set<Integer> missingSpots = new HashSet<>();
+            // first we collect the prediction category for each observation
+            // and the counts from each category,
+            // missing values are placed randomly
+            int[] to = new int[df.rowCount()];
+            int[] counts = new int[pred.size()];
             for (int row = 0; row < df.rowCount(); row++) {
                 boolean consumed = false;
                 for (int i = 0; i < pred.size(); i++) {
                     if (pred.get(i).test(row, df)) {
-                        mappings.get(i).add(row);
+                        to[row] = i;
+                        counts[i]++;
                         consumed = true;
                         break;
                     }
                 }
-                if (!consumed)
-                    missingSpots.add(row);
+                if (!consumed) {
+                    int next = RandomSource.nextInt(pred.size());
+                    to[row] = next;
+                    counts[next]++;
+                }
             }
-            missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-            List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
-            List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
+            // we build arrays for each category of proper size
+            int[][] maps = new int[pred.size()][];
+            for (int i = 0; i < pred.size(); i++) {
+                maps[i] = new int[counts[i]];
+            }
+            // here we maintain the position in each mapping
+            int[] pos = new int[pred.size()];
+            // fill the mappings
+            for (int i = 0; i < to.length; i++) {
+                int t = to[i];
+                maps[t][pos[t]] = i;
+                pos[t]++;
+            }
+            // and split the observations
+            List<Frame> frameList = new ArrayList<>();
+            List<Var> weightList = new ArrayList<>();
+            for (int i = 0; i < pred.size(); i++) {
+                frameList.add(df.mapRows(maps[i]));
+                weightList.add(weights.mapRows(maps[i]));
+            }
             return Pair.from(frameList, weightList);
         }
     };

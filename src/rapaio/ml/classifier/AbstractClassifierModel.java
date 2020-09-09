@@ -190,6 +190,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
         this.targetLevels.put(firstTargetName(), df.rvar(firstTargetName()).levels());
 
         HashSet<String> targetSet = new HashSet<>(targets);
+
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[0]);
         this.inputTypes = inputs.stream().map(name -> df.rvar(name).type()).toArray(VType[]::new);

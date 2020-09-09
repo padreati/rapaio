@@ -98,7 +98,7 @@ public class CTreeTest {
                 "================\n" +
                 "\n" +
                 "Description:\n" +
-                "CTree{purity=GiniGain,splitter=Weighted,varSelector=VarSelector[ALL]}\n" +
+                "CTree{purity=GiniGain,splitter=Random,varSelector=VarSelector[ALL]}\n" +
                 "\n" +
                 "Capabilities:\n" +
                 "types inputs/targets: NOMINAL,INT,DOUBLE,BINARY/NOMINAL\n" +
@@ -135,6 +135,6 @@ public class CTreeTest {
         assertEquals(model.toContent(), model.toSummary());
         assertEquals(model.toFullContent(), model.toSummary());
 
-        assertEquals("CTree{purity=GiniGain,splitter=Weighted,varSelector=VarSelector[ALL]}", model.toString());
+        assertEquals("CTree{purity=GiniGain,splitter=Random,varSelector=VarSelector[ALL]}", model.toString());
     }
 }

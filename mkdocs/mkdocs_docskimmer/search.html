@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+{% endblock styles %}
+
+{% block search %}
+<form class="form form--search" id="content_search" action="search.html" role="search">
+    <div class="form-group">
+        <label class="hidden" for="mkdocs-search-query">Search for:</label>
+        <input type="search" aria-label="Search" class="form__input" name="q" id="mkdocs-search-query" tabindex="3">
+        <button type="submit" class="form__btn-submit">Search</button>
+    </div>
+</form>
+{% endblock search %}
+
+{% block content %}
+<main id="maincontent" role="main">
+    <h1>Search Results</h1>
+    <div id="mkdocs-search-results">
+        Searching...
+    </div>
+</main>
+{% endblock content %}
+
