@@ -35,6 +35,7 @@ import rapaio.data.mapping.ArrayMapping;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -116,18 +117,28 @@ public enum Splitter implements Serializable {
      */
     Random {
         @Override
-        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groupPredicates) {
-            List<Mapping> mapList = createMapList(df.rowCount(), groupPredicates);
-            for (int row = 0; row < df.rowCount(); row++) {
-                int group = getMatchedPredicate(df, row, groupPredicates);
-                if (group != -1) {
-                    mapList.get(group).add(row);
-                } else {
-                    int next = RandomSource.nextInt(groupPredicates.size());
-                    mapList.get(next).add(row);
+        public List<Mapping> performSplitMapping(Frame df, Var weights, List<RowPredicate> groups) {
+            int[] maps = new int[df.rowCount()];
+            int[] counts = new int[groups.size()];
+            for (int i = 0; i < df.rowCount(); i++) {
+                int group = getMatchedPredicate(df, i, groups);
+                if (group == -1) {
+                    group = RandomSource.nextInt(groups.size());
                 }
+                maps[i] = group;
+                counts[group]++;
             }
-            return mapList;
+            int[][] mappings = new int[groups.size()][];
+            for (int i = 0; i < groups.size(); i++) {
+                mappings[i] = new int[counts[i]];
+            }
+            int[] pos = new int[groups.size()];
+            for (int i = 0; i < df.rowCount(); i++) {
+                int group = maps[i];
+                mappings[group][pos[group]] = i;
+                pos[group]++;
+            }
+            return Arrays.stream(mappings).map(Mapping::wrap).collect(Collectors.toList());
         }
     };
 
