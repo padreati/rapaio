@@ -27,8 +27,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.objects.Object2ShortMap;
-import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
@@ -39,6 +37,7 @@ import java.io.ObjectOutputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -140,10 +139,10 @@ public final class VarNominal extends AbstractVar {
     private int rows;
     private ArrayList<String> dict;
     private short[] data;
-    private Object2ShortMap<String> reverse;
+    private HashMap<String, Short> reverse;
 
     private VarNominal() {
-        this.reverse = new Object2ShortOpenHashMap<>();
+        this.reverse = new HashMap<>();
         this.reverse.put("?", (short) 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
@@ -279,7 +278,7 @@ public final class VarNominal extends AbstractVar {
             dict.add(value);
             reverse.put(value, (short) reverse.size());
         }
-        data[row] = reverse.getShort(value);
+        data[row] = reverse.get(value);
     }
 
     @Override
@@ -292,7 +291,7 @@ public final class VarNominal extends AbstractVar {
             dict.add(label);
             reverse.put(label, (short) reverse.size());
         }
-        data[rows++] = reverse.getShort(label);
+        data[rows++] = reverse.get(label);
     }
 
     @Override
@@ -315,7 +314,7 @@ public final class VarNominal extends AbstractVar {
         }
 
         this.dict = new ArrayList<>();
-        this.reverse = new Object2ShortOpenHashMap<>(dict.length);
+        this.reverse = new HashMap<>(dict.length);
         this.dict.add("?");
         this.reverse.put("?", (short) 0);
 
@@ -327,7 +326,7 @@ public final class VarNominal extends AbstractVar {
                 this.reverse.put(term, (short) this.reverse.size());
             }
             if (i < oldDict.size())
-                pos[i] = this.reverse.getShort(term);
+                pos[i] = this.reverse.get(term);
         }
 
         for (int i = 0; i < rows; i++) {
@@ -404,7 +403,7 @@ public final class VarNominal extends AbstractVar {
     private void readObject(ObjectInputStream in) throws IOException {
         rows = in.readInt();
         dict = new ArrayList<>();
-        reverse = new Object2ShortOpenHashMap<>();
+        reverse = new HashMap<>();
         int len = in.readInt();
         for (int i = 0; i < len; i++) {
             dict.add(in.readUTF());

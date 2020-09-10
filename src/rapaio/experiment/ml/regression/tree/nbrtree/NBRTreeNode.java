@@ -27,7 +27,6 @@
 
 package rapaio.experiment.ml.regression.tree.nbrtree;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.stat.Variance;
 import rapaio.core.stat.WeightedOnlineStat;
 import rapaio.data.Frame;
@@ -36,6 +35,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.NestedBoostingRTree;
 import rapaio.ml.common.VarSelector;
+import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;

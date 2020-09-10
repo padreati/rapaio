@@ -27,12 +27,12 @@
 
 package rapaio.data.ops;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VRefSort;
+import rapaio.util.IntComparator;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
 

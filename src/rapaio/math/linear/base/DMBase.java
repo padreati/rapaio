@@ -1,7 +1,7 @@
 package rapaio.math.linear.base;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.math.linear.DM;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;

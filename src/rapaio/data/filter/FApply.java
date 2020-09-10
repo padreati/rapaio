@@ -27,11 +27,11 @@
 
 package rapaio.data.filter;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.stream.FSpot;
+import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2IntFunction;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,7 +63,7 @@ public class FApply extends AbstractFFilter {
     private static final Consumer<FSpot> F_SPOT = vSpot -> {
     };
     private static final Double2DoubleFunction F_DOUBLE = key -> key;
-    private static final Int2IntFunction F_INT = key -> key;
+    private static final Int2IntFunction F_INT = (int key) -> key;
     private static final Function<String, String> F_STRING = key -> key;
 
     private final Type type;
@@ -113,7 +113,7 @@ public class FApply extends AbstractFFilter {
                     break;
                 case INT:
                     for (int i = 0; i < df.rowCount(); i++) {
-                        df.setInt(i, varIndex, intFunction.apply(df.getInt(i, varIndex)));
+                        df.setInt(i, varIndex, intFunction.applyAsInt(df.getInt(i, varIndex)));
                     }
                     break;
                 case LABEL:

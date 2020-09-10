@@ -42,7 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static rapaio.math.MTools.log2;
-import static rapaio.util.collection.DArrays.nanSum;
+import static rapaio.util.collection.DoubleArrays.nanSum;
 
 /**
  * Distribution table.

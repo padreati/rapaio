@@ -24,7 +24,6 @@
 
 package rapaio.core;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.tests.ChiSqGoodnessOfFit;
@@ -33,6 +32,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
+import rapaio.util.collection.DoubleArrays;
 
 import java.util.Arrays;
 

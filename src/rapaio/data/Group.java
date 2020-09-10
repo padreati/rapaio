@@ -27,8 +27,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import rapaio.data.group.GroupFun;
 import rapaio.data.group.function.GroupFunCount;
 import rapaio.data.group.function.GroupFunKurtosis;
@@ -43,6 +41,7 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.collection.Int2IntOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,7 +169,7 @@ public class Group implements Printable {
     private final Int2IntOpenHashMap rowToGroupId = new Int2IntOpenHashMap();
 
     // map group ids to indexes from the last level of the tree
-    private final Int2ObjectOpenHashMap<IndexNode> groupIdToLastLevelIndex = new Int2ObjectOpenHashMap<>();
+    private final HashMap<Integer, IndexNode> groupIdToLastLevelIndex = new HashMap<>();
 
     // sorted group ids
     private VarInt sortedGroupIds = VarInt.empty();
@@ -254,7 +253,7 @@ public class Group implements Printable {
         return featureNamesList;
     }
 
-    public Int2ObjectOpenHashMap<IndexNode> getGroupIdToLastLevelIndex() {
+    public HashMap<Integer, IndexNode> getGroupIdToLastLevelIndex() {
         return groupIdToLastLevelIndex;
     }
 

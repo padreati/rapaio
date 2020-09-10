@@ -27,13 +27,12 @@
 
 package rapaio.ml.clustering.kmeans;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.math.linear.DM;
-import rapaio.util.collection.DArrays;
-import rapaio.util.collection.IArrays;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntOpenHashSet;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -54,11 +53,11 @@ public enum KMeansInit implements Serializable {
         @Override
         public DM init(DM m, int k) {
 
-            int[] rows = IArrays.newSeq(0, m.rowCount());
-            int[] centroids = IArrays.newFill(k, -1);
+            int[] rows = IntArrays.newSeq(0, m.rowCount());
+            int[] centroids = IntArrays.newFill(k, -1);
 
             centroids[0] = RandomSource.nextInt(m.rowCount());
-            IntSet ids = new IntOpenHashSet();
+            IntOpenHashSet ids = new IntOpenHashSet();
             ids.add(centroids[0]);
 
             double[] p = new double[m.rowCount()];
@@ -76,8 +75,8 @@ public enum KMeansInit implements Serializable {
                     }
                 }
                 // normalize the weights
-                double sum = DArrays.sum(p, 0, p.length);
-                DArrays.div(p, 0, sum, p.length);
+                double sum = DoubleArrays.sum(p, 0, p.length);
+                DoubleArrays.div(p, 0, sum, p.length);
 
                 int next = SamplingTools.sampleWeightedWR(1, p)[0];
                 centroids[i] = next;

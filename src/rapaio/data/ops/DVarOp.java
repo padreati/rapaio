@@ -27,10 +27,10 @@
 
 package rapaio.data.ops;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
+import rapaio.util.IntComparator;
+import rapaio.util.function.Double2DoubleFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/12/19.

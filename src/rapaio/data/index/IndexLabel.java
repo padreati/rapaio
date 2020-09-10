@@ -1,6 +1,5 @@
 package rapaio.data.index;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Var;
@@ -8,6 +7,7 @@ import rapaio.data.VarNominal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,11 +53,11 @@ public class IndexLabel implements Index<String> {
     }
 
     private final List<String> values;
-    private final Object2IntOpenHashMap<String> reverse;
+    private final HashMap<String, Integer> reverse;
 
     private IndexLabel(List<String> values) {
         this.values = new ArrayList<>();
-        this.reverse = new Object2IntOpenHashMap<>();
+        this.reverse = new HashMap<>();
         for (String value : values) {
             if (reverse.containsKey(value)) {
                 continue;
@@ -106,7 +106,7 @@ public class IndexLabel implements Index<String> {
     public List<Integer> getIndexList(Var v) {
         return v.stream()
                 .filter(s -> reverse.containsKey(s.getLabel()))
-                .map(s -> reverse.getInt(s.getLabel()))
+                .map(s -> reverse.get(s.getLabel()))
                 .collect(Collectors.toList());
     }
 
@@ -114,7 +114,7 @@ public class IndexLabel implements Index<String> {
     public List<Integer> getIndexList(Frame df, String varName) {
         return df.rvar(varName).stream()
                 .filter(s -> reverse.containsKey(s.getLabel()))
-                .map(s -> reverse.getInt(s.getLabel()))
+                .map(s -> reverse.get(s.getLabel()))
                 .collect(Collectors.toList());
     }
 

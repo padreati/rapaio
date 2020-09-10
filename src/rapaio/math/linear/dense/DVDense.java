@@ -27,13 +27,13 @@
 
 package rapaio.math.linear.dense;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
-import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.base.DVBase;
-import rapaio.util.collection.DArrays;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.function.Double2DoubleFunction;
+import rapaio.util.function.Int2DoubleFunction;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public class DVDense extends DVBase {
      * @return vector instance
      */
     public static DVDense zeros(int n) {
-        return new DVDense(n, DArrays.newFill(n, 0));
+        return new DVDense(n, DoubleArrays.newFill(n, 0));
     }
 
     /**
@@ -60,7 +60,7 @@ public class DVDense extends DVBase {
      * @return vector instance
      */
     public static DVDense ones(int n) {
-        return new DVDense(n, DArrays.newFill(n, 1));
+        return new DVDense(n, DoubleArrays.newFill(n, 1));
     }
 
     /**
@@ -72,7 +72,7 @@ public class DVDense extends DVBase {
      * @return new real dense vector
      */
     public static DVDense fill(int n, double fill) {
-        return new DVDense(n, DArrays.newFill(n, fill));
+        return new DVDense(n, DoubleArrays.newFill(n, fill));
     }
 
     /**
@@ -139,7 +139,7 @@ public class DVDense extends DVBase {
     }
 
     public static DVDense from(int len, Int2DoubleFunction fun) {
-        return new DVDense(len, DArrays.newFrom(0, len, fun));
+        return new DVDense(len, DoubleArrays.newFrom(0, len, fun));
     }
 
     protected DVDense(int len, double[] values) {
@@ -153,7 +153,7 @@ public class DVDense extends DVBase {
 
     @Override
     public DVBase add(double x) {
-        DArrays.add(values, 0, x, size);
+        DoubleArrays.add(values, 0, x, size);
         return this;
     }
 
@@ -161,7 +161,7 @@ public class DVDense extends DVBase {
     public DVBase add(DV b) {
         if (b.isDense()) {
             checkConformance(b);
-            DArrays.add(values, 0, b.asDense().values, 0, size);
+            DoubleArrays.add(values, 0, b.asDense().values, 0, size);
             return this;
         }
         super.add(b);
@@ -172,7 +172,7 @@ public class DVDense extends DVBase {
     public DVBase sub(DV b) {
         if (b instanceof DVDense) {
             checkConformance(b);
-            DArrays.sub(values, 0, b.asDense().values, 0, size);
+            DoubleArrays.sub(values, 0, b.asDense().values, 0, size);
             return this;
         }
         super.sub(b);
@@ -181,7 +181,7 @@ public class DVDense extends DVBase {
 
     @Override
     public DV mult(double scalar) {
-        DArrays.mult(values, 0, scalar, size);
+        DoubleArrays.mult(values, 0, scalar, size);
         return this;
     }
 
@@ -189,7 +189,7 @@ public class DVDense extends DVBase {
     public DV mult(DV b) {
         checkConformance(b);
         if (b instanceof DVDense) {
-            DArrays.mult(values, 0, b.asDense().values, 0, size);
+            DoubleArrays.mult(values, 0, b.asDense().values, 0, size);
             return this;
         }
         super.mult(b);
@@ -198,7 +198,7 @@ public class DVDense extends DVBase {
 
     @Override
     public DV div(double scalar) {
-        DArrays.div(values, 0, scalar, size);
+        DoubleArrays.div(values, 0, scalar, size);
         return this;
     }
 
@@ -206,7 +206,7 @@ public class DVDense extends DVBase {
     public DV div(DV b) {
         checkConformance(b);
         if (b instanceof DVDense) {
-            DArrays.div(values, 0, b.asDense().values, 0, size);
+            DoubleArrays.div(values, 0, b.asDense().values, 0, size);
             return this;
         }
         for (int i = 0; i < size; i++) {
@@ -265,37 +265,37 @@ public class DVDense extends DVBase {
 
     @Override
     public double sum() {
-        return DArrays.sum(values, 0, size);
+        return DoubleArrays.sum(values, 0, size);
     }
 
     @Override
     public double nansum() {
-        return DArrays.nanSum(values, 0, size);
+        return DoubleArrays.nanSum(values, 0, size);
     }
 
     @Override
     public int nancount() {
-        return DArrays.nanCount(values, 0, size);
+        return DoubleArrays.nanCount(values, 0, size);
     }
 
     @Override
     public double mean() {
-        return DArrays.mean(values, 0, size);
+        return DoubleArrays.mean(values, 0, size);
     }
 
     @Override
     public double nanmean() {
-        return DArrays.nanMean(values, 0, size);
+        return DoubleArrays.nanMean(values, 0, size);
     }
 
     @Override
     public double variance() {
-        return DArrays.variance(values, 0, size);
+        return DoubleArrays.variance(values, 0, size);
     }
 
     @Override
     public double nanvariance() {
-        return DArrays.nanVariance(values, 0, size);
+        return DoubleArrays.nanVariance(values, 0, size);
     }
 
     @Override

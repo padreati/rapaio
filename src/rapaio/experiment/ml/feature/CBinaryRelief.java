@@ -27,7 +27,6 @@
 
 package rapaio.experiment.ml.feature;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
@@ -38,6 +37,7 @@ import rapaio.experiment.ml.feature.relief.ReliefDifferenceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefDistanceFunction;
 import rapaio.experiment.ml.feature.relief.ReliefImportance;
 import rapaio.math.linear.dense.DMStripe;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 import java.util.List;

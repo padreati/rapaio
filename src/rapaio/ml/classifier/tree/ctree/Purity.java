@@ -32,7 +32,7 @@ import rapaio.core.tools.DensityTable;
 
 import java.io.Serializable;
 
-import static rapaio.util.collection.DArrays.nanSum;
+import static rapaio.util.collection.DoubleArrays.nanSum;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.

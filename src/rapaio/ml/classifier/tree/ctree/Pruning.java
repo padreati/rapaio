@@ -27,16 +27,14 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import rapaio.data.Frame;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.util.DoublePair;
+import rapaio.util.collection.IntArrayList;
+import rapaio.util.collection.IntOpenHashSet;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Pruning techniques
@@ -62,13 +60,13 @@ public enum Pruning implements Serializable {
         public CTree prune(CTree tree, Frame df, boolean all) {
             // collect how current fitting works
 
-            Int2ObjectOpenHashMap<Node> nodes = collectNodes(tree, tree.getRoot(), new Int2ObjectOpenHashMap<>());
+            HashMap<Integer, Node> nodes = collectNodes(tree, tree.getRoot(), new HashMap<>());
 
             // collect predictions produced in each node in a cumulative way
 
-            Int2ObjectOpenHashMap<DoublePair> bottomUp = new Int2ObjectOpenHashMap<>();
-            Int2ObjectOpenHashMap<DoublePair> topDown = new Int2ObjectOpenHashMap<>();
-            nodes.keySet().forEach((int id) -> {
+            HashMap<Integer, DoublePair> bottomUp = new HashMap<>();
+            HashMap<Integer, DoublePair> topDown = new HashMap<>();
+            nodes.keySet().forEach(id -> {
                 bottomUp.put(id, DoublePair.zeros());
                 topDown.put(id, DoublePair.zeros());
             });
@@ -82,8 +80,8 @@ public enum Pruning implements Serializable {
 
             // test for pruning
 
-            IntList ids = new IntArrayList(nodes.keySet());
-            IntSet pruned = new IntOpenHashSet();
+            IntArrayList ids = new IntArrayList(nodes.keySet());
+            IntOpenHashSet pruned = new IntOpenHashSet();
             boolean found = true;
             double rowCount = df.rowCount();
             while (found) {
@@ -129,17 +127,17 @@ public enum Pruning implements Serializable {
             return tree;
         }
 
-        private void updateError(int id, Int2ObjectOpenHashMap<DoublePair> bottomUp,
-                                 Int2ObjectOpenHashMap<Node> nodes, DoublePair accDiff) {
+        private void updateError(int id, HashMap<Integer, DoublePair> bottomUp,
+                                 HashMap<Integer, Node> nodes, DoublePair accDiff) {
             bottomUp.get(id).increment(accDiff);
             if (nodes.get(id).parent != null)
                 updateError(nodes.get(id).parent.id, bottomUp, nodes, accDiff);
         }
 
-        private void addToPruned(int id, Node node, IntSet pruned,
-                                 Int2ObjectOpenHashMap<DoublePair> topDown,
-                                 Int2ObjectOpenHashMap<DoublePair> bottomUp,
-                                 Int2ObjectOpenHashMap<Node> nodes) {
+        private void addToPruned(int id, Node node, IntOpenHashSet pruned,
+                                 HashMap<Integer, DoublePair> topDown,
+                                 HashMap<Integer, DoublePair> bottomUp,
+                                 HashMap<Integer, Node> nodes) {
             pruned.add(node.id);
             if (node.id != id) {
                 topDown.remove(node.id);
@@ -150,7 +148,7 @@ public enum Pruning implements Serializable {
                 addToPruned(id, child, pruned, topDown, bottomUp, nodes);
         }
 
-        private Int2ObjectOpenHashMap<Node> collectNodes(CTree tree, Node node, Int2ObjectOpenHashMap<Node> nodes) {
+        private HashMap<Integer, Node> collectNodes(CTree tree, Node node, HashMap<Integer, Node> nodes) {
             nodes.put(node.id, node);
             for (Node child : node.children) {
                 collectNodes(tree, child, nodes);
@@ -158,7 +156,7 @@ public enum Pruning implements Serializable {
             return nodes;
         }
 
-        private DoublePair bottomUpCollect(int row, Frame df, CTree tree, Node node, Int2ObjectOpenHashMap<DoublePair> bottomUp) {
+        private DoublePair bottomUpCollect(int row, Frame df, CTree tree, Node node, HashMap<Integer, DoublePair> bottomUp) {
 
             if (node.leaf) {
                 DoublePair err = df.getLabel(row, tree.firstTargetName()).equals(node.bestLabel)
@@ -177,7 +175,7 @@ public enum Pruning implements Serializable {
             return DoublePair.zeros();
         }
 
-        private void topDownCollect(int row, Frame df, CTree tree, Node node, Int2ObjectOpenHashMap<DoublePair> topDown) {
+        private void topDownCollect(int row, Frame df, CTree tree, Node node, HashMap<Integer, DoublePair> topDown) {
 
             DoublePair err = df.getLabel(row, tree.firstTargetName()).equals(node.bestLabel)
                     ? DoublePair.of(0.0, 1.0) : DoublePair.of(1.0, 0.0);

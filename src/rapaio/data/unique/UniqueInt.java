@@ -27,11 +27,10 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
+import rapaio.util.collection.IntArrays;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +67,7 @@ public class UniqueInt extends AbstractUnique {
         for (int i = 0; i < elements.length; i++) {
             uniqueKeys.put(elements[i], i);
         }
-        rowLists = new Int2ObjectOpenHashMap<>();
+        rowLists = new HashMap<>();
         for (int i = 0; i < var.rowCount(); i++) {
             int key = var.getInt(i);
             int id = uniqueKeys.get(key);

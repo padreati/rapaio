@@ -27,10 +27,9 @@
 
 package rapaio.data.mapping;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IArrays;
+import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrays;
 
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
@@ -76,15 +75,6 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public void addAll(IntListIterator rows) {
-        if (!onList) {
-            onList = true;
-            listMapping = new ArrayMapping(start, end);
-        }
-        listMapping.addAll(rows);
-    }
-
-    @Override
     public void addAll(IntIterator rows) {
         if (!onList) {
             onList = true;
@@ -121,18 +111,13 @@ public final class IntervalMapping implements Mapping {
     }
 
     @Override
-    public IntListIterator listIterator() {
-        return onList ? listMapping.listIterator() : new IntervalIterator(start, end);
-    }
-
-    @Override
     public IntIterator iterator() {
         return onList ? listMapping.iterator() : new IntervalIterator(start, end);
     }
 
     @Override
     public int[] elements() {
-        return IArrays.newSeq(start, end);
+        return IntArrays.newSeq(start, end);
     }
 
     @Override
@@ -147,7 +132,7 @@ public final class IntervalMapping implements Mapping {
         return onList ? listMapping.stream() : IntStream.range(start, end);
     }
 
-    static class IntervalIterator implements IntListIterator, IntIterator {
+    static class IntervalIterator implements IntIterator {
         private final int start;
         private final int end;
         private int s;
@@ -169,29 +154,6 @@ public final class IntervalMapping implements Mapping {
                 throw new NoSuchElementException();
             }
             return s++;
-        }
-
-        @Override
-        public int previousInt() {
-            if (!hasPrevious()) {
-                throw new NoSuchElementException();
-            }
-            return s--;
-        }
-
-        @Override
-        public boolean hasPrevious() {
-            return s > 0;
-        }
-
-        @Override
-        public int nextIndex() {
-            return s - start + 1;
-        }
-
-        @Override
-        public int previousIndex() {
-            return s - start - 1;
         }
     }
 }

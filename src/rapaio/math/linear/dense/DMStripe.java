@@ -34,7 +34,7 @@ import rapaio.data.Var;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.base.DMBase;
-import rapaio.util.collection.DArrays;
+import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
 import java.util.Arrays;
@@ -202,7 +202,7 @@ public class DMStripe extends DMBase {
             var array = v.asDense().elements();
             var len = v.size();
             for (int i = 0; i < rowCount; i++) {
-                DArrays.mult(values[i], 0, array, 0, len);
+                DoubleArrays.mult(values[i], 0, array, 0, len);
             }
             return this;
         }
@@ -215,7 +215,7 @@ public class DMStripe extends DMBase {
             var array = v.asDense().elements();
             var len = v.size();
             for (int i = 0; i < rowCount; i++) {
-                DArrays.mult(values[i], 0, array[i], colCount);
+                DoubleArrays.mult(values[i], 0, array[i], colCount);
             }
             return this;
         }

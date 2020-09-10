@@ -27,13 +27,12 @@
 
 package rapaio.data.mapping;
 
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.core.RandomSource;
 import rapaio.data.Mapping;
-import rapaio.util.collection.IArrays;
+import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrayList;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.Int2IntFunction;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -55,11 +54,11 @@ public final class ArrayMapping implements Mapping {
     }
 
     public ArrayMapping(int start, int end) {
-        this.data = new IntArrayList(IArrays.newSeq(start, end));
+        this.data = new IntArrayList(IntArrays.newSeq(start, end));
     }
 
     public ArrayMapping(int[] array, int start, int end, Int2IntFunction fun) {
-        this.data = new IntArrayList(IArrays.newFrom(array, start, end, fun));
+        this.data = new IntArrayList(IntArrays.newFrom(array, start, end, fun));
     }
 
     public int size() {
@@ -84,13 +83,6 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public void addAll(IntListIterator it) {
-        while (it.hasNext()) {
-            add(it.nextInt());
-        }
-    }
-
-    @Override
     public void remove(int pos) {
         data.removeInt(pos);
     }
@@ -109,13 +101,8 @@ public final class ArrayMapping implements Mapping {
     }
 
     @Override
-    public IntListIterator listIterator() {
-        return data.iterator();
-    }
-
-    @Override
     public IntIterator iterator() {
-        return IArrays.iterator(data.elements(), 0, data.size());
+        return IntArrays.iterator(data.elements(), 0, data.size());
     }
 
     @Override
@@ -125,7 +112,7 @@ public final class ArrayMapping implements Mapping {
 
     @Override
     public void shuffle() {
-        it.unimi.dsi.fastutil.ints.IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
+        IntArrays.shuffle(data.elements(), 0, data.size(), RandomSource.getRandom());
     }
 
     @Override

@@ -7,7 +7,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.math.linear.dense.DMStripe;
-import rapaio.util.collection.DArrays;
+import rapaio.util.collection.DoubleArrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +28,7 @@ public abstract class StandardDVTest {
     void beforeEach() {
         RandomSource.setSeed(123);
         normal = Normal.std();
-        values = DArrays.newFrom(0, 100, row -> normal.sampleNext());
+        values = DoubleArrays.newFrom(0, 100, row -> normal.sampleNext());
         x = generateWrap(values);
         z = generateFill(100, 10);
     }

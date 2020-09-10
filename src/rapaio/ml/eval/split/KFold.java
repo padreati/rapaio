@@ -6,7 +6,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.util.collection.IArrays;
+import rapaio.util.collection.IntArrays;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +41,8 @@ public class KFold implements SplitStrategy {
             }
 
             // distribute rows in folds
-            int[] rows = IArrays.newSeq(0, df.rowCount());
-            it.unimi.dsi.fastutil.ints.IntArrays.shuffle(rows, RandomSource.getRandom());
+            int[] rows = IntArrays.newSeq(0, df.rowCount());
+            IntArrays.shuffle(rows, RandomSource.getRandom());
             int pos = 0;
             for (int row : rows) {
                 mappings[pos++].add(row);

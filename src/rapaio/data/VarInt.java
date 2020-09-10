@@ -27,13 +27,13 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import rapaio.core.RandomSource;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.IntIterator;
+import rapaio.util.collection.IntArrays;
+import rapaio.util.function.Int2IntFunction;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

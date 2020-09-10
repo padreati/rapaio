@@ -24,12 +24,12 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.filter.FRefSort;
 import rapaio.io.Csv;
+import rapaio.util.IntComparator;
 
 import java.io.IOException;
 

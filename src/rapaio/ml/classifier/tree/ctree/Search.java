@@ -27,14 +27,14 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.experiment.ml.common.predicate.RowPredicate;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.util.IntComparator;
+import rapaio.util.collection.IntArrays;
 
 import java.io.Serializable;
 import java.util.List;

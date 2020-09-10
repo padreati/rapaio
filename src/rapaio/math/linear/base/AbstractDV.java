@@ -1,6 +1,5 @@
 package rapaio.math.linear.base;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.dense.DMStripe;
@@ -8,6 +7,7 @@ import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.function.BiFunction;
 

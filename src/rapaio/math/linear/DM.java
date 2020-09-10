@@ -27,8 +27,8 @@
 
 package rapaio.math.linear;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.printer.Printable;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.io.Serializable;
 import java.util.stream.DoubleStream;

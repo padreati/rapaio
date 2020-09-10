@@ -1,12 +1,12 @@
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.sys.WS;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 

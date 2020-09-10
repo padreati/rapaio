@@ -34,7 +34,7 @@ import rapaio.data.VarDouble;
 import rapaio.ml.regression.tree.RTreeLoss;
 import rapaio.ml.regression.tree.rtree.SearchPayload;
 
-import static rapaio.util.collection.DArrays.sum;
+import static rapaio.util.collection.DoubleArrays.sum;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/6/18.

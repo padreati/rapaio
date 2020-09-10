@@ -1,23 +1,23 @@
 package rapaio.util.collection;
 
-import it.unimi.dsi.fastutil.doubles.DoubleIterator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
+import rapaio.util.DoubleIterator;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static rapaio.util.collection.DArrays.*;
+import static rapaio.util.collection.DoubleArrays.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/19.
  */
-public class DArraysTest {
+public class DoubleArraysTest {
 
     private static final double TOL = 1e-12;
     private final Normal normal = Normal.std();
@@ -42,13 +42,13 @@ public class DArraysTest {
     @Test
     void testIterator() {
         double[] array = newFrom(0, 100, row -> normal.sampleNext());
-        DoubleIterator it1 = DArrays.iterator(array, 0, 10);
+        DoubleIterator it1 = DoubleArrays.iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
             assertEquals(array[i], it1.nextDouble(), TOL);
         }
         assertThrows(NoSuchElementException.class, it1::nextDouble);
 
-        DoubleIterator it2 = DArrays.iterator(array, 0, 100);
+        DoubleIterator it2 = DoubleArrays.iterator(array, 0, 100);
         for (int i = 0; i < 100; i++) {
             assertEquals(array[i], it2.nextDouble(), TOL);
         }
@@ -135,7 +135,7 @@ public class DArraysTest {
             int len = 50 + RandomSource.nextInt(50) - start;
 
             double[] array2 = newCopy(array1, start, len);
-            DArrays.add(array2, 0, 10, len);
+            DoubleArrays.add(array2, 0, 10, len);
             double[] array3 = new double[len];
             addTo(array1, start, 10, array3, 0, len);
 

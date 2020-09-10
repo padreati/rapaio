@@ -27,13 +27,13 @@
 
 package rapaio.data.filter;
 
-import it.unimi.dsi.fastutil.doubles.Double2IntFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.util.function.Double2IntFunction;
+import rapaio.util.function.Int2IntFunction;
 
 import java.util.function.Function;
 

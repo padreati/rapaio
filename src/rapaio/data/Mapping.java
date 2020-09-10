@@ -27,11 +27,10 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
 import rapaio.data.mapping.ArrayMapping;
 import rapaio.data.mapping.IntervalMapping;
+import rapaio.util.IntIterator;
+import rapaio.util.function.Int2IntFunction;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -151,13 +150,6 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      *
      * @param rows collection of row numbers to be added to the mapping
      */
-    void addAll(IntListIterator rows);
-
-    /**
-     * Adds at the end of mapping the given indexes contained in collection
-     *
-     * @param rows collection of row numbers to be added to the mapping
-     */
     void addAll(IntIterator rows);
 
     /**
@@ -178,8 +170,6 @@ public interface Mapping extends Iterable<Integer>, Serializable {
      * Removes all elements from mapping
      */
     void clear();
-
-    IntListIterator listIterator();
 
     IntIterator iterator();
 

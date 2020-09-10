@@ -27,15 +27,14 @@
 
 package rapaio.data.unique;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.printer.Format;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.DoubleOpenHashSet;
+import rapaio.util.collection.IntArrays;
 
 import java.util.HashMap;
 
@@ -71,7 +70,7 @@ public class UniqueDouble extends AbstractUnique {
         for (int i = 0; i < elements.length; i++) {
             uniqueKeys.put(elements[i], i);
         }
-        rowLists = new Int2ObjectOpenHashMap<>();
+        rowLists = new HashMap<>();
         for (int i = 0; i < var.rowCount(); i++) {
             double key = var.getDouble(i);
             int id = uniqueKeys.get(key);

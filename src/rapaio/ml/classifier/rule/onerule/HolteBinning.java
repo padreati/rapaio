@@ -4,7 +4,7 @@ import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.rule.OneRule;
-import rapaio.util.collection.IArrays;
+import rapaio.util.collection.IntArrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/30/20.
@@ -28,8 +28,8 @@ public class HolteBinning implements OneRule.Binning {
     public RuleSet compute(String testVarName, OneRule parent, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVarName);
 
-        int[] rows = IArrays.newSeq(0, df.rowCount());
-        it.unimi.dsi.fastutil.ints.IntArrays.quickSort(rows, 0, rows.length, df.rvar(testVarName).refComparator());
+        int[] rows = IntArrays.newSeq(0, df.rowCount());
+        IntArrays.quickSort(rows, 0, rows.length, df.rvar(testVarName).refComparator());
 
         // find where missing values starts
         int len = 0;

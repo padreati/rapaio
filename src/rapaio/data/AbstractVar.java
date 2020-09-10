@@ -27,7 +27,6 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.ops.DVarOp;
@@ -36,6 +35,7 @@ import rapaio.data.unique.UniqueLabel;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
 import rapaio.printer.opt.POption;
+import rapaio.util.collection.IntArrays;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

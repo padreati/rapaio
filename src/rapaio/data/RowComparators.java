@@ -27,7 +27,7 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
+import rapaio.util.IntComparator;
 
 import java.io.Serializable;
 import java.util.Arrays;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/12/19.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LArrays {
+public final class LongArrays {
 
     public static boolean checkCapacity(long[] array, int pos) {
         return pos < array.length;

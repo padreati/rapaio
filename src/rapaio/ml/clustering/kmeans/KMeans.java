@@ -46,7 +46,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IArrays;
+import rapaio.util.collection.IntArrays;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -126,7 +126,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         DM m = DMStripe.copy(initialDf);
         c = initializeClusters(m);
 
-        int[] assignment = IArrays.newFill(m.rowCount(), -1);
+        int[] assignment = IntArrays.newFill(m.rowCount(), -1);
         errors = VarDouble.empty().withName("errors");
 
         assignToCentroids(m, assignment);
@@ -290,7 +290,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
 
     @Override
     public KMeansResult corePredict(Frame df, boolean withScores) {
-        int[] assignment = IArrays.newFill(df.rowCount(), -1);
+        int[] assignment = IntArrays.newFill(df.rowCount(), -1);
         DM m = DMStripe.copy(df);
         assignToCentroids(m, assignment);
         return KMeansResult.valueOf(this, df, VarInt.wrap(assignment));

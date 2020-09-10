@@ -27,10 +27,10 @@
 
 package rapaio.math.linear.dense;
 
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import rapaio.math.linear.DM;
 import rapaio.math.linear.DV;
 import rapaio.math.linear.base.AbstractDM;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;

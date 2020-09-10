@@ -27,12 +27,12 @@
 
 package rapaio.data;
 
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import rapaio.data.filter.FFilter;
 import rapaio.data.filter.FRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.printer.Printable;
+import rapaio.util.IntComparator;
 
 import java.io.Serializable;
 import java.util.Arrays;

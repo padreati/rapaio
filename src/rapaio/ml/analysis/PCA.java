@@ -27,8 +27,6 @@
 
 package rapaio.ml.analysis;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +45,8 @@ import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
-import rapaio.util.collection.IArrays;
+import rapaio.util.collection.DoubleArrays;
+import rapaio.util.collection.IntArrays;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -116,7 +115,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
         logger.fine("sort eigen values and vectors");
 
-        int[] mapping = IArrays.newSeq(0, eigenValues.size());
+        int[] mapping = IntArrays.newSeq(0, eigenValues.size());
         DoubleArrays.quickSortIndirect(mapping, eigenValues.asDense().elements(), 0, eigenValues.size());
         IntArrays.reverse(mapping);
 
