@@ -54,8 +54,8 @@ public class FrameAnalysis {
 
     public Frame buildCsvFrame(Csv csv, String file) throws IOException {
 
-        String[] varNames = csv.withEndRow(1000).read(file).varNames();
-        csv.withEndRow(Integer.MAX_VALUE);
+        String[] varNames = csv.endRow.set(1000).read(file).varNames();
+        csv.endRow.set(Integer.MAX_VALUE);
         int start = 0;
 
         VarNominal name = VarNominal.empty().withName("name");
@@ -69,11 +69,11 @@ public class FrameAnalysis {
             h2.add(VarDouble.empty().withName("h2_" + i));
         }
 
-        Var target = csv.withSkipCols(n -> n != targetIndex).read(file).rvar(0);
+        Var target = csv.skipCols.set(n -> n != targetIndex).read(file).rvar(0);
 
         while (start < varNames.length && start < maxVars) {
             int pos = start;
-            csv.withSkipCols(n -> !((n >= pos && n < pos + chunkSize && n < varNames.length && n < maxVars)));
+            csv.skipCols.set(n -> !((n >= pos && n < pos + chunkSize && n < varNames.length && n < maxVars)));
             Frame vs = csv.read(file);
 
             vs.varStream().forEach(var -> {

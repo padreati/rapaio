@@ -42,7 +42,7 @@ public class HypergeometricTest {
 
     @BeforeEach
     void beforeEach() throws Exception {
-        df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "hyper.csv");
+        df = Csv.instance().naValues.set("NaN").read(HypergeometricTest.class, "hyper.csv");
 
         hg1 = Hypergeometric.of(20, 20, 30);
         hg2 = Hypergeometric.of(70, 70, 100);

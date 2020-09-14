@@ -27,11 +27,18 @@
 
 package rapaio.io;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarString;
+import rapaio.ml.common.ListParam;
+import rapaio.ml.common.MultiListParam;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
+import rapaio.util.IntRule;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -48,22 +55,21 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * CSV file reader and writer utility.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Csv {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class Csv extends ParamSet<Csv> {
+
+    private static final long serialVersionUID = -5217533858566320281L;
 
     /**
      * @return new instance of Csv utility with default parameters values
@@ -74,204 +80,58 @@ public class Csv {
 
     private static final VType[] DEFAULT_TYPES = new VType[]{VType.BINARY, VType.INT, VType.LONG, VType.DOUBLE, VType.NOMINAL, VType.STRING};
 
-    private boolean trimSpaces = true;
-    private boolean header = true;
-    private boolean quotes = false;
-    private char separatorChar = ',';
-    private char escapeChar = '\"';
-    private final HashMap<String, VType> typeFieldHints = new HashMap<>();
-    private HashSet<String> naValues = new HashSet<>(Arrays.asList("?", "", " ", "na", "N/A", "NaN"));
-    private VType[] defaultTypes = new VType[]{VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.STRING};
-    private int startRow = 0;
-    private int endRow = Integer.MAX_VALUE;
-    private Predicate<Integer> skipRows = row -> false;
-    private Predicate<Integer> skipCols = row -> false;
-    private Frame template;
-
-    private Csv() {
-    }
-
+    /**
+     * Configures white space trimming for field values. If the white space trimming is enabled,
+     * the field values are trimmed at start and end of white char values.
+     */
+    public final ValueParam<Boolean, Csv> stripSpaces = new ValueParam<>(this, true,
+            "trimSpaces", "If true the original value from file is stripped");
     /**
      * Configure the Csv utility to consider a header or not. If the {@code hasHeader} parameter
      * is true the header feature is on, otherwise not.
-     *
-     * @param hasHeader if true the header feature is on, otherwise not
-     * @return the Csv utility instance
      */
-    public Csv withHeader(boolean hasHeader) {
-        this.header = hasHeader;
-        return this;
-    }
-
-    /**
-     * @return true if header feature is on, otherwise it returns false
-     */
-    public boolean hashHeader() {
-        return header;
-    }
-
+    public final ValueParam<Boolean, Csv> header = new ValueParam<>(this, true,
+            "header", "Specifies if the first row contains column names");
+    public final ValueParam<Boolean, Csv> quotes = new ValueParam<>(this, false,
+            "quotes", "Specifies if the values are quoted, trimmed at read and added at write");
     /**
      * Configures field character separator.
-     *
-     * @param separatorChar the field char separator value
-     * @return Csv utility instance
      */
-    public Csv withSeparatorChar(char separatorChar) {
-        this.separatorChar = separatorChar;
-        return this;
-    }
-
-    /**
-     * @return char used as field separator
-     */
-    public char getSeparatorChar() {
-        return separatorChar;
-    }
-
+    public final ValueParam<Character, Csv> separatorChar = new ValueParam<>(this, ',',
+            "separatorChar", "Character used to separate row values");
     /**
      * If double quotes (\") character is used to enclose the field values.
      * If this feature is turned on, the values are discarded of eventual first and last characters
      * if those characters are double quotes. This is useful if the separator char is used inside
      * string field values, for example.
-     *
-     * @param quotes true if feature is turned on, false otherwise
-     * @return Csv utility instance
      */
-    public Csv withQuotes(boolean quotes) {
-        this.quotes = quotes;
-        return this;
-    }
-
-    public boolean hasQuotes() {
-        return quotes;
-    }
-
-    /**
-     * Configures default escape char. If the field value contains escape char, than the following char after
-     * the escape does not have semantics and is considered as part of the field value. This enables one to
-     * use inside field values chars with semantics, like separator char.
-     *
-     * @param escapeChar configured escape char
-     * @return Csv instance utility
-     */
-    public Csv withEscapeChar(char escapeChar) {
-        this.escapeChar = escapeChar;
-        return this;
-    }
-
-    /**
-     * Configures white space trimming for field values. If the white space trimming is enabled,
-     * the field values are trimmed at start and end of white char values.
-     *
-     * @param trimSpaces if true feature is enabled, false otherwise
-     * @return Csv instance utility
-     */
-    public Csv withTrimSpaces(boolean trimSpaces) {
-        this.trimSpaces = trimSpaces;
-        return this;
-    }
-
+    public final ValueParam<Character, Csv> escapeChar = new ValueParam<>(this, '\"',
+            "escapeChar", "Escape character");
+    public final MultiListParam<VType, String, Csv> types = new MultiListParam<>(this, new HashMap<>(),
+            "types", "Specific type fields which overrides the automatic detection", Objects::nonNull);
+    public final ListParam<String, Csv> naValues = new ListParam<>(this, Arrays.asList("?", "", " ", "na", "N/A", "NaN"),
+            "naValues", "Values identified as missing value placeholders", (in, out) -> true);
+    public final ListParam<VType, Csv> defaultTypes = new ListParam<>(this, List.of(VType.BINARY, VType.DOUBLE, VType.NOMINAL, VType.STRING),
+            "defaultTypes", "List of default types to be tried at automatic detection", (in, out) -> true);
     /**
      * Specifies the first row number to be collected from csv file. By default this value is 0,
      * which means it will collect starting from the first row. If the value is greater than 0
      * it will skip the first {@code startRow-1} rows.
-     *
-     * @param startRow first row to be collected
-     * @return Csv instance utility
      */
-    public Csv withStartRow(int startRow) {
-        this.startRow = startRow;
-        return this;
-    }
-
-    /**
-     * @return first row number to be collected
-     */
-    public int getStartRow() {
-        return startRow;
-    }
-
+    public final ValueParam<Integer, Csv> startRow = new ValueParam<>(this, 0,
+            "startRow", "Start row of the row intervals to be read");
     /**
      * Specifies the last row number to be collected from csv file. By default this is value
      * is {@code Integer.MAX_VALUE}, which means all rows from file.
-     *
-     * @param endRow last row to be collected
-     * @return Csv instance utility
      */
-    public Csv withEndRow(int endRow) {
-        this.endRow = endRow;
-        return this;
-    }
-
-    public Csv withRows(int... rows) {
-        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
-        skipRows = row -> !skip.contains(row);
-        return this;
-    }
-
-    public Csv withRows(Predicate<Integer> p) {
-        skipRows = p.negate();
-        return this;
-    }
-
-    public Csv withSkipRows(int... rows) {
-        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
-        skipRows = skip::contains;
-        return this;
-    }
-
-    public Csv withSkipRows(Predicate<Integer> p) {
-        skipRows = p;
-        return this;
-    }
-
-    public Csv withCols(int... cols) {
-        final Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
-        skipCols = row -> !skip.contains(row);
-        return this;
-    }
-
-    public Csv withCols(Predicate<Integer> p) {
-        skipCols = p.negate();
-        return this;
-    }
-
-    public Csv withSkipCols(int... cols) {
-        Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
-        skipCols = skip::contains;
-        return this;
-    }
-
-    public Csv withSkipCols(Predicate<Integer> p) {
-        skipCols = p;
-        return this;
-    }
-
-    public Csv withTypes(VType vType, String... fields) {
-        Arrays.stream(fields).forEach(field -> typeFieldHints.put(field, vType));
-        return this;
-    }
-
-    public Csv withDefaultTypes(VType... defaultTypes) {
-        this.defaultTypes = defaultTypes;
-        return this;
-    }
-
-    public Csv withDefaultTypes() {
-        this.defaultTypes = DEFAULT_TYPES;
-        return this;
-    }
-
-    public Csv withNAValues(String... values) {
-        this.naValues = new HashSet<>();
-        Collections.addAll(naValues, values);
-        return this;
-    }
-
-    public Csv withTemplate(Frame template) {
-        this.template = template;
-        return this;
-    }
+    public final ValueParam<Integer, Csv> endRow = new ValueParam<>(this, Integer.MAX_VALUE,
+            "endRow", "Last row from row intervals to be read");
+    public final ValueParam<Predicate<Integer>, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(),
+            "skipRows", "Skip rows predicate used to filter rows to be read");
+    public final ValueParam<Predicate<Integer>, Csv> skipCols = new ValueParam<>(this, row -> false,
+            "skipCols", "Skip rows predicate used to filter columns to be read");
+    public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null,
+            "template", "Optional frame templated used to define variable names and type for reading", obj -> true);
 
     public Frame read(File file) {
         try {
@@ -325,7 +185,7 @@ public class Csv {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-            if (header) {
+            if (header.get()) {
                 String line = reader.readLine();
                 if (line == null) {
                     return null;
@@ -333,7 +193,7 @@ public class Csv {
                 names = parseLine(line);
             }
 
-            while (skipRows.test(allRowsNum)) {
+            while (skipRows.get().test(allRowsNum)) {
                 reader.readLine();
                 allRowsNum += 1;
             }
@@ -346,7 +206,7 @@ public class Csv {
                 }
 
                 allRowsNum += 1;
-                if (skipRows.test(allRowsNum - 1)) {
+                if (skipRows.get().test(allRowsNum - 1)) {
                     continue;
                 }
 
@@ -359,8 +219,8 @@ public class Csv {
                         names.add("V" + (i + 1));
                     }
                     for (String colName : names) {
-                        if (template != null) {
-                            String[] vn = template.varNames();
+                        if (template.get() != null) {
+                            String[] vn = template.get().varNames();
                             boolean found = false;
                             for (String name : vn) {
                                 if (name.equals(colName)) {
@@ -369,12 +229,13 @@ public class Csv {
                                 }
                             }
                             if (found) {
-                                varSlots.add(new VarSlot(this, template.rvar(colName), 0));
+                                varSlots.add(new VarSlot(this, template.get().rvar(colName), 0));
                                 continue;
                             }
                         }
-                        if (typeFieldHints.containsKey(colName)) {
-                            varSlots.add(new VarSlot(this, typeFieldHints.get(colName), 0));
+                        VType type = types.getReverseKey(colName);
+                        if (type != null) {
+                            varSlots.add(new VarSlot(this, type, 0));
                         } else {
                             // default type
                             varSlots.add(new VarSlot(this, 0));
@@ -382,11 +243,11 @@ public class Csv {
                     }
                 }
 
-                if (rows < startRow) {
+                if (rows < startRow.get()) {
                     rows++;
                     continue;
                 }
-                if (rows == endRow) break;
+                if (rows == endRow.get()) break;
                 List<String> row = parseLine(line);
                 rows++;
                 int len = Math.max(row.size(), names.size());
@@ -412,7 +273,7 @@ public class Csv {
             String name = names.size() > i ? names.get(i) : "V" + (i + 1);
             variables.add(varSlots.get(i).rvar().withName(name));
         }
-        return SolidFrame.byVars(rows - startRow, variables);
+        return SolidFrame.byVars(rows - startRow.get(), variables);
     }
 
     public List<String> parseLine(String line) {
@@ -429,25 +290,25 @@ public class Csv {
                     inQuotas = true;
                     continue;
                 }
-                if (inQuotas && ch == escapeChar && end < line.length() && line.charAt(end) == '\"') {
+                if (inQuotas && ch == escapeChar.get() && end < line.length() && line.charAt(end) == '\"') {
                     end++;
                     continue;
                 }
                 if (inQuotas && ch == '"') {
-                    if (escapeChar == '\"' && end < line.length() && line.charAt(end) == '\"') {
+                    if (escapeChar.get() == '\"' && end < line.length() && line.charAt(end) == '\"') {
                         end++;
                         continue;
                     }
                     inQuotas = false;
                     continue;
                 }
-                if (!inQuotas && (ch == separatorChar)) {
+                if (!inQuotas && (ch == separatorChar.get())) {
                     end--;
                     break;
                 }
             }
 
-            if (!skipCols.test(colNum)) {
+            if (!skipCols.get().test(colNum)) {
                 data.add(clean(line.substring(start, end)));
             }
 
@@ -466,10 +327,10 @@ public class Csv {
      * @return string cleaned
      */
     public String clean(String tok) {
-        if (trimSpaces) {
-            tok = tok.trim();
+        if (stripSpaces.get()) {
+            tok = tok.strip();
         }
-        if (quotes && !tok.isEmpty()) {
+        if (quotes.get() && !tok.isEmpty()) {
             if (tok.charAt(0) == '\"') {
                 tok = tok.substring(1);
             }
@@ -477,11 +338,11 @@ public class Csv {
                 tok = tok.substring(0, tok.length() - 1);
             }
         }
-        if (quotes) {
+        if (quotes.get()) {
             char[] line = new char[tok.length()];
             int len = 0;
             for (int i = 0; i < tok.length(); i++) {
-                if (len < tok.length() - 1 && tok.charAt(i) == escapeChar && tok.charAt(i + 1) == '\"') {
+                if (len < tok.length() - 1 && tok.charAt(i) == escapeChar.get() && tok.charAt(i + 1) == '\"') {
                     line[len++] = '\"';
                     i++;
                     continue;
@@ -490,8 +351,8 @@ public class Csv {
             }
             tok = String.valueOf(line, 0, len);
         }
-        if (trimSpaces) {
-            tok = tok.trim();
+        if (stripSpaces.get()) {
+            tok = tok.strip();
         }
         return tok;
     }
@@ -515,10 +376,10 @@ public class Csv {
     public void write(Frame df, OutputStream os) {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
-            if (header) {
+            if (header.get()) {
                 for (int i = 0; i < df.varNames().length; i++) {
                     if (i != 0) {
-                        writer.append(separatorChar);
+                        writer.append(separatorChar.get());
                     }
                     writer.append(df.varNames()[i]);
                 }
@@ -528,7 +389,7 @@ public class Csv {
             for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < df.varCount(); j++) {
                     if (j != 0) {
-                        writer.append(separatorChar);
+                        writer.append(separatorChar.get());
                     }
                     if (df.rvar(j).isMissing(i)) {
                         writer.append("?");
@@ -551,12 +412,12 @@ public class Csv {
         int len = 0;
         for (int i = 0; i < label.length(); i++) {
             if (label.charAt(i) == '\"') {
-                line[len++] = escapeChar;
+                line[len++] = escapeChar.get();
             }
             line[len++] = label.charAt(i);
         }
         label = String.valueOf(line, 0, len);
-        if (quotes) {
+        if (quotes.get()) {
             label = "\"" + label + "\"";
         }
         return label;
@@ -576,7 +437,7 @@ public class Csv {
         public VarSlot(Csv parent, int rows) {
             this.parent = parent;
             this.type = null;
-            this.var = parent.defaultTypes[0].newInstance(rows);
+            this.var = parent.defaultTypes.get().get(0).newInstance(rows);
             this.text = VarString.empty();
         }
 
@@ -595,7 +456,7 @@ public class Csv {
         }
 
         public void addValue(String value) {
-            if (parent.naValues.contains(value)) {
+            if (parent.naValues.get().contains(value)) {
                 value = "?";
             }
             if (type == null) {
@@ -613,7 +474,7 @@ public class Csv {
                         return;
                     } catch (IllegalArgumentException th) {
                         // if it's the last default type, than nothing else could be done
-                        if (var.type() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
+                        if (var.type() == parent.defaultTypes.get().get(parent.defaultTypes.get().size() - 1)) {
                             throw new IllegalArgumentException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
                                             value, var.type(), th.getMessage()));
@@ -623,23 +484,23 @@ public class Csv {
                     // have to find an upgrade
                     // find current default type position
                     int pos = 0;
-                    for (int i = 0; i < parent.defaultTypes.length; i++) {
-                        if (!parent.defaultTypes[i].equals(var.type())) continue;
+                    for (int i = 0; i < parent.defaultTypes.get().size(); i++) {
+                        if (!parent.defaultTypes.get().get(i).equals(var.type())) continue;
                         pos = i + 1;
                         break;
                     }
 
                     // try successive default type upgrades, if the last available fails also than throw an exception
-                    for (int i = pos; i < parent.defaultTypes.length; i++) {
+                    for (int i = pos; i < parent.defaultTypes.get().size(); i++) {
                         try {
-                            var = parent.defaultTypes[i].newInstance();
+                            var = parent.defaultTypes.get().get(i).newInstance();
                             if (text != null && text.rowCount() > 0)
                                 text.stream().forEach(s -> var.addLabel(s.getLabel()));
-                            if (i == parent.defaultTypes.length - 1)
+                            if (i == parent.defaultTypes.get().size() - 1)
                                 text = null;
                             break;
                         } catch (Exception th) {
-                            if (i == parent.defaultTypes.length - 1) {
+                            if (i == parent.defaultTypes.get().size() - 1) {
                                 throw new IllegalArgumentException(
                                         String.format("Could not parse value %s in type %s. Error: %s",
                                                 value, var.type(), th.getMessage()));

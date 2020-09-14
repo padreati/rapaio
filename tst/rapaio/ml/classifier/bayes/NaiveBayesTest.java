@@ -65,7 +65,7 @@ public class NaiveBayesTest {
 
         // change default parameters
 
-        nb.estimators.add(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
+        nb.estimators.set(GaussianEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0]));
         nb.prior.set(new PriorUniform());
 
         assertEquals("NaiveBayes", nb.name());

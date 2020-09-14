@@ -35,7 +35,7 @@ public class GBTClassifierModelTest {
                 .train.set(split.trainDf)
                 .test.set(split.testDf)
                 .skipStep.set(50)
-                .metrics.add(Accuracy.newMetric());
+                .metrics.set(Accuracy.newMetric());
         var model = GBTClassifierModel.newModel().runs.set(2000).runningHook.set(hook);
 
 

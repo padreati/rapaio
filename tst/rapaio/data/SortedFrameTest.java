@@ -46,9 +46,9 @@ public class SortedFrameTest {
     @BeforeEach
     void init() throws IOException {
         df = Csv.instance()
-                .withQuotes(false)
-                .withTypes(VType.DOUBLE, "z")
-                .withTypes(VType.INT, "y")
+                .quotes.set(false)
+                .types.add(VType.DOUBLE, "z")
+                .types.add(VType.INT, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 

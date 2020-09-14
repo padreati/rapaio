@@ -59,22 +59,22 @@ public class KernelEstimator extends AbstractEstimator {
         return new KernelEstimator(testName, kfunc, bandwidth);
     }
 
-    public static List<KernelEstimator> forRange(Frame df, VRange vRange) {
+    public static List<Estimator> forRange(Frame df, VRange vRange) {
         List<String> varNames = vRange.parseVarNames(df);
         return varNames.stream()
                 .map(name -> new KernelEstimator(name, new KFuncGaussian(), 0))
                 .collect(Collectors.toList());
     }
 
-    public static List<KernelEstimator> forType(Frame df, VType type) {
+    public static List<Estimator> forType(Frame df, VType type) {
         return forType(df, type, new KFuncGaussian());
     }
 
-    public static List<KernelEstimator> forType(Frame df, VType type, KFunc kfunc) {
+    public static List<Estimator> forType(Frame df, VType type, KFunc kfunc) {
         return forType(df, type, kfunc, 0);
     }
 
-    public static List<KernelEstimator> forType(Frame df, VType type, KFunc kfunc, double bandwidth) {
+    public static List<Estimator> forType(Frame df, VType type, KFunc kfunc, double bandwidth) {
         return VRange.onlyTypes(type).parseVarNames(df).stream()
                 .map(name -> new KernelEstimator(name, kfunc, bandwidth))
                 .collect(Collectors.toList());

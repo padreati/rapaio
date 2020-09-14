@@ -52,8 +52,8 @@ public class Datasets {
     public static Frame loadIrisDataset() {
         try {
             return Csv.instance()
-                    .withDefaultTypes(VType.DOUBLE)
-                    .withTypes(VType.NOMINAL, "class")
+                    .defaultTypes.set(VType.DOUBLE)
+                    .types.add(VType.NOMINAL, "class")
                     .read(Datasets.class, "iris-r.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,7 +62,7 @@ public class Datasets {
 
     public static Frame loadPearsonHeightDataset() throws IOException {
         return Csv.instance()
-                .withDefaultTypes(VType.DOUBLE)
+                .defaultTypes.set(VType.DOUBLE)
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
@@ -79,7 +79,7 @@ public class Datasets {
     public static Frame loadOldFaithful() {
         try {
             return Csv.instance()
-                    .withSeparatorChar('\t')
+                    .separatorChar.set('\t')
                     .read(Datasets.class, "old_faithful.tsv");
         } catch (IOException e) {
             throw new RuntimeException("Error loading old_faithful.tsv datasets.", e);
@@ -88,34 +88,34 @@ public class Datasets {
 
     public static Frame loadChestDataset() throws IOException {
         return Csv.instance()
-                .withSeparatorChar(',')
-                .withQuotes(true)
-                .withDefaultTypes(VType.DOUBLE)
+                .separatorChar.set(',')
+                .quotes.set(true)
+                .defaultTypes.set(VType.DOUBLE)
                 .read(Datasets.class, "chest.csv");
     }
 
     public static Frame loadCarMpgDataset() throws IOException {
         return Csv.instance()
-                .withSeparatorChar(',')
-                .withHeader(true)
-                .withQuotes(true)
-                .withDefaultTypes(VType.DOUBLE)
-                .withTypes(VType.NOMINAL, "carname", "origin")
+                .separatorChar.set(',')
+                .header.set(true)
+                .quotes.set(true)
+                .defaultTypes.set(VType.DOUBLE)
+                .types.add(VType.NOMINAL, "carname", "origin")
                 .read(Datasets.class, "carmpg.csv");
     }
 
     public static Frame loadSpamBase() throws IOException {
-        return Csv.instance().withDefaultTypes(VType.DOUBLE)
-                .withTypes(VType.NOMINAL, "spam")
+        return Csv.instance().defaultTypes.set(VType.DOUBLE)
+                .types.add(VType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
 
     public static Frame loadMushrooms() {
         try {
             return Csv.instance()
-                    .withSeparatorChar(',')
-                    .withHeader(true)
-                    .withQuotes(false)
+                    .separatorChar.set(',')
+                    .header.set(true)
+                    .quotes.set(false)
                     .read(Datasets.class, "mushrooms.csv");
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
@@ -125,11 +125,11 @@ public class Datasets {
     public static Frame loadPlay() {
         try {
             return Csv.instance()
-                    .withSeparatorChar(',')
-                    .withHeader(true)
-                    .withQuotes(false)
-                    .withTypes(VType.DOUBLE, "temp", "humidity")
-                    .withTypes(VType.NOMINAL, "windy")
+                    .separatorChar.set(',')
+                    .header.set(true)
+                    .quotes.set(false)
+                    .types.add(VType.DOUBLE, "temp", "humidity")
+                    .types.add(VType.NOMINAL, "windy")
                     .read(Datasets.class, "play.csv");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -138,39 +138,39 @@ public class Datasets {
 
     public static Frame loadOlympic() throws IOException {
         return Csv.instance()
-                .withQuotes(false)
-                .withTypes(VType.DOUBLE, "Edition")
+                .quotes.set(false)
+                .types.add(VType.DOUBLE, "Edition")
                 .read(Datasets.class, "olympic.csv");
     }
 
     public static Frame loadProstateCancer() throws IOException {
         return Csv.instance()
-                .withSeparatorChar('\t')
-                .withDefaultTypes(VType.DOUBLE, VType.NOMINAL)
+                .separatorChar.set('\t')
+                .defaultTypes.set(VType.DOUBLE, VType.NOMINAL)
                 .read(Datasets.class, "prostate.csv");
     }
 
     public static Frame loadHousing() throws IOException {
         return Csv.instance()
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
 //                .withTypes(VarType.BINARY, "CHAS")
                 .read(Datasets.class, "housing.csv");
     }
 
     public static Frame loadLifeScience() throws IOException {
         return Csv.instance()
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
-                .withTypes(VType.NOMINAL, "class")
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
+                .types.add(VType.NOMINAL, "class")
                 .read(Datasets.class.getResourceAsStream("life_science.csv"));
     }
 
     public static Frame loadISLAdvertising() throws IOException {
         return Csv.instance()
-                .withQuotes(true)
-                .withDefaultTypes(VType.DOUBLE)
-                .withTypes(VType.NOMINAL, "ID")
+                .quotes.set(true)
+                .defaultTypes.set(VType.DOUBLE)
+                .types.add(VType.NOMINAL, "ID")
                 .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));
     }
 
@@ -203,14 +203,14 @@ public class Datasets {
 
     public static Frame loadCoverType() throws IOException {
         return Csv.instance()
-                .withQuotes(true)
+                .quotes.set(true)
                 .read(Datasets.class.getResourceAsStream("covtype.csv"));
     }
 
     public static Frame loasSAheart() {
         try {
             return Csv.instance()
-                    .withTypes(VType.NOMINAL, "famhist", "chd")
+                    .types.add(VType.NOMINAL, "famhist", "chd")
                     .read(Datasets.class.getResourceAsStream("SAheart.csv"));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());

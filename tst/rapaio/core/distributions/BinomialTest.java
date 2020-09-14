@@ -44,8 +44,8 @@ public class BinomialTest {
     @BeforeEach
     public void setUp() throws Exception {
         df = Csv.instance()
-                .withHeader(true)
-                .withQuotes(false)
+                .header.set(true)
+                .quotes.set(false)
                 .read(BinomialTest.class, "binom.csv");
     }
 

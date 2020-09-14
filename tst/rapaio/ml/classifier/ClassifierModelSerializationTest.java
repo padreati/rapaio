@@ -34,7 +34,6 @@ import rapaio.data.VarNominal;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
 import rapaio.ml.classifier.bayes.NaiveBayes;
-import rapaio.ml.classifier.bayes.nb.Estimator;
 import rapaio.ml.classifier.bayes.nb.KernelEstimator;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.classifier.tree.CTree;
@@ -56,7 +55,7 @@ public class ClassifierModelSerializationTest {
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(OneRule.newModel(), iris, "class", "iris", varModel, varData, varAcc);
-        testModel(NaiveBayes.newModel().estimators.add(KernelEstimator.forType(iris, VType.DOUBLE).toArray(new Estimator[0])), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(NaiveBayes.newModel().estimators.set(KernelEstimator.forType(iris, VType.DOUBLE)), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
 

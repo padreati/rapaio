@@ -43,8 +43,8 @@ public class StudentTTest {
     @Test
     void testPdf() throws IOException {
         Frame df = Csv.instance()
-                .withDefaultTypes(VType.DOUBLE)
-                .withQuotes(false)
+                .defaultTypes.set(VType.DOUBLE)
+                .quotes.set(false)
                 .read(StudentTTest.class, "student-density.csv");
 
         for (int i = 0; i < df.rowCount(); i++) {
@@ -65,8 +65,8 @@ public class StudentTTest {
     @Test
     void testCdf() throws IOException {
         Frame df = Csv.instance()
-                .withDefaultTypes(VType.DOUBLE)
-                .withQuotes(false)
+                .defaultTypes.set(VType.DOUBLE)
+                .quotes.set(false)
                 .read(StudentTTest.class, "student-distribution.csv");
 
         for (int i = 0; i < df.rowCount(); i++) {
@@ -87,8 +87,8 @@ public class StudentTTest {
     @Test
     void testQuantile() throws IOException {
         Frame df = Csv.instance()
-                .withDefaultTypes(VType.DOUBLE)
-                .withQuotes(false)
+                .defaultTypes.set(VType.DOUBLE)
+                .quotes.set(false)
                 .read(StudentTTest.class, "student-quantile.csv");
 
         for (int i = 0; i < df.rowCount(); i++) {
@@ -109,10 +109,10 @@ public class StudentTTest {
     @Test
     void testWithR() throws IOException {
         Frame df = Csv.instance()
-                .withHeader(true)
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
-                .withNAValues("?", "-Inf", "Inf", "NA")
+                .header.set(true)
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
+                .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "student.csv");
         StudentT t1 = StudentT.of(1);
         StudentT t2 = StudentT.of(2);

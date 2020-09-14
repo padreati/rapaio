@@ -137,9 +137,9 @@ public class SortVarTest {
     void testGetterSetter() throws IOException {
 
         Frame df = Csv.instance()
-                .withQuotes(false)
-                .withTypes(VType.DOUBLE, "z")
-                .withTypes(VType.INT, "y")
+                .quotes.set(false)
+                .types.add(VType.DOUBLE, "z")
+                .types.add(VType.INT, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
         Var nominal = df.rvar(0);

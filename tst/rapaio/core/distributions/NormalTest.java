@@ -47,16 +47,16 @@ public class NormalTest {
     @BeforeEach
     void setUp() throws IOException {
         otherDf = Csv.instance()
-                .withHeader(true)
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
-                .withNAValues("?", "-Inf", "Inf", "NA")
+                .header.set(true)
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
+                .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "other_normal.csv");
         stdDf = Csv.instance()
-                .withHeader(true)
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
-                .withNAValues("?", "-Inf", "Inf", "NA")
+                .header.set(true)
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
+                .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "standard_normal.csv");
     }
 

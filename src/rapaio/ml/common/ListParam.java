@@ -44,6 +44,17 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
     }
 
     @SafeVarargs
+    public final S set(T... arrayValues) {
+        List<T> values = Arrays.asList(arrayValues);
+        clear();
+        if (!validate(values)) {
+            throw new IllegalArgumentException("Parameter values are invalid.");
+        }
+        this.values.addAll(values);
+        return params;
+    }
+
+    @SafeVarargs
     public final S add(T... values) {
         if (!validate(Arrays.asList(values))) {
             throw new IllegalArgumentException("Parameter values are invalid.");

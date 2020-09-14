@@ -41,10 +41,10 @@ public class ChiSquareTest {
     @Test
     void testWithR() throws IOException {
         Frame df = Csv.instance()
-                .withHeader(true)
-                .withSeparatorChar(',')
-                .withDefaultTypes(VType.DOUBLE)
-                .withNAValues("?", "-Inf", "Inf", "NA")
+                .header.set(true)
+                .separatorChar.set(',')
+                .defaultTypes.set(VType.DOUBLE)
+                .naValues.set("?", "-Inf", "Inf", "NA")
                 .read(this.getClass(), "chisq.csv");
 
         ChiSquare c1 = ChiSquare.of(1);

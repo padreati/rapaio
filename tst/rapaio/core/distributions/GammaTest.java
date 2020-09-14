@@ -56,7 +56,7 @@ public class GammaTest {
     @BeforeEach
     void beforeEach() throws IOException {
         RandomSource.setSeed(123);
-        df = Csv.instance().withNAValues("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
+        df = Csv.instance().naValues.set("NaN").read(HypergeometricTest.class, "gamma.csv").mapRows(Mapping.range(1_000));
         g_low_low = Gamma.of(0.5, 0.5);
         g_one_low = Gamma.of(0.5, 1);
         g_high_low = Gamma.of(0.5, 5);
