@@ -62,7 +62,7 @@ you can follow the instruction from
 [IJava](https://github.com/SpencerPark/IJava#installing). The following 
 notation is specific to IJava kernel jupyter notation. 
 
-    %maven io.github.padreati:rapaio:2.3.0  
+    %maven io.github.padreati:rapaio:2.4.0  
 
 ## Acknowledgements
 
