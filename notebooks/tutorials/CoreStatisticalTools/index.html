@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/CoreStatisticalTools/">
+
+
+    <meta name="author" content="Aurelian Tutuianu">
+
+    <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+
+
+    <title>Rapaio documentation site</title>
+
+
+    <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
+
+
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+    <style>body, input {
+        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
+    }
+
+    code, kbd, pre {
+        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
+    }</style>
+
+
+    <link rel="stylesheet" href="../../../stylesheets/extra.css">
+
+
+</head>
+
+
+<body dir="ltr">
+
+
+<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+
+
+    <a href="#4-core-statistical-tools" class="md-skip">
+        Skip to content
+    </a>
+
+</div>
+<div data-md-component="announce">
+
+</div>
+
+<header class="md-header" data-md-component="header">
+    <nav class="md-header-nav md-grid" aria-label="Header">
+        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+            </svg>
+
+        </a>
+        <label class="md-header-nav__button md-icon" for="__drawer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
+            </svg>
+        </label>
+        <div class="md-header-nav__title" data-md-component="header-title">
+
+            <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Rapaio
+          </span>
+                <span class="md-header-nav__topic md-ellipsis">
+            
+              4. Core statistical tools
+            
+          </span>
+            </div>
+
+        </div>
+
+
+    </nav>
+</header>
+
+<div class="md-container" data-md-component="container">
+
+
+    <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+                            <label class="md-nav__title" for="__drawer">
+                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
+                                   aria-label="Rapaio">
+
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+                                    </svg>
+
+                                </a>
+                                Rapaio
+                            </label>
+
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
+                                        Welcome to Rapaio
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../../library-features/" title="Features provided" class="md-nav__link">
+                                        Features provided
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+
+                                    <label class="md-nav__link" for="nav-3">
+                                        Notebooks
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-3">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Notebooks
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../../BriefPreview/" title="Brief preview of rapaio features" class="md-nav__link">
+                                                    Brief preview of rapaio features
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+
+                                    <label class="md-nav__link" for="nav-4">
+                                        Tutorials
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-4">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Tutorials
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
+                                                    Data Handling Overview
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+                                        Source
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+
+                        <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+                            <label class="md-nav__title" for="__toc">
+                                <span class="md-nav__icon md-icon"></span>
+                                Table of contents
+                            </label>
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+                                <li class="md-nav__item">
+                                    <a href="#4-core-statistical-tools" class="md-nav__link">
+                                        4. Core statistical tools
+                                    </a>
+
+                                    <nav class="md-nav" aria-label="4. Core statistical tools">
+                                        <ul class="md-nav__list">
+
+                                            <li class="md-nav__item">
+                                                <a href="#41-distributions" class="md-nav__link">
+                                                    4.1 Distributions
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="4.1 Distributions">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#411-normal-distribution" class="md-nav__link">
+                                                                4.1.1 Normal distribution
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#412-student-t-distribution" class="md-nav__link">
+                                                                4.1.2 Student t distribution
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#42-core-statistical-tools" class="md-nav__link">
+                                                    4.2 Core statistical tools
+                                                </a>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#43-hypothesis-testing" class="md-nav__link">
+                                                    4.3 Hypothesis testing
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="4.3 Hypothesis testing">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#431-z-tests" class="md-nav__link">
+                                                                4.3.1 Z tests
+                                                            </a>
+
+                                                            <nav class="md-nav" aria-label="4.3.1 Z tests">
+                                                                <ul class="md-nav__list">
+
+                                                                    <li class="md-nav__item">
+                                                                        <a href="#example-1-one-sample-z-test" class="md-nav__link">
+                                                                            Example 1: One sample z-test
+                                                                        </a>
+
+                                                                    </li>
+
+                                                                    <li class="md-nav__item">
+                                                                        <a href="#what-if-we-ask-if-the-machine-produces-more-than-standard-specification"
+                                                                           class="md-nav__link">
+                                                                            What if we ask if the machine produces more than standard
+                                                                            specification?
+                                                                        </a>
+
+                                                                    </li>
+
+                                                                </ul>
+                                                            </nav>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-2-one-sample-z-test" class="md-nav__link">
+                                                                Example 2: One sample z-test
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-3-two-samples-z-test" class="md-nav__link">
+                                                                Example 3: Two samples z test
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#432-t-tests" class="md-nav__link">
+                                                                4.3.2 T tests
+                                                            </a>
+
+                                                            <nav class="md-nav" aria-label="4.3.2 T tests">
+                                                                <ul class="md-nav__list">
+
+                                                                    <li class="md-nav__item">
+                                                                        <a href="#example-4" class="md-nav__link">
+                                                                            Example 4:
+                                                                        </a>
+
+                                                                    </li>
+
+                                                                </ul>
+                                                            </nav>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-content">
+                <article class="md-content__inner md-typeset">
+
+
+                    <h1>4. Core statistical tools</h1>
+
+                    <h2 id="4-core-statistical-tools">4. Core statistical tools</h2>
+                    <p>Rapaio library builds it's machine learning and data mining approach from a statistical perspective. As such, the
+                        library provides the following set of features:</p>
+                    <ul>
+                        <li>generate samples from a set of common distributions</li>
+                        <li>evaluate pdf, cdf, quantile for a common set of distributions</li>
+                        <li>standard hypothesis testing</li>
+                        <li>core statistical procedures on samples like mean and variance</li>
+                        <li>correlation coefficients computations</li>
+                    </ul>
+                    <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
+                            class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
+</code></pre>
+                    </div>
+
+                    <h3 id="41-distributions">4.1 Distributions</h3>
+                    <p>Statistics work with the concept or random variable. We can imagine a random variable like a process which generates
+                        numbers but we do not know precisely the generated value. This analogy works fine, even when we think at observing
+                        something. Let work that by an example.</p>
+                    <p>Imagine that we measure the heights of some men from a given place. We notice and collect some values. We might ask
+                        which is the process that generated the heights? Since we measured something, but the values are out of our control,
+                        the question is legitimate. The answer is the total number of factors which influenced the height of a men,
+                        including genes, culture, climate, longitude and latitude, and so on. All those imaginable factors together can be
+                        seen as a process which determines the heights.</p>
+                    <p>Now we identified which is the process. The next legitimate question is why random? Since there are a lot of factors
+                        inside the process, we usually are in the situation where we don't understand the underlying mechanics of the
+                        process. This can happen because we did not identified all the determinant factors. This can also happen simply
+                        because it is too complex. And there are also cases when we simply do not want or can't understand. Because of that
+                        we simply can't determine precisely the height of an individual men starting from known factors.</p>
+                    <p>We can't do that for individual, but we can say something more when more individuals are analyzed. Statistics is
+                        about populations (the total set of observations) and samples (a part of the existent samples), not about
+                        individuals. Thus when we talk about an individual we talk through the lenses of population. And because it's not
+                        precise we name it random.</p>
+                    <p>A random variable can be described in many ways, but all those formulations maps a potential interval of observable
+                        values with a probability. What we know when we have a random variable is a set of potential observable values and
+                        probability assigned with those values.</p>
+                    <h4 id="411-normal-distribution">4.1.1 Normal distribution</h4>
+                    <p>Normal or Gaussian distribution is perhaps the most known distribution. It is the distribution of the <em>bell
+                        shape</em>, even thought it is not unique among bell shaped distributions.</p>
+                    <p>The implementation of normal distribution lies in:<code>rapaio.core.distributions.Normal</code>.</p>
+                    <div class="highlight"><pre><span></span><code><span class="c1">// build a normal distribution with mean = 2, and standard deviation = 3</span>
+<span class="n">Normal</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">Normal</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <p>Normal distribution defined by two independent parameters: mean and standard deviation. Mean tells us when is the
+                        center of the distribution and standard deviation is a measure of variability.</p>
+                    <p>We can generate a random sample from this distribution.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">RandomSource</span><span class="p">.</span><span
+                            class="na">setSeed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">Var</span> <span class="n">x</span> <span class="o">=</span> <span class="n">normal</span><span class="p">.</span><span
+                                class="na">sample</span><span class="p">(</span><span class="mi">100</span><span class="p">).</span><span
+                                class="na">withName</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span
+                                class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; summary(name: x, type: DOUBLE)
+rows: 100, complete: 100, missing: 0
+        x [dbl]      
+   Min. : -5.7222763 
+1st Qu. : -0.4410606 
+ Median :  2.0399289 
+   Mean :  1.9267022 
+2nd Qu. :  3.6800746 
+   Max. : 11.2537520
+</code></pre>
+                    </div>
+
+                    <p>We can notice that the sample mean is <span class="arithmatex">\(1.927\)</span>, which is close to the population
+                        mean, but not equal. This is as expected. Since we generated a set of random values we can't expect to have a sample
+                        mean identical with population mean. If we expect that than we can suspect the generated numbers are not random.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">funLine</span><span class="p">(</span><span
+                            class="n">normal</span><span class="p">::</span><span class="n">pdf</span><span class="p">).</span><span
+                            class="na">xLim</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span
+                            class="p">,</span> <span class="mi">12</span><span class="p">).</span><span class="na">yLim</span><span
+                            class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_7_0.png"/></p>
+                    <p>We draw now a histogram built from the generated sample, and the distribution which was used to generate values:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span
+                            class="n">x</span><span class="p">,</span> <span class="n">prob</span><span class="p">(</span><span class="kc">true</span><span
+                            class="p">),</span> <span class="n">bins</span><span class="p">(</span><span class="mi">20</span><span
+                            class="p">)).</span><span class="na">funLine</span><span class="p">(</span><span class="n">normal</span><span
+                            class="p">::</span><span class="n">pdf</span><span class="p">));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_9_0.png"/></p>
+                    <h4 id="412-student-t-distribution">4.1.2 Student t distribution</h4>
+                    <p>Student t distribution is one of the most important distributions related with normal distribution. You can interpret
+                        the t distribution as a normal distribution, with additional uncertainty in the variance parameter.</p>
+                    <p>Suppose that we are interested in the mean of a random sample normally distributed. If we know the mean and standard
+                        deviation of the population, than we could emply a z test. But often is the case where we do not know the standard
+                        deviation. What we can do? We can use a plug in estimated value for the standard deviation. The problem is that the
+                        estimated value of the standard deviation is not given anymore, it is not a given parameter of the population.
+                        Instead, it is an estimated value of that parameter, which implies the fact that it contains some error. This is the
+                        t distribution. </p>
+                    <p>Formally the t distribution can be described as:</p>
+                    <div class="arithmatex">\[T = \frac{Z}{\sqrt{V / \nu}}\]</div>
+                    <p>where <span class="arithmatex">\(Z \sim N(0,1)\)</span>, $V \sim {\chi}^2_\nu $ and <span
+                            class="arithmatex">\(Z\)</span> and <span class="arithmatex">\(V\)</span> are independent.</p>
+                    <p>What is important to note here is that the degrees of freedom <span class="arithmatex">\(\nu\)</span> does not depend
+                        on <span class="arithmatex">\(\mu\)</span> or <span class="arithmatex">\(\sigma\)</span>, parameters of the original
+                        population. This is what makes this distribution important in practice.</p>
+                    <p>To increase the understanding of this intuition we will draw a normal distribution and several t distributions with
+                        various degrees of freedom.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Normal</span> <span class="n">n</span> <span
+                            class="o">=</span> <span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span
+                            class="p">();</span>
+<span class="n">StudentT</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">1</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t10</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">10</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t100</span> <span class="o">=</span> <span class="n">StudentT</span><span class="p">.</span><span
+                                class="na">of</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+
+<span class="n">Plot</span> <span class="n">p</span> <span class="o">=</span> <span class="n">funLine</span><span class="p">(</span><span
+                                class="n">n</span><span class="p">::</span><span class="n">pdf</span><span class="p">,</span> <span
+                                class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">t1</span><span class="p">::</span><span
+                                class="n">pdf</span><span class="p">,</span> <span class="n">color</span><span class="p">(</span><span
+                                class="mi">2</span><span class="p">))</span>
+<span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">t2</span><span class="p">::</span><span
+                                class="n">pdf</span><span class="p">,</span> <span class="n">color</span><span class="p">(</span><span
+                                class="mi">3</span><span class="p">))</span>
+<span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">t10</span><span class="p">::</span><span
+                                class="n">pdf</span><span class="p">,</span> <span class="n">color</span><span class="p">(</span><span
+                                class="mi">4</span><span class="p">))</span>
+<span class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">t100</span><span class="p">::</span><span
+                                class="n">pdf</span><span class="p">,</span> <span class="n">color</span><span class="p">(</span><span
+                                class="mi">5</span><span class="p">))</span>
+<span class="p">.</span><span class="na">xLim</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span
+                                class="p">,</span> <span class="mi">10</span><span class="p">).</span><span class="na">yLim</span><span
+                                class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.45</span><span
+                                class="p">)</span>
+<span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span
+                                class="mf">0.4</span><span class="p">,</span> <span class="n">color</span><span class="p">(</span><span
+                                class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span
+                                class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span
+                                class="mi">5</span><span class="p">),</span> <span class="n">labels</span><span class="p">(</span><span
+                                class="s">&quot;normal&quot;</span><span class="p">,</span> <span class="s">&quot;t1&quot;</span><span
+                                class="p">,</span> <span class="s">&quot;t2&quot;</span><span class="p">,</span> <span class="s">&quot;t10&quot;</span><span
+                                class="p">,</span> <span class="s">&quot;t100&quot;</span><span class="p">));</span>
+
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p</span><span
+                                class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_11_0.png"/></p>
+                    <p>Looking at the image above we see that the standard normal distribution has the highest value at <span
+                            class="arithmatex">\(<span class="arithmatex">\(0\)</span>\)</span>. We note also that the t distribution with 1
+                        degree of freedom has the lowest value at <span class="arithmatex">\(<span class="arithmatex">\(0\)</span>\)</span>.
+                        As the degrees of freedom increases the value at <span class="arithmatex">\(<span class="arithmatex">\(0\)</span>\)</span>
+                        increases as well.</p>
+                    <p>The reverse is true when we are looking for tails. The t with 1 degree of freedom has the fattest tail. This means
+                        that it have the highest uncertainty.</p>
+                    <p>To illustrate better the concept, we compute the 0.975 quantiles of those distributions:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Normal</span> <span class="n">n</span> <span
+                            class="o">=</span> <span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span
+                            class="p">();</span>
+<span class="n">StudentT</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">1</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t10</span> <span class="o">=</span> <span class="n">StudentT</span><span
+                                class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">10</span><span
+                                class="p">);</span>
+<span class="n">StudentT</span> <span class="n">t100</span> <span class="o">=</span> <span class="n">StudentT</span><span class="p">.</span><span
+                                class="na">of</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+
+<span class="n">Var</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">VarNominal</span><span
+                                class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">n</span><span
+                                class="p">.</span><span class="na">name</span><span class="p">(),</span> <span class="n">t100</span><span
+                                class="p">.</span><span class="na">name</span><span class="p">(),</span> <span class="n">t10</span><span
+                                class="p">.</span><span class="na">name</span><span class="p">(),</span><span class="n">t2</span><span
+                                class="p">.</span><span class="na">name</span><span class="p">(),</span> <span class="n">t1</span><span
+                                class="p">.</span><span class="na">name</span><span class="p">()).</span><span
+                                class="na">withName</span><span class="p">(</span><span class="s">&quot;distr&quot;</span><span
+                                class="p">);</span>
+<span class="n">Var</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span
+                                class="na">copy</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span
+                                class="na">quantile</span><span class="p">(</span><span class="mf">0.975</span><span
+                                class="p">),</span> <span class="n">t100</span><span class="p">.</span><span class="na">quantile</span><span
+                                class="p">(</span><span class="mf">0.975</span><span class="p">),</span> <span class="n">t10</span><span
+                                class="p">.</span><span class="na">quantile</span><span class="p">(</span><span class="mf">0.975</span><span
+                                class="p">),</span> <span class="n">t2</span><span class="p">.</span><span class="na">quantile</span><span
+                                class="p">(</span><span class="mf">0.975</span><span class="p">),</span>
+<span class="n">t1</span><span class="p">.</span><span class="na">quantile</span><span class="p">(</span><span class="mf">0.975</span><span
+                                class="p">)).</span><span class="na">withName</span><span class="p">(</span><span class="s">&quot;q0.975&quot;</span><span
+                                class="p">);</span>
+
+<span class="n">SolidFrame</span><span class="p">.</span><span class="na">byVars</span><span class="p">(</span><span
+                                class="n">dist</span><span class="p">,</span> <span class="n">p1</span><span class="p">).</span><span
+                                class="na">printContent</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>                 distr                q0.975                    distr                q0.975
+[0]              Normal(mu=0, sd=1)  1.959964  [3]   StudentT(df=2, mu=0, sigma=1)  4.3026527 
+[1] StudentT(df=100, mu=0, sigma=1)  1.9839715 [4]   StudentT(df=1, mu=0, sigma=1) 12.7062047 
+[2]  StudentT(df=10, mu=0, sigma=1)  2.2281389
+</code></pre>
+                    </div>
+
+                    <p>We can see that if the degrees of freedom increases the quantiles decreases and is getting closer to the values of
+                        normal distribution. Often the degrees of freedom is computed from the sample size in one way or another. That means
+                        the t distribution is getting closer to a normal distribution if the sample is large. Often when we are dealing with
+                        samples of size over <span class="arithmatex">\(100\)</span> the t distribution gives almost the same results ad the
+                        normal distribution. As a consequence normal distribution can be used as an approximation if the sample size is
+                        large.</p>
+                    <h3 id="42-core-statistical-tools">4.2 Core statistical tools</h3>
+                    <p><strong>TODO</strong></p>
+                    <h3 id="43-hypothesis-testing">4.3 Hypothesis testing</h3>
+                    <p>Rapaio library aims to contain an extensive set of alternatives for hypothesis testing. Right now there are available
+                        just some of them. Hypothesis testing an invaluable tool to answer questions when we are dealing with
+                        uncertainty.</p>
+                    <p>We deal with presenting hypothesis testing by following some examples.</p>
+                    <h4 id="431-z-tests">4.3.1 Z tests</h4>
+                    <p>Any hypothesis test which uses normal distribution for the computed statistic is named a z test. We should note that
+                        z tests needs to know standard deviations for the involved populations. It is accustomed that when the sample is
+                        large enough the value of the population standard deviation can be estimated from data. This is not implemented in
+                        library. For the case when one does not know the involved standard deviations one can use t tests.</p>
+                    <p>Note than because of this requirement, the z tests are rarely used. This is so because we rarely know the population
+                        parameters.</p>
+                    <h5 id="example-1-one-sample-z-test">Example 1: One sample z-test</h5>
+                    <p><em>Sue is in charge of Quality Control at a bottling facility (This example is taken from <strong><a
+                            href="http://www.cliffsnotes.com/study-guides/statistics/univariate-inferential-tests/two-sample-z-test-for-comparing-two-means">here</a></strong>).
+                        She is checking the operation of a machine that should deliver 355 mL of liquid into an aluminum can. If the machine
+                        delivers too little, then the local Regulatory Agency may fine the company. If the machine delivers too much, then
+                        the company may lose money. For these reasons, Sue is looking for any evidence that the amount delivered by the
+                        machine is different from 355 mL.</em></p>
+                    <p>During her investigation, Sue obtains a random sample of <span class="arithmatex">\(10\)</span> cans. She measures
+                        the following volumes:</p>
+                    <p><span class="arithmatex">\(355.02 355.47 353.01 355.93 356.66 355.98 353.74 354.96 353.81 355.79\)</span></p>
+                    <p>The machine's specifications claim that the amount of liquid delivered varies according to a normal distribution,
+                        with mean <span class="arithmatex">\(\mu = 355mL\)</span> and standard deviation <span class="arithmatex">\(\sigma = 0.05mL\)</span>.
+                    </p>
+                    <p>Do the data suggest that the machine is operating correctly?</p>
+                    <p>The null hypothesis is that the machine is operating according to its specifications; thus</p>
+                    <div class="arithmatex">\[H_0 : μ = 355\]</div>
+                    <p><span class="arithmatex">\(\mu\)</span> is the mean volume delivered by the machine. Sue is looking for evidence of
+                        any difference; thus, the alternate hypothesis is</p>
+                    <div class="arithmatex">\[H_1 : \mu \neq 355\]</div>
+                    <p>Since the hypothesis concerns a single population mean and the population follows a normal distribution with known
+                        standard deviation, a z-test is appropriate.</p>
+                    <p>What we can do is to use <em>HTTools</em> facility which offers shortcut methods to all implemented hypothesis tests.
+                        One of them is one sample z test which enables one to test if the sample mean is far from the expected sample mean.
+                    </p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Var</span> <span class="n">cans</span> <span
+                            class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span
+                            class="p">(</span><span class="mf">355.02</span><span class="p">,</span> <span class="mf">355.47</span><span
+                            class="p">,</span> <span class="mf">353.01</span><span class="p">,</span> <span class="mf">355.93</span><span
+                            class="p">,</span> <span class="mf">356.66</span><span class="p">,</span> <span class="mf">355.98</span><span
+                            class="p">,</span> <span class="mf">353.74</span><span class="p">,</span> <span class="mf">354.96</span><span
+                            class="p">,</span> <span class="mf">353.81</span><span class="p">,</span> <span class="mf">355.79</span><span
+                            class="p">);</span>
+<span class="c1">// run the test and print results</span>
+<span class="n">ZTestOneSample</span><span class="p">.</span><span class="na">test</span><span class="p">(</span><span class="n">cans</span><span
+                                class="p">,</span> <span class="mi">355</span><span class="p">,</span> <span class="mf">0.05</span><span
+                                class="p">).</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; HTTools.zTestOneSample
+
+ One Sample z-test
+
+mean: 355
+sd: 0.05
+significance level: 0.05
+alternative hypothesis: two tails P &gt; |z|
+
+sample size: 10
+sample mean: 355.037
+z score: 2.3400855
+p-value: 0.019279327322640594
+conf int: [355.0060102,355.0679898]
+</code></pre>
+                    </div>
+
+                    <p>The interpretation of the results is the following:</p>
+                    <ul>
+                        <li>the z-score is <span class="arithmatex">\(2.34\)</span>, which means that the computed sample mean is greater
+                            with more than 2 standard deviations
+                        </li>
+                        <li>for critical level being <span class="arithmatex">\(0.05\)</span> and p-value <span
+                                class="arithmatex">\(0.019\)</span>, we reject the null hypothesis that the mean volume delivered by the
+                            machine is equal with <span class="arithmatex">\(355\)</span></li>
+                    </ul>
+                    <p><strong>Note:</strong> even if we know that the sample mean is greater than the proposed mean, we cannot propose this
+                        conclusion. The proper conclusion would be that <em>is different than <span class="arithmatex">\(355\)</span></em>.
+                    </p>
+                    <h5 id="what-if-we-ask-if-the-machine-produces-more-than-standard-specification">What if we ask if the machine produces
+                        more than standard specification?</h5>
+                    <p>We deal with this question by changing the null hypothesis. Our hypotheses become:</p>
+                    <div class="arithmatex">\[H_0 : \mu \leq 355\]</div>
+                    <div class="arithmatex">\[H_1 \geq 355\]</div>
+                    <p>Our code looks like:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">ZTestOneSample</span><span class="p">.</span><span
+                            class="na">test</span><span class="p">(</span><span class="n">cans</span><span class="p">,</span>
+<span class="mi">355</span><span class="p">,</span> <span class="cm">/* mean */</span>
+<span class="mf">0.05</span><span class="p">,</span> <span class="cm">/* sd */</span>
+<span class="mf">0.05</span><span class="p">,</span> <span class="cm">/* significance level */</span>
+<span class="n">HTest</span><span class="p">.</span><span class="na">Alternative</span><span class="p">.</span><span
+                                class="na">GREATER_THAN</span> <span class="cm">/* alternative */</span>
+<span class="p">).</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; HTTools.zTestOneSample
+
+ One Sample z-test
+
+mean: 355
+sd: 0.05
+significance level: 0.05
+alternative hypothesis: one tail P &gt; z
+
+sample size: 10
+sample mean: 355.037
+z score: 2.3400855
+p-value: 0.009639663661320297
+conf int: [355.0060102,355.0679898]
+</code></pre>
+                    </div>
+
+                    <p>As expected the statistical power of this test is increased. As a consequence the p value was smaller and we still
+                        reject the null hypothesis. In this case we had an obvious case, when testing one side gave the same result as
+                        testing with two sides. I gave example just to help the user to pay attention to those kind of details.</p>
+                    <h4 id="example-2-one-sample-z-test">Example 2: One sample z-test</h4>
+                    <p><em>A herd of <span class="arithmatex">\(1500\)</span> steer was fed a special high‐protein grain for a month. A
+                        random sample of <span class="arithmatex">\(29\)</span> were weighed and had gained an average of <span
+                                class="arithmatex">\(6.7\)</span> pounds. If the standard deviation of weight gain for the entire herd is
+                        <span class="arithmatex">\(7.1\)</span>, test the hypothesis that the average weight gain per steer for the month
+                        was more than <span class="arithmatex">\(5\)</span> pounds. We have the following null and alternative
+                        hypothesis:</em></p>
+                    <div class="arithmatex">\[H_0 : \mu = 5$$
+                        $$H_1 : \mu &gt; 5\]
+                    </div>
+                    <p>This example is adapted from <strong><a
+                            href="https://en.wikibooks.org/wiki/Statistics/Testing_Data/z-tests#Is_The_Machine_Working_Correctly.3F">here</a></strong>
+                    </p>
+                    <div class="highlight"><pre><span></span><code><span class="n">ZTestOneSample</span> <span class="n">ztest</span> <span
+                            class="o">=</span> <span class="n">ZTestOneSample</span><span class="p">.</span><span
+                            class="na">test</span><span class="p">(</span>
+<span class="mf">6.7</span><span class="p">,</span> <span class="cm">/* sample mean */</span>
+<span class="mi">29</span><span class="p">,</span> <span class="cm">/* sample size */</span>
+<span class="mi">5</span><span class="p">,</span> <span class="cm">/* tested mean */</span>
+<span class="mf">7.1</span><span class="p">,</span> <span class="cm">/* population standard deviation */</span>
+<span class="mf">0.05</span><span class="p">,</span> <span class="cm">/* significance level */</span>
+<span class="n">HTest</span><span class="p">.</span><span class="na">Alternative</span><span class="p">.</span><span
+                                class="na">GREATER_THAN</span> <span class="cm">/* alternative */</span>
+<span class="p">);</span>
+<span class="n">ztest</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; HTTools.zTestOneSample
+
+ One Sample z-test
+
+mean: 5
+sd: 7.1
+significance level: 0.05
+alternative hypothesis: one tail P &gt; z
+
+sample size: 29
+sample mean: 6.7
+z score: 1.2894057
+p-value: 0.0986285477062051
+conf int: [4.1159112,9.2840888]
+</code></pre>
+                    </div>
+
+                    <p>P-value is greater than significance level which means that we cannot reject the null hypothesis. We don't have
+                        enough evidence.</p>
+                    <h4 id="example-3-two-samples-z-test">Example 3: Two samples z test</h4>
+                    <p><em>The amount of a certain trace element in blood is known to vary with a standard deviation of <span
+                            class="arithmatex">\(14.1\)</span> ppm (parts per million) for male blood donors and <span class="arithmatex">\(9.5\)</span>
+                        ppm for female donors. Random samples of <span class="arithmatex">\(75\)</span> male and <span class="arithmatex">\(50\)</span>
+                        female donors yield concentration means of <span class="arithmatex">\(28\)</span> and <span class="arithmatex">\(33\)</span>
+                        ppm, respectively. What is the likelihood that the population means of concentrations of the element are the same
+                        for men and women?</em></p>
+                    <p>According with central limit theorem we can assume that the distribution of the sample mean is a normal distribution.
+                        More than that, since we have random samples, than the sample mean difference has a normal distribution. And because
+                        we know the standard deviation for each population, we can use a two sample z test for testing the difference of the
+                        sample means.</p>
+                    <div class="arithmatex">\[H_0 : \mu_1 - \mu_2 = 0$$
+                        $$H_1 : \mu_1 - \mu_2 \neq 0\]
+                    </div>
+                    <p>This example is taken from <strong><a
+                            href="http://www.cliffsnotes.com/study-guides/statistics/univariate-inferential-tests/two-sample-z-test-for-comparing-two-means">here</a></strong>.
+                    </p>
+                    <div class="highlight"><pre><span></span><code><span class="n">ZTestTwoSamples</span><span class="p">.</span><span
+                            class="na">test</span><span class="p">(</span>
+<span class="mi">28</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="cm">/* male sample mean and size */</span>
+<span class="mi">33</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="cm">/* female sample mean and size */</span>
+<span class="mi">0</span><span class="p">,</span> <span class="cm">/* difference of means */</span>
+<span class="mf">14.1</span><span class="p">,</span> <span class="mf">9.5</span> <span class="cm">/* standard deviations */</span>
+<span class="p">).</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; HTTools.zTestTwoSamples
+
+ Two Samples z-test
+
+x sample mean: 28
+x sample size: 75
+y sample mean: 33
+y sample size: 50
+mean: 0
+x sd: 14.1
+y sd: 9.5
+significance level: 0.05
+alternative hypothesis: two tails P &gt; |z|
+
+sample mean: -5
+z score: -2.3686842
+p-value: 0.017851489594360337
+conf int: [-9.1372421,-0.8627579]
+</code></pre>
+                    </div>
+
+                    <p>The test run with <span class="arithmatex">\(0.05\)</span> significance level (because it was a default value). The
+                        alternative is two tails since we test for difference in means not equal with zero. The resulted p-value is lower
+                        than the significance value which means that we reject the hypothesis that the two populations have the same mean.
+                        We can see that also from confidence interval, since it does not include <span class="arithmatex">\(0\)</span>.</p>
+                    <p><strong>Note:</strong> If we would considered a significance level of <span class="arithmatex">\(0.01\)</span> than
+                        we would not be able to reject the null hypothesis.</p>
+                    <h4 id="432-t-tests">4.3.2 T tests</h4>
+                    <p>T tests are similar with z tests. Both tests uses a statistic which has a normal distribution. A z test is used when
+                        one knows standard deviations. A t test is used when the standard deviation is estimated from data. Note that when
+                        the sample size is large enough, both tests gives virtually identical results, since the t distributions converges
+                        to a normal distribution when the sample increases.</p>
+                    <h5 id="example-4">Example 4:</h5>
+                    <p><em>A baseball team coach wants to know if his team is significantly different than other teams in the league in
+                        scoring runs. Nationally, the average number of score runs is 5.7. He peek randomly five games which happen to have
+                        scores: 8, 9, 4, 10 and 8.</em></p>
+                    <p>The coach is looking to see if the average number of scores for his team is different than the national average,
+                        which is given. We can assume the sample is normally distributed. A z test would be fine under those conditions, but
+                        we do not know the national standard deviations. We have to estimate that from sample. Thus a t test is proper in
+                        this case, especially because the sample is so small. We fix the significance level at <span class="arithmatex">\(0.05\)</span>
+                        and choose the two tail version of the test since we are interested in testing the equality.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Var</span> <span class="n">x</span> <span
+                            class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span
+                            class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span
+                            class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span
+                            class="p">,</span> <span class="mi">8</span><span class="p">).</span><span class="na">withName</span><span
+                            class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+<span class="n">TTestOneSample</span><span class="p">.</span><span class="na">test</span><span class="p">(</span><span
+                                class="n">x</span><span class="p">,</span> <span class="mf">5.7</span><span class="p">).</span><span
+                                class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; TTestOneSample
+
+ One Sample t-test
+
+mean: 5.7
+significance level: 0.05
+alternative hypothesis: two tails P &gt; |z|
+
+sample size: 5
+sample mean: 7.8
+sample sd: 2.2803509
+df: 4
+t: 2.0592194
+p-value: 0.10854860356776591
+conf int: [4.9685704,10.6314296]
+</code></pre>
+                    </div>
+
+                    <p>The p-value is greater that significance level, so we fail to reject the test.</p>
+                    <p>What if we would estimate the sample standard deviation directly from the sample and we would than use a z test?
+                        Let's see.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Var</span> <span class="n">x</span> <span
+                            class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span
+                            class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span
+                            class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span
+                            class="p">,</span> <span class="mi">8</span><span class="p">).</span><span class="na">withName</span><span
+                            class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+<span class="n">ZTestOneSample</span><span class="p">.</span><span class="na">test</span><span class="p">(</span><span
+                                class="n">x</span><span class="p">,</span> <span class="mf">5.7</span><span class="p">,</span> <span
+                                class="n">Variance</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span
+                                class="n">x</span><span class="p">).</span><span class="na">sdValue</span><span class="p">()).</span><span
+                                class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>&gt; HTTools.zTestOneSample
+
+ One Sample z-test
+
+mean: 5.7
+sd: 2.2803509
+significance level: 0.05
+alternative hypothesis: two tails P &gt; |z|
+
+sample size: 5
+sample mean: 7.8
+z score: 2.0592194
+p-value: 0.03947322372463613
+conf int: [5.8012211,9.7987789]
+</code></pre>
+                    </div>
+
+                    <p>According with this test the mean score of the team is different than the national average. This is an illustration
+                        failed application of central limit theorem fails with small number of observations. The t test was built to
+                        incorporate the unknown in estimating the variance. Thus we increase the need to provide stronger evidence to reject
+                        the null hypothesis.</p>
+
+
+                </article>
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="md-footer">
+
+        <div class="md-footer-meta md-typeset">
+            <div class="md-footer-meta__inner md-grid">
+                <div class="md-footer-copyright">
+
+                    Made with
+                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+                        Material for MkDocs
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+<script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script>
+<script id="__lang" type="application/json">{
+    "clipboard.copy": "Copy to clipboard",
+    "clipboard.copied": "Copied to clipboard",
+    "search.config.lang": "en",
+    "search.config.pipeline": "trimmer, stopWordFilter",
+    "search.config.separator": "[\\s\\-]+",
+    "search.result.placeholder": "Type to start searching",
+    "search.result.none": "No matching documents",
+    "search.result.one": "1 matching document",
+    "search.result.other": "# matching documents"
+}</script>
+
+<script>
+    app = initialize({
+        base: "../../..",
+        features: [],
+        search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
+        }, typeof search !== "undefined" && search)
+    })
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

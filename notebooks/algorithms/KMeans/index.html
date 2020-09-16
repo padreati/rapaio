@@ -6,16 +6,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
 
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/algorithms/KMeans/">
+
+
     <meta name="author" content="Aurelian Tutuianu">
 
-    <link rel="shortcut icon" href="/rapaio/assets/images/favicon.png">
+    <link rel="shortcut icon" href="../../../assets/images/favicon.png">
     <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
 
 
     <title>Rapaio documentation site</title>
 
 
-    <link rel="stylesheet" href="/rapaio/assets/stylesheets/main.4dd2dd8d.min.css">
+    <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
 
 
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -29,7 +32,7 @@
     }</style>
 
 
-    <link rel="stylesheet" href="/rapaio/stylesheets/extra.css">
+    <link rel="stylesheet" href="../../../stylesheets/extra.css">
 
 
 </head>
@@ -71,7 +74,7 @@
           </span>
                 <span class="md-header-nav__topic md-ellipsis">
             
-              
+              Frame Summary
             
           </span>
             </div>
@@ -110,14 +113,14 @@
 
 
                                 <li class="md-nav__item">
-                                    <a href="/rapaio/." title="Welcome to Rapaio" class="md-nav__link">
+                                    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
                                         Welcome to Rapaio
                                     </a>
                                 </li>
 
 
                                 <li class="md-nav__item">
-                                    <a href="/rapaio/library-features/" title="Features provided" class="md-nav__link">
+                                    <a href="../../../library-features/" title="Features provided" class="md-nav__link">
                                         Features provided
                                     </a>
                                 </li>
@@ -140,8 +143,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="/rapaio/notebooks/BriefPreview/" title="Brief preview of rapaio features"
-                                                   class="md-nav__link">
+                                                <a href="../../BriefPreview/" title="Brief preview of rapaio features" class="md-nav__link">
                                                     Brief preview of rapaio features
                                                 </a>
                                             </li>
@@ -169,7 +171,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="/rapaio/notebooks/tutorials/DataHandlingOverview/" title="Data Handling Overview"
+                                                <a href="../../tutorials/DataHandlingOverview/" title="Data Handling Overview"
                                                    class="md-nav__link">
                                                     Data Handling Overview
                                                 </a>
@@ -198,7 +200,123 @@
             <div class="md-content">
                 <article class="md-content__inner md-typeset">
 
-                    <h1>404 - Not found</h1>
+
+                    <h1>Frame Summary</h1>
+
+                    <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
+                            class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span><span
+                            class="p">.</span><span class="na">ipynb</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="c1">// old faithful</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">Frame</span> <span class="n">old</span> <span
+                            class="o">=</span> <span class="n">Datasets</span><span class="p">.</span><span
+                            class="na">loadOldFaithful</span><span class="p">()</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">old</span><span class="p">.</span><span class="na">printSummary</span><span
+                            class="p">()</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>Frame Summary
+=============
+* rowCount: 272
+* complete: 272/272
+* varCount: 2
+* varNames:
+
+0. eruptions : dbl | 
+1.   waiting : dbl |
+
+* summary: 
+ eruptions [dbl]       waiting [dbl]          Mean : 3.4877831    Mean : 70.8970588 
+    Min. : 1.6000000    Min. : 43.0000000  2nd Qu. : 4.4542500 2nd Qu. : 82.0000000 
+ 1st Qu. : 2.1627500 1st Qu. : 58.0000000     Max. : 5.1000000    Max. : 96.0000000 
+  Median : 4.0000000  Median : 76.0000000
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span
+                            class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="mi">0</span><span class="p">),</span> <span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span
+                            class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">pch</span><span
+                            class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">color</span><span
+                            class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_4_0.png"/></p>
+                    <div class="highlight"><pre><span></span><code><span class="n">KMeans</span> <span class="n">model1</span> <span
+                            class="o">=</span> <span class="n">KMeans</span><span class="p">.</span><span class="na">newModel</span><span
+                            class="p">().</span><span class="na">k</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span
+                            class="mi">2</span><span class="p">);;</span>
+<span class="kd">var</span> <span class="n">res1</span> <span class="o">=</span> <span class="n">model1</span><span class="p">.</span><span
+                                class="na">fit</span><span class="p">(</span><span class="n">old</span><span class="p">).</span><span
+                                class="na">predict</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">res1</span><span class="p">.</span><span class="na">printSummary</span><span
+                            class="p">()</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>Overall:
+&gt; count: 272
+&gt; mean: 0.2914831
+&gt; var: 0.1125446
+&gt; sd: 0.3354767
+
+Per cluster: 
+    ID count   mean       var    var/total    sd     
+[0]  2   174 0.3125939 0.1242926 1.1043852 0.3525515 
+[1]  1    98 0.2540006 0.0905334 0.8044223 0.3008877
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span
+                            class="p">().</span><span class="na">withGraphicShape</span><span class="p">(</span><span
+                            class="mi">500</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>rapaio.printer.standard.StandardPrinter@31c56390
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span
+                            class="n">old</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="mi">0</span><span class="p">),</span> <span class="n">old</span><span class="p">.</span><span class="na">rvar</span><span
+                            class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">pch</span><span
+                            class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">color</span><span
+                            class="p">(</span><span class="n">res1</span><span class="p">.</span><span
+                            class="na">getClusterAssignment</span><span class="p">().</span><span class="na">copy</span><span
+                            class="p">().</span><span class="na">op</span><span class="p">().</span><span class="na">plus</span><span
+                            class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="p">.</span><span class="na">points</span><span class="p">(</span><span class="n">model1</span><span
+                                class="p">.</span><span class="na">getCentroidsFrame</span><span class="p">().</span><span
+                                class="na">rvar</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span
+                                class="n">model1</span><span class="p">.</span><span class="na">getCentroidsFrame</span><span
+                                class="p">().</span><span class="na">rvar</span><span class="p">(</span><span class="mi">1</span><span
+                                class="p">),</span> <span class="n">pch</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">),</span> <span class="n">sz</span><span class="p">(</span><span class="mi">6</span><span
+                                class="p">),</span> <span class="n">color</span><span class="p">(</span><span class="mi">3</span><span
+                                class="p">)))</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_8_0.png"/></p>
+                    <div class="highlight"><pre><span></span><code>
+</code></pre>
+                    </div>
 
 
                 </article>
@@ -225,8 +343,8 @@
 
 </div>
 
-<script src="/rapaio/assets/javascripts/vendor.3636a4ec.min.js"></script>
-<script src="/rapaio/assets/javascripts/bundle.e9fe3281.min.js"></script>
+<script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+<script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script>
 <script id="__lang" type="application/json">{
     "clipboard.copy": "Copy to clipboard",
     "clipboard.copied": "Copied to clipboard",
@@ -241,10 +359,10 @@
 
 <script>
     app = initialize({
-        base: "/rapaio/",
+        base: "../../..",
         features: [],
         search: Object.assign({
-            worker: "/rapaio/assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
         }, typeof search !== "undefined" && search)
     })
 </script>

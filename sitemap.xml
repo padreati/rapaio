@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>None</loc>
-        <lastmod>2020-09-07</lastmod>
+        <loc>https://padreati.github.io/rapaio/</loc>
+        <lastmod>2020-09-16</lastmod>
+        <changefreq>daily</changefreq>
+    </url>
+    <url>
+        <loc>https://padreati.github.io/rapaio/library-features/</loc>
+        <lastmod>2020-09-16</lastmod>
+        <changefreq>daily</changefreq>
+    </url>
+    <url>
+        <loc>https://padreati.github.io/rapaio/notebooks/BriefPreview/</loc>
+        <lastmod>2020-09-16</lastmod>
+        <changefreq>daily</changefreq>
+    </url>
+    <url>
+        <loc>https://padreati.github.io/rapaio/notebooks/tutorials/DataHandlingOverview/</loc>
+        <lastmod>2020-09-16</lastmod>
         <changefreq>daily</changefreq>
     </url>
 </urlset>

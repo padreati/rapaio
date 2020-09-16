@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/DataHandlingOverview/">
+
+
+    <meta name="author" content="Aurelian Tutuianu">
+
+    <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+
+
+    <title>Rapaio documentation site</title>
+
+
+    <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
+
+
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+    <style>body, input {
+        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
+    }
+
+    code, kbd, pre {
+        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
+    }</style>
+
+
+    <link rel="stylesheet" href="../../../stylesheets/extra.css">
+
+
+</head>
+
+
+<body dir="ltr">
+
+
+<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+
+
+    <a href="#data-handling-overview" class="md-skip">
+        Skip to content
+    </a>
+
+</div>
+<div data-md-component="announce">
+
+</div>
+
+<header class="md-header" data-md-component="header">
+    <nav class="md-header-nav md-grid" aria-label="Header">
+        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+            </svg>
+
+        </a>
+        <label class="md-header-nav__button md-icon" for="__drawer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
+            </svg>
+        </label>
+        <div class="md-header-nav__title" data-md-component="header-title">
+
+            <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Rapaio
+          </span>
+                <span class="md-header-nav__topic md-ellipsis">
+            
+              Data Handling Overview
+            
+          </span>
+            </div>
+
+        </div>
+
+
+    </nav>
+</header>
+
+<div class="md-container" data-md-component="container">
+
+
+    <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+                            <label class="md-nav__title" for="__drawer">
+                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
+                                   aria-label="Rapaio">
+
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+                                    </svg>
+
+                                </a>
+                                Rapaio
+                            </label>
+
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
+                                        Welcome to Rapaio
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../../library-features/" title="Features provided" class="md-nav__link">
+                                        Features provided
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+
+                                    <label class="md-nav__link" for="nav-3">
+                                        Notebooks
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-3">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Notebooks
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../../BriefPreview/" title="Brief preview of rapaio features" class="md-nav__link">
+                                                    Brief preview of rapaio features
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
+
+                                    <label class="md-nav__link" for="nav-4">
+                                        Tutorials
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-4">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Tutorials
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item md-nav__item--active">
+
+                                                <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+
+
+                                                <label class="md-nav__link md-nav__link--active" for="__toc">
+                                                    Data Handling Overview
+                                                    <span class="md-nav__icon md-icon"></span>
+                                                </label>
+
+                                                <a href="./" title="Data Handling Overview" class="md-nav__link md-nav__link--active">
+                                                    Data Handling Overview
+                                                </a>
+
+
+                                                <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+                                                    <label class="md-nav__title" for="__toc">
+                                                        <span class="md-nav__icon md-icon"></span>
+                                                        Table of contents
+                                                    </label>
+                                                    <ul class="md-nav__list" data-md-scrollfix>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#data-types-arrays-and-collections" class="md-nav__link">
+                                                                Data types, arrays and collections
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#var-and-frame" class="md-nav__link">
+                                                                Var and Frame
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#variables" class="md-nav__link">
+                                                                Variables
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#vartype-storage-and-representation-of-a-variable"
+                                                               class="md-nav__link">
+                                                                VarType: storage and representation of a variable
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#frames" class="md-nav__link">
+                                                                Frames
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+
+                                                </nav>
+
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+                                        Source
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+
+                        <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+                            <label class="md-nav__title" for="__toc">
+                                <span class="md-nav__icon md-icon"></span>
+                                Table of contents
+                            </label>
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+                                <li class="md-nav__item">
+                                    <a href="#data-types-arrays-and-collections" class="md-nav__link">
+                                        Data types, arrays and collections
+                                    </a>
+
+                                </li>
+
+                                <li class="md-nav__item">
+                                    <a href="#var-and-frame" class="md-nav__link">
+                                        Var and Frame
+                                    </a>
+
+                                </li>
+
+                                <li class="md-nav__item">
+                                    <a href="#variables" class="md-nav__link">
+                                        Variables
+                                    </a>
+
+                                </li>
+
+                                <li class="md-nav__item">
+                                    <a href="#vartype-storage-and-representation-of-a-variable" class="md-nav__link">
+                                        VarType: storage and representation of a variable
+                                    </a>
+
+                                </li>
+
+                                <li class="md-nav__item">
+                                    <a href="#frames" class="md-nav__link">
+                                        Frames
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-content">
+                <article class="md-content__inner md-typeset">
+
+
+                    <h1 id="data-handling-overview">Data Handling Overview</h1>
+                    <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
+                            class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
+</code></pre>
+                    </div>
+
+                    <h2 id="data-types-arrays-and-collections">Data types, arrays and collections</h2>
+                    <p>Most programming languages have constructs for data and instructions or commands. This is true for low level
+                        languages as it is for higher level languages. If the language does not provide those kind of constructs, commonly
+                        used libraries, like system libraries supply them. This is true also for Java language. Thus, we should start our
+                        discussion about data handling from what the language itself provides. </p>
+                    <p>Java provides value and reference data types. There are few values types like: <code>double</code>, <code>int</code>,
+                        <code>char</code> and so on. For each value type there is also a corresponding refference boxing type like <code>Double</code>,
+                        <code>Integer</code>, <code>Character</code>. Since Java language is an object oriented language, it should be
+                        apparent the reason for existence of the corresponding refference types: abstractization and encapsulation. If we
+                        add how the generics were implemented in language on those reasons we understood why we have collections implemented
+                        as they are, with their rich offerings in terms of functionality. Still, value types are part of the language
+                        together with the construct called array. They seem so dulled and non idiomatic, as such that somebody might ask why
+                        there are still part of the language. The main reason of their existence is performance: both in terms of memory and
+                        computation.</p>
+                    <p><em>Rapaio</em> library uses under the hood value types and arrays to achieve speed and memory efficience, carrying
+                        the burden of writting much more non idiomatic code. For example there are many vaue types array features in
+                        utilitary classes like <code>rapaio.util.collection.DoubleArrays</code> and similar. Those utilitary classes exists
+                        in order to offer support for high order constructs with compact and performant implementations.</p>
+                    <p>Working directly with value type arrays, even having at one's disposal a rich set of features, claims a lot of effort
+                        and attention. The resulting code would be probably very hard to write or read. Thus, <em>Rapaio</em> uses for most
+                        of the algorithms implemented higher constructs like <code>rapaio.data.Var</code> and <code>rapaio.data.Frame</code>
+                        to offer a rich and flexible set of features, easy to be used and leveraged further. Those constructs hides the
+                        complexity and intricaties implied at implementation times dues to working directly with value types vectors,
+                        without paying much in performance. </p>
+                    <p>Because those abstractions works directly with value type arrays, a lot of care was spent to offer many easy ways to
+                        transform data from value type array into variables, frames, vectors and matrices and viceversa, sometimes avoiding
+                        copying the data entirely. Java collections are also well conected with <em>Rapaio</em> data structures, thus being
+                        very easy to transfer data to and from those collections. </p>
+                    <h2 id="var-and-frame">Var and Frame</h2>
+                    <p>There are two ubiquous data structures used all over the place in this library: variables and frames. A variable is a
+                        list of values of the same type which implements the <code>Var</code> interface. You can think of a variable as a
+                        higher abstractization of an array because all values have the same type and there is random acces available. In
+                        fact, sometimes, the arrays are the only data storage for a <code>Var</code> implementation. Another way to look at
+                        a variable is like a column of a table.</p>
+                    <p>A set of variables makes a data frame, described by the interface <code>rapaio.data.Frame</code>. A frame is a table
+                        having observations as rows and variables as columns.</p>
+                    <p>Let's take a simple example. We will load the iris data set, which is provided by the the library.</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Frame</span> <span class="n">df</span> <span
+                            class="o">=</span> <span class="n">Datasets</span><span class="p">.</span><span
+                            class="na">loadIrisDataset</span><span class="p">();</span>
+<span class="n">df</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>Frame Summary
+=============
+* rowCount: 150
+* complete: 150/150
+* varCount: 5
+* varNames:
+
+0. sepal-length : dbl | 3.  petal-width : dbl | 
+1.  sepal-width : dbl | 4.        class : nom | 
+2. petal-length : dbl |
+
+* summary: 
+ sepal-length [dbl]      sepal-width [dbl]      petal-length [dbl]     
+       Min. : 4.3000000       Min. : 2.0000000        Min. : 1.0000000 
+    1st Qu. : 5.1000000    1st Qu. : 2.8000000     1st Qu. : 1.6000000 
+     Median : 5.8000000     Median : 3.0000000      Median : 4.3500000 
+       Mean : 5.8433333       Mean : 3.0573333        Mean : 3.7580000 
+    2nd Qu. : 6.4000000    2nd Qu. : 3.3000000     2nd Qu. : 5.1000000 
+       Max. : 7.9000000       Max. : 4.4000000        Max. : 6.9000000
+
+
+ petal-width [dbl]            class [nom] 
+      Min. : 0.1000000 versicolor :    50 
+   1st Qu. : 0.3000000     setosa :    50 
+    Median : 1.3000000  virginica :    50 
+      Mean : 1.1993333                    
+   2nd Qu. : 1.8000000                    
+      Max. : 2.5000000
+</code></pre>
+                    </div>
+
+                    <p>Frame summary is a simple way to see some general information about a data frame. We see the data frame contains
+                        <span class="arithmatex">\(150\)</span> observations/rows and <span class="arithmatex">\(5\)</span>
+                        variables/columns.</p>
+                    <p>The listing continues with name and type of the variables. Notice that there are four double variables and one
+                        nominal variable, named <code>class</code>.</p>
+                    <p>The summary listing ends with a section which describes each variable. For double variables the summary contains the
+                        well-known six number summary. We have there the minimum and maximum values, median, first and third quartile and
+                        the mean. For nominal values we have an enumeration of the first most frequent levels and the associated counts. For
+                        our <code>class</code> variable we see that there are three levels, each with <span class="arithmatex">\(50\)</span>
+                        instances.</p>
+                    <h2 id="variables">Variables</h2>
+                    <p>In statistics a variable has multiple meanings. A random variable can be thought as a process which produces values
+                        according to a distribution. <code>Var</code> objects models the concept of values drawn from a unidimensional
+                        random variable, in other words a sample of values. As a consequence a <code>Var</code> object has a size and uses
+                        integer indices to access values from sample. </p>
+                    <p><code>Var</code> interface declares methods useful for various kinds of tasks:
+                        * <em>manipulate values</em> from the variable by adding, removing, inserting and updating with different
+                        representations
+                        * <em>naming</em> a variable offers an alternate way to identify a variable into a frame and it is also useful as
+                        output information
+                        * <em>manipulate sets of values</em> by with concatenation and mapping
+                        * <em>streaming</em> allows traversal of variables by java streams
+                        * <em>numeric computations</em> like mathematical operations or variuos statistical interesting characteristics
+                        * <em>unique value and groupins</em> with a flexible grammar and short syntax
+                        * other tools like deep copy, deep compare, summary, etc</p>
+                    <h2 id="vartype-storage-and-representation-of-a-variable">VarType: storage and representation of a variable</h2>
+                    <p>There are two main concepts which have to be understood when working with variables: <strong>storage</strong> and
+                        <strong>representation</strong>. All the variables are able to store data internally using a Java data types like
+                        <code>double</code>, <code>int</code>, <code>String</code>, etc. In the same time, the data from variables can be
+                        represented in different ways, all of them being available through the <code>Var</code> interface for all types of
+                        variables.</p>
+                    <p>However not all the representations are possible for all types of variables, because some of them does not make
+                        sense. For example double floating values can be represented as strings, which is fine, however strings in general
+                        cannot be represented as double values.</p>
+                    <p>These are the following data representations all the <code>Var</code>-iables can implement:</p>
+                    <ul>
+                        <li><strong>double</strong> - double</li>
+                        <li><strong>int</strong> - int</li>
+                        <li><strong>long</strong> - long</li>
+                        <li><strong>instant</strong> - Instant</li>
+                        <li><strong>label</strong> - String</li>
+                    </ul>
+                    <p>The <code>Var</code> interface offers methods to get/update/insert values for all those data representations. Not all
+                        data representations are available for all variables. For example the label representation is available for all sort
+                        of variables. This is acceptable, since when storing information into a text-like data format, any data type should
+                        be transformed into a string and also should be able to be read from a string representation.</p>
+                    <p>To accomodate all those legal possibilities, the rapaio library has a set of predefined variable types, which can be
+                        found in the enum <code>VarType</code>.</p>
+                    <p>The defined variable types:</p>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>VType</th>
+                            <th>Var class</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><strong>BINARY</strong></td>
+                            <td>VarBinary</td>
+                            <td>Binary variable represented as int values, internally uses bitsets for efficient memory usage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>INT</strong></td>
+                            <td>VarInt</td>
+                            <td>Integer variable represented and stored internally as int</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NOMINAL</strong></td>
+                            <td>VarNominal</td>
+                            <td>Categorical variable represented as string from a predefined set, with no ordering (for example:
+                                <em>male</em>, <em>female</em>)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>DOUBLE</strong></td>
+                            <td>VarDouble</td>
+                            <td>Double variable represented and stored internally as double precision floating point values</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LONG</strong></td>
+                            <td>VarLong</td>
+                            <td>Long variable represented and stored internally as long 8-byte signed integer values</td>
+                        </tr>
+                        <tr>
+                            <td><strong>INSTANT</strong></td>
+                            <td>VarInstant</td>
+                            <td>Instant variable represented and stored as datetime instant</td>
+                        </tr>
+                        <tr>
+                            <td><strong>STRING</strong></td>
+                            <td>VarString</td>
+                            <td>String variable used for manipulation of text with free form</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p>A data type is important for the following reasons:</p>
+                    <ul>
+                        <li>gives a certain useful meaning for variables in such a way that machine learning or statistical algorithms can
+                            leverage to maximum potential the meta information about variables
+                        </li>
+                        <li>encapsulates the stored data type artifacts and hide those details from the user, while allowing the usage of a
+                            single unified interface for all variables
+                        </li>
+                    </ul>
+                    <h2 id="frames">Frames</h2>
+                    <p>The <code>rapaio.data.Frame</code> interface </p>
+
+
+                </article>
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="md-footer">
+
+        <div class="md-footer-nav">
+            <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+
+                <a href="../../BriefPreview/" title="Brief preview of rapaio features" class="md-footer-nav__link md-footer-nav__link--prev"
+                   rel="prev">
+                    <div class="md-footer-nav__button md-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/>
+                        </svg>
+                    </div>
+                    <div class="md-footer-nav__title">
+                        <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                            Brief preview of rapaio features
+                        </div>
+                    </div>
+                </a>
+
+
+            </nav>
+        </div>
+
+        <div class="md-footer-meta md-typeset">
+            <div class="md-footer-meta__inner md-grid">
+                <div class="md-footer-copyright">
+
+                    Made with
+                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+                        Material for MkDocs
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+<script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script>
+<script id="__lang" type="application/json">{
+    "clipboard.copy": "Copy to clipboard",
+    "clipboard.copied": "Copied to clipboard",
+    "search.config.lang": "en",
+    "search.config.pipeline": "trimmer, stopWordFilter",
+    "search.config.separator": "[\\s\\-]+",
+    "search.result.placeholder": "Type to start searching",
+    "search.result.none": "No matching documents",
+    "search.result.one": "1 matching document",
+    "search.result.other": "# matching documents"
+}</script>
+
+<script>
+    app = initialize({
+        base: "../../..",
+        features: [],
+        search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
+        }, typeof search !== "undefined" && search)
+    })
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

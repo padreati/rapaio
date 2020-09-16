@@ -6,16 +6,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
 
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/rapaio-bootstrap/">
+
+
     <meta name="author" content="Aurelian Tutuianu">
 
-    <link rel="shortcut icon" href="/rapaio/assets/images/favicon.png">
+    <link rel="shortcut icon" href="../../assets/images/favicon.png">
     <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
 
 
     <title>Rapaio documentation site</title>
 
 
-    <link rel="stylesheet" href="/rapaio/assets/stylesheets/main.4dd2dd8d.min.css">
+    <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
 
 
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -29,7 +32,7 @@
     }</style>
 
 
-    <link rel="stylesheet" href="/rapaio/stylesheets/extra.css">
+    <link rel="stylesheet" href="../../stylesheets/extra.css">
 
 
 </head>
@@ -71,7 +74,7 @@
           </span>
                 <span class="md-header-nav__topic md-ellipsis">
             
-              
+              Rapaio bootstrap
             
           </span>
             </div>
@@ -110,14 +113,14 @@
 
 
                                 <li class="md-nav__item">
-                                    <a href="/rapaio/." title="Welcome to Rapaio" class="md-nav__link">
+                                    <a href="../.." title="Welcome to Rapaio" class="md-nav__link">
                                         Welcome to Rapaio
                                     </a>
                                 </li>
 
 
                                 <li class="md-nav__item">
-                                    <a href="/rapaio/library-features/" title="Features provided" class="md-nav__link">
+                                    <a href="../../library-features/" title="Features provided" class="md-nav__link">
                                         Features provided
                                     </a>
                                 </li>
@@ -140,8 +143,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="/rapaio/notebooks/BriefPreview/" title="Brief preview of rapaio features"
-                                                   class="md-nav__link">
+                                                <a href="../BriefPreview/" title="Brief preview of rapaio features" class="md-nav__link">
                                                     Brief preview of rapaio features
                                                 </a>
                                             </li>
@@ -169,7 +171,7 @@
 
 
                                             <li class="md-nav__item">
-                                                <a href="/rapaio/notebooks/tutorials/DataHandlingOverview/" title="Data Handling Overview"
+                                                <a href="../tutorials/DataHandlingOverview/" title="Data Handling Overview"
                                                    class="md-nav__link">
                                                     Data Handling Overview
                                                 </a>
@@ -198,7 +200,108 @@
             <div class="md-content">
                 <article class="md-content__inner md-typeset">
 
-                    <h1>404 - Not found</h1>
+
+                    <h1>Rapaio bootstrap</h1>
+
+                    <p>This notebook is used to bootstrap rapaio library usage in jupyter notebooks. The activities included are:</p>
+                    <ul>
+                        <li>include maved dependency on rapaio library</li>
+                        <li>inlcude an extensive list of imports from rapaio library to make life easier</li>
+                        <li>include a list of useful imports from java jdk</li>
+                        <li>set up printer with default values for printer (text width and image sizes)</li>
+                    </ul>
+                    <div class="highlight"><pre><span></span><code><span class="c1">// repositories for beta versions</span>
+<span class="c1">//%mavenRepo oss-sonatype-snapshots https://oss.sonatype.org/content/repositories/snapshots/</span>
+
+<span class="c1">// maven central</span>
+<span class="c1">// %maven io.github.padreati:rapaio:2.3.0</span>
+
+<span class="c1">// local jars</span>
+<span class="o">%</span><span class="n">jars</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span
+                                class="n">ati</span><span class="o">/</span><span class="n">work</span><span class="o">/</span><span
+                                class="n">out</span><span class="o">/</span><span class="n">artifacts</span><span class="o">/</span><span
+                                class="n">rapaio</span><span class="p">.</span><span class="na">jar</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span
+                            class="c1">// extensive list of useful imports from rapaio library</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.core.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.core.correlation.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.core.distributions.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.core.tests.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.core.tools.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.core.stat.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.data.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.data.filter.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.data.group.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.data.unique.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.datasets.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.graphics.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.graphics.plot.*</span><span class="p">;</span>
+<span class="kn">import static</span> <span class="nn">rapaio.graphics.Plotter.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.io.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.math.linear.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.math.linear.dense.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.ml.eval.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.eval.metric.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.eval.split.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.common.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.sys.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.printer.*</span><span class="p">;</span>
+<span class="kn">import static</span> <span class="nn">rapaio.printer.Printer.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.bayes.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.boost.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.linear.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.rule.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.svm.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.tree.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.classifier.ensemble.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.linear.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.boost.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.ensemble.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.simple.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.ml.regression.tree.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">rapaio.ml.clustering.kmeans.*</span><span class="p">;</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="c1">// list of useful imports from jdk</span>
+
+<span class="kn">import</span> <span class="nn">java.util.function.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">java.util.stream.*</span><span class="p">;</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span
+                            class="p">().</span><span class="na">withOptions</span><span class="p">(</span><span
+                            class="n">textWidth</span><span class="p">(</span><span class="mi">70</span><span class="p">));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span class="p">().</span><span class="na">withGraphicShape</span><span
+                                class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">400</span><span
+                                class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>rapaio.printer.standard.StandardPrinter@218a92b
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>
+</code></pre>
+                    </div>
 
 
                 </article>
@@ -225,8 +328,8 @@
 
 </div>
 
-<script src="/rapaio/assets/javascripts/vendor.3636a4ec.min.js"></script>
-<script src="/rapaio/assets/javascripts/bundle.e9fe3281.min.js"></script>
+<script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+<script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script>
 <script id="__lang" type="application/json">{
     "clipboard.copy": "Copy to clipboard",
     "clipboard.copied": "Copied to clipboard",
@@ -241,10 +344,10 @@
 
 <script>
     app = initialize({
-        base: "/rapaio/",
+        base: "../..",
         features: [],
         search: Object.assign({
-            worker: "/rapaio/assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../../assets/javascripts/worker/search.5eca75d3.min.js"
         }, typeof search !== "undefined" && search)
     })
 </script>

@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/DataVisualization/">
+
+
+    <meta name="author" content="Aurelian Tutuianu">
+
+    <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+
+
+    <title>Rapaio documentation site</title>
+
+
+    <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
+
+
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+    <style>body, input {
+        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
+    }
+
+    code, kbd, pre {
+        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
+    }</style>
+
+
+    <link rel="stylesheet" href="../../../stylesheets/extra.css">
+
+
+</head>
+
+
+<body dir="ltr">
+
+
+<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+
+
+    <a href="#5-data-visualization" class="md-skip">
+        Skip to content
+    </a>
+
+</div>
+<div data-md-component="announce">
+
+</div>
+
+<header class="md-header" data-md-component="header">
+    <nav class="md-header-nav md-grid" aria-label="Header">
+        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+            </svg>
+
+        </a>
+        <label class="md-header-nav__button md-icon" for="__drawer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
+            </svg>
+        </label>
+        <div class="md-header-nav__title" data-md-component="header-title">
+
+            <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Rapaio
+          </span>
+                <span class="md-header-nav__topic md-ellipsis">
+            
+              5. Data visualization
+            
+          </span>
+            </div>
+
+        </div>
+
+
+    </nav>
+</header>
+
+<div class="md-container" data-md-component="container">
+
+
+    <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+                            <label class="md-nav__title" for="__drawer">
+                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
+                                   aria-label="Rapaio">
+
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
+                                    </svg>
+
+                                </a>
+                                Rapaio
+                            </label>
+
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
+                                        Welcome to Rapaio
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="../../../library-features/" title="Features provided" class="md-nav__link">
+                                        Features provided
+                                    </a>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+
+                                    <label class="md-nav__link" for="nav-3">
+                                        Notebooks
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-3">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Notebooks
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../../BriefPreview/" title="Brief preview of rapaio features" class="md-nav__link">
+                                                    Brief preview of rapaio features
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+
+                                    <label class="md-nav__link" for="nav-4">
+                                        Tutorials
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-4">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            Tutorials
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
+                                                    Data Handling Overview
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
+                                <li class="md-nav__item">
+                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+                                        Source
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                    <div class="md-sidebar__inner">
+
+                        <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+                            <label class="md-nav__title" for="__toc">
+                                <span class="md-nav__icon md-icon"></span>
+                                Table of contents
+                            </label>
+                            <ul class="md-nav__list" data-md-scrollfix>
+
+                                <li class="md-nav__item">
+                                    <a href="#5-data-visualization" class="md-nav__link">
+                                        5. Data visualization
+                                    </a>
+
+                                    <nav class="md-nav" aria-label="5. Data visualization">
+                                        <ul class="md-nav__list">
+
+                                            <li class="md-nav__item">
+                                                <a href="#51-brief-overview" class="md-nav__link">
+                                                    5.1 Brief overview
+                                                </a>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#52-box-plots" class="md-nav__link">
+                                                    5.2 Box plots
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="5.2 Box plots">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-1" class="md-nav__link">
+                                                                Example 1
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-2" class="md-nav__link">
+                                                                Example 2
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#53-xy-scatter-plots" class="md-nav__link">
+                                                    5.3 XY Scatter plots
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="5.3 XY Scatter plots">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-1_1" class="md-nav__link">
+                                                                Example 1
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-2_1" class="md-nav__link">
+                                                                Example 2
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#54-histogram" class="md-nav__link">
+                                                    5.4 Histogram
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="5.4 Histogram">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-1_2" class="md-nav__link">
+                                                                Example 1
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-2_2" class="md-nav__link">
+                                                                Example 2
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                            <li class="md-nav__item">
+                                                <a href="#55-density-line" class="md-nav__link">
+                                                    5.5 Density line
+                                                </a>
+
+                                                <nav class="md-nav" aria-label="5.5 Density line">
+                                                    <ul class="md-nav__list">
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-1_3" class="md-nav__link">
+                                                                Example 1
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-2_3" class="md-nav__link">
+                                                                Example 2
+                                                            </a>
+
+                                                        </li>
+
+                                                        <li class="md-nav__item">
+                                                            <a href="#example-3" class="md-nav__link">
+                                                                Example 3
+                                                            </a>
+
+                                                        </li>
+
+                                                    </ul>
+                                                </nav>
+
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="md-content">
+                <article class="md-content__inner md-typeset">
+
+
+                    <h1>5. Data visualization</h1>
+
+                    <h2 id="5-data-visualization">5. Data visualization</h2>
+                    <p>The purpose of this document is not to exhaust the graphics features of the library and graphics components which are
+                        already built in. There are good reasons why such a goal would be inappropriate:</p>
+                    <ul>
+                        <li>the library it's still in working phase, even there are many components ready for production use; any careful
+                            enumeration would be incomplete as soon as another graphical features would be added
+                        </li>
+                        <li>stressing the whole features even for a single component would be time consuming since working with all the
+                            combinations of graphical aspect options would take too much space to time for everybody
+                        </li>
+                    </ul>
+                    <p>The goal of this document is to illustrate the core ideas behind the graphic system and to provide enough examples to
+                        have a fast and productive feedback.</p>
+                    <p>The design of the graphical components of this library is influenced by many ideas from existing popular graphical
+                        systems. Among the main inspirations there are some which deserves appropriate consideration: <code>R</code>
+                        standard graphical library, <code>ggplot2</code> package and <code>matplotlib</code> from Python stack.</p>
+                    <h3 id="51-brief-overview">5.1 Brief overview</h3>
+                    <p>Drawing of graphical figures or text output is handled by classes which implements interface <code>rapaio.printer.Printer</code>.
+                        There are some built-in implementations of this interface. The default one is <code>StandardPrinter</code>, which
+                        allows printing text at console and drawing graphics in a Swing modal window. Another used implementation is <code>IdeaPrinter</code>,
+                        which is similar with standard printer for text output, but for graphics drawing implements a TCP/IP protocol with
+                        serialization which allows plug-ins like <code>rapaio-studio</code> to handle graphics drawing.</p>
+                    <p>A printer can be instantiated by itself by a handy way of using it is by the means of the utility class called <code>rapaio.sys.WS</code>
+                        (which comes from <strong>W</strong>ork <strong>W</strong>pace). This is an utility class which offers static
+                        shortcut methods yo allow one to simulate a working session. This class has an instance of a printer implementation
+                        (which can be changes by <code>WS.setPrinter</code> method) and shortcuts for text output and drawing.</p>
+                    <p>We are interested here in methods for drawing, so the workspace contains methods for this purpose. All of those
+                        methods works with a construct which contains all the indications regarding what kind of graphic should be built.
+                        This construct implements interface <code>rapaio.graphics.base.Figure</code>. Thus a figure is a construct which
+                        allows the printer system to obtain images which can be later drawn over graphical surfaces. Also, there are methods
+                        which allows one to obtain an image directly from a figure, or store an image directly on a disk file.</p>
+                    <p>Here are the shortcut methods implemented in <code>WS</code> utility:</p>
+                    <ul>
+                        <li>
+                            <p><em>void draw(Figure figure)</em> - draws a figure in a printing system; the size of drawing is either
+                                adaptive of has the default size of a graphical image contained in the printer implementation.</p>
+                        </li>
+                        <li>
+                            <p><em>void draw(Figure figure, int width, int height)</em> - draws a figure with dimensions specified by width
+                                and height</p>
+                        </li>
+                        <li>
+                            <p><em>BufferedImage buildImage(Figure figure)</em> - builds an image from a figure with dimensions specified as
+                                default width and default height from printer system</p>
+                        </li>
+                        <li>
+                            <p><em>BufferedImage buildImage(Figure figure, int width, int height)</em> - builds an image from a figure with
+                                specified dimensions</p>
+                        </li>
+                        <li>
+                            <p><em>void saveImage(Figure figure, int width, int height, String fileName)</em> - builds an image with
+                                specified dimensions by width and height from a given figure, and save the image into a <em>png</em> file
+                                with the specified file name</p>
+                        </li>
+                        <li>
+                            <p><em>void saveImage(Figure figure, int width, int height, OutputStream os)</em> - builds an image with
+                                specified dimensions by width and height, and send the image in <em>png</em> format to the specified output
+                                stream (could be a file or could be sent over network)</p>
+                        </li>
+                    </ul>
+                    <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
+                            class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
+</code></pre>
+                    </div>
+
+                    <p>Now in order to build figures one can instantiate and compose figures directly in a pure Java way. However graphical
+                        tools offers also a class named <code>rapaio.graphics.Plotter</code> which has a lot of shortcut methods to help one
+                        to simplify the above code. Here is an example:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Frame</span> <span class="n">iris</span> <span class="o">=</span> <span
+                            class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span
+                            class="p">();</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;sepal-length&quot;</span><span class="p">),</span> <span class="mi">0</span><span
+                            class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">bins</span><span
+                            class="p">(</span><span class="mi">40</span><span class="p">),</span> <span class="n">color</span><span
+                            class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">prob</span><span
+                            class="p">(</span><span class="kc">true</span><span class="p">))</span>
+<span class="p">.</span><span class="na">densityLine</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span
+                                class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span
+                                class="p">),</span> <span class="n">lwd</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">),</span> <span class="n">color</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">)));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_4_0.png"/></p>
+                    <h3 id="52-box-plots">5.2 Box plots</h3>
+                    <p>A box plot is a standard way of displaying information about the distribution of a continuous data variable based on
+                        five data summary. The five data summary consists of: <em>minimum</em>, <em>first quartile</em>, <em>median</em>
+                        (<em>second quartile</em>), <em>third quartile</em> and <em>maximum</em> number summaries.</p>
+                    <p>Box plots might be constructed in different manners by different authors. The common characteristics for all types of
+                        box-plots is <em>the box</em>.</p>
+                    <p>Which means that in all cases the bottom margin of the box lies on first quartile, the top margin of the box lies on
+                        third quartile and the line inside the box lies on median values.</p>
+                    <p>The extensions which comes from the box might differ and <code>rapaio</code> system implements the version which it's
+                        usually named: <strong>Tuckey's box plot</strong>. What is specific to this box plot is that the whiskers lies at
+                        the datum still within 1.5 IQR (<em>Interquartile range</em>).</p>
+                    <p>Any other points above or below whiskers are outliers. Outliers are of two different types:</p>
+                    <ul>
+                        <li><em>extreme outliers</em> - outliers which are at a distance greater or equal than 3*IQR</li>
+                        <li><em>outliers</em> - outliers which are at a distance greater or equal than 1.5*IQR</li>
+                    </ul>
+                    <h5 id="example-1">Example 1</h5>
+                    <p><strong>Scope</strong>: <em>Draw one box plot for each numerical variable from iris data set. We want each box plot
+                        to have a different color and we want some de-saturated colors.</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">boxPlot</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">mapVars</span><span class="p">(</span><span
+                            class="s">&quot;0~3&quot;</span><span class="p">),</span> <span class="n">color</span><span
+                            class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span
+                            class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span
+                            class="p">),</span> <span class="n">alpha</span><span class="p">(</span><span class="mf">0.5f</span><span
+                            class="p">)))</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_6_0.png"/></p>
+                    <ul>
+                        <li>
+                            <p><code>iris.mapVars("0~3")</code> - obtain a data set from <code>iris</code> data set, by keeping only the
+                                first 4 variables. We do that using the range notation (index of the start variable, concatenation symbol
+                                <code>~</code>, index of the last variable inclusive). Pay attention that variable indexes are 0 based.</p>
+                        </li>
+                        <li>
+                            <p><code>color(1, 2, 3, 4)</code> - we use colors from the current color palette, indexed with the specified
+                                integer values.</p>
+                        </li>
+                        <li>
+                            <p><code>alpha(0.3f)</code> - we de-saturate the drawing keeping only 0.3 of the actual color.</p>
+                        </li>
+                    </ul>
+                    <h5 id="example-2">Example 2</h5>
+                    <p><strong>Scope</strong>: <em>In order to identify the overlap between values of <code>sepal-length</code> variable
+                        from iris data set, we draw one box plot for each segment of the nominal <code>class</code> variable, and add a
+                        title</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">boxPlot</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;sepal-length&quot;</span><span class="p">),</span> <span class="n">iris</span><span
+                            class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;class&quot;</span><span class="p">)).</span><span class="na">title</span><span
+                            class="p">(</span><span class="s">&quot;sepal-length separation&quot;</span><span class="p">));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_8_0.png"/></p>
+                    <ul>
+                        <li>
+                            <p><code>iris.var("sepal-length")</code> - is the variable named <code>sepal-length</code> from</p>
+                        </li>
+                        <li>
+                            <p><code>iris</code> - data set, which is the numerical variable to be segmented and later box-plotted</p>
+                        </li>
+                        <li>
+                            <p><code>iris.var("class")</code> - specifies the segment discriminator, depending on the levels of this
+                                variable, the same number of levels will be created</p>
+                        </li>
+                        <li>
+                            <p><code>.title("..")</code> - adds a title to the box plot</p>
+                        </li>
+                    </ul>
+                    <h3 id="53-xy-scatter-plots">5.3 XY Scatter plots</h3>
+                    <p>We can study the relation between two numerical variables by drawing one point for each instance.</p>
+                    <h5 id="example-1_1">Example 1</h5>
+                    <p><strong>Scope</strong>: <em>Study which is the relation between <code>petal-length</code> and
+                        <code>sepal-length</code> from <code>iris</code> data set.</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;petal-length&quot;</span><span class="p">),</span> <span class="n">iris</span><span
+                            class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;petal-width&quot;</span><span class="p">)));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_10_0.png"/></p>
+                    <ul>
+                        <li><code>iris.var("petal-length")</code> - variable used to define horizontal axis</li>
+                        <li><code>iris.var("petal-width")</code> - variable used to define vertical axis</li>
+                    </ul>
+                    <h5 id="example-2_1">Example 2</h5>
+                    <p><strong>Scope</strong>: <em>Study which is the relation between <code>petal-length</code> and
+                        <code>sepal-length</code> from <code>iris</code> data set. Color each point with a different color corresponding
+                        with value from variable <code>class</code> and add a legend for colors.</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;petal-length&quot;</span><span class="p">),</span> <span class="n">iris</span><span
+                            class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;petal-width&quot;</span><span class="p">),</span><span class="n">color</span><span
+                            class="p">(</span><span class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span
+                            class="p">(</span><span class="s">&quot;class&quot;</span><span class="p">)),</span> <span
+                            class="n">pch</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span
+                                class="mf">2.2</span><span class="p">,</span> <span class="n">labels</span><span class="p">(</span><span
+                                class="s">&quot;setosa&quot;</span><span class="p">,</span> <span
+                                class="s">&quot;versicolor&quot;</span><span class="p">,</span> <span class="s">&quot;virginica&quot;</span><span
+                                class="p">)));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_12_0.png"/></p>
+                    <ul>
+                        <li><code>iris.getVar("petal-length")</code> - variable used to define horizontal axis</li>
+                        <li><code>iris.getVar("petal-width")</code> - variable used to define vertical axis</li>
+                        <li><code>color(iris.getVar("class"))</code> - nominal variable which provides indexes to select colors from current
+                            palette
+                        </li>
+                        <li><code>pch(2)</code> - select the type of figure used to draw points (in this case is a circle filled with solid
+                            color and a black border)
+                        </li>
+                        <li><code>legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"))</code> - adds a legend at the specific
+                            position specified in the data range; labels are specified by parameter, colors are taken as default from
+                            current palette starting with 1
+                        </li>
+                    </ul>
+                    <h3 id="54-histogram">5.4 Histogram</h3>
+                    <p>A histogram is a graphical representation of the distribution of a continuous variable.</p>
+                    <p>The histogram is only an estimation of the distribution. To construct a histogram you have to <em>bin</em> the range
+                        of values from the variable in a sequence of equal length intervals, and later on counting the values from each bin.
+                        Histograms can display counts, or can display proportions which are counts divided by the total number of values.
+                    </p>
+                    <p>Because the histogram uses bins that the main parameter of a histogram is the bin width. The bin's width is computed.
+                        To compute the width of a bin we need the number of bins and the minimum and maximum from the range of values. The
+                        range of values can be computed automatically from data or it can be specified when the histogram is built.</p>
+                    <p>We can omit the number of bins, in which case its value is estimated also from data. For estimation is used the
+                        Freedman-Diaconis rule. See <a href="https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule">Freedman-Diaconis
+                            wikipedia page</a> for more details.</p>
+                    <h5 id="example-1_2">Example 1</h5>
+                    <p><strong>Scope</strong>: <em>Build a histogram with default values to estimate the pdf of <code>sepal-length</code>
+                        variable from <code>iris</code> data set.</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;sepal-length&quot;</span><span class="p">)));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_15_0.png"/></p>
+                    <h5 id="example-2_2">Example 2</h5>
+                    <p><strong>Scope</strong>: <em>Build two overlapped histograms with default values to estimate the pdf of <code>sepal-length</code>
+                        and <code>petal-length</code> variables from <code>iris</code> data set. We want to get bins in range (0-10) of
+                        width 0.25, colored with red, and blue, with a big transparency for visibility</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">plot</span><span class="p">(</span><span
+                            class="n">alpha</span><span class="p">(</span><span class="mf">0.3f</span><span class="p">))</span>
+<span class="p">.</span><span class="na">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span
+                                class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span
+                                class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span
+                                class="p">,</span> <span class="n">bins</span><span class="p">(</span><span class="mi">40</span><span
+                                class="p">),</span> <span class="n">color</span><span class="p">(</span><span class="mi">1</span><span
+                                class="p">))</span>
+<span class="p">.</span><span class="na">hist</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span
+                                class="na">rvar</span><span class="p">(</span><span class="s">&quot;petal-length&quot;</span><span
+                                class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span
+                                class="p">,</span> <span class="n">bins</span><span class="p">(</span><span class="mi">40</span><span
+                                class="p">),</span> <span class="n">color</span><span class="p">(</span><span class="mi">2</span><span
+                                class="p">))</span>
+<span class="p">.</span><span class="na">legend</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span
+                                class="mi">20</span><span class="p">,</span> <span class="n">labels</span><span class="p">(</span><span
+                                class="s">&quot;sepal-length&quot;</span><span class="p">,</span> <span
+                                class="s">&quot;petal-length&quot;</span><span class="p">),</span> <span class="n">color</span><span
+                                class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span
+                                class="p">))</span>
+<span class="p">.</span><span class="na">xLab</span><span class="p">(</span><span class="s">&quot;variable&quot;</span><span
+                                class="p">));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_17_0.png"/></p>
+                    <ul>
+                        <li><code>plot(alpha(0.3f))</code> - builds an empty plot; this is used only to pass default values for alpha for
+                            all plot components, otherwise the plot construct would not be needed
+                        </li>
+                        <li><code>hist</code> - adds a histogram to the current plot</li>
+                        <li><code>iris.getVar("sepal-length")</code> - variable used to build histogram</li>
+                        <li><code>0, 10</code> - specifies the range used to compute bins</li>
+                        <li><code>bins(40)</code> - specifies the number of bins for histogram</li>
+                        <li><code>color(1)</code> - specifies the color to draw the histogram, which is the color indexed with 1 in color
+                            palette (in this case is red)
+                        </li>
+                        <li><code>legend(7, 20, ...)</code> - draws a legend at the specified coordinates, values are in the units specified
+                            by data
+                        </li>
+                        <li><code>labels(..)</code> - specifies labels for legend</li>
+                        <li><code>color(1, 2)</code> - specifies color for legend</li>
+                        <li><code>xLab</code> = specifies label text for horizontal axis</li>
+                    </ul>
+                    <h3 id="55-density-line">5.5 Density line</h3>
+                    <p>A density line is a graphical representation of the distribution of a continuous variable. The density line is
+                        similar with a histogram in purpose but it has a different strategy to build the estimate. The density line plot
+                        component implements a <em>kernel density estimator</em> which is basically a non-parametric smoothing method, named
+                        also Parzen-Rosenblatt window method.</p>
+                    <p>There are two main parameters for a density line: bandwidth and base density kernel function.
+                        The default bandwidth is computed according with Silverman's rule of thumb (more details on
+                        <strong><a href="https://en.wikipedia.org/wiki/Kernel_density_estimation">Wikipedia kernel density page</a></strong>).
+                        The default kernel function is the Gaussian pdf.</p>
+                    <p>Kernel function estimators can be constructed using various kernel functions like Gaussian, uniform, triangular,
+                        Epanechnikov, cosine, tricube, triweight, biweight. All of them are available in <code>rapaio</code> library and
+                        also some custom can be built.</p>
+                    <h5 id="example-1_3">Example 1</h5>
+                    <p><strong>Scope</strong>: <em>Illustrate the process of building the KDE estimation</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="c1">// this is our sample</span>
+<span class="n">VarDouble</span> <span class="n">x</span> <span class="o">=</span> <span class="n">VarDouble</span><span
+                                class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="o">-</span><span
+                                class="mf">2.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span
+                                class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span
+                                class="mf">1.9</span><span class="p">,</span> <span class="mf">5.1</span><span class="p">,</span> <span
+                                class="mf">6.2</span><span class="p">);</span>
+
+<span class="c1">// declare a bandwidth for smoothing</span>
+<span class="kt">double</span> <span class="n">bw</span> <span class="o">=</span> <span class="mf">1.25</span><span class="p">;</span>
+
+<span class="c1">// build a density line</span>
+<span class="n">Plot</span> <span class="n">p</span> <span class="o">=</span> <span class="n">densityLine</span><span
+                                class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bw</span><span class="p">);</span>
+
+<span class="c1">// for each point draw a normal distribution</span>
+<span class="n">x</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">forEach</span><span
+                                class="p">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">p</span><span
+                                class="p">.</span><span class="na">funLine</span><span class="p">(</span><span class="n">xi</span> <span
+                                class="o">-&gt;</span> <span class="n">Normal</span><span class="p">.</span><span class="na">of</span><span
+                                class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">getDouble</span><span
+                                class="p">(),</span> <span class="n">bw</span><span class="p">).</span><span class="na">pdf</span><span
+                                class="p">(</span><span class="n">xi</span><span class="p">)</span> <span class="o">/</span> <span
+                                class="n">x</span><span class="p">.</span><span class="na">rowCount</span><span class="p">(),</span>
+<span class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p</span><span
+                                class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_20_0.png"/></p>
+                    <p>With red are depicted the kernel functions used to spread probability around sample points. With black is depicted
+                        the kernel density estimation which is the sum of all individual kernel functions.</p>
+                    <h5 id="example-2_3">Example 2</h5>
+                    <p><strong>Scope</strong>: <em>Estimate density of iris <code>sepal-length</code> variable by histogram and density
+                        function</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
+                            class="na">image</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span
+                            class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                            class="s">&quot;sepal-length&quot;</span><span class="p">),</span> <span class="n">prob</span><span
+                            class="p">(</span><span class="kc">true</span><span class="p">))</span>
+<span class="p">.</span><span class="na">densityLine</span><span class="p">(</span><span class="n">iris</span><span class="p">.</span><span
+                                class="na">rvar</span><span class="p">(</span><span class="s">&quot;sepal-length&quot;</span><span
+                                class="p">)));</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_22_0.png"/></p>
+                    <ul>
+                        <li><code>hist(..)</code> - builds a histogram</li>
+                        <li><code>iris.getVar("sepal-length")</code> - variable used to build histogram and also to build the density line
+                        </li>
+                        <li><code>prob(true)</code> - parameter which specifies to a histogram to use probabilities (approximated by
+                            frequency ratios)
+                        </li>
+                        <li><code>densityLine(..)</code> - builds a density line</li>
+                    </ul>
+                    <h5 id="example-3">Example 3</h5>
+                    <p><strong>Scope</strong>: <em>Build multiple kernel density estimates for various bandwidth values</em></p>
+                    <p><strong>Solution</strong>:</p>
+                    <div class="highlight"><pre><span></span><code><span class="n">Plot</span> <span class="n">p2</span> <span
+                            class="o">=</span> <span class="n">plot</span><span class="p">();</span>
+<span class="n">DoubleStream</span><span class="p">.</span><span class="na">iterate</span><span class="p">(</span><span
+                                class="mf">0.05</span><span class="p">,</span> <span class="n">xi</span> <span class="o">-&gt;</span> <span
+                                class="n">xi</span> <span class="o">+</span> <span class="mf">0.02</span><span class="p">).</span><span
+                                class="na">limit</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span
+                                class="na">forEach</span><span class="p">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span
+                                class="n">p2</span><span class="p">.</span><span class="na">densityLine</span><span class="p">(</span><span
+                                class="n">iris</span><span class="p">.</span><span class="na">rvar</span><span class="p">(</span><span
+                                class="s">&quot;sepal-length&quot;</span><span class="p">),</span> <span class="n">v</span><span class="p">));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">p2</span><span
+                                class="p">);</span>
+</code></pre>
+                    </div>
+
+                    <p><img alt="png" src="output_24_0.png"/></p>
+                    <div class="highlight"><pre><span></span><code>
+</code></pre>
+                    </div>
+
+
+                </article>
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="md-footer">
+
+        <div class="md-footer-meta md-typeset">
+            <div class="md-footer-meta__inner md-grid">
+                <div class="md-footer-copyright">
+
+                    Made with
+                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+                        Material for MkDocs
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+<script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script>
+<script id="__lang" type="application/json">{
+    "clipboard.copy": "Copy to clipboard",
+    "clipboard.copied": "Copied to clipboard",
+    "search.config.lang": "en",
+    "search.config.pipeline": "trimmer, stopWordFilter",
+    "search.config.separator": "[\\s\\-]+",
+    "search.result.placeholder": "Type to start searching",
+    "search.result.none": "No matching documents",
+    "search.result.one": "1 matching document",
+    "search.result.other": "# matching documents"
+}</script>
+
+<script>
+    app = initialize({
+        base: "../../..",
+        features: [],
+        search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
+        }, typeof search !== "undefined" && search)
+    })
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
