@@ -1,3 +1,18 @@
 body {
     color: black;
 }
+
+.md-typeset {
+    font-size: .8rem;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+}
+
+.md-nav {
+    font-size: .8rem;
+}
+
+.md-typeset pre > code {
+    font-size: 0.65rem;
+}

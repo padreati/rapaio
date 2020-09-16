@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
 
-    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/AdvancedDataHandlingTools/">
+    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/_Sandbox/">
 
 
     <meta name="author" content="Aurelian Tutuianu">
@@ -46,11 +46,6 @@
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
 
-
-    <a href="#advanced-data-handling-tools" class="md-skip">
-        Skip to content
-    </a>
-
 </div>
 <div data-md-component="announce">
 
@@ -79,7 +74,7 @@
           </span>
                 <span class="md-header-nav__topic md-ellipsis">
             
-              Advanced Data Handling Tools
+               Sandbox
             
           </span>
             </div>
@@ -229,26 +224,73 @@
             </div>
 
 
-            <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
-                <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-
-                        <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-
-
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
-
             <div class="md-content">
                 <article class="md-content__inner md-typeset">
 
 
-                    <h1 id="advanced-data-handling-tools">Advanced Data Handling Tools</h1>
+                    <h1> Sandbox</h1>
+
                     <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
                             class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">DM</span> <span class="n">m</span> <span
+                            class="o">=</span> <span class="n">DMStripe</span><span class="p">.</span><span class="na">copy</span><span
+                            class="p">(</span><span class="n">Datasets</span><span class="p">.</span><span class="na">loadIrisDataset</span><span
+                            class="p">().</span><span class="na">removeVars</span><span class="p">(</span><span
+                            class="s">&quot;class&quot;</span><span class="p">))</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">DV</span> <span class="n">mean</span> <span
+                            class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="na">mean</span><span
+                            class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">DV</span> <span class="n">sd</span> <span
+                            class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="na">sd</span><span
+                            class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code><span class="n">m</span><span class="p">.</span><span
+                            class="na">copy</span><span class="p">().</span><span class="na">sub</span><span class="p">(</span><span
+                            class="n">mean</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span
+                            class="na">div</span><span class="p">(</span><span class="n">sd</span><span class="p">,</span> <span class="mi">0</span><span
+                            class="p">)</span>
+</code></pre>
+                    </div>
+
+                    <div class="highlight"><pre><span></span><code>DMStripe{rowCount:150, colCount:4, values:
+[
+ [ -0.8976739  1.015602  -1.3357516 -1.3110521  ], 
+ [ -1.1392005 -0.1315388 -1.3357516 -1.3110521  ], 
+ [ -1.3807271  0.3273175 -1.3923993 -1.3110521  ], 
+ [ -1.5014904  0.0978893 -1.279104  -1.3110521  ], 
+ [ -1.0184372  1.2450302 -1.3357516 -1.3110521  ], 
+ [ -0.535384   1.9333146 -1.1658087 -1.0486668  ], 
+ [ -1.5014904  0.7861738 -1.3357516 -1.1798595  ], 
+ [ -1.0184372  0.7861738 -1.279104  -1.3110521  ], 
+ [ -1.743017  -0.360967  -1.3357516 -1.3110521  ], 
+ [ -1.1392005  0.0978893 -1.279104  -1.4422448  ], 
+ [ -0.535384   1.4744583 -1.279104  -1.3110521  ], 
+ [ -1.2599638  0.7861738 -1.2224563 -1.3110521  ], 
+ [ -1.2599638 -0.1315388 -1.3357516 -1.4422448  ], 
+ [ -1.8637803 -0.1315388 -1.5056946 -1.4422448  ], 
+ [ -0.0523308  2.1627428 -1.4490469 -1.3110521  ], 
+ [ -0.1730941  3.0804554 -1.279104  -1.0486668  ], 
+ [ -0.535384   1.9333146 -1.3923993 -1.0486668  ], 
+ [ -0.8976739  1.015602  -1.3357516 -1.1798595  ], 
+ [ -0.1730941  1.7038865 -1.1658087 -1.1798595  ], 
+ [ -0.8976739  1.7038865 -1.279104  -1.1798595  ], 
+ [ -0.535384   0.7861738 -1.1658087 -1.3110521  ], 
+ [ -0.8976739  1.4744583 -1.279104  -1.0486668  ], 
+ [ -1.5014904  1.2450302 -1.5623422 -1.3110521  ], 
+ [ -0.8976739  0.5567457 -1.1658087 -0.9174741  ], 
+ [     ..         ..         ..         ..      ], 
+]}
 </code></pre>
                     </div>
 

@@ -47,7 +47,7 @@
 <div data-md-component="skip">
 
 
-    <a href="#brief-preview-of-rapaio-features" class="md-skip">
+    <a href="#brief-preview" class="md-skip">
         Skip to content
     </a>
 
@@ -79,7 +79,7 @@
           </span>
                 <span class="md-header-nav__topic md-ellipsis">
             
-              Brief preview of rapaio features
+              Brief preview
             
           </span>
             </div>
@@ -125,8 +125,8 @@
 
 
                                 <li class="md-nav__item">
-                                    <a href="../../library-features/" title="Features provided" class="md-nav__link">
-                                        Features provided
+                                    <a href="../../complete-library-features/" title="Complete list of features" class="md-nav__link">
+                                        Complete list of features
                                     </a>
                                 </li>
 
@@ -153,13 +153,12 @@
 
 
                                                 <label class="md-nav__link md-nav__link--active" for="__toc">
-                                                    Brief preview of rapaio features
+                                                    Brief preview
                                                     <span class="md-nav__icon md-icon"></span>
                                                 </label>
 
-                                                <a href="./" title="Brief preview of rapaio features"
-                                                   class="md-nav__link md-nav__link--active">
-                                                    Brief preview of rapaio features
+                                                <a href="./" title="Brief preview" class="md-nav__link md-nav__link--active">
+                                                    Brief preview
                                                 </a>
 
 
@@ -173,11 +172,11 @@
                                                     <ul class="md-nav__list" data-md-scrollfix>
 
                                                         <li class="md-nav__item">
-                                                            <a href="#brief-preview-of-rapaio-features" class="md-nav__link">
-                                                                Brief preview of rapaio features
+                                                            <a href="#brief-preview" class="md-nav__link">
+                                                                Brief preview
                                                             </a>
 
-                                                            <nav class="md-nav" aria-label="Brief preview of rapaio features">
+                                                            <nav class="md-nav" aria-label="Brief preview">
                                                                 <ul class="md-nav__list">
 
                                                                     <li class="md-nav__item">
@@ -261,6 +260,34 @@
                                 </li>
 
 
+                                <li class="md-nav__item md-nav__item--nested">
+
+                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+
+                                    <label class="md-nav__link" for="nav-5">
+                                        About
+                                        <span class="md-nav__icon md-icon"></span>
+                                    </label>
+                                    <nav class="md-nav" aria-label="About" data-md-level="1">
+                                        <label class="md-nav__title" for="nav-5">
+                                            <span class="md-nav__icon md-icon"></span>
+                                            About
+                                        </label>
+                                        <ul class="md-nav__list" data-md-scrollfix>
+
+
+                                            <li class="md-nav__item">
+                                                <a href="../../about/" title="Short story" class="md-nav__link">
+                                                    Short story
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </nav>
+                                </li>
+
+
                                 <li class="md-nav__item">
                                     <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
                                         Source
@@ -289,11 +316,11 @@
                             <ul class="md-nav__list" data-md-scrollfix>
 
                                 <li class="md-nav__item">
-                                    <a href="#brief-preview-of-rapaio-features" class="md-nav__link">
-                                        Brief preview of rapaio features
+                                    <a href="#brief-preview" class="md-nav__link">
+                                        Brief preview
                                     </a>
 
-                                    <nav class="md-nav" aria-label="Brief preview of rapaio features">
+                                    <nav class="md-nav" aria-label="Brief preview">
                                         <ul class="md-nav__list">
 
                                             <li class="md-nav__item">
@@ -348,9 +375,9 @@
                 <article class="md-content__inner md-typeset">
 
 
-                    <h1>Brief preview of rapaio features</h1>
+                    <h1>Brief preview</h1>
 
-                    <h3 id="brief-preview-of-rapaio-features">Brief preview of rapaio features</h3>
+                    <h3 id="brief-preview">Brief preview</h3>
                     <p>This notebook is intended to be a starting point for using rapaio library in a IJava jupyter notebook. We use a real
                         simple data set. The analysis is not indended to be an example for how to conduct an inference. The line story
                         poresented exists only to make the exemplification more friendly.</p>
@@ -372,8 +399,9 @@
                     <div class="highlight"><pre><span></span><code><span
                             class="c1">// skip the first column since it is the row number</span>
 <span class="kd">var</span> <span class="n">df</span> <span class="o">=</span> <span class="n">Csv</span><span class="p">.</span><span
-                                class="na">instance</span><span class="p">().</span><span class="na">withSkipCols</span><span
-                                class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                                class="na">instance</span><span class="p">().</span><span class="na">skipCols</span><span class="p">.</span><span
+                                class="na">set</span><span class="p">(</span><span class="n">IntRule</span><span class="p">.</span><span
+                                class="na">from</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
     <span class="p">.</span><span class="na">readUrl</span><span class="p">(</span><span class="s">&quot;http://faculty.marshall.usc.edu/gareth-james/ISL/Advertising.csv&quot;</span><span
                                 class="p">);</span>
 </code></pre>
@@ -385,13 +413,15 @@
 </code></pre>
                     </div>
 
-                    <div class="highlight"><pre><span></span><code>       TV   radio newspaper sales        TV   radio newspaper sales        TV   radio newspaper sales
-  [0] 230.1 37.8    69.2    22.1    [6]  57.5 32.8    23.5    11.8  [196]  94.2  4.9     8.1     9.7  
-  [1]  44.5 39.3    45.1    10.4    [7] 120.2 19.6    11.6    13.2  [197] 177    9.3     6.4    12.8  
-  [2]  17.2 45.9    69.3     9.3    [8]   8.6  2.1     1       4.8  [198] 283.6 42      66.2    25.5  
-  [3] 151.5 41.3    58.5    18.5    [9] 199.8  2.6    21.2    10.6  [199] 232.1  8.6     8.7    13.4  
-  [4] 180.8 10.8    58.4    12.9         ...   ...     ...     ...  
-  [5]   8.7 48.9    75       7.2  [195]  38.2  3.7    13.8     7.6
+                    <div class="highlight"><pre><span></span><code>       TV   radio newspaper sales        TV   radio newspaper sales
+  [0] 230.1 37.8    69.2    22.1    [8]   8.6  2.1     1       4.8  
+  [1]  44.5 39.3    45.1    10.4    [9] 199.8  2.6    21.2    10.6  
+  [2]  17.2 45.9    69.3     9.3         ...   ...     ...     ...  
+  [3] 151.5 41.3    58.5    18.5  [195]  38.2  3.7    13.8     7.6  
+  [4] 180.8 10.8    58.4    12.9  [196]  94.2  4.9     8.1     9.7  
+  [5]   8.7 48.9    75       7.2  [197] 177    9.3     6.4    12.8  
+  [6]  57.5 32.8    23.5    11.8  [198] 283.6 42      66.2    25.5  
+  [7] 120.2 19.6    11.6    13.2  [199] 232.1  8.6     8.7    13.4
 </code></pre>
                     </div>
 
@@ -435,7 +465,7 @@
 </code></pre>
                     </div>
 
-                    <p><img alt="png" src="output_11_0.png"/></p>
+                    <p><img alt="png" src="output_12_0.png"/></p>
                     <p>Let's look at the relation between DVs and IV.</p>
                     <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span
                             class="na">image</span><span class="p">(</span><span class="n">gridLayer</span><span class="p">(</span><span
@@ -464,7 +494,7 @@
 </code></pre>
                     </div>
 
-                    <p><img alt="png" src="output_13_0.png"/></p>
+                    <p><img alt="png" src="output_14_0.png"/></p>
                     <p>We have an idea that <em>TV</em> and <em>radio</em> are correlated with <em>sales</em>. First we can check if this is
                         true. We can do that by measuring the correlation between them.</p>
                     <div class="highlight"><pre><span></span><code><span class="n">CorrPearson</span><span class="p">.</span><span
@@ -550,7 +580,7 @@
 </code></pre>
                     </div>
 
-                    <p><img alt="png" src="output_23_0.png"/></p>
+                    <p><img alt="png" src="output_24_0.png"/></p>
                     <p>They look unrelated.</p>
                     <div class="highlight"><pre><span></span><code><span class="n">CorrPearson</span><span class="p">.</span><span
                             class="na">of</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="na">rvar</span><span
@@ -576,9 +606,9 @@
 
                     <p>We were right, even Spearman's rho could not get much of it.</p>
                     <h4 id="linear-regression">Linear regression</h4>
-                    <div class="highlight"><pre><span></span><code><span class="n">LinearRegression</span> <span class="n">lm</span> <span
-                            class="o">=</span> <span class="n">LinearRegression</span><span class="p">.</span><span
-                            class="na">newModel</span><span class="p">();</span>
+                    <div class="highlight"><pre><span></span><code><span class="n">LinearRegressionModel</span> <span
+                            class="n">lm</span> <span class="o">=</span> <span class="n">LinearRegressionModel</span><span
+                            class="p">.</span><span class="na">newModel</span><span class="p">();</span>
 <span class="n">lm</span><span class="p">.</span><span class="na">fit</span><span class="p">(</span><span class="n">df</span><span
                                 class="p">,</span> <span class="s">&quot;sales&quot;</span><span class="p">);</span>
 <span class="n">lm</span><span class="p">.</span><span class="na">predict</span><span class="p">(</span><span class="n">df</span><span
@@ -632,7 +662,7 @@ F-statistic: 570.271 on 3 and 196 DF,  p-value: &lt;2e-16
                     </div>
 
                     <div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="n">lm2</span> <span
-                            class="o">=</span> <span class="n">LinearRegression</span><span class="p">.</span><span
+                            class="o">=</span> <span class="n">LinearRegressionModel</span><span class="p">.</span><span
                             class="na">newModel</span><span class="p">();</span>
 <span class="n">lm2</span><span class="p">.</span><span class="na">fit</span><span class="p">(</span><span class="n">reducedDf</span><span
                                 class="p">,</span> <span class="s">&quot;sales&quot;</span><span class="p">);</span>
@@ -675,6 +705,9 @@ F-statistic: 859.618 on 2 and 197 DF,  p-value: &lt;2e-16
                     </div>
 
                     <p>We have a similar adjusted R2, as we expected.</p>
+                    <div class="highlight"><pre><span></span><code>
+</code></pre>
+                    </div>
 
 
                 </article>
@@ -688,8 +721,8 @@ F-statistic: 859.618 on 2 and 197 DF,  p-value: &lt;2e-16
         <div class="md-footer-nav">
             <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
 
-                <a href="../../library-features/" title="Features provided" class="md-footer-nav__link md-footer-nav__link--prev"
-                   rel="prev">
+                <a href="../../complete-library-features/" title="Complete list of features"
+                   class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
                     <div class="md-footer-nav__button md-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/>
@@ -700,7 +733,7 @@ F-statistic: 859.618 on 2 and 197 DF,  p-value: &lt;2e-16
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                            Features provided
+                            Complete list of features
                         </div>
                     </div>
                 </a>

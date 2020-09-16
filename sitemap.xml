@@ -6,7 +6,7 @@
         <changefreq>daily</changefreq>
     </url>
     <url>
-        <loc>https://padreati.github.io/rapaio/library-features/</loc>
+        <loc>https://padreati.github.io/rapaio/complete-library-features/</loc>
         <lastmod>2020-09-16</lastmod>
         <changefreq>daily</changefreq>
     </url>
@@ -17,6 +17,11 @@
     </url>
     <url>
         <loc>https://padreati.github.io/rapaio/notebooks/tutorials/DataHandlingOverview/</loc>
+        <lastmod>2020-09-16</lastmod>
+        <changefreq>daily</changefreq>
+    </url>
+    <url>
+        <loc>https://padreati.github.io/rapaio/about/</loc>
         <lastmod>2020-09-16</lastmod>
         <changefreq>daily</changefreq>
     </url>
