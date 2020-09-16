@@ -58,7 +58,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -126,9 +125,9 @@ public class Csv extends ParamSet<Csv> {
      */
     public final ValueParam<Integer, Csv> endRow = new ValueParam<>(this, Integer.MAX_VALUE,
             "endRow", "Last row from row intervals to be read");
-    public final ValueParam<Predicate<Integer>, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(),
+    public final ValueParam<IntRule, Csv> skipRows = new ValueParam<>(this, IntRule.all().negate(),
             "skipRows", "Skip rows predicate used to filter rows to be read");
-    public final ValueParam<Predicate<Integer>, Csv> skipCols = new ValueParam<>(this, row -> false,
+    public final ValueParam<IntRule, Csv> skipCols = new ValueParam<>(this, row -> false,
             "skipCols", "Skip rows predicate used to filter columns to be read");
     public final ValueParam<Frame, Csv> template = new ValueParam<>(this, null,
             "template", "Optional frame templated used to define variable names and type for reading", obj -> true);

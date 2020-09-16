@@ -35,36 +35,22 @@ library written in Java.*
 </tr>
 </table>
 
-## Short story
+## Documentation
 
-Back in time. It's 2012. I'm a software engineer participating at a contest
-about cold start problem in movie recommender systems. Zero knowledge about
-probabilities, statistics or machine learning. Solving the problem with bare
-hands without reading nothing on the topic was an unstoppable trap. The contest
-held a year, quarterly prizes. I won enough money to buy books to learn
-about those topics. Soon, I discovered that many of my imaginations and systems
-lied there in those books, analyzed by admirable people. Many other admirable
-people buried their years in libraries and systems which tackles data adventures.
+[Rapaio](https://padreati.github.io/rapaio/) is a rich collection of data mining, statistics and machine learning tools
+written completely in Java. Documentation for this library is hosted as [github pages](https://padreati.github.io/rapaio/).
+Most of the documentation is written as Jupyter notebooks and hosted at 
+[rapaio-notebooks github repository](https://github.com/padreati/rapaio-notebooks). The notebooks repository can also be 
+spinned up through [binder]().
 
-Many books and libraries after, I started to collect my own implementations 
-into what is now named rapaio. Write and rewrite many times, to find better
-tools, useful into those great data quests out there. Into this quests I would 
-like to invite you too. Some of you already have done timid steps. 
-I am thankful for that. Still, it's plenty of space. You are welcomed.
- 
-There are no rules because we are still small in number. We can talk 
-to each other. If we feel the need for rules, we will create them. 
-Until then, you can follow your feelings, common sense and regards each 
-of us deserves. 
- 
 ## Installation
 
-Last published release on maven central is 2.3.0
+Last published release on maven central is 2.4.0
 
        <dependency>
          <groupId>io.github.padreati</groupId>
          <artifactId>rapaio</artifactId>
-         <version>2.3.0</version>
+         <version>2.4.0</version>
        </dependency>
 
 The best way for exploration is through jupyter / jupyter-lab notebooks. 
@@ -72,17 +58,11 @@ This is excellent for experimenting with interactive notebooks or
 to document the ideas you are working on. 
 
 You have to install jupyter / jupyter-lab and IJava kernel. For more information
-on that you can follow the instruction from 
-[here](https://github.com/SpencerPark/IJava#installing). The following 
+you can follow the instruction from 
+[IJava](https://github.com/SpencerPark/IJava#installing). The following 
 notation is specific to IJava kernel jupyter notation. 
 
     %maven io.github.padreati:rapaio:2.3.0  
-
-## Documentation
-
-Documentation hosted on github pages [https://padreati.github.io/rapaio/](https://padreati.github.io/rapaio/).
-
-The github pages contains also references to notebooks which exemplifies teh concepts.
 
 ## Acknowledgements
 

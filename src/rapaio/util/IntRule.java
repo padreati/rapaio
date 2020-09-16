@@ -1,11 +1,13 @@
 package rapaio.util;
 
-import java.util.function.Predicate;
+import java.util.Objects;
+import java.util.function.IntPredicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/12/20.
  */
-public interface IntRule extends Predicate<Integer> {
+@FunctionalInterface
+public interface IntRule {
 
     static IntRule none() {
         return row -> false;
@@ -44,5 +46,26 @@ public interface IntRule extends Predicate<Integer> {
             }
             return false;
         };
+    }
+
+    static IntPredicate not(IntPredicate target) {
+        Objects.requireNonNull(target);
+        return target.negate();
+    }
+
+    boolean test(int t);
+
+    default IntRule and(IntRule other) {
+        Objects.requireNonNull(other);
+        return (t) -> test(t) && other.test(t);
+    }
+
+    default IntRule negate() {
+        return (t) -> !test(t);
+    }
+
+    default IntPredicate or(IntPredicate other) {
+        Objects.requireNonNull(other);
+        return (t) -> test(t) || other.test(t);
     }
 }
