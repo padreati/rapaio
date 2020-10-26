@@ -25,14 +25,14 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -40,7 +40,7 @@ import java.awt.geom.Line2D;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Lines extends PlotComponent {
+public class Lines extends Artist {
 
     private static final long serialVersionUID = 9183829873670164532L;
     private final Var x;
@@ -63,18 +63,16 @@ public class Lines extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
+    public void updateDataRange(Range range) {
         if (x.rowCount() == 0) {
-            return null;
+            return;
         }
-        Range range = new Range();
         for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
             range.union(x.getDouble(i), y.getDouble(i));
         }
-        return range;
     }
 
     @Override
@@ -90,7 +88,7 @@ public class Lines extends PlotComponent {
             double x2 = x.getDouble(i);
             double y2 = y.getDouble(i);
 
-            Range r = new Clip(parent.getRange()).lineClip(x1, y1, x2, y2);
+            Range r = new Clip(parent.getDataRange()).lineClip(x1, y1, x2, y2);
             if (r != null) {
                 x1 = xScale(r.x1());
                 x2 = xScale(r.x2());

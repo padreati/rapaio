@@ -25,13 +25,13 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 import rapaio.util.function.SFunction;
 
 import java.awt.*;
@@ -42,12 +42,12 @@ import static rapaio.graphics.Plotter.points;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FunctionLine extends PlotComponent {
+public class FunctionLine extends Artist {
 
     private static final long serialVersionUID = 8388944194915495215L;
     private final SFunction<Double, Double> f;
 
-    public FunctionLine(SFunction<Double, Double> f, GOption... opts) {
+    public FunctionLine(SFunction<Double, Double> f, GOption<?>... opts) {
         this.f = f;
         // apply default values for function line
         this.options.bind(points(1024 * 10));
@@ -55,13 +55,12 @@ public class FunctionLine extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
-        return null;
+    public void updateDataRange(Range range) {
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = parent.getRange();
+        Range range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();

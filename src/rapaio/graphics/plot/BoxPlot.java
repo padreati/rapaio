@@ -62,7 +62,7 @@ public class BoxPlot extends HostFigure {
     private final String[] names;
     private final GOpts options = new GOpts();
 
-    public BoxPlot(Var x, Var factor, GOption... opts) {
+    public BoxPlot(Var x, Var factor, GOption<?>... opts) {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.levels().stream().filter(map::containsKey).toArray(String[]::new);
@@ -72,11 +72,11 @@ public class BoxPlot extends HostFigure {
         initialize();
     }
 
-    public BoxPlot(Var x, GOption... opts) {
+    public BoxPlot(Var x, GOption<?>... opts) {
         this(new Var[]{x}, opts);
     }
 
-    public BoxPlot(Var[] vars, GOption... opts) {
+    public BoxPlot(Var[] vars, GOption<?>... opts) {
         this.vars = Arrays.copyOf(vars, vars.length);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
@@ -87,7 +87,7 @@ public class BoxPlot extends HostFigure {
         initialize();
     }
 
-    public BoxPlot(Frame df, GOption... opts) {
+    public BoxPlot(Frame df, GOption<?>... opts) {
         this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
@@ -106,7 +106,7 @@ public class BoxPlot extends HostFigure {
     }
 
     @Override
-    public Range buildRange() {
+    public Range buildDataRange() {
         Range range = new Range();
         range.union(0, Double.NaN);
         range.union(vars.length, Double.NaN);

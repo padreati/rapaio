@@ -25,14 +25,14 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionBins;
+import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -40,7 +40,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class Histogram2D extends PlotComponent {
+public class Histogram2D extends Artist {
 
     private static final long serialVersionUID = 136436073834179971L;
 
@@ -49,7 +49,7 @@ public class Histogram2D extends PlotComponent {
     private int[][] freq;
     private int maxFreq;
 
-    public Histogram2D(Var x, Var y, GOption... opts) {
+    public Histogram2D(Var x, Var y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
         this.options.bind(opts);
@@ -68,26 +68,10 @@ public class Histogram2D extends PlotComponent {
         parent.yLab(y.name());
     }
 
-    @Override
-    protected Range buildRange() {
-        if (x.rowCount() == 0) {
-            return null;
-        }
-        Range range = new Range();
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
-                continue;
-            }
-            range.union(x.getDouble(i), y.getDouble(i));
-        }
-        return range;
-    }
-
     private void computeData() {
-        Range range = buildRange();
         int bins = options.getBins();
-        double w = range.width() / bins;
-        double h = range.height() / bins;
+        double w = parent.getDataRange().width() / bins;
+        double h = parent.getDataRange().height() / bins;
 
         freq = new int[bins][bins];
 
@@ -95,8 +79,8 @@ public class Histogram2D extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
 
-            int xx = Math.min(bins - 1, (int) Math.floor((x.getDouble(i) - range.x1()) / w));
-            int yy = Math.min(bins - 1, (int) Math.floor((y.getDouble(i) - range.y1()) / h));
+            int xx = Math.min(bins - 1, (int) Math.floor((x.getDouble(i) - parent.getDataRange().x1()) / w));
+            int yy = Math.min(bins - 1, (int) Math.floor((y.getDouble(i) - parent.getDataRange().y1()) / h));
             freq[xx][yy]++;
             if (maxFreq < freq[xx][yy]) {
                 maxFreq = freq[xx][yy];
@@ -105,15 +89,26 @@ public class Histogram2D extends PlotComponent {
     }
 
     @Override
+    public void updateDataRange(Range range) {
+        if (x.rowCount() == 0) {
+            return;
+        }
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+            if (x.isMissing(i) || y.isMissing(i)) {
+                continue;
+            }
+            range.union(x.getDouble(i), y.getDouble(i));
+        }
+    }
+
+    @Override
     public void paint(Graphics2D g2d) {
-
         computeData();
-
         // paint each rectangle as a blue gradient
 
         int bins = options.getBins();
 
-        Range range = buildRange();
+        Range range = parent.getDataRange();
         double w = range.width() / bins;
         double h = range.height() / bins;
 

@@ -27,10 +27,21 @@
 
 package rapaio.graphics.base;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.io.Serializable;
+
 /**
  * @author algoshipda
  */
-public class Range1D {
+@Getter
+@Setter
+@ToString
+public class Range1D implements Serializable {
+
+    private static final long serialVersionUID = 8011268159946315468L;
     private double min = Double.NaN;
     private double max = Double.NaN;
 
@@ -50,46 +61,22 @@ public class Range1D {
         return min <= x && x <= max;
     }
 
-    public double length() {
+    public double getLength() {
         return max - min;
     }
 
-    public void setRange(double pMin, double pMax) {
-        min = pMin;
-        max = pMax;
-    }
-
-    public void setMin(double x) {
-        min = x;
-    }
-
-    public void setMax(double x) {
-        max = x;
-    }
-
-    public double getMin() {
-        return min;
-    }
-
-    public double getMax() {
-        return max;
+    public void setRange(double min, double max) {
+        this.min = min;
+        this.max = max;
     }
 
     public int getProperDecimals() {
         int decimals = 0;
-        double len = length();
+        double len = getLength();
         while (len <= 10.0 && decimals <= 7) {
             len *= 10;
             decimals++;
         }
         return decimals;
-    }
-
-    @Override
-    public String toString() {
-        return "Range1D{" +
-                "min=" + min +
-                ", max=" + max +
-                '}';
     }
 }

@@ -32,7 +32,7 @@ public class DoubleArraysTest {
         assertArrayEquals(new double[]{10., 10., 10.}, newFill(3, 10.));
         assertArrayEquals(new double[]{10., 11., 12.}, newSeq(10, 13));
         assertArrayEquals(new double[]{4., 9., 16.}, newFrom(new double[]{1, 2, 3, 4, 5}, 1, 4, x -> x * x));
-        assertArrayEquals(new double[]{3., 5.}, newCopy(new double[]{1, 3, 5, 7}, 1, 2));
+        assertArrayEquals(new double[]{3., 5.}, copy(new double[]{1, 3, 5, 7}, 1, 2));
     }
 
     private void testEqualArrays(double[] actual, double... expected) {
@@ -44,12 +44,14 @@ public class DoubleArraysTest {
         double[] array = newFrom(0, 100, row -> normal.sampleNext());
         DoubleIterator it1 = DoubleArrays.iterator(array, 0, 10);
         for (int i = 0; i < 10; i++) {
+            assertTrue(it1.hasNext());
             assertEquals(array[i], it1.nextDouble(), TOL);
         }
         assertThrows(NoSuchElementException.class, it1::nextDouble);
 
         DoubleIterator it2 = DoubleArrays.iterator(array, 0, 100);
         for (int i = 0; i < 100; i++) {
+            assertTrue(it2.hasNext());
             assertEquals(array[i], it2.nextDouble(), TOL);
         }
         assertThrows(NoSuchElementException.class, it2::nextDouble);
@@ -134,7 +136,7 @@ public class DoubleArraysTest {
             int start = RandomSource.nextInt(50);
             int len = 50 + RandomSource.nextInt(50) - start;
 
-            double[] array2 = newCopy(array1, start, len);
+            double[] array2 = copy(array1, start, len);
             DoubleArrays.add(array2, 0, 10, len);
             double[] array3 = new double[len];
             addTo(array1, start, 10, array3, 0, len);
@@ -143,11 +145,15 @@ public class DoubleArraysTest {
 
             double[] array4 = newFill(len, 10);
             double[] array5 = new double[len];
-            addTo(newCopy(array1, start, len), 0, array4, 0, array5, 0, len);
+            addTo(copy(array1, start, len), 0, array4, 0, array5, 0, len);
             double[] array6 = new double[len];
-            addTo(newCopy(array1, start, len), 0, array4, 0, array6, 0, len);
+            addTo(copy(array1, start, len), 0, array4, 0, array6, 0, len);
+
+            double[] array7 = copy(array1, start, len);
+            add(array7, 0, array4, 0, len);
 
             assertArrayEquals(array5, array6);
+            assertArrayEquals(array5, array7);
         }
     }
 
@@ -159,7 +165,7 @@ public class DoubleArraysTest {
             int start = RandomSource.nextInt(50);
             int len = RandomSource.nextInt(50);
 
-            double[] array2 = newCopy(array1, start, len);
+            double[] array2 = copy(array1, start, len);
             sub(array2, 0, 10, len);
             double[] array3 = new double[len];
             subTo(array1, start, 10, array3, 0, len);
@@ -167,12 +173,16 @@ public class DoubleArraysTest {
             assertArrayEquals(array2, array3, TOL);
 
             double[] array4 = newFill(len, 10);
-            double[] array5 = newCopy(array1, start, len);
+            double[] array5 = copy(array1, start, len);
             sub(array5, 0, array4, 0, len);
             double[] array6 = new double[len];
             subTo(array1, start, array4, 0, array6, 0, len);
 
+            double[] array7 = copy(array1, start, len);
+            sub(array7, 0, array4, 0, len);
+
             assertArrayEquals(array5, array6);
+            assertArrayEquals(array5, array7);
         }
     }
 
@@ -185,7 +195,7 @@ public class DoubleArraysTest {
             int end = 50 + RandomSource.nextInt(50);
             int len = end - start;
 
-            double[] array2 = newCopy(array1, start, len);
+            double[] array2 = copy(array1, start, len);
             mult(array2, 0, 10, len);
             double[] array3 = new double[len];
             multTo(array1, start, 10, array3, 0, len);
@@ -193,12 +203,16 @@ public class DoubleArraysTest {
             assertArrayEquals(array2, array3, TOL);
 
             double[] array4 = newFill(len, 10);
-            double[] array5 = newCopy(array1, start, len);
+            double[] array5 = copy(array1, start, len);
             mult(array5, 0, array4, 0, len);
             double[] array6 = new double[len];
             multTo(array1, start, array4, 0, array6, 0, len);
 
+            double[] array7 = copy(array1, start, len);
+            mult(array7, 0, array4, 0, len);
+
             assertArrayEquals(array5, array6);
+            assertArrayEquals(array5, array7);
         }
     }
 
@@ -210,7 +224,7 @@ public class DoubleArraysTest {
             int start = RandomSource.nextInt(50);
             int len = 50 + RandomSource.nextInt(50) - start;
 
-            double[] array2 = newCopy(array1, start, len);
+            double[] array2 = copy(array1, start, len);
             div(array2, 0, 10, len);
             double[] array3 = new double[len];
             divTo(array1, start, 10, array3, 0, len);
@@ -218,12 +232,67 @@ public class DoubleArraysTest {
             assertArrayEquals(array2, array3, TOL);
 
             double[] array4 = newFill(len, 10);
-            double[] array5 = newCopy(array1, start, len);
+            double[] array5 = copy(array1, start, len);
             div(array5, 0, array4, 0, len);
             double[] array6 = new double[len];
             divTo(array1, start, array4, 0, array6, 0, len);
 
+            double[] array7 = copy(array1, start, len);
+            div(array7, 0, array4, 0, len);
+
             assertArrayEquals(array5, array6);
+            assertArrayEquals(array5, array7);
         }
+    }
+
+    @Test
+    void testCapacity() {
+        double[] array1 = newSeq(0, 100);
+
+        // new copy preserving 10
+        double[] array2 = forceCapacity(array1, 10, 10);
+        assertTrue(DoubleArrays.equals(array1, 0, array2, 0, 10));
+        assertEquals(10, array2.length);
+
+        // new copy preserving 80
+        double[] array3 = forceCapacity(array1, 120, 80);
+        assertTrue(DoubleArrays.equals(array1, 0, array3, 0, 80));
+        assertEquals(120, array3.length);
+
+        // leave array untouched
+        double[] array4 = ensureCapacity(array1, 10);
+        assertTrue(DoubleArrays.equals(array1, 0, array4, 0, 100));
+        assertEquals(100, array4.length);
+
+        // new copy preserving all available
+        double[] array5 = ensureCapacity(array1, 120);
+        assertTrue(DoubleArrays.equals(array1, 0, array5, 0, 100));
+        assertEquals(120, array5.length);
+
+        // new copy preserving 10
+        double[] array6 = ensureCapacity(array1, 120, 10);
+        assertTrue(DoubleArrays.equals(array1, 0, array6, 0, 10));
+        assertTrue(DoubleArrays.equals(newFill(90, 0), 0, array6, 10, 90));
+
+        // leave untouched
+        double[] array7 = grow(array1, 10);
+        assertTrue(DoubleArrays.equals(array1, 0, array7, 0, 100));
+        assertEquals(100, array7.length);
+
+        // new copy preserving all
+        double[] array8 = grow(array1, 120);
+        assertTrue(DoubleArrays.equals(array1, 0, array8, 0, 100));
+        assertEquals(150, array8.length);
+
+        // new copy preserving 10
+        double[] array9 = grow(array1, 200, 10);
+        assertTrue(DoubleArrays.equals(array1, 0, array9, 0, 10));
+        assertTrue(DoubleArrays.equals(newFill(190, 0), 0, array9, 10, 190));
+        assertEquals(200, array9.length);
+
+        // trim array to 10
+        double[] array10 = trim(array1, 10);
+        assertEquals(10, array10.length);
+        assertTrue(DoubleArrays.equals(array1, 0, array10, 0, 10));
     }
 }

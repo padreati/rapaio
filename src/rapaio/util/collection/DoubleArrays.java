@@ -2,7 +2,9 @@ package rapaio.util.collection;
 
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleIterator;
 import rapaio.util.function.Double2DoubleFunction;
@@ -20,7 +22,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Utility class to handle the manipulation of arrays of double 64 floating values.
+ * Utility class to handle the manipulation of arrays of double 64 floating point values.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/11/19.
  */
@@ -93,12 +95,6 @@ public final class DoubleArrays {
         return data;
     }
 
-    public static double[] newCopy(double[] array, int start, int len) {
-        double[] data = new double[len];
-        System.arraycopy(array, start, data, 0, len);
-        return data;
-    }
-
     public static DoubleIterator iterator(double[] array, int start, int len) {
         return new DoubleIterator() {
             private int pos = start;
@@ -142,8 +138,6 @@ public final class DoubleArrays {
         }
     }
 
-    // minus
-
     public static void sub(double[] a, int aStart, double s, int len) {
         for (int i = 0; i < len; i++) {
             a[aStart++] -= s;
@@ -168,8 +162,6 @@ public final class DoubleArrays {
         }
     }
 
-    // multiplication
-
     public static void mult(double[] a, int aStart, double s, int len) {
         for (int i = aStart; i < len + aStart; i++) {
             a[i] *= s;
@@ -193,8 +185,6 @@ public final class DoubleArrays {
             to[toStart++] = a[aStart++] * b[bStart++];
         }
     }
-
-    // div
 
     public static void div(double[] a, int aStart, double s, int len) {
         for (int i = aStart; i < len + aStart; i++) {
@@ -301,11 +291,12 @@ public final class DoubleArrays {
 
     /**
      * Those functions were copied from fastutil but adapted for our use case.
-     * The reason is to avoid importing the huge lbrary of fastutil and
-     * to have a bseline for our implementations
+     * The reason is to avoid importing the huge library of fastutil and
+     * to have a baseline for our implementations
      */
 
     public static final double[] EMPTY_ARRAY = {};
+
     /**
      * A static, final, empty array to be used as default array in allocations. An
      * object distinct from {@link #EMPTY_ARRAY} makes it possible to have different
@@ -315,6 +306,30 @@ public final class DoubleArrays {
      * @see java.util.ArrayList
      */
     public static final double[] DEFAULT_EMPTY_ARRAY = {};
+
+    /**
+     * Returns true if two array intervals have equal elements.
+     * First interval is contained in vector {@param a} starting from {@param aStart}
+     * of length {@param length}. Second interval is contained in array {@param b}
+     * and starts at {@param bStart} with length {@param length}.
+     * <p>
+     * For comparisons of full arrays use {@link Arrays#equals(double[], double[])}
+     *
+     * @param a      array containing the first interval
+     * @param aStart index of the first element from the first interval
+     * @param b      array containing the second interval
+     * @param bStart index of the first element from the second interval
+     * @param length length of both intervals
+     * @return true if values from both intervals are the same, falso otherwise
+     */
+    public static boolean equals(final double[] a, final int aStart, final double[] b, final int bStart, final int length) {
+        for (int i = 0; i < length; i++) {
+            if (a[aStart + i] != b[bStart + i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Forces an array to contain the given number of entries, preserving just a part of the array.
@@ -422,25 +437,6 @@ public final class DoubleArrays {
                 length == 0 ? EMPTY_ARRAY : new double[length];
         System.arraycopy(array, 0, t, 0, length);
         return t;
-    }
-
-    /**
-     * Sets the length of the given array.
-     *
-     * @param array  an array.
-     * @param length the new length for the array.
-     * @return {@code array}, if it contains exactly {@code length}
-     * entries; otherwise, if it contains <em>more</em> than
-     * {@code length} entries, an array with {@code length} entries
-     * whose entries are the same as the first {@code length} entries of
-     * {@code array}; otherwise, an array with {@code length} entries
-     * whose first {@code array.length} entries are the same as those of
-     * {@code array}.
-     */
-    public static double[] setLength(final double[] array, final int length) {
-        if (length == array.length) return array;
-        if (length < array.length) return trim(array, length);
-        return ensureCapacity(array, length);
     }
 
     /**
@@ -1981,19 +1977,10 @@ public final class DoubleArrays {
         }
     }
 
+    @AllArgsConstructor
+    @ToString
     protected static final class Segment {
         protected final int offset, length, level;
-
-        protected Segment(final int offset, final int length, final int level) {
-            this.offset = offset;
-            this.length = length;
-            this.level = level;
-        }
-
-        @Override
-        public String toString() {
-            return "Segment [offset=" + offset + ", length=" + length + ", level=" + level + "]";
-        }
     }
 
     protected static final Segment POISON_PILL = new Segment(-1, -1, -1);

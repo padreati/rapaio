@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
@@ -33,12 +33,11 @@ import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
 
 import static rapaio.graphics.Plotter.bins;
 
@@ -47,7 +46,7 @@ import static rapaio.graphics.Plotter.bins;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Histogram extends PlotComponent {
+public class Histogram extends Artist {
 
     private static final long serialVersionUID = -7990247895216501553L;
 
@@ -56,11 +55,11 @@ public class Histogram extends PlotComponent {
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
 
-    public Histogram(Var v, GOption... opts) {
+    public Histogram(Var v, GOption<?>... opts) {
         this(v, Double.NaN, Double.NaN, opts);
     }
 
-    public Histogram(Var v, double minValue, double maxValue, GOption... opts) {
+    public Histogram(Var v, double minValue, double maxValue, GOption<?>... opts) {
         this.v = v;
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -150,24 +149,23 @@ public class Histogram extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
+    public void updateDataRange(Range range) {
         rebuild();
-        Range range = new Range();
         range.union(minValue, Double.NaN);
         range.union(maxValue, Double.NaN);
-        Arrays.stream(freqTable).sequential().forEach(t -> range.union(Double.NaN, t));
+        for (double freq : freqTable) {
+            range.union(Double.NaN, freq);
+        }
         range.union(Double.NaN, 0);
-        return range;
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        rebuild();
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
-            double mind = Math.min(d, parent.getRange().y2());
-            if (!parent.getRange().contains(binStart(i), 0)) {
+            double mind = Math.min(d, parent.getDataRange().y2());
+            if (!parent.getDataRange().contains(binStart(i), 0)) {
                 continue;
             }
             Composite old = g2d.getComposite();

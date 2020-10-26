@@ -30,14 +30,15 @@ package rapaio.graphics.base;
 import java.io.Serializable;
 
 /**
- * @author tutuianu
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Range implements Serializable {
 
     private static final long serialVersionUID = -7868093307393360861L;
+    private static final double extendedFactor = 1.025;
+
     private final Range1D xRange = new Range1D();
     private final Range1D yRange = new Range1D();
-    private static final double extendedFactor = 1.025;
 
     public Range() {
     }
@@ -48,8 +49,8 @@ public class Range implements Serializable {
     }
 
     public void union(Range range) {
-        xRange.union(range.getXRange());
-        yRange.union(range.getYRange());
+        xRange.union(range.xRange());
+        yRange.union(range.yRange());
     }
 
     public void union(double x, double y) {
@@ -62,11 +63,11 @@ public class Range implements Serializable {
     }
 
     public double width() {
-        return xRange.length();
+        return xRange.getLength();
     }
 
     public double height() {
-        return yRange.length();
+        return yRange.getLength();
     }
 
     public double x1() {
@@ -85,27 +86,27 @@ public class Range implements Serializable {
         return yRange.getMax();
     }
 
-    public void setX1(double x1) {
+    public void x1(double x1) {
         xRange.setMin(x1);
     }
 
-    public void setX2(double x2) {
+    public void x2(double x2) {
         xRange.setMax(x2);
     }
 
-    public void setY1(double y1) {
+    public void y1(double y1) {
         yRange.setMin(y1);
     }
 
-    public void setY2(double y2) {
+    public void y2(double y2) {
         yRange.setMax(y2);
     }
 
-    public Range1D getXRange() {
+    public Range1D xRange() {
         return xRange;
     }
 
-    public Range1D getYRange() {
+    public Range1D yRange() {
         return yRange;
     }
 
@@ -123,20 +124,20 @@ public class Range implements Serializable {
         double xExtRange = (x2() - x1()) * extendedFactor;
         double xMid = (x1() + x2()) / 2;
         if (x1() == x2()) {
-            extended.setX1(x1() - 1);
-            extended.setX2(x2() + 1);
+            extended.x1(x1() - 1);
+            extended.x2(x2() + 1);
         } else {
-            extended.setX1(xMid - xExtRange / 2);
-            extended.setX2(xMid + xExtRange / 2);
+            extended.x1(xMid - xExtRange / 2);
+            extended.x2(xMid + xExtRange / 2);
         }
         double yExtRange = (y2() - y1()) * extendedFactor;
         double yMid = (y1() + y2()) / 2;
         if (y1() == y2()) {
-            extended.setY1(y1() - 1);
-            extended.setY2(y2() + 1);
+            extended.y1(y1() - 1);
+            extended.y2(y2() + 1);
         } else {
-            extended.setY1(yMid - yExtRange / 2);
-            extended.setY2(yMid + yExtRange / 2);
+            extended.y1(yMid - yExtRange / 2);
+            extended.y2(yMid + yExtRange / 2);
         }
         return extended;
     }

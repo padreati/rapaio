@@ -32,10 +32,12 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Minimum;
+import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarDouble;
 import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.Figure;
@@ -68,8 +70,9 @@ import static rapaio.graphics.Plotter.*;
 
 public class ImageGraphicsTest {
 
+    //    private static final boolean regenerate = true;
     private static final boolean regenerate = false;
-    private static final boolean show = false;
+    private static final boolean show = true;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
@@ -78,6 +81,8 @@ public class ImageGraphicsTest {
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
+        ImageUtility.setBestHints();
+//        ImageUtility.setSpeedHints();
     }
 
     @Test
@@ -238,8 +243,6 @@ public class ImageGraphicsTest {
     void testDensity() throws IOException {
 
         Var x = df.rvar(0).mapRows(Mapping.range(200));
-        x.printSummary();
-
         Plot fig = plot();
         for (int i = 10; i < 150; i += 5) {
             fig.densityLine(x, i / 300.0);
@@ -259,8 +262,6 @@ public class ImageGraphicsTest {
     void testRocCurve() throws IOException {
 
         ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 2);
-        roc.printSummary();
-
         Figure fig = rocCurve(roc);
 
         if (show)
@@ -273,12 +274,25 @@ public class ImageGraphicsTest {
     }
 
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
-//        for (int x = 0; x < img1.getWidth(); x++) {
-//            for (int y = 0; y < img1.getHeight(); y++) {
-//                if (img1.getRGB(x, y) != img2.getRGB(x, y))
-//                    return false;
-//            }
-//        }
+        VarDouble s1 = VarDouble.empty();
+        VarDouble s2 = VarDouble.empty();
+        for (int x = 0; x < img1.getWidth(); x++) {
+            for (int y = 0; y < img1.getHeight(); y++) {
+                Color c1 = new Color(img1.getRGB(x, y));
+                Color c2 = new Color(img2.getRGB(x, y));
+
+                s1.addDouble(c1.getAlpha());
+                s1.addDouble(c1.getRed());
+                s1.addDouble(c1.getGreen());
+                s1.addDouble(c1.getBlue());
+
+                s2.addDouble(c2.getAlpha());
+                s2.addDouble(c2.getRed());
+                s2.addDouble(c2.getGreen());
+                s2.addDouble(c2.getBlue());
+            }
+        }
+        assertTrue(Quantiles.of(s1.copy().op().minus(s2), 0.92).values()[0] < 10);
         return img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight();
     }
 }

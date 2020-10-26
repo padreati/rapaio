@@ -33,7 +33,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.experiment.ml.regression.tree.SmoothRTree;
 import rapaio.ml.common.VarSelector;
-import rapaio.util.Pin;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/19/19.
@@ -108,18 +109,18 @@ public class SmoothRTreeNode {
 
         double errorScore = tree.getLoss().residualErrorScore(y);
 
-        Pin<Candidate> bc = new Pin<>(null);
+        AtomicReference<Candidate> bc = new AtomicReference<>(null);
         for (String testVarName : testVarNames) {
             Candidate candidate = computeCandidate(df, weights, y, testVarName, tree);
             if (Double.isNaN(candidate.score) || errorScore < candidate.score) {
                 continue;
             }
-            if (bc.isEmpty() || bc.get().score > candidate.score) {
+            if (bc.get() == null || bc.get().score > candidate.score) {
                 bc.set(candidate);
             }
         }
         // if we can't build a model than we stop
-        if (bc.isEmpty()) {
+        if (bc.get() == null) {
             isLeaf = true;
             return;
         }

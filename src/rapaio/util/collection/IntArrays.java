@@ -312,51 +312,6 @@ public final class IntArrays {
     }
 
     /**
-     * Fills the given array with the given value.
-     *
-     * @param array an array.
-     * @param value the new value for all elements of the array.
-     * @deprecated Please use the corresponding {@link java.util.Arrays} method.
-     */
-    @Deprecated
-    public static void fill(final int[] array, final int value) {
-        int i = array.length;
-        while (i-- != 0) array[i] = value;
-    }
-
-    /**
-     * Fills a portion of the given array with the given value.
-     *
-     * @param array an array.
-     * @param from  the starting index of the portion to fill (inclusive).
-     * @param to    the end index of the portion to fill (exclusive).
-     * @param value the new value for all elements of the specified portion of the array.
-     * @deprecated Please use the corresponding {@link java.util.Arrays} method.
-     */
-    @Deprecated
-    public static void fill(final int[] array, final int from, int to, final int value) {
-        ensureFromTo(array, from, to);
-        if (from == 0) while (to-- != 0) array[to] = value;
-        else for (int i = from; i < to; i++) array[i] = value;
-    }
-
-    /**
-     * Returns true if the two arrays are element wise equal.
-     *
-     * @param a1 an array.
-     * @param a2 another array.
-     * @return true if the two arrays are of the same length, and their elements are equal.
-     * @deprecated Please use the corresponding {@link java.util.Arrays} method, which is intrinsified in recent JVMs.
-     */
-    @Deprecated
-    public static boolean equals(final int[] a1, final int[] a2) {
-        int i = a1.length;
-        if (i != a2.length) return false;
-        while (i-- != 0) if (!(a1[i] == a2[i])) return false;
-        return true;
-    }
-
-    /**
      * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array.
      *
      * <p>This method may be used whenever an array range check is needed.

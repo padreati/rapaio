@@ -43,13 +43,7 @@ public final class DoubleComparators {
         public DoubleComparator reversed() {
             return OPPOSITE_COMPARATOR;
         }
-
-        private Object readResolve() {
-            return NATURAL_COMPARATOR;
-        }
     }
-
-    ;
 
     public static final DoubleComparator NATURAL_COMPARATOR = new NaturalImplicitComparator();
 
@@ -68,10 +62,6 @@ public final class DoubleComparators {
         @Override
         public DoubleComparator reversed() {
             return NATURAL_COMPARATOR;
-        }
-
-        private Object readResolve() {
-            return OPPOSITE_COMPARATOR;
         }
     }
 

@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
@@ -34,38 +34,36 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
-import rapaio.util.Pin;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.util.function.Function;
 
 /**
  * Plot sub-component which draws a KDE density estimator.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DensityLine extends PlotComponent {
+public class DensityLine extends Artist {
 
     private static final long serialVersionUID = -9207144655129877629L;
     private final Var var;
     private final double bandwidth;
     private final KDE kde;
 
-    public DensityLine(Var var, GOption... opts) {
+    public DensityLine(Var var, GOption<?>... opts) {
         this(var, new KFuncGaussian(), KDE.silvermanBandwidth(var), opts);
     }
 
-    public DensityLine(Var var, double bandwidth, GOption... opts) {
+    public DensityLine(Var var, double bandwidth, GOption<?>... opts) {
         this(var, new KFuncGaussian(), bandwidth, opts);
     }
 
-    public DensityLine(Var var, KFunc kfunc, GOption... opts) {
+    public DensityLine(Var var, KFunc kfunc, GOption<?>... opts) {
         this(var, kfunc, KDE.silvermanBandwidth(var), opts);
     }
 
-    public DensityLine(Var var, KFunc kfunc, double bandwidth, GOption... opts) {
+    public DensityLine(Var var, KFunc kfunc, double bandwidth, GOption<?>... opts) {
         this.var = var;
         this.bandwidth = bandwidth;
         this.kde = KDE.of(var, kfunc, bandwidth);
@@ -73,35 +71,16 @@ public class DensityLine extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
-        Pin<Double> xmin = new Pin<>(Double.NaN);
-        Pin<Double> xmax = new Pin<>(Double.NaN);
-        Pin<Double> ymin = new Pin<>(0.0);
-        Pin<Double> ymax = new Pin<>(Double.NaN);
-
-        var.stream().filter(s -> !s.isMissing()).forEach(s -> {
-            double xMin = kde.kernel().minValue(s.getDouble(), bandwidth);
-            double xMax = kde.kernel().maxValue(s.getDouble(), bandwidth);
-            double yMax = ((Function<Double, Double>) kde::pdf).apply(s.getDouble());
-            xmin.set(Double.isNaN(xmin.get()) ? xMin : Math.min(xmin.get(), xMin));
-            xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
-            ymax.set(Double.isNaN(ymax.get()) ? yMax : Math.max(ymax.get(), yMax));
+    public void updateDataRange(Range range) {
+        var.stream().complete().forEach(s -> {
+            range.union(kde.kernel().minValue(s.getDouble(), bandwidth), 0);
+            range.union(kde.kernel().maxValue(s.getDouble(), bandwidth), kde.pdf(s.getDouble()));
         });
-
-        // give some space
-        ymax.set(ymax.get() * 1.05);
-        Range range = new Range();
-        range.setX1(xmin.get());
-        range.setX2(xmax.get());
-        range.setY1(ymin.get());
-        range.setY2(ymax.get());
-        return range;
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        buildRange();
-        Range range = parent.getRange();
+        Range range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
         double xstep = (range.x2() - range.x1()) / options.getPoints();

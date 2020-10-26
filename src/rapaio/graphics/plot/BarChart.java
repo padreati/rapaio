@@ -122,7 +122,7 @@ public class BarChart extends HostFigure {
     }
 
     @Override
-    public Range buildRange() {
+    public Range buildDataRange() {
         if (range == null) {
 
             // learn preliminaries

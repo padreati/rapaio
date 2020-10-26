@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
  */
 public class VarString extends AbstractVar {
 
+    public static final String MISSING_VALUE = "?";
+
     public static VarString empty() {
         return new VarString(0);
     }
@@ -215,17 +217,17 @@ public class VarString extends AbstractVar {
 
     @Override
     public boolean isMissing(int row) {
-        return values.get(row) == null;
+        return MISSING_VALUE.equals(values.get(row));
     }
 
     @Override
     public void setMissing(int row) {
-        values.set(row, null);
+        values.set(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        values.add(null);
+        values.add(MISSING_VALUE);
     }
 
     @Override

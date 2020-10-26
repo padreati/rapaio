@@ -25,12 +25,12 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -39,7 +39,7 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Legend extends PlotComponent {
+public class Legend extends Artist {
 
     private static final long serialVersionUID = 7360504551525942239L;
 
@@ -49,7 +49,7 @@ public class Legend extends PlotComponent {
     private final double y;
     private final int place;
 
-    public Legend(double x, double y, GOption... opts) {
+    public Legend(double x, double y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
         this.place = -1;
@@ -57,7 +57,7 @@ public class Legend extends PlotComponent {
         this.options.bind(opts);
     }
 
-    public Legend(int place, GOption... opts) {
+    public Legend(int place, GOption<?>... opts) {
         this.x = -1;
         this.y = -1;
         this.place = place;
@@ -85,8 +85,8 @@ public class Legend extends PlotComponent {
         if (place != -1) {
             switch (place) {
                 case UP_LEFT:
-                    xstart = parent.xScale(parent.getRange().x1());
-                    ystart = parent.yScale(parent.getRange().y2());
+                    xstart = parent.xScale(parent.getDataRange().x1());
+                    ystart = parent.yScale(parent.getDataRange().y2());
             }
         }
 
@@ -100,7 +100,6 @@ public class Legend extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
-        return null;
+    public void updateDataRange(Range range) {
     }
 }

@@ -25,11 +25,11 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -37,7 +37,7 @@ import java.awt.geom.AffineTransform;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/5/16.
  */
-public class Segment2D extends PlotComponent {
+public class Segment2D extends Artist {
 
     private static final long serialVersionUID = 6358307433520540622L;
 
@@ -46,7 +46,7 @@ public class Segment2D extends PlotComponent {
     private final double x2;
     private final double y2;
 
-    public Segment2D(double x1, double y1, double x2, double y2, GOption... opts) {
+    public Segment2D(double x1, double y1, double x2, double y2, GOption<?>... opts) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -55,8 +55,9 @@ public class Segment2D extends PlotComponent {
     }
 
     @Override
-    protected Range buildRange() {
-        return new Range(x1, y1, x2, y2);
+    public void updateDataRange(Range range) {
+        range.union(x1, y1);
+        range.union(x2, y2);
     }
 
     @Override

@@ -57,8 +57,8 @@ public class FigurePanel extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         final String drawingMessage = "Rendering Update...";
         FontMetrics fm = g.getFontMetrics();
 
@@ -86,7 +86,7 @@ public class FigurePanel extends JPanel {
      * Creates a new worker to do the image rendering in the background.
      */
     private void createBackgroundImage() {
-        drawWorker = new SwingWorker<BufferedImage, Object>() {
+        drawWorker = new SwingWorker<>() {
             @Override
             protected BufferedImage doInBackground() {
                 if (figure == null) {

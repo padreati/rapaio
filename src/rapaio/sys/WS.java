@@ -102,6 +102,6 @@ public class WS {
     }
 
     public static BufferedImage image(Figure figure, int w, int h) {
-        return ImageUtility.buildImage(figure, w, h, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+        return ImageUtility.buildImage(figure, w, h);
     }
 }

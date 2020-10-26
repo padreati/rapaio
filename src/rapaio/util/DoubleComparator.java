@@ -18,12 +18,8 @@ package rapaio.util;
 import java.util.Comparator;
 
 /**
- * A type-specific {@link Comparator}; provides methods to compare two primitive types both as objects
+ * A type-specific {@link Comparator} for double; provides methods to compare two primitive types both as objects
  * and as primitive types.
- *
- * <p>Note that {@code fastutil} provides a corresponding abstract class that
- * can be used to implement this interface just by specifying the type-specific
- * comparator.
  *
  * @see Comparator
  */
@@ -36,7 +32,6 @@ public interface DoubleComparator extends Comparator<Double> {
      *
      * @return a negative integer, zero, or a positive integer as the first
      * argument is less than, equal to, or greater than the second.
-     * @see Comparator
      */
     int compare(double k1, double k2);
 

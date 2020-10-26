@@ -31,7 +31,6 @@ import rapaio.experiment.io.json.stream.JsonInputFlat;
 import rapaio.experiment.io.json.stream.LzJsonOutput;
 import rapaio.experiment.io.json.tree.JsonValue;
 import rapaio.experiment.util.stream.StreamUtil;
-import rapaio.util.Pin;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -91,10 +91,10 @@ public class JsonUtil {
     }
 
     public static void balancedConvertToLz(File root, FileFilter ff, String prefix, int sliceCount, Consumer<String> messageHandler) {
-        Pin<Integer> fileCounter = new Pin<>(0);
+        AtomicInteger fileCounter = new AtomicInteger(0);
         Stream<JsonValue> stream = Json.stream(root, ff).parallel();
         StreamUtil.partition(stream, sliceCount).forEach(list -> {
-                    Pin<Integer> counter = new Pin<>(0);
+            AtomicInteger counter = new AtomicInteger(0);
                     synchronized (fileCounter) {
                         counter.set(fileCounter.get());
                     }
@@ -115,7 +115,7 @@ public class JsonUtil {
     }
 
     public static void balancedConvertToLz(Stream<JsonValue> stream, File root, String prefix, int sliceCount, Consumer<String> messageHandler) {
-        Pin<Integer> fileCounter = new Pin<>(0);
+        AtomicInteger fileCounter = new AtomicInteger(0);
         StreamUtil.partition(stream, sliceCount).forEach(list -> {
                     synchronized (fileCounter) {
                         try {

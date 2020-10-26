@@ -25,13 +25,13 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
+import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.PlotComponent;
 import rapaio.ml.eval.metric.ROC;
 
 import java.awt.*;
@@ -40,19 +40,14 @@ import java.awt.geom.Line2D;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class ROCCurve extends PlotComponent {
+public class ROCCurve extends Artist {
 
     private static final long serialVersionUID = 4110642211338491615L;
     private final ROC roc;
 
-    public ROCCurve(ROC roc, GOption... opts) {
+    public ROCCurve(ROC roc, GOption<?>... opts) {
         this.roc = roc;
         this.options.bind(opts);
-    }
-
-    @Override
-    public Range buildRange() {
-        return new Range(0, 0, 1, 1);
     }
 
     @Override
@@ -60,6 +55,12 @@ public class ROCCurve extends PlotComponent {
         super.bind(parent);
         parent.xLab("fp rate");
         parent.yLab("tp rate");
+    }
+
+    @Override
+    public void updateDataRange(Range range) {
+        range.union(0, 0);
+        range.union(1, 1);
     }
 
     @Override
@@ -75,11 +76,11 @@ public class ROCCurve extends PlotComponent {
             double x2 = parent.xScale(roc.data().getDouble(i, "fpr"));
             double y2 = parent.yScale(roc.data().getDouble(i, "tpr"));
 
-            if (parent.getRange().contains(
+            if (parent.getDataRange().contains(
                     roc.data().getDouble(i - 1, "fpr"),
                     roc.data().getDouble(i - 1, "tpr")
             )
-                    && parent.getRange().contains(
+                    && parent.getDataRange().contains(
                     roc.data().getDouble(i, "fpr"),
                     roc.data().getDouble(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));

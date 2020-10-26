@@ -25,13 +25,13 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -43,14 +43,14 @@ import java.util.LinkedList;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
  */
 @Deprecated
-public class MeshContour extends PlotComponent {
+public class MeshContour extends Artist {
 
     private static final long serialVersionUID = -642370269224702175L;
     private final MeshGrid mg;
     private boolean contour = false;
     private boolean fill = false;
 
-    public MeshContour(MeshGrid mg, boolean contour, boolean fill, GOption... opts) {
+    public MeshContour(MeshGrid mg, boolean contour, boolean fill, GOption<?>... opts) {
         this.mg = mg;
         this.contour = contour;
         this.fill = fill;
@@ -58,13 +58,9 @@ public class MeshContour extends PlotComponent {
     }
 
     @Override
-    protected Range buildRange() {
-        return new Range(
-                mg.x().getDouble(0),
-                mg.y().getDouble(0),
-                mg.x().getDouble(mg.x().rowCount() - 1),
-                mg.y().getDouble(mg.y().rowCount() - 1)
-        );
+    public void updateDataRange(Range range) {
+        range.union(mg.x().getDouble(0), mg.y().getDouble(0));
+        range.union(mg.x().getDouble(mg.x().rowCount() - 1), mg.y().getDouble(mg.y().rowCount() - 1));
     }
 
     @Override
@@ -80,9 +76,9 @@ public class MeshContour extends PlotComponent {
         for (int i = 0; i < mg.x().rowCount() - 1; i++) {
             for (int j = 0; j < mg.y().rowCount() - 1; j++) {
 
-                if (!parent.getRange().contains(x.getDouble(i), y.getDouble(j)))
+                if (!parent.getDataRange().contains(x.getDouble(i), y.getDouble(j)))
                     continue;
-                if (!parent.getRange().contains(x.getDouble(i + 1), y.getDouble(j + 1)))
+                if (!parent.getDataRange().contains(x.getDouble(i + 1), y.getDouble(j + 1)))
                     continue;
 
                 int k = mg.side(i, j);

@@ -25,14 +25,14 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -43,13 +43,13 @@ import java.awt.geom.Line2D;
  * parameter.
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/17.
  */
-public class DVLines extends PlotComponent {
+public class DVLines extends Artist {
 
     private static final long serialVersionUID = -7666732702588432021L;
     private final Var values;
     private final Var indexes;
 
-    public DVLines(Var values, Var indexes, GOption... opts) {
+    public DVLines(Var values, Var indexes, GOption<?>... opts) {
         this.values = values;
         this.indexes = indexes;
 
@@ -57,10 +57,9 @@ public class DVLines extends PlotComponent {
     }
 
     @Override
-    protected Range buildRange() {
-        return new Range(
-                Minimum.of(indexes).value(), Minimum.of(values).value(),
-                Maximum.of(indexes).value(), Maximum.of(values).value());
+    public void updateDataRange(Range range) {
+        range.union(Minimum.of(indexes).value(), Maximum.of(indexes).value());
+        range.union(Minimum.of(values).value(), Maximum.of(values).value());
     }
 
     @Override

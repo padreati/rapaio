@@ -27,17 +27,25 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author Aurelian Tutuianu
  */
-public abstract class PlotComponent extends BaseFigure {
+public abstract class Artist implements Serializable {
 
     private static final long serialVersionUID = -797168275849511614L;
+    protected final GOpts options = new GOpts();
     protected Plot parent;
+    private Range range;
+
+    public GOpts getOptions() {
+        return options;
+    }
 
     public void bind(Plot parent) {
         if (parent == null) {
@@ -54,6 +62,8 @@ public abstract class PlotComponent extends BaseFigure {
     public double yScale(double y) {
         return parent.yScale(y);
     }
+
+    public abstract void updateDataRange(Range dataRange);
 
     public abstract void paint(Graphics2D g2d);
 }

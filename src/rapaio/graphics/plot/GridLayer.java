@@ -27,6 +27,7 @@
 
 package rapaio.graphics.plot;
 
+import lombok.AllArgsConstructor;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
@@ -54,7 +55,7 @@ public class GridLayer extends HostFigure {
     }
 
     @Override
-    protected Range buildRange() {
+    protected Range buildDataRange() {
         return null;
     }
 
@@ -110,23 +111,22 @@ public class GridLayer extends HostFigure {
             g.fig.paint(g2d, rect);
         }
     }
-}
 
-final class G implements Serializable {
+    @Override
+    protected void buildLeftMarkers() {
+    }
 
-    private static final long serialVersionUID = -2763424578024274986L;
+    @Override
+    protected void buildBottomMarkers() {
+    }
 
-    final int row;
-    final int col;
-    final int width;
-    final int height;
-    final Figure fig;
-
-    public G(int row, int col, int width, int height, Figure fig) {
-        this.row = row;
-        this.col = col;
-        this.width = width;
-        this.height = height;
-        this.fig = fig;
+    @AllArgsConstructor
+    static class G implements Serializable {
+        private static final long serialVersionUID = -2763424578024274986L;
+        final int row;
+        final int col;
+        final int width;
+        final int height;
+        final Figure fig;
     }
 }

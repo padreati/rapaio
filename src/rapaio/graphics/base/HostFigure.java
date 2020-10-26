@@ -27,7 +27,9 @@
 
 package rapaio.graphics.base;
 
+import lombok.Getter;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class HostFigure extends BaseFigure {
+public abstract class HostFigure implements Figure {
 
     private static final long serialVersionUID = 8198529442678989416L;
 
@@ -48,6 +50,10 @@ public abstract class HostFigure extends BaseFigure {
     protected static final int LABEL_PAD = 30;
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
+
+    @Getter
+    protected final GOpts options = new GOpts();
+    private Range dataRange;
 
     //
     protected Rectangle viewport;
@@ -73,6 +79,21 @@ public abstract class HostFigure extends BaseFigure {
     protected double x2 = Double.NaN;
     protected double y1 = Double.NaN;
     protected double y2 = Double.NaN;
+
+    protected abstract Range buildDataRange();
+
+    public Range getDataRange() {
+        if (dataRange == null) {
+            dataRange = buildDataRange();
+        }
+        if (dataRange == null)
+            return null;
+        return dataRange;
+    }
+
+    protected void setDataRange(Range dataRange) {
+        this.dataRange = dataRange;
+    }
 
     public HostFigure xLim(double start, double end) {
         this.x1 = start;
@@ -141,29 +162,20 @@ public abstract class HostFigure extends BaseFigure {
             sizeXLabel = LABEL_PAD;
         }
 
-        viewport.x += sizeLeftThicker;
-        viewport.width -= sizeLeftThicker;
-        viewport.x += sizeLeftMarkers;
-        viewport.width -= sizeLeftMarkers;
-        viewport.x += sizeYLabel;
-        viewport.width -= sizeYLabel;
-
+        viewport.x += sizeLeftThicker + sizeLeftMarkers + sizeYLabel;
+        viewport.width -= sizeLeftThicker + sizeLeftMarkers + sizeYLabel;
 
         viewport.y += sizeTitle;
         viewport.height -= sizeTitle;
-
-        viewport.height -= sizeBottomThicker;
-        viewport.height -= sizeBottomMarkers;
-        viewport.height -= sizeXLabel;
-
+        viewport.height -= sizeBottomThicker + sizeBottomMarkers + sizeXLabel;
     }
 
     public double xScale(double x) {
-        return viewport.x + viewport.width * (x - getRange().x1()) / (getRange().x2() - getRange().x1());
+        return viewport.x + viewport.width * (x - getDataRange().x1()) / (getDataRange().x2() - getDataRange().x1());
     }
 
     public double yScale(double y) {
-        return viewport.y + viewport.height * (1. - (y - getRange().y1()) / (getRange().y2() - getRange().y1()));
+        return viewport.y + viewport.height * (1. - (y - getDataRange().y1()) / (getDataRange().y2() - getDataRange().y1()));
     }
 
     protected Rectangle getViewport() {
@@ -213,7 +225,7 @@ public abstract class HostFigure extends BaseFigure {
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildViewport(rect);
-        setRange(buildRange());
+
 
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
@@ -311,7 +323,7 @@ public abstract class HostFigure extends BaseFigure {
         if (xspots < 2) {
             return;
         }
-        Range range = getRange();
+        Range range = getDataRange();
         XWilkinson.Labels xlabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
                 range.x1(), range.x2(), xspots);
 
@@ -329,7 +341,7 @@ public abstract class HostFigure extends BaseFigure {
         if (yspots < 2) {
             return;
         }
-        Range range = getRange();
+        Range range = getDataRange();
         XWilkinson.Labels ylabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
                 range.y1(), range.y2(), yspots);
 
@@ -339,9 +351,7 @@ public abstract class HostFigure extends BaseFigure {
         }
     }
 
-    protected void buildLeftMarkers() {
-    }
+    protected abstract void buildLeftMarkers();
 
-    protected void buildBottomMarkers() {
-    }
+    protected abstract void buildBottomMarkers();
 }

@@ -25,12 +25,12 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 import rapaio.math.MTools;
 import rapaio.printer.Format;
 
@@ -42,7 +42,7 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
-public class CorrGram extends PlotComponent {
+public class CorrGram extends Artist {
 
     private static final long serialVersionUID = 7529398214880633755L;
 
@@ -73,8 +73,9 @@ public class CorrGram extends PlotComponent {
     }
 
     @Override
-    protected Range buildRange() {
-        return new Range(0, 0, d.length(), d.length());
+    public void updateDataRange(Range range) {
+        range.union(0, 0);
+        range.union(d.length(), d.length());
     }
 
     @Override

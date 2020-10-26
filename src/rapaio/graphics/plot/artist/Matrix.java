@@ -25,11 +25,11 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 import rapaio.math.linear.DM;
 
 import java.awt.*;
@@ -41,21 +41,22 @@ import java.awt.geom.Point2D;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/17/19.
  */
 @Deprecated
-public class Matrix extends PlotComponent {
+public class Matrix extends Artist {
 
     private static final long serialVersionUID = -642370269224702175L;
     private final DM m;
     private final boolean contour;
 
-    public Matrix(DM m, boolean contour, GOption... opts) {
+    public Matrix(DM m, boolean contour, GOption<?>... opts) {
         this.m = m;
         this.contour = contour;
         this.options.bind(opts);
     }
 
     @Override
-    protected Range buildRange() {
-        return new Range(0, 0, m.colCount(), m.rowCount());
+    public void updateDataRange(Range range) {
+        range.union(0, 0);
+        range.union(m.colCount(), m.rowCount());
     }
 
     @Override

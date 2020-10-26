@@ -32,7 +32,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.plotcomp.Points;
+import rapaio.graphics.plot.artist.Points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

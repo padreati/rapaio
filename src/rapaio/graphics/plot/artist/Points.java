@@ -25,14 +25,14 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.PchPalette;
+import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 
@@ -41,14 +41,14 @@ import java.awt.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Points extends PlotComponent {
+public class Points extends Artist {
 
     private static final long serialVersionUID = -4766079423843859315L;
 
     private final Var x;
     private final Var y;
 
-    public Points(Var x, Var y, GOption... opts) {
+    public Points(Var x, Var y, GOption<?>... opts) {
         this.x = x;
         this.y = y;
         this.options.bind(opts);
@@ -62,18 +62,16 @@ public class Points extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
+    public void updateDataRange(Range range) {
         if (x.rowCount() == 0) {
-            return null;
+            return;
         }
-        Range range = new Range();
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
             range.union(x.getDouble(i), y.getDouble(i));
         }
-        return range;
     }
 
     @Override
@@ -88,7 +86,7 @@ public class Points extends PlotComponent {
             double xx = x.getDouble(i);
             double yy = y.getDouble(i);
 
-            if (!parent.getRange().contains(xx, yy)) continue;
+            if (!parent.getDataRange().contains(xx, yy)) continue;
 
             g2d.setColor(options.getColor(i));
             g2d.setStroke(new BasicStroke(options.getLwd()));

@@ -25,13 +25,13 @@
  *
  */
 
-package rapaio.graphics.plot.plotcomp;
+package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.Plotter;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.plot.Artist;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -51,7 +51,7 @@ import java.awt.geom.Line2D;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ABLine extends PlotComponent {
+public class ABLine extends Artist {
 
     private static final long serialVersionUID = 8980967297314815554L;
     private final double a;
@@ -59,7 +59,7 @@ public class ABLine extends PlotComponent {
     private final boolean h;
     private final boolean v;
 
-    public ABLine(boolean horiz, double a, GOption... opts) {
+    public ABLine(boolean horiz, double a, GOption<?>... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
@@ -68,7 +68,7 @@ public class ABLine extends PlotComponent {
         this.options.bind(opts);
     }
 
-    public ABLine(double a, double b, GOption... opts) {
+    public ABLine(double a, double b, GOption<?>... opts) {
         this.a = a;
         this.b = b;
         this.h = false;
@@ -78,19 +78,18 @@ public class ABLine extends PlotComponent {
     }
 
     @Override
-    public Range buildRange() {
+    public void updateDataRange(Range range) {
         if (h) {
-            return new Range(Double.NaN, a, Double.NaN, a);
+            range.union(Double.NaN, a);
         }
         if (v) {
-            return new Range(a, Double.NaN, a, Double.NaN);
+            range.union(a, Double.NaN);
         }
-        return null;
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = parent.getRange();
+        Range range = parent.getDataRange();
         g2d.setColor(options.getColor(0));
 
         double x1, x2, y1, y2;
