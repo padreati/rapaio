@@ -72,7 +72,7 @@ public class ImageGraphicsTest {
 
     //    private static final boolean regenerate = true;
     private static final boolean regenerate = false;
-    private static final boolean show = true;
+    private static final boolean show = false;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
