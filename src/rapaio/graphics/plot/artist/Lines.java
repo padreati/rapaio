@@ -29,10 +29,10 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -63,7 +63,7 @@ public class Lines extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         if (x.rowCount() == 0) {
             return;
         }
@@ -88,12 +88,12 @@ public class Lines extends Artist {
             double x2 = x.getDouble(i);
             double y2 = y.getDouble(i);
 
-            Range r = new Clip(parent.getDataRange()).lineClip(x1, y1, x2, y2);
+            DataRange r = new Clip(parent.getDataRange()).lineClip(x1, y1, x2, y2);
             if (r != null) {
-                x1 = xScale(r.x1());
-                x2 = xScale(r.x2());
-                y1 = yScale(r.y1());
-                y2 = yScale(r.y2());
+                x1 = xScale(r.xMin());
+                x2 = xScale(r.xMax());
+                y1 = yScale(r.yMin());
+                y2 = yScale(r.yMax());
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }
@@ -121,11 +121,11 @@ class Clip {
     private final double xmax;
     private final double ymax;
 
-    public Clip(Range r) {
-        this.xmin = Math.min(r.x1(), r.x2());
-        this.ymin = Math.min(r.y1(), r.y2());
-        this.xmax = Math.max(r.x1(), r.x2());
-        this.ymax = Math.max(r.y1(), r.y2());
+    public Clip(DataRange r) {
+        this.xmin = Math.min(r.xMin(), r.xMax());
+        this.ymin = Math.min(r.yMin(), r.yMax());
+        this.xmax = Math.max(r.xMin(), r.xMax());
+        this.ymax = Math.max(r.yMin(), r.yMax());
     }
     // Compute the bit code for a point (x, y) using the clip rectangle
     // bounded diagonally by (xmin, ymin), and (xmax, ymax)
@@ -152,7 +152,7 @@ class Clip {
     // Cohen-Sutherland clipping algorithm clips a line from
     // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
     // diagonal from (xmin, ymin) to (xmax, ymax).
-    public Range lineClip(double x0, double y0, double x1, double y1) {
+    public DataRange lineClip(double x0, double y0, double x1, double y1) {
         // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
         int outcode0 = computeOutCode(x0, y0);
         int outcode1 = computeOutCode(x1, y1);
@@ -202,6 +202,6 @@ class Clip {
                 }
             }
         }
-        return accept ? new Range(x0, y0, x1, y1) : null;
+        return accept ? new DataRange(x0, y0, x1, y1) : null;
     }
 }

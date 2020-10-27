@@ -33,10 +33,9 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
 import rapaio.graphics.base.HostFigure;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.GOptions;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -58,9 +57,9 @@ public class BarChart extends HostFigure {
     private final Var category;
     private final Var condition;
     private final Var numeric;
-    private final GOpts options = new GOpts().bind(color(0));
+    private final GOptions options = new GOptions().bind(color(0));
     private boolean density = false;
-    private Range range;
+    private DataRange range;
     private int[] sel;
     private double[][] hits;
     private double[] totals;
@@ -122,7 +121,7 @@ public class BarChart extends HostFigure {
     }
 
     @Override
-    public Range buildDataRange() {
+    public DataRange buildDataRange() {
         if (range == null) {
 
             // learn preliminaries
@@ -188,7 +187,7 @@ public class BarChart extends HostFigure {
             }
 
             // now learn range
-            range = new Range();
+            range = new DataRange();
             for (int aSel1 : sel) {
                 range.union(Double.NaN, totals[aSel1]);
                 range.union(Double.NaN, 0);

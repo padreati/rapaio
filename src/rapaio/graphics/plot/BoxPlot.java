@@ -34,12 +34,11 @@ import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
 import rapaio.graphics.base.HostFigure;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.opt.GOptionPch;
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
 
 import java.awt.*;
@@ -60,7 +59,7 @@ public class BoxPlot extends HostFigure {
 
     private final Var[] vars;
     private final String[] names;
-    private final GOpts options = new GOpts();
+    private final GOptions options = new GOptions();
 
     public BoxPlot(Var x, Var factor, GOption<?>... opts) {
 
@@ -106,8 +105,8 @@ public class BoxPlot extends HostFigure {
     }
 
     @Override
-    public Range buildDataRange() {
-        Range range = new Range();
+    public DataRange buildDataRange() {
+        DataRange range = new DataRange();
         range.union(0, Double.NaN);
         range.union(vars.length, Double.NaN);
         for (Var v : vars) {

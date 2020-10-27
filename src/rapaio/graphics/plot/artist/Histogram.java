@@ -29,12 +29,13 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.Axes;
+import rapaio.graphics.plot.DataRange;
+import rapaio.math.MTools;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -51,9 +52,9 @@ public class Histogram extends Artist {
     private static final long serialVersionUID = -7990247895216501553L;
 
     private final Var v;
-    double[] freqTable;
-    double minValue = Double.NaN;
-    double maxValue = Double.NaN;
+    private double[] freqTable;
+    private double minValue;
+    private double maxValue;
 
     public Histogram(Var v, GOption<?>... opts) {
         this(v, Double.NaN, Double.NaN, opts);
@@ -76,46 +77,37 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public void bind(Plot parent) {
+    public void bind(Axes parent) {
         super.bind(parent);
 
-        parent.yLab(options.getProb() ? "density" : "frequency");
-        parent.xLab(v.name());
-        parent.leftThick(true);
-        parent.leftMarkers(true);
-        parent.bottomThick(true);
-        parent.bottomMarkers(true);
+        parent.getPlot().yLab(options.getProb() ? "density" : "frequency");
+        parent.getPlot().xLab(v.name());
+        parent.getPlot().leftThick(true);
+        parent.getPlot().leftMarkers(true);
+        parent.getPlot().bottomThick(true);
+        parent.getPlot().bottomMarkers(true);
         if (options.getBins() == -1) {
             options.bind(bins(computeFreedmanDiaconisEstimation(v)));
         }
     }
 
-    public Histogram minValue(double minValue) {
-        this.minValue = minValue;
-        return this;
-    }
-
-    public Histogram maxValue(double maxValue) {
-        this.maxValue = maxValue;
-        return this;
-    }
-
     private void rebuild() {
-        if (minValue != minValue) {
-            for (int i = 0; i < v.rowCount(); i++) {
-                if (v.isMissing(i)) {
-                    continue;
-                }
-                if (minValue != minValue) {
-                    minValue = v.getDouble(i);
-                } else {
-                    minValue = Math.min(minValue, v.getDouble(i));
-                }
-                if (maxValue != maxValue) {
-                    maxValue = v.getDouble(i);
-                } else {
-                    maxValue = Math.max(maxValue, v.getDouble(i));
-                }
+        minValue = Double.NaN;
+        maxValue = Double.NaN;
+
+        for (int i = 0; i < v.rowCount(); i++) {
+            if (v.isMissing(i)) {
+                continue;
+            }
+            if (!Double.isFinite(minValue)) {
+                minValue = v.getDouble(i);
+            } else {
+                minValue = Math.min(minValue, v.getDouble(i));
+            }
+            if (!Double.isFinite(maxValue)) {
+                maxValue = v.getDouble(i);
+            } else {
+                maxValue = Math.max(maxValue, v.getDouble(i));
             }
         }
 
@@ -134,10 +126,7 @@ public class Histogram extends Artist {
                 continue;
             }
             int index = (int) ((v.getDouble(i) - minValue) / step);
-            if (index == freqTable.length)
-                index--;
-            if (index < 0)
-                index++;
+            index = MTools.cut(index, 0, freqTable.length - 1);
             freqTable[index]++;
         }
 
@@ -149,7 +138,7 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         rebuild();
         range.union(minValue, Double.NaN);
         range.union(maxValue, Double.NaN);
@@ -164,10 +153,7 @@ public class Histogram extends Artist {
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
-            double mind = Math.min(d, parent.getDataRange().y2());
-            if (!parent.getDataRange().contains(binStart(i), 0)) {
-                continue;
-            }
+            double mind = Math.min(d, parent.getDataRange().yMax());
             Composite old = g2d.getComposite();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
             double x = parent.xScale(binStart(i));

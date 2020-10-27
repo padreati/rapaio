@@ -27,9 +27,9 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -55,7 +55,7 @@ public class Segment2D extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         range.union(x1, y1);
         range.union(x2, y2);
     }

@@ -47,12 +47,12 @@ public class GOptionSz implements GOption<Var> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setSz(this);
     }
 
     @Override
-    public Var apply(GOpts opts) {
+    public Var apply(GOptions opts) {
         return size;
     }
 }

@@ -43,12 +43,12 @@ public class GOptionLabels implements GOption<String[]> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setLabels(this);
     }
 
     @Override
-    public String[] apply(GOpts opts) {
+    public String[] apply(GOptions opts) {
         return Arrays.copyOf(labels, labels.length);
     }
 }

@@ -40,12 +40,12 @@ public class GOptionProb implements GOption<Boolean> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setProb(this);
     }
 
     @Override
-    public Boolean apply(GOpts opts) {
+    public Boolean apply(GOptions opts) {
         return prob;
     }
 }

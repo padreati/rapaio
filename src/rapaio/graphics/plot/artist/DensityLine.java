@@ -32,15 +32,15 @@ import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 
 /**
- * Plot sub-component which draws a KDE density estimator.
+ * Artist which draws a KDE density estimator function.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -71,7 +71,7 @@ public class DensityLine extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         var.stream().complete().forEach(s -> {
             range.union(kde.kernel().minValue(s.getDouble(), bandwidth), 0);
             range.union(kde.kernel().maxValue(s.getDouble(), bandwidth), kde.pdf(s.getDouble()));
@@ -80,19 +80,22 @@ public class DensityLine extends Artist {
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = parent.getDataRange();
+        DataRange range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
-        double xstep = (range.x2() - range.x1()) / options.getPoints();
+        double xstep = (range.xMax() - range.xMin()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setDouble(i, range.x1() + i * xstep);
+            x.setDouble(i, range.xMin() + i * xstep);
             y.setDouble(i, kde.pdf(x.getDouble(i)));
         }
+
+        Composite oldComposite = g2d.getComposite();
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+        g2d.setStroke(new BasicStroke(options.getLwd()));
 
         for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
-                g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
                         xScale(x.getDouble(i - 1)),
                         yScale(y.getDouble(i - 1)),
@@ -101,5 +104,7 @@ public class DensityLine extends Artist {
 
             }
         }
+
+        g2d.setComposite(oldComposite);
     }
 }

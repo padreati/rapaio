@@ -28,11 +28,11 @@
 package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.Axes;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -58,14 +58,14 @@ public class Histogram2D extends Artist {
     }
 
     @Override
-    public void bind(Plot parent) {
+    public void bind(Axes parent) {
         super.bind(parent);
-        parent.leftMarkers(true);
-        parent.leftThick(true);
-        parent.xLab(x.name());
-        parent.bottomMarkers(true);
-        parent.bottomThick(true);
-        parent.yLab(y.name());
+        parent.getPlot().leftMarkers(true);
+        parent.getPlot().leftThick(true);
+        parent.getPlot().xLab(x.name());
+        parent.getPlot().bottomMarkers(true);
+        parent.getPlot().bottomThick(true);
+        parent.getPlot().yLab(y.name());
     }
 
     private void computeData() {
@@ -79,8 +79,8 @@ public class Histogram2D extends Artist {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
 
-            int xx = Math.min(bins - 1, (int) Math.floor((x.getDouble(i) - parent.getDataRange().x1()) / w));
-            int yy = Math.min(bins - 1, (int) Math.floor((y.getDouble(i) - parent.getDataRange().y1()) / h));
+            int xx = Math.min(bins - 1, (int) Math.floor((x.getDouble(i) - parent.getDataRange().xMin()) / w));
+            int yy = Math.min(bins - 1, (int) Math.floor((y.getDouble(i) - parent.getDataRange().yMin()) / h));
             freq[xx][yy]++;
             if (maxFreq < freq[xx][yy]) {
                 maxFreq = freq[xx][yy];
@@ -89,7 +89,7 @@ public class Histogram2D extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         if (x.rowCount() == 0) {
             return;
         }
@@ -108,7 +108,7 @@ public class Histogram2D extends Artist {
 
         int bins = options.getBins();
 
-        Range range = parent.getDataRange();
+        DataRange range = parent.getDataRange();
         double w = range.width() / bins;
         double h = range.height() / bins;
 
@@ -119,10 +119,10 @@ public class Histogram2D extends Artist {
                 Color color = new Color(c.getRed(), c.getGreen(), c.getBlue(), blue);
                 g2d.setColor(color);
                 Rectangle2D.Double rr = new Rectangle2D.Double(
-                        parent.xScale(range.x1() + w * i),
-                        parent.yScale(range.y1() + h * j + h),
-                        parent.xScale(range.x1() + w * i + w) - parent.xScale(range.x1() + w * i),
-                        parent.yScale(range.y1() + h * j) - parent.yScale(range.y1() + h * j + h));
+                        parent.xScale(range.xMin() + w * i),
+                        parent.yScale(range.yMin() + h * j + h),
+                        parent.xScale(range.xMin() + w * i + w) - parent.xScale(range.xMin() + w * i),
+                        parent.yScale(range.yMin() + h * j) - parent.yScale(range.yMin() + h * j + h));
                 g2d.fill(rr);
             }
         }

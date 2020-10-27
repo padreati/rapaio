@@ -27,20 +27,15 @@
 
 package rapaio.graphics.plot;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Var;
-import rapaio.data.VarInt;
 import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.base.XWilkinson;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.artist.ABLine;
-import rapaio.graphics.plot.artist.DVLines;
 import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
@@ -52,12 +47,10 @@ import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment2D;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.util.function.SFunction;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -76,13 +69,10 @@ public class Plot implements Figure {
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
 
-    @Getter(AccessLevel.PROTECTED)
-    protected final GOpts options = new GOpts();
-    private Range dataRange = new Range();
+    final GOptions options = new GOptions();
+    Axes axes = new Axes(this);
 
-    //
-    @Getter(AccessLevel.PROTECTED)
-    protected Rectangle viewport;
+    Rectangle viewport;
 
     //
     protected String title;
@@ -109,71 +99,12 @@ public class Plot implements Figure {
     protected int sizeXLabel;
 
     //
-    protected double x1 = Double.NaN;
-    protected double x2 = Double.NaN;
-    protected double y1 = Double.NaN;
-    protected double y2 = Double.NaN;
-
-    // artists
-    private final List<Artist> artists = new LinkedList<>();
-
     public Plot(GOption<?>... opts) {
         bottomThick(true);
         bottomMarkers(true);
         leftThick(true);
         leftMarkers(true);
         this.options.bind(opts);
-    }
-
-    public Range getDataRange() {
-        if (dataRange == null) {
-            dataRange = buildDataRange();
-        }
-        if (dataRange == null)
-            return null;
-        return dataRange;
-    }
-
-    protected Range buildDataRange() {
-        Range range = new Range();
-        for (Artist artist : artists) {
-            artist.updateDataRange(range);
-        }
-
-        if (!Double.isFinite(range.x1())) {
-            range.x1(0);
-        }
-        if (!Double.isFinite(range.x2())) {
-            range.x2(1);
-        }
-        if (!Double.isFinite(range.y1())) {
-            range.y1(0);
-        }
-        if (!Double.isFinite(range.y2())) {
-            range.y2(1);
-        }
-
-        range = range.getExtendedRange();
-
-        if (x1 == x1 && x2 == x2) {
-            range.x1(x1);
-            range.x2(x2);
-        }
-        if (y1 == y1 && y2 == y2) {
-            range.y1(y1);
-            range.y2(y2);
-        }
-
-        if (range.x1() == range.x2()) {
-            range.x1(range.x1() - 0.5);
-            range.x2(range.x2() + 0.5);
-        }
-
-        if (range.y1() == range.y2()) {
-            range.y1(range.y1() - 0.5);
-            range.y2(range.y2() + 0.5);
-        }
-        return range;
     }
 
     protected void buildViewport(Rectangle rectangle) {
@@ -215,18 +146,10 @@ public class Plot implements Figure {
         viewport.height -= sizeBottomThicker + sizeBottomMarkers + sizeXLabel;
     }
 
-    public double xScale(double x) {
-        return viewport.x + viewport.width * (x - getDataRange().x1()) / (getDataRange().x2() - getDataRange().x1());
-    }
-
-    public double yScale(double y) {
-        return viewport.y + viewport.height * (1. - (y - getDataRange().y1()) / (getDataRange().y2() - getDataRange().y1()));
-    }
-
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildViewport(rect);
-        dataRange = buildDataRange();
+        axes.buildDataRange();
 
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
@@ -315,7 +238,7 @@ public class Plot implements Figure {
                     viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD + LABEL_PAD);
         }
 
-        for (Artist pc : artists) {
+        for (Artist pc : axes.getArtistList()) {
             pc.paint(g2d);
         }
     }
@@ -328,12 +251,12 @@ public class Plot implements Figure {
         if (xspots < 2) {
             return;
         }
-        Range range = getDataRange();
+        DataRange range = axes.getDataRange();
         XWilkinson.Labels xlabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
-                range.x1(), range.x2(), xspots);
+                range.xMin(), range.xMax(), xspots);
 
         for (double label : xlabels.getList()) {
-            bottomMarkersPos.add((label - range.x1()) * viewport.width / range.width());
+            bottomMarkersPos.add((label - range.xMin()) * viewport.width / range.width());
             bottomMarkersMsg.add(xlabels.getFormattedValue(label));
         }
     }
@@ -346,18 +269,14 @@ public class Plot implements Figure {
         if (yspots < 2) {
             return;
         }
-        Range range = getDataRange();
+        DataRange range = axes.getDataRange();
         XWilkinson.Labels ylabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
-                range.y1(), range.y2(), yspots);
+                range.yMin(), range.yMax(), yspots);
 
         for (double label : ylabels.getList()) {
-            leftMarkersPos.add((label - range.y1()) * viewport.height / range.height());
+            leftMarkersPos.add((label - range.yMin()) * viewport.height / range.height());
             leftMarkersMsg.add(String.valueOf(ylabels.getFormattedValue(label)));
         }
-    }
-
-    public List<Artist> getArtists() {
-        return artists;
     }
 
     public Plot leftThick(boolean leftThicker) {
@@ -409,8 +328,8 @@ public class Plot implements Figure {
     }
 
     public Plot add(Artist pc) {
-        pc.bind(this);
-        artists.add(pc);
+        pc.bind(axes);
+        axes.addArtist(pc);
         return this;
     }
 
@@ -418,14 +337,14 @@ public class Plot implements Figure {
 
 
     public Plot xLim(double start, double end) {
-        this.x1 = start;
-        this.x2 = end;
+        axes.xLimStart = start;
+        axes.xLimEnd = end;
         return this;
     }
 
     public Plot yLim(double start, double end) {
-        this.y1 = start;
-        this.y2 = end;
+        axes.yLimStart = start;
+        axes.yLimEnd = end;
         return this;
     }
 
@@ -476,12 +395,12 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot funLine(SFunction<Double, Double> f, GOption<?>... opts) {
+    public Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
         add(new FunctionLine(f, opts));
         return this;
     }
 
-    public Plot densityLine(Var var, GOption... opts) {
+    public Plot densityLine(Var var, GOption<?>... opts) {
         add(new DensityLine(var, opts));
         return this;
     }
@@ -523,16 +442,6 @@ public class Plot implements Figure {
 
     public Plot segment2d(double x1, double y1, double x2, double y2, GOption<?>... opts) {
         add(new Segment2D(x1, y1, x2, y2, opts));
-        return this;
-    }
-
-    public Plot dvLines(Var values) {
-        add(new DVLines(values, VarInt.seq(values.rowCount())));
-        return this;
-    }
-
-    public Plot dvLines(Var values, Var indexes, GOption... opts) {
-        add(new DVLines(values, indexes, opts));
         return this;
     }
 }

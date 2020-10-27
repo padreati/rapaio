@@ -40,14 +40,14 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/15.
  */
-public class GOpts implements Serializable {
+public class GOptions implements Serializable {
 
     private static final long serialVersionUID = -8407683729055712796L;
 
-    private static final GOpts defaults;
+    private static final GOptions defaults;
 
     static {
-        defaults = new GOpts();
+        defaults = new GOptions();
         defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
         defaults.color = new GOptionColor(Color.BLACK);
         defaults.lwd = new GOptionLwd(1.0f);
@@ -60,7 +60,7 @@ public class GOpts implements Serializable {
         defaults.labels = new GOptionLabels(new String[]{""});
     }
 
-    private GOpts parent;
+    private GOptions parent;
 
     private GOptionPalette palette;
     private GOptionColor color;
@@ -73,12 +73,12 @@ public class GOpts implements Serializable {
     private GOptionPoints points;
     private GOptionLabels labels;
 
-    public GOpts bind(GOption... options) {
+    public GOptions bind(GOption<?>... options) {
         Arrays.stream(options).forEach(o -> o.bind(this));
         return this;
     }
 
-    public GOption[] toArray() {
+    public GOption<?>[] toArray() {
         return new GOption[]{
                 palette,
                 color,
@@ -95,11 +95,11 @@ public class GOpts implements Serializable {
 
     // getters
 
-    public GOpts getParent() {
+    public GOptions getParent() {
         return parent;
     }
 
-    public void setParent(GOpts parent) {
+    public void setParent(GOptions parent) {
         this.parent = parent;
     }
 

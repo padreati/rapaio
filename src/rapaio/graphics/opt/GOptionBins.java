@@ -40,12 +40,12 @@ public class GOptionBins implements GOption<Integer> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setBins(this);
     }
 
     @Override
-    public Integer apply(GOpts opts) {
+    public Integer apply(GOptions opts) {
         return bins;
     }
 }

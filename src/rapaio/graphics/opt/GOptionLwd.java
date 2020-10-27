@@ -40,12 +40,12 @@ public class GOptionLwd implements GOption<Float> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setLwd(this);
     }
 
     @Override
-    public Float apply(GOpts opts) {
+    public Float apply(GOptions opts) {
         return lwd;
     }
 }

@@ -28,7 +28,7 @@
 package rapaio.sys;
 
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
+import rapaio.image.ImageUtility;
 import rapaio.printer.Printer;
 import rapaio.printer.standard.StandardPrinter;
 

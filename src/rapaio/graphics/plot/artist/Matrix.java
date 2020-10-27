@@ -27,9 +27,9 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 import rapaio.math.linear.DM;
 
 import java.awt.*;
@@ -54,7 +54,7 @@ public class Matrix extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         range.union(0, 0);
         range.union(m.colCount(), m.rowCount());
     }

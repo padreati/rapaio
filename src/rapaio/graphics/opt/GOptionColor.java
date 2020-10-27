@@ -39,7 +39,7 @@ import java.util.Arrays;
 public class GOptionColor implements GOption<Color[]> {
 
     private static final long serialVersionUID = 7534853593877383832L;
-    private final SFunction<GOpts, Color[]> function;
+    private final SFunction<GOptions, Color[]> function;
 
     public GOptionColor(int... index) {
         function = gOpts -> Arrays.stream(index).boxed().map(i -> gOpts.getPalette().getColor(i)).toArray(Color[]::new);
@@ -64,12 +64,12 @@ public class GOptionColor implements GOption<Color[]> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setColor(this);
     }
 
     @Override
-    public Color[] apply(GOpts opts) {
+    public Color[] apply(GOptions opts) {
         return function.apply(opts);
     }
 }

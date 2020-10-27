@@ -40,12 +40,12 @@ public class GOptionPoints implements GOption<Integer> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setPoints(this);
     }
 
     @Override
-    public Integer apply(GOpts opts) {
+    public Integer apply(GOptions opts) {
         return points;
     }
 }

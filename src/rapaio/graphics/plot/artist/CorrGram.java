@@ -27,10 +27,15 @@
 
 package rapaio.graphics.plot.artist;
 
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorGradient;
+import rapaio.graphics.opt.GOption;
+import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axes;
+import rapaio.graphics.plot.DataRange;
 import rapaio.math.MTools;
 import rapaio.printer.Format;
 
@@ -40,6 +45,21 @@ import java.awt.geom.Rectangle2D;
 import java.util.stream.DoubleStream;
 
 /**
+ * Correlograms are artists which helps visualize data in correlation matrices.
+ * A correlation matrix is a {@link DistanceMatrix} which has to have values normalized in
+ * range [-1,1]. If this is not the case the values will be cut off in those limits.
+ * <p>
+ * In order to give some example one can use {@link CorrPearson#matrix()} to obtain
+ * the Pearson linear correlation matrix. In a similar fashion one can use
+ * {@link CorrSpearman#matrix()}.
+ * <p>
+ * By default, adding this artist will turn all markers and tickers for the given axes.
+ * If one wants a different behaviour it must turn them on explicitly.
+ * <p>
+ * The colors used to display values comes from {@link ColorGradient#newHueGradient(int, int, double[])}
+ * with start=0, end=240 and an array of 101 percentages. One can changes this behaviour by setting
+ * the {@link rapaio.graphics.Plotter#color(Color[])} graphical option to an array of 101 color elements.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
 public class CorrGram extends Artist {
@@ -49,31 +69,36 @@ public class CorrGram extends Artist {
     private final boolean grid;
     private final boolean labels;
     private final DistanceMatrix d;
-    private final int[][] colors;
 
-    public CorrGram(DistanceMatrix d, boolean labels, boolean grid) {
+    public CorrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
         this.labels = labels;
         this.grid = grid;
         this.d = d;
 
-        colors = new int[d.length()][d.length()];
-
-        for (int i = 0; i < d.length(); i++) {
-            for (int j = 0; j < d.length(); j++) {
-                double x = d.get(i, j);
-                if (x > 1)
-                    x = 1;
-                if (x < -1)
-                    x = -1;
-
-                int c = (int) MTools.floor((1 + x) * 50);
-                colors[i][j] = c;
-            }
-        }
+        this.options.setColor(new GOptionColor(ColorGradient.newHueGradient(0, 240,
+                DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray()).getColors()
+        ));
+        this.options.bind(opts);
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void bind(Axes parent) {
+        super.bind(parent);
+        parent.getPlot().bottomMarkers(false);
+        parent.getPlot().bottomThick(false);
+        parent.getPlot().leftMarkers(false);
+        parent.getPlot().leftThick(false);
+    }
+
+    private int computeIndex(int i, int j) {
+        double value = d.get(i, j);
+        value = Math.min(value, 1);
+        value = Math.max(value, -1);
+        return (int) MTools.floor((1 + value) * 50);
+    }
+
+    @Override
+    public void updateDataRange(DataRange range) {
         range.union(0, 0);
         range.union(d.length(), d.length());
     }
@@ -81,15 +106,12 @@ public class CorrGram extends Artist {
     @Override
     public void paint(Graphics2D g2d) {
 
-        ColorGradient gradient = ColorGradient.newHueGradient(DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
-//        ColorGradient gradient = ColorGradient.newBiColorGradient(Color.MAGENTA, Color.yellow, DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
-
         double xstep = Math.abs(xScale(1) - xScale(0));
         double ystep = Math.abs(yScale(1) - yScale(0));
         for (int i = 0; i < d.length(); i++) {
             for (int j = 0; j < d.length(); j++) {
                 if (i != j) {
-                    g2d.setColor(gradient.getColor(colors[i][j]));
+                    g2d.setColor(options.getColor(computeIndex(i, j)));
                     g2d.fill(new Rectangle2D.Double(
                             xScale(j),
                             yScale(d.length() - i),

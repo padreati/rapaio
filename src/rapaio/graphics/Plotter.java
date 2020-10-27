@@ -33,6 +33,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
@@ -51,7 +52,7 @@ import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.QQPlot;
 import rapaio.graphics.plot.artist.ABLine;
-import rapaio.graphics.plot.artist.DVLines;
+import rapaio.graphics.plot.artist.CorrGram;
 import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
@@ -60,13 +61,13 @@ import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.util.function.SFunction;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
 
 public final class Plotter {
 
-    public static Plot plot(GOption... opts) {
+    public static Plot plot(GOption<?>... opts) {
         return new Plot(opts);
     }
 
@@ -74,129 +75,129 @@ public final class Plotter {
         return new GridLayer(rows, cols);
     }
 
-    public static QQPlot qqplot(Var points, Distribution dist, GOption... opts) {
+    public static QQPlot qqplot(Var points, Distribution dist, GOption<?>... opts) {
         return new QQPlot(points, dist, opts);
     }
 
-    public static BoxPlot boxPlot(Var x, Var factor, GOption... opts) {
+    public static BoxPlot boxPlot(Var x, Var factor, GOption<?>... opts) {
         return new BoxPlot(x, factor, opts);
     }
 
-    public static BoxPlot boxPlot(Var x, GOption... opts) {
+    public static BoxPlot boxPlot(Var x, GOption<?>... opts) {
         return new BoxPlot(x, opts);
     }
 
-    public static BoxPlot boxPlot(Var[] vars, GOption... opts) {
+    public static BoxPlot boxPlot(Var[] vars, GOption<?>... opts) {
         return new BoxPlot(vars, opts);
     }
 
-    public static BoxPlot boxPlot(Frame df, GOption... opts) {
+    public static BoxPlot boxPlot(Frame df, GOption<?>... opts) {
         return new BoxPlot(df, opts);
     }
 
-    public static Plot hist(Var v, GOption... opts) {
+    public static Plot hist(Var v, GOption<?>... opts) {
         return plot().add(new Histogram(v, opts));
     }
 
-    public static Plot hist(Var v, double minValue, double maxValue, GOption... opts) {
+    public static Plot hist(Var v, double minValue, double maxValue, GOption<?>... opts) {
         return plot().add(new Histogram(v, minValue, maxValue, opts));
     }
 
-    public static Plot hist2d(Var x, Var y, GOption... opts) {
+    public static Plot hist2d(Var x, Var y, GOption<?>... opts) {
         return plot().add(new Histogram2D(x, y, opts));
     }
 
-    public static Plot densityLine(Var var, GOption... opts) {
+    public static Plot densityLine(Var var, GOption<?>... opts) {
         return plot().add(new DensityLine(var, opts));
     }
 
-    public static Plot densityLine(Var var, double bandwidth, GOption... opts) {
+    public static Plot densityLine(Var var, double bandwidth, GOption<?>... opts) {
         return plot().add(new DensityLine(var, bandwidth, opts));
     }
 
-    public static Plot densityLine(Var var, KFunc kfunc, GOption... opts) {
+    public static Plot densityLine(Var var, KFunc kfunc, GOption<?>... opts) {
         return plot().add(new DensityLine(var, kfunc, opts));
     }
 
-    public static Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOption... opts) {
+    public static Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOption<?>... opts) {
         return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
     }
 
-    public static Plot funLine(SFunction<Double, Double> f, GOption... opts) {
+    public static Plot funLine(Double2DoubleFunction f, GOption<?>... opts) {
         return plot().add(new FunctionLine(f, opts));
     }
 
-    public static Plot lines(Var x, Var y, GOption... opts) {
+    public static Plot lines(Var x, Var y, GOption<?>... opts) {
         return plot().add(new Lines(x, y, opts));
     }
 
-    public static Plot lines(Var y, GOption... opts) {
+    public static Plot lines(Var y, GOption<?>... opts) {
         return plot().add(new Lines(y, opts));
     }
 
-    public static Plot points(Var x, Var y, GOption... opts) {
+    public static Plot points(Var x, Var y, GOption<?>... opts) {
         return plot().add(new Points(x, y, opts));
     }
 
-    public static Plot points(Var y, GOption... opts) {
+    public static Plot points(Var y, GOption<?>... opts) {
         return plot().add(new Points(VarInt.seq(y.rowCount()).withName("pos"), y, opts));
     }
 
-    public static Plot rocCurve(ROC roc, GOption... opts) {
+    public static Plot rocCurve(ROC roc, GOption<?>... opts) {
         return plot().add(new ROCCurve(roc, opts));
     }
 
-    public static BarChart barChart(Var categ, GOption... opts) {
-        return new BarChart(categ, opts);
+    public static BarChart barChart(Var category, GOption<?>... opts) {
+        return new BarChart(category, opts);
     }
 
-    public static BarChart barChart(Var categ, Var cond, GOption... opts) {
-        return new BarChart(categ, cond, opts);
+    public static BarChart barChart(Var category, Var cond, GOption<?>... opts) {
+        return new BarChart(category, cond, opts);
     }
 
-    public static BarChart barChart(Var categ, Var cond, Var numeric, GOption... opts) {
-        return new BarChart(categ, cond, numeric, opts);
+    public static BarChart barChart(Var category, Var cond, Var numeric, GOption<?>... opts) {
+        return new BarChart(category, cond, numeric, opts);
     }
 
-    public static Plot hLine(double a, GOption... opts) {
+    public static Plot hLine(double a, GOption<?>... opts) {
         return plot().add(new ABLine(true, a, opts));
     }
 
-    public static Plot vLine(double a, GOption... opts) {
+    public static Plot vLine(double a, GOption<?>... opts) {
         return plot().add(new ABLine(false, a, opts));
     }
 
-    public static Plot abLine(double a, double b, GOption... opts) {
+    public static Plot abLine(double a, double b, GOption<?>... opts) {
         return plot().add(new ABLine(a, b, opts));
     }
 
-    public static Plot dvLines(Var values, GOption... opts) {
-        return plot().add(new DVLines(values, VarInt.seq(values.rowCount())));
+    public static Plot corrGram(DistanceMatrix d, GOption<?>... opts) {
+        return corrGram(d, true, true, opts);
     }
 
-    public static Plot dvLines(Var values, Var indexes, GOption... opts) {
-        return plot().add(new DVLines(values, indexes, opts));
+    public static Plot corrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
+        return plot().add(new CorrGram(d, labels, grid, opts));
     }
 
     // GRAPHICAL OPTIONS
 
-    public static GOption palette(ColorPalette colorPalette) {
+    public static GOptionPalette palette(ColorPalette colorPalette) {
         return new GOptionPalette(colorPalette);
     }
 
-    public static GOption color(int... index) {
+    public static GOptionColor color(int... index) {
         return new GOptionColor(index);
     }
 
-    public static GOption color(Color color) {
+    public static GOptionColor color(Color color) {
         return new GOptionColor(color);
     }
 
-    public static GOption color(Color[] colors) {
+    public static GOptionColor color(Color[] colors) {
         return new GOptionColor(colors);
     }
 
-    public static GOption color(Var color) {
+    public static GOptionColor color(Var color) {
         return new GOptionColor(color);
     }
 

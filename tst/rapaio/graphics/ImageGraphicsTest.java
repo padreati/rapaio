@@ -24,11 +24,14 @@
 
 package rapaio.graphics;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
+import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Minimum;
@@ -40,11 +43,11 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
-import rapaio.io.JavaIO;
+import rapaio.image.ImageUtility;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.sys.WS;
 
@@ -70,9 +73,10 @@ import static rapaio.graphics.Plotter.*;
 
 public class ImageGraphicsTest {
 
-    //    private static final boolean regenerate = true;
-    private static final boolean regenerate = false;
-    private static final boolean show = false;
+    private static final boolean regenerate = true;
+    //        private static final boolean regenerate = false;
+    private static final boolean show = true;
+    //    private static final boolean show = false;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
@@ -85,24 +89,53 @@ public class ImageGraphicsTest {
 //        ImageUtility.setSpeedHints();
     }
 
-    @Test
-    void testBoxPlot() throws IOException {
-
-        Var x = df.rvar(1);
-        Var factor = df.rvar("class");
-
-        BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
-
+    private void assertTest(Figure f, String name) throws IOException {
         if (show) {
-            WS.draw(plot);
+            WS.draw(f);
         }
         if (regenerate) {
-            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/boxplot-test.png");
+            ImageUtility.saveImage(f, 500, 400, root + "/rapaio/graphics/" + name + ".png");
         }
 
-        BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("boxplot-test.png"));
+        BufferedImage bi1 = ImageUtility.buildImage(f, 500, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
         assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    @SneakyThrows
+    void testABLine() {
+        Plot plot = new Plot();
+        plot.xLim(-10, 10);
+        plot.yLim(-10, 10);
+
+        plot.hLine(0, color(3));
+        plot.hLine(1, color(4));
+
+        plot.vLine(0, color(5));
+        plot.vLine(1.2, color(6));
+
+        plot.abLine(1, 0, color(7));
+        plot.abLine(-1.2, 0, color(8));
+
+        assertTest(plot, "abline-test");
+    }
+
+    @Test
+    @SneakyThrows
+    void testCorrGram() {
+        Frame sel = Datasets.loadHousing();
+        DistanceMatrix d = CorrSpearman.of(sel).matrix();
+        assertTest(corrGram(d), "corrgram-test");
+    }
+
+    @Test
+    void testBoxPlot() throws IOException {
+        Var x = df.rvar(1);
+        Var factor = df.rvar("class");
+        BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
+
+        assertTest(plot, "boxplot-test");
     }
 
     @Test
@@ -115,16 +148,7 @@ public class ImageGraphicsTest {
                 .xLim(0, 10)
                 .yLim(0, 10);
 
-        JavaIO.storeToFile(plot, "/tmp/tmp.ser");
-
-        if (show)
-            WS.draw(plot);
-        if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/funLine-test.png");
-
-        BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("funLine-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(plot, "funline-test");
     }
 
     @Test
@@ -137,15 +161,7 @@ public class ImageGraphicsTest {
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));
 
-        if (show) {
-            WS.draw(plot);
-        }
-        if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400,
-                    root + "/rapaio/graphics/qqplot-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("qqplot-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(plot, "qqplot-test");
     }
 
     @Test
@@ -155,27 +171,13 @@ public class ImageGraphicsTest {
         Var y = df.rvar(1).copy().withName("y");
 
         Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
-        if (show)
-            WS.draw(plot);
-        if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist2d-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist2d-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(plot, "hist2d-test");
     }
 
     @Test
     void testHistogram() throws IOException {
-
         Var x = df.rvar(0).withName("x");
-        Plot plot = hist(x, bins(30));
-        if (show)
-            WS.draw(plot);
-        if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(hist(x, bins(30)), "hist-test");
     }
 
     @Test
@@ -191,13 +193,7 @@ public class ImageGraphicsTest {
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));
 
-        if (show)
-            WS.draw(fig);
-        if (regenerate)
-            ImageUtility.saveImage(fig, 400, 400, root + "/rapaio/graphics/grid-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("grid-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(fig, "grid-test");
     }
 
     @Test
@@ -211,13 +207,7 @@ public class ImageGraphicsTest {
                 .add(lines(x))
                 .add(lines(x).yLim(-2, -1));
 
-        if (show)
-            WS.draw(fig);
-        if (regenerate)
-            ImageUtility.saveImage(fig, 300, 200, root + "/rapaio/graphics/lines-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 300, 200);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("lines-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(fig, "lines-test");
     }
 
     @Test
@@ -229,33 +219,19 @@ public class ImageGraphicsTest {
         Figure fig = gridLayer(1, 2)
                 .add(points(x))
                 .add(points(x, y).xLim(-3, -1));
-
-        if (show)
-            WS.draw(fig);
-        if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/points-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("points-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(fig, "points-test");
     }
 
     @Test
     void testDensity() throws IOException {
 
         Var x = df.rvar(0).mapRows(Mapping.range(200));
-        Plot fig = plot();
+        Plot fig = densityLine(x, new KFuncGaussian(), lwd(30), alpha(0.1f), color(2));
         for (int i = 10; i < 150; i += 5) {
             fig.densityLine(x, i / 300.0);
         }
         fig.densityLine(x, lwd(2), color(1));
-
-        if (show)
-            WS.draw(fig);
-        if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/density-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("density-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(fig, "density-test");
     }
 
     @Test
@@ -263,14 +239,7 @@ public class ImageGraphicsTest {
 
         ROC roc = ROC.from(df.rvar(0), df.rvar("class"), 2);
         Figure fig = rocCurve(roc);
-
-        if (show)
-            WS.draw(fig);
-        if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/roc-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
-        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("roc-test.png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        assertTest(fig, "roc-test");
     }
 
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {

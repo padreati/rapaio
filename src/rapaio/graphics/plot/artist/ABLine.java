@@ -28,16 +28,16 @@
 package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.Plotter;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 
 /**
- * Plot component which draws a line of the form y = f(x) = a*x + b
+ * Artist which draws a line of the form y = f(x) = a*x + b
  * There is a generic form of the line by calling {@link #ABLine(double, double, GOption...)}.
  * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
@@ -73,12 +73,12 @@ public class ABLine extends Artist {
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options.bind(opts);
         this.options.setColor(new GOptionColor(new Color[]{Color.LIGHT_GRAY}));
+        this.options.bind(opts);
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         if (h) {
             range.union(Double.NaN, a);
         }
@@ -89,41 +89,41 @@ public class ABLine extends Artist {
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = parent.getDataRange();
+        DataRange range = parent.getDataRange();
         g2d.setColor(options.getColor(0));
 
         double x1, x2, y1, y2;
         if (!h && !v) {
-            double xx = range.x1();
+            double xx = range.xMin();
             double yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x1 = (int) parent.xScale(xx);
-                y1 = (int) parent.yScale(yy);
+                x1 = parent.xScale(xx);
+                y1 = parent.yScale(yy);
             } else {
-                y1 = (int) parent.yScale(range.y1());
-                x1 = (int) parent.xScale((range.y1() - b) / a);
+                y1 = parent.yScale(range.yMin());
+                x1 = parent.xScale((range.yMin() - b) / a);
             }
 
-            xx = range.x2();
+            xx = range.xMax();
             yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x2 = (int) parent.xScale(xx);
-                y2 = (int) parent.yScale(yy);
+                x2 = parent.xScale(xx);
+                y2 = parent.yScale(yy);
             } else {
-                y2 = (int) parent.yScale(range.y2());
-                x2 = (int) parent.xScale((range.y2() - b) / a);
+                y2 = parent.yScale(range.yMax());
+                x2 = parent.xScale((range.yMax() - b) / a);
             }
         } else {
             if (h) {
-                x1 = (int) parent.xScale(range.x1());
-                y1 = (int) parent.yScale(a);
-                x2 = (int) parent.xScale(range.x2());
-                y2 = (int) parent.yScale(a);
+                x1 = parent.xScale(range.xMin());
+                y1 = parent.yScale(a);
+                x2 = parent.xScale(range.xMax());
+                y2 = parent.yScale(a);
             } else {
-                x1 = (int) parent.xScale(a);
-                y1 = (int) parent.yScale(range.y1());
-                x2 = (int) parent.xScale(a);
-                y2 = (int) parent.yScale(range.y2());
+                x1 = parent.xScale(a);
+                y1 = parent.yScale(range.yMin());
+                x2 = parent.xScale(a);
+                y2 = parent.yScale(range.yMax());
             }
         }
         Stroke oldStroke = g2d.getStroke();

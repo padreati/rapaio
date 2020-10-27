@@ -28,11 +28,11 @@
 package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.Axes;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 
@@ -55,14 +55,14 @@ public class Points extends Artist {
     }
 
     @Override
-    public void bind(Plot parent) {
+    public void bind(Axes parent) {
         super.bind(parent);
-        parent.xLab(x.name());
-        parent.yLab(y.name());
+        parent.getPlot().xLab(x.name());
+        parent.getPlot().yLab(y.name());
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         if (x.rowCount() == 0) {
             return;
         }

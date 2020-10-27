@@ -29,10 +29,10 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.util.function.SFunction;
+import rapaio.graphics.plot.DataRange;
+import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -45,28 +45,28 @@ import static rapaio.graphics.Plotter.points;
 public class FunctionLine extends Artist {
 
     private static final long serialVersionUID = 8388944194915495215L;
-    private final SFunction<Double, Double> f;
+    private final Double2DoubleFunction f;
 
-    public FunctionLine(SFunction<Double, Double> f, GOption<?>... opts) {
+    public FunctionLine(Double2DoubleFunction f, GOption<?>... opts) {
         this.f = f;
         // apply default values for function line
-        this.options.bind(points(1024 * 10));
+        this.options.bind(points(1024 * 64));
         this.options.bind(opts);
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = parent.getDataRange();
+        DataRange range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
-        double xstep = (range.x2() - range.x1()) / options.getPoints();
+        double xstep = (range.xMax() - range.xMin()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setDouble(i, range.x1() + i * xstep);
-            y.setDouble(i, f.apply(x.getDouble(i)));
+            x.setDouble(i, range.xMin() + i * xstep);
+            y.setDouble(i, f.applyAsDouble(x.getDouble(i)));
         }
 
         Composite old = g2d.getComposite();

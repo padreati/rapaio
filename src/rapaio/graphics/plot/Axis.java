@@ -25,27 +25,41 @@
  *
  */
 
-package rapaio.graphics.opt;
+package rapaio.graphics.plot;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
+ * @author algoshipda
  */
-public class GOptionAlpha implements GOption<Float> {
+@Getter
+@Setter
+public class Axis implements Serializable {
 
-    private static final long serialVersionUID = -1727266027662363808L;
-    private final float alpha;
+    private static final long serialVersionUID = 8011268159946315468L;
+    private double min = Double.NaN;
+    private double max = Double.NaN;
 
-    public GOptionAlpha(float alpha) {
-        this.alpha = alpha;
+    public void union(double x) {
+        if (Double.isFinite(x)) {
+            min = (Double.isFinite(min)) ? Math.min(min, x) : x;
+            max = (Double.isFinite(max)) ? Math.max(max, x) : x;
+        }
     }
 
-    @Override
-    public void bind(GOptions opts) {
-        opts.setAlpha(this);
+    public boolean contains(double x) {
+        return min <= x && x <= max;
     }
 
-    @Override
-    public Float apply(GOptions opts) {
-        return alpha;
+    public double getLength() {
+        return max - min;
+    }
+
+    public void setRange(double min, double max) {
+        this.min = min;
+        this.max = max;
     }
 }

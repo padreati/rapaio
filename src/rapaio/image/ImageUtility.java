@@ -25,7 +25,9 @@
  *
  */
 
-package rapaio.graphics.base;
+package rapaio.image;
+
+import rapaio.graphics.base.Figure;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

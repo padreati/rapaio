@@ -27,8 +27,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.GOptions;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -39,20 +38,20 @@ import java.io.Serializable;
 public abstract class Artist implements Serializable {
 
     private static final long serialVersionUID = -797168275849511614L;
-    protected final GOpts options = new GOpts();
-    protected Plot parent;
-    private Range range;
+    protected final GOptions options = new GOptions();
+    protected Axes parent;
+    private DataRange range;
 
-    public GOpts getOptions() {
+    public GOptions getOptions() {
         return options;
     }
 
-    public void bind(Plot parent) {
+    public void bind(Axes parent) {
         if (parent == null) {
             throw new IllegalArgumentException("parent plot reference is null");
         }
         this.parent = parent;
-        this.options.setParent(parent.getOptions());
+        this.options.setParent(parent.plot.options);
     }
 
     public double xScale(double x) {
@@ -63,7 +62,7 @@ public abstract class Artist implements Serializable {
         return parent.yScale(y);
     }
 
-    public abstract void updateDataRange(Range dataRange);
+    public abstract void updateDataRange(DataRange dataRange);
 
     public abstract void paint(Graphics2D g2d);
 }

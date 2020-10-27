@@ -43,12 +43,12 @@ public class GOptionPch implements GOption<Var> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setPch(this);
     }
 
     @Override
-    public Var apply(GOpts opts) {
+    public Var apply(GOptions opts) {
         return pch;
     }
 }

@@ -29,9 +29,9 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.data.Var;
 import rapaio.experiment.grid.MeshGrid;
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -58,7 +58,7 @@ public class MeshContour extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
         range.union(mg.x().getDouble(0), mg.y().getDouble(0));
         range.union(mg.x().getDouble(mg.x().rowCount() - 1), mg.y().getDouble(mg.y().rowCount() - 1));
     }

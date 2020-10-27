@@ -40,12 +40,12 @@ public class GOptionPalette implements GOption<ColorPalette> {
     }
 
     @Override
-    public void bind(GOpts opts) {
+    public void bind(GOptions opts) {
         opts.setPalette(this);
     }
 
     @Override
-    public ColorPalette apply(GOpts gOpts) {
+    public ColorPalette apply(GOptions gOpts) {
         return palette;
     }
 }

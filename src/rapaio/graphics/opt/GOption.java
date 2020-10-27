@@ -34,10 +34,10 @@ public interface GOption<T> extends Serializable {
     /**
      * Binds an option to a given set of graphical options
      */
-    void bind(GOpts opts);
+    void bind(GOptions opts);
 
     /**
      * Produce the graphical option
      */
-    T apply(GOpts opts);
+    T apply(GOptions opts);
 }

@@ -30,7 +30,6 @@ package rapaio.graphics.plot;
 import lombok.AllArgsConstructor;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.HostFigure;
-import rapaio.graphics.base.Range;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -55,7 +54,7 @@ public class GridLayer extends HostFigure {
     }
 
     @Override
-    protected Range buildDataRange() {
+    protected DataRange buildDataRange() {
         return null;
     }
 

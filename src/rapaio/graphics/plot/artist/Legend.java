@@ -27,10 +27,10 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -85,8 +85,8 @@ public class Legend extends Artist {
         if (place != -1) {
             switch (place) {
                 case UP_LEFT:
-                    xstart = parent.xScale(parent.getDataRange().x1());
-                    ystart = parent.yScale(parent.getDataRange().y2());
+                    xstart = parent.xScale(parent.getDataRange().xMin());
+                    ystart = parent.yScale(parent.getDataRange().yMax());
             }
         }
 
@@ -100,6 +100,6 @@ public class Legend extends Artist {
     }
 
     @Override
-    public void updateDataRange(Range range) {
+    public void updateDataRange(DataRange range) {
     }
 }

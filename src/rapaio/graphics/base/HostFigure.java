@@ -29,7 +29,8 @@ package rapaio.graphics.base;
 
 import lombok.Getter;
 import rapaio.graphics.opt.ColorPalette;
-import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.GOptions;
+import rapaio.graphics.plot.DataRange;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public abstract class HostFigure implements Figure {
     protected static final int MINIMUM_PAD = 20;
 
     @Getter
-    protected final GOpts options = new GOpts();
-    private Range dataRange;
+    protected final GOptions options = new GOptions();
+    private DataRange dataRange;
 
     //
     protected Rectangle viewport;
@@ -80,9 +81,9 @@ public abstract class HostFigure implements Figure {
     protected double y1 = Double.NaN;
     protected double y2 = Double.NaN;
 
-    protected abstract Range buildDataRange();
+    protected abstract DataRange buildDataRange();
 
-    public Range getDataRange() {
+    public DataRange getDataRange() {
         if (dataRange == null) {
             dataRange = buildDataRange();
         }
@@ -91,7 +92,7 @@ public abstract class HostFigure implements Figure {
         return dataRange;
     }
 
-    protected void setDataRange(Range dataRange) {
+    protected void setDataRange(DataRange dataRange) {
         this.dataRange = dataRange;
     }
 
@@ -171,11 +172,11 @@ public abstract class HostFigure implements Figure {
     }
 
     public double xScale(double x) {
-        return viewport.x + viewport.width * (x - getDataRange().x1()) / (getDataRange().x2() - getDataRange().x1());
+        return viewport.x + viewport.width * (x - getDataRange().xMin()) / (getDataRange().xMax() - getDataRange().xMin());
     }
 
     public double yScale(double y) {
-        return viewport.y + viewport.height * (1. - (y - getDataRange().y1()) / (getDataRange().y2() - getDataRange().y1()));
+        return viewport.y + viewport.height * (1. - (y - getDataRange().yMin()) / (getDataRange().yMax() - getDataRange().yMin()));
     }
 
     protected Rectangle getViewport() {
@@ -323,12 +324,12 @@ public abstract class HostFigure implements Figure {
         if (xspots < 2) {
             return;
         }
-        Range range = getDataRange();
+        DataRange range = getDataRange();
         XWilkinson.Labels xlabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
-                range.x1(), range.x2(), xspots);
+                range.xMin(), range.xMax(), xspots);
 
         for (double label : xlabels.getList()) {
-            bottomMarkersPos.add((label - range.x1()) * viewport.width / range.width());
+            bottomMarkersPos.add((label - range.xMin()) * viewport.width / range.width());
             bottomMarkersMsg.add(xlabels.getFormattedValue(label));
         }
     }
@@ -341,12 +342,12 @@ public abstract class HostFigure implements Figure {
         if (yspots < 2) {
             return;
         }
-        Range range = getDataRange();
+        DataRange range = getDataRange();
         XWilkinson.Labels ylabels = XWilkinson.base10(XWilkinson.DEEFAULT_EPS).searchBounded(
-                range.y1(), range.y2(), yspots);
+                range.yMin(), range.yMax(), yspots);
 
         for (double label : ylabels.getList()) {
-            leftMarkersPos.add((label - range.y1()) * viewport.height / range.height());
+            leftMarkersPos.add((label - range.yMin()) * viewport.height / range.height());
             leftMarkersMsg.add(String.valueOf(ylabels.getFormattedValue(label)));
         }
     }
