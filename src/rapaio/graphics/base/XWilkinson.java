@@ -63,7 +63,7 @@ public class XWilkinson {
     }
 
     public static XWilkinson base10(double eps) {
-        return XWilkinson.of(new double[]{1, 5, 2, 2.5, 4, 3}, 10, eps);
+        return XWilkinson.of(new double[]{2, 5, 4, 2.5, 4, 3}, 10, eps);
     }
 
     public static XWilkinson base2(double eps) {

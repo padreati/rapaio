@@ -37,7 +37,7 @@ import java.awt.geom.AffineTransform;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/5/16.
  */
-public class Segment2D extends Artist {
+public class Segment extends Artist {
 
     private static final long serialVersionUID = 6358307433520540622L;
 
@@ -45,8 +45,15 @@ public class Segment2D extends Artist {
     private final double y1;
     private final double x2;
     private final double y2;
+    private final Type type;
 
-    public Segment2D(double x1, double y1, double x2, double y2, GOption<?>... opts) {
+    public enum Type {
+        LINE,
+        ARROW
+    }
+
+    public Segment(Type type, double x1, double y1, double x2, double y2, GOption<?>... opts) {
+        this.type = type;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -65,29 +72,34 @@ public class Segment2D extends Artist {
 
         Composite old = g2d.getComposite();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
-        g2d.setColor(options.getColor(0));
 
+        g2d.setColor(options.getColor(0));
         g2d.setStroke(new BasicStroke(options.getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 
-//        g2d.draw(new Line2D.Double(xScale(x1), yScale(y1), xScale(x2), yScale(y2)));
-        drawArrow(g2d, xScale(x1), yScale(y1), xScale(x2), yScale(y2));
+        drawLine(g2d, xScale(x1), yScale(y1), xScale(x2), yScale(y2));
 
         g2d.setComposite(old);
     }
 
-    void drawArrow(Graphics g1, double x1, double y1, double x2, double y2) {
+    void drawLine(Graphics g1, double x1, double y1, double x2, double y2) {
         Graphics2D g = (Graphics2D) g1.create();
 
         double dx = x2 - x1, dy = y2 - y1;
         double angle = Math.atan2(dy, dx);
         int len = (int) Math.sqrt(dx * dx + dy * dy);
+
         AffineTransform at = AffineTransform.getTranslateInstance(x1, y1);
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
 
+        int diff = (int) options.getLwd();
         // Draw horizontal arrow starting in (0, 0)
-        g.drawLine(0, 0, len, 0);
-        g.fillPolygon(new int[]{len, (int) (len - options.getSz(0)), (int) (len - options.getSz(0)), len},
-                new int[]{0, (int) -options.getSz(0), (int) options.getSz(0), 0}, 4);
+        g.drawLine(0, 0, len - diff, 0);
+        if (type.equals(Type.ARROW)) {
+            diff = 2 * diff;
+            g.fillPolygon(
+                    new int[]{len, len - diff, len - diff, len},
+                    new int[]{0, -diff, diff, 0}, 4);
+        }
     }
 }

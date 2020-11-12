@@ -73,9 +73,9 @@ import static rapaio.graphics.Plotter.*;
 
 public class ImageGraphicsTest {
 
-    private static final boolean regenerate = true;
+    private static final boolean regenerate = false;
     //        private static final boolean regenerate = false;
-    private static final boolean show = true;
+    private static final boolean show = false;
     //    private static final boolean show = false;
     private static final String root = "/home/ati/work/rapaio/tst";
 
@@ -85,8 +85,8 @@ public class ImageGraphicsTest {
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
-        ImageUtility.setBestHints();
-//        ImageUtility.setSpeedHints();
+//        ImageUtility.setBestHints();
+        ImageUtility.setSpeedHints();
     }
 
     private void assertTest(Figure f, String name) throws IOException {
@@ -242,6 +242,19 @@ public class ImageGraphicsTest {
         assertTest(fig, "roc-test");
     }
 
+    @Test
+    @SneakyThrows
+    void testSegment() {
+        Plot plot = new Plot();
+        plot.xLim(0, 1);
+        plot.yLim(0, 1);
+
+        plot.segmentLine(0.1, 0.1, 0.7, 0.7, color(1));
+        plot.segmentArrow(0.1, 0.9, 0.9, 0.1, color(2), lwd(6));
+
+        assertTest(plot, "segment-test");
+    }
+
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         VarDouble s1 = VarDouble.empty();
         VarDouble s2 = VarDouble.empty();
@@ -261,7 +274,7 @@ public class ImageGraphicsTest {
                 s2.addDouble(c2.getBlue());
             }
         }
-        assertTrue(Quantiles.of(s1.copy().op().minus(s2), 0.92).values()[0] < 10);
+        assertTrue(Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 15);
         return img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight();
     }
 }

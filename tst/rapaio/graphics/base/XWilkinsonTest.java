@@ -22,7 +22,7 @@ public class XWilkinsonTest {
 
         assertEquals("0.15;0.3;0.45;0.6;0.75;0.9",
                 labels1.getList().stream().map(labels1::getFormattedValue).collect(Collectors.joining(";")));
-        assertEquals("0;2,500,000;5,000,000;7,500,000;10,000,000",
+        assertEquals("0;2,000,000;4,000,000;6,000,000;8,000,000;10,000,000",
                 labels2.getList().stream().map(labels2::getFormattedValue).collect(Collectors.joining(";")));
 
         Locale defaultLocale = Locale.getDefault();

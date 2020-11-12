@@ -45,7 +45,7 @@ import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.MeshContour;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.ROCCurve;
-import rapaio.graphics.plot.artist.Segment2D;
+import rapaio.graphics.plot.artist.Segment;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -62,7 +62,7 @@ public class Plot implements Figure {
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
-    protected static final double DEFAULT_THICKER_MIN_SPACE = 130.;
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 110.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
@@ -265,7 +265,7 @@ public class Plot implements Figure {
         leftMarkersPos.clear();
         leftMarkersMsg.clear();
 
-        int yspots = (int) Math.floor(viewport.height / thickerMinSpace);
+        int yspots = (int) Math.floor(viewport.height / thickerMinSpace) + 1;
         if (yspots < 2) {
             return;
         }
@@ -440,8 +440,16 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot segment2d(double x1, double y1, double x2, double y2, GOption<?>... opts) {
-        add(new Segment2D(x1, y1, x2, y2, opts));
+    public Plot segmentLine(double x1, double y1, double x2, double y2, GOption<?>... opts) {
+        return segment(Segment.Type.LINE, x1, y1, x2, y2, opts);
+    }
+
+    public Plot segmentArrow(double x1, double y1, double x2, double y2, GOption<?>... opts) {
+        return segment(Segment.Type.ARROW, x1, y1, x2, y2, opts);
+    }
+
+    public Plot segment(Segment.Type type, double x1, double y1, double x2, double y2, GOption<?>... opts) {
+        add(new Segment(type, x1, y1, x2, y2, opts));
         return this;
     }
 }
