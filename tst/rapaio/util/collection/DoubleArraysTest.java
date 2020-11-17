@@ -6,6 +6,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
+import rapaio.util.DoubleComparators;
 import rapaio.util.DoubleIterator;
 
 import java.util.Arrays;
@@ -294,5 +295,36 @@ public class DoubleArraysTest {
         double[] array10 = trim(array1, 10);
         assertEquals(10, array10.length);
         assertTrue(DoubleArrays.equals(array1, 0, array10, 0, 10));
+    }
+
+    @Test
+    void testSorting() {
+
+        var x = Normal.std().sample(100_000);
+        double[] array = x.elements();
+        int len = x.rowCount();
+
+        var s1 = DoubleArrays.copy(array, 0, len);
+        DoubleArrays.quickSort(s1, 0, len);
+        assertAsc(s1);
+
+        var s2 = DoubleArrays.copy(array, 0, len);
+        DoubleArrays.parallelQuickSort(s2, 0, len);
+        assertAsc(s2);
+
+        var s3 = DoubleArrays.copy(array, 0, len);
+        DoubleArrays.quickSort(s3, DoubleComparators.OPPOSITE_COMPARATOR);
+    }
+
+    private void assertAsc(double[] array) {
+        for (int i = 1; i < array.length; i++) {
+            assertTrue(array[i - 1] <= array[i]);
+        }
+    }
+
+    private void assertDesc(double[] array) {
+        for (int i = 1; i < array.length; i++) {
+            assertTrue(array[i - 1] >= array[i]);
+        }
     }
 }

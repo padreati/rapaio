@@ -448,51 +448,11 @@ public final class DoubleArrays {
      * @return a new array containing {@code length} elements of {@code array} starting at {@code offset}.
      */
     public static double[] copy(final double[] array, final int offset, final int length) {
-        ensureOffsetLength(array, offset, length);
+        TArrays.ensureOffsetLength(array.length, offset, length);
         final double[] a =
                 length == 0 ? EMPTY_ARRAY : new double[length];
         System.arraycopy(array, offset, a, 0, length);
         return a;
-    }
-
-    /**
-     * Returns a copy of an array.
-     *
-     * @param array an array.
-     * @return a copy of {@code array}.
-     */
-    public static double[] copy(final double[] array) {
-        return array.clone();
-    }
-
-    /**
-     * Ensures that a range given by its first (inclusive) and last (exclusive) elements fits an array.
-     *
-     * <p>This method may be used whenever an array range check is needed.
-     *
-     * @param a    an array.
-     * @param from a start index (inclusive).
-     * @param to   an end index (exclusive).
-     * @throws IllegalArgumentException       if {@code from} is greater than {@code to}.
-     * @throws ArrayIndexOutOfBoundsException if {@code from} or {@code to} are greater than the array length or negative.
-     */
-    public static void ensureFromTo(final double[] a, final int from, final int to) {
-        TArrays.ensureFromTo(a.length, from, to);
-    }
-
-    /**
-     * Ensures that a range given by an offset and a length fits an array.
-     *
-     * <p>This method may be used whenever an array range check is needed.
-     *
-     * @param a      an array.
-     * @param offset a start index.
-     * @param length a length (the number of elements in the range).
-     * @throws IllegalArgumentException       if {@code length} is negative.
-     * @throws ArrayIndexOutOfBoundsException if {@code offset} is negative or {@code offset}+{@code length} is greater than the array length.
-     */
-    public static void ensureOffsetLength(final double[] a, final int offset, final int length) {
-        TArrays.ensureOffsetLength(a.length, offset, length);
     }
 
     /**
@@ -512,7 +472,7 @@ public final class DoubleArrays {
     private static final int MERGESORT_NO_REC = 16;
 
     /**
-     * Swaps two elements of an anrray.
+     * Swaps two elements of an array.
      *
      * @param x an array.
      * @param a a position in {@code x}.

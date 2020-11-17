@@ -98,9 +98,6 @@ public class ImageGraphicsTest {
         BufferedImage bi1 = ImageUtility.buildImage(f, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
         boolean condition = bufferedImagesEqual(bi1, bi2);
-        if (!condition) {
-            WS.draw(f, 500, 400);
-        }
         assertTrue(condition);
     }
 
@@ -289,7 +286,7 @@ public class ImageGraphicsTest {
                 s2.addDouble(c2.getBlue());
             }
         }
-        boolean condition = Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 15;
+        boolean condition = Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 20;
         if (!condition) {
             return condition;
         }
