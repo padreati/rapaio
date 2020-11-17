@@ -40,68 +40,74 @@ public class DataRange implements Serializable {
     private static final long serialVersionUID = -7868093307393360861L;
     private static final double extendedFactor = 1.025;
 
-    private final Axis xRange = new Axis();
-    private final Axis yRange = new Axis();
+    private double xMin;
+    private double xMax;
+    private double yMin;
+    private double yMax;
 
     public DataRange() {
+        this(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }
 
     public DataRange(double x1, double y1, double x2, double y2) {
-        xRange.setRange(x1, x2);
-        yRange.setRange(y1, y2);
+        xMin = x1;
+        xMax = x2;
+        yMin = y1;
+        yMax = y2;
     }
 
     public void union(double x, double y) {
-        xRange.union(x);
-        yRange.union(y);
+        xMin = Double.isFinite(xMin) ? Math.min(xMin, x) : x;
+        xMax = Double.isFinite(xMax) ? Math.max(xMax, x) : x;
+        yMin = Double.isFinite(yMin) ? Math.min(yMin, y) : y;
+        yMax = Double.isFinite(yMax) ? Math.max(yMax, y) : y;
     }
 
     public boolean contains(double x, double y) {
-        return xRange.contains(x) && yRange.contains(y);
+        return (xMin <= x) && (x <= xMax) && (yMin <= y) && (y <= yMax);
     }
 
     public double width() {
-        return xRange.getLength();
+        return xMax - xMin;
     }
 
     public double height() {
-        return yRange.getLength();
+        return yMax - yMin;
     }
 
     public double xMin() {
-        return xRange.getMin();
+        return xMin;
     }
 
     public double yMin() {
-        return yRange.getMin();
+        return yMin;
     }
 
     public double xMax() {
-        return xRange.getMax();
+        return xMax;
     }
 
     public double yMax() {
-        return yRange.getMax();
+        return yMax;
     }
 
     public void xMin(double x1) {
-        xRange.setMin(x1);
+        xMin = x1;
     }
 
     public void xMax(double x2) {
-        xRange.setMax(x2);
+        xMax = x2;
     }
 
     public void yMin(double y1) {
-        yRange.setMin(y1);
+        yMin = y1;
     }
 
     public void yMax(double y2) {
-        yRange.setMax(y2);
+        yMax = y2;
     }
 
     public DataRange getExtendedRange() {
-
         DataRange extended = new DataRange();
         double xExtRange = (xMax() - xMin()) * extendedFactor;
         double xMid = (xMin() + xMax()) / 2;

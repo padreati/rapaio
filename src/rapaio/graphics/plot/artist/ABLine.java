@@ -31,7 +31,7 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -78,52 +78,61 @@ public class ABLine extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
         if (h) {
-            range.union(Double.NaN, a);
+            union(Double.NaN, a);
         }
         if (v) {
-            range.union(a, Double.NaN);
+            union(a, Double.NaN);
         }
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        DataRange range = parent.getDataRange();
         g2d.setColor(options.getColor(0));
 
         double x1, x2, y1, y2;
         if (!h && !v) {
-            double xx = range.xMin();
+            double xx = plot.xAxis().min();
             double yy = a * xx + b;
-            if (range.contains(xx, yy)) {
-                x1 = parent.xScale(xx);
-                y1 = parent.yScale(yy);
+            if (contains(xx, yy)) {
+                x1 = xScale(xx);
+                y1 = yScale(yy);
             } else {
-                y1 = parent.yScale(range.yMin());
-                x1 = parent.xScale((range.yMin() - b) / a);
+                y1 = yScale(plot.xAxis().min());
+                x1 = xScale((plot.yAxis().min() - b) / a);
             }
 
-            xx = range.xMax();
+            xx = plot.xAxis().max();
             yy = a * xx + b;
-            if (range.contains(xx, yy)) {
-                x2 = parent.xScale(xx);
-                y2 = parent.yScale(yy);
+            if (contains(xx, yy)) {
+                x2 = xScale(xx);
+                y2 = yScale(yy);
             } else {
-                y2 = parent.yScale(range.yMax());
-                x2 = parent.xScale((range.yMax() - b) / a);
+                y2 = yScale(plot.yAxis().max());
+                x2 = xScale((plot.yAxis().max() - b) / a);
             }
         } else {
             if (h) {
-                x1 = parent.xScale(range.xMin());
-                y1 = parent.yScale(a);
-                x2 = parent.xScale(range.xMax());
-                y2 = parent.yScale(a);
+                x1 = xScale(plot.xAxis().min());
+                y1 = yScale(a);
+                x2 = xScale(plot.xAxis().max());
+                y2 = yScale(a);
             } else {
-                x1 = parent.xScale(a);
-                y1 = parent.yScale(range.yMin());
-                x2 = parent.xScale(a);
-                y2 = parent.yScale(range.yMax());
+                x1 = xScale(a);
+                y1 = yScale(plot.yAxis().min());
+                x2 = xScale(a);
+                y2 = yScale(plot.yAxis().max());
             }
         }
         Stroke oldStroke = g2d.getStroke();

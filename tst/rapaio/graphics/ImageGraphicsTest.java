@@ -32,9 +32,7 @@ import rapaio.core.correlation.CorrSpearman;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.empirical.KFuncGaussian;
-import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Mean;
-import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -45,7 +43,7 @@ import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.plot.BoxPlot;
+import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.image.ImageUtility;
 import rapaio.ml.eval.metric.ROC;
@@ -74,9 +72,9 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-    //        private static final boolean regenerate = false;
+    //            private static final boolean regenerate = true;
     private static final boolean show = false;
-    //    private static final boolean show = false;
+    //        private static final boolean show = true;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
@@ -99,7 +97,11 @@ public class ImageGraphicsTest {
 
         BufferedImage bi1 = ImageUtility.buildImage(f, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream(name + ".png"));
-        assertTrue(bufferedImagesEqual(bi1, bi2));
+        boolean condition = bufferedImagesEqual(bi1, bi2);
+        if (!condition) {
+            WS.draw(f, 500, 400);
+        }
+        assertTrue(condition);
     }
 
     @Test
@@ -133,9 +135,24 @@ public class ImageGraphicsTest {
     void testBoxPlot() throws IOException {
         Var x = df.rvar(1);
         Var factor = df.rvar("class");
-        BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
+        Plot plot = boxplot(x, factor, color(10, 50, 100));
 
         assertTest(plot, "boxplot-test");
+    }
+
+    @Test
+    @SneakyThrows
+    void testBarPlot() {
+        var mush = Datasets.loadMushrooms();
+        mush.printSummary();
+
+        GridLayer grid = gridLayer(2, 2);
+        grid.add(barplot(mush.rvar("gill-color"), mush.rvar("classes"), stacked(false)));
+        grid.add(barplot(mush.rvar("gill-color"), mush.rvar("classes"), stacked(true)));
+        grid.add(barplot(mush.rvar("gill-color"), mush.rvar("classes"), stacked(false), sort(-1)));
+        grid.add(barplot(mush.rvar("gill-color"), mush.rvar("classes"), stacked(true), sort(1), top(5)));
+
+        assertTest(grid, "barplot-test");
     }
 
     @Test
@@ -201,8 +218,6 @@ public class ImageGraphicsTest {
 
         Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).withName("x").stream().complete().toMappedVar();
 
-        double min = Minimum.of(x).value();
-        double max = Maximum.of(x).value();
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
                 .add(lines(x).yLim(-2, -1));
@@ -274,7 +289,10 @@ public class ImageGraphicsTest {
                 s2.addDouble(c2.getBlue());
             }
         }
-        assertTrue(Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 15);
+        boolean condition = Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 15;
+        if (!condition) {
+            return condition;
+        }
         return img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight();
     }
 }

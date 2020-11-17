@@ -32,10 +32,11 @@ import rapaio.data.VarDouble;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -46,11 +47,11 @@ public class Lines extends Artist {
     private final Var x;
     private final Var y;
 
-    public Lines(Var y, GOption... opts) {
+    public Lines(Var y, GOption<?>... opts) {
         this(VarDouble.seq(0, y.rowCount() - 1), y, opts);
     }
 
-    public Lines(Var x, Var y, GOption... opts) {
+    public Lines(Var x, Var y, GOption<?>... opts) {
         this.x = VarDouble.empty().withName(x.name());
         this.y = VarDouble.empty().withName(y.name());
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
@@ -63,7 +64,17 @@ public class Lines extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
         if (x.rowCount() == 0) {
             return;
         }
@@ -71,7 +82,7 @@ public class Lines extends Artist {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.getDouble(i), y.getDouble(i));
+            union(x.getDouble(i), y.getDouble(i));
         }
     }
 
@@ -88,12 +99,13 @@ public class Lines extends Artist {
             double x2 = x.getDouble(i);
             double y2 = y.getDouble(i);
 
-            DataRange r = new Clip(parent.getDataRange()).lineClip(x1, y1, x2, y2);
+            Rectangle2D r = new Clip(plot.xAxis().min(), plot.yAxis().min(), plot.xAxis().max(), plot.yAxis().max())
+                    .lineClip(x1, y1, x2, y2);
             if (r != null) {
-                x1 = xScale(r.xMin());
-                x2 = xScale(r.xMax());
-                y1 = yScale(r.yMin());
-                y2 = yScale(r.yMax());
+                x1 = xScale(r.getMinX());
+                x2 = xScale(r.getMaxX());
+                y1 = yScale(r.getMinY());
+                y2 = yScale(r.getMaxY());
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }
@@ -121,11 +133,11 @@ class Clip {
     private final double xmax;
     private final double ymax;
 
-    public Clip(DataRange r) {
-        this.xmin = Math.min(r.xMin(), r.xMax());
-        this.ymin = Math.min(r.yMin(), r.yMax());
-        this.xmax = Math.max(r.xMin(), r.xMax());
-        this.ymax = Math.max(r.yMin(), r.yMax());
+    public Clip(double x1, double y1, double x2, double y2) {
+        this.xmin = Math.min(x1, x2);
+        this.ymin = Math.min(y1, y2);
+        this.xmax = Math.max(x1, x2);
+        this.ymax = Math.max(y1, y2);
     }
     // Compute the bit code for a point (x, y) using the clip rectangle
     // bounded diagonally by (xmin, ymin), and (xmax, ymax)
@@ -152,7 +164,7 @@ class Clip {
     // Cohen-Sutherland clipping algorithm clips a line from
     // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
     // diagonal from (xmin, ymin) to (xmax, ymax).
-    public DataRange lineClip(double x0, double y0, double x1, double y1) {
+    public Rectangle2D lineClip(double x0, double y0, double x1, double y1) {
         // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
         int outcode0 = computeOutCode(x0, y0);
         int outcode1 = computeOutCode(x1, y1);
@@ -202,6 +214,6 @@ class Clip {
                 }
             }
         }
-        return accept ? new DataRange(x0, y0, x1, y1) : null;
+        return accept ? new Rectangle2D.Double(x0, y0, x1 - x0, y1 - y0) : null;
     }
 }

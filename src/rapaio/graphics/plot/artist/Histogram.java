@@ -33,8 +33,8 @@ import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axes;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
+import rapaio.graphics.plot.Plot;
 import rapaio.math.MTools;
 
 import java.awt.*;
@@ -70,6 +70,16 @@ public class Histogram extends Artist {
         options.bind(opts);
     }
 
+    @Override
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
     private int computeFreedmanDiaconisEstimation(Var v) {
         double[] q = Quantiles.of(v, 0, 0.25, 0.75, 1).values();
         double iqr = q[2] - q[1];
@@ -77,15 +87,15 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public void bind(Axes parent) {
+    public void bind(Plot parent) {
         super.bind(parent);
 
-        parent.getPlot().yLab(options.getProb() ? "density" : "frequency");
-        parent.getPlot().xLab(v.name());
-        parent.getPlot().leftThick(true);
-        parent.getPlot().leftMarkers(true);
-        parent.getPlot().bottomThick(true);
-        parent.getPlot().bottomMarkers(true);
+        parent.yLab(options.getProb() ? "density" : "frequency");
+        parent.xLab(v.name());
+        parent.leftThick(true);
+        parent.leftMarkers(true);
+        parent.bottomThick(true);
+        parent.bottomMarkers(true);
         if (options.getBins() == -1) {
             options.bind(bins(computeFreedmanDiaconisEstimation(v)));
         }
@@ -138,28 +148,29 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public void updateDataRange() {
         rebuild();
-        range.union(minValue, Double.NaN);
-        range.union(maxValue, Double.NaN);
+        union(minValue, Double.NaN);
+        union(maxValue, Double.NaN);
         for (double freq : freqTable) {
-            range.union(Double.NaN, freq);
+            union(Double.NaN, freq);
         }
-        range.union(Double.NaN, 0);
+        union(Double.NaN, 0);
     }
 
     @Override
     public void paint(Graphics2D g2d) {
+        g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
-            double mind = Math.min(d, parent.getDataRange().yMax());
+            double mind = Math.min(d, plot.yAxis().max());
             Composite old = g2d.getComposite();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
-            double x = parent.xScale(binStart(i));
-            double y = parent.yScale(mind);
-            double w = parent.xScale(binStart(i + 1)) - parent.xScale(binStart(i));
-            double h = parent.yScale(0) - parent.yScale(mind);
+            double x = xScale(binStart(i));
+            double y = yScale(mind);
+            double w = xScale(binStart(i + 1)) - xScale(binStart(i));
+            double h = yScale(0) - yScale(mind);
 
             if (d != 0) {
                 g2d.setColor(options.getColor(i));

@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.awt.*;
@@ -55,31 +55,40 @@ public class FunctionLine extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        DataRange range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
-        double xstep = (range.xMax() - range.xMin()) / options.getPoints();
+        double xstep = (plot.xAxis().length()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setDouble(i, range.xMin() + i * xstep);
+            x.setDouble(i, plot.xAxis().min() + i * xstep);
             y.setDouble(i, f.applyAsDouble(x.getDouble(i)));
         }
 
         Composite old = g2d.getComposite();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
         for (int i = 1; i < x.rowCount(); i++) {
-            if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
+            if (contains(x.getDouble(i - 1), y.getDouble(i - 1)) && contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        parent.xScale(x.getDouble(i - 1)),
-                        parent.yScale(y.getDouble(i - 1)),
-                        parent.xScale(x.getDouble(i)),
-                        parent.yScale(y.getDouble(i))));
+                        xScale(x.getDouble(i - 1)),
+                        yScale(y.getDouble(i - 1)),
+                        xScale(x.getDouble(i)),
+                        yScale(y.getDouble(i))));
 
             }
         }

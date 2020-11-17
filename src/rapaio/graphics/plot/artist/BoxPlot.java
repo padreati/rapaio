@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
@@ -33,13 +33,14 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
-import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.opt.GOptionPch;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
+import rapaio.graphics.plot.Artist;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -53,7 +54,7 @@ import static java.util.stream.Collectors.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BoxPlot extends HostFigure {
+public class BoxPlot extends Artist {
 
     private static final long serialVersionUID = 8868603141563818477L;
 
@@ -66,9 +67,7 @@ public class BoxPlot extends HostFigure {
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.levels().stream().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(VarDouble::copy).toArray(Var[]::new);
-
         this.options.bind(opts);
-        initialize();
     }
 
     public BoxPlot(Var x, GOption<?>... opts) {
@@ -82,8 +81,6 @@ public class BoxPlot extends HostFigure {
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
-
-        initialize();
     }
 
     public BoxPlot(Frame df, GOption<?>... opts) {
@@ -93,53 +90,34 @@ public class BoxPlot extends HostFigure {
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
         options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
-
-        initialize();
-    }
-
-    private void initialize() {
-        leftMarkers(true);
-        leftThick(true);
-        bottomMarkers(true);
-        bottomThick(true);
     }
 
     @Override
-    public DataRange buildDataRange() {
-        DataRange range = new DataRange();
-        range.union(0, Double.NaN);
-        range.union(vars.length, Double.NaN);
-        for (Var v : vars) {
-            for (int i = 0; i < v.rowCount(); i++) {
-                if (v.isMissing(i)) continue;
-                range.union(Double.NaN, v.getDouble(i));
+    public Axis newXAxis() {
+        return Axis.nominal(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
+        union(0, Double.NaN);
+        union(vars.length, Double.NaN);
+        for (int i = 0; i < vars.length; i++) {
+            Var v = vars[i];
+            plot.xAxis().unionCategory(i + 0.5, names[i]);
+            for (int j = 0; j < v.rowCount(); j++) {
+                if (v.isMissing(j)) continue;
+                union(Double.NaN, v.getDouble(j));
             }
         }
-        return range;
     }
 
     @Override
-    public void buildLeftMarkers() {
-        buildNumericLeftMarkers();
-    }
-
-    @Override
-    public void buildBottomMarkers() {
-        bottomMarkersPos.clear();
-        bottomMarkersMsg.clear();
-
-        double xSpotWidth = 1.0 * getViewport().width / vars.length;
-
-        for (int i = 0; i < vars.length; i++) {
-            bottomMarkersPos.add(i * xSpotWidth + xSpotWidth / 2);
-            bottomMarkersMsg.add(names[i]);
-        }
-    }
-
-    @Override
-    public void paint(Graphics2D g2d, Rectangle rect) {
-        super.paint(g2d, rect);
-
+    public void paint(Graphics2D g2d) {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
         for (int i = 0; i < vars.length; i++) {
@@ -218,5 +196,4 @@ public class BoxPlot extends HostFigure {
             g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerqhisker)));
         }
     }
-
 }

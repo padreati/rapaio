@@ -39,30 +39,42 @@ public abstract class Artist implements Serializable {
 
     private static final long serialVersionUID = -797168275849511614L;
     protected final GOptions options = new GOptions();
-    protected Axes parent;
-    private DataRange range;
+    protected Plot plot;
 
     public GOptions getOptions() {
         return options;
     }
 
-    public void bind(Axes parent) {
+    public void bind(Plot parent) {
         if (parent == null) {
             throw new IllegalArgumentException("parent plot reference is null");
         }
-        this.parent = parent;
-        this.options.setParent(parent.plot.options);
+        this.plot = parent;
+        this.options.setParent(parent.options);
     }
 
+    public abstract Axis newXAxis();
+
+    public abstract Axis newYAxis();
+
     public double xScale(double x) {
-        return parent.xScale(x);
+        return plot.xScale(x);
     }
 
     public double yScale(double y) {
-        return parent.yScale(y);
+        return plot.yScale(y);
     }
 
-    public abstract void updateDataRange(DataRange dataRange);
+    public boolean contains(double x, double y) {
+        return plot.xAxis().contains(x) && plot.yAxis().contains(y);
+    }
+
+    public void union(double x, double y) {
+        plot.xAxis().unionNumeric(x);
+        plot.yAxis().unionNumeric(y);
+    }
+
+    public abstract void updateDataRange();
 
     public abstract void paint(Graphics2D g2d);
 }

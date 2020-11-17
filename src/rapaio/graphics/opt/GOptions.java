@@ -56,7 +56,10 @@ public class GOptions implements Serializable {
         defaults.alpha = new GOptionAlpha(1.0f);
         defaults.bins = new GOptionBins(-1);
         defaults.prob = new GOptionProb(false);
+        defaults.stacked = new GOptionStacked(false);
         defaults.points = new GOptionPoints(256);
+        defaults.top = new GOptionTop(Integer.MAX_VALUE);
+        defaults.sort = new GOptionSort(0);
         defaults.labels = new GOptionLabels(new String[]{""});
     }
 
@@ -70,7 +73,10 @@ public class GOptions implements Serializable {
     private GOptionAlpha alpha;
     private GOptionBins bins;
     private GOptionProb prob;
+    private GOptionStacked stacked;
     private GOptionPoints points;
+    private GOptionTop top;
+    private GOptionSort sort;
     private GOptionLabels labels;
 
     public GOptions bind(GOption<?>... options) {
@@ -88,7 +94,10 @@ public class GOptions implements Serializable {
                 alpha,
                 bins,
                 prob,
+                stacked,
                 points,
+                top,
+                sort,
                 labels
         };
     }
@@ -233,6 +242,17 @@ public class GOptions implements Serializable {
         this.prob = prob;
     }
 
+    public boolean getStacked() {
+        if (stacked == null) {
+            return parent != null ? parent.getStacked() : defaults.stacked.apply(this);
+        }
+        return stacked.apply(this);
+    }
+
+    public void setStacked(GOptionStacked stacked) {
+        this.stacked = stacked;
+    }
+
     public int getPoints() {
         if (points == null) {
             return parent != null ? parent.getPoints() : defaults.points.apply(this);
@@ -242,6 +262,28 @@ public class GOptions implements Serializable {
 
     public void setPoints(GOptionPoints points) {
         this.points = points;
+    }
+
+    public int getTop() {
+        if (top == null) {
+            return parent != null ? parent.getTop() : defaults.top.apply(this);
+        }
+        return top.apply(this);
+    }
+
+    public void setTop(GOptionTop top) {
+        this.top = top;
+    }
+
+    public int getSort() {
+        if (sort == null) {
+            return parent != null ? parent.getSort() : defaults.sort.apply(this);
+        }
+        return sort.apply(this);
+    }
+
+    public void setSort(GOptionSort sort) {
+        this.sort = sort;
     }
 
     public String[] getLabels() {

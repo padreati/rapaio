@@ -25,34 +25,27 @@
  *
  */
 
-package rapaio.graphics.plot;
-
-import rapaio.core.distributions.Distribution;
-import rapaio.data.Var;
-import rapaio.data.VarDouble;
-import rapaio.data.filter.VSort;
-import rapaio.graphics.opt.GOption;
-import rapaio.graphics.plot.artist.Points;
+package rapaio.graphics.opt;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public class QQPlot extends Plot {
+public class GOptionSort implements GOption<Integer> {
 
-    private static final long serialVersionUID = -3244871850592508515L;
+    private static final long serialVersionUID = -4310646137630324226L;
+    private final int sort;
 
-    public QQPlot(Var points, Distribution distribution, GOption... opts) {
+    public GOptionSort(int sort) {
+        this.sort = sort;
+    }
 
-        this.options.bind(opts);
-        Var x = VSort.asc().fapply(points);
-        Var y = VarDouble.empty(x.rowCount());
-        for (int i = 0; i < y.rowCount(); i++) {
-            double p = (i + 1) / (y.rowCount() + 1.);
-            y.setDouble(i, distribution.quantile(p));
-        }
-        add(new Points(y, x));
-        yLab("Sampling Quantiles");
-        xLab("Theoretical Quantiles");
-        title("QQPlot - sample vs. " + distribution.name());
+    @Override
+    public void bind(GOptions opts) {
+        opts.setSort(this);
+    }
+
+    @Override
+    public Integer apply(GOptions opts) {
+        return sort;
     }
 }

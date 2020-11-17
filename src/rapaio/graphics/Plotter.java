@@ -45,13 +45,15 @@ import rapaio.graphics.opt.GOptionPalette;
 import rapaio.graphics.opt.GOptionPch;
 import rapaio.graphics.opt.GOptionPoints;
 import rapaio.graphics.opt.GOptionProb;
+import rapaio.graphics.opt.GOptionSort;
+import rapaio.graphics.opt.GOptionStacked;
 import rapaio.graphics.opt.GOptionSz;
-import rapaio.graphics.plot.BarChart;
-import rapaio.graphics.plot.BoxPlot;
+import rapaio.graphics.opt.GOptionTop;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.QQPlot;
 import rapaio.graphics.plot.artist.ABLine;
+import rapaio.graphics.plot.artist.BarPlot;
+import rapaio.graphics.plot.artist.BoxPlot;
 import rapaio.graphics.plot.artist.CorrGram;
 import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
@@ -67,32 +69,32 @@ import java.awt.*;
 
 public final class Plotter {
 
-    public static Plot plot(GOption<?>... opts) {
-        return new Plot(opts);
-    }
-
     public static GridLayer gridLayer(int rows, int cols) {
         return new GridLayer(rows, cols);
     }
 
-    public static QQPlot qqplot(Var points, Distribution dist, GOption<?>... opts) {
-        return new QQPlot(points, dist, opts);
+    public static Plot plot(GOption<?>... opts) {
+        return new Plot(opts);
     }
 
-    public static BoxPlot boxPlot(Var x, Var factor, GOption<?>... opts) {
-        return new BoxPlot(x, factor, opts);
+    public static Plot qqplot(Var points, Distribution dist, GOption<?>... opts) {
+        return plot().qqplot(points, dist, opts);
     }
 
-    public static BoxPlot boxPlot(Var x, GOption<?>... opts) {
-        return new BoxPlot(x, opts);
+    public static Plot boxplot(Var x, Var factor, GOption<?>... opts) {
+        return plot().add(new BoxPlot(x, factor, opts));
     }
 
-    public static BoxPlot boxPlot(Var[] vars, GOption<?>... opts) {
-        return new BoxPlot(vars, opts);
+    public static Plot boxplot(Var x, GOption<?>... opts) {
+        return plot().add(new BoxPlot(x, opts));
     }
 
-    public static BoxPlot boxPlot(Frame df, GOption<?>... opts) {
-        return new BoxPlot(df, opts);
+    public static Plot boxplot(Var[] vars, GOption<?>... opts) {
+        return plot().add(new BoxPlot(vars, opts));
+    }
+
+    public static Plot boxplot(Frame df, GOption<?>... opts) {
+        return plot().add(new BoxPlot(df, opts));
     }
 
     public static Plot hist(Var v, GOption<?>... opts) {
@@ -147,16 +149,16 @@ public final class Plotter {
         return plot().add(new ROCCurve(roc, opts));
     }
 
-    public static BarChart barChart(Var category, GOption<?>... opts) {
-        return new BarChart(category, opts);
+    public static Plot barplot(Var category, GOption<?>... opts) {
+        return plot().add(new BarPlot(category, null, null, opts));
     }
 
-    public static BarChart barChart(Var category, Var cond, GOption<?>... opts) {
-        return new BarChart(category, cond, opts);
+    public static Plot barplot(Var category, Var cond, GOption<?>... opts) {
+        return plot().add(new BarPlot(category, cond, null, opts));
     }
 
-    public static BarChart barChart(Var category, Var cond, Var numeric, GOption<?>... opts) {
-        return new BarChart(category, cond, numeric, opts);
+    public static Plot barplot(Var category, Var cond, Var numeric, GOption<?>... opts) {
+        return plot().add(new BarPlot(category, cond, numeric, opts));
     }
 
     public static Plot hLine(double a, GOption<?>... opts) {
@@ -254,8 +256,20 @@ public final class Plotter {
         return new GOptionProb(prob);
     }
 
+    public static GOptionStacked stacked(boolean stacked) {
+        return new GOptionStacked(stacked);
+    }
+
     public static GOptionPoints points(int points) {
         return new GOptionPoints(points);
+    }
+
+    public static GOptionTop top(int top) {
+        return new GOptionTop(top);
+    }
+
+    public static GOptionSort sort(int sort) {
+        return new GOptionSort(sort);
     }
 
     public static GOptionLabels labels(String... labels) {

@@ -29,7 +29,7 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -62,9 +62,19 @@ public class Segment extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
-        range.union(x1, y1);
-        range.union(x2, y2);
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
+        union(x1, y1);
+        union(x2, y2);
     }
 
     @Override

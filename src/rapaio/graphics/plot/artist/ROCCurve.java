@@ -30,8 +30,8 @@ package rapaio.graphics.plot.artist;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axes;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
+import rapaio.graphics.plot.Plot;
 import rapaio.ml.eval.metric.ROC;
 
 import java.awt.*;
@@ -51,16 +51,26 @@ public class ROCCurve extends Artist {
     }
 
     @Override
-    public void bind(Axes parent) {
-        super.bind(parent);
-        parent.getPlot().xLab("fp rate");
-        parent.getPlot().yLab("tp rate");
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
-        range.union(0, 0);
-        range.union(1, 1);
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void bind(Plot parent) {
+        super.bind(parent);
+        parent.xLab("fp rate");
+        parent.yLab("tp rate");
+    }
+
+    @Override
+    public void updateDataRange() {
+        union(0, 0);
+        union(1, 1);
     }
 
     @Override
@@ -71,18 +81,14 @@ public class ROCCurve extends Artist {
 
         for (int i = 1; i < roc.data().rowCount(); i++) {
             g2d.setColor(options.getColor(i));
-            double x1 = parent.xScale(roc.data().getDouble(i - 1, "fpr"));
-            double y1 = parent.yScale(roc.data().getDouble(i - 1, "tpr"));
-            double x2 = parent.xScale(roc.data().getDouble(i, "fpr"));
-            double y2 = parent.yScale(roc.data().getDouble(i, "tpr"));
+            double x1 = xScale(roc.data().getDouble(i - 1, "fpr"));
+            double y1 = yScale(roc.data().getDouble(i - 1, "tpr"));
+            double x2 = xScale(roc.data().getDouble(i, "fpr"));
+            double y2 = yScale(roc.data().getDouble(i, "tpr"));
 
-            if (parent.getDataRange().contains(
-                    roc.data().getDouble(i - 1, "fpr"),
-                    roc.data().getDouble(i - 1, "tpr")
-            )
-                    && parent.getDataRange().contains(
-                    roc.data().getDouble(i, "fpr"),
-                    roc.data().getDouble(i, "tpr"))) {
+            var data = roc.data();
+            if (contains(data.getDouble(i - 1, "fpr"), data.getDouble(i - 1, "tpr"))
+                    && contains(data.getDouble(i, "fpr"), data.getDouble(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

@@ -31,8 +31,8 @@ import rapaio.data.Var;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.PchPalette;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axes;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
+import rapaio.graphics.plot.Plot;
 
 import java.awt.*;
 
@@ -55,14 +55,24 @@ public class Points extends Artist {
     }
 
     @Override
-    public void bind(Axes parent) {
-        super.bind(parent);
-        parent.getPlot().xLab(x.name());
-        parent.getPlot().yLab(y.name());
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void bind(Plot parent) {
+        super.bind(parent);
+        parent.xLab(x.name());
+        parent.yLab(y.name());
+    }
+
+    @Override
+    public void updateDataRange() {
         if (x.rowCount() == 0) {
             return;
         }
@@ -70,7 +80,7 @@ public class Points extends Artist {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.getDouble(i), y.getDouble(i));
+            union(x.getDouble(i), y.getDouble(i));
         }
     }
 
@@ -86,16 +96,15 @@ public class Points extends Artist {
             double xx = x.getDouble(i);
             double yy = y.getDouble(i);
 
-            if (!parent.getDataRange().contains(xx, yy)) continue;
+            if (!contains(xx, yy)) {
+                continue;
+            }
 
             g2d.setColor(options.getColor(i));
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
-            PchPalette.STANDARD.draw(g2d,
-                    parent.xScale(xx),
-                    parent.yScale(yy),
-                    options.getSz(i), options.getPch(i));
+            PchPalette.STANDARD.draw(g2d, xScale(xx), yScale(yy), options.getSz(i), options.getPch(i));
         }
     }
 }

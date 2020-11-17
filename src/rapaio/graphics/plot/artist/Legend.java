@@ -30,7 +30,7 @@ package rapaio.graphics.plot.artist;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -66,6 +66,16 @@ public class Legend extends Artist {
     }
 
     @Override
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
     public void paint(Graphics2D g2d) {
 
         // TODO I've commented that because it seems like it needs a better treatment
@@ -79,14 +89,14 @@ public class Legend extends Artist {
             minHeight = Math.min(minHeight, height);
         }
         double size = g2d.getFontMetrics().getStringBounds("aa", g2d).getWidth();
-        double xstart = parent.xScale(x);
-        double ystart = parent.yScale(y);
+        double xstart = xScale(x);
+        double ystart = yScale(y);
 
         if (place != -1) {
             switch (place) {
                 case UP_LEFT:
-                    xstart = parent.xScale(parent.getDataRange().xMin());
-                    ystart = parent.yScale(parent.getDataRange().yMax());
+                    xstart = xScale(plot.xAxis().min());
+                    ystart = yScale(plot.yAxis().max());
             }
         }
 
@@ -100,6 +110,6 @@ public class Legend extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public void updateDataRange() {
     }
 }

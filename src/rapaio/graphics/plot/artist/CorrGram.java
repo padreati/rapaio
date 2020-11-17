@@ -34,8 +34,8 @@ import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.Axes;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
+import rapaio.graphics.plot.Plot;
 import rapaio.math.MTools;
 import rapaio.printer.Format;
 
@@ -82,12 +82,22 @@ public class CorrGram extends Artist {
     }
 
     @Override
-    public void bind(Axes parent) {
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void bind(Plot parent) {
         super.bind(parent);
-        parent.getPlot().bottomMarkers(false);
-        parent.getPlot().bottomThick(false);
-        parent.getPlot().leftMarkers(false);
-        parent.getPlot().leftThick(false);
+        parent.bottomMarkers(false);
+        parent.bottomThick(false);
+        parent.leftMarkers(false);
+        parent.leftThick(false);
     }
 
     private int computeIndex(int i, int j) {
@@ -98,9 +108,9 @@ public class CorrGram extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
-        range.union(0, 0);
-        range.union(d.length(), d.length());
+    public void updateDataRange() {
+        union(0, 0);
+        union(d.length(), d.length());
     }
 
     @Override

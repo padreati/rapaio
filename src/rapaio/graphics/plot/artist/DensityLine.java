@@ -34,7 +34,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
-import rapaio.graphics.plot.DataRange;
+import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -71,21 +71,30 @@ public class DensityLine extends Artist {
     }
 
     @Override
-    public void updateDataRange(DataRange range) {
+    public Axis newXAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public Axis newYAxis() {
+        return Axis.numeric(plot);
+    }
+
+    @Override
+    public void updateDataRange() {
         var.stream().complete().forEach(s -> {
-            range.union(kde.kernel().minValue(s.getDouble(), bandwidth), 0);
-            range.union(kde.kernel().maxValue(s.getDouble(), bandwidth), kde.pdf(s.getDouble()));
+            union(kde.kernel().minValue(s.getDouble(), bandwidth), 0);
+            union(kde.kernel().maxValue(s.getDouble(), bandwidth), kde.pdf(s.getDouble()));
         });
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        DataRange range = parent.getDataRange();
         Var x = VarDouble.fill(options.getPoints() + 1, 0);
         Var y = VarDouble.fill(options.getPoints() + 1, 0);
-        double xstep = (range.xMax() - range.xMin()) / options.getPoints();
+        double xstep = plot.xAxis().length() / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setDouble(i, range.xMin() + i * xstep);
+            x.setDouble(i, plot.xAxis().min() + i * xstep);
             y.setDouble(i, kde.pdf(x.getDouble(i)));
         }
 
@@ -94,7 +103,7 @@ public class DensityLine extends Artist {
         g2d.setStroke(new BasicStroke(options.getLwd()));
 
         for (int i = 1; i < x.rowCount(); i++) {
-            if (range.contains(x.getDouble(i - 1), y.getDouble(i - 1)) && range.contains(x.getDouble(i), y.getDouble(i))) {
+            if (contains(x.getDouble(i - 1), y.getDouble(i - 1)) && contains(x.getDouble(i), y.getDouble(i))) {
                 g2d.setColor(options.getColor(i));
                 g2d.draw(new Line2D.Double(
                         xScale(x.getDouble(i - 1)),
