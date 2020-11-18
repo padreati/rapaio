@@ -119,7 +119,7 @@ public final class IntArrays {
     /**
      * Returns the multiplication of all elements starting with start (inclusive) till end (exclusive)
      */
-    public static int prod(int[] a, int start, int len) {
+    public static int prodsum(int[] a, int start, int len) {
         int prod = 1;
         for (int i = start; i < start + len; i++) {
             prod *= a[i];
@@ -137,12 +137,21 @@ public final class IntArrays {
      * @param len    size of the operation
      * @return computed value
      */
-    public static int prod(int[] a, int aStart, int[] b, int bStart, int len) {
+    public static int prodsum(int[] a, int aStart, int[] b, int bStart, int len) {
         int sum = 0;
         for (int i = 0; i < len; i++) {
             sum += a[aStart++] * b[bStart++];
         }
         return sum;
+    }
+
+    public static boolean equals(int[] a, int aStart, int[] b, int bStart, int len) {
+        for (int i = 0; i < len - aStart; i++) {
+            if (a[aStart + i] != b[bStart + i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

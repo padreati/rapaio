@@ -611,7 +611,7 @@ public final class DoubleArrays {
         quickSort(x, 0, x.length, comp);
     }
 
-    protected static class ForkJoinQuickSortComp extends RecursiveAction {
+    private static class ForkJoinQuickSortComp extends RecursiveAction {
         private static final long serialVersionUID = 1L;
         private final int from;
         private final int to;

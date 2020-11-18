@@ -6,11 +6,14 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Variance;
 import rapaio.data.VarDouble;
+import rapaio.util.DoubleComparator;
 import rapaio.util.DoubleComparators;
 import rapaio.util.DoubleIterator;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static rapaio.util.collection.DoubleArrays.*;
@@ -300,31 +303,72 @@ public class DoubleArraysTest {
     @Test
     void testSorting() {
 
-        var x = Normal.std().sample(100_000);
-        double[] array = x.elements();
-        int len = x.rowCount();
+        int len = 100_000;
+        double[] a = Normal.std().sample(len).elements();
+        double[] b = Normal.std().sample(len).elements();
 
-        var s1 = DoubleArrays.copy(array, 0, len);
-        DoubleArrays.quickSort(s1, 0, len);
-        assertAsc(s1);
+        assertAsc(a, DoubleArrays::quickSort);
+        assertAsc(a, DoubleArrays::parallelQuickSort);
 
-        var s2 = DoubleArrays.copy(array, 0, len);
-        DoubleArrays.parallelQuickSort(s2, 0, len);
-        assertAsc(s2);
+        assertDesc(a, DoubleArrays::quickSort);
+        assertDesc(a, DoubleArrays::parallelQuickSort);
 
-        var s3 = DoubleArrays.copy(array, 0, len);
-        DoubleArrays.quickSort(s3, DoubleComparators.OPPOSITE_COMPARATOR);
+        assertAscIndirect(a, DoubleArrays::quickSortIndirect);
+        assertAscIndirect(a, DoubleArrays::parallelQuickSortIndirect);
+
+        assertAsc(a, DoubleArrays::mergeSort);
+        assertDesc(a, DoubleArrays::mergeSort);
+
+        assertAsc(a, DoubleArrays::stableSort);
+        assertDesc(a, DoubleArrays::stableSort);
+
+        assertAsc(a, DoubleArrays::radixSort);
+        assertAsc(a, DoubleArrays::parallelQuickSort);
+
+        assertAscIndirect(a, (p, v) -> DoubleArrays.radixSortIndirect(p, v, true));
+        assertAscIndirect(a, (p, v) -> DoubleArrays.parallelRadixSortIndirect(p, v, true));
+
+        assertAsc2(a, b, DoubleArrays::quickSort);
+        assertAsc2(a, b, DoubleArrays::parallelQuickSort);
+        assertAsc2(a, b, DoubleArrays::radixSort);
+        assertAsc2(a, b, DoubleArrays::parallelRadixSort);
     }
 
-    private void assertAsc(double[] array) {
-        for (int i = 1; i < array.length; i++) {
-            assertTrue(array[i - 1] <= array[i]);
+    private void assertAsc(double[] src, Consumer<double[]> fun) {
+        var s = DoubleArrays.copy(src, 0, src.length);
+        fun.accept(s);
+        for (int i = 1; i < s.length; i++) {
+            assertTrue(s[i - 1] <= s[i]);
         }
     }
 
-    private void assertDesc(double[] array) {
-        for (int i = 1; i < array.length; i++) {
-            assertTrue(array[i - 1] >= array[i]);
+    private void assertDesc(double[] src, BiConsumer<double[], DoubleComparator> fun) {
+        var s = DoubleArrays.copy(src, 0, src.length);
+        fun.accept(s, DoubleComparators.OPPOSITE_COMPARATOR);
+        for (int i = 1; i < s.length; i++) {
+            assertTrue(s[i - 1] >= s[i]);
         }
     }
+
+    private void assertAsc2(double[] a, double[] b, BiConsumer<double[], double[]> alg) {
+        double[] sa = DoubleArrays.copy(a, 0, a.length);
+        double[] sb = DoubleArrays.copy(b, 0, b.length);
+        alg.accept(sa, sb);
+        for (int i = 1; i < sa.length; i++) {
+            if (sa[i - 1] == sa[i]) {
+                assertTrue(sb[i - 1] <= sb[i]);
+            } else {
+                assertTrue(sa[i - 1] < sa[i]);
+            }
+        }
+    }
+
+    private void assertAscIndirect(double[] array, BiConsumer<int[], double[]> alg) {
+        int[] perm = IntArrays.newSeq(0, array.length);
+        alg.accept(perm, array);
+        for (int i = 1; i < array.length; i++) {
+            assertTrue(array[perm[i - 1]] <= array[perm[i]]);
+        }
+    }
+
 }
