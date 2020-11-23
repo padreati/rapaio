@@ -46,10 +46,10 @@ public class FJitterTest {
     void testSmoke() {
 
         Frame a = SolidFrame.byVars(
-                VarDouble.fill(100, 0).withName("num1"),
-                VarDouble.fill(100, 0).withName("num2"),
-                VarBinary.fill(100, 1).withName("bin"),
-                VarNominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
+                VarDouble.fill(100, 0).name("num1"),
+                VarDouble.fill(100, 0).name("num2"),
+                VarBinary.fill(100, 1).name("bin"),
+                VarNominal.from(100, r -> String.valueOf(r % 10)).name("nom")
         );
 
         Frame df1 = a.copy().fapply(FJitter.on(VRange.onlyTypes(VType.DOUBLE)));
@@ -68,7 +68,7 @@ public class FJitterTest {
 
     @Test
     void testDouble() {
-        Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(100, RandomSource::nextDouble).name("x"));
 
         RandomSource.setSeed(111);
         Frame df1 = df.copy().fapply(FJitter.on(VRange.all()));

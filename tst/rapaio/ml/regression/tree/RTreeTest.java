@@ -212,9 +212,9 @@ public class RTreeTest {
     @Test
     void testLinearSeparableTest() {
         Var[] vars = new Var[]{
-                VarDouble.empty().withName("x"),
-                VarNominal.empty().withName("cat"),
-                VarDouble.empty().withName("target")};
+                VarDouble.empty().name("x"),
+                VarNominal.empty().name("cat"),
+                VarDouble.empty().name("target")};
 
         // first region - target 0
         for (int i = 0; i < 100; i++) {

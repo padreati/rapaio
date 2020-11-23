@@ -151,7 +151,7 @@ class QuadraticFunction implements NBRFunction {
         }
 
         VarDouble square = VarDouble.from(df.rvar(testVarName), v -> v * v)
-                .withName(testVarName + "^2");
+                .name(testVarName + "^2");
         Frame map = BoundFrame.byVars(df.rvar(testVarName), square, y);
         try {
             lm.fit(map, weights, y.name());
@@ -264,7 +264,7 @@ class SplineFunction implements NBRFunction {
                 int ii = i;
                 VarDouble feature = VarDouble
                         .from(df.rowCount(), row -> Math.pow(df.getDouble(row, index), ii + 1))
-                        .withName(testVarName + "_" + (ii + 1));
+                        .name(testVarName + "_" + (ii + 1));
                 testFeatures.add(feature);
             }
         }
@@ -295,7 +295,7 @@ class SplineFunction implements NBRFunction {
                 int ii = i;
                 VarDouble term = VarDouble
                         .from(df.rowCount(), row -> Math.max(0, Math.pow(df.getDouble(row, index) - ref, ii + 1)))
-                        .withName(testVarName + "_knot_" + (ii + 1));
+                        .name(testVarName + "_knot_" + (ii + 1));
                 features.add(term);
             }
             features.add(y);

@@ -67,7 +67,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
                 data[i] = fun.applyAsDouble(source.getDouble(i));
             }
         }
-        return VarDouble.wrap(data).withName(source.name());
+        return VarDouble.wrap(data).name(source.name());
     }
 
     @Override

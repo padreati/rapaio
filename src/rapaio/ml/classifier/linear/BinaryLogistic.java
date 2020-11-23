@@ -217,7 +217,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
     private DMStripe computeInputMatrix(Frame df, String targetName) {
         List<Var> variables = new ArrayList<>();
         if (intercept.get() != 0) {
-            variables.add(VarDouble.fill(df.rowCount(), intercept.get()).withName("Intercept"));
+            variables.add(VarDouble.fill(df.rowCount(), intercept.get()).name("Intercept"));
         }
         df.varStream()
                 .filter(v -> !firstTargetName().equals(v.name()))

@@ -71,7 +71,7 @@ public class FRenameVars extends AbstractFFilter {
         df.varStream().forEach(var -> {
             if (inputVarNamesIndex.containsKey(var.name())) {
                 int index = inputVarNamesIndex.get(var.name());
-                vars.add(var.withName(outputVarNames[index]));
+                vars.add(var.name(outputVarNames[index]));
             } else {
                 vars.add(var);
             }

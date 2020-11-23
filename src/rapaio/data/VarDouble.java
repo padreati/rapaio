@@ -128,7 +128,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
      * @return new instance of numeric variable
      */
     public static VarDouble copy(Var source) {
-        VarDouble numeric = new VarDouble(source.rowCount(), source.rowCount(), 0).withName(source.name());
+        VarDouble numeric = new VarDouble(source.rowCount(), source.rowCount(), 0).name(source.name());
         if (!(source instanceof VarDouble)) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.data[i] = source.getDouble(i);
@@ -344,8 +344,8 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
     }
 
     @Override
-    public VarDouble withName(String name) {
-        return (VarDouble) super.withName(name);
+    public VarDouble name(String name) {
+        return (VarDouble) super.name(name);
     }
 
     @Override
@@ -551,7 +551,7 @@ public final class VarDouble extends AbstractVar implements Iterable<Double> {
 
     @Override
     public VarDouble copy() {
-        VarDouble copy = new VarDouble(0, 0, 0).withName(name());
+        VarDouble copy = new VarDouble(0, 0, 0).name(name());
         copy.data = Arrays.copyOf(data, rows);
         copy.rows = rows;
         return copy;

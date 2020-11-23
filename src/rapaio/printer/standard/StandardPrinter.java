@@ -27,7 +27,7 @@
 
 package rapaio.printer.standard;
 
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.Figure;
 import rapaio.printer.AbstractPrinter;
 import rapaio.printer.local.FigurePanel;
 

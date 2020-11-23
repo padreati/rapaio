@@ -24,14 +24,14 @@ public class JoinTest {
     @BeforeEach
     void beforeEach() {
         df1 = SolidFrame.byVars(
-                VarNominal.copy("a", "b", "c", "a", "b").withName("id"),
-                VarInt.copy(20, 20, 40, 30, 40).withName("age"),
-                VarDouble.wrap(1, 2, 3, 0, 0).withName("children")
+                VarNominal.copy("a", "b", "c", "a", "b").name("id"),
+                VarInt.copy(20, 20, 40, 30, 40).name("age"),
+                VarDouble.wrap(1, 2, 3, 0, 0).name("children")
         );
 
         df2 = SolidFrame.byVars(
-                VarNominal.copy("a", "c", "d", "a", "d").withName("id"),
-                VarNominal.copy("Iasi", "Iasi", "Bucharest", "Bucharest", "Constanta").withName("city")
+                VarNominal.copy("a", "c", "d", "a", "d").name("id"),
+                VarNominal.copy("Iasi", "Iasi", "Bucharest", "Bucharest", "Constanta").name("city")
         );
     }
 

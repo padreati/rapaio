@@ -59,8 +59,8 @@ public class ReliefImportance {
         int[] rows = IntArrays.newSeq(0, names.length);
         IntArrays.quickSort(rows, 0, names.length, (r1, r2) -> -Double.compare(weights[r1], weights[r2]));
 
-        VarDouble weightVar = VarDouble.empty().withName("weights");
-        VarNominal nameVar = VarNominal.empty().withName("names");
+        VarDouble weightVar = VarDouble.empty().name("weights");
+        VarNominal nameVar = VarNominal.empty().name("names");
 
         for (int row : rows) {
             nameVar.addLabel(names[row]);
@@ -71,8 +71,8 @@ public class ReliefImportance {
     }
 
     public Frame unorderedFrame() {
-        VarDouble weightVar = VarDouble.empty().withName("weights");
-        VarNominal nameVar = VarNominal.empty().withName("names");
+        VarDouble weightVar = VarDouble.empty().name("weights");
+        VarNominal nameVar = VarNominal.empty().name("names");
 
         for (int i = 0; i < names.length; i++) {
             nameVar.addLabel(names[i]);

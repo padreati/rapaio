@@ -29,7 +29,7 @@ public class PriorMLETest {
         assertEquals("MLE", new PriorMLE().name());
         assertEquals("MLE{}", new PriorMLE().fittedName());
 
-        VarNominal target = VarNominal.copy("a", "a", "b").withName(TARGET);
+        VarNominal target = VarNominal.copy("a", "a", "b").name(TARGET);
         Prior prior = new PriorMLE();
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(3, 1), TARGET);
         assertEquals("MLE{a:0.6666667,b:0.3333333}", prior.fittedName());
@@ -37,7 +37,7 @@ public class PriorMLETest {
 
     @Test
     void testPrediction() {
-        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").withName(TARGET);
+        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").name(TARGET);
         PriorMLE prior = new PriorMLE();
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(6, 1), TARGET);
 
@@ -50,7 +50,7 @@ public class PriorMLETest {
     @Test
     void testNewInstance() {
         PriorMLE prior = new PriorMLE();
-        VarNominal target = VarNominal.copy("a", "b", "c").withName("target");
+        VarNominal target = VarNominal.copy("a", "b", "c").name("target");
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(target.rowCount(), 1), "target");
 
         assertEquals("MLE{a:0.3333333,b:0.3333333,c:0.3333333}", prior.fittedName());

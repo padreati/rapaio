@@ -31,11 +31,11 @@ public class MultinoulliEstimatorTest {
 
         assertEquals("Multinoulli{tests=[a,b], lapaceSmoother=1}",
                 MultinoulliEstimator.forRange(
-                        SolidFrame.byVars(VarDouble.empty().withName("a"), VarDouble.empty().withName("b")),
+                        SolidFrame.byVars(VarDouble.empty().name("a"), VarDouble.empty().name("b")),
                         VRange.onlyTypes(VType.DOUBLE)).name());
         assertEquals("Multinoulli{tests=[a,b], lapaceSmoother=1.2}",
                 MultinoulliEstimator.forRange(1.2,
-                        SolidFrame.byVars(VarDouble.empty().withName("a"), VarDouble.empty().withName("b")),
+                        SolidFrame.byVars(VarDouble.empty().name("a"), VarDouble.empty().name("b")),
                         VRange.onlyTypes(VType.DOUBLE)).name());
     }
 
@@ -51,8 +51,8 @@ public class MultinoulliEstimatorTest {
 
     @Test
     void testEmptyNominal() {
-        Var t = VarNominal.empty().withName("t");
-        Var x = VarNominal.empty().withName("x");
+        Var t = VarNominal.empty().name("t");
+        Var x = VarNominal.empty().name("x");
 
         var estimator = MultinoulliEstimator.forName("x");
         estimator.fit(SolidFrame.byVars(t, x), VarDouble.empty(), "t");
@@ -63,8 +63,8 @@ public class MultinoulliEstimatorTest {
 
     @Test
     void testFitPredict() {
-        Var t = VarNominal.copy("a", "a", "a", "b", "b").withName("t");
-        Var x = VarNominal.copy("x", "x", "y", "y", "z").withName("x");
+        Var t = VarNominal.copy("a", "a", "a", "b", "b").name("t");
+        Var x = VarNominal.copy("x", "x", "y", "y", "z").name("x");
         Frame df1 = SolidFrame.byVars(x, t);
 
         var estimator1 = MultinoulliEstimator.forName("x");

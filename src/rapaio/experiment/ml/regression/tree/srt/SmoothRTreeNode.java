@@ -144,11 +144,11 @@ public class SmoothRTreeNode {
         Mapping leftRows = Mapping.empty();
         Mapping rightRows = Mapping.empty();
 
-        Var yHat = VarDouble.empty().withName(y.name());
+        Var yHat = VarDouble.empty().name(y.name());
         Var leftW = VarDouble.empty();
         Var rightW = VarDouble.empty();
-        Var leftY = VarDouble.empty().withName(y.name());
-        Var rightY = VarDouble.empty().withName(y.name());
+        Var leftY = VarDouble.empty().name(y.name());
+        Var rightY = VarDouble.empty().name(y.name());
 
         for (int i = 0; i < df.rowCount(); i++) {
             double ytrue = y.getDouble(i);

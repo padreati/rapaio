@@ -31,8 +31,8 @@ public class FImputeRegressionResultTest {
     @Test
     void testBasic() {
 
-        VarDouble x = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(100, row -> row % 9 == 0 ? Double.NaN : normal.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(100, row -> row % 7 == 0 ? Double.NaN : normal.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(100, row -> row % 9 == 0 ? Double.NaN : normal.sampleNext()).name("y");
 
         double xm = Mean.of(x).value();
         double ym = Mean.of(y).value();

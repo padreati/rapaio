@@ -21,7 +21,7 @@ public class PriorUniformTest {
         assertEquals("Uniform", prior.name());
         assertEquals("Uniform{value=?,targetLevels=[]}", prior.fittedName());
 
-        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").withName(TARGET);
+        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").name(TARGET);
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(6, 1), TARGET);
 
         assertEquals("Uniform", prior.name());
@@ -31,7 +31,7 @@ public class PriorUniformTest {
     @Test
     void testPrediction() {
         Prior prior = new PriorUniform();
-        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").withName(TARGET);
+        VarNominal target = VarNominal.copy("a", "b", "a", "c", "a", "b").name(TARGET);
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(6, 1), TARGET);
 
         assertEquals(1./3, prior.computePrior("a"), TOLERANCE);
@@ -43,7 +43,7 @@ public class PriorUniformTest {
     @Test
     void testNewInstance() {
         PriorUniform prior = new PriorUniform();
-        VarNominal target = VarNominal.copy("a", "b", "c").withName("target");
+        VarNominal target = VarNominal.copy("a", "b", "c").name("target");
         prior.fitPriors(SolidFrame.byVars(target), VarDouble.fill(target.rowCount(), 1), "target");
 
         assertEquals("Uniform{value=0.3333333,targetLevels=[a,b,c]}", prior.fittedName());

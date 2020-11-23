@@ -468,7 +468,7 @@ public interface Frame extends Serializable, Printable {
         final String[] names = varNames();
         final Var[] vars = new Var[names.length];
         for (int i = 0; i < names.length; i++) {
-            vars[i] = rvar(names[i]).copy().withName(names[i]);
+            vars[i] = rvar(names[i]).copy().name(names[i]);
         }
         return SolidFrame.byVars(vars);
     }

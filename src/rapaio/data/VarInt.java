@@ -230,8 +230,8 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    public VarInt withName(String name) {
-        return (VarInt) super.withName(name);
+    public VarInt name(String name) {
+        return (VarInt) super.name(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {

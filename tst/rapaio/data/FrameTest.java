@@ -43,9 +43,9 @@ public class FrameTest {
     @Test
     void testRemove() {
         SolidFrame df = SolidFrame.byVars(
-                VarNominal.copy("a", "b").withName("x"),
-                VarNominal.copy("x", "y").withName("y"),
-                VarDouble.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").name("x"),
+                VarNominal.copy("x", "y").name("y"),
+                VarDouble.wrap(1, 2).name("z")
         );
         Frame df1 = df.removeVars(VRange.of("x,z"));
 
@@ -69,9 +69,9 @@ public class FrameTest {
     @Test
     void testSetters() {
         SolidFrame df = SolidFrame.byVars(
-                VarNominal.copy("a", "b").withName("x"),
-                VarNominal.copy("x", "y").withName("y"),
-                VarDouble.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").name("x"),
+                VarNominal.copy("x", "y").name("y"),
+                VarDouble.wrap(1, 2).name("z")
         );
 
         df.setDouble(1, "z", 100);
@@ -87,9 +87,9 @@ public class FrameTest {
     @Test
     void testMissing() {
         SolidFrame df = SolidFrame.byVars(
-                VarNominal.copy("a", "b").withName("x"),
-                VarNominal.copy("x", "y").withName("y"),
-                VarDouble.wrap(1, 2).withName("z")
+                VarNominal.copy("a", "b").name("x"),
+                VarNominal.copy("x", "y").name("y"),
+                VarDouble.wrap(1, 2).name("z")
         );
 
         assertFalse(df.isMissing(0));
@@ -112,9 +112,9 @@ public class FrameTest {
     void testMappers() {
 
         SolidFrame df = SolidFrame.byVars(
-                VarDouble.seq(100).withName("x"),
-                VarDouble.seq(100).withName("y"),
-                VarDouble.seq(100).withName("z")
+                VarDouble.seq(100).name("x"),
+                VarDouble.seq(100).name("y"),
+                VarDouble.seq(100).name("z")
         );
 
         Frame map1 = df.mapVars("x", "y");
@@ -138,9 +138,9 @@ public class FrameTest {
     void testVarStream() {
 
         List<Var> varList = Arrays.asList(
-                VarDouble.seq(100).withName("x"),
-                VarDouble.seq(100).withName("y"),
-                VarDouble.seq(100).withName("z")
+                VarDouble.seq(100).name("x"),
+                VarDouble.seq(100).name("y"),
+                VarDouble.seq(100).name("z")
         );
         SolidFrame df = SolidFrame.byVars(varList);
 
@@ -156,9 +156,9 @@ public class FrameTest {
     @Test
     void testSpotStream() {
         List<Var> varList = Arrays.asList(
-                VarDouble.seq(100).withName("x"),
-                VarDouble.seq(100).withName("y"),
-                VarDouble.seq(100).withName("z")
+                VarDouble.seq(100).name("x"),
+                VarDouble.seq(100).name("y"),
+                VarDouble.seq(100).name("z")
         );
         SolidFrame df = SolidFrame.byVars(varList);
 
@@ -170,12 +170,12 @@ public class FrameTest {
     void testDeepEquals() {
 
         assertFalse(SolidFrame.byVars(VarDouble.seq(100)).deepEquals(SolidFrame.byVars(VarDouble.seq(10))));
-        assertFalse(SolidFrame.byVars(VarDouble.seq(10).withName("x")).deepEquals(SolidFrame.byVars(
-                VarDouble.seq(10).withName("x"),
-                VarDouble.seq(10).withName("y")
+        assertFalse(SolidFrame.byVars(VarDouble.seq(10).name("x")).deepEquals(SolidFrame.byVars(
+                VarDouble.seq(10).name("x"),
+                VarDouble.seq(10).name("y")
         )));
         assertFalse(SolidFrame.byVars(VarDouble.seq(10)).deepEquals(SolidFrame.byVars(
-                VarDouble.seq(10).withName("x")
+                VarDouble.seq(10).name("x")
         )));
 
     }

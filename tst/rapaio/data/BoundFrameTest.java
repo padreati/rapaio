@@ -43,14 +43,14 @@ public class BoundFrameTest {
 
     // frame with first rows
     private final Frame df1 = SolidFrame.byVars(
-            VarDouble.wrap(1, 2, 3, 4).withName("x"),
-            VarDouble.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).withName("1/x")
+            VarDouble.wrap(1, 2, 3, 4).name("x"),
+            VarDouble.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).name("1/x")
     );
 
     // frame with second set of rows
     private final Frame df2 = SolidFrame.byVars(
-            VarDouble.wrap(5, 6).withName("x"),
-            VarDouble.wrap(1 / 5., 1 / 6.).withName("1/x")
+            VarDouble.wrap(5, 6).name("x"),
+            VarDouble.wrap(1 / 5., 1 / 6.).name("1/x")
     );
 
     // empty frame
@@ -58,14 +58,14 @@ public class BoundFrameTest {
 
     // frame with different column names
     private final Frame df4 = SolidFrame.byVars(
-            VarDouble.wrap(7).withName("a"),
-            VarDouble.wrap(1 / 7.).withName("b")
+            VarDouble.wrap(7).name("a"),
+            VarDouble.wrap(1 / 7.).name("b")
     );
 
     // frame with different column types
     private final Frame df5 = SolidFrame.byVars(
-            VarInt.wrap(7).withName("x"),
-            VarDouble.wrap(1 / 7.).withName("1/x")
+            VarInt.wrap(7).name("x"),
+            VarDouble.wrap(1 / 7.).name("1/x")
     );
 
     @BeforeEach
@@ -76,7 +76,7 @@ public class BoundFrameTest {
     @Test
     void testInvalidVarsWithSameName() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> BoundFrame.byVars(VarDouble.wrap(1.).withName("x"), VarDouble.wrap(1.).withName("x")));
+                () -> BoundFrame.byVars(VarDouble.wrap(1.).name("x"), VarDouble.wrap(1.).name("x")));
         assertEquals("bound frame does not allow variables with the same name: x", ex.getMessage());
     }
 
@@ -84,8 +84,8 @@ public class BoundFrameTest {
     void testInvalidFramesWithVarsWithSameName() {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> BoundFrame.byVars(
-                        SolidFrame.byVars(VarDouble.wrap(1.).withName("x")),
-                        SolidFrame.byVars(VarDouble.wrap(2.).withName("x"))));
+                        SolidFrame.byVars(VarDouble.wrap(1.).name("x")),
+                        SolidFrame.byVars(VarDouble.wrap(2.).name("x"))));
         assertEquals("bound frame does not allow variables with the same name: x", ex.getMessage());
     }
 
@@ -93,11 +93,11 @@ public class BoundFrameTest {
     void testBuildersByVars() {
 
         Var[] vars = new Var[]{
-                VarDouble.wrap(1, 2, 3, Double.NaN).withName("a"),
-                VarInt.wrap(1, 2, 3, Integer.MIN_VALUE).withName("b"),
-                VarLong.wrap(1, 2, 3, Long.MIN_VALUE).withName("c"),
-                VarBinary.copy(1, 0, 1, -1).withName("d"),
-                VarNominal.copy("x1", "x2", "x3", "?").withName("e")
+                VarDouble.wrap(1, 2, 3, Double.NaN).name("a"),
+                VarInt.wrap(1, 2, 3, Integer.MIN_VALUE).name("b"),
+                VarLong.wrap(1, 2, 3, Long.MIN_VALUE).name("c"),
+                VarBinary.copy(1, 0, 1, -1).name("d"),
+                VarNominal.copy("x1", "x2", "x3", "?").name("e")
         };
 
         SolidFrame df = SolidFrame.byVars(vars);
@@ -234,7 +234,7 @@ public class BoundFrameTest {
     @Test
     void testBindMapVars() {
         Frame df = BoundFrame.byVars(df1);
-        df = df.bindVars(VarDouble.wrap(-1, -2, -3, -4).withName("y"));
+        df = df.bindVars(VarDouble.wrap(-1, -2, -3, -4).name("y"));
 
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
@@ -244,7 +244,7 @@ public class BoundFrameTest {
 
         df = BoundFrame.byVars(df1);
         df = df.bindVars(SolidFrame.byVars(
-                VarDouble.wrap(-1, -2, -3, -4).withName("y")
+                VarDouble.wrap(-1, -2, -3, -4).name("y")
         ));
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
@@ -276,7 +276,7 @@ public class BoundFrameTest {
             assertEquals(1 / (i + 1.), df.getDouble(i, 1), 1e-12);
         }
 
-        df = df.bindRows(SolidFrame.byVars(VarDouble.empty().withName("x"), VarDouble.empty().withName("1/x")));
+        df = df.bindRows(SolidFrame.byVars(VarDouble.empty().name("x"), VarDouble.empty().name("1/x")));
         assertEquals(2, df.varCount());
         assertEquals(6, df.rowCount());
         for (int i = 0; i < 6; i++) {

@@ -34,7 +34,7 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
 import rapaio.experiment.grid.MeshGrid;
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.Figure;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
@@ -91,8 +91,8 @@ public class Plot implements Figure {
 
     private final List<Artist> artistList = new ArrayList<>();
 
-    private Axis xAxis;
-    private Axis yAxis;
+    private final Axis xAxis;
+    private final Axis yAxis;
 
     protected double xLimStart = Double.NaN;
     protected double xLimEnd = Double.NaN;
@@ -100,18 +100,21 @@ public class Plot implements Figure {
     protected double yLimEnd = Double.NaN;
 
     public Plot(GOption<?>... opts) {
+        this(null, null, opts);
+    }
+
+    public Plot(Axis xAxis, Axis yAxis, GOption<?>... opts) {
         bottomThick(true);
         bottomMarkers(true);
         leftThick(true);
         leftMarkers(true);
         this.options.bind(opts);
+        this.xAxis = (xAxis != null) ? xAxis : new Axis();
+        this.yAxis = (yAxis != null) ? yAxis : new Axis();
     }
 
     public void addArtist(Artist artist) {
-        if (artistList.isEmpty()) {
-            this.xAxis = artist.newXAxis();
-            this.yAxis = artist.newYAxis();
-        }
+        artist.bind(this);
         this.artistList.add(artist);
     }
 
@@ -131,8 +134,8 @@ public class Plot implements Figure {
             artist.updateDataRange();
         }
 
-        xAxis.computeArtifacts(viewport.width, xLimStart, xLimEnd);
-        yAxis.computeArtifacts(viewport.height, yLimStart, yLimEnd);
+        xAxis.computeArtifacts(this, viewport.width, xLimStart, xLimEnd);
+        yAxis.computeArtifacts(this, viewport.height, yLimStart, yLimEnd);
     }
 
     protected void buildViewport(Rectangle rectangle) {
@@ -171,9 +174,13 @@ public class Plot implements Figure {
     }
 
     @Override
-    public void paint(Graphics2D g2d, Rectangle rect) {
-        buildViewport(rect);
+    public void prepare(Rectangle rectangle) {
+        buildViewport(rectangle);
         buildDataRange();
+    }
+
+    @Override
+    public void paint(Graphics2D g2d, Rectangle rect) {
 
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
@@ -188,6 +195,7 @@ public class Plot implements Figure {
         }
 
         g2d.setFont(MARKERS_FONT);
+        g2d.setStroke(new BasicStroke(1f));
         g2d.drawLine(viewport.x - THICKER_PAD,
                 viewport.y,
                 viewport.x - THICKER_PAD,
@@ -226,6 +234,7 @@ public class Plot implements Figure {
 
 
         g2d.setFont(MARKERS_FONT);
+        g2d.setStroke(new BasicStroke(1f));
         g2d.drawLine(viewport.x,
                 viewport.y + viewport.height + THICKER_PAD,
                 viewport.x + viewport.width,

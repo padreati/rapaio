@@ -314,8 +314,8 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public VarLong withName(String name) {
-        return (VarLong) super.withName(name);
+    public VarLong name(String name) {
+        return (VarLong) super.name(name);
     }
 
     private void ensureCapacityInternal(int minCapacity) {

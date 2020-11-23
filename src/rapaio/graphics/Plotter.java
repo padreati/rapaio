@@ -39,6 +39,7 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionHorizontal;
 import rapaio.graphics.opt.GOptionLabels;
 import rapaio.graphics.opt.GOptionLwd;
 import rapaio.graphics.opt.GOptionPalette;
@@ -142,7 +143,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var y, GOption<?>... opts) {
-        return plot().add(new Points(VarInt.seq(y.rowCount()).withName("pos"), y, opts));
+        return plot().add(new Points(VarInt.seq(y.rowCount()).name("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOption<?>... opts) {
@@ -270,6 +271,10 @@ public final class Plotter {
 
     public static GOptionSort sort(int sort) {
         return new GOptionSort(sort);
+    }
+
+    public static GOptionHorizontal horizontal(boolean horizontal) {
+        return new GOptionHorizontal(horizontal);
     }
 
     public static GOptionLabels labels(String... labels) {

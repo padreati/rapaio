@@ -146,9 +146,9 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     private Frame getVIInfo(Map<String, List<Double>> viMap) {
-        Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("mean");
-        Var sd = VarDouble.empty().withName("sd");
+        Var name = VarNominal.empty().name("name");
+        Var score = VarDouble.empty().name("mean");
+        Var sd = VarDouble.empty().name("sd");
         for (Map.Entry<String, List<Double>> e : viMap.entrySet()) {
             name.addLabel(e.getKey());
             VarDouble scores = VarDouble.copy(e.getValue());
@@ -156,7 +156,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
             score.addDouble(Mean.of(scores).value());
         }
         double maxScore = Maximum.of(score).value();
-        Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).withName("scaled score");
+        Var scaled = VarDouble.from(score.rowCount(), row -> 100.0 * score.getDouble(row) / maxScore).name("scaled score");
         return SolidFrame.byVars(name, score, sd, scaled).fapply(FRefSort.by(score.refComparator(false))).copy();
     }
 
@@ -169,11 +169,11 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     }
 
     public Frame getPermVIInfo() {
-        Var name = VarNominal.empty().withName("name");
-        Var score = VarDouble.empty().withName("mean");
-        Var sds = VarDouble.empty().withName("sd");
-        Var zscores = VarDouble.empty().withName("z-score");
-        Var pvalues = VarDouble.empty().withName("p-value");
+        Var name = VarNominal.empty().name("name");
+        Var score = VarDouble.empty().name("mean");
+        Var sds = VarDouble.empty().name("sd");
+        Var zscores = VarDouble.empty().name("z-score");
+        Var pvalues = VarDouble.empty().name("p-value");
         Distribution normal = Normal.std();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());

@@ -147,7 +147,7 @@ public class IndexLabelTest {
     @Test
     void testWorkingWithFrames() {
 
-        var df = SolidFrame.byVars(VarNominal.copy("a", "b", "c", "a", "b", "?").withName("x"));
+        var df = SolidFrame.byVars(VarNominal.copy("a", "b", "c", "a", "b", "?").name("x"));
 
         var index = IndexLabel.fromVarLevels(true, df, "x");
 

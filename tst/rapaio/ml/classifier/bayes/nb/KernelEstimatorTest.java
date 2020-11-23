@@ -25,9 +25,9 @@ public class KernelEstimatorTest {
 
     @BeforeEach
     void beforeEach() {
-        VarNominal target = VarNominal.copy("a", "a", "a", "a", "a", "b", "b", "b", "b", "b").withName("t");
-        VarDouble x = VarDouble.copy(10, 11, 12, 11, 13, 2, 3, 4, 3, 2).withName("x");
-        VarDouble y = VarDouble.copy(9, 10, 11, 12, 11, 13, 2, 3, 4, 3).withName("y");
+        VarNominal target = VarNominal.copy("a", "a", "a", "a", "a", "b", "b", "b", "b", "b").name("t");
+        VarDouble x = VarDouble.copy(10, 11, 12, 11, 13, 2, 3, 4, 3, 2).name("x");
+        VarDouble y = VarDouble.copy(9, 10, 11, 12, 11, 13, 2, 3, 4, 3).name("y");
         df = SolidFrame.byVars(x, y, target);
     }
 
@@ -53,14 +53,14 @@ public class KernelEstimatorTest {
 
     @Test
     void testBuilders() {
-        VarDouble d1 = VarDouble.empty().withName("d1");
-        VarDouble d2 = VarDouble.empty().withName("d2");
+        VarDouble d1 = VarDouble.empty().name("d1");
+        VarDouble d2 = VarDouble.empty().name("d2");
 
-        VarBinary b1 = VarBinary.empty().withName("b1");
-        VarBinary b2 = VarBinary.empty().withName("b2");
+        VarBinary b1 = VarBinary.empty().name("b1");
+        VarBinary b2 = VarBinary.empty().name("b2");
 
-        VarNominal n1 = VarNominal.empty(0).withName("n1");
-        VarNominal n2 = VarNominal.empty(0).withName("n2");
+        VarNominal n1 = VarNominal.empty(0).name("n1");
+        VarNominal n2 = VarNominal.empty(0).name("n2");
 
 
         assertEquals(Arrays.asList("d1", "d2"), KernelEstimator.forType(SolidFrame.byVars(d1, d2, b1, b2, n1, n2), VType.DOUBLE)

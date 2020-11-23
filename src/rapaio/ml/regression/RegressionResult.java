@@ -76,8 +76,8 @@ public class RegressionResult implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            prediction.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, VarDouble.empty(df.rowCount()).withName(targetName));
+            prediction.put(targetName, VarDouble.empty(df.rowCount()).name(targetName));
+            residuals.put(targetName, VarDouble.empty(df.rowCount()).name(targetName));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);

@@ -75,14 +75,14 @@ public class ConstantRegressionResultTest {
         r2.fit(df, father);
         var fit2 = r2.predict(df, true);
 
-        assertTrue(VarDouble.fill(df.rowCount(), 66).withName("Father")
+        assertTrue(VarDouble.fill(df.rowCount(), 66).name("Father")
                 .deepEquals(fit1.firstPrediction()));
-        assertFalse(df.rvar(father).copy().fapply(VToDouble.byValue(x -> x - 66)).withName("Father")
+        assertFalse(df.rvar(father).copy().fapply(VToDouble.byValue(x -> x - 66)).name("Father")
                 .deepEquals(fit1.firstResidual()));
 
-        assertTrue(VarDouble.fill(df.rowCount(), 1).withName("Father")
+        assertTrue(VarDouble.fill(df.rowCount(), 1).name("Father")
                 .deepEquals(fit2.firstPrediction()));
-        assertTrue(df.rvar(father).copy().fapply(VToDouble.byValue(x -> x - 1)).withName("Father")
+        assertTrue(df.rvar(father).copy().fapply(VToDouble.byValue(x -> x - 1)).name("Father")
                 .deepEquals(fit2.firstResidual()));
 
         assertEquals("ConstantRegression{constant=66}", r1.toString());

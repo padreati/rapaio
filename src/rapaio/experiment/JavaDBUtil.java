@@ -163,7 +163,7 @@ public class JavaDBUtil {
                 }
             }
             for (int i = 0; i < vars.size(); i++) {
-                vars.get(i).withName(colNames.get(i));
+                vars.get(i).name(colNames.get(i));
             }
             return SolidFrame.byVars(lists.get(0).size(), vars);
         }

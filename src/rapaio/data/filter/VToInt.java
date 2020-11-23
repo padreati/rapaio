@@ -114,7 +114,7 @@ public class VToInt implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.apply(new VSpot(i, var));
             }
-            return VarInt.wrap(value).withName(var.name());
+            return VarInt.wrap(value).name(var.name());
         }
     }
 
@@ -131,7 +131,7 @@ public class VToInt implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.applyAsInt(var.getDouble(i));
             }
-            return VarInt.wrap(value).withName(var.name());
+            return VarInt.wrap(value).name(var.name());
         }
     }
 
@@ -148,7 +148,7 @@ public class VToInt implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = var.isMissing(i) ? VarInt.MISSING_VALUE : function.applyAsInt(var.getInt(i));
             }
-            return VarInt.wrap(value).withName(var.name());
+            return VarInt.wrap(value).name(var.name());
         }
     }
 
@@ -165,7 +165,7 @@ public class VToInt implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 values[i] = function.apply(var.getLabel(i));
             }
-            return VarInt.wrap(values).withName(var.name());
+            return VarInt.wrap(values).name(var.name());
         }
     }
 

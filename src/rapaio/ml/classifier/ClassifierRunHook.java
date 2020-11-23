@@ -47,7 +47,7 @@ public class ClassifierRunHook extends ParamSet<ClassifierRunHook> implements SB
             (m1, m2) -> true);
 
     @Getter
-    private final VarInt runs = VarInt.empty().withName("runs");
+    private final VarInt runs = VarInt.empty().name("runs");
     @Getter
     private final LinkedHashMap<String, VarDouble> trainScores = new LinkedHashMap<>();
     @Getter

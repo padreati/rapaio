@@ -70,17 +70,17 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return selection(10, 5, printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return selection(rowCount(), 0, printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -135,7 +135,7 @@ public abstract class AbstractFrame implements Frame {
         WS.println(head(lines));
     }
 
-    private String selection(int head, int tail, Printer printer, POption... options) {
+    private String selection(int head, int tail, Printer printer, POption<?>... options) {
         if (varCount() == 0) {
             return "";
         }

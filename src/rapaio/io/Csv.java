@@ -270,7 +270,7 @@ public class Csv extends ParamSet<Csv> {
         List<Var> variables = new ArrayList<>();
         for (int i = 0; i < varSlots.size(); i++) {
             String name = names.size() > i ? names.get(i) : "V" + (i + 1);
-            variables.add(varSlots.get(i).rvar().withName(name));
+            variables.add(varSlots.get(i).rvar().name(name));
         }
         return SolidFrame.byVars(rows - startRow.get(), variables);
     }

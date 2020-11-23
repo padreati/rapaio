@@ -30,9 +30,9 @@ public class HolteBinningTest {
     @Test
     void testMinimumOne() {
 
-        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).withName("x");
+        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
         VarDouble w = VarDouble.fill(x.rowCount(), 1);
-        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").withName("y");
+        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
         OneRule model = OneRule.newModel();
@@ -63,9 +63,9 @@ public class HolteBinningTest {
     @Test
     void testMinimumTwo() {
 
-        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).withName("x");
+        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
         VarDouble w = VarDouble.fill(x.rowCount(), 1);
-        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").withName("y");
+        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
         OneRule model = OneRule.newModel();
@@ -97,9 +97,9 @@ public class HolteBinningTest {
     @Test
     void testMinimumThree() {
 
-        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).withName("x");
+        VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
         VarDouble w = VarDouble.fill(x.rowCount(), 1);
-        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").withName("y");
+        VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
         OneRule model = OneRule.newModel();
@@ -130,8 +130,8 @@ public class HolteBinningTest {
 
     @Test
     void testWithMissing() {
-        VarDouble x = VarDouble.copy(1., 1, 1, 1, 1, 1, Double.NaN, Double.NaN, 1, 1, 1, Double.NaN).withName("x");
-        VarNominal y = VarNominal.copy("a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a").withName("y");
+        VarDouble x = VarDouble.copy(1., 1, 1, 1, 1, 1, Double.NaN, Double.NaN, 1, 1, 1, Double.NaN).name("x");
+        VarNominal y = VarNominal.copy("a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a").name("y");
         VarDouble w = VarDouble.fill(x.rowCount(), 1);
         Frame df = SolidFrame.byVars(x, y);
 

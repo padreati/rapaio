@@ -62,11 +62,11 @@ public class CorrPearsonTest {
         CorrPearson cp = CorrPearson.of(x, x);
         assertEquals(1, cp.singleValue(), 1e-20);
 
-        x = VarDouble.from(1_000, Math::sqrt).withName("x");
+        x = VarDouble.from(1_000, Math::sqrt).name("x");
         cp = CorrPearson.of(x, x);
         assertEquals(1, cp.singleValue(), 1e-20);
 
-        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).withName("y");
+        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).name("y");
         cp = CorrPearson.of(x, y);
         assertEquals(-1, cp.singleValue(), 1e-20);
     }
@@ -74,8 +74,8 @@ public class CorrPearsonTest {
     @Test
     void randomTest() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).name("y");
 
         CorrPearson cp = CorrPearson.of(x, y);
         assertEquals(0.021769705986371478, cp.singleValue(), TOL);
@@ -87,8 +87,8 @@ public class CorrPearsonTest {
     @Test
     void testNonLinearCorr() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
 
         CorrPearson cp = CorrPearson.of(SolidFrame.byVars(x, y));
         assertEquals(0.8356446312071465, cp.singleValue(), TOL);
@@ -97,9 +97,9 @@ public class CorrPearsonTest {
     @Test
     void testMultipleVarsNonLinear() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
-        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
+        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).name("z");
 
 
         DM exp = DMStripe.copy(3, 3,

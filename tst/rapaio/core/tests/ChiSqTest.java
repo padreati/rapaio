@@ -127,9 +127,9 @@ public class ChiSqTest {
 
     @Test
     void testConditionalIndependence() {
-        Var status = VarNominal.empty().withName("status");
-        Var scout = VarNominal.empty().withName("scout");
-        Var delinquent = VarNominal.empty().withName("delinquent");
+        Var status = VarNominal.empty().name("status");
+        Var scout = VarNominal.empty().name("scout");
+        Var delinquent = VarNominal.empty().name("delinquent");
 
         for (int i = 0; i < 11; i++) {
             status.addLabel("low");

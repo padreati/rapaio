@@ -27,7 +27,7 @@
 
 package rapaio.image;
 
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.Figure;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -92,6 +92,7 @@ public class ImageUtility {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHints(defaultHints);
         Rectangle rect = new Rectangle(newImage.getWidth(), newImage.getHeight());
+        figure.prepare(rect);
         figure.paint(g2d, rect);
         return newImage;
     }

@@ -161,12 +161,12 @@ public class VarLongTest {
 
     @Test
     void testWithName() {
-        VarLong x = VarLong.copy(1, 2, 3, 5).withName("X");
+        VarLong x = VarLong.copy(1, 2, 3, 5).name("X");
         assertEquals("X", x.name());
 
         Var y = MappedVar.byRows(x, 1, 2);
         assertEquals("X", y.name());
-        y.withName("y");
+        y.name("y");
         assertEquals("y", y.name());
 
         assertEquals(2.0, y.getLong(0), 10e-10);
@@ -175,7 +175,7 @@ public class VarLongTest {
 
     @Test
     void testOtherValues() {
-        VarLong x = VarLong.copy(1, 2, 3, 4).withName("x");
+        VarLong x = VarLong.copy(1, 2, 3, 4).name("x");
 
         x.addInt(10);
         assertEquals(10, x.getLong(x.rowCount() - 1), 10e-10);

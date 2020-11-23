@@ -87,11 +87,11 @@ public class CorrSpearmanTest {
 
     @Test
     void maxCorrTest() {
-        VarDouble x = VarDouble.from(1_000, Math::sqrt).withName("x");
+        VarDouble x = VarDouble.from(1_000, Math::sqrt).name("x");
         CorrSpearman cp = CorrSpearman.of(x, x);
         assertEquals(1, cp.singleValue(), 1e-12);
 
-        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).withName("y");
+        VarDouble y = x.stream().mapToDouble().map(v -> -v).boxed().collect(VarDouble.collector()).name("y");
         cp = CorrSpearman.of(SolidFrame.byVars(x, y));
         assertEquals(-1, cp.singleValue(), 1e-12);
     }
@@ -99,8 +99,8 @@ public class CorrSpearmanTest {
     @Test
     void randomTest() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> norm.sampleNext()).name("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(0.023296211476962116, cp.singleValue(), TOL);
@@ -109,8 +109,8 @@ public class CorrSpearmanTest {
     @Test
     void testNonLinearCorr() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(0.8789432182134321, cp.singleValue(), TOL);
@@ -119,9 +119,9 @@ public class CorrSpearmanTest {
     @Test
     void testMultipleVarsNonLinear() {
         Normal norm = Normal.of(0, 12);
-        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
-        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
+        VarDouble x = VarDouble.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).name("x");
+        VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
+        VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).name("z");
 
         DM exp = DMStripe.copy(3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
@@ -140,8 +140,8 @@ public class CorrSpearmanTest {
 
     @Test
     void testMissingValues() {
-        VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
-        VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
+        VarDouble x = VarDouble.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).name("x");
+        VarDouble y = VarDouble.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).name("y");
 
         CorrSpearman cp = CorrSpearman.of(x, y);
         assertEquals(1, cp.singleValue(), TOL);
@@ -178,7 +178,7 @@ public class CorrSpearmanTest {
         int K = 10;
         Var[] vars = new Var[K];
         for (int i = 0; i < K; i++) {
-            vars[i] = VarDouble.from(100, Normal.std()::sampleNext).withName("Var_" + (i + 1));
+            vars[i] = VarDouble.from(100, Normal.std()::sampleNext).name("Var_" + (i + 1));
         }
 
         WS.getPrinter().withOptions(textWidth(100));

@@ -85,23 +85,23 @@ public class VarTest {
 
     @Test
     void copyNameTest() {
-        VarDouble num = VarDouble.seq(1, 10, 0.5).withName("num");
+        VarDouble num = VarDouble.seq(1, 10, 0.5).name("num");
         assertEquals(num.name(), num.copy().name());
         assertEquals(num.name(), num.mapRows(2, 5).copy().name());
 
-        VarInt idx = VarInt.seq(1, 10).withName("idx");
+        VarInt idx = VarInt.seq(1, 10).name("idx");
         assertEquals(idx.name(), idx.copy().name());
         assertEquals(idx.name(), idx.mapRows(2, 5).copy().name());
 
-        VarBinary bin = VarBinary.copy(1, 0, 1, 0, 1).withName("bin");
+        VarBinary bin = VarBinary.copy(1, 0, 1, 0, 1).name("bin");
         assertEquals(bin.name(), bin.copy().name());
         assertEquals(bin.name(), bin.mapRows(2, 5).copy().name());
 
-        VarNominal nom = VarNominal.copy("a", "b", "a", "c", "a").withName("nom");
+        VarNominal nom = VarNominal.copy("a", "b", "a", "c", "a").name("nom");
         assertEquals(nom.name(), nom.copy().name());
         assertEquals(nom.name(), nom.mapRows(2, 4).copy().name());
 
-        VarLong stp = VarLong.seq(1, 10).withName("stamp");
+        VarLong stp = VarLong.seq(1, 10).name("stamp");
         assertEquals(stp.name(), stp.copy().name());
         assertEquals(stp.name(), stp.mapRows(2, 5).copy().name());
     }
@@ -155,9 +155,9 @@ public class VarTest {
 
     @Test
     void testDeepEquals() {
-        assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarDouble.scalar(1).withName("y")));
-        assertFalse(VarDouble.seq(2).withName("x").deepEquals(VarDouble.scalar(1).withName("x")));
-        assertFalse(VarDouble.scalar(1).withName("x").deepEquals(VarInt.scalar(1).withName("x")));
+        assertFalse(VarDouble.scalar(1).name("x").deepEquals(VarDouble.scalar(1).name("y")));
+        assertFalse(VarDouble.seq(2).name("x").deepEquals(VarDouble.scalar(1).name("x")));
+        assertFalse(VarDouble.scalar(1).name("x").deepEquals(VarInt.scalar(1).name("x")));
         assertFalse(VarDouble.scalar(1).deepEquals(VarDouble.scalar(2)));
         assertFalse(VarNominal.copy("a").deepEquals(VarNominal.copy("b")));
     }

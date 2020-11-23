@@ -149,7 +149,7 @@ public class ArffPersistence {
                 }
             }
             for (int i = 0; i < newvectors.size(); i++) {
-                newvectors.get(i).withName(names.get(i));
+                newvectors.get(i).name(names.get(i));
             }
             Frame df = SolidFrame.byVars(data.size(), newvectors);
 

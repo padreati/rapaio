@@ -158,13 +158,13 @@ public class Join {
         List<Var> rightVars = new ArrayList<>();
 
         for (String varName : leftVarNames) {
-            keyVars.add(dfLeft.rvar(varName).newInstance(0).withName(varName));
+            keyVars.add(dfLeft.rvar(varName).newInstance(0).name(varName));
         }
         for (String varName : leftRemainVarNames) {
-            leftVars.add(dfLeft.rvar(varName).newInstance(0).withName(varName));
+            leftVars.add(dfLeft.rvar(varName).newInstance(0).name(varName));
         }
         for (String varName : rightRemainVarNames) {
-            rightVars.add(dfRight.rvar(varName).newInstance(0).withName(varName));
+            rightVars.add(dfRight.rvar(varName).newInstance(0).name(varName));
         }
 
         for (int id = 0; id < idMap.size(); id++) {
@@ -213,13 +213,13 @@ public class Join {
         List<Var> rightVars = new ArrayList<>();
 
         for (String varName : rightVarNames) {
-            keyVars.add(dfRight.rvar(varName).newInstance(0).withName(varName));
+            keyVars.add(dfRight.rvar(varName).newInstance(0).name(varName));
         }
         for (String varName : leftRemainVarNames) {
-            leftVars.add(dfLeft.rvar(varName).newInstance(0).withName(varName));
+            leftVars.add(dfLeft.rvar(varName).newInstance(0).name(varName));
         }
         for (String varName : rightRemainVarNames) {
-            rightVars.add(dfRight.rvar(varName).newInstance(0).withName(varName));
+            rightVars.add(dfRight.rvar(varName).newInstance(0).name(varName));
         }
 
         for (int id = 0; id < idMap.size(); id++) {
@@ -333,9 +333,9 @@ public class Join {
     }
 
     public static void main(String[] args) {
-        VarInt id = VarInt.empty().withName("id");
-        VarDouble x1 = VarDouble.empty().withName("x1");
-        VarDouble x2 = VarDouble.empty().withName("x2");
+        VarInt id = VarInt.empty().name("id");
+        VarDouble x1 = VarDouble.empty().name("x1");
+        VarDouble x2 = VarDouble.empty().name("x2");
 
         for (int i = 0; i < 30; i++) {
             id.addInt(i + 1);

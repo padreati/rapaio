@@ -108,13 +108,13 @@ public class FixedScaleSmoothSplineRFunction implements SmoothRFunction {
                 // build features corresponding to beta_{k+1}..beta_{2k}
                 for (int i = 0; i <= degree; i++) {
                     int ii = i;
-                    features.add(testVar.op().capply(v -> Math.pow(v, ii) * sx(v, sigma, ref)).withName(testVarName + "_alpha_" + (i + 1)));
+                    features.add(testVar.op().capply(v -> Math.pow(v, ii) * sx(v, sigma, ref)).name(testVarName + "_alpha_" + (i + 1)));
                 }
 
                 // build features corresponding to (beta_{1}-beta_{k+1}), (beta_{2}-beta_{k+2}), ...
                 for (int i = 0; i <= degree; i++) {
                     int ii = i;
-                    features.add(testVar.op().capply(v -> Math.pow(v, ii) * (1.0 - sx(v, sigma, ref))).withName(testVarName + "_alpha_" + (degree + 2 + i)));
+                    features.add(testVar.op().capply(v -> Math.pow(v, ii) * (1.0 - sx(v, sigma, ref))).name(testVarName + "_alpha_" + (degree + 2 + i)));
                 }
 
                 // fit a linear regression

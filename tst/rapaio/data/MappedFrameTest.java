@@ -53,8 +53,8 @@ public class MappedFrameTest {
     @Test
     void testBuilders() {
         Frame df = SolidFrame.byVars(
-                VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
-                VarInt.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
+                VarDouble.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).name("x"),
+                VarInt.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).name("y")
         );
 
         Frame mapped = MappedFrame.byRow(df, 0, 2, 4, 6, 8);
@@ -79,9 +79,9 @@ public class MappedFrameTest {
     void testMapAndBound() {
         final int N = 10;
 
-        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
-        Var y = VarInt.from(N, row -> row * 2).withName("y");
-        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
+        Var x = VarDouble.from(N, row -> row * 1.0).name("x");
+        Var y = VarInt.from(N, row -> row * 2).name("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).name("z");
         Frame df1 = SolidFrame.byVars(x, y, z);
 
         Frame a = df1
@@ -133,15 +133,15 @@ public class MappedFrameTest {
         assertEquals(1.0 / 3, df3.getDouble(0, 0), TOL);
         assertEquals(1.0 / 7, df3.getDouble(1, 0), TOL);
 
-        assertTrue(VarDouble.wrap(1.0 / 3, 1.0 / 7).withName("z").deepEquals(df3.rvar(0)));
+        assertTrue(VarDouble.wrap(1.0 / 3, 1.0 / 7).name("z").deepEquals(df3.rvar(0)));
     }
 
     @Test
     void testVarNamesAndTypes() {
         final int N = 10;
-        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
-        Var y = VarInt.from(N, row -> row * 2).withName("y");
-        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
+        Var x = VarDouble.from(N, row -> row * 1.0).name("x");
+        Var y = VarInt.from(N, row -> row * 2).name("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).name("z");
         Frame df1 = SolidFrame.byVars(x, y, z).mapRows(0, 1, 2);
 
         String[] varNames = df1.varNames();
@@ -156,15 +156,15 @@ public class MappedFrameTest {
 
     @Test
     void testInvalidVarIndex() {
-        assertNull(SolidFrame.byVars(VarDouble.seq(10).withName("x")).mapRows(0, 1).rvar("y"));
+        assertNull(SolidFrame.byVars(VarDouble.seq(10).name("x")).mapRows(0, 1).rvar("y"));
     }
 
     @Test
     void testAddClearRows() {
         final int N = 10;
-        Var x = VarDouble.from(N, row -> row * 1.0).withName("x");
-        Var y = VarInt.from(N, row -> row * 2).withName("y");
-        Var z = VarDouble.from(N, row -> 1.0 / row).withName("z");
+        Var x = VarDouble.from(N, row -> row * 1.0).name("x");
+        Var y = VarInt.from(N, row -> row * 2).name("y");
+        Var z = VarDouble.from(N, row -> 1.0 / row).name("z");
         Frame df1 = SolidFrame.byVars(x, y, z).mapRows(0, 1, 2);
 
         Frame df2 = df1.addRows(100);
@@ -181,11 +181,11 @@ public class MappedFrameTest {
     @Test
     void testGettersSetters() {
         List<Var> varList = Arrays.asList(
-                VarDouble.wrap(0, VarDouble.MISSING_VALUE, 2, VarDouble.MISSING_VALUE).withName("a"),
-                VarInt.wrap(0, VarInt.MISSING_VALUE, 2, VarInt.MISSING_VALUE).withName("b"),
-                VarNominal.copy("a", "?", "b", "?").withName("c"),
-                VarLong.copy(0, VarLong.MISSING_VALUE, 2, VarLong.MISSING_VALUE).withName("d"),
-                VarBinary.copy(1, 0, 1, 1).withName("e")
+                VarDouble.wrap(0, VarDouble.MISSING_VALUE, 2, VarDouble.MISSING_VALUE).name("a"),
+                VarInt.wrap(0, VarInt.MISSING_VALUE, 2, VarInt.MISSING_VALUE).name("b"),
+                VarNominal.copy("a", "?", "b", "?").name("c"),
+                VarLong.copy(0, VarLong.MISSING_VALUE, 2, VarLong.MISSING_VALUE).name("d"),
+                VarBinary.copy(1, 0, 1, 1).name("e")
         );
         varList.get(4).setMissing(1);
 

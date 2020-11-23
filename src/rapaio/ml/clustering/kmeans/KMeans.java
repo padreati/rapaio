@@ -127,7 +127,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         c = initializeClusters(m);
 
         int[] assignment = IntArrays.newFill(m.rowCount(), -1);
-        errors = VarDouble.empty().withName("errors");
+        errors = VarDouble.empty().name("errors");
 
         assignToCentroids(m, assignment);
         repairEmptyClusters(m, assignment);

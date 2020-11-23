@@ -146,8 +146,8 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
             sb.append("Fitted values:\n");
             sb.append("\n");
 
-            Var target = VarNominal.empty().withName("Target");
-            Var median = VarDouble.empty().withName("Fitted value");
+            Var target = VarNominal.empty().name("Target");
+            Var median = VarDouble.empty().name("Fitted value");
             for (int i = 0; i < medians.length; i++) {
                 target.addLabel(targetName(i));
                 median.addDouble(medians[i]);
@@ -168,8 +168,8 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
             sb.append("Fitted values:\n");
             sb.append("\n");
 
-            Var target = VarNominal.empty().withName("Target");
-            Var median = VarDouble.empty().withName("Fitted value");
+            Var target = VarNominal.empty().name("Target");
+            Var median = VarDouble.empty().name("Fitted value");
             for (int i = 0; i < medians.length; i++) {
                 target.addLabel(targetName(i));
                 median.addDouble(medians[i]);

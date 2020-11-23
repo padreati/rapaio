@@ -40,9 +40,9 @@ public class TTestTwoSamplesTest {
     @Test
     void precomputedTest() {
         Normal n = Normal.of(0, 10);
-        Var x = VarDouble.from(100, n::sampleNext).withName("x");
-        Var y = VarDouble.from(100, n::sampleNext).withName("y");
-        Var z = VarDouble.from(40, n::sampleNext).withName("z");
+        Var x = VarDouble.from(100, n::sampleNext).name("x");
+        Var y = VarDouble.from(100, n::sampleNext).name("y");
+        Var z = VarDouble.from(40, n::sampleNext).name("z");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         TTestTwoSamples t2 = TTestTwoSamples.test(Mean.of(x).value(), x.rowCount(), Mean.of(y).value(), y.rowCount(), 0, Variance.of(x).sdValue(), Variance.of(y).sdValue());
@@ -56,8 +56,8 @@ public class TTestTwoSamplesTest {
     @Test
     void testTTest() {
 
-        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).name("x");
+        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).name("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
@@ -100,8 +100,8 @@ public class TTestTwoSamplesTest {
     @Test
     public void testWelchTTest() {
 
-        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).withName("x");
-        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).withName("y");
+        Var x = VarDouble.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5).name("x");
+        Var y = VarDouble.copy(7, 3, 5, 6, 6, 10).name("y");
 
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();

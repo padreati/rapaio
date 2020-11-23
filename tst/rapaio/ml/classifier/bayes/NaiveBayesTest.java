@@ -117,7 +117,7 @@ public class NaiveBayesTest {
     void testInvalidFit() {
         var ex = assertThrows(IllegalStateException.class, () -> NaiveBayes.newModel()
                 .estimators.add(GaussianEstimator.forName("a"))
-                .fit(SolidFrame.byVars(VarNominal.copy("a", "b").withName("y")), "y"));
+                .fit(SolidFrame.byVars(VarNominal.copy("a", "b").name("y")), "y"));
         assertEquals("Input variable: a is not contained in training data frame.", ex.getMessage());
     }
 
@@ -164,8 +164,8 @@ public class NaiveBayesTest {
         NaiveBayes model = NaiveBayes.newModel().estimators.add(estimator);
 
         Frame df = SolidFrame.byVars(
-                VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("a"),
-                VarNominal.from(100, row -> row > 0 ? "a" : "b").withName("t")
+                VarNominal.from(100, row -> row > 0 ? "a" : "b").name("a"),
+                VarNominal.from(100, row -> row > 0 ? "a" : "b").name("t")
         );
         model.fit(df, "t");
         ClassifierResult result = model.predict(df, true, true);

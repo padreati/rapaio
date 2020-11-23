@@ -24,7 +24,7 @@ public class KFoldTest {
 
     @BeforeEach
     void beforeEach() {
-        weights = VarDouble.seq(10).withName("w");
+        weights = VarDouble.seq(10).name("w");
         df = SolidFrame.byVars(weights);
     }
 

@@ -60,6 +60,7 @@ public class GOptions implements Serializable {
         defaults.points = new GOptionPoints(256);
         defaults.top = new GOptionTop(Integer.MAX_VALUE);
         defaults.sort = new GOptionSort(0);
+        defaults.horizontal = new GOptionHorizontal(false);
         defaults.labels = new GOptionLabels(new String[]{""});
     }
 
@@ -77,6 +78,7 @@ public class GOptions implements Serializable {
     private GOptionPoints points;
     private GOptionTop top;
     private GOptionSort sort;
+    private GOptionHorizontal horizontal;
     private GOptionLabels labels;
 
     public GOptions bind(GOption<?>... options) {
@@ -98,6 +100,7 @@ public class GOptions implements Serializable {
                 points,
                 top,
                 sort,
+                horizontal,
                 labels
         };
     }
@@ -284,6 +287,17 @@ public class GOptions implements Serializable {
 
     public void setSort(GOptionSort sort) {
         this.sort = sort;
+    }
+
+    public boolean getHorizontal() {
+        if (horizontal == null) {
+            return parent != null ? parent.getHorizontal() : defaults.horizontal.apply(this);
+        }
+        return horizontal.apply(this);
+    }
+
+    public void setHorizontal(GOptionHorizontal horizontal) {
+        this.horizontal = horizontal;
     }
 
     public String[] getLabels() {

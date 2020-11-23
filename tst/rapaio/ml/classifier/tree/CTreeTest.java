@@ -29,7 +29,7 @@ public class CTreeTest {
         c.addGroup(RowPredicate.numLessEqual("x", 1));
         c.addGroup(RowPredicate.numGreater("x", 1));
 
-        Frame df = SolidFrame.byVars(VarDouble.wrap(0).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.wrap(0).name("x"));
 
         assertTrue(c.groupPredicates.get(0).test(0, df));
         assertFalse(c.groupPredicates.get(1).test(0, df));
@@ -73,7 +73,7 @@ public class CTreeTest {
         tree.fit(df, "class");
 
         var pred = tree.predict(df, true, true);
-        df = df.bindVars(pred.firstClasses().copy().withName("predict"));
+        df = df.bindVars(pred.firstClasses().copy().name("predict"));
 
         Frame match = df.stream().filter(spot -> spot.getInt("class") == spot.getInt("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());

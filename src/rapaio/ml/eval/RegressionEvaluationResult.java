@@ -74,10 +74,10 @@ public class RegressionEvaluationResult implements Printable {
         this.eval = eval;
 
         List<Var> vars = new ArrayList<>();
-        vars.add(VarInt.empty().withName(FIELD_ROUND));
-        vars.add(VarInt.empty().withName(FIELD_FOLD));
+        vars.add(VarInt.empty().name(FIELD_ROUND));
+        vars.add(VarInt.empty().name(FIELD_FOLD));
         for (RegressionMetric metric : eval.getMetrics()) {
-            vars.add(VarDouble.empty().withName(metric.getName()));
+            vars.add(VarDouble.empty().name(metric.getName()));
         }
         trainScores = SolidFrame.byVars(vars).copy();
         testScores = trainScores.copy();
@@ -137,9 +137,9 @@ public class RegressionEvaluationResult implements Printable {
         StringBuilder sb = new StringBuilder();
         sb.append("CV score\n");
         sb.append("=============\n");
-        Var metricVar = VarNominal.empty().withName("metric");
-        Var meanVar = VarDouble.empty().withName("mean");
-        Var stdVar = VarDouble.empty().withName("std");
+        Var metricVar = VarNominal.empty().name("metric");
+        Var meanVar = VarDouble.empty().name("mean");
+        Var stdVar = VarDouble.empty().name("std");
         Frame global = SolidFrame.byVars(metricVar, meanVar, stdVar);
 
         for (RegressionMetric metric : eval.getMetrics()) {

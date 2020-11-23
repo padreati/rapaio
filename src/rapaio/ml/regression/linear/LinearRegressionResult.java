@@ -123,7 +123,7 @@ public class LinearRegressionResult extends RegressionResult {
                 Set<String> availableFeatures = new HashSet<>(Arrays.asList(df.varNames()));
                 for (String inputName : model.inputNames()) {
                     if (FIntercept.INTERCEPT.equals(inputName) && !availableFeatures.contains(inputName)) {
-                        features = df.bindVars(VarDouble.fill(df.rowCount(), 1).withName(FIntercept.INTERCEPT)).copy();
+                        features = df.bindVars(VarDouble.fill(df.rowCount(), 1).name(FIntercept.INTERCEPT)).copy();
                     }
                 }
                 DM X = rapaio.math.linear.dense.DMStripe.copy(features.mapVars(model.inputNames()));

@@ -97,7 +97,7 @@ public class BoundVar extends AbstractVar {
                 last += vars.get(i).rowCount();
             }
         }
-        this.withName(vars.get(0).name());
+        this.name(vars.get(0).name());
     }
 
     private int findIndex(int row) {

@@ -144,7 +144,7 @@ public class VToDouble implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = function.apply(new VSpot(i, var));
             }
-            return VarDouble.wrap(value).withName(var.name());
+            return VarDouble.wrap(value).name(var.name());
         }
     }
 
@@ -161,7 +161,7 @@ public class VToDouble implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.applyAsDouble(var.getDouble(i));
             }
-            return VarDouble.wrap(value).withName(var.name());
+            return VarDouble.wrap(value).name(var.name());
         }
     }
 
@@ -178,7 +178,7 @@ public class VToDouble implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 value[i] = var.isMissing(i) ? VarDouble.MISSING_VALUE : function.applyAsDouble(var.getInt(i));
             }
-            return VarDouble.wrap(value).withName(var.name());
+            return VarDouble.wrap(value).name(var.name());
         }
     }
 
@@ -195,7 +195,7 @@ public class VToDouble implements VFilter {
             for (int i = 0; i < var.rowCount(); i++) {
                 values[i] = function.apply(var.getLabel(i));
             }
-            return VarDouble.wrap(values).withName(var.name());
+            return VarDouble.wrap(values).name(var.name());
         }
     }
 

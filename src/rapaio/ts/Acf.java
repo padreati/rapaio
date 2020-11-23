@@ -50,11 +50,11 @@ public final class Acf implements Printable {
     private final VarDouble covariance;
 
     public static Acf from(Var ts, int maxLag) {
-        return new Acf(ts, VarInt.seq(0, maxLag).withName("lags"));
+        return new Acf(ts, VarInt.seq(0, maxLag).name("lags"));
     }
 
     public static Acf from(Var ts, VarInt lags) {
-        return new Acf(ts, lags.withName("lags"));
+        return new Acf(ts, lags.name("lags"));
     }
 
     private Acf(Var ts, VarInt lags) {
@@ -63,8 +63,8 @@ public final class Acf implements Printable {
         }
         this.ts = ts.copy();
         this.lags = lags.copy();
-        this.correlation = VarDouble.fill(lags.rowCount(), 0).withName("correlation");
-        this.covariance = VarDouble.fill(lags.rowCount(), 0).withName("covariance");
+        this.correlation = VarDouble.fill(lags.rowCount(), 0).name("correlation");
+        this.covariance = VarDouble.fill(lags.rowCount(), 0).name("covariance");
 
         compute();
     }

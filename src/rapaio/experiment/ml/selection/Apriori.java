@@ -25,7 +25,7 @@
  *
  */
 
-package rapaio.experiment.selection;
+package rapaio.experiment.ml.selection;
 
 import rapaio.core.tools.DensityVector;
 import rapaio.data.Frame;
@@ -217,7 +217,7 @@ public class Apriori implements Printable {
     public Frame buildFeatures(Frame df) {
         List<Var> vars = rules.stream().map(r -> VarNominal.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
-            vars.get(i).withName("Apriori_" + (i + 1));
+            vars.get(i).name("Apriori_" + (i + 1));
         }
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < rules.size(); j++) {

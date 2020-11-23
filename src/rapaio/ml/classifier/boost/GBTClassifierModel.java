@@ -164,7 +164,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
 
         for (int k = 0; k < K; k++) {
 
-            Var residual_k = residual.mapRow(k).asVarDouble().mapRows(sample.getMapping()).withName("##tt##");
+            Var residual_k = residual.mapRow(k).asVarDouble().mapRows(sample.getMapping()).name("##tt##");
 
             var tree = model.get().newInstance();
             tree.fit(sample.getDf().bindVars(residual_k), sample.getWeights(), "##tt##");

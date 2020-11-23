@@ -53,7 +53,7 @@ public class OneRuleTest {
 
     @BeforeEach
     void beforeEach() {
-        classVar = VarNominal.empty(SIZE, "False", "True").withName("class");
+        classVar = VarNominal.empty(SIZE, "False", "True").name("class");
         classVar.setLabel(0, "True");
         classVar.setLabel(1, "True");
         classVar.setLabel(2, "True");
@@ -61,7 +61,7 @@ public class OneRuleTest {
         classVar.setLabel(4, "False");
         classVar.setLabel(5, "False");
 
-        heightVar = VarDouble.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
+        heightVar = VarDouble.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).name("height");
 
         RandomSource.setSeed(1);
     }
@@ -142,8 +142,8 @@ public class OneRuleTest {
     @Test
     void predictMissing() {
 
-        VarNominal x = VarNominal.copy("a", "a", "a", "?", "?").withName("x");
-        VarNominal y = VarNominal.copy("x", "x", "x", "y", "y").withName("y");
+        VarNominal x = VarNominal.copy("a", "a", "a", "?", "?").name("x");
+        VarNominal y = VarNominal.copy("x", "x", "x", "y", "y").name("y");
 
         Frame df = SolidFrame.byVars(x, y);
         OneRule model = OneRule.newModel().fit(df, "y");

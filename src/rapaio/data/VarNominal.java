@@ -181,8 +181,8 @@ public final class VarNominal extends AbstractVar {
     }
 
     @Override
-    public VarNominal withName(String name) {
-        return (VarNominal) super.withName(name);
+    public VarNominal name(String name) {
+        return (VarNominal) super.name(name);
     }
 
     @Override

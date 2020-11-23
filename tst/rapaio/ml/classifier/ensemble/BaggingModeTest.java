@@ -38,10 +38,10 @@ public class BaggingModeTest {
 
         classes = VarNominal.empty(1, "a", "b", "c");
         densities = SolidFrame.byVars(
-                VarDouble.empty(1).withName("?"),
-                VarDouble.empty(1).withName("a"),
-                VarDouble.empty(1).withName("b"),
-                VarDouble.empty(1).withName("c")
+                VarDouble.empty(1).name("?"),
+                VarDouble.empty(1).name("a"),
+                VarDouble.empty(1).name("b"),
+                VarDouble.empty(1).name("c")
         );
     }
 

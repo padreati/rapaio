@@ -39,12 +39,12 @@ public class POpts implements Serializable {
         this.parent = parent;
     }
 
-    public POpts bind(POption... options) {
+    public POpts bind(POption<?>... options) {
         Arrays.stream(options).forEach(o -> o.bind(this));
         return this;
     }
 
-    public POption[] toArray() {
+    public POption<?>[] toArray() {
         return new POption[]{
                 textWidth, floatFormat
         };

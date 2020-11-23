@@ -153,7 +153,7 @@ public class SamplingToolsTest {
     @Test
     void testRandomSampleSizes() {
 
-        Frame df = SolidFrame.byVars(VarDouble.seq(100).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.seq(100).name("x"));
 
         double[] freq = new double[]{0.127, 0.5, 0.333};
         Frame[] frames = SamplingTools.randomSampleSlices(df, freq);
@@ -173,8 +173,8 @@ public class SamplingToolsTest {
     void testRandomStratifiedSplit() {
 
         Frame df = SolidFrame.byVars(
-                VarDouble.seq(100).withName("x"),
-                VarNominal.from(100, row -> String.valueOf(row % 3)).withName("strata")
+                VarDouble.seq(100).name("x"),
+                VarNominal.from(100, row -> String.valueOf(row % 3)).name("strata")
         );
 
         double[] p = new double[3];

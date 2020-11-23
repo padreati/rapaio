@@ -24,7 +24,7 @@ public class RowPredicateTest {
     @Test
     void testNumPredicates() {
 
-        Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.from(50, MTools::sqrt).name("x"));
 
         // test basic numeric predicates
 
@@ -72,7 +72,7 @@ public class RowPredicateTest {
     void testBinaryPredicates() {
 
         int[] values = SamplingTools.sampleWR(2, 100);
-        SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).withName("x"));
+        SolidFrame df = SolidFrame.byVars(VarBinary.from(values.length, row -> values[row] == 1).name("x"));
 
         assertEquals(100, df.stream().filter(s -> RowPredicate.binEqual("x", true).test(s.row(), s.frame())).count()
                 + df.stream().filter(s -> RowPredicate.binEqual("x", false).test(s.row(), s.frame())).count());

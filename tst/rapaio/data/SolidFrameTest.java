@@ -47,12 +47,12 @@ public class SolidFrameTest {
 
     @BeforeEach
     void setUp() {
-        x = VarDouble.wrap(1, 2, 3, 4).withName("x");
-        y = VarNominal.copy("a", "c", "b", "a").withName("y");
+        x = VarDouble.wrap(1, 2, 3, 4).name("x");
+        y = VarNominal.copy("a", "c", "b", "a").name("y");
         df1 = SolidFrame.byVars(
-                VarDouble.seq(1, 10).withName("x"),
-                VarDouble.seq(21, 30).withName("y"),
-                VarDouble.seq(101, 111).withName("z"));
+                VarDouble.seq(1, 10).name("x"),
+                VarDouble.seq(21, 30).name("y"),
+                VarDouble.seq(101, 111).name("z"));
     }
 
     @Test
@@ -111,10 +111,10 @@ public class SolidFrameTest {
     @Test
     void testConvenientMethods() {
         List<Var> vars = new ArrayList<>();
-        vars.add(VarDouble.copy(1., 2., 3., 4.).withName("x"));
-        vars.add(VarDouble.copy(3., 5., 9., 12.).withName("y"));
-        vars.add(VarNominal.empty(4, "ana", "are", "mere").withName("name"));
-        vars.add(VarInt.seq(1, 4).withName("index"));
+        vars.add(VarDouble.copy(1., 2., 3., 4.).name("x"));
+        vars.add(VarDouble.copy(3., 5., 9., 12.).name("y"));
+        vars.add(VarNominal.empty(4, "ana", "are", "mere").name("name"));
+        vars.add(VarInt.seq(1, 4).name("index"));
         Frame df = SolidFrame.byVars(vars);
 
         assertEquals(1., df.getDouble(0, 0), 1e-10);
@@ -184,8 +184,8 @@ public class SolidFrameTest {
         }
 
         df2 = SolidFrame.byVars(y).bindVars(
-                SolidFrame.byVars(VarDouble.wrap(1, 2).withName("x"))
-                        .bindRows(SolidFrame.byVars(VarDouble.wrap(3, 4).withName("x")))
+                SolidFrame.byVars(VarDouble.wrap(1, 2).name("x"))
+                        .bindRows(SolidFrame.byVars(VarDouble.wrap(3, 4).name("x")))
         );
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());

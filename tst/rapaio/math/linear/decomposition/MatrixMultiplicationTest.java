@@ -80,7 +80,7 @@ public class MatrixMultiplicationTest {
 
     private void put(Map<String, VarDouble> map, String key, Long value) {
         if (!map.containsKey(key)) {
-            map.put(key, VarDouble.empty().withName(key));
+            map.put(key, VarDouble.empty().name(key));
         }
         map.get(key).addDouble(value);
     }

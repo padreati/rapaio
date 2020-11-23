@@ -52,8 +52,8 @@ public class Lines extends Artist {
     }
 
     public Lines(Var x, Var y, GOption<?>... opts) {
-        this.x = VarDouble.empty().withName(x.name());
-        this.y = VarDouble.empty().withName(y.name());
+        this.x = VarDouble.empty().name(x.name());
+        this.y = VarDouble.empty().name(y.name());
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
@@ -64,13 +64,13 @@ public class Lines extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override

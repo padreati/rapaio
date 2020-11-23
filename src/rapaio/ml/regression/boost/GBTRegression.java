@@ -135,7 +135,7 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
 
         for (int i = 1; i <= runs.get(); i++) {
 
-            Var gradient = loss.get().gradient(y, fitValues).withName("target");
+            Var gradient = loss.get().gradient(y, fitValues).name("target");
 
             Frame xm = x.bindVars(gradient);
             var tree = (GBTRtree<? extends RegressionModel, ? extends RegressionResult>) model.get().newInstance();

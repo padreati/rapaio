@@ -27,8 +27,8 @@ public class FImputeClassifierModelTest {
     @Test
     void testBasic() {
 
-        VarNominal x = VarNominal.from(100, row -> xd[RandomSource.nextInt(xd.length)]).withName("x");
-        VarNominal y = VarNominal.from(100, row -> yd[RandomSource.nextInt(yd.length)]).withName("y");
+        VarNominal x = VarNominal.from(100, row -> xd[RandomSource.nextInt(xd.length)]).name("x");
+        VarNominal y = VarNominal.from(100, row -> yd[RandomSource.nextInt(yd.length)]).name("y");
 
         var model = OneRule.newModel();
 

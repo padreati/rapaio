@@ -67,7 +67,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
         for (int i = 0; i < rowCount; i++) {
             copy[i] = fun.applyAsDouble(data[i]);
         }
-        return VarDouble.wrap(copy).withName(source.name());
+        return VarDouble.wrap(copy).name(source.name());
     }
 
     @Override

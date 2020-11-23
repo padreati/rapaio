@@ -47,7 +47,7 @@ public class GroupFunStd extends DefaultSingleGroupFun {
 
     @Override
     public Var buildVar(Group group, String varName) {
-        return VarDouble.empty(group.getGroupCount()).withName(varName + SEPARATOR + name);
+        return VarDouble.empty(group.getGroupCount()).name(varName + SEPARATOR + name);
     }
 
     @Override

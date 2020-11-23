@@ -53,7 +53,7 @@ public abstract class AbstractVar implements Var {
         return name;
     }
 
-    public Var withName(String name) {
+    public Var name(String name) {
         this.name = name;
         return this;
     }
@@ -66,13 +66,13 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case INT:
-                VarInt idx = VarInt.empty(rowCount()).withName(name());
+                VarInt idx = VarInt.empty(rowCount()).name(name());
                 for (int i = 0; i < rowCount(); i++) {
                     idx.setInt(i, getInt(i));
                 }
                 return idx;
             case LONG:
-                VarLong stamp = VarLong.empty(rowCount()).withName(name());
+                VarLong stamp = VarLong.empty(rowCount()).name(name());
                 for (int i = 0; i < rowCount(); i++) {
                     if (isMissing(i)) {
                         stamp.setMissing(i);
@@ -82,13 +82,13 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case DOUBLE:
-                VarDouble num = VarDouble.empty(rowCount()).withName(name());
+                VarDouble num = VarDouble.empty(rowCount()).name(name());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
             case BINARY:
-                VarBinary bin = VarBinary.empty(rowCount()).withName(name());
+                VarBinary bin = VarBinary.empty(rowCount()).name(name());
                 for (int i = 0; i < rowCount(); i++) {
                     if (isMissing(i)) {
                         bin.setMissing(i);
@@ -98,7 +98,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return bin;
             case NOMINAL:
-                VarNominal nom = VarNominal.empty(rowCount(), levels()).withName(name());
+                VarNominal nom = VarNominal.empty(rowCount(), levels()).name(name());
                 for (int i = 0; i < rowCount(); i++) {
                     if (isMissing(i)) {
                         nom.setMissing(i);
@@ -108,7 +108,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return nom;
             case STRING:
-                return VarString.from(rowCount(), this::getLabel).withName(name());
+                return VarString.from(rowCount(), this::getLabel).name(name());
             default:
                 throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }

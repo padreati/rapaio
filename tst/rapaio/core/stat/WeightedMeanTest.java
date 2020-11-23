@@ -40,14 +40,14 @@ public class WeightedMeanTest {
     @Test
     void testBasic() {
 
-        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
+        VarDouble values = VarDouble.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).name("x");
 
         VarDouble weights = VarDouble.fill(10, 1);
 
         assertEquals(5.5, WeightedMean.of(values, weights).value(), TOL);
         assertEquals(5.5, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), TOL);
 
-        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2).withName("x");
+        weights = VarDouble.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2).name("x");
         assertEquals(5.666666666666667, WeightedMean.of(values, weights).value(), 10e-12);
         assertEquals(5.666666666666667, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), TOL);
 
@@ -66,18 +66,18 @@ public class WeightedMeanTest {
     @Test
     void testMissing() {
 
-        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN).withName("x");
+        VarDouble values = VarDouble.copy(Double.NaN, Double.NaN).name("x");
         VarDouble weights = VarDouble.copy(1, 1);
 
         assertTrue(Double.isNaN(WeightedMean.of(values, weights).value()));
         assertTrue(Double.isNaN(WeightedMean.of(SolidFrame.byVars(values), weights, "x").value()));
 
-        values = VarDouble.copy(1, 2).withName("x");
+        values = VarDouble.copy(1, 2).name("x");
         weights = VarDouble.copy(Double.NaN, Double.NaN);
         assertTrue(Double.isNaN(WeightedMean.of(values, weights).value()));
         assertTrue(Double.isNaN(WeightedMean.of(SolidFrame.byVars(values), weights, "x").value()));
 
-        values = VarDouble.copy(Double.NaN, 1, 2).withName("x");
+        values = VarDouble.copy(Double.NaN, 1, 2).name("x");
         weights = VarDouble.copy(1, 2, Double.NaN);
         assertEquals(1.0, WeightedMean.of(values, weights).value(), 10e-12);
         assertEquals(1.0, WeightedMean.of(SolidFrame.byVars(values), weights, "x").value(), 10e-12);

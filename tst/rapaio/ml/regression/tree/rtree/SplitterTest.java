@@ -49,7 +49,7 @@ public class SplitterTest {
     @BeforeEach
     void setUp() {
         w = VarDouble.empty();
-        df = SolidFrame.byVars(VarDouble.empty().withName("x"));
+        df = SolidFrame.byVars(VarDouble.empty().name("x"));
 
         candidate = new Candidate(0, "");
         candidate.addGroup(RowPredicate.numLess("x", 10));

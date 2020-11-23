@@ -136,8 +136,8 @@ public class FSpotsTest {
     @Test
     void testGettersSetters() {
         Frame df = SolidFrame.byVars(
-                VarDouble.wrap(1, 2).withName("x"),
-                VarNominal.copy("a", "b").withName("y"));
+                VarDouble.wrap(1, 2).name("x"),
+                VarNominal.copy("a", "b").name("y"));
 
         FSpot spot = new FSpot(df, 1);
 

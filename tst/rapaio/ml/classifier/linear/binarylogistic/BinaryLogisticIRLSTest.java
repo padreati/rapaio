@@ -116,7 +116,7 @@ public class BinaryLogisticIRLSTest {
     void testSeparableL2() {
 
         VarDouble lambdas = VarDouble.seq(0, 10, 0.2);
-        VarDouble loss = VarDouble.empty().withName("loss");
+        VarDouble loss = VarDouble.empty().name("loss");
         for (double lambda : lambdas) {
             var x = rapaio.math.linear.dense.DMStripe.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
             var y = DVDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
@@ -144,8 +144,8 @@ public class BinaryLogisticIRLSTest {
     @Test
     public void testIllConditionedInputs() {
         Normal normal = Normal.of(10, 2);
-        VarDouble x1 = VarDouble.from(100, normal::sampleNext).withName("x1");
-        VarDouble x2 = VarDouble.from(x1, v -> v + normal.sampleNext() / 1e8).withName("x2");
+        VarDouble x1 = VarDouble.from(100, normal::sampleNext).name("x1");
+        VarDouble x2 = VarDouble.from(x1, v -> v + normal.sampleNext() / 1e8).name("x2");
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 

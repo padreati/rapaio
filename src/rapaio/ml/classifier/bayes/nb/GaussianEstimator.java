@@ -140,6 +140,7 @@ public class GaussianEstimator extends AbstractEstimator {
             double sd = stats.get(label).sd();
             normals.put(label, Normal.of(mu, sd));
         }
+        hasLearned = true;
         return true;
     }
 

@@ -1001,4 +1001,14 @@ public class MTools {
     public static double floorMod(double a, double n) {
         return a - n * Math.floor(a / n);
     }
+
+    public static int gcd(int a, int b) {
+        while (a != b) {
+            if (a > b)
+                a -= b;
+            else
+                b -= a;
+        }
+        return a;
+    }
 }

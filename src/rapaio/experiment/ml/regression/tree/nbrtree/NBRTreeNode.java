@@ -249,7 +249,7 @@ public class NBRTreeNode implements Serializable {
         rightNode = new NBRTreeNode(-1, this);
 
         Var pred = prediction;
-        VarDouble residuals = VarDouble.from(y.rowCount(), row -> originalY.getDouble(row) - pred.getDouble(row)).withName(y.name());
+        VarDouble residuals = VarDouble.from(y.rowCount(), row -> originalY.getDouble(row) - pred.getDouble(row)).name(y.name());
 
         leftNode.coreNodeFit(
                 df.mapRows(leftRows).copy(),

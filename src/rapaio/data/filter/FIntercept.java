@@ -71,7 +71,7 @@ public class FIntercept extends AbstractFFilter {
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        VarDouble intercept = VarDouble.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1.0).name(INTERCEPT);
         return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

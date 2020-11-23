@@ -23,9 +23,9 @@ public class FFillMissingTest {
     void beforeEach() {
         RandomSource.setSeed(123);
         df = SolidFrame.byVars(
-                VarDouble.wrap(1, VarDouble.MISSING_VALUE, 3, 4).withName("a"),
-                VarInt.wrap(1, 2, VarInt.MISSING_VALUE, 4).withName("b"),
-                VarNominal.copy("1", "2", "3", VarNominal.MISSING_VALUE).withName("c")
+                VarDouble.wrap(1, VarDouble.MISSING_VALUE, 3, 4).name("a"),
+                VarInt.wrap(1, 2, VarInt.MISSING_VALUE, 4).name("b"),
+                VarNominal.copy("1", "2", "3", VarNominal.MISSING_VALUE).name("c")
         );
     }
 

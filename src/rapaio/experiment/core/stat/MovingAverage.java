@@ -43,7 +43,7 @@ public class MovingAverage {
         int left = Math.floorDiv(window - 1, 2);
         int right = window - 1 - left;
 
-        ma = VarDouble.empty(source.rowCount()).withName("ma-" + source.name());
+        ma = VarDouble.empty(source.rowCount()).name("ma-" + source.name());
 
         for (int i = left; i < source.rowCount() - right; i++) {
             double sum = 0;

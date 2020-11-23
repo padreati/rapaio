@@ -22,7 +22,7 @@ public class ZeroRuleTest {
 
     @Test
     void testPrintable() {
-        VarNominal target = VarNominal.copy("a", "a", "b").withName("target");
+        VarNominal target = VarNominal.copy("a", "a", "b").name("target");
 
         ZeroRule notFitted = ZeroRule.newModel();
         ZeroRule fitted = ZeroRule.newModel().fit(SolidFrame.byVars(target), "target");
@@ -52,7 +52,7 @@ public class ZeroRuleTest {
 
     @Test
     void testPredictionNoInputs() {
-        VarNominal target = VarNominal.copy("a", "a", "b").withName("target");
+        VarNominal target = VarNominal.copy("a", "a", "b").name("target");
 
         var model = ZeroRule.newModel().fit(SolidFrame.byVars(target), "target");
         var result = model.predict(SolidFrame.byVars(target), true, true);
@@ -68,7 +68,7 @@ public class ZeroRuleTest {
 
     @Test
     void testNotTrained() {
-        var target = VarNominal.copy("a", "a", "b").withName("target");
+        var target = VarNominal.copy("a", "a", "b").name("target");
         var ex = assertThrows(IllegalStateException.class, () -> ZeroRule.newModel().predict(SolidFrame.byVars(target)));
         assertEquals("Model was not trained/fitted on data.", ex.getMessage());
     }

@@ -40,14 +40,14 @@ public class KMeansResult extends ClusteringResult {
         DM m = DMStripe.copy(df);
         int ccount = c.rowCount();
 
-        Var id = VarInt.seq(1, ccount).withName("ID");
-        Var count = VarInt.fill(ccount, 0).withName("count");
-        Var mean = VarDouble.fill(ccount, 0).withName("mean");
-        Var variance = VarDouble.fill(ccount, 0).withName("var");
-        Var variancePercentage = VarDouble.fill(ccount, 0).withName("var/total");
-        Var std = VarDouble.fill(ccount, 0).withName("sd");
+        Var id = VarInt.seq(1, ccount).name("ID");
+        Var count = VarInt.fill(ccount, 0).name("count");
+        Var mean = VarDouble.fill(ccount, 0).name("mean");
+        Var variance = VarDouble.fill(ccount, 0).name("var");
+        Var variancePercentage = VarDouble.fill(ccount, 0).name("var/total");
+        Var std = VarDouble.fill(ccount, 0).name("sd");
 
-        distances = VarDouble.empty().withName("all dist");
+        distances = VarDouble.empty().name("all dist");
 
         Map<Integer, VarDouble> errors = new HashMap<>();
 

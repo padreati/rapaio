@@ -158,7 +158,7 @@ public class BoundFrame extends AbstractFrame {
                 boundVars.add(df.rvar(names[i]));
             }
 
-            Var boundedVar = BoundVar.from(counts, boundVars).withName(names[i]);
+            Var boundedVar = BoundVar.from(counts, boundVars).name(names[i]);
             vars.add(boundedVar);
             indexes.put(names[i], i);
         }

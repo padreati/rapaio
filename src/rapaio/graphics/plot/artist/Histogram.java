@@ -29,18 +29,21 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
+import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
+import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.MTools;
+import rapaio.sys.WS;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Plot component which allows one to add a histogram to a plot.
@@ -71,13 +74,13 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     private int computeFreedmanDiaconisEstimation(Var v) {
@@ -150,12 +153,22 @@ public class Histogram extends Artist {
     @Override
     public void updateDataRange() {
         rebuild();
-        union(minValue, Double.NaN);
-        union(maxValue, Double.NaN);
-        for (double freq : freqTable) {
-            union(Double.NaN, freq);
+
+        if (options.getHorizontal()) {
+            union(Double.NaN, minValue);
+            union(Double.NaN, maxValue);
+            for (double freq : freqTable) {
+                union(freq, Double.NaN);
+            }
+            union(0, Double.NaN);
+        } else {
+            union(minValue, Double.NaN);
+            union(maxValue, Double.NaN);
+            for (double freq : freqTable) {
+                union(Double.NaN, freq);
+            }
+            union(Double.NaN, 0);
         }
-        union(Double.NaN, 0);
     }
 
     @Override
@@ -172,6 +185,14 @@ public class Histogram extends Artist {
             double w = xScale(binStart(i + 1)) - xScale(binStart(i));
             double h = yScale(0) - yScale(mind);
 
+            if (getOptions().getHorizontal()) {
+                mind = Math.min(d, plot.xAxis().max());
+                x = xScale(0);
+                y = yScale(binStart(i + 1));
+                w = -(xScale(0) - xScale(mind));
+                h = -(yScale(binStart(i + 1)) - yScale(binStart(i)));
+            }
+
             if (d != 0) {
                 g2d.setColor(options.getColor(i));
                 g2d.fill(new Rectangle2D.Double(x, y, w, h));
@@ -185,5 +206,20 @@ public class Histogram extends Artist {
     private double binStart(int i) {
         double fraction = (maxValue - minValue) / (1. * options.getBins());
         return minValue + fraction * i;
+    }
+
+    public static void main(String[] args) {
+        var df = Datasets.loadIrisDataset();
+        var v1 = df.rvar("sepal-length");
+        var v2 = df.rvar("petal-length");
+
+        Axis x = new Axis();
+        Axis y = new Axis();
+
+        GridLayer layer = new GridLayer(2, 2);
+        layer.add(1, 1, new Plot(x, new Axis()).hist(v1, bins(30)));
+        layer.add(2, 1, new Plot(x, y).points(v1, v2));
+        layer.add(2, 2, new Plot(new Axis(), y).hist(v2, horizontal(true), bins(30)));
+        WS.draw(layer);
     }
 }

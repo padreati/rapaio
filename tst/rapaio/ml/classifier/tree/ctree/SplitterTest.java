@@ -52,8 +52,8 @@ public class SplitterTest {
     @BeforeEach
     void beforeEach() {
         VarDouble values = VarDouble.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
-        df = SolidFrame.byVars(values.copy().withName("x"));
-        w = values.fapply(VApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).withName("w");
+        df = SolidFrame.byVars(values.copy().name("x"));
+        w = values.fapply(VApply.onDouble(x -> Double.isNaN(x) ? 1 : Math.abs(x))).name("w");
         c = new Candidate(1, "test");
         c.addGroup(RowPredicate.numGreater("x", 0));
         c.addGroup(RowPredicate.numLess("x", 0));

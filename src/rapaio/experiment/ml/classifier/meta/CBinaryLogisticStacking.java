@@ -120,12 +120,12 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
             }
             logger.config("started fitting weak learner...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.copy().withName("V" + vars.size())));
+        }).collect(toList()).forEach(var -> vars.add(var.copy().name("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
                 .map(v -> v.copy()
                         .fapply(VApply.onDouble(x -> x * x))
-                        .withName(v.name() + "^2"))
+                        .name(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
 
@@ -154,10 +154,10 @@ public class CBinaryLogisticStacking extends AbstractClassifierModel<CBinaryLogi
         weaks.parallelStream().map(weak -> {
             logger.config("started fitting weak learner ...");
             return weak.predict(df).firstDensity().rvar(1);
-        }).collect(toList()).forEach(var -> vars.add(var.copy().withName("V" + vars.size())));
+        }).collect(toList()).forEach(var -> vars.add(var.copy().name("V" + vars.size())));
 
         List<Var> quadratic = vars.stream()
-                .map(v -> v.copy().fapply(VApply.onDouble(x -> x * x)).withName(v.name() + "^2"))
+                .map(v -> v.copy().fapply(VApply.onDouble(x -> x * x)).name(v.name() + "^2"))
                 .collect(toList());
         vars.addAll(quadratic);
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);

@@ -41,7 +41,7 @@ public class RegressionResultEvaluationTest {
 
     @Test
     void testSmoke() {
-        Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).withName(targetName));
+        Frame df = SolidFrame.byVars(VarDouble.copy(1.0, 1.0, 1.0, 2.0).name(targetName));
         RegressionModel model = L2Regression.newModel();
         RegressionMetric metric = RMSE.newMetric();
 

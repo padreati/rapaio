@@ -8,8 +8,8 @@ import java.util.List;
  */
 public abstract class AbstractEstimator implements Estimator {
 
-    private final List<String> testVarNames;
-    private boolean hasLearned = false;
+    protected final List<String> testVarNames;
+    protected boolean hasLearned = false;
 
     public AbstractEstimator(List<String> testVarNames) {
         this.testVarNames = new ArrayList<>(testVarNames);

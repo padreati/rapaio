@@ -39,7 +39,7 @@ public class ClassifierModelEvaluationTest {
 
     @Test
     void testSmoke() {
-        Frame df = SolidFrame.byVars(VarNominal.copy("a", "a", "a", "b").withName(targetName));
+        Frame df = SolidFrame.byVars(VarNominal.copy("a", "a", "a", "b").name(targetName));
         var model = ZeroRule.newModel();
         ClassifierMetric metric = Accuracy.newMetric(true);
 

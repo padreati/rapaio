@@ -112,7 +112,7 @@ public class VQuantileDiscrete implements VFilter {
         if (!var.type().isNumeric()) {
             return var;
         }
-        VarNominal result = VarNominal.empty(0, dict).withName(var.name());
+        VarNominal result = VarNominal.empty(0, dict).name(var.name());
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.isMissing(i)) {
                 result.addMissing();

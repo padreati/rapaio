@@ -21,10 +21,10 @@ public class WeightedLinearRegressionResultResultModelTest {
     void testCoefficients() {
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
-        VarDouble x = VarDouble.seq(0, 100, 1).withName("x");
-        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).withName("I");
-        VarDouble y1 = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).withName("y1");
-        VarDouble y2 = VarDouble.from(x, v -> v * 3 - 10 + normal.sampleNext()).withName("y2");
+        VarDouble x = VarDouble.seq(0, 100, 1).name("x");
+        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).name("I");
+        VarDouble y1 = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).name("y1");
+        VarDouble y2 = VarDouble.from(x, v -> v * 3 - 10 + normal.sampleNext()).name("y2");
 
         Frame df = BoundFrame.byVars(x, y1, y2);
 

@@ -169,8 +169,8 @@ public final class VarBinary extends AbstractVar {
     }
 
     @Override
-    public VarBinary withName(String name) {
-        return (VarBinary) super.withName(name);
+    public VarBinary name(String name) {
+        return (VarBinary) super.name(name);
     }
 
     private void increaseCapacity(int minCapacity) {
@@ -406,7 +406,7 @@ public final class VarBinary extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return VarBinary.empty(rows).withName(name());
+        return VarBinary.empty(rows).name(name());
     }
 
     @Override

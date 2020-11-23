@@ -180,20 +180,20 @@ public class Datasets {
         List<Var> vars = new ArrayList<>();
         vars.add(VarBinary.fromIndex(n,
                 row -> row % 7 == 2 ? Integer.MIN_VALUE : RandomSource.nextInt(3) - 1)
-                .withName("boolean"));
+                .name("boolean"));
         vars.add(VarDouble.from(n,
                 row -> row % 10 == -1 ? Double.NaN : RandomSource.nextDouble())
-                .withName("double"));
+                .name("double"));
         vars.add(VarInt.from(n,
                 row -> row % 13 == 0 ? Integer.MIN_VALUE : RandomSource.nextInt(100) - 50)
-                .withName("int"));
+                .name("int"));
         vars.add(VarLong.from(n,
                 row -> row % 17 == 0 ? Long.MIN_VALUE : 3l * RandomSource.nextInt(Integer.MAX_VALUE))
-                .withName("long"));
+                .name("long"));
         String[] labels = new String[]{"a", "b", "c", "d", "e"};
         vars.add(VarNominal.from(n,
                 row -> row % 17 == 5 ? "?" : labels[RandomSource.nextInt(labels.length)])
-                .withName("nominal"));
+                .name("nominal"));
         return SolidFrame.byVars(vars);
     }
 

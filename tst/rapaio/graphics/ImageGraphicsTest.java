@@ -42,7 +42,6 @@ import rapaio.data.VarDouble;
 import rapaio.data.filter.VApply;
 import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
-import rapaio.graphics.base.Figure;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.image.ImageUtility;
@@ -72,9 +71,8 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-    //            private static final boolean regenerate = true;
+//                private static final boolean regenerate = true;
     private static final boolean show = false;
-    //        private static final boolean show = true;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
@@ -83,8 +81,7 @@ public class ImageGraphicsTest {
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
-//        ImageUtility.setBestHints();
-        ImageUtility.setSpeedHints();
+        ImageUtility.setBestHints();
     }
 
     private void assertTest(Figure f, String name) throws IOException {
@@ -132,16 +129,13 @@ public class ImageGraphicsTest {
     void testBoxPlot() throws IOException {
         Var x = df.rvar(1);
         Var factor = df.rvar("class");
-        Plot plot = boxplot(x, factor, color(10, 50, 100));
-
-        assertTest(plot, "boxplot-test");
+        assertTest(boxplot(x, factor, color(10, 50, 100)), "boxplot-test");
     }
 
     @Test
     @SneakyThrows
     void testBarPlot() {
         var mush = Datasets.loadMushrooms();
-        mush.printSummary();
 
         GridLayer grid = gridLayer(2, 2);
         grid.add(barplot(mush.rvar("gill-color"), mush.rvar("classes"), stacked(false)));
@@ -181,8 +175,8 @@ public class ImageGraphicsTest {
     @Test
     void testHistogram2D() throws IOException {
 
-        Var x = df.rvar(0).copy().withName("x");
-        Var y = df.rvar(1).copy().withName("y");
+        Var x = df.rvar(0).copy().name("x");
+        Var y = df.rvar(1).copy().name("y");
 
         Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
         assertTest(plot, "hist2d-test");
@@ -190,15 +184,15 @@ public class ImageGraphicsTest {
 
     @Test
     void testHistogram() throws IOException {
-        Var x = df.rvar(0).withName("x");
+        Var x = df.rvar(0).name("x");
         assertTest(hist(x, bins(30)), "hist-test");
     }
 
     @Test
     void testGridLayer() throws IOException {
 
-        Var x = df.rvar(0).withName("x");
-        Var y = df.rvar(1).withName("y");
+        Var x = df.rvar(0).name("x");
+        Var y = df.rvar(1).name("y");
 
         Figure fig = gridLayer(3, 3)
                 .add(1, 1, 2, 2, points(x, y, sz(2)))
@@ -213,7 +207,7 @@ public class ImageGraphicsTest {
     @Test
     void testLines() throws IOException {
 
-        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).withName("x").stream().complete().toMappedVar();
+        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).name("x").stream().complete().toMappedVar();
 
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
@@ -225,8 +219,8 @@ public class ImageGraphicsTest {
     @Test
     void testPoints() throws IOException {
 
-        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).withName("x");
-        Var y = df.rvar(1).fapply(VApply.onDouble(Math::log1p)).withName("y");
+        Var x = df.rvar(0).fapply(VApply.onDouble(Math::log1p)).name("x");
+        Var y = df.rvar(1).fapply(VApply.onDouble(Math::log1p)).name("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))
@@ -286,7 +280,7 @@ public class ImageGraphicsTest {
                 s2.addDouble(c2.getBlue());
             }
         }
-        boolean condition = Quantiles.of(s1.copy().op().minus(s2), 0.90).values()[0] < 20;
+        boolean condition = Quantiles.of(s1.copy().op().minus(s2).op().apply(Math::abs), 0.90).values()[0] < 20;
         if (!condition) {
             return condition;
         }

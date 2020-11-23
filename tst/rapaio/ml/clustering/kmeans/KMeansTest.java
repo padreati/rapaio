@@ -27,8 +27,8 @@ public class KMeansTest {
 
         var df = Datasets.loadOldFaithful();
 
-        VarInt ks = VarInt.seq(1, 10).withName("k");
-        VarDouble inertia = VarDouble.empty().withName("inertia");
+        VarInt ks = VarInt.seq(1, 10).name("k");
+        VarDouble inertia = VarDouble.empty().name("inertia");
 
         for (int k : ks) {
             KMeans model = KMeans.newModel()
@@ -56,12 +56,12 @@ public class KMeansTest {
 
     @Test
     void testDegenerate() {
-        Frame df = SolidFrame.byVars(VarDouble.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0).withName("x"));
+        Frame df = SolidFrame.byVars(VarDouble.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0).name("x"));
         KMeans clustering = KMeans.newModel().k.set(2).nstart.set(100).fit(df);
         KMeansResult result = clustering.predict(df);
 
         Frame c = clustering.getCentroids().refSort("x");
-        assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).withName("x"))));
+        assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
         DM cc = clustering.getCentroidsMatrix();
         assertEquals(0, cc.mapCol(0).prod());
         assertEquals(1, cc.mapCol(0).sum());

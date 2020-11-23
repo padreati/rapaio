@@ -54,7 +54,7 @@ public class VarStringTest {
         Iterator<String> it = Arrays.asList(largeValues).iterator();
         assertTrue(copy1.deepEquals(VarString.from(largeValues.length, it::next)));
 
-        VarString copy2 = VarString.copy(largeValues).withName("copy");
+        VarString copy2 = VarString.copy(largeValues).name("copy");
         assertEquals("copy", copy2.name());
 
         VarString copy3 = copy2.copy();

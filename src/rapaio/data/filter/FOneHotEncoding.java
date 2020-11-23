@@ -122,7 +122,7 @@ public class FOneHotEncoding extends AbstractFFilter {
                 Map<String, Var> index = new HashMap<>();
                 // create a new numeric var for each level, filled with 0
                 for (String token : dict) {
-                    Var v = VarBinary.fill(df.rowCount(), 0).withName(varName + "." + token);
+                    Var v = VarBinary.fill(df.rowCount(), 0).name(varName + "." + token);
                     oneHotVars.add(v);
                     index.put(token, v);
                 }

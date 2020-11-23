@@ -55,10 +55,10 @@ public class DensityTableTest {
         assertEquals(Collections.singletonList("b"), dt.rowIndex().getValues());
         assertEquals(Arrays.asList("d", "e"), dt.colIndex().getValues());
 
-        Var x = VarNominal.copy("a", "b", "a", "c").withName("x");
-        Var y = VarNominal.copy("d", "e", "d", "e").withName("y");
+        Var x = VarNominal.copy("a", "b", "a", "c").name("x");
+        Var y = VarNominal.copy("d", "e", "d", "e").name("y");
 
-        Var w = VarDouble.copy(1.0, 2.0, 3.0, 4.0).withName("w");
+        Var w = VarDouble.copy(1.0, 2.0, 3.0, 4.0).name("w");
 
         Frame df = SolidFrame.byVars(x, y);
 

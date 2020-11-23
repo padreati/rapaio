@@ -89,7 +89,7 @@ public class ClassifierResult implements Printable {
             List<String> targetLevels = new ArrayList<>(model.targetLevels(target));
             dictionaries.put(target, targetLevels);
             if (hasClasses) {
-                classes.put(target, VarNominal.empty(df.rowCount(), targetLevels).withName(target));
+                classes.put(target, VarNominal.empty(df.rowCount(), targetLevels).name(target));
             }
             if (hasDensities) {
                 densities.put(target, SolidFrame.matrix(df.rowCount(), targetLevels));

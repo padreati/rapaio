@@ -58,13 +58,13 @@ public class MeshContour extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override

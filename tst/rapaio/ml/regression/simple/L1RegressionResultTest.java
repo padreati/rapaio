@@ -26,7 +26,7 @@ public class L1RegressionResultTest {
         df = Datasets.loadISLAdvertising();
         Var[] vars = new Var[30];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = VarDouble.seq(30).withName("x" + (i + 1));
+            vars[i] = VarDouble.seq(30).name("x" + (i + 1));
         }
         bigDf = SolidFrame.byVars(vars);
     }

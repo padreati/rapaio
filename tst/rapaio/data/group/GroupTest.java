@@ -202,8 +202,8 @@ public class GroupTest {
         String[] groupLevels = new String[]{"alpha", "beta", "gamma", "delta", "iota", "niu", "miu"};
         String[] fieldLevels = new String[]{"x", "y", "z", "t", "a", "b", "d", "c", "f", "m", "n", "p", "q", "w", "e", "j", "k"};
 
-        VarNominal varGroup = VarNominal.from(N, row -> groupLevels[RandomSource.nextInt(groupLevels.length)], groupLevels).withName("group");
-        VarNominal field = VarNominal.from(N, row -> fieldLevels[RandomSource.nextInt(fieldLevels.length)], fieldLevels).withName("field");
+        VarNominal varGroup = VarNominal.from(N, row -> groupLevels[RandomSource.nextInt(groupLevels.length)], groupLevels).name("group");
+        VarNominal field = VarNominal.from(N, row -> fieldLevels[RandomSource.nextInt(fieldLevels.length)], fieldLevels).name("field");
 
         Frame df = SolidFrame.byVars(varGroup, field);
 

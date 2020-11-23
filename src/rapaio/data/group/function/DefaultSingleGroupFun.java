@@ -73,7 +73,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
                 continue;
             }
             if (normalizeLevel == 0) {
-                result.add(VarBinary.fill(aggregate.rowCount(), 1).withName(aggregate.name() + "_N0"));
+                result.add(VarBinary.fill(aggregate.rowCount(), 1).name(aggregate.name() + "_N0"));
                 continue;
             }
             result.add(normalize(group, aggregate));
@@ -110,7 +110,7 @@ public abstract class DefaultSingleGroupFun extends DefaultGroupFun {
 
         // normalize
 
-        VarDouble normalized = VarDouble.empty(count).withName(agg.name() + "_N" + normalizeLevel);
+        VarDouble normalized = VarDouble.empty(count).name(agg.name() + "_N" + normalizeLevel);
         for (int i = 0; i < group.getGroupCount(); i++) {
             double value = agg.getDouble(i);
             if (Double.isNaN(value) || Double.isInfinite(value)) {

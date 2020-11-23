@@ -27,7 +27,7 @@
 
 package rapaio.printer.local;
 
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.Figure;
 import rapaio.image.ImageUtility;
 
 import javax.swing.*;

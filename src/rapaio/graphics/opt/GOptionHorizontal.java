@@ -25,16 +25,27 @@
  *
  */
 
-package rapaio.graphics.base;
-
-import java.awt.*;
-import java.io.Serializable;
+package rapaio.graphics.opt;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public interface Figure extends Serializable {
+public class GOptionHorizontal implements GOption<Boolean> {
 
-    default void paint(Graphics2D g2d, Rectangle rect) {
+    private static final long serialVersionUID = -2622006323719065328L;
+    private final boolean horizontal;
+
+    public GOptionHorizontal(boolean horizontal) {
+        this.horizontal = horizontal;
+    }
+
+    @Override
+    public void bind(GOptions opts) {
+        opts.setHorizontal(this);
+    }
+
+    @Override
+    public Boolean apply(GOptions opts) {
+        return horizontal;
     }
 }

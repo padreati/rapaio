@@ -45,10 +45,10 @@ public class FMapRemoveVarsTest {
     @BeforeEach
     void setUp() {
         df = SolidFrame.byVars(
-                VarDouble.fill(10, 1).withName("a"),
-                VarDouble.fill(10, 2).withName("b"),
-                VarDouble.fill(10, 3).withName("c"),
-                VarNominal.from(10, r -> String.valueOf(r % 3)).withName("d")
+                VarDouble.fill(10, 1).name("a"),
+                VarDouble.fill(10, 2).name("b"),
+                VarDouble.fill(10, 3).name("c"),
+                VarNominal.from(10, r -> String.valueOf(r % 3)).name("d")
         );
     }
 

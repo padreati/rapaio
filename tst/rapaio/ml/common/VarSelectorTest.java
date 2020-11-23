@@ -53,15 +53,15 @@ public class VarSelectorTest {
     void setUp() {
         df = SolidFrame.byVars(
                 0,
-                VarInt.scalar(1).withName("a"),
-                VarInt.scalar(1).withName("b"),
-                VarInt.scalar(1).withName("c"),
-                VarInt.scalar(1).withName("d"),
-                VarInt.scalar(1).withName("e"),
-                VarInt.scalar(1).withName("f"),
-                VarInt.scalar(1).withName("g"),
-                VarInt.scalar(1).withName("h"),
-                VarInt.scalar(1).withName("class"));
+                VarInt.scalar(1).name("a"),
+                VarInt.scalar(1).name("b"),
+                VarInt.scalar(1).name("c"),
+                VarInt.scalar(1).name("d"),
+                VarInt.scalar(1).name("e"),
+                VarInt.scalar(1).name("f"),
+                VarInt.scalar(1).name("g"),
+                VarInt.scalar(1).name("h"),
+                VarInt.scalar(1).name("class"));
         classColName = "class";
         RandomSource.setSeed(1234);
     }

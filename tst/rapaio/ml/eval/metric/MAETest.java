@@ -18,9 +18,9 @@ public class MAETest {
     void smokeTest() {
 
         final int N = 100;
-        Var x = VarDouble.fill(N, 0).withName("x");
-        Var y = VarDouble.seq(1, N).withName("y");
-        Var z = VarDouble.from(y, value -> -value).withName("z");
+        Var x = VarDouble.fill(N, 0).name("x");
+        Var y = VarDouble.seq(1, N).name("y");
+        Var z = VarDouble.from(y, value -> -value).name("z");
 
 
         MAE mae1 = MAE.from(x, y);

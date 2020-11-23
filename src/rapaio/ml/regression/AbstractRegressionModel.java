@@ -131,7 +131,7 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
     @Override
     public M fit(Frame df, String... targetVarNames) {
-        VarDouble weights = VarDouble.fill(df.rowCount(), 1).withName("weights");
+        VarDouble weights = VarDouble.fill(df.rowCount(), 1).name("weights");
         return fit(df, weights, targetVarNames);
     }
 

@@ -98,7 +98,7 @@ Otherwise, use erfc() if your C compiler has one with adequate accuracy.
               cPhi(3.3)  needs R(3.3) and 3.3=4-.7, so use h=-.7 and R(4)=v[2].
     */
     double cPhi(double x) {
-        double v[] = {1.25331413731550025, .421369229288054473, .236652382913560671,
+        double[] v = {1.25331413731550025, .421369229288054473, .236652382913560671,
                 .162377660896867462, .123131963257932296, .0990285964717319214,
                 .0827662865013691773, .0710695805388521071, .0622586659950261958};
         double h, a, b, z, t, s, pwr;
@@ -215,14 +215,14 @@ Otherwise, use erfc() if your C compiler has one with adequate accuracy.
     void run() {
 
         double zz = 1.2;
-        System.out.println(String.format("     lim n->infty Prob(A_n < %f) = %18.16f\n", zz, ADinf(zz)));
+        System.out.printf("     lim n->infty Prob(A_n < %f) = %18.16f\n%n", zz, ADinf(zz));
 
         int i, n;
         double x, z;
-        double u[] = {
+        double[] u = {
                 .0392, .0884, .260, .310, .454, .644, .797, .813, .921, .960
         };
-        double w[] = {
+        double[] w = {
                 .0015, .0078, .0676, .0961, .106, .107, .835, .861, .948, .992
         };
         printf("The AD test for uniformity of \n{ ");

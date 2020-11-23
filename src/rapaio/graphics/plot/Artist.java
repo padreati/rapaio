@@ -41,21 +41,24 @@ public abstract class Artist implements Serializable {
     protected final GOptions options = new GOptions();
     protected Plot plot;
 
+    public void bind(Plot plot) {
+        this.plot = plot;
+        this.options.setParent(plot.options);
+        if (this.plot.xAxis().type().equals(Axis.Type.UNKNOWN)) {
+            this.plot.xAxis().type(xAxisType());
+        }
+        if (this.plot.yAxis().type().equals(Axis.Type.UNKNOWN)) {
+            this.plot.yAxis().type(yAxisType());
+        }
+    }
+
+    public abstract Axis.Type xAxisType();
+
+    public abstract Axis.Type yAxisType();
+
     public GOptions getOptions() {
         return options;
     }
-
-    public void bind(Plot parent) {
-        if (parent == null) {
-            throw new IllegalArgumentException("parent plot reference is null");
-        }
-        this.plot = parent;
-        this.options.setParent(parent.options);
-    }
-
-    public abstract Axis newXAxis();
-
-    public abstract Axis newYAxis();
 
     public double xScale(double x) {
         return plot.xScale(x);

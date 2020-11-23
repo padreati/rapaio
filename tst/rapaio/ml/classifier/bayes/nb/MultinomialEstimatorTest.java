@@ -26,8 +26,8 @@ public class MultinomialEstimatorTest {
         var estim1 = MultinomialEstimator.fromNames("x", "y", "z");
         var estim2 = MultinomialEstimator.fromNames(Arrays.asList("x", "y", "z"));
         var estim3 = MultinomialEstimator.fromRange(SolidFrame.byVars(
-                VarDouble.empty().withName("x"), VarDouble.empty().withName("y"), VarDouble.empty().withName("z"),
-                VarNominal.empty().withName("a")
+                VarDouble.empty().name("x"), VarDouble.empty().name("y"), VarDouble.empty().name("z"),
+                VarNominal.empty().name("a")
         ), VRange.onlyTypes(VType.DOUBLE));
 
         var estim4 = estim3.newInstance();
@@ -35,8 +35,8 @@ public class MultinomialEstimatorTest {
         var estim5 = MultinomialEstimator.fromNames(1, "x", "y", "z");
         var estim6 = MultinomialEstimator.fromNames(1, Arrays.asList("x", "y", "z"));
         var estim7 = MultinomialEstimator.fromRange(1, SolidFrame.byVars(
-                VarDouble.empty().withName("x"), VarDouble.empty().withName("y"), VarDouble.empty().withName("z"),
-                VarNominal.empty().withName("a")
+                VarDouble.empty().name("x"), VarDouble.empty().name("y"), VarDouble.empty().name("z"),
+                VarNominal.empty().name("a")
         ), VRange.onlyTypes(VType.DOUBLE));
 
         var estim8 = estim7.newInstance();
@@ -55,10 +55,10 @@ public class MultinomialEstimatorTest {
     @Test
     void testInvalidBuilders() {
 
-        Var x1 = VarDouble.wrap(0, 1.1, 2).withName("x1");
-        Var x2 = VarDouble.wrap(-1, 2, 3).withName("x2");
-        Var x3 = VarDouble.wrap(1, 0, 100).withName("x3");
-        Var t = VarNominal.copy("a", "b", "c").withName("t");
+        Var x1 = VarDouble.wrap(0, 1.1, 2).name("x1");
+        Var x2 = VarDouble.wrap(-1, 2, 3).name("x2");
+        Var x3 = VarDouble.wrap(1, 0, 100).name("x3");
+        Var t = VarNominal.copy("a", "b", "c").name("t");
 
         var ex = assertThrows(IllegalArgumentException.class, () -> MultinomialEstimator.fromNames("x3"));
         assertEquals("Multinomial estimator must apply to at least 2 variables.", ex.getMessage());
@@ -83,9 +83,9 @@ public class MultinomialEstimatorTest {
     @Test
     void testFittedName() {
 
-        Var x1 = VarDouble.copy(1, 2, 3, 1, 2, 3).withName("x1");
-        Var x2 = VarDouble.copy(3, 2, 1, 3, 2, 1).withName("x2");
-        Var t = VarNominal.copy("a", "a", "a", "b", "b", "b").withName("t");
+        Var x1 = VarDouble.copy(1, 2, 3, 1, 2, 3).name("x1");
+        Var x2 = VarDouble.copy(3, 2, 1, 3, 2, 1).name("x2");
+        Var t = VarNominal.copy("a", "a", "a", "b", "b", "b").name("t");
 
         var estimator = MultinomialEstimator.fromNames("x1", "x2");
         estimator.fit(SolidFrame.byVars(x1, x2, t), null, "t");
@@ -95,9 +95,9 @@ public class MultinomialEstimatorTest {
 
     @Test
     void testFitAndPredict() {
-        Var x1 = VarDouble.copy(1, 2, 3, 1, 2, 3, 0).withName("x1");
-        Var x2 = VarDouble.copy(3, 2, 1, 3, 2, 1, 0).withName("x2");
-        Var t = VarNominal.copy("a", "a", "a", "b", "b", "b").withName("t");
+        Var x1 = VarDouble.copy(1, 2, 3, 1, 2, 3, 0).name("x1");
+        Var x2 = VarDouble.copy(3, 2, 1, 3, 2, 1, 0).name("x2");
+        Var t = VarNominal.copy("a", "a", "a", "b", "b", "b").name("t");
 
         var estimator = MultinomialEstimator.fromNames("x1", "x2");
         var df = SolidFrame.byVars(x1, x2, t);

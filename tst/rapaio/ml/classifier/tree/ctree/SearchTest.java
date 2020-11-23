@@ -80,8 +80,8 @@ public class SearchTest {
     @Test
     void binaryBinaryTest() {
         var df = SolidFrame.byVars(
-                VarBinary.copy(0, 0, 0, 1, 1, 1).withName("x"),
-                VarNominal.copy("a", "a", "b", "b", "b", "b").withName("y")
+                VarBinary.copy(0, 0, 0, 1, 1, 1).name("x"),
+                VarNominal.copy("a", "a", "b", "b", "b", "b").name("y")
         );
 
         var candidate = Search.BinaryBinary.computeCandidate(CTree.newDecisionStump().minCount.set(1),

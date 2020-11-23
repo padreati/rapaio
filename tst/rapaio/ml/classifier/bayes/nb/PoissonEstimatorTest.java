@@ -35,9 +35,9 @@ public class PoissonEstimatorTest {
         assertEquals(estimator1.fittedName(), estimator2.fittedName());
 
         SolidFrame df = SolidFrame.byVars(
-                VarInt.seq(0, 10).withName("x"),
-                VarInt.seq(0, 10).withName("y"),
-                VarInt.seq(0, 10).withName("z")
+                VarInt.seq(0, 10).name("x"),
+                VarInt.seq(0, 10).name("y"),
+                VarInt.seq(0, 10).name("z")
         );
         var list1 = PoissonEstimator.forRange(df, VRange.all());
         var list2 = PoissonEstimator.forNames("x", "y", "z");
@@ -50,8 +50,8 @@ public class PoissonEstimatorTest {
     @Test
     void testFitPredict() {
         Poisson poisson = Poisson.of(10);
-        VarDouble sample = poisson.sample(10_000).withName("x");
-        Frame df = SolidFrame.byVars(sample, VarNominal.from(10_000, row -> row % 2 == 0 ? "a" : "b").withName("y"));
+        VarDouble sample = poisson.sample(10_000).name("x");
+        Frame df = SolidFrame.byVars(sample, VarNominal.from(10_000, row -> row % 2 == 0 ? "a" : "b").name("y"));
 
         var estim = PoissonEstimator.forName("x");
         estim.fit(df, VarDouble.fill(df.rowCount(), 1), "y");
@@ -66,7 +66,7 @@ public class PoissonEstimatorTest {
         assertTrue(Math.abs(lambdaMap.get("a").getLambda() - 10) <= 1);
         assertTrue(Math.abs(lambdaMap.get("b").getLambda() - 10) <= 1);
 
-        Frame test = SolidFrame.byVars(VarDouble.copy(1, 2, 3).withName("x"));
+        Frame test = SolidFrame.byVars(VarDouble.copy(1, 2, 3).name("x"));
         assertEquals(lambdaMap.get("a").pdf(1), estim.predict(test, 0, "a"));
         assertEquals(lambdaMap.get("b").pdf(3), estim.predict(test, 2, "b"));
         assertEquals(1e-100, estim.predict(test, 0, "c"));
@@ -74,8 +74,8 @@ public class PoissonEstimatorTest {
 
     @Test
     void testInvalidVauluesOnFit() {
-        VarDouble x = VarDouble.copy(0, -1, 100).withName("x");
-        VarNominal y = VarNominal.copy("a", "a", "b").withName("y");
+        VarDouble x = VarDouble.copy(0, -1, 100).name("x");
+        VarNominal y = VarNominal.copy("a", "a", "b").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
         assertFalse(PoissonEstimator.forName("x").fit(df, VarDouble.fill(3, 1), "y"));

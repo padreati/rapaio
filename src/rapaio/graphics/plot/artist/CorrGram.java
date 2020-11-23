@@ -82,22 +82,22 @@ public class CorrGram extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.numeric(plot);
+    public void bind(Plot plot) {
+        super.bind(plot);
+        plot.bottomMarkers(false);
+        plot.bottomThick(false);
+        plot.leftMarkers(false);
+        plot.leftThick(false);
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override
-    public void bind(Plot parent) {
-        super.bind(parent);
-        parent.bottomMarkers(false);
-        parent.bottomThick(false);
-        parent.leftMarkers(false);
-        parent.leftThick(false);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     private int computeIndex(int i, int j) {
@@ -138,6 +138,7 @@ public class CorrGram extends Artist {
                     double height = bounds.getHeight();
 
                     g2d.setColor(Color.BLACK);
+                    g2d.setStroke(new BasicStroke(1f));
                     g2d.drawString(label,
                             (int) (xScale(j) + xstep / 2 - width / 2),
                             (int) (yScale(d.length() - i) + ystep / 2 + height / 2));

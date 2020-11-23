@@ -45,11 +45,11 @@ public class ClassifierEvaluationResult implements Printable {
         this.eval = eval;
 
         List<Var> vars = new ArrayList<>();
-        vars.add(VarNominal.empty().withName(FIELD_DATASET));
-        vars.add(VarInt.empty().withName(FIELD_ROUND));
-        vars.add(VarInt.empty().withName(FIELD_FOLD));
+        vars.add(VarNominal.empty().name(FIELD_DATASET));
+        vars.add(VarInt.empty().name(FIELD_ROUND));
+        vars.add(VarInt.empty().name(FIELD_FOLD));
         for (ClassifierMetric metric : eval.getMetrics()) {
-            vars.add(VarDouble.empty().withName(metric.getName()));
+            vars.add(VarDouble.empty().name(metric.getName()));
         }
         trainScores = SolidFrame.byVars(vars).copy();
         testScores = trainScores.copy();
@@ -112,10 +112,10 @@ public class ClassifierEvaluationResult implements Printable {
         StringBuilder sb = new StringBuilder();
         sb.append("CV score in training data\n");
         sb.append("=========================\n");
-        Var datasetVar = VarNominal.empty().withName("dataset");
-        Var metricVar = VarNominal.empty().withName("metric");
-        Var meanVar = VarDouble.empty().withName("mean");
-        Var stdVar = VarDouble.empty().withName("std");
+        Var datasetVar = VarNominal.empty().name("dataset");
+        Var metricVar = VarNominal.empty().name("metric");
+        Var meanVar = VarDouble.empty().name("mean");
+        Var stdVar = VarDouble.empty().name("std");
         Frame global = SolidFrame.byVars(datasetVar, metricVar, meanVar, stdVar);
 
         for (ClassifierMetric metric : eval.getMetrics()) {

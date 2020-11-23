@@ -160,13 +160,13 @@ public class BarPlot extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.nominal(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.CATEGORY;
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override

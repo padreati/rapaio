@@ -298,7 +298,7 @@ public class VarBinaryTest {
 
     @Test
     void testPrint() {
-        VarBinary var = VarBinary.copy(IntStream.range(0, 200).map(x -> RandomSource.nextInt(3) - 1).toArray()).withName("x");
+        VarBinary var = VarBinary.copy(IntStream.range(0, 200).map(x -> RandomSource.nextInt(3) - 1).toArray()).name("x");
         assertEquals("VarBinary [name:\"x\", rowCount:200, values: 1, 1, 1, 1, ?, 1, ?, 0, 1, 0, 1, ?, 1, 1, 0, ?, ..., 0, 0]", var.toString());
 
         WS.getPrinter().withOptions(textWidth(100));

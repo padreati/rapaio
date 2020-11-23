@@ -83,8 +83,8 @@ public class BinaryLogisticTest {
                 .init.set(BinaryLogistic.Initialize.ZERO)
                 .eps.set(0.000001);
 
-        VarDouble x = VarDouble.copy(-5, -4, -3, -2, -1, 1, 2, 3, 4, 5).withName("x");
-        VarNominal y = VarNominal.copy("1", "1", "1", "1", "1", "0", "0", "0", "0", "0").withName("y");
+        VarDouble x = VarDouble.copy(-5, -4, -3, -2, -1, 1, 2, 3, 4, 5).name("x");
+        VarNominal y = VarNominal.copy("1", "1", "1", "1", "1", "0", "0", "0", "0", "0").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
         var result1 = model1.fit(df, "y").predict(df);

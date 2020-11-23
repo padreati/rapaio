@@ -68,7 +68,7 @@ public class Pacf implements Printable {
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];
-        pacf = VarDouble.empty(lags.rowCount()).withName("pacf");
+        pacf = VarDouble.empty(lags.rowCount()).name("pacf");
         w[0] = cor.getDouble(1);
         pacf.setDouble(0, cor.getDouble(1));
         for (int ll = 1; ll < nlag; ll++) {

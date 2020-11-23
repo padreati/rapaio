@@ -51,7 +51,7 @@ public class RowSamplerTest {
     @BeforeEach
     public void setUp() {
         df = Datasets.loadIrisDataset();
-        w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).withName("w");
+        w = VarDouble.from(df.rowCount(), row -> (double) df.getInt(row, "class")).name("w");
         assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
     }
 
@@ -67,7 +67,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        VarDouble count = VarDouble.empty().withName("bcount");
+        VarDouble count = VarDouble.empty().name("bcount");
         for (int i = 0; i < N; i++) {
             RowSampler.Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
             count.addDouble(1.0 * s.getMapping().stream().distinct().count() / df.rowCount());
@@ -82,7 +82,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        VarDouble count = VarDouble.fill(df.rowCount(), 0.0).withName("sscount");
+        VarDouble count = VarDouble.fill(df.rowCount(), 0.0).name("sscount");
         for (int i = 0; i < N; i++) {
             RowSampler.Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
             s.getMapping().stream().forEach(r -> count.setDouble(r, count.getDouble(r) + 1));

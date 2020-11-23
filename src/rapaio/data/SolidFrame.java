@@ -78,7 +78,7 @@ public class SolidFrame extends AbstractFrame {
     public static SolidFrame emptyFrom(Frame src, int rowCount) {
         Var[] vars = new Var[src.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.rvar(i).type().newInstance(rowCount).withName(src.rvar(i).name());
+            vars[i] = src.rvar(i).type().newInstance(rowCount).name(src.rvar(i).name());
         }
         return SolidFrame.byVars(vars);
     }
@@ -105,7 +105,7 @@ public class SolidFrame extends AbstractFrame {
      */
     public static Frame matrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        colNames.forEach(n -> vars.add(VarDouble.fill(rows, 0).withName(n)));
+        colNames.forEach(n -> vars.add(VarDouble.fill(rows, 0).name(n)));
         return SolidFrame.byVars(rows, vars);
     }
 

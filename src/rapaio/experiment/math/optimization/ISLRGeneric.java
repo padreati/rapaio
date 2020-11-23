@@ -74,7 +74,7 @@ public class ISLRGeneric {
         // initial L2 solution
 
         DV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
-        VarDouble err = VarDouble.empty().withName("errors");
+        VarDouble err = VarDouble.empty().name("errors");
 
         for (int it = 0; it < maxIt; it++) {
 
@@ -153,7 +153,7 @@ public class ISLRGeneric {
         // initial L2 solution
         DV x = QRDecomposition.from(A).solve(b.asMatrix()).mapCol(0);
 
-        VarDouble err = VarDouble.empty().withName("errors");
+        VarDouble err = VarDouble.empty().name("errors");
 
         for (int k = 0; k < iterMax; k++) {
             if (p >= 2) {
@@ -213,7 +213,7 @@ public class ISLRGeneric {
     public static void main(String[] args) {
 
         Frame df = Datasets.loasSAheart().removeVars(VRange.of(0)).removeVars("typea,adiposity");
-        VarDouble intercept = VarDouble.fill(df.rowCount(), 1).withName("(Intercept)");
+        VarDouble intercept = VarDouble.fill(df.rowCount(), 1).name("(Intercept)");
         Frame dfa = SolidFrame.byVars(intercept).bindVars(df.removeVars("chd"));
 
         dfa.printSummary();

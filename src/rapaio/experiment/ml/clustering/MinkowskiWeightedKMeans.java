@@ -166,7 +166,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         centroids = bestCentroids;
 
         arrows = VarInt.fill(df.rowCount(), -1);
-        errors = VarDouble.empty().withName("errors");
+        errors = VarDouble.empty().name("errors");
 
         assignToCentroids(df);
         repairEmptyClusters(df);
@@ -415,14 +415,14 @@ public class MinkowskiWeightedKMeans implements Printable {
 
     private void buildSummary(Frame df) {
 
-        VarInt summaryId = VarInt.seq(1, centroids.rowCount()).withName("ID");
-        VarInt summaryCount = VarInt.fill(centroids.rowCount(), 0).withName("count");
-        VarDouble summaryMean = VarDouble.fill(centroids.rowCount(), 0).withName("mean");
-        VarDouble summaryVar = VarDouble.fill(centroids.rowCount(), 0).withName("var");
-        VarDouble summaryVarP = VarDouble.fill(centroids.rowCount(), 0).withName("var/total");
-        VarDouble summarySd = VarDouble.fill(centroids.rowCount(), 0).withName("sd");
+        VarInt summaryId = VarInt.seq(1, centroids.rowCount()).name("ID");
+        VarInt summaryCount = VarInt.fill(centroids.rowCount(), 0).name("count");
+        VarDouble summaryMean = VarDouble.fill(centroids.rowCount(), 0).name("mean");
+        VarDouble summaryVar = VarDouble.fill(centroids.rowCount(), 0).name("var");
+        VarDouble summaryVarP = VarDouble.fill(centroids.rowCount(), 0).name("var/total");
+        VarDouble summarySd = VarDouble.fill(centroids.rowCount(), 0).name("sd");
 
-        summaryAllDist = VarDouble.empty().withName("all dist");
+        summaryAllDist = VarDouble.empty().name("all dist");
 
         Map<Integer, VarDouble> errors = new HashMap<>();
 
@@ -479,7 +479,7 @@ public class MinkowskiWeightedKMeans implements Printable {
             sb.append(summary.fapply(FRefSort.by(summary.rvar("count").refComparator(false))).toFullContent(printer, options));
             sb.append("\n");
             sb.append("Cluster weights:\n");
-            Frame w = SolidFrame.byVars(VarInt.seq(k).withName("ID")).bindVars(weights);
+            Frame w = SolidFrame.byVars(VarInt.seq(k).name("ID")).bindVars(weights);
             sb.append(w.toFullContent(printer, options));
             sb.append("\n");
         }

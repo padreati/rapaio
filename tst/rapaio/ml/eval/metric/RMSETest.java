@@ -24,9 +24,9 @@ public class RMSETest {
 
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
-        VarDouble x = normal.sample(100).withName("x");
-        VarDouble y = VarDouble.from(x, val -> val + 1).withName("y");
-        VarDouble z = VarDouble.from(x, val -> val - 2).withName("z");
+        VarDouble x = normal.sample(100).name("x");
+        VarDouble y = VarDouble.from(x, val -> val + 1).name("y");
+        VarDouble z = VarDouble.from(x, val -> val - 2).name("z");
 
         RegressionScore rmse1 = RMSE.newMetric().compute(x, y);
         RegressionScore rmse2 = RMSE.newMetric().compute(x, z);

@@ -610,7 +610,7 @@ public class Group implements Printable {
                 // first they are empty
                 List<Var> unstackedVars = new ArrayList<>();
                 for (String unstackId : unstackIds) {
-                    Var newAgg = result.rvar(aggregateVarName).newInstance(unstackedDf.rowCount()).withName(unstackId + aggregateVarName);
+                    Var newAgg = result.rvar(aggregateVarName).newInstance(unstackedDf.rowCount()).name(unstackId + aggregateVarName);
                     // fill with missing values
                     for (int i = 0; i < newAgg.rowCount(); i++) {
                         newAgg.setMissing(i);

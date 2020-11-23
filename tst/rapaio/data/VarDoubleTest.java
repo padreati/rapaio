@@ -186,12 +186,12 @@ public class VarDoubleTest {
 
     @Test
     void testWithName() {
-        VarDouble x = VarDouble.copy(1, 2, 3, 5).withName("X");
+        VarDouble x = VarDouble.copy(1, 2, 3, 5).name("X");
         assertEquals("X", x.name());
 
         Var y = MappedVar.byRows(x, 1, 2);
         assertEquals("X", y.name());
-        y.withName("y");
+        y.name("y");
         assertEquals("y", y.name());
 
         assertEquals(2.0, y.getDouble(0), 10e-10);
@@ -200,7 +200,7 @@ public class VarDoubleTest {
 
     @Test
     void testOtherValues() {
-        VarDouble x = VarDouble.copy(1, 2, 3, 4).withName("x");
+        VarDouble x = VarDouble.copy(1, 2, 3, 4).name("x");
 
         x.addInt(10);
         assertEquals(10, x.getDouble(x.rowCount() - 1), 10e-10);

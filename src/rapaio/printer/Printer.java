@@ -27,7 +27,7 @@
 
 package rapaio.printer;
 
-import rapaio.graphics.base.Figure;
+import rapaio.graphics.Figure;
 import rapaio.printer.opt.POption;
 import rapaio.printer.opt.POptionTextWidth;
 import rapaio.printer.opt.POpts;

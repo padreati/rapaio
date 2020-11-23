@@ -63,7 +63,6 @@ public class BoxPlot extends Artist {
     private final GOptions options = new GOptions();
 
     public BoxPlot(Var x, Var factor, GOption<?>... opts) {
-
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.getLabel(s.row()), mapping(VSpot::getDouble, toList())));
         names = factor.levels().stream().filter(map::containsKey).toArray(String[]::new);
         vars = Arrays.stream(names).map(map::get).map(VarDouble::copy).toArray(Var[]::new);
@@ -93,13 +92,13 @@ public class BoxPlot extends Artist {
     }
 
     @Override
-    public Axis newXAxis() {
-        return Axis.nominal(plot);
+    public Axis.Type xAxisType() {
+        return Axis.Type.CATEGORY;
     }
 
     @Override
-    public Axis newYAxis() {
-        return Axis.numeric(plot);
+    public Axis.Type yAxisType() {
+        return Axis.Type.NUMERIC;
     }
 
     @Override

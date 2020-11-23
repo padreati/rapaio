@@ -118,7 +118,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
                             }
                             logger.fine("started fitting weak learner...");
                             return weaks.get(i).predict(df).firstDensity().rvar(1).copy()
-                                    .withName("V" + i);
+                                    .name("V" + i);
                         })
                         .collect(toList());
 
@@ -149,7 +149,7 @@ public class CStacking extends AbstractClassifierModel<CStacking, ClassifierResu
                             .firstDensity()
                             .rvar(1)
                             .copy()
-                            .withName("V" + i);
+                            .name("V" + i);
                 }).collect(toList());
         return PredSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }

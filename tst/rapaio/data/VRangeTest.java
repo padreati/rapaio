@@ -40,12 +40,12 @@ public class VRangeTest {
     @Test
     void testSmoke() {
         Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("a"),
-                VarDouble.empty().withName("b"),
-                VarDouble.empty().withName("c"),
-                VarDouble.empty().withName("d"),
-                VarNominal.empty(0, "A", "B").withName("x"),
-                VarNominal.empty(0, "C", "D").withName("y")
+                VarDouble.empty().name("a"),
+                VarDouble.empty().name("b"),
+                VarDouble.empty().name("c"),
+                VarDouble.empty().name("d"),
+                VarNominal.empty(0, "A", "B").name("x"),
+                VarNominal.empty(0, "C", "D").name("y")
         );
 
         test(VRange.of(0, 2), df,
@@ -102,12 +102,12 @@ public class VRangeTest {
     @Test
     public void testInvalidRanges() {
         Frame df = SolidFrame.byVars(
-                VarDouble.empty().withName("a"),
-                VarDouble.empty().withName("b"),
-                VarDouble.empty().withName("c"),
-                VarDouble.empty().withName("d"),
-                VarNominal.empty(0, "A", "B").withName("x"),
-                VarNominal.empty(0, "C", "D").withName("y")
+                VarDouble.empty().name("a"),
+                VarDouble.empty().name("b"),
+                VarDouble.empty().name("c"),
+                VarDouble.empty().name("d"),
+                VarNominal.empty(0, "A", "B").name("x"),
+                VarNominal.empty(0, "C", "D").name("y")
         );
 
         test(VRange.of("0~af,a~q,q,q~a"), df, new int[0], new String[0], new String[0]);

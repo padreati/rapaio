@@ -7,6 +7,9 @@
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
  *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2017 Aurelian Tutuianu
+ *    Copyright 2018 Aurelian Tutuianu
+ *    Copyright 2019 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,29 +25,17 @@
  *
  */
 
-package rapaio.data.filter;
+package rapaio.graphics;
 
-import org.junit.jupiter.api.Test;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.VarDouble;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.awt.*;
+import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FInterceptTest {
+public interface Figure extends Serializable {
 
-    @Test
-    void testInterceptValues() {
-        Frame before = SolidFrame.byVars(VarDouble.fill(100, 1).name("a"));
-        Frame after = FIntercept.filter().newInstance().fapply(before);
+    void prepare(Rectangle rectangle);
 
-        assertEquals(2, after.varCount());
-        assertEquals(FIntercept.INTERCEPT, after.varNames()[0]);
-
-        Frame again = FIntercept.filter().fapply(after);
-        assertEquals(after, again);
-    }
+    void paint(Graphics2D g2d, Rectangle rectangle);
 }

@@ -125,6 +125,7 @@ public class BernoulliEstimator extends AbstractEstimator {
             }
         }
         this.density = density.normalizeOnRows();
+        this.hasLearned = true;
         return true;
     }
 

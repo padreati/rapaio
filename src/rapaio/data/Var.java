@@ -61,7 +61,7 @@ public interface Var extends Serializable, Printable {
      *
      * @param name future name of the variable
      */
-    Var withName(String name);
+    Var name(String name);
 
     /**
      * @return variable type

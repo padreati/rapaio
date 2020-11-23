@@ -99,8 +99,8 @@ public class VarString extends AbstractVar {
     }
 
     @Override
-    public VarString withName(String name) {
-        return (VarString) super.withName(name);
+    public VarString name(String name) {
+        return (VarString) super.name(name);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class VarString extends AbstractVar {
 
     @Override
     public VarString copy() {
-        VarString copy = new VarString(0).withName(name());
+        VarString copy = new VarString(0).name(name());
         copy.values = new ArrayList<>(values);
         return copy;
     }

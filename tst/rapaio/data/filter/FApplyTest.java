@@ -20,8 +20,8 @@ public class FApplyTest {
     @Test
     void spotTest() {
         var df = SolidFrame.byVars(
-                VarNominal.copy("a", "b", "c").withName("x1"),
-                VarDouble.copy(1, 2, 3).withName("x2")
+                VarNominal.copy("a", "b", "c").name("x1"),
+                VarDouble.copy(1, 2, 3).name("x2")
         );
         df.fapply(FApply.onSpot(s -> {
             s.setMissing(0);
@@ -52,7 +52,7 @@ public class FApplyTest {
 
     @Test
     void testInt() {
-        Frame df = SolidFrame.byVars(VarInt.seq(1, 100).withName("x"));
+        Frame df = SolidFrame.byVars(VarInt.seq(1, 100).name("x"));
         Frame copy = df.copy().fapply(FApply.onInt(i -> i + 1, VRange.all()));
         for (int j = 0; j < df.rowCount(); j++) {
             assertEquals(j + 2, copy.getInt(j, 0));
@@ -61,7 +61,7 @@ public class FApplyTest {
 
     @Test
     void testString() {
-        Frame df = SolidFrame.byVars(VarNominal.copy("a", "b", "a", "b").withName("x"));
+        Frame df = SolidFrame.byVars(VarNominal.copy("a", "b", "a", "b").name("x"));
         Frame copy = df.copy().fapply(FApply.onLabel(l -> "a".equals(l) ? "b" : "a", VRange.all()));
         for (int j = 0; j < df.rowCount(); j++) {
             assertEquals(j % 2 == 0 ? "b" : "a", copy.getLabel(j, 0));
