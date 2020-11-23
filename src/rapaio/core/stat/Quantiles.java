@@ -31,6 +31,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
+import rapaio.util.collection.DoubleArrays;
 
 import java.util.Arrays;
 
@@ -92,11 +93,7 @@ public class Quantiles implements Printable {
             return x;
         }
         if (completeCount == 1) {
-            double[] values = new double[percentiles.length];
-            for (int i = 0; i < values.length; i++) {
-                values[i] = x[0];
-            }
-            return values;
+            return DoubleArrays.newFill(percentiles.length, 0);
         }
 
         Arrays.sort(x, 0, completeCount);

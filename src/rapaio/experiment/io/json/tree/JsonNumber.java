@@ -86,7 +86,7 @@ public class JsonNumber extends JsonValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JsonNumber that = (JsonNumber) o;
-        return !(!Objects.equals(original, that.original));
+        return Objects.equals(original, that.original);
     }
 
     @Override

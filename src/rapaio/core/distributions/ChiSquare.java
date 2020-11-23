@@ -57,7 +57,7 @@ public final class ChiSquare implements Distribution {
         this.df = df;
         this.b = Math.sqrt(df - 1.0);
         double vm1 = -0.6065306597 * (1.0 - 0.25 / (b * b + 1.0));
-        this.vm = (-b > vm1) ? -b : vm1;
+        this.vm = Math.max(-b, vm1);
         this.vd = 0.6065306597 * (0.7071067812 + b) / (0.5 + b) - vm;
     }
 

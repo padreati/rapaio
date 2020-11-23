@@ -266,7 +266,7 @@ final class NominalEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " = \'" + testValue + "\'";
+        return testName + " = '" + testValue + "'";
     }
 }
 
@@ -291,6 +291,6 @@ final class NominalNotEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " != \'" + testValue + "\'";
+        return testName + " != '" + testValue + "'";
     }
 }

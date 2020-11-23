@@ -42,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -71,8 +72,9 @@ public class JsonInputFlat implements JsonInput {
 
     public JsonInputFlat(File file) throws IOException {
         this.reader = (file.getName().endsWith(".gz")) ?
-                new InputStreamReader(new GZIPInputStream(new BufferedInputStream(new FileInputStream(file), 1024 * 1024), 16 * 1024), "utf-8") :
-                new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), "utf-8");
+                new InputStreamReader(new GZIPInputStream(new BufferedInputStream(new FileInputStream(file), 1024 * 1024), 16 * 1024),
+                        StandardCharsets.UTF_8) :
+                new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), StandardCharsets.UTF_8);
     }
 
     public JsonInputFlat(String text) {
@@ -317,7 +319,7 @@ public class JsonInputFlat implements JsonInput {
         if (reader != null) {
             try {
                 reader.close();
-            } catch (IOException ingored) {
+            } catch (IOException ignored) {
             }
         }
     }

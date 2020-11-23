@@ -62,8 +62,8 @@ public abstract class AbstractPrinter implements Printer {
     }
 
     @Override
-    public Printer withOptions(POption... options) {
-        for (POption option : options) {
+    public Printer withOptions(POption<?>... options) {
+        for (POption<?> option : options) {
             option.bind(opts);
         }
         return this;

@@ -42,7 +42,7 @@ public class NominalRule extends Rule {
 
     private final String testLabel;
 
-    public NominalRule(String testLabel, String targetLevel, DensityVector dv) {
+    public NominalRule(String testLabel, String targetLevel, DensityVector<String> dv) {
         super(targetLevel, dv);
         this.testLabel = testLabel;
     }

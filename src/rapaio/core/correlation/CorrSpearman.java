@@ -80,11 +80,6 @@ public class CorrSpearman extends AbstractCorrelation {
     }
 
     private void compute(Var[] vars) {
-        String[] names = new String[vars.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = vars[i].name();
-        }
-
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {

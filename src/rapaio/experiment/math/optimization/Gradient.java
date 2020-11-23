@@ -203,7 +203,7 @@ class LogisticGradient implements Gradient {
         int dataSize = data.size();
 
         // (weights.size / dataSize + 1) is number of classes
-        if (weights.size() % dataSize == 0 && numClasses == weights.size() / dataSize * 1.0 + 1)
+        if (weights.size() % dataSize == 0 && numClasses == 1.0 * weights.size() / dataSize + 1)
             throw new IllegalArgumentException("");
         switch (numClasses) {
             case 2:

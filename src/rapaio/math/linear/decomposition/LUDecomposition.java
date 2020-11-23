@@ -149,7 +149,7 @@ public class LUDecomposition implements Serializable, Printable {
         if (rowCount != colCount) {
             throw new IllegalArgumentException("Matrix must be square.");
         }
-        double d = (double) pivSign;
+        double d = pivSign;
         for (int j = 0; j < colCount; j++) {
             d *= LU.get(j, j);
         }

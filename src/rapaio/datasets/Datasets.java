@@ -188,7 +188,7 @@ public class Datasets {
                 row -> row % 13 == 0 ? Integer.MIN_VALUE : RandomSource.nextInt(100) - 50)
                 .name("int"));
         vars.add(VarLong.from(n,
-                row -> row % 17 == 0 ? Long.MIN_VALUE : 3l * RandomSource.nextInt(Integer.MAX_VALUE))
+                row -> row % 17 == 0 ? Long.MIN_VALUE : 3L * RandomSource.nextInt(Integer.MAX_VALUE))
                 .name("long"));
         String[] labels = new String[]{"a", "b", "c", "d", "e"};
         vars.add(VarNominal.from(n,

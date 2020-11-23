@@ -44,7 +44,7 @@ public class FigurePanel extends JPanel {
 
     private final Figure figure;
     protected volatile BufferedImage currentImage;
-    protected volatile SwingWorker<BufferedImage, Object> drawWorker;
+    protected SwingWorker<BufferedImage, Object> drawWorker;
     boolean forceRedraw = true;
 
     public FigurePanel(Figure figure) {

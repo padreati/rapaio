@@ -521,7 +521,7 @@ class LBFGS {
 
             if (gnorm / xnorm <= eps) finish = true;
 
-            if (iprint[1 - 1] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
+            if (iprint[0] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
 
             // Cache the current solution vector. Due to the spaghetti-like
             // nature of this code, it's not possible to quit here and return;
@@ -599,9 +599,9 @@ class LBFGS {
             System.err.println("*************************************************");
             System.err.println("\ti\tnfn\tfunc\tgnorm\tsteplength");
         } else {
-            if ((iprint[1 - 1] == 0) && (iter != 1 && !finish)) return;
-            if (iprint[1 - 1] != 0) {
-                if ((iter - 1) % iprint[1 - 1] == 0 || finish) {
+            if ((iprint[0] == 0) && (iter != 1 && !finish)) return;
+            if (iprint[0] != 0) {
+                if ((iter - 1) % iprint[0] == 0 || finish) {
                     if (iprint[2 - 1] > 1 && iter > 1)
                         System.err.println("\ti\tnfn\tfunc\tgnorm\tsteplength");
                     System.err.println("\t" + iter + "\t" + nfun + "\t" + f + "\t" + gnorm + "\t" + stp[0]);
@@ -632,7 +632,6 @@ class LBFGS {
             if (finish)
                 System.err.println(" The minimization terminated without detecting errors. iflag = 0");
         }
-        return;
     }
 
     /**
@@ -660,8 +659,6 @@ class LBFGS {
                 ix = ix + incx;
                 iy = iy + incy;
             }
-
-            return;
         }
 
         m = n % 4;

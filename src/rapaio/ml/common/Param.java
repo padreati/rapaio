@@ -29,6 +29,7 @@ public interface Param<T, S extends ParamSet<S>> extends Serializable {
 
     S clear();
 
+    @SuppressWarnings("unchecked")
     default void copyFrom(Param<?, ?> param) {
         set((T) param.get());
     }

@@ -123,7 +123,7 @@ public class SCollectors {
     public static <T> Collector<T, List<List<T>>, List<List<T>>> slidingCollector(int size, int step) {
         final int window = Math.max(size, step);
 
-        return new Collector<T, List<List<T>>, List<List<T>>>() {
+        return new Collector<>() {
 
             private final Queue<T> buffer = new ArrayDeque<>();
             private int totalIn = 0;

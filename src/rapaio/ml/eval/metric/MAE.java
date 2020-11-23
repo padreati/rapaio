@@ -99,7 +99,7 @@ public class MAE implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> MAE (Mean Absolute Error):\n");
         sb.append("\n");
@@ -115,7 +115,7 @@ public class MAE implements Printable {
         }
         sb.append(tt.getDynamicText(printer, options));
         sb.append("\n");
-        sb.append("Total mae: " + Format.floatFlex(totalMae) + "\n");
+        sb.append("Total mae: ").append(Format.floatFlex(totalMae)).append("\n");
         sb.append("\n");
 
         return sb.toString();

@@ -54,8 +54,9 @@ public class SVDecomposition implements java.io.Serializable {
         return new SVDecomposition(A);
     }
 
-    private double[][] u, v;
-    private double[] s;
+    private final double[][] u;
+    private final double[][] v;
+    private final double[] s;
     private final int rowCount, colCount;
     private int p, pp;
     private final int nct, nrt;
@@ -75,7 +76,7 @@ public class SVDecomposition implements java.io.Serializable {
             throw new IllegalArgumentException("SVD only works for rowCount >= colCount");
         }
 
-        minCount = Math.min(rowCount, colCount);
+        minCount = colCount;
         s = new double[Math.min(rowCount + 1, colCount)];
         u = new double[rowCount][minCount];
         v = new double[colCount][colCount];

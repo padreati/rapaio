@@ -188,16 +188,16 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         numTermDict = new HashMap<>();
         numTermIndex = new HashMap<>();
 
-        List<Pair<String, Integer>> strlist = strCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue())).collect(toList());
-        strlist.sort((o1, o2) -> -Integer.compare(o1.v1.length() * o1.v2, o2.v1.length() * o2.v2));
+        List<Pair<String, Integer>> strlist = strCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue()))
+                .sorted((o1, o2) -> -Integer.compare(o1.v1.length() * o1.v2, o2.v1.length() * o2.v2)).collect(toList());
         for (int i = 0; i < strlist.size(); i++) {
             strTerms[i] = strlist.get(i).v1;
             strTermDict.put(strlist.get(i).v1, strlist.get(i).v1.getBytes());
             strTermIndex.put(strlist.get(i).v1, i);
         }
 
-        List<Pair<String, Integer>> numlist = numCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue())).collect(toList());
-        numlist.sort((o1, o2) -> -Integer.compare(o1.v1.length() * o1.v2, o2.v1.length() * o2.v2));
+        List<Pair<String, Integer>> numlist = numCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue()))
+                .sorted((o1, o2) -> -Integer.compare(o1.v1.length() * o1.v2, o2.v1.length() * o2.v2)).collect(toList());
         for (int i = 0; i < numlist.size(); i++) {
             numTerms[i] = numlist.get(i).v1;
             numTermDict.put(numlist.get(i).v1, numlist.get(i).v1.getBytes());

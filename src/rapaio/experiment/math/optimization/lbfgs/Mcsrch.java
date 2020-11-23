@@ -79,7 +79,7 @@ public class Mcsrch {
     }
 
     double max3(double x, double y, double z) {
-        return x < y ? (y < z ? z : y) : (x < z ? z : x);
+        return x < y ? Math.max(y, z) : Math.max(x, z);
     }
 
     /**
@@ -542,7 +542,5 @@ public class Mcsrch {
                 stp[0] = Math.max(stx[0] + 0.66 * (sty[0] - stx[0]), stp[0]);
             }
         }
-
-        return;
     }
 }

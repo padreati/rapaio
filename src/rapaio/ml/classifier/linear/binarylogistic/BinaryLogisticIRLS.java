@@ -24,9 +24,9 @@ public class BinaryLogisticIRLS {
     @Builder.Default
     private final double eps = 1e-20;
     @Builder.Default
-    private int maxIter = 10;
+    private final int maxIter = 10;
     @Builder.Default
-    private double lambda = 0.0;
+    private final double lambda = 0.0;
     @NonNull
     private final DM x;
     @NonNull

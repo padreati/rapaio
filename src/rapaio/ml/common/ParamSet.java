@@ -27,6 +27,7 @@ import java.util.function.Function;
  */
 public abstract class ParamSet<T extends ParamSet<T>> implements Serializable {
 
+    private static final long serialVersionUID = -3083758110942840984L;
     @Getter
     private final TreeMap<String, Param<?, T>> parameterMap = new TreeMap<>();
 

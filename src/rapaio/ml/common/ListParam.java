@@ -112,6 +112,7 @@ public class ListParam<T, S extends ParamSet<S>> implements Param<List<T>, S> {
         return validator.apply(this.values, newValues);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void copyFrom(Param<?, ?> param) {
         set((List<T>) param);

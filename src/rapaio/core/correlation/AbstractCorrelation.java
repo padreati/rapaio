@@ -108,17 +108,17 @@ public abstract class AbstractCorrelation implements Correlation {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         if (d.names().length == 2) {
             summaryTwo(sb);
@@ -133,7 +133,7 @@ public abstract class AbstractCorrelation implements Correlation {
         sb.append(Format.floatFlex(d.get(0, 1))).append("\n");
     }
 
-    private void summaryMore(StringBuilder sb, Printer printer, POption... options) {
+    private void summaryMore(StringBuilder sb, Printer printer, POption<?>... options) {
         sb.append(String.format("> %s[%s] - %s\n", corrName(), Arrays.deepToString(d.names()), corrDescription()));
 
         TextTable tt = TextTable.empty(d.names().length + 1, d.names().length + 1, 1, 1);
