@@ -29,21 +29,18 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.math.MTools;
-import rapaio.sys.WS;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import static rapaio.graphics.Plotter.*;
+import static rapaio.graphics.Plotter.bins;
 
 /**
  * Plot component which allows one to add a histogram to a plot.
@@ -206,20 +203,5 @@ public class Histogram extends Artist {
     private double binStart(int i) {
         double fraction = (maxValue - minValue) / (1. * options.getBins());
         return minValue + fraction * i;
-    }
-
-    public static void main(String[] args) {
-        var df = Datasets.loadIrisDataset();
-        var v1 = df.rvar("sepal-length");
-        var v2 = df.rvar("petal-length");
-
-        Axis x = new Axis();
-        Axis y = new Axis();
-
-        GridLayer layer = new GridLayer(2, 2);
-        layer.add(1, 1, new Plot(x, new Axis()).hist(v1, bins(30)));
-        layer.add(2, 1, new Plot(x, y).points(v1, v2));
-        layer.add(2, 2, new Plot(new Axis(), y).hist(v2, horizontal(true), bins(30)));
-        WS.draw(layer);
     }
 }

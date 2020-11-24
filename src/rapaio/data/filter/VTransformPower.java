@@ -79,7 +79,7 @@ public class VTransformPower implements VFilter {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return "VTransformPower(lambda=" + Format.floatFlex(lambda) + ")";
     }
 

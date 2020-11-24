@@ -61,12 +61,12 @@ public interface HTest extends Printable {
     double ciLow();
 
     @Override
-    default String toContent(Printer printer, POption... options) {
+    default String toContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 
     @Override
-    default String toFullContent(Printer printer, POption... options) {
+    default String toFullContent(Printer printer, POption<?>... options) {
         return toSummary(printer, options);
     }
 }

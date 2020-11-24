@@ -111,7 +111,7 @@ public class JsonInputFlat implements JsonInput {
         }
     }
 
-    private void skipWhite() throws IOException {
+    private void skipWhite() {
         while (isWhite(_next)) _next = getNext();
     }
 
@@ -216,7 +216,7 @@ public class JsonInputFlat implements JsonInput {
         }
     }
 
-    private JsonBool readBool() throws IOException {
+    private JsonBool readBool() {
         pos = 0;
         buffer[pos++] = (char) _next;
         while (true) {
@@ -243,7 +243,7 @@ public class JsonInputFlat implements JsonInput {
         throw new IllegalArgumentException("parsing literal exception, parsed value: " + value);
     }
 
-    private JsonNull readNull() throws IOException {
+    private JsonNull readNull() {
         pos = 0;
         buffer[pos++] = (char) _next;
         while (true) {
@@ -261,15 +261,14 @@ public class JsonInputFlat implements JsonInput {
             buffer[pos++] = (char) _next;
         }
         String value = getBuf();
-        switch (value) {
-            case KEY_NULL:
-                return JsonValue.NULL;
+        if (KEY_NULL.equals(value)) {
+            return JsonValue.NULL;
         }
         logger.severe("parsing literal exception, parsed value: " + value);
         throw new IllegalArgumentException("parsing literal exception, parsed value: " + value);
     }
 
-    private JsonNumber readNumeric() throws IOException {
+    private JsonNumber readNumeric() {
         pos = 0;
         buffer[pos++] = (char) _next;
         while (true) {
@@ -288,7 +287,7 @@ public class JsonInputFlat implements JsonInput {
         return new JsonNumber(getBuf());
     }
 
-    private JsonString readString() throws IOException {
+    private JsonString readString() {
         pos = 0;
         while (true) {
             _next = getNext();

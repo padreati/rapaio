@@ -54,7 +54,7 @@ public class JsonSpliterator implements Spliterator<JsonValue> {
     private final Consumer<String> messageHandler;
     private final boolean parallel;
     private final Predicate<String> propFilter;
-    private long estimateSize = Long.MAX_VALUE;
+    private long estimateSize;
 
     private JsonInput input;
 

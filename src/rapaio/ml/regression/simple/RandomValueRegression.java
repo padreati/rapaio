@@ -108,7 +108,7 @@ public class RandomValueRegression extends AbstractRegressionModel<RandomValueRe
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         if (isFitted()) {
@@ -118,12 +118,12 @@ public class RandomValueRegression extends AbstractRegressionModel<RandomValueRe
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 }

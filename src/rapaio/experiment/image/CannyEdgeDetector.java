@@ -328,8 +328,8 @@ public class CannyEdgeDetector {
     private void computeGradients(float kernelRadius, int kernelWidth) {
 
         //generate the gaussian convolution masks
-        float kernel[] = new float[kernelWidth];
-        float diffKernel[] = new float[kernelWidth];
+        float[] kernel = new float[kernelWidth];
+        float[] diffKernel = new float[kernelWidth];
         int kwidth;
         for (kwidth = 0; kwidth < kernelWidth; kwidth++) {
             float g1 = gaussian(kwidth, kernelRadius);
@@ -451,13 +451,14 @@ public class CannyEdgeDetector {
                  * variable (3) and reused in the mirror case (4).
                  *
                  */
+                boolean geq = Math.abs(xGrad) >= Math.abs(yGrad);
                 if (xGrad * yGrad <= (float) 0 /*(1)*/
-                        ? Math.abs(xGrad) >= Math.abs(yGrad) /*(2)*/
+                        ? geq /*(2)*/
                         ? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /*(3)*/
                         && tmp > Math.abs(yGrad * swMag - (xGrad + yGrad) * wMag) /*(4)*/
                         : (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * neMag - (yGrad + xGrad) * nMag) /*(3)*/
                         && tmp > Math.abs(xGrad * swMag - (yGrad + xGrad) * sMag) /*(4)*/
-                        : Math.abs(xGrad) >= Math.abs(yGrad) /*(2)*/
+                        : geq /*(2)*/
                         ? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * seMag + (xGrad - yGrad) * eMag) /*(3)*/
                         && tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /*(4)*/
                         : (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /*(3)*/
@@ -590,7 +591,7 @@ public class CannyEdgeDetector {
         }
     }
 
-    private void writeEdges(int pixels[]) {
+    private void writeEdges(int[] pixels) {
         //NOTE: There is currently no mechanism for obtaining the edge data
         //in any other format other than an INT_ARGB type BufferedImage.
         //This may be easily remedied by providing alternative accessors.

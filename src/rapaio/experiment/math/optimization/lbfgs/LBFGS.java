@@ -349,7 +349,7 @@ public class LBFGS {
             ftol = 0.0001;
             maxfev = 20;
 
-            if (iprint[1 - 1] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
+            if (iprint[0] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
 
             execute_entire_while_loop = true;
         }
@@ -463,7 +463,7 @@ public class LBFGS {
 
             if (gnorm / xnorm <= eps) finish = true;
 
-            if (iprint[1 - 1] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
+            if (iprint[0] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
 
             // Cache the current solution vector. Due to the spaghetti-like
             // nature of this code, it's not possible to quit here and return;
@@ -529,19 +529,19 @@ public class LBFGS {
                 System.err.print(" vector x =");
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + x[i - 1]);
-                System.err.println("");
+                System.err.println();
 
                 System.err.print(" gradient vector g =");
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + g[i - 1]);
-                System.err.println("");
+                System.err.println();
             }
             System.err.println("*************************************************");
             System.err.println("\ti\tnfn\tfunc\tgnorm\tsteplength");
         } else {
-            if ((iprint[1 - 1] == 0) && (iter != 1 && !finish)) return;
-            if (iprint[1 - 1] != 0) {
-                if ((iter - 1) % iprint[1 - 1] == 0 || finish) {
+            if ((iprint[0] == 0) && (iter != 1 && !finish)) return;
+            if (iprint[0] != 0) {
+                if ((iter - 1) % iprint[0] == 0 || finish) {
                     if (iprint[2 - 1] > 1 && iter > 1)
                         System.err.println("\ti\tnfn\tfunc\tgnorm\tsteplength");
                     System.err.println("\t" + iter + "\t" + nfun + "\t" + f + "\t" + gnorm + "\t" + stp[0]);
@@ -561,18 +561,17 @@ public class LBFGS {
                 }
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + x[i - 1]);
-                System.err.println("");
+                System.err.println();
                 if (iprint[2 - 1] == 3) {
                     System.err.print(" gradient vector g =");
                     for (i = 1; i <= n; i++)
                         System.err.print("  " + g[i - 1]);
-                    System.err.println("");
+                    System.err.println();
                 }
             }
             if (finish)
                 System.err.println(" The minimization terminated without detecting errors. iflag = 0");
         }
-        return;
     }
 
     /**
@@ -620,7 +619,6 @@ public class LBFGS {
             dy[iy0 + i + 2 - 1] = dy[iy0 + i + 2 - 1] + da * dx[ix0 + i + 2 - 1];
             dy[iy0 + i + 3 - 1] = dy[iy0 + i + 3 - 1] + da * dx[ix0 + i + 3 - 1];
         }
-        return;
     }
 
     /**

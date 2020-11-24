@@ -205,93 +205,92 @@ class LogisticGradient implements Gradient {
         // (weights.size / dataSize + 1) is number of classes
         if (weights.size() % dataSize == 0 && numClasses == 1.0 * weights.size() / dataSize + 1)
             throw new IllegalArgumentException("");
-        switch (numClasses) {
-            case 2:
-                /**
-                 * For Binary Logistic Regression.
-                 *
-                 * Although the loss and gradient calculation for multinomial one is more generalized,
-                 * and multinomial one can also be used in binary case, we still implement a specialized
-                 * binary version for performance reason.
-                 */
-                double margin2 = -1.0 * data.dot(weights);
-                double multiplier2 = (1.0 / (1.0 + Math.exp(margin2))) - label;
-                cumGradient.add(data.copy().mult(multiplier2));
-                if (label > 0) {
-                    // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
-                    return MTools.log1pExp(margin2);
-                } else {
-                    return MTools.log1pExp(margin2) - margin2;
-                }
-            default:
-                /**
-                 * For Multinomial Logistic Regression.
-                 */
-
-                // marginY is margins(label - 1) in the formula.
-                double marginY = 0.0;
-                double maxMargin = Double.NEGATIVE_INFINITY;
-                double maxMarginIndex = 0;
-
-                DV margins = DVDense.zeros(numClasses - 1);
-                for (int i = 0; i < margins.size(); i++) {
-                    double margin = 0.0;
-                    for (int j = 0; j < data.size(); j++) {
-                        double value = data.get(j);
-                        if (value != 0.0)
-                            margin += value * weights.get((i * dataSize) + j);
-                    }
-                    if (i == (int) label - 1)
-                        marginY = margin;
-                    if (margin > maxMargin) {
-                        maxMargin = margin;
-                        maxMarginIndex = i;
-                    }
-                    margins.set(i, margin);
-                }
-
-                /**
-                 * When maxMargin > 0, the original formula will cause overflow as we discuss
-                 * in the previous comment.
-                 * We address this by subtracting maxMargin from all the margins, so it's guaranteed
-                 * that all of the new margins will be smaller than zero to prevent arithmetic overflow.
-                 */
-                double sum = 0.0;
-                if (maxMargin > 0) {
-                    for (int i = 0; i < numClasses - 1; i++) {
-                        margins.set(i, margins.get(i) - maxMargin);
-                        if (i == maxMarginIndex) {
-                            sum += Math.exp(-maxMargin);
-                        } else {
-                            sum += Math.exp(margins.get(i));
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < numClasses - 1; i++) {
-                        sum += Math.exp(margins.get(i));
-                    }
-                }
-
-                for (int i = 0; i < numClasses - 1; i++) {
-                    double multiplier = Math.exp(margins.get(i)) / (sum + 1.0) -
-                            ((label != 0.0 && label == i + 1) ? 1.0 : 0.0);
-                    for (int j = 0; j < data.size(); j++) {
-                        double value = data.get(j);
-                        if (value != 0.0) {
-                            int pos = i * dataSize + j;
-                            cumGradient.set(pos, cumGradient.get(pos) + multiplier * value);
-                        }
-                    }
-                }
-
-                double loss = (label > 0.0) ? Math.log1p(sum) - marginY : Math.log1p(sum);
-
-                if (maxMargin > 0) {
-                    return loss + maxMargin;
-                } else {
-                    return loss;
-                }
+        if (numClasses == 2) {
+            /*
+             * For Binary Logistic Regression.
+             *
+             * Although the loss and gradient calculation for multinomial one is more generalized,
+             * and multinomial one can also be used in binary case, we still implement a specialized
+             * binary version for performance reason.
+             */
+            double margin2 = -1.0 * data.dot(weights);
+            double multiplier2 = (1.0 / (1.0 + Math.exp(margin2))) - label;
+            cumGradient.add(data.copy().mult(multiplier2));
+            if (label > 0) {
+                // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
+                return MTools.log1pExp(margin2);
+            } else {
+                return MTools.log1pExp(margin2) - margin2;
+            }
         }
+        /*
+         * For Multinomial Logistic Regression.
+         */
+
+        // marginY is margins(label - 1) in the formula.
+        double marginY = 0.0;
+        double maxMargin = Double.NEGATIVE_INFINITY;
+        double maxMarginIndex = 0;
+
+        DV margins = DVDense.zeros(numClasses - 1);
+        for (int i = 0; i < margins.size(); i++) {
+            double margin = 0.0;
+            for (int j = 0; j < data.size(); j++) {
+                double value = data.get(j);
+                if (value != 0.0)
+                    margin += value * weights.get((i * dataSize) + j);
+            }
+            if (i == (int) label - 1)
+                marginY = margin;
+            if (margin > maxMargin) {
+                maxMargin = margin;
+                maxMarginIndex = i;
+            }
+            margins.set(i, margin);
+        }
+
+        /*
+         * When maxMargin > 0, the original formula will cause overflow as we discuss
+         * in the previous comment.
+         * We address this by subtracting maxMargin from all the margins, so it's guaranteed
+         * that all of the new margins will be smaller than zero to prevent arithmetic overflow.
+         */
+        double sum = 0.0;
+        if (maxMargin > 0) {
+            for (int i = 0; i < numClasses - 1; i++) {
+                margins.set(i, margins.get(i) - maxMargin);
+                if (i == maxMarginIndex) {
+                    sum += Math.exp(-maxMargin);
+                } else {
+                    sum += Math.exp(margins.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < numClasses - 1; i++) {
+                sum += Math.exp(margins.get(i));
+            }
+        }
+
+        for (int i = 0; i < numClasses - 1; i++) {
+            double multiplier = Math.exp(margins.get(i)) / (sum + 1.0) -
+                    ((label != 0.0 && label == i + 1) ? 1.0 : 0.0);
+            for (int j = 0; j < data.size(); j++) {
+                double value = data.get(j);
+                if (value != 0.0) {
+                    int pos = i * dataSize + j;
+                    cumGradient.set(pos, cumGradient.get(pos) + multiplier * value);
+                }
+            }
+        }
+
+        double loss = (label > 0.0) ? Math.log1p(sum) - marginY : Math.log1p(sum);
+
+        if (maxMargin > 0) {
+            return loss + maxMargin;
+        } else {
+            return loss;
+        }
+
     }
 }
 

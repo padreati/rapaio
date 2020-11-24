@@ -171,11 +171,13 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T sort(IntComparator comparator) {
         return (T) source.fapply(VRefSort.from(comparator)).copy();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T sort(boolean asc) {
         return (T) source.fapply(VRefSort.from(source.refComparator(asc))).copy();
     }

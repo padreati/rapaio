@@ -175,7 +175,7 @@ public class L2Regression extends AbstractRegressionModel<L2Regression, Regressi
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 

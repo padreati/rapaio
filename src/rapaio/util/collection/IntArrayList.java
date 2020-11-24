@@ -214,11 +214,9 @@ public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializab
         assert size <= data.length;
     }
 
-    public boolean add(final int k) {
+    public void add(final int k) {
         grow(size + 1);
         data[size++] = k;
-        assert size <= data.length;
-        return true;
     }
 
     public int getInt(final int index) {

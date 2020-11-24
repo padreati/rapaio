@@ -50,6 +50,12 @@ public final class Binomial implements Distribution {
     private final int n;
 
     private Binomial(double p, int n) {
+        if (!Double.isFinite(p) || p < 0 || p > 1) {
+            throw new IllegalArgumentException("Probability must have a finite value in range [0,1].");
+        }
+        if (n <= 0) {
+            throw new IllegalArgumentException("Number of samples must be a positive integer value.");
+        }
         this.p = p;
         this.n = n;
     }
@@ -81,66 +87,54 @@ public final class Binomial implements Distribution {
     }
 
     @Override
-    public double quantile(double p) {
-        double pr = this.p;
-        double q, mu, sigma, gamma, z, y;
-
-        if (Double.isNaN(p) || Double.isNaN(n) || Double.isNaN(pr)) return p + n + pr;
-        if (Double.isInfinite(n) || Double.isInfinite(pr)) return Double.NaN;
-        /* if log_p is true, p = -Inf is a legitimate value */
-        if (Double.isInfinite(p)) return Double.NaN;
-
-        //if(n != floor(n + 0.5)) return Double.NaN;
-        if (n != rint(n)) return Double.NaN;
-        if (pr < 0 || pr > 1 || n < 0) return Double.NaN;
-
-        // R_Q_P01_boundaries(p, 0, n);
-        /* !log_p */
-        if (p < 0 || p > 1)
+    public double quantile(double probability) {
+        if (!Double.isFinite(probability) || probability < 0 || probability > 1) {
             return Double.NaN;
-        if (p == 0)
+        }
+
+        if (probability == 0)
             return 0;
-        if (p == 1)
+        if (probability == 1)
             return n;
 
-        if (pr == 0. || n == 0) return 0.;
+        if (p == 0. || n == 0) return 0.;
 
-        q = 1 - pr;
+        double q = 1 - p;
         if (q == 0.) return n; /* covers the full range of the densities */
-        mu = n * pr;
-        sigma = sqrt(n * pr * q);
-        gamma = (q - pr) / sigma;
+        double mu = n * p;
+        double sigma = sqrt(n * p * q);
+        double gamma = (q - p) / sigma;
 
         /* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
          * FIXME: This is far from optimal [cancellation for p ~= 1, etc]: */
         /* temporary hack --- FIXME --- */
-        if (p + 1.01 * DBL_EPSILON >= 1.) return n;
+        if (probability + 1.01 * DBL_EPSILON >= 1.) return n;
 
         /* y := approx.value (Cornish-Fisher expansion) :  */
-        z = Normal.std().quantile(p);
+        double z = Normal.std().quantile(probability);
         //y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
-        y = rint(mu + sigma * (z + gamma * (z * z - 1) / 6));
+        double y = rint(mu + sigma * (z + gamma * (z * z - 1) / 6));
 
         if (y > n) /* way off */ y = n;
 
-        z = Binomial.of(pr, n).cdf(y);
+        z = Binomial.of(p, n).cdf(y);
 
         /* fuzz to ensure left continuity: */
-        p *= 1 - 64 * DBL_EPSILON;
+        probability *= 1 - 64 * DBL_EPSILON;
 
         double[] zp = new double[]{z};
-        if (n < 1e5) return doSearch(y, zp, p, n, pr, 1);
+        if (n < 1e5) return doSearch(y, zp, probability, 1);
         /* Otherwise be a bit cleverer in the search */
         double incr = floor(n * 0.001), oldincr;
         do {
             oldincr = incr;
-            y = doSearch(y, zp, p, n, pr, incr);
+            y = doSearch(y, zp, probability, incr);
             incr = Math.max(1, floor(incr / 100));
         } while (oldincr > 1 && incr > n * 1e-20);
         return y;
     }
 
-    private static double doSearch(double y, double[] z, double p, int n, double pr, double incr) {
+    private double doSearch(double y, double[] z, double pr, double incr) {
         if (z[0] >= p) {
             /* search to the left */
             while (true) {

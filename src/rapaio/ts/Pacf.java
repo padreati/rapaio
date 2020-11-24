@@ -98,7 +98,7 @@ public class Pacf implements Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Pacf summary\n");
         sb.append("===========\n");

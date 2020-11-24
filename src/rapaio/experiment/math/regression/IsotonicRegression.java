@@ -38,28 +38,29 @@ package rapaio.experiment.math.regression;
  */
 public class IsotonicRegression {
 
-    public double[] isotonic_regression(double[] y,
-                                        double[] weight) {
+    public double[] isotonic_regression(double[] y, double[] weight) {
         double[] solution = new double[y.length];
 
         double numerator, denominator;
-        int i, pooled, n, k;
+        int i, n, k;
 
         n = y.length;
 
         // The algorithm proceeds by iteratively updating the solution array.
 
-        for (i = 0; i < n; i++)
+        for (i = 0; i < n; i++) {
             solution[i] = y[i];
+        }
 
         if (n <= 1)
             return solution;
 
         n -= 1;
-        while (true) {
+        boolean pooled = true;
+        while (pooled) {
             // repeat until there are no more adjacent violators.
             i = 0;
-            pooled = 0;
+            pooled = false;
             while (i < n) {
                 k = i;
                 while (k < n && solution[k] >= solution[k + 1])
@@ -76,13 +77,10 @@ public class IsotonicRegression {
                     }
                     for (int j = i; j < k + 1; j++)
                         solution[j] = numerator / denominator;
-                    pooled = 1;
+                    pooled = true;
                 }
                 i = k + 1;
             }
-            // Check for convergence
-            if (pooled == 0)
-                break;
         }
         return solution;
     }

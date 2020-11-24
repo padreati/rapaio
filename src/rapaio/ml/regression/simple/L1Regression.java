@@ -137,7 +137,7 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -159,7 +159,7 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append(headerSummary());
         sb.append("\n");
@@ -181,7 +181,7 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 }

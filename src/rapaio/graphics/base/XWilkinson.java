@@ -111,7 +111,7 @@ public class XWilkinson {
     public boolean loose = false;
 
     // scale-goodness weights for simplicity, coverage, density, legibility
-    private final double w[];
+    private final double[] w;
 
     // calculation of scale-goodness
     private double w(double s, double c, double d, double l) {

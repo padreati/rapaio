@@ -91,7 +91,7 @@ public class CForest extends AbstractClassifierModel<CForest, ClassifierResult> 
     public final ValueParam<Boolean, CForest> viGain = new ValueParam<>(this, false,
             "gainVI", "Performs gain variable importance computations");
 
-    public ValueParam<Boolean, CForest> viPerm = new ValueParam<>(this, false,
+    public final ValueParam<Boolean, CForest> viPerm = new ValueParam<>(this, false,
             "viPerm", "Perform permutation variable importance computations");
 
     public final ValueParam<CTree, CForest> model = new ValueParam<>(this, CTree.newCART()

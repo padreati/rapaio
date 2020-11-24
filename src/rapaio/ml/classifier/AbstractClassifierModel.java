@@ -67,7 +67,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
     public final SBiConsumer<ClassifierModel, Integer> DEFAULT_RUNNING_HOOK = (m, i) -> {
     };
 
-    public ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
+    public final ValueParam<RowSampler, M> rowSampler = new ValueParam<>((M) this, RowSampler.identity(),
             "rowSampler",
             "Method used to sample rows.",
             Objects::nonNull);
@@ -78,7 +78,7 @@ public abstract class AbstractClassifierModel<M extends AbstractClassifierModel<
      * no pooling and positive values means pooling with a specified
      * value.
      */
-    public ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0,
+    public final ValueParam<Integer, M> poolSize = new ValueParam<>((M) this, 0,
             "poolSize",
             "Number of threads in execution pool to be used for fitting the model.",
             x -> true);

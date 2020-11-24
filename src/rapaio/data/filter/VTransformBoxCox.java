@@ -76,7 +76,7 @@ public class VTransformBoxCox implements VFilter {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return "VTransformBoxCox(lambda=" + Format.floatFlex(lambda) + ", shift:" + Format.floatFlex(shift) + ")";
     }
 

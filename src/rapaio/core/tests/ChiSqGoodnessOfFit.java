@@ -157,7 +157,7 @@ public class ChiSqGoodnessOfFit implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ChiSqGoodnessOfFit\n");
         sb.append("\n");

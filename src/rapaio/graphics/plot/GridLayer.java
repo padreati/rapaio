@@ -36,11 +36,16 @@ import rapaio.graphics.opt.GOptions;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
 public class GridLayer implements Figure {
+
+    public static GridLayer of(int rows, int cols) {
+        return new GridLayer(rows, cols, null, null, null, null);
+    }
 
     private static final long serialVersionUID = 4476430187955007744L;
 
@@ -57,14 +62,24 @@ public class GridLayer implements Figure {
     protected String title;
 
 
-    final int rows;
-    final int cols;
-    final G[][] assign;
-    private final java.util.List<G> list = new ArrayList<>();
+    private final int rows;
+    private final int cols;
+    private final G[][] assign;
+    private final List<G> list = new ArrayList<>();
 
-    public GridLayer(int rows, int cols) {
+    private final double[] rowSizePercentage;
+    private final double[] colSizePercentage;
+
+    private final int[] rowSizePixels;
+    private final int[] colSizePixels;
+
+    public GridLayer(int rows, int cols, double[] rowSizePercentage, double[] colSizePercentage, int[] rowSizePixels, int[] colSizePixels) {
         this.rows = rows;
         this.cols = cols;
+        this.rowSizePercentage = rowSizePercentage;
+        this.colSizePercentage = colSizePercentage;
+        this.rowSizePixels = rowSizePixels;
+        this.colSizePixels = colSizePixels;
         this.assign = new G[rows][cols];
     }
 

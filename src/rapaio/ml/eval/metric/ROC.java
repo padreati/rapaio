@@ -200,7 +200,7 @@ public class ROC implements Printable, Serializable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         final String fmt = "%-10s";
 

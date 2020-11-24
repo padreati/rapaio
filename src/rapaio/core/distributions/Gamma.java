@@ -191,7 +191,7 @@ public class Gamma implements Distribution {
 
     @Override
     public double sampleNext() {
-        /***********************************************************************
+        /* **********************************************************************
          * * Gamma Distribution - Acceptance Rejection combined with Acceptance Complement * *
          * ***************************************************************** *
          * FUNCTION: - gds samples a random number from the standard * gamma

@@ -60,7 +60,7 @@ public class KFuncBiWeight implements KFunc {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return toString();
     }
 }

@@ -66,7 +66,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
      * Defines the scaling value of the intercept, by default being 1. If the configured value
      * for the intercept is 0, than no intercept is added to the input features.
      */
-    public ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0,
+    public final ValueParam<Double, BinaryLogistic> intercept = new ValueParam<>(this, 1.0,
             "intercept",
             "Value of the intercept column, if zero than no intercept will be added to regression.");
 
@@ -83,7 +83,7 @@ public class BinaryLogistic extends AbstractClassifierModel<BinaryLogistic, Clas
      * problem by considering this specified target level as the positive case, and
      * all the other levels as the negative case.
      */
-    public ValueParam<String, BinaryLogistic> nominalLevel = new ValueParam<>(this, "",
+    public final ValueParam<String, BinaryLogistic> nominalLevel = new ValueParam<>(this, "",
             "nominalLevel",
             "Nominal level used in one vs all strategy. If the target variable is a nominal variable with more than 2 levels " +
                     "(ignoring missing value level) then the logistic regression is transformed into a binary classification problem" +

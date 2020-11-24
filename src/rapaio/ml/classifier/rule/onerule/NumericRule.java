@@ -43,7 +43,7 @@ public class NumericRule extends Rule {
     private final double maxValue;
     private final boolean missingValue;
 
-    public NumericRule(double minValue, double maxValue, boolean missingValue, String targetLevel, DensityVector dv) {
+    public NumericRule(double minValue, double maxValue, boolean missingValue, String targetLevel, DensityVector<String> dv) {
         super(targetLevel, dv);
         this.minValue = minValue;
         this.maxValue = maxValue;

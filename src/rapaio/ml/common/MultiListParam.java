@@ -56,7 +56,8 @@ public class MultiListParam<K, T, S extends ParamSet<S>> implements Param<Map<K,
         return params;
     }
 
-    public S add(K key, T... values) {
+    @SafeVarargs
+    public final S add(K key, T... values) {
         this.valueMap.put(key, Arrays.asList(values));
         return params;
     }

@@ -123,7 +123,7 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toContent(Printer printer, POption... options) {
+    public String toContent(Printer printer, POption<?>... options) {
         return "> mean[" + varName + "]\n" +
                 "total rows: " + floatFlex(completeCount + missingCount) +
                 " (complete: " + floatFlex(completeCount) +
@@ -132,12 +132,12 @@ public final class Mean implements Printable {
     }
 
     @Override
-    public String toFullContent(Printer printer, POption... options) {
+    public String toFullContent(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 }

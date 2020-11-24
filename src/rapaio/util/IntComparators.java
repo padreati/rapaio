@@ -43,10 +43,6 @@ public final class IntComparators {
         public IntComparator reversed() {
             return OPPOSITE_COMPARATOR;
         }
-
-        private Object readResolve() {
-            return NATURAL_COMPARATOR;
-        }
     }
 
     public static final IntComparator NATURAL_COMPARATOR = new NaturalImplicitComparator();
@@ -66,10 +62,6 @@ public final class IntComparators {
         @Override
         public IntComparator reversed() {
             return NATURAL_COMPARATOR;
-        }
-
-        private Object readResolve() {
-            return OPPOSITE_COMPARATOR;
         }
     }
 

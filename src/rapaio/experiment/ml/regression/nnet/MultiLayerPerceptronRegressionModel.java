@@ -47,7 +47,7 @@ import static rapaio.printer.Format.floatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel implements Printable {
+public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel<MultiLayerPerceptronRegressionModel, RegressionResult> implements Printable {
 
     private static final long serialVersionUID = -7855492977246862795L;
     private final int[] layerSizes;
@@ -264,7 +264,7 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         throw new IllegalArgumentException("not implemented");
     }
 }

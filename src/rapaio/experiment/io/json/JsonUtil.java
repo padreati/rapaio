@@ -67,8 +67,11 @@ public class JsonUtil {
         }
     }
 
-    public static void convertToLz(File root, FileFilter fnf, Function<String, String> rename, Consumer<String> mh) {
+    public static void convertToLz(File root, FileFilter fnf, Function<String, String> rename, Consumer<String> mh) throws IOException {
         File[] children = root.listFiles(fnf);
+        if (children == null) {
+            throw new IOException("Root file ia not a directory.");
+        }
         Arrays.stream(children).parallel().forEach(f -> {
             String newFileName = rename.apply(f.getAbsolutePath());
             File newFile = new File(newFileName);

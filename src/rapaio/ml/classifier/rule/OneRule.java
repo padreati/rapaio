@@ -197,6 +197,7 @@ public class OneRule extends AbstractClassifierModel<OneRule, ClassifierResult> 
         return Pair.from("?", DensityVector.emptyByLabels(true, firstTargetLevels()));
     }
 
+    @SuppressWarnings("unchecked")
     private RuleSet buildNominal(String testVarName, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVarName);
 

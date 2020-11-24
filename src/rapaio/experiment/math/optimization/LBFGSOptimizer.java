@@ -40,37 +40,33 @@ public class LBFGSOptimizer {
 
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
-        double g[], diag[], w[];
         DV x = DVDense.zeros(ndim);
-        g = new double[ndim];
-        diag = new double[ndim];
-        w = new double[nwork];
+        double[] g = new double[ndim];
+        double[] diag = new double[ndim];
+        double[] w = new double[nwork];
 
-        double f, eps, xtol, gtol, t1, t2, stpmin, stpmax;
-        int iprint[], iflag[] = new int[1], icall, n, m, mp, lp, j;
-        iprint = new int[2];
+        int[] iflag = new int[1];
+        int[] iprint = new int[2];
         boolean diagco;
 
-        n = 100;
-        m = 5;
+        int n = 100;
+        int m = 5;
         iprint[0] = 1;
-        iprint[1] = 0;
         diagco = false;
-        eps = 1.0e-5;
-        xtol = 1.0e-16;
-        icall = 0;
-        iflag[0] = 0;
+        double eps = 1.0e-5;
+        double xtol = 1.0e-16;
+        int icall = 0;
 
-        for (j = 1; j <= n; j += 2) {
+        for (int j = 1; j <= n; j += 2) {
             x.set(j - 1, -1.2e0);
             x.set(j, 1.e0);
         }
 
         do {
-            f = 0;
-            for (j = 1; j <= n; j += 2) {
-                t1 = 1.e0 - x.get(j - 1);
-                t2 = 1.e1 * (x.get(j) - x.get(j - 1) * x.get(j - 1));
+            double f = 0;
+            for (int j = 1; j <= n; j += 2) {
+                double t1 = 1.e0 - x.get(j - 1);
+                double t2 = 1.e1 * (x.get(j) - x.get(j - 1) * x.get(j - 1));
                 g[j] = 2.e1 * t2;
                 g[j - 1] = -2.e0 * (x.get(j - 1) * g[j] + t1);
                 f = f + t1 * t1 + t2 * t2;
@@ -589,12 +585,12 @@ class LBFGS {
                 System.err.print(" vector x =");
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + x.get(i - 1));
-                System.err.println("");
+                System.err.println();
 
                 System.err.print(" gradient vector g =");
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + g[i - 1]);
-                System.err.println("");
+                System.err.println();
             }
             System.err.println("*************************************************");
             System.err.println("\ti\tnfn\tfunc\tgnorm\tsteplength");
@@ -621,12 +617,12 @@ class LBFGS {
                 }
                 for (i = 1; i <= n; i++)
                     System.err.print("  " + x.get(i - 1));
-                System.err.println("");
+                System.err.println();
                 if (iprint[2 - 1] == 3) {
                     System.err.print(" gradient vector g =");
                     for (i = 1; i <= n; i++)
                         System.err.print("  " + g[i - 1]);
-                    System.err.println("");
+                    System.err.println();
                 }
             }
             if (finish)
@@ -677,7 +673,6 @@ class LBFGS {
             dy[iy0 + i + 2 - 1] = dy[iy0 + i + 2 - 1] + da * dx[ix0 + i + 2 - 1];
             dy[iy0 + i + 3 - 1] = dy[iy0 + i + 3 - 1] + da * dx[ix0 + i + 3 - 1];
         }
-        return;
     }
 
     /**

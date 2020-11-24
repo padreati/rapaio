@@ -69,12 +69,12 @@ public interface KFunc extends Printable, Serializable {
     double maxValue(double x, double bandwidth);
 
     @Override
-    default String toFullContent(Printer printer, POption... options) {
+    default String toFullContent(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 
     @Override
-    default String toSummary(Printer printer, POption... options) {
+    default String toSummary(Printer printer, POption<?>... options) {
         return toContent(printer, options);
     }
 }

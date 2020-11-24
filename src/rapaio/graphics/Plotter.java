@@ -71,7 +71,7 @@ import java.awt.*;
 public final class Plotter {
 
     public static GridLayer gridLayer(int rows, int cols) {
-        return new GridLayer(rows, cols);
+        return GridLayer.of(rows, cols);
     }
 
     public static Plot plot(GOption<?>... opts) {

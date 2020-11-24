@@ -107,7 +107,7 @@ public class LUDecomposition implements Serializable, Printable {
             for (int j = 0; j <= i; j++) {
                 if (i > j) {
                     X.set(i, j, LU.get(i, j));
-                } else if (i == j) {
+                } else {
                     X.set(i, j, 1.0);
                 }
             }
@@ -202,7 +202,7 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition summary\n");

@@ -164,7 +164,7 @@ public class ADTestGoodness implements HTest {
     }
 
     @Override
-    public String toSummary(Printer printer, POption... options) {
+    public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("> ADTestGoodness\n");
         sb.append("\n");

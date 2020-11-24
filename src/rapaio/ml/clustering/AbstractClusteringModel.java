@@ -32,12 +32,14 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
      * For example for CForest the number of runs is used to specify
      * the number of decision trees to be built.
      */
+    @SuppressWarnings("unchecked")
     public final ValueParam<Integer, M> runs = new ValueParam<>((M) this, 1_000,
             "runs",
             "Number of iterations for iterative iterations or number of sub ensembles.",
             x -> x > 0
     );
 
+    @SuppressWarnings("unchecked")
     public final ValueParam<SBiConsumer<ClusteringModel, Integer>, M> runningHook = new ValueParam<>((M) this, DEFAULT_RUNNING_HOOK,
             "runningHook", "Running hook");
 
@@ -71,6 +73,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public M fit(Frame df, Var weights) {
         FitSetup fitSetup = prepareFit(df, weights);
         return (M) coreFit(fitSetup.df, fitSetup.weights);
@@ -88,6 +91,7 @@ public abstract class AbstractClusteringModel<M extends AbstractClusteringModel<
     public abstract ClusteringModel coreFit(Frame df, Var weights);
 
     @Override
+    @SuppressWarnings("unchecked")
     public R predict(Frame df, boolean withScores) {
         return corePredict(df, withScores);
     }
