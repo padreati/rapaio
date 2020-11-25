@@ -80,18 +80,24 @@ public final class Binomial implements Distribution {
 
     @Override
     public double cdf(double x) {
-        if (x >= n)
+        if (x >= n) {
             return 1.0;
+        }
         x = MTools.floor(x);
         return betaIncReg(1 - p, n - x, x + 1);
     }
 
     @Override
     public double quantile(double probability) {
-        if (!Double.isFinite(probability) || probability < 0 || probability > 1) {
+        /* if log_p is true, p = -Inf is a legitimate value */
+        if (!Double.isFinite(probability)) {
             return Double.NaN;
         }
 
+        // R_Q_P01_boundaries(p, 0, n);
+        /* !log_p */
+        if (probability < 0 || probability > 1)
+            return Double.NaN;
         if (probability == 0)
             return 0;
         if (probability == 1)
@@ -134,12 +140,12 @@ public final class Binomial implements Distribution {
         return y;
     }
 
-    private double doSearch(double y, double[] z, double pr, double incr) {
-        if (z[0] >= p) {
+    private double doSearch(double y, double[] z, double probability, double incr) {
+        if (z[0] >= probability) {
             /* search to the left */
             while (true) {
-                double newz = Binomial.of(pr, n).cdf(y - incr);
-                if (y == 0 || newz < p)
+                double newz = cdf(y - incr);
+                if (y == 0 || newz < probability)
                     return y;
                 y = Math.max(0, y - incr);
                 z[0] = newz;
@@ -147,12 +153,11 @@ public final class Binomial implements Distribution {
         } else {        /* search to the right */
             while (true) {
                 y = Math.min(y + incr, n);
-                if (y == n || (z[0] = Binomial.of(pr, n).cdf(y)) >= p)
+                if (y == n || (z[0] = cdf(y)) >= probability)
                     return y;
             }
         }
     }
-
 
     @Override
     public double min() {
