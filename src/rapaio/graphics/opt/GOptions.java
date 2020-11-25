@@ -61,6 +61,8 @@ public class GOptions implements Serializable {
         defaults.top = new GOptionTop(Integer.MAX_VALUE);
         defaults.sort = new GOptionSort(0);
         defaults.horizontal = new GOptionHorizontal(false);
+        defaults.widths = new GOptionWidths(new double[]{-1});
+        defaults.heights = new GOptionHeights(new double[]{-1});
         defaults.labels = new GOptionLabels(new String[]{""});
     }
 
@@ -79,6 +81,8 @@ public class GOptions implements Serializable {
     private GOptionTop top;
     private GOptionSort sort;
     private GOptionHorizontal horizontal;
+    private GOptionWidths widths;
+    private GOptionHeights heights;
     private GOptionLabels labels;
 
     public GOptions bind(GOption<?>... options) {
@@ -101,6 +105,8 @@ public class GOptions implements Serializable {
                 top,
                 sort,
                 horizontal,
+                widths,
+                heights,
                 labels
         };
     }
@@ -298,6 +304,28 @@ public class GOptions implements Serializable {
 
     public void setHorizontal(GOptionHorizontal horizontal) {
         this.horizontal = horizontal;
+    }
+
+    public Sizes getWidths() {
+        if (widths == null) {
+            return parent != null ? parent.getWidths() : defaults.widths.apply(this);
+        }
+        return widths.apply(this);
+    }
+
+    public void setWidths(GOptionWidths widths) {
+        this.widths = widths;
+    }
+
+    public Sizes getHeights() {
+        if (heights == null) {
+            return parent != null ? parent.getHeights() : defaults.heights.apply(this);
+        }
+        return heights.apply(this);
+    }
+
+    public void setHeights(GOptionHeights heights) {
+        this.heights = heights;
     }
 
     public String[] getLabels() {

@@ -39,6 +39,7 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionHeights;
 import rapaio.graphics.opt.GOptionHorizontal;
 import rapaio.graphics.opt.GOptionLabels;
 import rapaio.graphics.opt.GOptionLwd;
@@ -50,6 +51,7 @@ import rapaio.graphics.opt.GOptionSort;
 import rapaio.graphics.opt.GOptionStacked;
 import rapaio.graphics.opt.GOptionSz;
 import rapaio.graphics.opt.GOptionTop;
+import rapaio.graphics.opt.GOptionWidths;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.artist.ABLine;
@@ -279,5 +281,21 @@ public final class Plotter {
 
     public static GOptionLabels labels(String... labels) {
         return new GOptionLabels(labels);
+    }
+
+    public static GOptionWidths widths(double... relativeSizes) {
+        return new GOptionWidths(relativeSizes);
+    }
+
+    public static GOptionWidths widths(int... absoluteSizes) {
+        return new GOptionWidths(absoluteSizes);
+    }
+
+    public static GOptionHeights heights(double... relativeSizes) {
+        return new GOptionHeights(relativeSizes);
+    }
+
+    public static GOptionHeights heights(int... absoluteSizes) {
+        return new GOptionHeights(absoluteSizes);
     }
 }

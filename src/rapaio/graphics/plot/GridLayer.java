@@ -31,7 +31,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import rapaio.graphics.Figure;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
+import rapaio.util.collection.DoubleArrays;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -43,8 +45,8 @@ import java.util.List;
  */
 public class GridLayer implements Figure {
 
-    public static GridLayer of(int rows, int cols) {
-        return new GridLayer(rows, cols, null, null, null, null);
+    public static GridLayer of(int rows, int cols, GOption<?>... options) {
+        return new GridLayer(rows, cols, options);
     }
 
     private static final long serialVersionUID = 4476430187955007744L;
@@ -67,20 +69,11 @@ public class GridLayer implements Figure {
     private final G[][] assign;
     private final List<G> list = new ArrayList<>();
 
-    private final double[] rowSizePercentage;
-    private final double[] colSizePercentage;
-
-    private final int[] rowSizePixels;
-    private final int[] colSizePixels;
-
-    public GridLayer(int rows, int cols, double[] rowSizePercentage, double[] colSizePercentage, int[] rowSizePixels, int[] colSizePixels) {
+    public GridLayer(int rows, int cols, GOption<?>... options) {
         this.rows = rows;
         this.cols = cols;
-        this.rowSizePercentage = rowSizePercentage;
-        this.colSizePercentage = colSizePercentage;
-        this.rowSizePixels = rowSizePixels;
-        this.colSizePixels = colSizePixels;
         this.assign = new G[rows][cols];
+        this.options.bind(options);
     }
 
     protected int sizeTitle;
@@ -149,16 +142,17 @@ public class GridLayer implements Figure {
     @Override
     public void prepare(Rectangle r) {
         buildViewport(r);
-        double h = r.getHeight() / rows;
-        double w = r.getWidth() / cols;
+
+
+        double[] h = options.getHeights().computeSizes(rows, r.getHeight());
+        double[] w = options.getWidths().computeSizes(cols, r.getWidth());
 
         for (G g : list) {
             Rectangle rect = new Rectangle(
-                    (int) (r.x + g.col * w),
-                    (int) (r.y + g.row * h),
-                    (int) (w * g.width),
-                    (int) (h * g.height)
-            );
+                    (int) (r.x + DoubleArrays.sum(w, 0, g.col)),
+                    (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
+                    (int) (DoubleArrays.sum(w, g.col, g.width)),
+                    (int) (DoubleArrays.sum(h, g.row, g.height)));
             g.plot.prepare(rect);
         }
     }
@@ -178,16 +172,15 @@ public class GridLayer implements Figure {
             g2d.drawString(title, (int) (r.x + (r.width - titleWidth) / 2), r.y + TITLE_PAD);
         }
 
-        double h = r.getHeight() / rows;
-        double w = r.getWidth() / cols;
+        double[] h = options.getHeights().computeSizes(rows, r.getHeight());
+        double[] w = options.getWidths().computeSizes(cols, r.getWidth());
 
         for (G g : list) {
             Rectangle rect = new Rectangle(
-                    (int) (r.x + g.col * w),
-                    (int) (r.y + g.row * h),
-                    (int) (w * g.width),
-                    (int) (h * g.height)
-            );
+                    (int) (r.x + DoubleArrays.sum(w, 0, g.col)),
+                    (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
+                    (int) (DoubleArrays.sum(w, g.col, g.width)),
+                    (int) (DoubleArrays.sum(h, g.row, g.height)));
             g.plot.paint(g2d, rect);
         }
     }
