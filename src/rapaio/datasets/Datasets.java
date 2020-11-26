@@ -27,6 +27,8 @@
 
 package rapaio.datasets;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -47,6 +49,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Datasets {
 
     public static Frame loadIrisDataset() {

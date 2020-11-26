@@ -452,7 +452,7 @@ public class IntArrayList implements RandomAccess, Cloneable, java.io.Serializab
      * @param l a type-specific array list.
      * @return true if the argument contains the same elements of this type-specific array list.
      */
-    public boolean equals(final IntArrayList l) {
+    public boolean equalArray(final IntArrayList l) {
         if (l == this) return true;
         int s = size();
         if (s != l.size()) return false;

@@ -49,9 +49,4 @@ public final class Identity implements RowSampler {
     public String name() {
         return "Identity";
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Identity;
-    }
 }
