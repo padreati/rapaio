@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,7 +43,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T apply(Double2DoubleFunction fun) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             if (!source.isMissing(i)) {
                 source.setDouble(i, fun.applyAsDouble(source.getDouble(i)));
             }
@@ -59,8 +53,8 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public VarDouble capply(Double2DoubleFunction fun) {
-        double[] data = new double[source.rowCount()];
-        for (int i = 0; i < source.rowCount(); i++) {
+        double[] data = new double[source.size()];
+        for (int i = 0; i < source.size(); i++) {
             if (source.isMissing(i)) {
                 data[i] = Double.NaN;
             } else {
@@ -73,7 +67,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     @Override
     public double nansum() {
         double sum = 0.0;
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             if (source.isMissing(i)) {
                 continue;
             }
@@ -86,7 +80,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
     public double nanmean() {
         double count = 0.0;
         double sum = 0.0;
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             if (source.isMissing(i)) {
                 continue;
             }
@@ -98,7 +92,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T fill(double a) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, a);
         }
         return source;
@@ -106,7 +100,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T plus(double a) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) + a);
         }
         return source;
@@ -114,7 +108,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T plus(Var x) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) + x.getDouble(i));
         }
         return source;
@@ -122,7 +116,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T minus(double a) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) - a);
         }
         return source;
@@ -130,7 +124,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T minus(Var x) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) - x.getDouble(i));
         }
         return source;
@@ -138,7 +132,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T mult(double a) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) * a);
         }
         return source;
@@ -146,7 +140,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T mult(Var x) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) * x.getDouble(i));
         }
         return source;
@@ -155,7 +149,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T divide(double a) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) / a);
         }
         return source;
@@ -163,7 +157,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public T divide(Var x) {
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             source.setDouble(i, source.getDouble(i) / x.getDouble(i));
         }
         return source;
@@ -184,9 +178,9 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public int[] sortedCompleteRows(boolean asc) {
-        int[] rows = new int[source.rowCount()];
+        int[] rows = new int[source.size()];
         int len = 0;
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             if (source.isMissing(i)) {
                 continue;
             }
@@ -198,9 +192,9 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public int[] sortedRows(boolean asc) {
-        int[] rows = new int[source.rowCount()];
+        int[] rows = new int[source.size()];
         int len = 0;
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             rows[len++] = i;
         }
         IntArrays.quickSort(rows, 0, len, source.refComparator(asc));

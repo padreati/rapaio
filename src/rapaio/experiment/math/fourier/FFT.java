@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,7 +36,7 @@ public class FFT {
     // compute the FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> fft(Pair<Var, Var> x) {
 
-        int N = x.v1.rowCount();
+        int N = x.v1.size();
 
         // base case
         if (N == 1) return x;
@@ -87,7 +81,7 @@ public class FFT {
 
     // compute the inverse FFT of x[], assuming its length is a power of 2
     public static Pair<Var, Var> ifft(Pair<Var, Var> x) {
-        int N = x.v1.rowCount();
+        int N = x.v1.size();
 
         Var im2 = VarDouble.from(N, row -> -x.v2.getDouble(row));
 
@@ -103,15 +97,15 @@ public class FFT {
     // compute the circular convolution of x and y
     public static Pair<Var, Var> cconvolve(Pair<Var, Var> x, Pair<Var, Var> y) {
 
-        int len = x.v1.rowCount();
+        int len = x.v1.size();
 
         // should probably pad x and y with 0s so that they have same length
         // and are powers of 2
-        if ((x.v2.rowCount() != len)) {
+        if ((x.v2.size() != len)) {
             throw new RuntimeException("Dimensions don't agree");
         }
 
-        int N = x.v1.rowCount();
+        int N = x.v1.size();
 
         // compute FFT of each sequence
         Pair<Var, Var> a = fft(x);
@@ -134,7 +128,7 @@ public class FFT {
         Pair<Var, Var> a = Pair.from(x.v1.copy(), x.v2.copy());
         Pair<Var, Var> b = Pair.from(y.v1.copy(), y.v2.copy());
 
-        for (int i = 0; i < x.v1.rowCount(); i++) {
+        for (int i = 0; i < x.v1.size(); i++) {
             a.v1.addDouble(0.0);
             a.v2.addDouble(0.0);
             b.v1.addDouble(0.0);

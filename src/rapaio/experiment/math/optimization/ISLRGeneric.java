@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -111,7 +105,7 @@ public class ISLRGeneric {
 
             // break if the improvement is then tolerance
 
-            if (it > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - ee) < tol) {
+            if (it > 0 && Math.abs(err.getDouble(err.size() - 2) - ee) < tol) {
                 break;
             }
         }
@@ -203,7 +197,7 @@ public class ISLRGeneric {
 
             // break if the improvement is then tolerance
 
-            if (k > 0 && Math.abs(err.getDouble(err.rowCount() - 2) - err.getDouble(err.rowCount() - 1)) < tol) {
+            if (k > 0 && Math.abs(err.getDouble(err.size() - 2) - err.getDouble(err.size() - 1)) < tol) {
                 break;
             }
         }
@@ -241,7 +235,7 @@ public class ISLRGeneric {
 
 
             Pair<DV, VarDouble> pair2 = islrH(A, b, prob, h, 1000, 1e-20);
-            plot.lines(pair2.v2, color(1));
+            plot.lines(pair2.v2, fill(1));
 
             WS.println("Solution 2 for p=" + Format.floatFlex(prob));
             WS.println("Min :" + Format.floatFlex(A.dot(pair2.v1).sub(b).norm(prob)));

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -44,9 +41,10 @@ import rapaio.datasets.Datasets;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.artist.PolyFill;
+import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.image.ImageUtility;
 import rapaio.ml.eval.metric.ROC;
-import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -71,8 +69,6 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
-//                private static final boolean regenerate = true;
-    private static final boolean show = false;
     private static final String root = "/home/ati/work/rapaio/tst";
 
     private Frame df;
@@ -81,13 +77,10 @@ public class ImageGraphicsTest {
     void setUp() throws Exception {
         RandomSource.setSeed(1234);
         df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
-        ImageUtility.setBestHints();
+        ImageUtility.setSpeedHints();
     }
 
     private void assertTest(Figure f, String name) throws IOException {
-        if (show) {
-            WS.draw(f);
-        }
         if (regenerate) {
             ImageUtility.saveImage(f, 500, 400, root + "/rapaio/graphics/" + name + ".png");
         }
@@ -105,14 +98,14 @@ public class ImageGraphicsTest {
         plot.xLim(-10, 10);
         plot.yLim(-10, 10);
 
-        plot.hLine(0, color(3));
-        plot.hLine(1, color(4));
+        plot.hLine(0, fill(3));
+        plot.hLine(1, fill(4));
 
-        plot.vLine(0, color(5));
-        plot.vLine(1.2, color(6));
+        plot.vLine(0, fill(5));
+        plot.vLine(1.2, fill(6));
 
-        plot.abLine(1, 0, color(7));
-        plot.abLine(-1.2, 0, color(8));
+        plot.abLine(1, 0, fill(7));
+        plot.abLine(-1.2, 0, fill(8));
 
         assertTest(plot, "abline-test");
     }
@@ -129,7 +122,8 @@ public class ImageGraphicsTest {
     void testBoxPlot() throws IOException {
         Var x = df.rvar(1);
         Var factor = df.rvar("class");
-        assertTest(boxplot(x, factor, color(10, 50, 100)), "boxplot-test");
+        var plot = boxplot(x, factor, fill(10, 50, 100));
+        assertTest(plot, "boxplot-test");
     }
 
     @Test
@@ -165,9 +159,9 @@ public class ImageGraphicsTest {
         final int N = 100;
         Var x = df.rvar(2);
         Distribution normal = Normal.of(Mean.of(x).value(), Variance.of(x).sdValue());
-        Plot plot = qqplot(x, normal, pch(2), color(3))
-                .vLine(0, color(Color.GRAY))
-                .hLine(0, color(Color.GRAY));
+        Plot plot = qqplot(x, normal, pch(2), fill(3))
+                .vLine(0, fill(Color.GRAY))
+                .hLine(0, fill(Color.GRAY));
 
         assertTest(plot, "qqplot-test");
     }
@@ -178,7 +172,7 @@ public class ImageGraphicsTest {
         Var x = df.rvar(0).copy().name("x");
         Var y = df.rvar(1).copy().name("y");
 
-        Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
+        Plot plot = hist2d(x, y, fill(2), bins(20)).points(x, y, alpha(0.3f));
         assertTest(plot, "hist2d-test");
     }
 
@@ -196,7 +190,7 @@ public class ImageGraphicsTest {
 
         Figure fig = gridLayer(3, 3)
                 .add(1, 1, 2, 2, points(x, y, sz(2)))
-                .add(3, 2, 2, 1, hist2d(x, y, color(2)))
+                .add(3, 2, 2, 1, hist2d(x, y, fill(2)))
                 .add(lines(x))
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));
@@ -224,7 +218,7 @@ public class ImageGraphicsTest {
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))
-                .add(points(x, y).xLim(-3, -1));
+                .add(points(x, y, pch(2), fill(2), color(1)).xLim(-3, -1));
         assertTest(fig, "points-test");
     }
 
@@ -255,10 +249,62 @@ public class ImageGraphicsTest {
         plot.xLim(0, 1);
         plot.yLim(0, 1);
 
-        plot.segmentLine(0.1, 0.1, 0.7, 0.7, color(1));
-        plot.segmentArrow(0.1, 0.9, 0.9, 0.1, color(2), lwd(6));
+        plot.segmentLine(0.1, 0.1, 0.7, 0.7, fill(1));
+        plot.segmentArrow(0.1, 0.9, 0.9, 0.1, fill(2), lwd(6));
 
         assertTest(plot, "segment-test");
+    }
+
+    @Test
+    @SneakyThrows
+    void testRapaioLogo() {
+        var x = VarDouble.seq(0, 1, 0.004).name("x");
+
+        var green = Normal.of(0.24, 0.08);
+        var blue = Normal.of(0.37, 0.15);
+        var orange = Normal.of(0.59, 0.13);
+        var red = Normal.of(0.80, 0.06);
+
+        Color cgreen = Color.decode("0x2ca02c");
+        Color cblue = Color.decode("0x1f77b4");
+        Color corange = Color.decode("0xff7f0e");
+        Color cred = Color.decode("0xd62728");
+
+        var ygreen = VarDouble.from(x, green::pdf).name("y");
+        var yblue = VarDouble.from(x, blue::pdf).name("y");
+        var yorange = VarDouble.from(x, orange::pdf).name("y");
+        var yred = VarDouble.from(x, red::pdf).name("y");
+
+        float alpha = 0.5f;
+        float lwd = 5f;
+
+        Plot up = plot();
+
+        up.add(new PolyFill(x, yblue, fill(cblue), alpha(alpha)));
+        up.add(new PolyFill(x, yorange, fill(corange), alpha(alpha)));
+        up.add(new PolyFill(x, ygreen, fill(cgreen), alpha(alpha)));
+        up.add(new PolyFill(x, yred, fill(cred), alpha(alpha)));
+
+        up.add(new PolyLine(false, x, yblue, color(cblue), lwd(lwd)));
+        up.add(new PolyLine(false, x, yorange, color(corange), lwd(lwd)));
+        up.add(new PolyLine(false, x, ygreen, color(cgreen), lwd(lwd)));
+        up.add(new PolyLine(false, x, yred, color(cred), lwd(lwd)));
+
+        up.xLim(0, 1);
+        up.leftThick(false);
+        up.leftMarkers(false);
+        up.bottomThick(false);
+        up.bottomMarkers(false);
+
+        Plot down = plot();
+
+        down.leftThick(false);
+        down.leftMarkers(false);
+        down.bottomThick(false);
+        down.bottomMarkers(false);
+
+        Figure fig = gridLayer(2, 1, heights(0.7, 0.3)).add(up).add(down);
+        assertTest(fig, "rapaio-logo");
     }
 
     boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
@@ -280,7 +326,9 @@ public class ImageGraphicsTest {
                 s2.addDouble(c2.getBlue());
             }
         }
-        boolean condition = Quantiles.of(s1.copy().op().minus(s2).op().apply(Math::abs), 0.90).values()[0] < 20;
+        var delta = s1.copy().op().minus(s2).op().apply(Math::abs);
+        delta.printSummary();
+        boolean condition = Quantiles.of(delta, 0.97).values()[0] < 10;
         if (!condition) {
             return condition;
         }

@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -51,12 +45,12 @@ public class BoundVar extends AbstractVar {
     }
 
     public static BoundVar from(List<Var> vars) {
-        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
+        return new BoundVar(vars.stream().map(Var::size).collect(Collectors.toList()), vars);
     }
 
     public static BoundVar from(Var... vars) {
         return new BoundVar(
-                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
+                Arrays.stream(vars).map(Var::size).collect(Collectors.toList()),
                 Arrays.stream(vars).collect(Collectors.toList())
         );
     }
@@ -94,7 +88,7 @@ public class BoundVar extends AbstractVar {
             } else {
                 this.counts.add(counts.get(i) + last);
                 this.vars.add(vars.get(i));
-                last += vars.get(i).rowCount();
+                last += vars.get(i).size();
             }
         }
         this.name(vars.get(0).name());
@@ -117,7 +111,7 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public int rowCount() {
+    public int size() {
         return rowCount;
     }
 

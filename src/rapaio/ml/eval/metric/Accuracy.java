@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.eval.metric;
 
 import rapaio.data.Var;
@@ -29,13 +50,13 @@ public class Accuracy extends AbstractClassifierMetric implements ClassifierMetr
     @Override
     public Accuracy compute(Var actual, ClassifierResult prediction) {
         double match = 0;
-        for (int i = 0; i < prediction.firstClasses().rowCount(); i++) {
+        for (int i = 0; i < prediction.firstClasses().size(); i++) {
             if (prediction.firstClasses().getLabel(i).equals(actual.getLabel(i))) {
                 match++;
             }
         }
         score = ClassifierScore.builder()
-                .value(normalize ? match / prediction.firstClasses().rowCount() : match)
+                .value(normalize ? match / prediction.firstClasses().size() : match)
                 .build();
         return this;
     }

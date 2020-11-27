@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -183,7 +177,7 @@ public class MinkowskiWeightedKMeans implements Printable {
                 learned = true;
                 runningHook.accept(this, runs - rounds);
             }
-            int erc = errors.rowCount();
+            int erc = errors.size();
             if (erc > 1 && debug) {
                 WS.println("prev error: " + errors.getDouble(erc - 2) +
                         ", current error: " + errors.getDouble(erc - 1) +
@@ -410,7 +404,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     public double error() {
-        return errors.rowCount() == 0 ? Double.NaN : errors.getDouble(errors.rowCount() - 1);
+        return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
     private void buildSummary(Frame df) {
@@ -435,7 +429,7 @@ public class MinkowskiWeightedKMeans implements Printable {
         }
         double tvar = Variance.of(summaryAllDist).value();
         for (Map.Entry<Integer, VarDouble> e : errors.entrySet()) {
-            summaryCount.setInt(e.getKey(), e.getValue().rowCount());
+            summaryCount.setInt(e.getKey(), e.getValue().size());
             summaryMean.setDouble(e.getKey(), Mean.of(e.getValue()).value());
             double v = Variance.of(e.getValue()).value();
             summaryVar.setDouble(e.getKey(), v);
@@ -469,7 +463,7 @@ public class MinkowskiWeightedKMeans implements Printable {
             sb.append("MinkowskyWeightedKMeans did not clustered anything yet!\n");
         } else {
             sb.append("Overall: \n");
-            sb.append("> count: ").append(summaryAllDist.rowCount()).append("\n");
+            sb.append("> count: ").append(summaryAllDist.size()).append("\n");
             sb.append("> mean: ").append(Format.floatFlex(Mean.of(summaryAllDist).value())).append("\n");
             sb.append("> var: ").append(Format.floatFlex(Variance.of(summaryAllDist).value())).append("\n");
             sb.append("> sd: ").append(Format.floatFlex(Variance.of(summaryAllDist).sdValue())).append("\n");

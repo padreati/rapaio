@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -43,19 +40,19 @@ public class MappedVarTest {
     @Test
     void testBuilders() {
         Var a = VarDouble.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
-        assertEquals(2, a.rowCount());
+        assertEquals(2, a.size());
         assertEquals(3, a.getDouble(0), TOL);
         assertEquals(4, a.getDouble(1), TOL);
 
         Var b = a.bindRows(VarDouble.wrap(10, 11));
-        assertEquals(4, b.rowCount());
+        assertEquals(4, b.size());
         assertEquals(3, b.getDouble(0), TOL);
         assertEquals(10, b.getDouble(2), TOL);
 
         Var seq = VarInt.seq(100);
         Var mapSeq = MappedVar.byRows(seq, 1, 2, 3);
-        assertEquals(3, mapSeq.rowCount());
-        for (int i = 0; i < mapSeq.rowCount(); i++) {
+        assertEquals(3, mapSeq.size());
+        for (int i = 0; i < mapSeq.size(); i++) {
             assertEquals(i + 1, mapSeq.getInt(i));
         }
     }
@@ -65,7 +62,7 @@ public class MappedVarTest {
         VarDouble x = VarDouble.seq(0, 100);
         MappedVar map = x.mapRows(Mapping.range(10));
 
-        assertNotEquals(x.rowCount(), map.rowCount());
+        assertNotEquals(x.size(), map.size());
         assertTrue(x.deepEquals(map.getSource()));
     }
 
@@ -122,7 +119,7 @@ public class MappedVarTest {
     @Test
     void testMappedBinary() {
         Var x = VarBinary.copy(1, 0, 1).mapRows(0, 2);
-        assertEquals(2, x.rowCount());
+        assertEquals(2, x.size());
         assertEquals(1, x.getInt(0));
         assertEquals(1, x.getInt(1));
 
@@ -134,7 +131,7 @@ public class MappedVarTest {
     @Test
     void testMappedLong() {
         Var x = VarLong.copy(100, 200).mapRows(0, 1);
-        assertEquals(2, x.rowCount());
+        assertEquals(2, x.size());
         assertEquals(100, x.getLong(0));
         assertEquals(200, x.getLong(1));
 

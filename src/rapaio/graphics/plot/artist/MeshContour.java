@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -70,7 +64,7 @@ public class MeshContour extends Artist {
     @Override
     public void updateDataRange() {
         union(mg.x().getDouble(0), mg.y().getDouble(0));
-        union(mg.x().getDouble(mg.x().rowCount() - 1), mg.y().getDouble(mg.y().rowCount() - 1));
+        union(mg.x().getDouble(mg.x().size() - 1), mg.y().getDouble(mg.y().size() - 1));
     }
 
     @Override
@@ -83,8 +77,8 @@ public class MeshContour extends Artist {
 
         LinkedList<Point2D.Double> lines = new LinkedList<>();
 
-        for (int i = 0; i < mg.x().rowCount() - 1; i++) {
-            for (int j = 0; j < mg.y().rowCount() - 1; j++) {
+        for (int i = 0; i < mg.x().size() - 1; i++) {
+            for (int j = 0; j < mg.y().size() - 1; j++) {
 
                 if (!contains(x.getDouble(i), y.getDouble(j)))
                     continue;
@@ -115,7 +109,7 @@ public class MeshContour extends Artist {
                             path.lineTo(xScale(x.getDouble(i)), yScale(y.getDouble(j + 1)));
                             path.lineTo(xScale(x.getDouble(i)), yScale(y.getDouble(j)));
 
-                            g2d.setColor(options.getColor(0));
+                            g2d.setColor(options.getFill(0));
                             g2d.setStroke(new BasicStroke());
                             g2d.draw(path);
                             g2d.fill(path);
@@ -248,7 +242,7 @@ public class MeshContour extends Artist {
                             }
                             path.lineTo(start.x, start.y);
 
-                            g2d.setColor(options.getColor(0));
+                            g2d.setColor(options.getFill(0));
                             g2d.setStroke(new BasicStroke());
                             g2d.draw(path);
                             g2d.fill(path);

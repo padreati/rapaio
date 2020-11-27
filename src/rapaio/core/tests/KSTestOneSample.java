@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -72,10 +66,10 @@ public class KSTestOneSample implements HTest {
         this.cdf = cdf;
 
         D = 0;
-        double n = v.rowCount();
+        double n = v.size();
         double fo = 0.0;
 
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             //ECDF(x) - F(x)
             double ff = cdf.cdf(v.getDouble(i));
             double fn = (i + 1) / n;
@@ -134,8 +128,8 @@ public class KSTestOneSample implements HTest {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
 
-        int ties = (int) (v.rowCount() - v.stream().mapToDouble().distinct().count());
-        sb.append(String.format("sample size: %d, ties: %d\n", v.rowCount(), ties));
+        int ties = (int) (v.size() - v.stream().mapToDouble().distinct().count());
+        sb.append(String.format("sample size: %d, ties: %d\n", v.size(), ties));
         if (ties > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 

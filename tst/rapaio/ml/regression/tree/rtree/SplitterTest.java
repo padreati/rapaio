@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -69,7 +66,7 @@ public class SplitterTest {
                 u = Uniform.of(11, 19);
         }
         VarDouble sample = u.sample(count);
-        for (int i = 0; i < sample.rowCount(); i++) {
+        for (int i = 0; i < sample.size(); i++) {
             df.addRows(1);
             df.rvar("x").setDouble(df.rowCount() - 1, sample.getDouble(i));
             w.addDouble(weight);
@@ -87,10 +84,10 @@ public class SplitterTest {
         assertEquals(2, result.size());
 
         assertEquals(2, df.mapRows(result.get(0)).rowCount());
-        assertEquals(2, w.mapRows(result.get(0)).rowCount());
+        assertEquals(2, w.mapRows(result.get(0)).size());
 
         assertEquals(2, df.mapRows(result.get(1)).rowCount());
-        assertEquals(2, w.mapRows(result.get(1)).rowCount());
+        assertEquals(2, w.mapRows(result.get(1)).size());
 
         assertEquals(2, w.mapRows(result.get(0)).stream().mapToDouble().sum(), TOL);
         assertEquals(4, w.mapRows(result.get(1)).stream().mapToDouble().sum(), TOL);
@@ -110,12 +107,12 @@ public class SplitterTest {
 
         // group 1
         assertEquals(10, df.mapRows(result.get(0)).rowCount());
-        assertEquals(10, w.mapRows(result.get(0)).rowCount());
+        assertEquals(10, w.mapRows(result.get(0)).size());
         assertEquals(10, w.mapRows(result.get(0)).stream().mapToDouble().sum(), TOL);
 
         // group 2
         assertEquals(9, df.mapRows(result.get(1)).rowCount());
-        assertEquals(9, w.mapRows(result.get(1)).rowCount());
+        assertEquals(9, w.mapRows(result.get(1)).size());
         assertEquals(20, w.mapRows(result.get(1)).stream().mapToDouble().sum(), TOL);
     }
 

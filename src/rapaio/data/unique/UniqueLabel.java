@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -54,7 +48,7 @@ public class UniqueLabel extends AbstractUnique {
     private UniqueLabel(Var var, boolean sorted) {
         super(sorted);
         HashSet<String> keySet = new HashSet<>();
-        for (int i = 0; i < var.rowCount(); i++) {
+        for (int i = 0; i < var.size(); i++) {
             keySet.add(var.getLabel(i));
         }
         values = new ArrayList<>(keySet);
@@ -66,14 +60,14 @@ public class UniqueLabel extends AbstractUnique {
             uniqueKeys.put(values.get(i), i);
         }
         rowLists = new HashMap<>();
-        for (int i = 0; i < var.rowCount(); i++) {
+        for (int i = 0; i < var.size(); i++) {
             int id = uniqueKeys.get(var.getLabel(i));
             if (!rowLists.containsKey(id)) {
                 rowLists.put(id, Mapping.empty());
             }
             rowLists.get(id).add(i);
         }
-        updateIdsByRow(var.rowCount());
+        updateIdsByRow(var.size());
     }
 
     @Override

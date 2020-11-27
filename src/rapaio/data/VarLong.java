@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -139,12 +133,12 @@ public class VarLong extends AbstractVar {
      */
     public static VarLong copy(Var var) {
         if (var instanceof VarLong) {
-            VarLong stamp = VarLong.fill(var.rowCount());
-            System.arraycopy(((VarLong) var).data, 0, stamp.data, 0, var.rowCount());
+            VarLong stamp = VarLong.fill(var.size());
+            System.arraycopy(((VarLong) var).data, 0, stamp.data, 0, var.size());
             return stamp;
         }
-        VarLong stamp = new VarLong(var.rowCount(), var.rowCount(), 0);
-        for (int i = 0; i < var.rowCount(); i++) {
+        VarLong stamp = new VarLong(var.size(), var.size(), 0);
+        for (int i = 0; i < var.size(); i++) {
             stamp.data[i] = var.getLong(i);
         }
         return stamp;
@@ -239,7 +233,7 @@ public class VarLong extends AbstractVar {
      */
     public static VarLong from(Var source, Function<Long, Long> transform) {
         VarLong var = VarLong.empty();
-        for (int i = 0; i < source.rowCount(); i++) {
+        for (int i = 0; i < source.size(); i++) {
             var.addLong(transform.apply(source.getLong(i)));
         }
         return var;
@@ -336,7 +330,7 @@ public class VarLong extends AbstractVar {
     }
 
     @Override
-    public int rowCount() {
+    public int size() {
         return rows;
     }
 

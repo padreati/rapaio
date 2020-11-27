@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -41,12 +38,12 @@ public class VarNominalTest {
     @Test
     void testSmoke() {
         Var v = VarNominal.empty(0);
-        assertEquals(0, v.rowCount());
+        assertEquals(0, v.size());
         assertEquals(1, v.levels().size());
         assertEquals("?", v.levels().get(0));
 
         v = VarNominal.empty();
-        assertEquals(0, v.rowCount());
+        assertEquals(0, v.size());
         assertEquals(1, v.levels().size());
         assertEquals("?", v.levels().get(0));
 
@@ -54,7 +51,7 @@ public class VarNominalTest {
         assertFalse(v.type().isNumeric());
 
         v = VarNominal.empty(1, "a");
-        assertEquals(1, v.rowCount());
+        assertEquals(1, v.size());
         assertEquals("?", v.getLabel(0));
 
         assertEquals("VarNominal [name:\"?\", rowCount:10, values: ?, ?, ?, ?, ?, ?, ?, ?, ?, ?]", VarNominal.empty(10).toString());
@@ -187,8 +184,8 @@ public class VarNominalTest {
 
         a.addLabel("z");
 
-        assertEquals(2, b.rowCount());
-        assertEquals(3, a.rowCount());
+        assertEquals(2, b.size());
+        assertEquals(3, a.size());
     }
 
     @Test
@@ -196,14 +193,14 @@ public class VarNominalTest {
         VarNominal var = VarNominal.empty(0, "x", "y");
 
         var.addMissing();
-        assertEquals(1, var.rowCount());
+        assertEquals(1, var.size());
 
         var.addInt(1);
-        assertEquals(2, var.rowCount());
+        assertEquals(2, var.size());
         assertEquals("x", var.getLabel(1));
 
         var.addDouble(2.4);
-        assertEquals(3, var.rowCount());
+        assertEquals(3, var.size());
         assertEquals("y", var.getLabel(2));
 
         var = VarNominal.empty();
@@ -211,11 +208,11 @@ public class VarNominalTest {
         var.addLabel("y");
         var.removeRow(0);
 
-        assertEquals(1, var.rowCount());
+        assertEquals(1, var.size());
         assertEquals("y", var.getLabel(0));
 
         var.clearRows();
-        assertEquals(0, var.rowCount());
+        assertEquals(0, var.size());
     }
 
     @Test
@@ -235,7 +232,7 @@ public class VarNominalTest {
 
         VarNominal copy6 = VarNominal.copy("a", "b");
         copy6.addRows(2);
-        assertEquals(4, copy6.rowCount());
+        assertEquals(4, copy6.size());
         assertTrue(copy6.isMissing(2));
         assertTrue(copy6.isMissing(3));
 

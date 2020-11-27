@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -101,16 +98,16 @@ public class ChiSquareTest {
 
         ChiSquare c1 = ChiSquare.of(1);
         Var sample1 = c1.sample(1000_000);
-        assertEquals(sample1.rowCount(), sample1.stream().mapToDouble().filter(x -> x > 0).count());
+        assertEquals(sample1.size(), sample1.stream().mapToDouble().filter(x -> x > 0).count());
 
         ChiSquare c2 = ChiSquare.of(2);
         Var sample = c2.sample(100);
         long count = sample.stream().mapToDouble().filter(x -> x > 0).count();
-        assertEquals(sample.rowCount(), count);
+        assertEquals(sample.size(), count);
 
         sample = c.sample(100);
         count = sample.stream().mapToDouble().filter(x -> x > 0).count();
-        assertEquals(sample.rowCount(), count);
+        assertEquals(sample.size(), count);
         assertEquals(0, ChiSquare.of(2).pdf(-10), TOL);
         assertEquals(0, ChiSquare.of(3).cdf(-10), TOL);
     }

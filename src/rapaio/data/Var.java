@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -73,7 +67,7 @@ public interface Var extends Serializable, Printable {
      *
      * @return size of var
      */
-    int rowCount();
+    int size();
 
     /**
      * Builds a new variable having rows of the current variable,
@@ -108,9 +102,9 @@ public interface Var extends Serializable, Printable {
 
     default MappedVar removeRows(Mapping mapping) {
         Set<Integer> remove = mapping.stream().boxed().collect(Collectors.toSet());
-        int[] map = new int[Math.max(0, rowCount() - remove.size())];
+        int[] map = new int[Math.max(0, size() - remove.size())];
         int pos = 0;
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             if (!remove.contains(i)) {
                 map[pos++] = i;
             }
@@ -364,19 +358,19 @@ public interface Var extends Serializable, Printable {
     }
 
     default void forEachSpot(Consumer<VSpot> consumer) {
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             consumer.accept(new VSpot(i, this));
         }
     }
 
     default void forEachInt(IntConsumer consumer) {
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             consumer.accept(getInt(i));
         }
     }
 
     default void forEachDouble(DoubleConsumer consumer) {
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             consumer.accept(getDouble(i));
         }
     }
@@ -442,12 +436,12 @@ public interface Var extends Serializable, Printable {
     default boolean deepEquals(Var var) {
         if (!Objects.equals(name(), var.name()))
             return false;
-        if (rowCount() != var.rowCount())
+        if (size() != var.size())
             return false;
         if (type() != var.type())
             return false;
 
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             if (isMissing(i) != var.isMissing(i)) {
                 return false;
             }

@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -57,7 +51,7 @@ public class KDevianceLoss implements Loss {
         double up = 0.0;
         double down = 0.0;
 
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             up += y.getDouble(i);
             down += Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
         }
@@ -72,7 +66,7 @@ public class KDevianceLoss implements Loss {
         double up = 0.0;
         double down = 0.0;
 
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             up += weight.getDouble(i) * y.getDouble(i);
             down += weight.getDouble(i) * Math.abs(y.getDouble(i)) * (1.0 - Math.abs(y.getDouble(i)));
         }
@@ -89,7 +83,7 @@ public class KDevianceLoss implements Loss {
         double up = 0.0;
         double down = 0.0;
 
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             double delta = y.getDouble(i) - fx.getDouble(i);
             up += delta;
             down += Math.abs(delta) * (1.0 - Math.abs(delta));

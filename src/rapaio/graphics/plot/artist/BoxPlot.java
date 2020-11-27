@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,9 +27,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.stream.VSpot;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.opt.GOptionPch;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.opt.PchPalette;
@@ -50,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.*;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -78,7 +72,8 @@ public class BoxPlot extends Artist {
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
-        options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
+        options.setColor(color(0));
+        options.setFill(new GOptionFill(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
     }
 
@@ -87,7 +82,8 @@ public class BoxPlot extends Artist {
         this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
 
         options.setPch(new GOptionPch(VarInt.wrap(0, 3)));
-        options.setColor(new GOptionColor(new Color[]{new Color(240, 240, 240)}));
+        options.setColor(color(0));
+        options.setFill(new GOptionFill(new Color[]{new Color(240, 240, 240)}));
         this.options.bind(opts);
     }
 
@@ -108,7 +104,7 @@ public class BoxPlot extends Artist {
         for (int i = 0; i < vars.length; i++) {
             Var v = vars[i];
             plot.xAxis().unionCategory(i + 0.5, names[i]);
-            for (int j = 0; j < v.rowCount(); j++) {
+            for (int j = 0; j < v.size(); j++) {
                 if (v.isMissing(j)) continue;
                 union(Double.NaN, v.getDouble(j));
             }
@@ -121,7 +117,7 @@ public class BoxPlot extends Artist {
 
         for (int i = 0; i < vars.length; i++) {
             Var v = vars[i];
-            if (v.rowCount() == 0) {
+            if (v.size() == 0) {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
@@ -136,11 +132,10 @@ public class BoxPlot extends Artist {
 
             // first we fill the space
 
-            g2d.setColor(options.getColor(i));
-            g2d.fill(new Rectangle2D.Double(xScale(x1), yScale(q[2]),
-                    xScale(x3) - xScale(x1), yScale(q[0]) - yScale(q[2])));
+            g2d.setColor(options.getFill(i));
+            g2d.fill(new Rectangle2D.Double(xScale(x1), yScale(q[2]), xScale(x3) - xScale(x1), yScale(q[0]) - yScale(q[2])));
 
-            g2d.setColor(ColorPalette.STANDARD.getColor(0));
+            g2d.setColor(options.getColor(i));
 
             // median
             g2d.setStroke(new BasicStroke(options.getLwd() * 2));
@@ -158,7 +153,7 @@ public class BoxPlot extends Artist {
             // outliers
             double upperwhisker = q[2];
             double lowerqhisker = q[0];
-            for (int j = 0; j < v.rowCount(); j++) {
+            for (int j = 0; j < v.size(); j++) {
                 double point = v.getDouble(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
@@ -166,7 +161,7 @@ public class BoxPlot extends Artist {
                     PchPalette.STANDARD.draw(g2d,
                             xScale(x2),
                             yScale(point),
-                            options.getSz(i), options.getPch(1));
+                            options.getSz(i), options.getPch(1), options.getLwd(), options.getColor(i), options.getFill(i));
                     continue;
                 }
                 if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
@@ -175,7 +170,7 @@ public class BoxPlot extends Artist {
                     PchPalette.STANDARD.draw(g2d,
                             xScale(x2),
                             yScale(point),
-                            options.getSz(i), options.getPch(0));
+                            options.getSz(i), options.getPch(0), options.getLwd(), options.getColor(i), options.getFill(i));
                     continue;
                 }
                 if ((point > upperwhisker) && (point < q[2] + innerFence)) {

@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +49,7 @@ public class VarInstantTest {
     @Test
     void testConstructors() {
         var t1 = VarInstant.empty(10);
-        for (int i = 0; i < t1.rowCount(); i++) {
+        for (int i = 0; i < t1.size(); i++) {
             assertTrue(t1.isMissing(i));
             assertNull(t1.getInstant(i));
             assertEquals("?", t1.getLabel(i));
@@ -39,12 +60,12 @@ public class VarInstantTest {
 
         ZonedDateTime start = ZonedDateTime.now();
         var t2 = VarInstant.from(10, row -> Instant.from(start.plus(row, ChronoUnit.DAYS)));
-        for (int i = 0; i < t2.rowCount(); i++) {
+        for (int i = 0; i < t2.size(); i++) {
             assertEquals(start.plus(i, ChronoUnit.DAYS).toInstant(), t2.getInstant(i));
         }
 
         var t3 = VarInstant.from(1, 2, 3);
-        assertEquals(3, t3.rowCount());
+        assertEquals(3, t3.size());
         assertEquals(1, t3.getLong(0));
         assertEquals(3, t3.getLong(2));
         assertEquals(Instant.ofEpochMilli(1), t3.getInstant(0));
@@ -97,7 +118,7 @@ public class VarInstantTest {
         t.addLong(200);
         t.addMissing();
 
-        assertEquals(3, t.rowCount());
+        assertEquals(3, t.size());
         assertEquals(Instant.ofEpochMilli(100), t.getInstant(0));
         assertEquals(Instant.ofEpochMilli(200), t.getInstant(1));
         assertEquals(200, t.getLong(1));

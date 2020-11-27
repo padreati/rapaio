@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -46,7 +43,7 @@ public class VarIntTest {
         Var index = VarInt.empty(1);
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
-        assertEquals(1, index.rowCount());
+        assertEquals(1, index.size());
     }
 
     @Test
@@ -109,14 +106,14 @@ public class VarIntTest {
     @Test
     void testMissing() {
         Var index = VarInt.seq(1, 10, 1);
-        for (int i = 0; i < index.rowCount(); i++) {
+        for (int i = 0; i < index.size(); i++) {
             assertFalse(index.isMissing(i));
         }
-        for (int i = 0; i < index.rowCount(); i++) {
+        for (int i = 0; i < index.size(); i++) {
             if (i % 2 == 0)
                 index.setMissing(i);
         }
-        for (int i = 0; i < index.rowCount(); i++) {
+        for (int i = 0; i < index.size(); i++) {
             assertEquals(i % 2 == 0, index.isMissing(i));
         }
     }
@@ -124,16 +121,16 @@ public class VarIntTest {
     @Test
     void testOneIndex() {
         Var one = VarInt.scalar(2);
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals(2, one.getInt(0));
 
         one = VarInt.scalar(3);
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals(3, one.getInt(0));
 
         one.addRows(2);
         one.setInt(2, 10);
-        assertEquals(3, one.rowCount());
+        assertEquals(3, one.size());
         assertEquals(10, one.getInt(2));
 
         one.setLabel(0, "?");
@@ -143,21 +140,21 @@ public class VarIntTest {
     @Test
     void testBuilders() {
         Var empty1 = VarInt.empty();
-        assertEquals(0, empty1.rowCount());
+        assertEquals(0, empty1.size());
         empty1 = VarInt.empty(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(VarInt.MISSING_VALUE, empty1.getInt(i));
         }
 
         Var fill1 = VarInt.fill(10, -1);
-        assertEquals(10, fill1.rowCount());
-        for (int i = 0; i < fill1.rowCount(); i++) {
+        assertEquals(10, fill1.size());
+        for (int i = 0; i < fill1.size(); i++) {
             assertEquals(-1, fill1.getInt(i));
         }
 
         Var seq1 = VarInt.seq(1, 10);
-        assertEquals(10, seq1.rowCount());
-        for (int i = 0; i < seq1.rowCount(); i++) {
+        assertEquals(10, seq1.size());
+        for (int i = 0; i < seq1.size(); i++) {
             assertEquals(i + 1, seq1.getInt(i));
         }
 
@@ -185,7 +182,7 @@ public class VarIntTest {
         src[2] = 10;
         assertEquals(10, x2.getInt(2));
 
-        VarInt from1 = VarInt.from(x2.rowCount(), x2::getInt);
+        VarInt from1 = VarInt.from(x2.size(), x2::getInt);
         assertTrue(from1.deepEquals(x2));
 
         VarInt collect1 = IntStream.range(0, 100).boxed().collect(VarInt.collector());
@@ -209,7 +206,7 @@ public class VarIntTest {
         for (int val : array) {
             int1.addInt(val);
         }
-        for (int i = 0; i < int1.rowCount(); i++) {
+        for (int i = 0; i < int1.size(); i++) {
             if (array[i] == VarInt.MISSING_VALUE) {
                 assertEquals(VarNominal.MISSING_VALUE, int1.getLabel(i));
             } else {
@@ -220,7 +217,7 @@ public class VarIntTest {
         VarInt int2 = VarInt.copy(1, 2, 3);
         int2.addLabel("10");
 
-        assertEquals(4, int2.rowCount());
+        assertEquals(4, int2.size());
         assertEquals("1", int2.getLabel(0));
         assertEquals("2", int2.getLabel(1));
         assertEquals("3", int2.getLabel(2));
@@ -230,7 +227,7 @@ public class VarIntTest {
         x3.setLabel(0, "10");
         x3.removeRow(1);
 
-        assertEquals(2, x3.rowCount());
+        assertEquals(2, x3.size());
         assertEquals("10", x3.getLabel(0));
         assertEquals("3", x3.getLabel(1));
 
@@ -240,7 +237,7 @@ public class VarIntTest {
             x4.addLabel(str);
         }
 
-        assertEquals(stringValues.length, x4.rowCount());
+        assertEquals(stringValues.length, x4.size());
         for (int i = 0; i < stringValues.length; i++) {
             assertEquals(stringValues[i], x4.getLabel(i));
         }
@@ -255,7 +252,7 @@ public class VarIntTest {
             int1.addDouble(val);
         }
 
-        assertEquals(values.length, int1.rowCount());
+        assertEquals(values.length, int1.size());
         for (int i = 0; i < values.length; i++) {
             if (Double.isNaN(values[i])) {
                 assertTrue(int1.isMissing(i));
@@ -264,10 +261,10 @@ public class VarIntTest {
             }
         }
 
-        for (int i = 0; i < int1.rowCount(); i++) {
+        for (int i = 0; i < int1.size(); i++) {
             int1.setDouble(i, values[i]);
         }
-        assertEquals(values.length, int1.rowCount());
+        assertEquals(values.length, int1.size());
         for (int i = 0; i < values.length; i++) {
             if (Double.isNaN(values[i])) {
                 assertTrue(int1.isMissing(i));
@@ -295,12 +292,12 @@ public class VarIntTest {
         VarInt x = VarInt.copy(1, 3, 6, 7, 9);
         x.removeRow(0);
 
-        assertEquals(4, x.rowCount());
+        assertEquals(4, x.size());
         assertEquals(3, x.getInt(0));
         assertEquals(9, x.getInt(3));
 
         x.clearRows();
-        assertEquals(0, x.rowCount());
+        assertEquals(0, x.size());
 
         assertThrows(IndexOutOfBoundsException.class, () -> x.removeRow(-1));
     }
@@ -314,7 +311,7 @@ public class VarIntTest {
         Var x4 = x3.copy();
         x4.addDouble(8);
 
-        assertEquals(4, x4.rowCount());
+        assertEquals(4, x4.size());
         assertEquals(1, x4.getInt(0));
         assertEquals(3, x4.getInt(2));
         assertEquals(8, x4.getInt(3));
@@ -323,7 +320,7 @@ public class VarIntTest {
     @Test
     void testDataAccessor() {
         VarInt int1 = VarInt.seq(0, 100, 2);
-        for (int i = 0; i < int1.rowCount(); i++) {
+        for (int i = 0; i < int1.size(); i++) {
             assertEquals(int1.getInt(i), int1.elements()[i]);
         }
         int[] values = new int[]{0, 1, Integer.MIN_VALUE, 3, 4};

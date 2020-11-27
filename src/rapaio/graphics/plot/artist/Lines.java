@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -48,13 +42,13 @@ public class Lines extends Artist {
     private final Var y;
 
     public Lines(Var y, GOption<?>... opts) {
-        this(VarDouble.seq(0, y.rowCount() - 1), y, opts);
+        this(VarDouble.seq(0, y.size() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOption<?>... opts) {
         this.x = VarDouble.empty().name(x.name());
         this.y = VarDouble.empty().name(y.name());
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
             this.x.addDouble(x.getDouble(i));
@@ -75,10 +69,10 @@ public class Lines extends Artist {
 
     @Override
     public void updateDataRange() {
-        if (x.rowCount() == 0) {
+        if (x.size() == 0) {
             return;
         }
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < x.size(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
@@ -92,7 +86,7 @@ public class Lines extends Artist {
         g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < x.rowCount(); i++) {
+        for (int i = 1; i < x.size(); i++) {
             g2d.setColor(options.getColor(i));
             double x1 = x.getDouble(i - 1);
             double y1 = y.getDouble(i - 1);

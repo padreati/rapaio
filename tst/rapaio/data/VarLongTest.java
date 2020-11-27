@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +49,13 @@ public class VarLongTest {
     @Test
     void testEmptyWithNoRows() {
         VarLong empty = VarLong.empty();
-        assertEquals(0, empty.rowCount());
+        assertEquals(0, empty.size());
     }
 
     @Test
     void testVarEmptyWithRows() {
         VarLong empty = VarLong.empty(100);
-        assertEquals(100, empty.rowCount());
+        assertEquals(100, empty.size());
         for (int i = 0; i < 100; i++) {
             assertTrue(empty.isMissing(i));
         }
@@ -46,7 +67,7 @@ public class VarLongTest {
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
         VarLong copy = VarLong.copy(sourceIntArray);
-        assertEquals(100, copy.rowCount());
+        assertEquals(100, copy.size());
         for (int i = 0; i < 100; i++) {
             assertEquals(sourceIntArray[i], copy.getLong(i), TOL);
         }
@@ -58,8 +79,8 @@ public class VarLongTest {
         List<Long> sourceLongList = Arrays.stream(sourceLongArray).boxed().collect(Collectors.toList());
 
         VarLong dcopy = VarLong.copy(sourceLongArray);
-        assertEquals(100, dcopy.rowCount());
-        for (int i = 0; i < dcopy.rowCount(); i++) {
+        assertEquals(100, dcopy.size());
+        for (int i = 0; i < dcopy.size(); i++) {
             assertEquals(sourceLongArray[i], dcopy.getLong(i));
         }
         assertTrue(dcopy.deepEquals(VarLong.copy(dcopy)));
@@ -71,11 +92,11 @@ public class VarLongTest {
         assertTrue(dcopy.deepEquals(VarLong.from(dcopy, val -> val)));
 
         VarLong fill1 = VarLong.fill(100);
-        assertEquals(100, fill1.rowCount());
+        assertEquals(100, fill1.size());
         fill1.stream().mapToDouble().forEach(val -> assertEquals(0.0, val, TOL));
 
         VarLong fill2 = VarLong.fill(100, 20);
-        assertEquals(100, fill2.rowCount());
+        assertEquals(100, fill2.size());
         fill2.stream().mapToDouble().forEach(val -> assertEquals(20.0, val, TOL));
         assertTrue(VarLong.empty().deepEquals(fill2.newInstance(0)));
 
@@ -94,7 +115,7 @@ public class VarLongTest {
         assertFalse(flag);
         assertFalse(v.type().isNominal());
 
-        assertEquals(0, v.rowCount());
+        assertEquals(0, v.size());
         assertEquals("VarLong [name:\"?\", rowCount:1, values: ?]", VarLong.empty(1).toString());
     }
 
@@ -148,11 +169,11 @@ public class VarLongTest {
     void testOneNumeric() {
         Var one = VarLong.scalar((long) Math.PI);
 
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals((long) Math.PI, one.getLong(0), 1e-10);
 
         one = VarLong.scalar((long) Math.E);
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals((long) Math.E, one.getLong(0), 1e-10);
 
         one.setDouble(0, Math.E);
@@ -178,7 +199,7 @@ public class VarLongTest {
         VarLong x = VarLong.copy(1, 2, 3, 4).name("x");
 
         x.addInt(10);
-        assertEquals(10, x.getLong(x.rowCount() - 1), 10e-10);
+        assertEquals(10, x.getLong(x.size() - 1), 10e-10);
 
         VarLong s = VarLong.empty();
         s.addLong(1);
@@ -216,15 +237,15 @@ public class VarLongTest {
 
         x.clearRows();
 
-        assertEquals(0, x.rowCount());
+        assertEquals(0, x.size());
 
-        assertEquals(2, y.rowCount());
+        assertEquals(2, y.size());
         assertEquals(1, y.getInt(0));
         assertEquals(3, y.getInt(1));
 
         x2.addRows(3);
 
-        assertEquals(6, x2.rowCount());
+        assertEquals(6, x2.size());
         for (int i = 0; i < 3; i++) {
             assertEquals(i + 1, x2.getLong(i), TOL);
             assertTrue(x2.isMissing(i + 3));

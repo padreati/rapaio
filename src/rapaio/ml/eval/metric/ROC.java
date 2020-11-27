@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -71,8 +65,8 @@ public class ROC implements Printable, Serializable {
      * @param predict variable which contains the predicted classes
      */
     public static ROC from(Var score, Var actual, Var predict) {
-        VarInt classes = VarInt.empty(actual.rowCount());
-        for (int i = 0; i < actual.rowCount(); i++) {
+        VarInt classes = VarInt.empty(actual.size());
+        for (int i = 0; i < actual.size(); i++) {
             if (actual.getLabel(i).equals(predict.getLabel(i))) {
                 classes.setInt(i, 1);
             } else {
@@ -105,8 +99,8 @@ public class ROC implements Printable, Serializable {
      * @param label  label of the class considered 1, all other labels values are 0
      */
     public static ROC from(Var score, Var actual, String label) {
-        VarInt classes = VarInt.empty(actual.rowCount());
-        for (int i = 0; i < actual.rowCount(); i++) {
+        VarInt classes = VarInt.empty(actual.size());
+        for (int i = 0; i < actual.size(); i++) {
             if (actual.getLabel(i).equals(label)) {
                 classes.setInt(i, 1);
             } else {
@@ -128,7 +122,7 @@ public class ROC implements Printable, Serializable {
         double prevtp = 0;
         double prevfp = 0;
         auc = 0;
-        for (int i = 0; i < classes.rowCount(); i++) {
+        for (int i = 0; i < classes.size(); i++) {
             if (classes.isMissing(i)) {
                 continue;
             }
@@ -141,10 +135,10 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VRefSort(RowComparators.doubleComparator(score, false)).fapply(VarInt.seq(score.rowCount()));
+        Var rows = new VRefSort(RowComparators.doubleComparator(score, false)).fapply(VarInt.seq(score.size()));
         int len = 1;
         double prev = Double.MIN_VALUE;
-        for (int i = 0; i < rows.rowCount(); i++) {
+        for (int i = 0; i < rows.size(); i++) {
             if (score.isMissing(rows.getInt(i)) || classes.isMissing(rows.getInt(i))) continue;
             if (score.getDouble(rows.getInt(i)) != prev) {
                 prev = score.getDouble(rows.getInt(i));
@@ -155,7 +149,7 @@ public class ROC implements Printable, Serializable {
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 
-        for (int i = 0; i < rows.rowCount(); i++) {
+        for (int i = 0; i < rows.size(); i++) {
             if (score.isMissing(rows.getInt(i)) || classes.isMissing(rows.getInt(i))) continue;
             if (score.getDouble(rows.getInt(i)) != prev) {
                 auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
@@ -191,7 +185,7 @@ public class ROC implements Printable, Serializable {
 
     public int findRowForThreshold(double value) {
         Var th = data.rvar(threshold);
-        for (int i = 0; i < th.rowCount(); i++) {
+        for (int i = 0; i < th.size(); i++) {
             if (th.getDouble(i) <= value) {
                 return i;
             }

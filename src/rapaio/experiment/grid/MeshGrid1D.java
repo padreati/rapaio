@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -50,9 +44,9 @@ public class MeshGrid1D implements Serializable {
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.len = y.rowCount();
+        this.len = y.size();
 
-        this.grid = VarDouble.empty(x.rowCount() * y.rowCount());
+        this.grid = VarDouble.empty(x.size() * y.size());
     }
 
     public Var getX() {
@@ -79,8 +73,8 @@ public class MeshGrid1D implements Serializable {
     }
 
     public void fillWithFunction(BiFunction<Double, Double, Double> f) {
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < y.rowCount(); j++) {
+        for (int i = 0; i < x.size(); i++) {
+            for (int j = 0; j < y.size(); j++) {
                 grid.setDouble(i * len + j, f.apply(x.getDouble(i), y.getDouble(j)));
             }
         }
@@ -105,9 +99,9 @@ class MeshGrid1DImpl implements MeshGrid {
         this.low = low;
         this.high = high;
 
-        this.sides = new int[g.grid.rowCount()];
-        for (int i = 0; i < g.x.rowCount(); i++) {
-            for (int j = 0; j < g.y.rowCount(); j++) {
+        this.sides = new int[g.grid.size()];
+        for (int i = 0; i < g.x.size(); i++) {
+            for (int j = 0; j < g.y.size(); j++) {
                 sides[i * g.len + j] = sideCompute(i, j);
             }
         }

@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -91,7 +85,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     }
 
     public double getInertia() {
-        return errors.rowCount() == 0 ? Double.NaN : errors.getDouble(errors.rowCount() - 1);
+        return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
     public DM getCentroidsMatrix() {
@@ -142,7 +136,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
                 learned = true;
                 runningHook.get().accept(this, runs.get() - rounds);
             }
-            int erc = errors.rowCount();
+            int erc = errors.size();
             if (erc > 1 && errors.getDouble(erc - 2) - errors.getDouble(erc - 1) < eps.get() && errors.getDouble(erc - 1) <= errors.getDouble(erc - 2)) {
                 break;
             }
@@ -308,7 +302,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         sb.append("Model fitted=").append(hasLearned()).append("\n");
         if (learned) {
             sb.append("Inertia:").append(getInertia()).append("\n");
-            sb.append("Iterations:").append(errors.rowCount()).append("\n");
+            sb.append("Iterations:").append(errors.size()).append("\n");
             sb.append("Learned clusters:").append(centroids.rowCount()).append("\n");
         }
         return sb.toString();

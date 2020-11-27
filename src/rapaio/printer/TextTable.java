@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -259,14 +253,14 @@ public class TextTable {
             }
             // by default if no anchor is found we take mid
             int mid = (int) Math.ceil(value.length() / 2.);
-            if (indexes.rowCount() != 0) {
+            if (indexes.size() != 0) {
                 if (align < 0) {
                     mid = indexes.getInt(0);
                 } else {
                     if (align > 0) {
-                        mid = indexes.getInt(indexes.rowCount() - 1);
+                        mid = indexes.getInt(indexes.size() - 1);
                     } else {
-                        mid = indexes.getInt(indexes.rowCount() / 2);
+                        mid = indexes.getInt(indexes.size() / 2);
                     }
                 }
             }

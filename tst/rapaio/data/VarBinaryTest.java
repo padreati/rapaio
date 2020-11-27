@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -90,7 +87,7 @@ public class VarBinaryTest {
     @Test
     void testMissingValues() {
         VarBinary bin = VarBinary.copy(1, 0, 1, 0, -1, -1, 1, 0);
-        assertEquals(8, bin.rowCount());
+        assertEquals(8, bin.size());
         assertTrue(bin.isMissing(4));
         assertFalse(bin.isMissing(7));
 
@@ -99,7 +96,7 @@ public class VarBinaryTest {
         bin.addInt(1);
         bin.setMissing(1);
 
-        assertEquals(2, bin.rowCount());
+        assertEquals(2, bin.size());
         assertTrue(bin.isMissing(0));
         assertTrue(bin.isMissing(1));
     }
@@ -107,12 +104,12 @@ public class VarBinaryTest {
     @Test
     void testBuilders() {
         VarBinary bin = VarBinary.copy(1, 1, 0, 0);
-        assertEquals(4, bin.rowCount());
+        assertEquals(4, bin.size());
         assertEquals(1, bin.getInt(0));
         assertEquals(0, bin.getInt(3));
 
         VarBinary bin2 = VarBinary.fromIndex(100, i -> i % 3 == 0 ? -1 : i % 3 == 1 ? 0 : 1);
-        for (int i = 0; i < bin2.rowCount(); i++) {
+        for (int i = 0; i < bin2.size(); i++) {
             switch (i % 3) {
                 case 0:
                     assertTrue(bin2.isMissing(i));
@@ -159,20 +156,20 @@ public class VarBinaryTest {
         VarBinary copy = bin.copy();
         assertEquals(0, copy.getInt(0));
         assertEquals(0, copy.getInt(1));
-        assertEquals(2, copy.rowCount());
+        assertEquals(2, copy.size());
 
         copy.removeRow(0);
-        assertEquals(1, copy.rowCount());
+        assertEquals(1, copy.size());
         assertEquals(0, copy.getInt(0));
 
         copy.clearRows();
-        assertEquals(0, copy.rowCount());
+        assertEquals(0, copy.size());
 
         copy.removeRow(10);
 
         VarBinary bin1 = VarBinary.fill(10, 1);
         bin1.addRows(10);
-        assertEquals(20, bin1.rowCount());
+        assertEquals(20, bin1.size());
         for (int i = 0; i < 10; i++) {
             assertEquals(1, bin1.getInt(i));
             assertTrue(bin1.isMissing(i + 10));
@@ -187,7 +184,7 @@ public class VarBinaryTest {
         bin.addDouble(0);
         bin.addDouble(-1);
 
-        assertEquals(3, bin.rowCount());
+        assertEquals(3, bin.size());
         assertEquals(1, bin.getInt(0));
         assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
@@ -209,7 +206,7 @@ public class VarBinaryTest {
         bin.addInt(0);
         bin.addInt(-1);
 
-        assertEquals(3, bin.rowCount());
+        assertEquals(3, bin.size());
         assertEquals(1, bin.getInt(0));
         assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
@@ -232,7 +229,7 @@ public class VarBinaryTest {
         bin.addLong(0);
         bin.addLong(-1);
 
-        assertEquals(3, bin.rowCount());
+        assertEquals(3, bin.size());
         assertEquals(1, bin.getInt(0));
         assertEquals(0, bin.getInt(1));
         assertTrue(bin.isMissing(2));
@@ -270,7 +267,7 @@ public class VarBinaryTest {
             bin.addLabel(label);
         }
 
-        assertEquals(labels.length, bin.rowCount());
+        assertEquals(labels.length, bin.size());
         for (int i = 0; i < labels.length; i++) {
             assertEquals(labels[i], bin.getLabel(i));
         }

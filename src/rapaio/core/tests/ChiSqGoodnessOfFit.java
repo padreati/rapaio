@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -82,8 +76,8 @@ public class ChiSqGoodnessOfFit implements HTest {
                 return DensityVector.fromLevelCounts(false, x);
             case DOUBLE:
             case INT:
-                var dv = DensityVector.emptyByLabels(x.rowCount());
-                for (int i = 0; i < x.rowCount(); i++) {
+                var dv = DensityVector.emptyByLabels(x.size());
+                for (int i = 0; i < x.size(); i++) {
                     dv.set(i, x.getDouble(i));
                 }
                 return dv;
@@ -104,14 +98,14 @@ public class ChiSqGoodnessOfFit implements HTest {
 
         VarDouble expected = VarDouble.from(p, pi -> pi * dv.sum());
 
-        if (dv.rowCount() != expected.rowCount()) {
+        if (dv.rowCount() != expected.size()) {
             throw new IllegalArgumentException("Different degrees of freedom!");
         }
 
         this.dv = dv;
         this.p = p;
         this.expected = expected;
-        this.df = expected.rowCount() - 1;
+        this.df = expected.size() - 1;
         if (df <= 0) {
             throw new IllegalArgumentException("should be over 0");
         }

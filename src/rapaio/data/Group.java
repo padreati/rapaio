@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -612,7 +606,7 @@ public class Group implements Printable {
                 for (String unstackId : unstackIds) {
                     Var newAgg = result.rvar(aggregateVarName).newInstance(unstackedDf.rowCount()).name(unstackId + aggregateVarName);
                     // fill with missing values
-                    for (int i = 0; i < newAgg.rowCount(); i++) {
+                    for (int i = 0; i < newAgg.size(); i++) {
                         newAgg.setMissing(i);
                     }
                     unstackedVars.add(newAgg);
@@ -698,10 +692,10 @@ public class Group implements Printable {
                 full = true;
             } else {
                 selectedGroupIds.addAllInt(sortedGroupIds.iterator(0, headRows));
-                selectedGroupIds.addAllInt(sortedGroupIds.iterator(sortedGroupIds.rowCount() - tailRows, sortedGroupIds.rowCount()));
+                selectedGroupIds.addAllInt(sortedGroupIds.iterator(sortedGroupIds.size() - tailRows, sortedGroupIds.size()));
             }
 
-            TextTable tt = TextTable.empty(selectedGroupIds.rowCount() + 1,
+            TextTable tt = TextTable.empty(selectedGroupIds.size() + 1,
                     group.getGroupByNameList().size() + aggregateDf.varCount() + 1, 1, group.getGroupByNameList().size() + 1);
 
             // group header
@@ -714,7 +708,7 @@ public class Group implements Printable {
             }
             // row numbers
             if (full) {
-                for (int i = 0; i < selectedGroupIds.rowCount(); i++) {
+                for (int i = 0; i < selectedGroupIds.size(); i++) {
                     tt.textRight(i + 1, 0, String.format("[%d]", i));
                 }
             } else {

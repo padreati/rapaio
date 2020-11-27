@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -66,14 +60,14 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case INT:
-                VarInt idx = VarInt.empty(rowCount()).name(name());
-                for (int i = 0; i < rowCount(); i++) {
+                VarInt idx = VarInt.empty(size()).name(name());
+                for (int i = 0; i < size(); i++) {
                     idx.setInt(i, getInt(i));
                 }
                 return idx;
             case LONG:
-                VarLong stamp = VarLong.empty(rowCount()).name(name());
-                for (int i = 0; i < rowCount(); i++) {
+                VarLong stamp = VarLong.empty(size()).name(name());
+                for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
                         stamp.setMissing(i);
                         continue;
@@ -82,14 +76,14 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case DOUBLE:
-                VarDouble num = VarDouble.empty(rowCount()).name(name());
-                for (int i = 0; i < rowCount(); i++) {
+                VarDouble num = VarDouble.empty(size()).name(name());
+                for (int i = 0; i < size(); i++) {
                     num.setDouble(i, getDouble(i));
                 }
                 return num;
             case BINARY:
-                VarBinary bin = VarBinary.empty(rowCount()).name(name());
-                for (int i = 0; i < rowCount(); i++) {
+                VarBinary bin = VarBinary.empty(size()).name(name());
+                for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
                         bin.setMissing(i);
                         continue;
@@ -98,8 +92,8 @@ public abstract class AbstractVar implements Var {
                 }
                 return bin;
             case NOMINAL:
-                VarNominal nom = VarNominal.empty(rowCount(), levels()).name(name());
-                for (int i = 0; i < rowCount(); i++) {
+                VarNominal nom = VarNominal.empty(size(), levels()).name(name());
+                for (int i = 0; i < size(); i++) {
                     if (isMissing(i)) {
                         nom.setMissing(i);
                         continue;
@@ -108,7 +102,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return nom;
             case STRING:
-                return VarString.from(rowCount(), this::getLabel).name(name());
+                return VarString.from(size(), this::getLabel).name(name());
             default:
                 throw new IllegalArgumentException("Variable type does not hav an implementation.");
         }
@@ -137,14 +131,14 @@ public abstract class AbstractVar implements Var {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount());
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(size());
         sb.append(", values: ");
 
         int elements = toStringDisplayValueCount();
-        if (rowCount() <= elements) {
-            for (int i = 0; i < rowCount(); i++) {
+        if (size() <= elements) {
+            for (int i = 0; i < size(); i++) {
                 sb.append(getLabel(i));
-                if (i < rowCount() - 1) {
+                if (i < size() - 1) {
                     sb.append(", ");
                 }
             }
@@ -153,7 +147,7 @@ public abstract class AbstractVar implements Var {
                 sb.append(getLabel(i)).append(", ");
             }
             sb.append("..., ");
-            sb.append(getLabel(rowCount() - 2)).append(", ").append(getLabel(rowCount() - 1));
+            sb.append(getLabel(size() - 2)).append(", ").append(getLabel(size() - 1));
         }
 
         sb.append("]");
@@ -167,7 +161,7 @@ public abstract class AbstractVar implements Var {
         StringBuilder sb = new StringBuilder();
         sb.append("> summary(name: ").append(name()).append(", type: ").append(type().name()).append(")\n");
         int complete = (int) stream().complete().count();
-        sb.append("rows: ").append(rowCount()).append(", complete: ").append(complete).append(", missing: ").append(rowCount() - complete).append("\n");
+        sb.append("rows: ").append(size()).append(", complete: ").append(complete).append(", missing: ").append(size() - complete).append("\n");
 
         TextTable tt = TextTable.empty(8, 2);
 
@@ -213,7 +207,7 @@ public abstract class AbstractVar implements Var {
         int ones = 0;
         int zeros = 0;
         int missing = 0;
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             if (v.isMissing(i)) {
                 missing++;
             } else {
@@ -234,8 +228,8 @@ public abstract class AbstractVar implements Var {
         int[] ids = unique.countSortedIds().elements();
         IntArrays.reverse(ids, 0, unique.uniqueCount());
 
-        int rowCount = var.rowCount();
-        int nans = (int) (var.rowCount() - var.stream().complete().count());
+        int rowCount = var.size();
+        int nans = (int) (var.size() - var.stream().complete().count());
 
         int len;
         if (nans == 0) {
@@ -273,7 +267,7 @@ public abstract class AbstractVar implements Var {
         double mean = Mean.of(v).value();
 
         int nas = 0;
-        for (int j = 0; j < v.rowCount(); j++) {
+        for (int j = 0; j < v.size(); j++) {
             if (v.isMissing(j)) {
                 nas++;
             }
@@ -302,9 +296,9 @@ public abstract class AbstractVar implements Var {
     @Override
     public String toContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
-        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(size()).append("]\n");
 
-        if (rowCount() > 100) {
+        if (size() > 100) {
             TextTable tt = TextTable.empty(102, 2, 1, 1);
             tt.textCenter(0, 0, "row");
             tt.textCenter(0, 1, "value");
@@ -315,9 +309,9 @@ public abstract class AbstractVar implements Var {
             }
             tt.textCenter(80, 0, "...");
             tt.textCenter(80, 1, "...");
-            for (int i = rowCount() - 20; i < rowCount(); i++) {
-                tt.intRow(i + 101 - rowCount(), 0, i);
-                textTablePutValue(tt, i + 101 - rowCount(), 1, i, printer, options);
+            for (int i = size() - 20; i < size(); i++) {
+                tt.intRow(i + 101 - size(), 0, i);
+                textTablePutValue(tt, i + 101 - size(), 1, i, printer, options);
             }
             sb.append(tt.getDynamicText(printer, options));
         } else {
@@ -329,16 +323,16 @@ public abstract class AbstractVar implements Var {
     @Override
     public String toFullContent(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
-        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(rowCount()).append("]\n");
+        sb.append(toStringClassName()).append(" [name:\"").append(name()).append("\", rowCount:").append(size()).append("]\n");
         fullTable(sb, printer, options);
         return sb.toString();
     }
 
     private void fullTable(StringBuilder sb, Printer printer, POption<?>... options) {
-        TextTable tt = TextTable.empty(rowCount() + 1, 2, 1, 1);
+        TextTable tt = TextTable.empty(size() + 1, 2, 1, 1);
         tt.textCenter(0, 0, "row");
         tt.textCenter(0, 1, "value");
-        for (int i = 0; i < rowCount(); i++) {
+        for (int i = 0; i < size(); i++) {
             tt.intRow(i + 1, 0, i);
             textTablePutValue(tt, i + 1, 1, i, printer, options);
         }

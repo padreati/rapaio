@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -95,15 +89,15 @@ public class TTestTwoPaired implements HTest {
 
         complete = VarDouble.empty();
 
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
             complete.addDouble(x.getDouble(i) - y.getDouble(i));
         }
 
-        df = complete.rowCount() - 1;
+        df = complete.size() - 1;
 
-        if (complete.rowCount() < 1) {
+        if (complete.size() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             sd = Double.NaN;
@@ -118,7 +112,7 @@ public class TTestTwoPaired implements HTest {
         sampleMean = Mean.of(complete).value();
         sd = Variance.of(complete).sdValue();
 
-        double sv = sd / Math.sqrt(complete.rowCount());
+        double sv = sd / Math.sqrt(complete.size());
 
         t = (sampleMean - mu) / sv;
 
@@ -186,7 +180,7 @@ public class TTestTwoPaired implements HTest {
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("complete rows: ").append(complete.rowCount()).append("\n");
+        sb.append("complete rows: ").append(complete.size()).append("\n");
         sb.append("mean: ").append(floatFlex(mu)).append("\n");
         sb.append("significance level: ").append(floatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");

@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,7 +22,7 @@
 package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
@@ -53,7 +47,7 @@ public class Legend extends Artist {
         this.x = x;
         this.y = y;
         this.place = -1;
-        options.setColor(new GOptionColor(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
+        options.setFill(new GOptionFill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
         this.options.bind(opts);
     }
 
@@ -61,7 +55,7 @@ public class Legend extends Artist {
         this.x = -1;
         this.y = -1;
         this.place = place;
-        options.setColor(new GOptionColor(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
+        options.setFill(new GOptionFill(IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new)));
         this.options.bind(opts);
     }
 
@@ -101,7 +95,7 @@ public class Legend extends Artist {
         }
 
         for (int i = 0; i < labels.length; i++) {
-            g2d.setColor(options.getColor(i));
+            g2d.setColor(options.getFill(i));
             g2d.draw(new Rectangle2D.Double(xstart, ystart - minHeight / 3, size, 1));
             g2d.setColor(Color.BLACK);
             g2d.drawString(labels[i], (int) (xstart + size + size / 2), (int) (ystart));

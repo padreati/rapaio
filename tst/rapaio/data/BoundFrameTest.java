@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -222,7 +219,7 @@ public class BoundFrameTest {
         assertEquals("1/x", df.varNames()[1]);
 
         // check the properties of a bounded var after frame bind by rows
-        assertEquals(6, df.rvar(0).rowCount());
+        assertEquals(6, df.rvar(0).size());
         assertEquals(1., df.rvar(0).getDouble(0), 1e-12);
         assertEquals(6., df.rvar("x").getDouble(5), 1e-12);
         assertEquals(1 / 1., df.rvar(1).getDouble(0), 1e-12);

@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -70,8 +64,8 @@ public class HuberLoss implements Loss {
         // compute one-iteration approximation
 
         double gamma = r_bar;
-        double count = y.rowCount();
-        for (int i = 0; i < y.rowCount(); i++) {
+        double count = y.size();
+        for (int i = 0; i < y.size(); i++) {
             gamma += (y.getDouble(i) - r_bar <= 0 ? -1 : 1)
                     * Math.min(rho, Math.abs(y.getDouble(i) - r_bar))
                     / count;
@@ -90,7 +84,7 @@ public class HuberLoss implements Loss {
         // compute residuals
 
         VarDouble residual = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             residual.addDouble(y.getDouble(i) - fx.getDouble(i));
         }
 
@@ -101,7 +95,7 @@ public class HuberLoss implements Loss {
         // compute absolute residuals
 
         VarDouble absResidual = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             absResidual.addDouble(Math.abs(y.getDouble(i) - fx.getDouble(i)));
         }
 
@@ -112,8 +106,8 @@ public class HuberLoss implements Loss {
         // compute one-iteration approximation
 
         double gamma = r_bar;
-        double count = y.rowCount();
-        for (int i = 0; i < y.rowCount(); i++) {
+        double count = y.size();
+        for (int i = 0; i < y.size(); i++) {
             gamma += (residual.getDouble(i) - r_bar <= 0 ? -1 : 1)
                     * Math.min(rho, Math.abs(residual.getDouble(i) - r_bar))
                     / count;
@@ -127,7 +121,7 @@ public class HuberLoss implements Loss {
         // compute absolute residuals
 
         VarDouble absResidual = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             absResidual.addDouble(Math.abs(y.getDouble(i) - y_hat.getDouble(i)));
         }
 
@@ -138,7 +132,7 @@ public class HuberLoss implements Loss {
         // now compute gradient
 
         VarDouble gradient = VarDouble.empty();
-        for (int i = 0; i < y.rowCount(); i++) {
+        for (int i = 0; i < y.size(); i++) {
             if (absResidual.getDouble(i) <= rho) {
                 gradient.addDouble(y.getDouble(i) - y_hat.getDouble(i));
             } else {
@@ -150,7 +144,7 @@ public class HuberLoss implements Loss {
 
     @Override
     public VarDouble error(Var y, Var y_hat) {
-        return VarDouble.from(y.rowCount(), row -> {
+        return VarDouble.from(y.size(), row -> {
             double a = Math.abs(y.getDouble(row) - y_hat.getDouble(row));
             return (a < alpha) ? (a * a / 2.0) : (alpha * a - alpha * alpha / 2);
         });
@@ -164,7 +158,7 @@ public class HuberLoss implements Loss {
     @Override
     public double residualErrorScore(Var residual) {
         double score = 0.0;
-        for (int i = 0; i < residual.rowCount(); i++) {
+        for (int i = 0; i < residual.size(); i++) {
             double a = Math.abs(residual.getDouble(i));
             score += (a < alpha) ? (a * a / 2.0) : (alpha * a - alpha * alpha / 2);
         }

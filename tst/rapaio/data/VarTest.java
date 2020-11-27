@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -55,8 +52,8 @@ public class VarTest {
         dict.add("c");
         y.setLevels(dict);
 
-        assertEquals(4, x.rowCount());
-        assertEquals(4, y.rowCount());
+        assertEquals(4, x.size());
+        assertEquals(4, y.size());
 
         for (int i = 0; i < 4; i++) {
             assertEquals(x.getLabel(i), y.getLabel(i));
@@ -130,25 +127,25 @@ public class VarTest {
     void testRefComparator() {
         Var varDouble = VarDouble.from(100, RandomSource::nextDouble);
         varDouble = varDouble.fapply(VRefSort.from(varDouble.refComparator()));
-        for (int i = 1; i < varDouble.rowCount(); i++) {
+        for (int i = 1; i < varDouble.size(); i++) {
             assertTrue(varDouble.getDouble(i - 1) <= varDouble.getDouble(i));
         }
 
         Var varLong = VarLong.from(100, row -> (long) RandomSource.nextInt(100));
         varLong = varLong.fapply(VRefSort.from(varLong.refComparator()));
-        for (int i = 1; i < varLong.rowCount(); i++) {
+        for (int i = 1; i < varLong.size(); i++) {
             assertTrue(varLong.getLong(i - 1) <= varLong.getLong(i));
         }
 
         Var varInt = VarInt.from(100, row -> RandomSource.nextInt(100));
         varInt = varInt.fapply(VRefSort.from(varInt.refComparator()));
-        for (int i = 1; i < varInt.rowCount(); i++) {
+        for (int i = 1; i < varInt.size(); i++) {
             assertTrue(varInt.getInt(i - 1) <= varInt.getInt(i));
         }
 
         Var varNominal = VarNominal.from(100, row -> String.valueOf(RandomSource.nextInt(100)));
         varNominal = varNominal.fapply(VRefSort.from(varNominal.refComparator()));
-        for (int i = 1; i < varNominal.rowCount(); i++) {
+        for (int i = 1; i < varNominal.size(); i++) {
             assertTrue(varNominal.getLabel(i - 1).compareTo(varNominal.getLabel(i)) <= 0);
         }
     }

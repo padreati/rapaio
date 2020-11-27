@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -77,7 +71,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     }
 
     static Mapping wrap(VarInt var) {
-        return new ArrayMapping(var.elements(), 0, var.rowCount());
+        return new ArrayMapping(var.elements(), 0, var.size());
     }
 
     /**
@@ -91,7 +85,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     }
 
     static Mapping copy(VarInt var) {
-        return copy(var, 0, var.rowCount());
+        return copy(var, 0, var.size());
     }
 
     static Mapping copy(VarInt var, int start, int end) {
@@ -99,7 +93,7 @@ public interface Mapping extends Iterable<Integer>, Serializable {
     }
 
     static Mapping from(VarInt var, Int2IntFunction fun) {
-        return new ArrayMapping(var.elements(), 0, var.rowCount(), fun);
+        return new ArrayMapping(var.elements(), 0, var.size(), fun);
     }
 
     /**

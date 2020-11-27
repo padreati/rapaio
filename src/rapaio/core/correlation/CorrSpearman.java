@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -83,17 +77,17 @@ public class CorrSpearman extends AbstractCorrelation {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            VarInt index = VarInt.seq(vars[i].rowCount());
+            VarInt index = VarInt.seq(vars[i].size());
             sorted[i] = new VRefSort(RowComparators.doubleComparator(vars[i], true)).fapply(index);
-            ranks[i] = VarDouble.fill(vars[i].rowCount());
+            ranks[i] = VarDouble.fill(vars[i].size());
         }
 
         // compute ranks
         for (int i = 0; i < sorted.length; i++) {
             int start = 0;
-            while (start < sorted[i].rowCount()) {
+            while (start < sorted[i].size()) {
                 int end = start;
-                while (end < sorted[i].rowCount() - 1 &&
+                while (end < sorted[i].size() - 1 &&
                         vars[i].getDouble(sorted[i].getInt(end)) == vars[i].getDouble(sorted[i].getInt(end + 1))) {
                     end++;
                 }

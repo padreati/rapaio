@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -55,13 +52,13 @@ public class VarDoubleTest {
     @Test
     void testEmptyWithNoRows() {
         VarDouble empty = VarDouble.empty();
-        assertEquals(0, empty.rowCount());
+        assertEquals(0, empty.size());
     }
 
     @Test
     void testVarEmptyWithRows() {
         VarDouble empty = VarDouble.empty(100);
-        assertEquals(100, empty.rowCount());
+        assertEquals(100, empty.size());
         for (int i = 0; i < 100; i++) {
             assertTrue(empty.isMissing(i));
         }
@@ -73,7 +70,7 @@ public class VarDoubleTest {
         List<Integer> sourceIntList = Arrays.stream(sourceIntArray).boxed().collect(Collectors.toList());
 
         VarDouble copy = VarDouble.copy(sourceIntArray);
-        assertEquals(100, copy.rowCount());
+        assertEquals(100, copy.size());
         for (int i = 0; i < 100; i++) {
             assertEquals(sourceIntArray[i], copy.getDouble(i), TOL);
         }
@@ -85,8 +82,8 @@ public class VarDoubleTest {
         List<Double> sourceDoubleList = Arrays.stream(sourceDoubleArray).boxed().collect(Collectors.toList());
 
         VarDouble dcopy = VarDouble.copy(sourceDoubleArray);
-        assertEquals(100, dcopy.rowCount());
-        for (int i = 0; i < dcopy.rowCount(); i++) {
+        assertEquals(100, dcopy.size());
+        for (int i = 0; i < dcopy.size(); i++) {
             assertEquals(sourceDoubleArray[i], dcopy.getDouble(i), TOL);
         }
         assertTrue(dcopy.deepEquals(VarDouble.copy(dcopy)));
@@ -98,11 +95,11 @@ public class VarDoubleTest {
         assertTrue(dcopy.deepEquals(VarDouble.from(dcopy, val -> val)));
 
         VarDouble fill1 = VarDouble.fill(100);
-        assertEquals(100, fill1.rowCount());
+        assertEquals(100, fill1.size());
         fill1.stream().mapToDouble().forEach(val -> assertEquals(0.0, val, TOL));
 
         VarDouble fill2 = VarDouble.fill(100, 20);
-        assertEquals(100, fill2.rowCount());
+        assertEquals(100, fill2.size());
         fill2.stream().mapToDouble().forEach(val -> assertEquals(20.0, val, TOL));
         assertTrue(VarDouble.empty().deepEquals(fill2.newInstance(0)));
 
@@ -121,7 +118,7 @@ public class VarDoubleTest {
         assertTrue(flag);
         assertFalse(v.type().isNominal());
 
-        assertEquals(0, v.rowCount());
+        assertEquals(0, v.size());
         assertEquals("VarDouble [name:\"?\", rowCount:1, values: ?]", VarDouble.empty(1).toString());
     }
 
@@ -176,11 +173,11 @@ public class VarDoubleTest {
     void testOneNumeric() {
         Var one = VarDouble.scalar(Math.PI);
 
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals(Math.PI, one.getDouble(0), 1e-10);
 
         one = VarDouble.scalar(Math.E);
-        assertEquals(1, one.rowCount());
+        assertEquals(1, one.size());
         assertEquals(Math.E, one.getDouble(0), 1e-10);
     }
 
@@ -203,7 +200,7 @@ public class VarDoubleTest {
         VarDouble x = VarDouble.copy(1, 2, 3, 4).name("x");
 
         x.addInt(10);
-        assertEquals(10, x.getDouble(x.rowCount() - 1), 10e-10);
+        assertEquals(10, x.getDouble(x.size() - 1), 10e-10);
 
         VarDouble s = VarDouble.empty();
         s.addLong(1);
@@ -241,15 +238,15 @@ public class VarDoubleTest {
 
         x.clearRows();
 
-        assertEquals(0, x.rowCount());
+        assertEquals(0, x.size());
 
-        assertEquals(2, y.rowCount());
+        assertEquals(2, y.size());
         assertEquals(1, y.getInt(0));
         assertEquals(3, y.getInt(1));
 
         x2.addRows(3);
 
-        assertEquals(6, x2.rowCount());
+        assertEquals(6, x2.size());
         for (int i = 0; i < 3; i++) {
             assertEquals(i + 1, x2.getDouble(i), TOL);
             assertTrue(x2.isMissing(i + 3));

@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ts;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -64,24 +85,24 @@ public class AcfTest {
 
     @Test
     void basicTest() {
-        Acf acf1 = Acf.from(ts1, ts1.rowCount());
+        Acf acf1 = Acf.from(ts1, ts1.size());
         acf1.printSummary();
-        for (int i = 0; i < acf1.correlation().rowCount(); i++) {
+        for (int i = 0; i < acf1.correlation().size(); i++) {
             assertTrue(acf1.correlation().isMissing(i));
         }
 
-        Acf acf2 = Acf.from(ts2, ts2.rowCount());
+        Acf acf2 = Acf.from(ts2, ts2.size());
         acf2.printSummary();
-        for (int i = 0; i < acf2.correlation().rowCount(); i++) {
+        for (int i = 0; i < acf2.correlation().size(); i++) {
             assertEquals(corr2.getDouble(i), acf2.correlation().getDouble(i), TOL);
         }
-        for (int i = 0; i < acf2.correlation().rowCount(); i++) {
+        for (int i = 0; i < acf2.correlation().size(); i++) {
             assertEquals(cov2.getDouble(i), acf2.covariance().getDouble(i), TOL);
         }
 
-        Acf acf3 = Acf.from(ts3, ts3.rowCount());
+        Acf acf3 = Acf.from(ts3, ts3.size());
         acf3.printSummary();
-        for (int i = 0; i < acf3.correlation().rowCount(); i++) {
+        for (int i = 0; i < acf3.correlation().size(); i++) {
             assertEquals(cov3.getDouble(i), acf3.covariance().getDouble(i), TOL);
         }
     }

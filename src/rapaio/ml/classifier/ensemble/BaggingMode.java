@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -50,12 +44,12 @@ public enum BaggingMode implements Serializable {
         @Override
         public void computeDensity(List<String> dictionary, List<ClassifierResult> predictions, VarNominal classes, Frame densities) {
             predictions.stream().map(ClassifierResult::firstClasses).forEach(d -> {
-                for (int i = 0; i < d.rowCount(); i++) {
+                for (int i = 0; i < d.size(); i++) {
                     int best = d.getInt(i);
                     densities.setDouble(i, best, densities.getDouble(i, best) + 1);
                 }
             });
-            for (int i = 0; i < classes.rowCount(); i++) {
+            for (int i = 0; i < classes.size(); i++) {
                 var dv = DensityVector.emptyByLabels(false, dictionary);
                 for (int j = 1; j < dictionary.size(); j++) {
                     dv.increment(dictionary.get(j), densities.getDouble(i, j));
@@ -87,7 +81,7 @@ public enum BaggingMode implements Serializable {
                     }
                 }
             });
-            for (int i = 0; i < classes.rowCount(); i++) {
+            for (int i = 0; i < classes.size(); i++) {
                 var dv = DensityVector.emptyByLabels(false, dictionary);
                 for (int j = 1; j < dictionary.size(); j++) {
                     dv.increment(dictionary.get(j), densities.getDouble(i, j));

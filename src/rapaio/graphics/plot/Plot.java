@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,6 +43,8 @@ import rapaio.graphics.plot.artist.Legend;
 import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.MeshContour;
 import rapaio.graphics.plot.artist.Points;
+import rapaio.graphics.plot.artist.PolyFill;
+import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.ml.eval.metric.ROC;
@@ -196,11 +192,12 @@ public class Plot implements Figure {
 
         g2d.setFont(MARKERS_FONT);
         g2d.setStroke(new BasicStroke(1f));
-        g2d.drawLine(viewport.x - THICKER_PAD,
-                viewport.y,
-                viewport.x - THICKER_PAD,
-                viewport.y + viewport.height);
-
+        if (leftThicker || leftMarkers) {
+            g2d.drawLine(viewport.x - THICKER_PAD,
+                    viewport.y,
+                    viewport.x - THICKER_PAD,
+                    viewport.y + viewport.height);
+        }
         for (int i = 0; i < yAxis.tickers().size(); i++) {
             if (leftThicker) {
                 g2d.drawLine(
@@ -235,10 +232,12 @@ public class Plot implements Figure {
 
         g2d.setFont(MARKERS_FONT);
         g2d.setStroke(new BasicStroke(1f));
-        g2d.drawLine(viewport.x,
-                viewport.y + viewport.height + THICKER_PAD,
-                viewport.x + viewport.width,
-                viewport.y + viewport.height + THICKER_PAD);
+        if (bottomThicker || bottomMarkers) {
+            g2d.drawLine(viewport.x,
+                    viewport.y + viewport.height + THICKER_PAD,
+                    viewport.x + viewport.width,
+                    viewport.y + viewport.height + THICKER_PAD);
+        }
 
         for (int i = 0; i < xAxis.tickers().size(); i++) {
             if (bottomThicker) {
@@ -381,6 +380,16 @@ public class Plot implements Figure {
         return this;
     }
 
+    public Plot polyline(boolean closed, Var x, Var y, GOption<?>... opts) {
+        add(new PolyLine(closed, x, y, opts));
+        return this;
+    }
+
+    public Plot polyfill(Var x, Var y, GOption<?>... opts) {
+        add(new PolyFill(x, y, opts));
+        return this;
+    }
+
     public Plot densityLine(Var var, GOption<?>... opts) {
         add(new DensityLine(var, opts));
         return this;
@@ -471,9 +480,9 @@ public class Plot implements Figure {
 
     public Plot qqplot(Var points, Distribution distribution, GOption<?>... opts) {
         Var x = VSort.asc().fapply(points);
-        Var y = VarDouble.empty(x.rowCount());
-        for (int i = 0; i < y.rowCount(); i++) {
-            double p = (i + 1) / (y.rowCount() + 1.);
+        Var y = VarDouble.empty(x.size());
+        for (int i = 0; i < y.size(); i++) {
+            double p = (i + 1) / (y.size() + 1.);
             y.setDouble(i, distribution.quantile(p));
         }
         add(new Points(y, x, opts));

@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,15 +57,15 @@ public class VarStringTest {
     void testBuilders() {
 
         VarString empty1 = VarString.empty();
-        assertEquals(0, empty1.rowCount());
+        assertEquals(0, empty1.size());
 
         VarString empty2 = VarString.empty(10);
-        assertEquals(10, empty2.rowCount());
+        assertEquals(10, empty2.size());
         for (int i = 0; i < 10; i++) {
             assertNull(empty2.getLabel(i));
         }
 
-        VarString empty3 = empty2.newInstance(empty2.rowCount());
+        VarString empty3 = empty2.newInstance(empty2.size());
         assertTrue(empty2.deepEquals(empty3));
 
         VarString copy1 = VarString.copy(largeValues);
@@ -68,7 +89,7 @@ public class VarStringTest {
         VarString text = VarString.copy(shortValues);
         text.addRows(3);
 
-        assertEquals(6, text.rowCount());
+        assertEquals(6, text.size());
         for (int i = 0; i < 3; i++) {
             assertNull(text.getLabel(3 + i));
         }
@@ -81,7 +102,7 @@ public class VarStringTest {
         assertNull(text.getLabel(3));
 
         text.clearRows();
-        assertEquals(0, text.rowCount());
+        assertEquals(0, text.size());
     }
 
     @Test
@@ -145,7 +166,7 @@ public class VarStringTest {
         x.setLabel(0, "Maria");
         x.addLabel("John");
 
-        assertEquals(2, x.rowCount());
+        assertEquals(2, x.size());
         assertEquals("Maria", x.getLabel(0));
         assertEquals("John", x.getLabel(1));
     }
@@ -153,7 +174,7 @@ public class VarStringTest {
     @Test
     void testMissingOperations() {
         VarString x = VarString.empty(1);
-        assertEquals(1, x.rowCount());
+        assertEquals(1, x.size());
         assertNull(x.getLabel(0));
 
         x.setLabel(0, "l1");

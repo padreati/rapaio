@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.regression.linear.impl;
 
 import rapaio.data.Frame;
@@ -67,7 +88,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
         LinearRegressionResult result = new LinearRegressionResult(this, df, withResiduals);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            for (int j = 0; j < result.prediction(target).rowCount(); j++) {
+            for (int j = 0; j < result.prediction(target).size(); j++) {
                 double fit = 0.0;
                 for (int k = 0; k < inputNames().length; k++) {
                     String inputName = inputNames[k];

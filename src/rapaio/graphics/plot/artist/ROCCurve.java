@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,7 +21,6 @@
 
 package rapaio.graphics.plot.artist;
 
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
@@ -77,10 +70,9 @@ public class ROCCurve extends Artist {
     public void paint(Graphics2D g2d) {
         g2d.setColor(options.getColor(0));
         g2d.setStroke(new BasicStroke(options.getLwd()));
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
         for (int i = 1; i < roc.data().rowCount(); i++) {
-            g2d.setColor(options.getColor(i));
+            g2d.setColor(options.getFill(i));
             double x1 = xScale(roc.data().getDouble(i - 1, "fpr"));
             double y1 = yScale(roc.data().getDouble(i - 1, "tpr"));
             double x2 = xScale(roc.data().getDouble(i, "fpr"));
@@ -92,7 +84,5 @@ public class ROCCurve extends Artist {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }
-
-        g2d.setColor(options.getColor(0));
     }
 }

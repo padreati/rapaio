@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -222,7 +219,7 @@ public class LinearRegressionResultResultModelTest {
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
         VarDouble x = VarDouble.seq(0, 100, 1).name("x");
-        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).name("I");
+        VarDouble intercept = VarDouble.fill(x.size(), 1.0).name("I");
         VarDouble y = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).name("y");
 
         Frame df1 = BoundFrame.byVars(x, y);
@@ -250,7 +247,7 @@ public class LinearRegressionResultResultModelTest {
         RandomSource.setSeed(123);
         Normal normal = Normal.of(0, 10);
         VarDouble x = VarDouble.seq(0, 100, 1).name("x");
-        VarDouble intercept = VarDouble.fill(x.rowCount(), 1.0).name("I");
+        VarDouble intercept = VarDouble.fill(x.size(), 1.0).name("I");
         VarDouble y1 = VarDouble.from(x, v -> v * 2 + normal.sampleNext()).name("y1");
         VarDouble y2 = VarDouble.from(x, v -> v * 3 - 10 + normal.sampleNext()).name("y2");
 

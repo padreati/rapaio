@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -254,7 +248,7 @@ public class Csv extends ParamSet<Csv> {
                     // we have a value in row for which we did not defined a var slot
                     if (i >= varSlots.size()) {
                         names.add("V" + (i + 1));
-                        varSlots.add(new VarSlot(this, varSlots.get(0).var.rowCount()));
+                        varSlots.add(new VarSlot(this, varSlots.get(0).var.size()));
                         continue;
                     }
                     // we have missing values at the end of the row
@@ -493,7 +487,7 @@ public class Csv extends ParamSet<Csv> {
                     for (int i = pos; i < parent.defaultTypes.get().size(); i++) {
                         try {
                             var = parent.defaultTypes.get().get(i).newInstance();
-                            if (text != null && text.rowCount() > 0)
+                            if (text != null && text.size() > 0)
                                 text.stream().forEach(s -> var.addLabel(s.getLabel()));
                             if (i == parent.defaultTypes.get().size() - 1)
                                 text = null;

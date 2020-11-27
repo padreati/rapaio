@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -39,6 +33,7 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.opt.GOptionHeights;
 import rapaio.graphics.opt.GOptionHorizontal;
 import rapaio.graphics.opt.GOptionLabels;
@@ -64,6 +59,8 @@ import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
 import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.Points;
+import rapaio.graphics.plot.artist.PolyFill;
+import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
@@ -72,8 +69,8 @@ import java.awt.*;
 
 public final class Plotter {
 
-    public static GridLayer gridLayer(int rows, int cols) {
-        return GridLayer.of(rows, cols);
+    public static GridLayer gridLayer(int rows, int cols, GOption<?>... opts) {
+        return GridLayer.of(rows, cols, opts);
     }
 
     public static Plot plot(GOption<?>... opts) {
@@ -112,6 +109,14 @@ public final class Plotter {
         return plot().add(new Histogram2D(x, y, opts));
     }
 
+    public static Plot polyline(boolean closed, Var x, Var y, GOption<?>... opts) {
+        return plot().add(new PolyLine(closed, x, y, opts));
+    }
+
+    public static Plot polyfill(Var x, Var y, GOption<?>... opts) {
+        return plot().add(new PolyFill(x, y, opts));
+    }
+
     public static Plot densityLine(Var var, GOption<?>... opts) {
         return plot().add(new DensityLine(var, opts));
     }
@@ -145,7 +150,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var y, GOption<?>... opts) {
-        return plot().add(new Points(VarInt.seq(y.rowCount()).name("pos"), y, opts));
+        return plot().add(new Points(VarInt.seq(y.size()).name("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOption<?>... opts) {
@@ -206,6 +211,22 @@ public final class Plotter {
         return new GOptionColor(color);
     }
 
+    public static GOptionFill fill(int... index) {
+        return new GOptionFill(index);
+    }
+
+    public static GOptionFill fill(Color color) {
+        return new GOptionFill(color);
+    }
+
+    public static GOptionFill fill(Color[] colors) {
+        return new GOptionFill(colors);
+    }
+
+    public static GOptionFill fill(Var color) {
+        return new GOptionFill(color);
+    }
+
     public static GOptionLwd lwd(float lwd) {
         return new GOptionLwd(lwd);
     }
@@ -233,7 +254,7 @@ public final class Plotter {
     }
 
     public static GOptionPch pch(Var pchIndex, int... mapping) {
-        VarInt pch = VarInt.from(pchIndex.rowCount(), row -> {
+        VarInt pch = VarInt.from(pchIndex.size(), row -> {
             int i = pchIndex.getInt(row);
             if (i >= 0 && i < mapping.length) {
                 return mapping[i];

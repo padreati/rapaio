@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.data.mapping;
 
 import org.junit.jupiter.api.Test;
@@ -19,8 +40,8 @@ public class ArrayMappingTest {
         testEquals(new ArrayMapping(0, 10), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
         VarInt list = VarInt.wrap(1, 2, 3, 7, 8);
-        testEquals(new ArrayMapping(list.elements(), 0, list.rowCount()), list.elements());
-        testEquals(new ArrayMapping(list.elements(), 0, list.rowCount(), x -> x + 1), 2, 3, 4, 8, 9);
+        testEquals(new ArrayMapping(list.elements(), 0, list.size()), list.elements());
+        testEquals(new ArrayMapping(list.elements(), 0, list.size(), x -> x + 1), 2, 3, 4, 8, 9);
     }
 
     private void testEquals(Mapping map, int... values) {

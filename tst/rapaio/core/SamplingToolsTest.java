@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -77,8 +74,8 @@ public class SamplingToolsTest {
             v.addDouble(next);
         }
         double[] values = v.elements();
-        DoubleArrays.quickSort(values, 0, v.rowCount(), Double::compare);
-        for (int i = 1; i < v.rowCount(); i++) {
+        DoubleArrays.quickSort(values, 0, v.size(), Double::compare);
+        for (int i = 1; i < v.size(); i++) {
             assertTrue(values[i] - values[i - 1] >= 1);
         }
     }

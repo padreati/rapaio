@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -147,9 +141,9 @@ public class NBRTreeNode implements Serializable {
             Candidate bc = bestCandidate;
             Var oldY = y;
             Var oldPrediction = prediction;
-            y = VarDouble.from(y.rowCount(), r -> oldY.getDouble(r) -
+            y = VarDouble.from(y.size(), r -> oldY.getDouble(r) -
                     factor * tree.getLearningRate() * bc.prediction.getDouble(r));
-            prediction = VarDouble.from(y.rowCount(), r -> oldPrediction.getDouble(r) +
+            prediction = VarDouble.from(y.size(), r -> oldPrediction.getDouble(r) +
                     factor * tree.getLearningRate() * bc.prediction.getDouble(r));
             residualErrorScore = tree.getLoss().residualErrorScore(y);
         }
@@ -164,8 +158,8 @@ public class NBRTreeNode implements Serializable {
         }
 
         // pre compute errors
-        int[] rows = new int[y.rowCount()];
-        for (int i = 0; i < y.rowCount(); i++) {
+        int[] rows = new int[y.size()];
+        for (int i = 0; i < y.size(); i++) {
             rows[i] = i;
         }
 
@@ -176,31 +170,31 @@ public class NBRTreeNode implements Serializable {
 
         for (String testVarName : testVarNames) {
             int testNameIndex = df.varIndex(testVarName);
-            IntArrays.quickSort(rows, 0, y.rowCount(),
+            IntArrays.quickSort(rows, 0, y.size(),
                     (o1, o2) -> Double.compare(df.getDouble(o1, testNameIndex), df.getDouble(o2, testNameIndex)));
             WeightedOnlineStat left_os = new WeightedOnlineStat();
             WeightedOnlineStat right_os = new WeightedOnlineStat();
 
-            double[] leftVar = new double[y.rowCount()];
-            double[] rightVar = new double[y.rowCount()];
-            double[] leftWeight = new double[y.rowCount()];
-            double[] rightWeight = new double[y.rowCount()];
+            double[] leftVar = new double[y.size()];
+            double[] rightVar = new double[y.size()];
+            double[] leftWeight = new double[y.size()];
+            double[] rightWeight = new double[y.size()];
 
             WeightedOnlineStat so = WeightedOnlineStat.empty();
 
-            for (int i = 1; i < y.rowCount(); i++) {
+            for (int i = 1; i < y.size(); i++) {
                 so.update(y.getDouble(rows[i]), weights.getDouble(rows[i]));
                 leftWeight[i] = so.weightSum();
                 leftVar[i] = so.variance();
             }
             so = WeightedOnlineStat.empty();
-            for (int i = y.rowCount() - 1; i >= 0; i--) {
+            for (int i = y.size() - 1; i >= 0; i--) {
                 so.update(y.getDouble(rows[i]), weights.getDouble(rows[i]));
                 rightWeight[i] = so.weightSum();
                 rightVar[i] = so.variance();
             }
 
-            for (int i = tree.getMinCount(); i < y.rowCount() - tree.getMinCount() - 1; i++) {
+            for (int i = tree.getMinCount(); i < y.size() - tree.getMinCount() - 1; i++) {
                 if (df.getDouble(rows[i], testNameIndex) == df.getDouble(rows[i + 1], testNameIndex)) {
                     continue;
                 }
@@ -249,7 +243,7 @@ public class NBRTreeNode implements Serializable {
         rightNode = new NBRTreeNode(-1, this);
 
         Var pred = prediction;
-        VarDouble residuals = VarDouble.from(y.rowCount(), row -> originalY.getDouble(row) - pred.getDouble(row)).name(y.name());
+        VarDouble residuals = VarDouble.from(y.size(), row -> originalY.getDouble(row) - pred.getDouble(row)).name(y.name());
 
         leftNode.coreNodeFit(
                 df.mapRows(leftRows).copy(),
@@ -264,7 +258,7 @@ public class NBRTreeNode implements Serializable {
     private double computeFactor(Var resiual, VarDouble fx) {
         double up = 0.0;
         double down = 0.0;
-        for (int i = 0; i < resiual.rowCount(); i++) {
+        for (int i = 0; i < resiual.size(); i++) {
             up += resiual.getDouble(i) * fx.getDouble(i);
             down += fx.getDouble(i) * fx.getDouble(i);
         }

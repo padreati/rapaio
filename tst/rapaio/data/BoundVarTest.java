@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -103,7 +100,7 @@ public class BoundVarTest {
         Var y = BoundVar.from(c, d);
         x = x.bindRows(y).bindRows(e);
 
-        assertEquals(12, x.rowCount());
+        assertEquals(12, x.size());
         assertEquals(1, x.getDouble(0), 1e-12);
         assertEquals(4, x.getDouble(3), 1e-12);
         assertEquals(8, x.getDouble(7), 1e-12);
@@ -118,8 +115,8 @@ public class BoundVarTest {
         vars.add(e);
         Var z = BoundVar.from(vars);
 
-        assertEquals(x.rowCount(), z.rowCount());
-        for (int i = 0; i < x.rowCount(); i++) {
+        assertEquals(x.size(), z.size());
+        for (int i = 0; i < x.size(); i++) {
             if (x.isMissing(i)) {
                 assertEquals(x.isMissing(i), z.isMissing(i));
             } else {
@@ -128,7 +125,7 @@ public class BoundVarTest {
         }
 
         z = x.mapRows(Mapping.wrap(0, 7, 9));
-        assertEquals(3, z.rowCount());
+        assertEquals(3, z.size());
         assertEquals(1, z.getDouble(0), 1e-12);
         assertEquals(8, z.getDouble(1), 1e-12);
         assertTrue(z.isMissing(2));

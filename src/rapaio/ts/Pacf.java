@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -64,11 +58,11 @@ public class Pacf implements Printable {
         VarDouble cor = acf.correlation();
 
         double a, b, c;
-        int nlag = cor.rowCount() - 1;
+        int nlag = cor.size() - 1;
 
         double[] v = new double[nlag];
         double[] w = new double[nlag];
-        pacf = VarDouble.empty(lags.rowCount()).name("pacf");
+        pacf = VarDouble.empty(lags.size()).name("pacf");
         w[0] = cor.getDouble(1);
         pacf.setDouble(0, cor.getDouble(1));
         for (int ll = 1; ll < nlag; ll++) {
@@ -104,10 +98,10 @@ public class Pacf implements Printable {
         sb.append("===========\n");
         sb.append("\n");
 
-        TextTable tt = TextTable.empty(lags.rowCount() + 1, 2, 1, 0);
+        TextTable tt = TextTable.empty(lags.size() + 1, 2, 1, 0);
         tt.textCenter(0, 0, "Lag");
         tt.textCenter(0, 1, "pacf");
-        for (int i = 0; i < lags.rowCount(); i++) {
+        for (int i = 0; i < lags.size(); i++) {
             tt.textRight(i + 1, 0, lags.getLabel(i));
             tt.floatFlex(i + 1, 1, pacf.getDouble(i));
         }

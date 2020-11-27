@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ts;
 
 
@@ -55,15 +76,15 @@ public class PacfTest {
     @Test
     void basicTest() {
 
-        Pacf pacf2 = Pacf.from(ts2, ts2.rowCount() - 1);
+        Pacf pacf2 = Pacf.from(ts2, ts2.size() - 1);
         pacf2.printSummary();
-        for (int i = 0; i < pacf2.values().rowCount(); i++) {
+        for (int i = 0; i < pacf2.values().size(); i++) {
             assertEquals(ref2.getDouble(i), pacf2.values().getDouble(i), TOL);
         }
 
-        Pacf pacf3 = Pacf.from(ts3, ts3.rowCount() - 1);
+        Pacf pacf3 = Pacf.from(ts3, ts3.size() - 1);
         pacf3.printSummary();
-        for (int i = 0; i < pacf3.values().rowCount(); i++) {
+        for (int i = 0; i < pacf3.values().size(); i++) {
             assertEquals(ref3.getDouble(i), pacf3.values().getDouble(i), TOL, "err at i=" + i);
         }
     }

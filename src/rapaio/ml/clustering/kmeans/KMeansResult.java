@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.clustering.kmeans;
 
 import lombok.Getter;
@@ -58,7 +79,7 @@ public class KMeansResult extends ClusteringResult {
         }
         double totalVariance = Variance.of(distances).value();
         for (Map.Entry<Integer, VarDouble> e : errors.entrySet()) {
-            count.setInt(e.getKey(), e.getValue().rowCount());
+            count.setInt(e.getKey(), e.getValue().size());
             mean.setDouble(e.getKey(), Mean.of(e.getValue()).value());
             double v = Variance.of(e.getValue()).value();
             variance.setDouble(e.getKey(), v);
@@ -77,12 +98,12 @@ public class KMeansResult extends ClusteringResult {
     public String toSummary(Printer printer, POption<?>... options) {
         StringBuilder sb = new StringBuilder();
         sb.append("Overall: \n");
-        sb.append("> count: ").append(distances.rowCount()).append("\n");
+        sb.append("> count: ").append(distances.size()).append("\n");
         sb.append("> mean: ").append(Format.floatFlex(Mean.of(distances).value())).append("\n");
         sb.append("> var: ").append(Format.floatFlex(Variance.of(distances).value())).append("\n");
         sb.append("> sd: ").append(Format.floatFlex(Variance.of(distances).sdValue())).append("\n");
         sb.append("> inertia:").append(Format.floatFlex(kmeans.getInertia())).append("\n");
-        sb.append("> iterations:").append(kmeans.getErrors().rowCount()).append("\n");
+        sb.append("> iterations:").append(kmeans.getErrors().size()).append("\n");
         sb.append("\n");
 
         sb.append("Per cluster: \n");

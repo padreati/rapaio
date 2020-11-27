@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -85,7 +79,7 @@ public class Histogram2D extends Artist {
 
         freq = new int[bins][bins];
 
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (x.isMissing(i) || y.isMissing(i))
                 continue;
 
@@ -100,10 +94,10 @@ public class Histogram2D extends Artist {
 
     @Override
     public void updateDataRange() {
-        if (x.rowCount() == 0) {
+        if (x.size() == 0) {
             return;
         }
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
@@ -124,7 +118,7 @@ public class Histogram2D extends Artist {
         for (int i = 0; i < bins; i++) {
             for (int j = 0; j < bins; j++) {
                 int blue = (int) (255 * freq[i][j] / (1.0 * maxFreq));
-                Color c = options.getColor(0);
+                Color c = options.getFill(0);
                 Color color = new Color(c.getRed(), c.getGreen(), c.getBlue(), blue);
                 g2d.setColor(color);
                 Rectangle2D.Double rr = new Rectangle2D.Double(

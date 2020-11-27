@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -104,7 +98,7 @@ public class ZTestTwoPaired implements HTest {
         xComplete = x.stream().complete().toMappedVar();
         yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        if (xComplete.size() < 1 || yComplete.size() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
 
@@ -117,13 +111,13 @@ public class ZTestTwoPaired implements HTest {
         }
 
         Var complete = VarDouble.empty();
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (!(x.isMissing(i) || y.isMissing(i)))
                 complete.addDouble(x.getDouble(i) - y.getDouble(i));
         }
         sampleMean = Mean.of(complete).value();
 
-        double sv = sd / Math.sqrt(complete.rowCount());
+        double sv = sd / Math.sqrt(complete.size());
 
         zScore = (sampleMean - mu) / sv;
 
@@ -187,8 +181,8 @@ public class ZTestTwoPaired implements HTest {
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
+        sb.append("x complete rows: ").append(xComplete.size()).append("/").append(x.size()).append("\n");
+        sb.append("y complete rows: ").append(yComplete.size()).append("/").append(y.size()).append("\n");
         sb.append("mean: ").append(floatFlex(mu)).append("\n");
         sb.append("x sd: ").append(floatFlex(sd)).append("\n");
         sb.append("significance level: ").append(floatFlex(sl)).append("\n");

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -77,7 +74,7 @@ public class VSpotsTest {
 
         Var sorted1 = x.stream().sorted().toMappedVar();
         Var sorted2 = x.stream().sorted(Comparator.comparingDouble(VSpot::getDouble)).toMappedVar();
-        for (int i = 1; i < sorted1.rowCount(); i++) {
+        for (int i = 1; i < sorted1.size(); i++) {
             assertTrue(sorted1.getDouble(i - 1) <= sorted1.getDouble(i));
             assertTrue(sorted2.getDouble(i - 1) <= sorted2.getDouble(i));
             assertTrue(sorted1.getInt(i - 1) <= sorted1.getInt(i));
@@ -161,24 +158,24 @@ public class VSpotsTest {
     void testSorted() {
 
         Var s1 = VarDouble.from(100, RandomSource::nextDouble).stream().sorted().toMappedVar();
-        for (int i = 1; i < s1.rowCount(); i++) {
+        for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getDouble(i - 1) <= s1.getDouble(i));
         }
 
         Var s2 = VarInt.from(100, row -> RandomSource.nextInt(100)).stream().sorted().toMappedVar();
-        for (int i = 1; i < s1.rowCount(); i++) {
+        for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getInt(i - 1) <= s1.getInt(i));
         }
 
         Var s3 = VarLong.from(100, row -> (long) (RandomSource.nextInt(100)))
                 .stream().sorted().toMappedVar();
-        for (int i = 1; i < s1.rowCount(); i++) {
+        for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getLong(i - 1) <= s1.getLong(i));
         }
 
         Var s4 = VarBinary.from(100, row -> RandomSource.nextDouble() > 0.5)
                 .stream().sorted().toMappedVar();
-        for (int i = 1; i < s1.rowCount(); i++) {
+        for (int i = 1; i < s1.size(); i++) {
             assertTrue(s1.getInt(i - 1) <= s1.getInt(i));
         }
 
@@ -186,7 +183,7 @@ public class VSpotsTest {
         Var s5 = VarNominal.from(100, row -> words[RandomSource.nextInt(words.length)])
                 .stream().sorted().toMappedVar();
 
-        for (int i = 1; i < s5.rowCount(); i++) {
+        for (int i = 1; i < s5.size(); i++) {
             assertTrue(s5.getLabel(i - 1).compareTo(s5.getLabel(i)) <= 0);
         }
     }

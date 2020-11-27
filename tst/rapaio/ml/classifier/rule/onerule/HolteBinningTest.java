@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.classifier.rule.onerule;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +52,7 @@ public class HolteBinningTest {
     void testMinimumOne() {
 
         VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
-        VarDouble w = VarDouble.fill(x.rowCount(), 1);
+        VarDouble w = VarDouble.fill(x.size(), 1);
         VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
@@ -64,7 +85,7 @@ public class HolteBinningTest {
     void testMinimumTwo() {
 
         VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
-        VarDouble w = VarDouble.fill(x.rowCount(), 1);
+        VarDouble w = VarDouble.fill(x.size(), 1);
         VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
@@ -98,7 +119,7 @@ public class HolteBinningTest {
     void testMinimumThree() {
 
         VarDouble x = VarDouble.copy(1, 1, 2, 2, 3, 3, 4, 5, 6).name("x");
-        VarDouble w = VarDouble.fill(x.rowCount(), 1);
+        VarDouble w = VarDouble.fill(x.size(), 1);
         VarNominal y = VarNominal.copy("a", "a", "b", "b", "c", "c", "a", "b", "c").name("y");
         Frame df = SolidFrame.byVars(x, y);
 
@@ -132,7 +153,7 @@ public class HolteBinningTest {
     void testWithMissing() {
         VarDouble x = VarDouble.copy(1., 1, 1, 1, 1, 1, Double.NaN, Double.NaN, 1, 1, 1, Double.NaN).name("x");
         VarNominal y = VarNominal.copy("a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a").name("y");
-        VarDouble w = VarDouble.fill(x.rowCount(), 1);
+        VarDouble w = VarDouble.fill(x.size(), 1);
         Frame df = SolidFrame.byVars(x, y);
 
         OneRule model = OneRule.newModel();

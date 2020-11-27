@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -66,19 +63,19 @@ public class SortVarTest {
         index.setMissing(5);
         index.setInt(0, 1);
 
-        assertEquals(10, index.rowCount());
+        assertEquals(10, index.size());
         Var sort = VSort.asc().fapply(index);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getInt(i - 1) <= sort.getInt(i));
         }
 
         sort = new VSort(false).fapply(index);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getInt(i - 1) >= sort.getInt(i));
         }
 
         Var second = VSort.asc().fapply(index);
-        for (int i = 1; i < second.rowCount(); i++) {
+        for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
     }
@@ -87,19 +84,19 @@ public class SortVarTest {
     void testSortNumeric() {
         Var numeric = VarDouble.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
-        assertEquals(7, numeric.rowCount());
+        assertEquals(7, numeric.size());
         Var sort = new VSort(true).fapply(numeric);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getDouble(i - 1) <= sort.getDouble(i));
         }
 
         sort = new VSort(false).fapply(numeric);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getDouble(i - 1) >= sort.getDouble(i));
         }
 
         Var second = new VSort(true).fapply(numeric);
-        for (int i = 1; i < second.rowCount(); i++) {
+        for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getInt(i - 1) <= second.getInt(i));
         }
     }
@@ -118,17 +115,17 @@ public class SortVarTest {
         nominal.setMissing(5);
 
         Var sort = new VSort(true).fapply(nominal);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) <= 0);
         }
 
         sort = new VSort(false).fapply(nominal);
-        for (int i = 1; i < sort.rowCount(); i++) {
+        for (int i = 1; i < sort.size(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) >= 0);
         }
 
         Var second = new VSort(true).fapply(nominal);
-        for (int i = 1; i < second.rowCount(); i++) {
+        for (int i = 1; i < second.size(); i++) {
             assertTrue(second.getLabel(i - 1).compareTo(second.getLabel(i)) <= 0);
         }
     }
@@ -154,7 +151,7 @@ public class SortVarTest {
         transform.put("c", "b");
         transform.put("d", "d");
         Var sort = VSort.asc().fapply(nominal);
-        for (int i = 0; i < sort.rowCount(); i++) {
+        for (int i = 0; i < sort.size(); i++) {
             sort.setLabel(i, transform.get(sort.getLabel(i)));
         }
 
@@ -163,7 +160,7 @@ public class SortVarTest {
         assertEquals("c", nominal.getLabel(2));
         assertEquals("d", nominal.getLabel(3));
 
-        for (int i = 0; i < sort.rowCount(); i++) {
+        for (int i = 0; i < sort.size(); i++) {
             sort.setInt(i, 2);
             assertEquals(nominal.levels().get(2), nominal.getLabel(i));
             assertEquals(2, nominal.getInt(i));
@@ -177,7 +174,7 @@ public class SortVarTest {
         // numeric
 
         sort = VSort.asc().fapply(numeric);
-        for (int i = 0; i < sort.rowCount(); i++) {
+        for (int i = 0; i < sort.size(); i++) {
             sort.setDouble(i, sort.getDouble(i) + Math.E);
         }
         assertEquals(Math.E + 1., numeric.getDouble(0), 1e-10);
@@ -189,7 +186,7 @@ public class SortVarTest {
         // index
 
         sort = VSort.asc().fapply(index);
-        for (int i = 0; i < sort.rowCount(); i++) {
+        for (int i = 0; i < sort.size(); i++) {
             sort.setDouble(i, sort.getInt(i) + 10);
         }
         assertEquals(11, index.getInt(0));

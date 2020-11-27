@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -139,7 +133,7 @@ public class ZTestTwoSamples implements HTest {
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        if (xComplete.size() < 1 || yComplete.size() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
@@ -156,9 +150,9 @@ public class ZTestTwoSamples implements HTest {
         }
 
         xSampleMean = Mean.of(xComplete).value();
-        xSampleSize = xComplete.rowCount();
+        xSampleSize = xComplete.size();
         ySampleMean = Mean.of(yComplete).value();
-        ySampleSize = yComplete.rowCount();
+        ySampleSize = yComplete.size();
         sampleMean = xSampleMean - ySampleMean;
 
         compute();

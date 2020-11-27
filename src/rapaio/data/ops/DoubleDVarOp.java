@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,7 +43,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
 
     public DoubleDVarOp(VarDouble source) {
         this.source = source;
-        this.rowCount = source.rowCount();
+        this.rowCount = source.size();
         this.data = source.elements();
     }
 
@@ -249,7 +243,7 @@ public final class DoubleDVarOp implements DVarOp<VarDouble> {
     @Override
     public VarDouble sort(boolean asc) {
         DoubleComparator comparator = getComparator(asc);
-        DoubleArrays.quickSort(source.elements(), 0, source.rowCount(), comparator);
+        DoubleArrays.quickSort(source.elements(), 0, source.size(), comparator);
         return source;
     }
 

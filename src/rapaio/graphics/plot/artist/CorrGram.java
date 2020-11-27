@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,7 +26,7 @@ import rapaio.core.correlation.CorrSpearman;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -58,7 +52,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * The colors used to display values comes from {@link ColorGradient#newHueGradient(int, int, double[])}
  * with start=0, end=240 and an array of 101 percentages. One can changes this behaviour by setting
- * the {@link rapaio.graphics.Plotter#color(Color[])} graphical option to an array of 101 color elements.
+ * the {@link rapaio.graphics.Plotter#fill(Color[])} graphical option to an array of 101 color elements.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/19/16.
  */
@@ -75,7 +69,7 @@ public class CorrGram extends Artist {
         this.grid = grid;
         this.d = d;
 
-        this.options.setColor(new GOptionColor(ColorGradient.newHueGradient(0, 240,
+        this.options.setFill(new GOptionFill(ColorGradient.newHueGradient(0, 240,
                 DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray()).getColors()
         ));
         this.options.bind(opts);
@@ -121,7 +115,7 @@ public class CorrGram extends Artist {
         for (int i = 0; i < d.length(); i++) {
             for (int j = 0; j < d.length(); j++) {
                 if (i != j) {
-                    g2d.setColor(options.getColor(computeIndex(i, j)));
+                    g2d.setColor(options.getFill(computeIndex(i, j)));
                     g2d.fill(new Rectangle2D.Double(
                             xScale(j),
                             yScale(d.length() - i),
@@ -137,7 +131,7 @@ public class CorrGram extends Artist {
                     double width = bounds.getWidth();
                     double height = bounds.getHeight();
 
-                    g2d.setColor(Color.BLACK);
+                    g2d.setColor(options.getColor(0));
                     g2d.setStroke(new BasicStroke(1f));
                     g2d.drawString(label,
                             (int) (xScale(j) + xstep / 2 - width / 2),

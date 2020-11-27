@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -343,7 +337,7 @@ public class Join {
             x2.addDouble(Math.sqrt(i + 1));
         }
 
-        int[] sample = SamplingTools.sampleWOR(id.rowCount(), id.rowCount());
+        int[] sample = SamplingTools.sampleWOR(id.size(), id.size());
 
         Frame df1 = SolidFrame.byVars(id, x1);
         Frame df2 = SolidFrame.byVars(id, x2).mapRows(Mapping.wrap(sample)).copy();

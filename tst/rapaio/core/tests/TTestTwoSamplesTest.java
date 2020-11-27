@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -45,9 +42,9 @@ public class TTestTwoSamplesTest {
         Var z = VarDouble.from(40, n::sampleNext).name("z");
 
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
-        TTestTwoSamples t2 = TTestTwoSamples.test(Mean.of(x).value(), x.rowCount(), Mean.of(y).value(), y.rowCount(), 0, Variance.of(x).sdValue(), Variance.of(y).sdValue());
+        TTestTwoSamples t2 = TTestTwoSamples.test(Mean.of(x).value(), x.size(), Mean.of(y).value(), y.size(), 0, Variance.of(x).sdValue(), Variance.of(y).sdValue());
         TTestTwoSamples t3 = TTestTwoSamples.welchTest(x, z, 0);
-        TTestTwoSamples t4 = TTestTwoSamples.welchTest(Mean.of(x).value(), x.rowCount(), Mean.of(z).value(), z.rowCount(), 0, Variance.of(x).sdValue(), Variance.of(z).sdValue());
+        TTestTwoSamples t4 = TTestTwoSamples.welchTest(Mean.of(x).value(), x.size(), Mean.of(z).value(), z.size(), 0, Variance.of(x).sdValue(), Variance.of(z).sdValue());
 
         assertEquals(t1.pValue(), t2.pValue(), TOL);
         assertEquals(t3.pValue(), t4.pValue(), TOL);
@@ -62,11 +59,11 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.test(x, y, 0);
         t1.printSummary();
 
-        assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        assertEquals(x.size(), t1.getXSampleSize(), TOL);
         assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);
         assertEquals(Variance.of(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        assertEquals(y.size(), t1.getYSampleSize(), TOL);
         assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
         assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 
@@ -106,11 +103,11 @@ public class TTestTwoSamplesTest {
         TTestTwoSamples t1 = TTestTwoSamples.welchTest(x, y, 0);
         t1.printSummary();
 
-        assertEquals(x.rowCount(), t1.getXSampleSize(), TOL);
+        assertEquals(x.size(), t1.getXSampleSize(), TOL);
         assertEquals(Mean.of(x).value(), t1.getXSampleMean(), TOL);
         assertEquals(Variance.of(x).sdValue(), t1.getXSampleSd(), TOL);
 
-        assertEquals(y.rowCount(), t1.getYSampleSize(), TOL);
+        assertEquals(y.size(), t1.getYSampleSize(), TOL);
         assertEquals(Mean.of(y).value(), t1.getYSampleMean(), TOL);
         assertEquals(Variance.of(y).sdValue(), t1.getYSampleSd(), TOL);
 

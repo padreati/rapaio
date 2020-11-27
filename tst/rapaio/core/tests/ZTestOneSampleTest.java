@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -48,7 +45,7 @@ public class ZTestOneSampleTest {
         ZTestOneSample z1 = ZTestOneSample.test(x, mu, sd);
         z1.printSummary();
 
-        assertEquals(x.rowCount(), z1.getSampleSize());
+        assertEquals(x.size(), z1.getSampleSize());
         assertEquals(HTest.Alternative.TWO_TAILS, z1.getAlt());
         assertEquals(mu, z1.getMu(), TOL);
         assertEquals(sd, z1.getSd(), TOL);
@@ -60,7 +57,7 @@ public class ZTestOneSampleTest {
         assertEquals(82.3563105814821, z1.ciHigh(), TOL);
         assertEquals(0.05, z1.getSl(), TOL);
 
-        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd);
+        z1 = ZTestOneSample.test(71.2, x.size(), mu, sd);
         z1.printSummary();
         assertEquals(71.2, z1.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.getZScore(), TOL);
@@ -70,7 +67,7 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z1.getSl(), TOL);
 
 
-        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
+        z1 = ZTestOneSample.test(71.2, x.size(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(71.2, z1.getSampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.getZScore(), TOL);

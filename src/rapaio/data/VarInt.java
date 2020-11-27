@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -250,7 +244,7 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     @Override
-    public int rowCount() {
+    public int size() {
         return rows;
     }
 
@@ -454,8 +448,8 @@ public final class VarInt extends AbstractVar implements Iterable<Integer> {
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
+        out.writeInt(size());
+        for (int i = 0; i < size(); i++) {
             out.writeInt(data[i]);
         }
     }

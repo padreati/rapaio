@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -94,7 +88,7 @@ public final class Confusion implements Printable {
     }
 
     private void validate() {
-        if (actual.rowCount() != predict.rowCount()) {
+        if (actual.size() != predict.size()) {
             throw new IllegalArgumentException("Row size does not match.");
         }
         if (!validTypes.contains(actual.type())) {
@@ -119,7 +113,7 @@ public final class Confusion implements Printable {
     private void compute() {
         int offsetActual = (actual.type() == VType.NOMINAL) ? 1 : 0;
         int offsetPredict = (actual.type() == VType.NOMINAL) ? 1 : 0;
-        for (int i = 0; i < actual.rowCount(); i++) {
+        for (int i = 0; i < actual.size(); i++) {
             if (!actual.isMissing(i) && !predict.isMissing(i)) {
                 completeCases++;
                 cmFrequency.inc(actual.getInt(i) - offsetActual, predict.getInt(i) - offsetPredict, 1);
@@ -253,7 +247,7 @@ public final class Confusion implements Printable {
     }
 
     private void addDetails(StringBuilder sb) {
-        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
+        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.size()));
         sb.append(String.format("Acc: %s         (Accuracy )\n", floatFlex(acc)));
         if (binary) {
             sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", floatFlex(f1)));

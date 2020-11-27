@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,9 +23,8 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
+import rapaio.graphics.opt.GOptionFill;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 import rapaio.graphics.plot.Plot;
@@ -66,7 +59,7 @@ public class Histogram extends Artist {
         this.maxValue = maxValue;
 
         // default values for histogram
-        options.setColor(new GOptionColor(new Color[]{options.getPalette().getColor(7)}));
+        options.setFill(new GOptionFill(new Color[]{options.getPalette().getColor(7)}));
         options.bind(opts);
     }
 
@@ -105,7 +98,7 @@ public class Histogram extends Artist {
         minValue = Double.NaN;
         maxValue = Double.NaN;
 
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             if (v.isMissing(i)) {
                 continue;
             }
@@ -127,7 +120,7 @@ public class Histogram extends Artist {
             return;
         }
         double total = 0;
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             if (v.isMissing(i)) {
                 continue;
             }
@@ -171,7 +164,6 @@ public class Histogram extends Artist {
     @Override
     public void paint(Graphics2D g2d) {
         g2d.setStroke(new BasicStroke(options.getLwd()));
-        g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
             double mind = Math.min(d, plot.yAxis().max());
@@ -191,10 +183,10 @@ public class Histogram extends Artist {
             }
 
             if (d != 0) {
-                g2d.setColor(options.getColor(i));
+                g2d.setColor(options.getFill(i));
                 g2d.fill(new Rectangle2D.Double(x, y, w, h));
             }
-            g2d.setColor(ColorPalette.STANDARD.getColor(0));
+            g2d.setColor(options.getColor(i));
             g2d.draw(new Rectangle2D.Double(x, y, w, h));
             g2d.setComposite(old);
         }

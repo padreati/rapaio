@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -50,6 +44,7 @@ public class GOptions implements Serializable {
         defaults = new GOptions();
         defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
         defaults.color = new GOptionColor(Color.BLACK);
+        defaults.fill = new GOptionFill(Color.BLACK);
         defaults.lwd = new GOptionLwd(1.0f);
         defaults.sz = new GOptionSz(VarDouble.scalar(3));
         defaults.pch = new GOptionPch(VarInt.scalar(0));
@@ -70,6 +65,7 @@ public class GOptions implements Serializable {
 
     private GOptionPalette palette;
     private GOptionColor color;
+    private GOptionFill fill;
     private GOptionLwd lwd;
     private GOptionSz sz;
     private GOptionPch pch;
@@ -94,6 +90,7 @@ public class GOptions implements Serializable {
         return new GOption[]{
                 palette,
                 color,
+                fill,
                 lwd,
                 sz,
                 pch,
@@ -157,6 +154,23 @@ public class GOptions implements Serializable {
         this.color = color;
     }
 
+    public Color getFill(int row) {
+        if (fill == null) {
+            if (parent != null) {
+                return parent.getFill(row);
+            } else {
+                Color[] _color = defaults.fill.apply(this);
+                return _color[row % _color.length];
+            }
+        }
+        Color[] _color = fill.apply(this);
+        return _color[row % _color.length];
+    }
+
+    public void setFill(GOptionFill fill) {
+        this.fill = fill;
+    }
+
     /*
      * Line width
      */
@@ -182,11 +196,11 @@ public class GOptions implements Serializable {
                 return parent.getSz(row);
             } else {
                 Var _sz = defaults.sz.apply(this);
-                return _sz.getDouble(row % _sz.rowCount());
+                return _sz.getDouble(row % _sz.size());
             }
         }
         Var _sz = sz.apply(this);
-        return _sz.getDouble(row % _sz.rowCount());
+        return _sz.getDouble(row % _sz.size());
     }
 
     public void setSz(GOptionSz sz) {
@@ -203,11 +217,11 @@ public class GOptions implements Serializable {
                 return parent.getPch(row);
             } else {
                 Var _pch = defaults.pch.apply(this);
-                return _pch.getInt(row % _pch.rowCount());
+                return _pch.getInt(row % _pch.size());
             }
         }
         Var _pch = pch.apply(this);
-        return _pch.getInt(row % _pch.rowCount());
+        return _pch.getInt(row % _pch.size());
     }
 
     public void setPch(GOptionPch pch) {

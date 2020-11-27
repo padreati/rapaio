@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,7 +26,6 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.VarNominal;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
 import rapaio.graphics.plot.Artist;
@@ -47,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.fill;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -69,26 +62,26 @@ public class BarPlot extends Artist {
             throw new IllegalArgumentException("Categories are nominal only");
         }
         if (condition == null) {
-            condition = VarNominal.empty(category.rowCount(), new ArrayList<>());
+            condition = VarNominal.empty(category.size(), new ArrayList<>());
         }
         if (!categoryTypes.contains(condition.type())) {
             throw new IllegalArgumentException("Conditions are nominal only.");
         }
         if (weights == null) {
-            weights = VarDouble.fill(category.rowCount(), 1);
+            weights = VarDouble.fill(category.size(), 1);
         }
         if (!weights.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be numeric.");
         }
 
         int shift = 9;
-        options.bind(color(VarInt.seq(shift, condition.levels().size())));
+        options.bind(fill(VarInt.seq(shift, condition.levels().size())));
         options.bind(opts);
 
         Map<String, Map<String, Double>> map = new HashMap<>();
-        int rowCount = category.rowCount();
-        rowCount = Math.min(rowCount, condition.rowCount());
-        rowCount = Math.min(rowCount, weights.rowCount());
+        int rowCount = category.size();
+        rowCount = Math.min(rowCount, condition.size());
+        rowCount = Math.min(rowCount, weights.size());
         LinkedHashSet<String> categoryLevels = new LinkedHashSet<>();
         LinkedHashSet<String> conditionLevels = new LinkedHashSet<>();
         for (int i = 0; i < rowCount; i++) {
@@ -213,10 +206,10 @@ public class BarPlot extends Artist {
                             (int) yScale(ystart),
                             (int) yScale(ystart)};
 
-                    g2d.setColor(options.getColor(j));
+                    g2d.setColor(options.getFill(j));
                     g2d.fillPolygon(x, y, 4);
 
-                    g2d.setColor(ColorPalette.STANDARD.getColor(0));
+                    g2d.setColor(options.getColor(j));
                     g2d.drawPolygon(x, y, 4);
 
                     ystart = yend;
@@ -243,10 +236,10 @@ public class BarPlot extends Artist {
                             (int) yScale(0),
                     };
 
-                    g2d.setColor(options.getColor(j));
+                    g2d.setColor(options.getFill(j));
                     g2d.fillPolygon(x, y, 4);
 
-                    g2d.setColor(ColorPalette.STANDARD.getColor(0));
+                    g2d.setColor(options.getColor(j));
                     g2d.drawPolygon(x, y, 4);
                 }
             }

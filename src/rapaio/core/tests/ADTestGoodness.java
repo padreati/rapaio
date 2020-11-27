@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -90,7 +84,7 @@ public class ADTestGoodness implements HTest {
             if (!Double.isNaN(mu)) {
                 // variance unknown, mean is known
                 sigmaHat = 0.0;
-                for (int i = 0; i < x.rowCount(); i++) {
+                for (int i = 0; i < x.size(); i++) {
                     sigmaHat += Math.pow(x.getDouble(i) - mu, 2);
                 }
                 sigmaHat = Math.sqrt(sigmaHat);
@@ -104,7 +98,7 @@ public class ADTestGoodness implements HTest {
         Normal normal = Normal.std();
 
         a2 = 0.0;
-        int n = y.rowCount();
+        int n = y.size();
         for (int i = 1; i <= n; i++) {
             double phi = normal.cdf(y.getDouble(i - 1));
             a2 += (2 * i - 1) * Math.log(phi) + (2 * (n - i) + 1) * Math.log(1 - phi);
@@ -175,7 +169,7 @@ public class ADTestGoodness implements HTest {
         sb.append("  sample is normally distributed\n");
         sb.append("\n");
 
-        sb.append("sample size: ").append(x.rowCount()).append("\n");
+        sb.append("sample size: ").append(x.size()).append("\n");
         sb.append("given mean: ").append(floatFlex(mu)).append(", used mean : ").append(floatFlex(muHat)).append("\n");
         sb.append("given sd  : ").append(floatFlex(sigma)).append(", used sd   : ").append(floatFlex(sigmaHat)).append("\n");
         sb.append("\n");

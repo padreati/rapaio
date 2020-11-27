@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -74,22 +68,22 @@ public class Gini implements Printable {
 
     private double gini(Var actual, Var fit) {
 
-        Var index = VarInt.seq(actual.rowCount());
+        Var index = VarInt.seq(actual.size());
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
         Var sol = new VRefSort(cmp).fapply(actual).copy();
 
-        int n = sol.rowCount();
+        int n = sol.size();
 
         double totalLosses = Sum.of(sol).value();
         double giniSum = Sum.of(VCumSum.filter().fapply(sol)).value() / totalLosses;
-        giniSum -= (actual.rowCount() + 1) / 2.;
-        return giniSum / actual.rowCount();
+        giniSum -= (actual.size() + 1) / 2.;
+        return giniSum / actual.size();
     }
 
     private double wgini(Var actual, Var fit, Var weights) {
-        Var index = VarInt.seq(actual.rowCount());
+        Var index = VarInt.seq(actual.size());
         IntComparator cmp = RowComparators.from(
                 RowComparators.doubleComparator(fit, false),
                 RowComparators.integerComparator(index, true));
@@ -98,11 +92,11 @@ public class Gini implements Printable {
 
         double wsum = Sum.of(w).value();
         Var random = VCumSum.filter().fapply(VarDouble.from(w, value -> value / wsum).copy());
-        double totalPositive = Sum.of(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row))).value();
-        Var lorentz = new VCumSum().fapply(VarDouble.from(actual.rowCount(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
+        double totalPositive = Sum.of(VarDouble.from(actual.size(), row -> sol.getDouble(row) * w.getDouble(row))).value();
+        Var lorentz = new VCumSum().fapply(VarDouble.from(actual.size(), row -> sol.getDouble(row) * w.getDouble(row) / totalPositive));
 
         double g = 0.0;
-        for (int i = 0; i < actual.rowCount() - 1; i++) {
+        for (int i = 0; i < actual.size() - 1; i++) {
             g += lorentz.getDouble(i + 1) * random.getDouble(i) - lorentz.getDouble(i) * random.getDouble(i + 1);
         }
         return g;

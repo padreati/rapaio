@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -66,13 +60,13 @@ public final class WeightedMean implements Printable {
     }
 
     private double compute(final Var var, final Var weights) {
-        if (var.rowCount() != weights.rowCount()) {
+        if (var.size() != weights.size()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
-        double[] v = new double[var.rowCount()];
-        double[] w = new double[var.rowCount()];
-        for (int i = 0; i < var.rowCount(); i++) {
+        double[] v = new double[var.size()];
+        double[] w = new double[var.size()];
+        for (int i = 0; i < var.size(); i++) {
             if (var.isMissing(i) || weights.isMissing(i)) {
                 missingCount++;
                 continue;
@@ -99,12 +93,12 @@ public final class WeightedMean implements Printable {
 
     private double compute(final Frame df, final Var weights, String varName) {
         int varNameIndex = df.varIndex(varName);
-        if (df.rowCount() != weights.rowCount()) {
+        if (df.rowCount() != weights.size()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
         double total = 0;
         double[] v = new double[df.rowCount()];
-        double[] w = new double[weights.rowCount()];
+        double[] w = new double[weights.size()];
         for (int i = 0; i < df.rowCount(); i++) {
             if (df.isMissing(i, varNameIndex) || weights.isMissing(i)) {
                 missingCount++;

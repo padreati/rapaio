@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -73,10 +67,10 @@ public class Points extends Artist {
 
     @Override
     public void updateDataRange() {
-        if (x.rowCount() == 0) {
+        if (x.size() == 0) {
             return;
         }
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        for (int i = 0; i < Math.min(x.size(), y.size()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
@@ -87,7 +81,7 @@ public class Points extends Artist {
     @Override
     public void paint(Graphics2D g2d) {
 
-        int len = Math.min(x.rowCount(), y.rowCount());
+        int len = Math.min(x.size(), y.size());
         for (int i = 0; i < len; i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
@@ -100,11 +94,12 @@ public class Points extends Artist {
                 continue;
             }
 
-            g2d.setColor(options.getColor(i));
+            g2d.setColor(options.getFill(i));
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
-            PchPalette.STANDARD.draw(g2d, xScale(xx), yScale(yy), options.getSz(i), options.getPch(i));
+            PchPalette.STANDARD.draw(g2d, xScale(xx), yScale(yy), options.getSz(i), options.getPch(i), options.getLwd(),
+                    options.getColor(i), options.getFill(i));
         }
     }
 }

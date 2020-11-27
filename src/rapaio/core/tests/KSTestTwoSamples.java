@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -63,8 +57,8 @@ public class KSTestTwoSamples implements HTest {
         double fn2 = 0.0;
         int i1 = 0;
         int i2 = 0;
-        double n1 = v1.rowCount();
-        double n2 = v2.rowCount();
+        double n1 = v1.size();
+        double n2 = v2.size();
         while (i1 < n1 && i2 < n2) {
             double d1 = v1.getDouble(i1);
             double d2 = v2.getDouble(i2);
@@ -124,12 +118,12 @@ public class KSTestTwoSamples implements HTest {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
-        int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
-        int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());
+        int ties1 = (int) (v1.size() - v1.stream().mapToDouble().distinct().count());
+        int ties2 = (int) (v2.size() - v2.stream().mapToDouble().distinct().count());
         sb.append(String.format("first sample size: %d, ties: %d\n",
-                v1.rowCount(), ties1));
+                v1.size(), ties1));
         sb.append(String.format("second sample size: %d, ties: %d\n",
-                v2.rowCount(), ties2));
+                v2.size(), ties2));
         if (ties1 + ties2 > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 

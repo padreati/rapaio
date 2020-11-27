@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,14 +46,14 @@ public class FToDoubleTest {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
         Var v = VarNominal.empty(10, dict);
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
         Frame df = SolidFrame.byVars(v);
 
         Frame f1 = df.fapply(FToDouble.on(VRange.all()));
-        for (int i = 0; i < v.rowCount(); i++) {
+        for (int i = 0; i < v.size(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, f1.getDouble(i, 0), 1e-10);
         }

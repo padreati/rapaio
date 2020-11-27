@@ -3,13 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
- *    Copyright 2017 Aurelian Tutuianu
- *    Copyright 2018 Aurelian Tutuianu
- *    Copyright 2019 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,12 +23,13 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
-import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+
+import static rapaio.graphics.Plotter.color;
 
 /**
  * Artist which draws a line of the form y = f(x) = a*x + b
@@ -64,7 +59,7 @@ public class ABLine extends Artist {
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
-        this.options.setColor(new GOptionColor(new Color[]{Color.LIGHT_GRAY}));
+        this.options.setColor(color(new Color[]{Color.LIGHT_GRAY}));
         this.options.bind(opts);
     }
 
@@ -73,7 +68,7 @@ public class ABLine extends Artist {
         this.b = b;
         this.h = false;
         this.v = false;
-        this.options.setColor(new GOptionColor(new Color[]{Color.LIGHT_GRAY}));
+        this.options.setColor(color(new Color[]{Color.LIGHT_GRAY}));
         this.options.bind(opts);
     }
 
@@ -99,7 +94,7 @@ public class ABLine extends Artist {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setColor(options.getColor(0));
+        g2d.setColor(options.getFill(0));
 
         double x1, x2, y1, y2;
         if (!h && !v) {
