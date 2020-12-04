@@ -62,7 +62,7 @@ public class MeshContour extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         union(mg.x().getDouble(0), mg.y().getDouble(0));
         union(mg.x().getDouble(mg.x().size() - 1), mg.y().getDouble(mg.y().size() - 1));
     }

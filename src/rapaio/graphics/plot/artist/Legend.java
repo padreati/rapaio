@@ -104,6 +104,6 @@ public class Legend extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
     }
 }

@@ -19,17 +19,27 @@
  *
  */
 
-package rapaio.graphics;
-
-import java.awt.*;
-import java.io.Serializable;
+package rapaio.graphics.opt;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public interface Figure extends Serializable {
+public class GOptionHAlign implements GOption<Integer> {
 
-    void prepare(Graphics2D g2d, Rectangle rectangle);
+    private static final long serialVersionUID = -4310646137630324226L;
+    private final int hAlign;
 
-    void paint(Graphics2D g2d, Rectangle rectangle);
+    public GOptionHAlign(int hAlign) {
+        this.hAlign = hAlign;
+    }
+
+    @Override
+    public void bind(GOptions opts) {
+        opts.setHAlign(this);
+    }
+
+    @Override
+    public Integer apply(GOptions opts) {
+        return hAlign;
+    }
 }

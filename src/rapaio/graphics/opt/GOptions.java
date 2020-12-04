@@ -29,6 +29,8 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import static rapaio.graphics.Plotter.*;
+
 /**
  * Graphical aspect options.
  * <p>
@@ -59,6 +61,9 @@ public class GOptions implements Serializable {
         defaults.widths = new GOptionWidths(new double[]{-1});
         defaults.heights = new GOptionHeights(new double[]{-1});
         defaults.labels = new GOptionLabels(new String[]{""});
+        defaults.hAlign = new GOptionHAlign(HALIGN_LEFT);
+        defaults.vAlign = new GOptionVAlign(VALIGN_TOP);
+        defaults.font = new GOptionFont(new Font("DejaVu Sans", Font.PLAIN, 20));
     }
 
     private GOptions parent;
@@ -80,6 +85,9 @@ public class GOptions implements Serializable {
     private GOptionWidths widths;
     private GOptionHeights heights;
     private GOptionLabels labels;
+    private GOptionHAlign hAlign;
+    private GOptionVAlign vAlign;
+    private GOptionFont font;
 
     public GOptions bind(GOption<?>... options) {
         Arrays.stream(options).forEach(o -> o.bind(this));
@@ -104,7 +112,10 @@ public class GOptions implements Serializable {
                 horizontal,
                 widths,
                 heights,
-                labels
+                labels,
+                hAlign,
+                vAlign,
+                font
         };
     }
 
@@ -351,5 +362,38 @@ public class GOptions implements Serializable {
 
     public void setLabels(GOptionLabels labels) {
         this.labels = labels;
+    }
+
+    public int getHAlign() {
+        if (hAlign == null) {
+            return parent != null ? parent.getHAlign() : defaults.hAlign.apply(this);
+        }
+        return hAlign.apply(this);
+    }
+
+    public void setHAlign(GOptionHAlign hAlign) {
+        this.hAlign = hAlign;
+    }
+
+    public int getVAlign() {
+        if (vAlign == null) {
+            return parent != null ? parent.getVAlign() : defaults.vAlign.apply(this);
+        }
+        return vAlign.apply(this);
+    }
+
+    public void setVAlign(GOptionVAlign vAlign) {
+        this.vAlign = vAlign;
+    }
+
+    public Font getFont() {
+        if (font == null) {
+            return parent != null ? parent.getFont() : defaults.font.apply(this);
+        }
+        return font.apply(this);
+    }
+
+    public void setFont(GOptionFont font) {
+        this.font = font;
     }
 }

@@ -83,7 +83,7 @@ public class ABLine extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         if (h) {
             union(Double.NaN, a);
         }

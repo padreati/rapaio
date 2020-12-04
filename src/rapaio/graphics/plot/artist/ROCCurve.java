@@ -61,7 +61,7 @@ public class ROCCurve extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         union(0, 0);
         union(1, 1);
     }

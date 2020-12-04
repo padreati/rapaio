@@ -66,7 +66,7 @@ public class Segment extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         union(x1, y1);
         union(x2, y2);
     }

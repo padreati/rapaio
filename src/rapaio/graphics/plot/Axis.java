@@ -52,8 +52,10 @@ public final class Axis implements Serializable {
     private final List<Double> tickers = new ArrayList<>();
     private final List<String> labels = new ArrayList<>();
 
-    private double min;
-    private double max;
+    private double hardMin = Double.NaN;
+    private double hardMax = Double.NaN;
+    private double min = Double.NaN;
+    private double max = Double.NaN;
 
     private final Map<String, Double> categoryMap = new HashMap<>();
 
@@ -64,29 +66,48 @@ public final class Axis implements Serializable {
         labels.clear();
     }
 
-    public void unionNumeric(double x) {
-        if (Double.isFinite(x)) {
-            min = (Double.isFinite(min)) ? Math.min(min, x) : x;
-            max = (Double.isFinite(max)) ? Math.max(max, x) : x;
+    public void hardLim(double hardMin, double hardMax) {
+        if (Double.isFinite(hardMin)) {
+            this.hardMin = hardMin;
+        }
+        if (Double.isFinite(hardMax)) {
+            this.hardMax = hardMax;
         }
     }
 
-    public void unionCategory(double x, String label) {
-        unionNumeric(x);
-        categoryMap.put(label, x);
+    public boolean allowUnion(double x) {
+        return Double.isFinite(x)
+                && (!Double.isFinite(hardMin) || (x >= hardMin))
+                && (!Double.isFinite(hardMax) || (x <= hardMax));
     }
 
-    public void computeArtifacts(Plot plot, double viewportSpan, double limStart, double limEnd) {
+    public boolean unionNumeric(double x) {
+        if (!allowUnion(x)) {
+            return false;
+        }
+        min = (Double.isFinite(min)) ? Math.min(min, x) : x;
+        max = (Double.isFinite(max)) ? Math.max(max, x) : x;
+        return true;
+    }
+
+    public boolean unionCategory(double x, String label) {
+        if (!allowUnion(x)) {
+            return false;
+        }
+        unionNumeric(x);
+        categoryMap.put(label, x);
+        return true;
+    }
+
+    public void computeArtifacts(Plot plot, double viewportSpan) {
         if (!Double.isFinite(min)) {
             min = 0;
         }
         if (!Double.isFinite(max)) {
             max = 1;
         }
-        if (Double.isFinite(limStart * limEnd)) {
-            min = limStart;
-            max = limEnd;
-        }
+        min = Double.isFinite(hardMin) ? hardMin : min;
+        max = Double.isFinite(hardMax) ? hardMax : max;
         if (min == max) {
             min = min - 0.5;
             max = max + 0.5;

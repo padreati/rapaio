@@ -75,7 +75,7 @@ public class DensityLine extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         var.stream().complete().forEach(s -> {
             union(kde.kernel().minValue(s.getDouble(), bandwidth), 0);
             union(kde.kernel().maxValue(s.getDouble(), bandwidth), kde.pdf(s.getDouble()));

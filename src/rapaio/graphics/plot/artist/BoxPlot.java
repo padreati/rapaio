@@ -98,7 +98,7 @@ public class BoxPlot extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         union(0, Double.NaN);
         union(vars.length, Double.NaN);
         for (int i = 0; i < vars.length; i++) {

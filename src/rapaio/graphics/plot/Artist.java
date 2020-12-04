@@ -54,8 +54,16 @@ public abstract class Artist implements Serializable {
         return options;
     }
 
+    public double xUnscale(double x) {
+        return plot.xUnscale(x);
+    }
+
     public double xScale(double x) {
         return plot.xScale(x);
+    }
+
+    public double yUnscale(double y) {
+        return plot.yUnscale(y);
     }
 
     public double yScale(double y) {
@@ -66,12 +74,22 @@ public abstract class Artist implements Serializable {
         return plot.xAxis().contains(x) && plot.yAxis().contains(y);
     }
 
-    public void union(double x, double y) {
-        plot.xAxis().unionNumeric(x);
-        plot.yAxis().unionNumeric(y);
+    public boolean union(double x, double y) {
+        if (Double.isFinite(x) && Double.isNaN(y)) {
+            return plot.xAxis().unionNumeric(x);
+        }
+        if (Double.isNaN(x) && Double.isFinite(y)) {
+            return plot.yAxis().unionNumeric(y);
+        }
+        if (plot.xAxis().allowUnion(x) && plot.yAxis().allowUnion(y)) {
+            plot.xAxis().unionNumeric(x);
+            plot.yAxis().unionNumeric(y);
+            return true;
+        }
+        return false;
     }
 
-    public abstract void updateDataRange();
+    public abstract void updateDataRange(Graphics2D g2d);
 
     public abstract void paint(Graphics2D g2d);
 }

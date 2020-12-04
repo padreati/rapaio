@@ -26,6 +26,8 @@ import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
 
+import java.awt.*;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/27/20.
  */
@@ -52,7 +54,7 @@ public abstract class BasePoly extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         int len = Math.min(x.size(), y.size());
         for (int i = 0; i < len; i++) {
             union(x.getDouble(i), y.getDouble(i));

@@ -19,17 +19,37 @@
  *
  */
 
-package rapaio.graphics;
+package rapaio.graphics.opt;
 
 import java.awt.*;
-import java.io.Serializable;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/17.
  */
-public interface Figure extends Serializable {
+public class GOptionFont implements GOption<Font> {
 
-    void prepare(Graphics2D g2d, Rectangle rectangle);
+    private static final long serialVersionUID = 7534853593877383832L;
+    private final Font font;
 
-    void paint(Graphics2D g2d, Rectangle rectangle);
+    public GOptionFont(Font font) {
+        this.font = font;
+    }
+
+    public GOptionFont(String fontName) {
+        this.font = new Font(fontName, Font.PLAIN, 20);
+    }
+
+    public GOptionFont(String fontName, int style, int size) {
+        this.font = new Font(fontName, style, size);
+    }
+
+    @Override
+    public void bind(GOptions opts) {
+        opts.setFont(this);
+    }
+
+    @Override
+    public Font apply(GOptions opts) {
+        return font;
+    }
 }

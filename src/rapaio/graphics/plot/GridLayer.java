@@ -134,7 +134,7 @@ public class GridLayer implements Figure {
     }
 
     @Override
-    public void prepare(Rectangle r) {
+    public void prepare(Graphics2D g2d, Rectangle r) {
         buildViewport(r);
 
 
@@ -147,7 +147,7 @@ public class GridLayer implements Figure {
                     (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
                     (int) (DoubleArrays.sum(w, g.col, g.width)),
                     (int) (DoubleArrays.sum(h, g.row, g.height)));
-            g.plot.prepare(rect);
+            g.plot.prepare(g2d, rect);
         }
     }
 

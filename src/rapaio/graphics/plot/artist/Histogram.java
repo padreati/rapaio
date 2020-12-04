@@ -114,6 +114,22 @@ public class Histogram extends Artist {
             }
         }
 
+        if (options.getHorizontal()) {
+            if (Double.isFinite(plot.yAxis().min())) {
+                minValue = plot.yAxis().min();
+            }
+            if (Double.isFinite(plot.yAxis().max())) {
+                maxValue = plot.yAxis().max();
+            }
+        } else {
+            if (Double.isFinite(plot.xAxis().min())) {
+                minValue = plot.xAxis().min();
+            }
+            if (Double.isFinite(plot.xAxis().max())) {
+                maxValue = plot.xAxis().max();
+            }
+        }
+
         double step = (maxValue - minValue) / (1. * options.getBins());
         freqTable = new double[options.getBins()];
         if (freqTable.length == 0) {
@@ -141,23 +157,22 @@ public class Histogram extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
         rebuild();
-
         if (options.getHorizontal()) {
-            union(Double.NaN, minValue);
-            union(Double.NaN, maxValue);
+            plot.yAxis().unionNumeric(minValue);
+            plot.yAxis().unionNumeric(maxValue);
             for (double freq : freqTable) {
-                union(freq, Double.NaN);
+                plot.xAxis().unionNumeric(freq);
             }
-            union(0, Double.NaN);
+            plot.xAxis().unionNumeric(0);
         } else {
-            union(minValue, Double.NaN);
-            union(maxValue, Double.NaN);
+            plot.xAxis().unionNumeric(minValue);
+            plot.xAxis().unionNumeric(maxValue);
             for (double freq : freqTable) {
-                union(Double.NaN, freq);
+                plot.yAxis().unionNumeric(freq);
             }
-            union(Double.NaN, 0);
+            plot.yAxis().unionNumeric(0);
         }
     }
 

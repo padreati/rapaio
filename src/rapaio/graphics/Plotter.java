@@ -34,6 +34,8 @@ import rapaio.graphics.opt.GOptionAlpha;
 import rapaio.graphics.opt.GOptionBins;
 import rapaio.graphics.opt.GOptionColor;
 import rapaio.graphics.opt.GOptionFill;
+import rapaio.graphics.opt.GOptionFont;
+import rapaio.graphics.opt.GOptionHAlign;
 import rapaio.graphics.opt.GOptionHeights;
 import rapaio.graphics.opt.GOptionHorizontal;
 import rapaio.graphics.opt.GOptionLabels;
@@ -46,6 +48,7 @@ import rapaio.graphics.opt.GOptionSort;
 import rapaio.graphics.opt.GOptionStacked;
 import rapaio.graphics.opt.GOptionSz;
 import rapaio.graphics.opt.GOptionTop;
+import rapaio.graphics.opt.GOptionVAlign;
 import rapaio.graphics.opt.GOptionWidths;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
@@ -292,6 +295,10 @@ public final class Plotter {
         return new GOptionTop(top);
     }
 
+    public static final int SORT_DESC = -1;
+    public static final int SORT_NONE = 0;
+    public static final int SORT_ASC = 1;
+
     public static GOptionSort sort(int sort) {
         return new GOptionSort(sort);
     }
@@ -318,5 +325,33 @@ public final class Plotter {
 
     public static GOptionHeights heights(int... absoluteSizes) {
         return new GOptionHeights(absoluteSizes);
+    }
+
+    public static final int HALIGN_LEFT = -1;
+    public static final int HALIGN_CENTER = 0;
+    public static final int HALIGN_RIGHT = 1;
+
+    public static GOptionHAlign hAlign(int hAlign) {
+        return new GOptionHAlign(hAlign);
+    }
+
+    public static final int VALIGN_TOP = -1;
+    public static final int VALIGN_CENTER = 0;
+    public static final int VALIGN_BOTTOM = 1;
+
+    public static GOptionVAlign vAlign(int vAlign) {
+        return new GOptionVAlign(vAlign);
+    }
+
+    public static GOptionFont font(Font font) {
+        return new GOptionFont(font);
+    }
+
+    public static GOptionFont font(String fontName) {
+        return new GOptionFont(fontName);
+    }
+
+    public static GOptionFont font(String fontName, int style, int size) {
+        return new GOptionFont(new Font(fontName, style, size));
     }
 }

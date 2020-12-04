@@ -69,7 +69,7 @@ public class Plot implements Figure {
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
     protected static final int TITLE_PAD = 40;
-    protected static final int MINIMUM_PAD = 20;
+    protected static final int MINIMUM_PAD = 10;
 
     final GOptions options = new GOptions();
 
@@ -89,11 +89,6 @@ public class Plot implements Figure {
 
     private final Axis xAxis;
     private final Axis yAxis;
-
-    protected double xLimStart = Double.NaN;
-    protected double xLimEnd = Double.NaN;
-    protected double yLimStart = Double.NaN;
-    protected double yLimEnd = Double.NaN;
 
     public Plot(GOption<?>... opts) {
         this(null, null, opts);
@@ -122,16 +117,20 @@ public class Plot implements Figure {
         return yAxis;
     }
 
-    protected void buildDataRange() {
+    public Rectangle getViewport() {
+        return viewport;
+    }
+
+    protected void buildDataRange(Graphics2D g2d) {
         xAxis.clear();
         yAxis.clear();
 
         for (Artist artist : artistList) {
-            artist.updateDataRange();
+            artist.updateDataRange(g2d);
         }
 
-        xAxis.computeArtifacts(this, viewport.width, xLimStart, xLimEnd);
-        yAxis.computeArtifacts(this, viewport.height, yLimStart, yLimEnd);
+        xAxis.computeArtifacts(this, viewport.width);
+        yAxis.computeArtifacts(this, viewport.height);
     }
 
     protected void buildViewport(Rectangle rectangle) {
@@ -161,8 +160,16 @@ public class Plot implements Figure {
         viewport.height -= sizeBottomThicker + sizeBottomMarkers + sizeXLabel;
     }
 
+    public double xUnscale(double x) {
+        return (x - viewport.x) * xAxis.length() / viewport.width + xAxis.min();
+    }
+
     public double xScale(double x) {
         return viewport.x + viewport.width * (x - xAxis.min()) / xAxis.length();
+    }
+
+    public double yUnscale(double y) {
+        return (viewport.y - y) * yAxis.length() / viewport.height + 1. + yAxis.min();
     }
 
     public double yScale(double y) {
@@ -170,9 +177,9 @@ public class Plot implements Figure {
     }
 
     @Override
-    public void prepare(Rectangle rectangle) {
+    public void prepare(Graphics2D g2d, Rectangle rectangle) {
         buildViewport(rectangle);
-        buildDataRange();
+        buildDataRange(g2d);
     }
 
     @Override
@@ -317,14 +324,12 @@ public class Plot implements Figure {
     }
 
     public Plot xLim(double start, double end) {
-        xLimStart = start;
-        xLimEnd = end;
+        xAxis.hardLim(start, end);
         return this;
     }
 
     public Plot yLim(double start, double end) {
-        yLimStart = start;
-        yLimEnd = end;
+        yAxis.hardLim(start, end);
         return this;
     }
 

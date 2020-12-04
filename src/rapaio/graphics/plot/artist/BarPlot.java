@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static rapaio.graphics.Plotter.fill;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -128,20 +128,21 @@ public class BarPlot extends Artist {
 
         // sort if required
         switch (options.getSort()) {
-            case 1:
+            case SORT_ASC:
                 IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
                     if (totals[o1] == totals[o2])
                         return 0;
                     return totals[o1] < totals[o2] ? -1 : 1;
                 });
                 break;
-            case -1:
+            case SORT_DESC:
                 IntArrays.quickSort(indexes, 0, len, (o1, o2) -> {
                     if (totals[o1] == totals[o2])
                         return 0;
                     return totals[o1] < totals[o2] ? 1 : -1;
                 });
                 break;
+            case SORT_NONE:
             default:
                 // do not sort
                 break;
@@ -163,7 +164,7 @@ public class BarPlot extends Artist {
     }
 
     @Override
-    public void updateDataRange() {
+    public void updateDataRange(Graphics2D g2d) {
 
         // now learn range
         plot.yAxis().unionNumeric(0);
