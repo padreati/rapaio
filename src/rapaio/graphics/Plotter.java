@@ -65,6 +65,7 @@ import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
+import rapaio.graphics.plot.artist.Text;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -190,6 +191,10 @@ public final class Plotter {
 
     public static Plot corrGram(DistanceMatrix d, boolean labels, boolean grid, GOption<?>... opts) {
         return plot().add(new CorrGram(d, labels, grid, opts));
+    }
+
+    public static Plot text(double x, double y, String text, GOption<?>... opts) {
+        return plot().add(new Text(x, y, text, opts));
     }
 
     // GRAPHICAL OPTIONS

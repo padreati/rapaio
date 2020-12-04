@@ -47,6 +47,7 @@ import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
+import rapaio.graphics.plot.artist.Text;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -494,6 +495,11 @@ public class Plot implements Figure {
         yLab("Sampling Quantiles");
         xLab("Theoretical Quantiles");
         title("QQPlot - sample vs. " + distribution.name());
+        return this;
+    }
+
+    public Plot text(double x, double y, String text, GOption<?>... opts) {
+        add(new Text(x, y, text, opts));
         return this;
     }
 }

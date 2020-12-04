@@ -32,6 +32,7 @@ import rapaio.graphics.plot.Axis;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 
 /**
  * Artist which draws a KDE density estimator function.
@@ -98,14 +99,28 @@ public class DensityLine extends Artist {
 
         for (int i = 1; i < x.size(); i++) {
             if (contains(x.getDouble(i - 1), y.getDouble(i - 1)) && contains(x.getDouble(i), y.getDouble(i))) {
-                g2d.setColor(options.getColor(i));
-                g2d.draw(new Line2D.Double(
-                        xScale(x.getDouble(i - 1)),
-                        yScale(y.getDouble(i - 1)),
-                        xScale(x.getDouble(i)),
-                        yScale(y.getDouble(i))));
-
+                if (options.getColor(i) != null) {
+                    g2d.setColor(options.getColor(i));
+                    g2d.draw(new Line2D.Double(
+                            xScale(x.getDouble(i - 1)),
+                            yScale(y.getDouble(i - 1)),
+                            xScale(x.getDouble(i)),
+                            yScale(y.getDouble(i))));
+                }
             }
+        }
+        Path2D.Double poly = new Path2D.Double();
+        poly.moveTo(xScale(x.getDouble(0)), yScale(y.getDouble(0)));
+        for (int i = 1; i < x.size(); i++) {
+            if (contains(x.getDouble(i - 1), y.getDouble(i - 1)) && contains(x.getDouble(i), y.getDouble(i))) {
+                poly.lineTo(xScale(x.getDouble(i)), yScale(y.getDouble(i)));
+            }
+        }
+        poly.lineTo(xScale(x.getDouble(0)), yScale(y.getDouble(0)));
+
+        if (options.getFill(0) != null) {
+            g2d.setColor(options.getFill(0));
+            g2d.fill(poly);
         }
 
         g2d.setComposite(oldComposite);

@@ -226,12 +226,14 @@ public class ImageGraphicsTest {
     void testDensity() throws IOException {
 
         Var x = df.rvar(0).mapRows(Mapping.range(200));
-        Plot fig = densityLine(x, new KFuncGaussian(), lwd(30), alpha(0.1f), color(2));
+        var up = densityLine(x, new KFuncGaussian(), lwd(30), alpha(0.1f), color(2));
         for (int i = 10; i < 150; i += 5) {
-            fig.densityLine(x, i / 300.0);
+            up.densityLine(x, i / 300.0);
         }
-        fig.densityLine(x, lwd(2), color(1));
-        assertTest(fig, "density-test");
+        up.densityLine(x, lwd(2), color(1));
+
+        var down = densityLine(df.rvar(0), fill(13));
+        assertTest(gridLayer(1, 2).add(up).add(down), "density-test");
     }
 
     @Test
@@ -253,6 +255,17 @@ public class ImageGraphicsTest {
         plot.segmentArrow(0.1, 0.9, 0.9, 0.1, fill(2), lwd(6));
 
         assertTest(plot, "segment-test");
+    }
+
+    @Test
+    @SneakyThrows
+    void testText() {
+        var plot = plot().xLim(0, 1).yLim(0, 1);
+        plot.text(0.1, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_LEFT));
+        plot.text(0.5, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_CENTER), color(2));
+        plot.text(0.8, 0.9, "Ana\nAre\nMere", hAlign(HALIGN_RIGHT), color(4));
+
+        assertTest(plot, "text-test");
     }
 
     @Test

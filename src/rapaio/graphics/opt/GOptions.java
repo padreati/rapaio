@@ -46,7 +46,7 @@ public class GOptions implements Serializable {
         defaults = new GOptions();
         defaults.palette = new GOptionPalette(ColorPalette.STANDARD);
         defaults.color = new GOptionColor(Color.BLACK);
-        defaults.fill = new GOptionFill(Color.BLACK);
+        defaults.fill = new GOptionFill(-1);
         defaults.lwd = new GOptionLwd(1.0f);
         defaults.sz = new GOptionSz(VarDouble.scalar(3));
         defaults.pch = new GOptionPch(VarInt.scalar(0));
@@ -171,7 +171,7 @@ public class GOptions implements Serializable {
                 return parent.getFill(row);
             } else {
                 Color[] _color = defaults.fill.apply(this);
-                return _color[row % _color.length];
+                return _color != null ? _color[row % _color.length] : null;
             }
         }
         Color[] _color = fill.apply(this);
