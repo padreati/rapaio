@@ -41,6 +41,7 @@ import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.graphics.plot.artist.Lines;
+import rapaio.graphics.plot.artist.Matrix;
 import rapaio.graphics.plot.artist.MeshContour;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
@@ -48,6 +49,7 @@ import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Text;
+import rapaio.math.linear.DM;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -500,6 +502,11 @@ public class Plot implements Figure {
 
     public Plot text(double x, double y, String text, GOption<?>... opts) {
         add(new Text(x, y, text, opts));
+        return this;
+    }
+
+    public Plot matrix(DM m, GOption<?>... opts) {
+        add(new Matrix(m, opts));
         return this;
     }
 }

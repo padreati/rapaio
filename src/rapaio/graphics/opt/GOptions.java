@@ -154,11 +154,11 @@ public class GOptions implements Serializable {
                 return parent.getColor(row);
             } else {
                 Color[] _color = defaults.color.apply(this);
-                return _color[row % _color.length];
+                return _color != null ? _color[row % _color.length] : null;
             }
         }
         Color[] _color = color.apply(this);
-        return _color[row % _color.length];
+        return _color != null ? _color[row % _color.length] : null;
     }
 
     public void setColor(GOptionColor color) {
@@ -175,7 +175,7 @@ public class GOptions implements Serializable {
             }
         }
         Color[] _color = fill.apply(this);
-        return _color[row % _color.length];
+        return _color != null ? _color[row % _color.length] : null;
     }
 
     public void setFill(GOptionFill fill) {

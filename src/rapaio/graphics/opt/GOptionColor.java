@@ -36,6 +36,10 @@ public class GOptionColor implements GOption<Color[]> {
     private final SFunction<GOptions, Color[]> function;
 
     public GOptionColor(int... index) {
+        if (index.length == 1 && index[0] == -1) {
+            function = gOpts -> null;
+            return;
+        }
         function = gOpts -> Arrays.stream(index).boxed().map(i -> gOpts.getPalette().getColor(i)).toArray(Color[]::new);
     }
 

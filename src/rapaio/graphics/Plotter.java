@@ -61,11 +61,13 @@ import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
 import rapaio.graphics.plot.artist.Lines;
+import rapaio.graphics.plot.artist.Matrix;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
+import rapaio.math.linear.DM;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -195,6 +197,10 @@ public final class Plotter {
 
     public static Plot text(double x, double y, String text, GOption<?>... opts) {
         return plot().add(new Text(x, y, text, opts));
+    }
+
+    public static Plot matrix(DM m, GOption<?>... opts) {
+        return plot().add(new Matrix(m, opts));
     }
 
     // GRAPHICAL OPTIONS
