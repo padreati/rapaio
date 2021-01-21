@@ -24,8 +24,8 @@ package rapaio.ml.regression.linear.impl;
 import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.AbstractRegressionModel;
@@ -51,17 +51,17 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             "Configures the model to add an intercept term or not",
             Objects::nonNull);
 
-    protected DM beta;
+    protected DMatrix beta;
 
-    public DV firstCoefficients() {
+    public DVector firstCoefficients() {
         return beta.mapCol(0);
     }
 
-    public DV getCoefficients(int targetIndex) {
+    public DVector getCoefficients(int targetIndex) {
         return beta.mapCol(targetIndex);
     }
 
-    public DM getAllCoefficients() {
+    public DMatrix getAllCoefficients() {
         return beta;
     }
 
@@ -140,7 +140,7 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
             String targetName = targetNames[i];
             sb.append("Target <<< ").append(targetName).append(" >>>\n\n");
             sb.append("> Coefficients: \n");
-            DV coeff = beta.mapCol(i);
+            DVector coeff = beta.mapCol(i);
 
             TextTable tt = TextTable.empty(coeff.size() + 1, 2, 1, 0);
             tt.textCenter(0, 0, "Name");

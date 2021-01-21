@@ -22,10 +22,10 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.stream.IntStream;
 
@@ -35,11 +35,11 @@ import java.util.stream.IntStream;
  * @author Martin Thoma
  */
 public class MatrixMultiplication {
-    public static DM jama(DM A, DM B) {
+    public static DMatrix jama(DMatrix A, DMatrix B) {
         if (B.rowCount() != A.colCount()) {
             throw new IllegalArgumentException("Matrix inner dimensions must agree.");
         }
-        DM X = DMStripe.empty(A.rowCount(), B.colCount());
+        DMatrix X = DMatrixStripe.empty(A.rowCount(), B.colCount());
         double[] Bcolj = new double[A.colCount()];
         for (int j = 0; j < B.colCount(); j++) {
             for (int k = 0; k < A.colCount(); k++) {
@@ -56,9 +56,9 @@ public class MatrixMultiplication {
         return X;
     }
 
-    public static DM ijkAlgorithm(DM A, DM B) {
+    public static DMatrix ijkAlgorithm(DMatrix A, DMatrix B) {
         // Initialize C
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
@@ -69,9 +69,9 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static DM ijkParallel(DM A, DM B) {
+    public static DMatrix ijkParallel(DMatrix A, DMatrix B) {
         // initialize C
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < B.colCount(); j++) {
                 for (int k = 0; k < A.colCount(); k++) {
@@ -82,9 +82,9 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static DM ikjAlgorithm(DM A, DM B) {
+    public static DMatrix ikjAlgorithm(DMatrix A, DMatrix B) {
         // initialize C
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), B.colCount());
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
@@ -97,8 +97,8 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static DM ikjParallel(DM A, DM B) {
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), B.colCount());
+    public static DMatrix ikjParallel(DMatrix A, DMatrix B) {
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
                 if (A.get(i, k) == 0)
@@ -111,7 +111,7 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static DV ikjParallel(DM A, DV b) {
+    public static DVector ikjParallel(DMatrix A, DVector b) {
 
         if (A.colCount() != b.size()) {
             throw new IllegalArgumentException(
@@ -120,7 +120,7 @@ public class MatrixMultiplication {
                     ));
         }
 
-        DV C = DVDense.zeros(A.rowCount());
+        DVector C = DVectorDense.zeros(A.rowCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, C.get(i) + A.get(i, j) * b.get(j));
@@ -129,8 +129,8 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static DM tiledAlgorithm(DM A, DM B) {
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), B.colCount());
+    public static DMatrix tiledAlgorithm(DMatrix A, DMatrix B) {
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), B.colCount());
 
 //        Pick a tile size T = theta(sqrt(M))
         int T = 1;
@@ -166,8 +166,8 @@ public class MatrixMultiplication {
         return C;
     }
 
-    private static DM add(DM A, DM B) {
-        DM C = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), A.colCount());
+    private static DMatrix add(DMatrix A, DMatrix B) {
+        DMatrix C = DMatrixStripe.empty(A.rowCount(), A.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, j, A.get(i, j) + B.get(i, j));
@@ -176,9 +176,9 @@ public class MatrixMultiplication {
         return C;
     }
 
-    private static DM subtract(DM A, DM B) {
+    private static DMatrix subtract(DMatrix A, DMatrix B) {
         int n = A.rowCount();
-        DM C = rapaio.math.linear.dense.DMStripe.empty(n, n);
+        DMatrix C = DMatrixStripe.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, A.get(i, j) - B.get(i, j));
@@ -192,14 +192,14 @@ public class MatrixMultiplication {
         return (int) Math.pow(2, log2);
     }
 
-    public static DM strassen(DM A, DM B, int leafSize) {
+    public static DMatrix strassen(DMatrix A, DMatrix B, int leafSize) {
         // Make the matrices bigger so that you can apply the strassen
         // algorithm recursively without having to deal with odd
         // matrix sizes
         int n = A.colCount();
         int m = nextPowerOfTwo(n);
-        DM APrep = rapaio.math.linear.dense.DMStripe.empty(m, m);
-        DM BPrep = rapaio.math.linear.dense.DMStripe.empty(m, m);
+        DMatrix APrep = DMatrixStripe.empty(m, m);
+        DMatrix BPrep = DMatrixStripe.empty(m, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 APrep.set(i, j, A.get(i, j));
@@ -207,8 +207,8 @@ public class MatrixMultiplication {
             }
         }
 
-        DM CPrep = strassenR(APrep, BPrep, leafSize);
-        DM C = rapaio.math.linear.dense.DMStripe.empty(n, n);
+        DMatrix CPrep = strassenR(APrep, BPrep, leafSize);
+        DMatrix C = DMatrixStripe.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, CPrep.get(i, j));
@@ -217,7 +217,7 @@ public class MatrixMultiplication {
         return C;
     }
 
-    private static DM strassenR(DM A, DM B, int leafSize) {
+    private static DMatrix strassenR(DMatrix A, DMatrix B, int leafSize) {
         int n = A.colCount();
 
         if (n <= leafSize) {
@@ -225,15 +225,15 @@ public class MatrixMultiplication {
         } else {
             // initializing the new sub-matrices
             int newSize = n / 2;
-            DM a11 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM a12 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM a21 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM a22 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
+            DMatrix a11 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix a12 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix a21 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix a22 = DMatrixStripe.empty(newSize, newSize);
 
-            DM b11 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM b12 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM b21 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
-            DM b22 = rapaio.math.linear.dense.DMStripe.empty(newSize, newSize);
+            DMatrix b11 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix b12 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix b21 = DMatrixStripe.empty(newSize, newSize);
+            DMatrix b22 = DMatrixStripe.empty(newSize, newSize);
 
             // dividing the matrices in 4 sub-matrices:
             for (int i = 0; i < newSize; i++) {
@@ -251,52 +251,52 @@ public class MatrixMultiplication {
             }
 
             // Calculating p1 to p7:
-            DM aResult = add(a11, a22);
-            DM bResult = add(b11, b22);
-            DM p1 = strassenR(aResult, bResult, leafSize);
+            DMatrix aResult = add(a11, a22);
+            DMatrix bResult = add(b11, b22);
+            DMatrix p1 = strassenR(aResult, bResult, leafSize);
             // p1 = (a11+a22) * (b11+b22)
 
             aResult = add(a21, a22); // a21 + a22
-            DM p2 = strassenR(aResult, b11, leafSize); // p2 = (a21+a22) * (b11)
+            DMatrix p2 = strassenR(aResult, b11, leafSize); // p2 = (a21+a22) * (b11)
 
             bResult = subtract(b12, b22); // b12 - b22
-            DM p3 = strassenR(a11, bResult, leafSize);
+            DMatrix p3 = strassenR(a11, bResult, leafSize);
             // p3 = (a11) * (b12 - b22)
 
             bResult = subtract(b21, b11); // b21 - b11
-            DM p4 = strassenR(a22, bResult, leafSize);
+            DMatrix p4 = strassenR(a22, bResult, leafSize);
             // p4 = (a22) * (b21 - b11)
 
             aResult = add(a11, a12); // a11 + a12
-            DM p5 = strassenR(aResult, b22, leafSize);
+            DMatrix p5 = strassenR(aResult, b22, leafSize);
             // p5 = (a11+a12) * (b22)
 
             aResult = subtract(a21, a11); // a21 - a11
             bResult = add(b11, b12); // b11 + b12
-            DM p6 = strassenR(aResult, bResult, leafSize);
+            DMatrix p6 = strassenR(aResult, bResult, leafSize);
             // p6 = (a21-a11) * (b11+b12)
 
             aResult = subtract(a12, a22); // a12 - a22
             bResult = add(b21, b22); // b21 + b22
-            DM p7 = strassenR(aResult, bResult, leafSize);
+            DMatrix p7 = strassenR(aResult, bResult, leafSize);
             // p7 = (a12-a22) * (b21+b22)
 
             // calculating c21, c21, c11 e c22:
-            DM c12 = add(p3, p5); // c12 = p3 + p5
-            DM c21 = add(p2, p4); // c21 = p2 + p4
+            DMatrix c12 = add(p3, p5); // c12 = p3 + p5
+            DMatrix c21 = add(p2, p4); // c21 = p2 + p4
 
             aResult = add(p1, p4); // p1 + p4
             bResult = add(aResult, p7); // p1 + p4 + p7
-            DM c11 = subtract(bResult, p5);
+            DMatrix c11 = subtract(bResult, p5);
             // c11 = p1 + p4 - p5 + p7
 
             aResult = add(p1, p3); // p1 + p3
             bResult = add(aResult, p6); // p1 + p3 + p6
-            DM c22 = subtract(bResult, p2);
+            DMatrix c22 = subtract(bResult, p2);
             // c22 = p1 + p3 - p2 + p6
 
             // Grouping the results obtained in a single matrix:
-            DM C = rapaio.math.linear.dense.DMStripe.empty(n, n);
+            DMatrix C = DMatrixStripe.empty(n, n);
             for (int i = 0; i < newSize; i++) {
                 for (int j = 0; j < newSize; j++) {
                     C.set(i, j, c11.get(i, j));
@@ -309,8 +309,8 @@ public class MatrixMultiplication {
         }
     }
 
-    public static DM mul(DM A, double scalar) {
-        DM X = rapaio.math.linear.dense.DMStripe.empty(A.rowCount(), A.colCount());
+    public static DMatrix mul(DMatrix A, double scalar) {
+        DMatrix X = DMatrixStripe.empty(A.rowCount(), A.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < A.colCount(); j++) {
                 X.set(i, j, A.get(i, j) * scalar);

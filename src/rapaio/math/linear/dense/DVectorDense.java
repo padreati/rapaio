@@ -23,8 +23,8 @@ package rapaio.math.linear.dense;
 
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.base.DVBase;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.base.DVectorBase;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.Double2DoubleFunction;
 import rapaio.util.function.Int2DoubleFunction;
@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.DoubleStream;
 
-public class DVDense extends DVBase {
+public class DVectorDense extends DVectorBase {
 
     private static final long serialVersionUID = 5763094452899116225L;
 
@@ -43,8 +43,8 @@ public class DVDense extends DVBase {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static DVDense zeros(int n) {
-        return new DVDense(n, DoubleArrays.newFill(n, 0));
+    public static DVectorDense zeros(int n) {
+        return new DVectorDense(n, DoubleArrays.newFill(n, 0));
     }
 
     /**
@@ -53,8 +53,8 @@ public class DVDense extends DVBase {
      * @param n the size of the vector
      * @return vector instance
      */
-    public static DVDense ones(int n) {
-        return new DVDense(n, DoubleArrays.newFill(n, 1));
+    public static DVectorDense ones(int n) {
+        return new DVectorDense(n, DoubleArrays.newFill(n, 1));
     }
 
     /**
@@ -65,8 +65,8 @@ public class DVDense extends DVBase {
      * @param fill fill value
      * @return new real dense vector
      */
-    public static DVDense fill(int n, double fill) {
-        return new DVDense(n, DoubleArrays.newFill(n, fill));
+    public static DVectorDense fill(int n, double fill) {
+        return new DVectorDense(n, DoubleArrays.newFill(n, fill));
     }
 
     /**
@@ -77,17 +77,17 @@ public class DVDense extends DVBase {
      * @param v given variable
      * @return new real dense vector
      */
-    public static DVDense from(Var v) {
+    public static DVectorDense from(Var v) {
         if (v instanceof VarDouble) {
             VarDouble vd = (VarDouble) v;
             double[] array = vd.elements();
-            return new DVDense(vd.size(), array);
+            return new DVectorDense(vd.size(), array);
         }
         double[] values = new double[v.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = v.getDouble(i);
         }
-        return new DVDense(values.length, values);
+        return new DVectorDense(values.length, values);
     }
 
     /**
@@ -97,8 +97,8 @@ public class DVDense extends DVBase {
      * @param source source vector
      * @return new real dense vector which is a copy of the source vector
      */
-    public static DVDense copy(DV source) {
-        DVDense v = zeros(source.size());
+    public static DVectorDense copy(DVector source) {
+        DVectorDense v = zeros(source.size());
         if (source.isDense()) {
             System.arraycopy(source.asDense().values, 0, v.values, 0, source.size());
             return v;
@@ -116,7 +116,7 @@ public class DVDense extends DVBase {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static DVDense wrap(double... values) {
+    public static DVectorDense wrap(double... values) {
         return wrapArray(values.length, values);
     }
 
@@ -127,16 +127,16 @@ public class DVDense extends DVBase {
      * @param values referenced array of values
      * @return new real dense vector
      */
-    public static DVDense wrapArray(int size, double[] values) {
+    public static DVectorDense wrapArray(int size, double[] values) {
         Objects.requireNonNull(values);
-        return new DVDense(size, values);
+        return new DVectorDense(size, values);
     }
 
-    public static DVDense from(int len, Int2DoubleFunction fun) {
-        return new DVDense(len, DoubleArrays.newFrom(0, len, fun));
+    public static DVectorDense from(int len, Int2DoubleFunction fun) {
+        return new DVectorDense(len, DoubleArrays.newFrom(0, len, fun));
     }
 
-    protected DVDense(int len, double[] values) {
+    protected DVectorDense(int len, double[] values) {
         super(len, values);
     }
 
@@ -146,13 +146,13 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public DVBase add(double x) {
+    public DVectorBase add(double x) {
         DoubleArrays.add(values, 0, x, size);
         return this;
     }
 
     @Override
-    public DVBase add(DV b) {
+    public DVectorBase add(DVector b) {
         if (b.isDense()) {
             checkConformance(b);
             DoubleArrays.add(values, 0, b.asDense().values, 0, size);
@@ -163,8 +163,8 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public DVBase sub(DV b) {
-        if (b instanceof DVDense) {
+    public DVectorBase sub(DVector b) {
+        if (b instanceof DVectorDense) {
             checkConformance(b);
             DoubleArrays.sub(values, 0, b.asDense().values, 0, size);
             return this;
@@ -174,15 +174,15 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public DV mult(double scalar) {
+    public DVector mult(double scalar) {
         DoubleArrays.mult(values, 0, scalar, size);
         return this;
     }
 
     @Override
-    public DV mult(DV b) {
+    public DVector mult(DVector b) {
         checkConformance(b);
-        if (b instanceof DVDense) {
+        if (b instanceof DVectorDense) {
             DoubleArrays.mult(values, 0, b.asDense().values, 0, size);
             return this;
         }
@@ -191,15 +191,15 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public DV div(double scalar) {
+    public DVector div(double scalar) {
         DoubleArrays.div(values, 0, scalar, size);
         return this;
     }
 
     @Override
-    public DV div(DV b) {
+    public DVector div(DVector b) {
         checkConformance(b);
-        if (b instanceof DVDense) {
+        if (b instanceof DVectorDense) {
             DoubleArrays.div(values, 0, b.asDense().values, 0, size);
             return this;
         }
@@ -210,11 +210,11 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public double dot(DV b) {
+    public double dot(DVector b) {
         checkConformance(b);
         double s = 0;
-        if (b instanceof DVDense) {
-            DVDense sb = (DVDense) b;
+        if (b instanceof DVectorDense) {
+            DVectorDense sb = (DVectorDense) b;
             for (int i = 0; i < size; i++) {
                 s = Math.fma(values[i], sb.values[i], s);
             }
@@ -250,7 +250,7 @@ public class DVDense extends DVBase {
         return Math.pow(s, 1.0 / p);
     }
 
-    public DV normalize(double p) {
+    public DVector normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
             mult(1.0 / norm);
@@ -293,15 +293,15 @@ public class DVDense extends DVBase {
     }
 
     @Override
-    public DV apply(Double2DoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f) {
         for (int i = 0; i < size; i++) {
             values[i] = f.applyAsDouble(values[i]);
         }
         return this;
     }
 
-    public DVDense copy() {
-        DVDense copy = DVDense.zeros(size);
+    public DVectorDense copy() {
+        DVectorDense copy = DVectorDense.zeros(size);
         System.arraycopy(values, 0, copy.values, 0, size);
         return copy;
     }

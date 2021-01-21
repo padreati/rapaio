@@ -25,8 +25,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
 import rapaio.math.linear.decomposition.QRDecomposition;
 
@@ -49,18 +49,18 @@ public class BinaryLogisticIRLS {
     @Builder.Default
     private final double lambda = 0.0;
     @NonNull
-    private final DM x;
+    private final DMatrix x;
     @NonNull
-    private final DV y;
+    private final DVector y;
     @NonNull
-    private final DV w0;
+    private final DVector w0;
 
     @Builder(setterPrefix = "with")
     @Getter
     @ToString
     public static class Result {
 
-        public DV getW() {
+        public DVector getW() {
             if (ws.size() > 0) {
                 return ws.get(ws.size() - 1);
             }
@@ -78,7 +78,7 @@ public class BinaryLogisticIRLS {
         private final List<Double> nlls;
 
         @NonNull
-        private final List<DV> ws;
+        private final List<DVector> ws;
 
         private final boolean converged;
     }
@@ -86,14 +86,14 @@ public class BinaryLogisticIRLS {
     public Result fit() {
         int it = 0;
         // current solution
-        DV w = w0.copy();
-        ArrayList<DV> ws = new ArrayList<>();
+        DVector w = w0.copy();
+        ArrayList<DVector> ws = new ArrayList<>();
         ws.add(w);
         List<Double> nlls = new ArrayList<>();
         nlls.add(negativeLogLikelihood(x, y, w));
 
         while (it++ < maxIter) {
-            DV wnew = iterate(w);
+            DVector wnew = iterate(w);
             double nll = negativeLogLikelihood(x, y, wnew);
 
             double nll_delta = nll - nlls.get(nlls.size() - 1);
@@ -115,7 +115,7 @@ public class BinaryLogisticIRLS {
                 .build();
     }
 
-    private double negativeLogLikelihood(DM x, DV y, DV w) {
+    private double negativeLogLikelihood(DMatrix x, DVector y, DVector w) {
         return -x.dot(w)
                 .apply((i, v) -> (y.get(i) == 1) ? (1. / (1. + exp(-v))) : (1 - 1. / (1. + exp(-v))))
                 .apply(this::cut)
@@ -127,22 +127,22 @@ public class BinaryLogisticIRLS {
         return Math.min(1 - 1e-12, value);
     }
 
-    private DV iterate(DV w) {
+    private DVector iterate(DVector w) {
 
         // Xw dot product
-        DV xw = x.dot(w);
+        DVector xw = x.dot(w);
 
         // p diag = 1/(1+exp(-Xw))
-        DV p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
+        DVector p = xw.copy().apply(value -> cut(1. / (1. + exp(-value))));
 
         // p(1-p) diag from p diag
-        DV pvars = p.copy().apply(value -> value * (1 - value));
+        DVector pvars = p.copy().apply(value -> value * (1 - value));
 
         // z = Wx - I(p(1-p))^{-1}(y-p)
-        DV z = xw.add(y.copy().sub(p).div(pvars));
+        DVector z = xw.add(y.copy().sub(p).div(pvars));
 
         // Xt(p(1-p)
-        DM xpvar = x.copy();
+        DMatrix xpvar = x.copy();
         for (int i = 0; i < xpvar.rowCount(); i++) {
             double pvar = pvars.get(i);
             for (int j = 0; j < xpvar.colCount(); j++) {
@@ -151,7 +151,7 @@ public class BinaryLogisticIRLS {
         }
 
         // XI(p(1-p))^T * X
-        DM mA = xpvar.t().dot(x);
+        DMatrix mA = xpvar.t().dot(x);
 
         // for L2 regularization we inflate main diagonal
         if (lambda != 0) {
@@ -161,7 +161,7 @@ public class BinaryLogisticIRLS {
         }
 
         //XI(p(1-p))^T * X * z
-        DM b = xpvar.t().dot(z.asMatrix());
+        DMatrix b = xpvar.t().dot(z.asMatrix());
 
         CholeskyDecomposition chol = CholeskyDecomposition.from(mA);
         if (chol.isSPD()) {

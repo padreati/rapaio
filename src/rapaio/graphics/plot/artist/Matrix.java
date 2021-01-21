@@ -25,7 +25,7 @@ import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;
 import rapaio.graphics.plot.Axis;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -38,9 +38,9 @@ import java.awt.geom.Point2D;
 public class Matrix extends Artist {
 
     private static final long serialVersionUID = -642370269224702175L;
-    private final DM m;
+    private final DMatrix m;
 
-    public Matrix(DM m, GOption<?>... opts) {
+    public Matrix(DMatrix m, GOption<?>... opts) {
         this.m = m;
         this.options.setColor(Plotter.color(-1));
         this.options.bind(opts);

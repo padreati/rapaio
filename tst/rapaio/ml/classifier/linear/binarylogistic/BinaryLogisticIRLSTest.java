@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Collections;
 
@@ -48,16 +48,16 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testDefaults() {
         var optimizer = BinaryLogisticIRLS.builder()
-                .withX(DMStripe.identity(1))
-                .withY(DVDense.zeros(1))
-                .withW0(DVDense.ones(1))
+                .withX(DMatrixStripe.identity(1))
+                .withY(DVectorDense.zeros(1))
+                .withW0(DVectorDense.ones(1))
                 .build();
         assertEquals(1e-20, optimizer.getEps());
         assertEquals(10, optimizer.getMaxIter());
         assertEquals(0, optimizer.getLambda());
-        assertTrue(rapaio.math.linear.dense.DMStripe.identity(1).deepEquals(optimizer.getX()));
-        assertTrue(DVDense.zeros(1).deepEquals(optimizer.getY()));
-        assertTrue(DVDense.ones(1).deepEquals(optimizer.getW0()));
+        assertTrue(DMatrixStripe.identity(1).deepEquals(optimizer.getX()));
+        assertTrue(DVectorDense.zeros(1).deepEquals(optimizer.getY()));
+        assertTrue(DVectorDense.ones(1).deepEquals(optimizer.getW0()));
     }
 
     @Test
@@ -73,9 +73,9 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testSymmetricAroundZeroSeparable() {
 
-        var x = rapaio.math.linear.dense.DMStripe.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-        var y = DVDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = DVDense.zeros(1);
+        var x = DMatrixStripe.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+        var y = DVectorDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = DVectorDense.zeros(1);
 
         var result = BinaryLogisticIRLS.builder()
                 .withX(x)
@@ -92,9 +92,9 @@ public class BinaryLogisticIRLSTest {
     @Test
     void testSymmetricAroundZeroNotSeparable() {
 
-        var x = rapaio.math.linear.dense.DMStripe.copy(10, 1, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
-        var y = DVDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-        var w0 = DVDense.zeros(1);
+        var x = DMatrixStripe.copy(10, 1, -5, -4, -3, 2, -1, 1, -2, 3, 4, 5);
+        var y = DVectorDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+        var w0 = DVectorDense.zeros(1);
 
         var result = BinaryLogisticIRLS.builder()
                 .withX(x)
@@ -117,9 +117,9 @@ public class BinaryLogisticIRLSTest {
 
     @Test
     void testUnconverged() {
-        var x = rapaio.math.linear.dense.DMStripe.copy(2, 1, -5, 5);
-        var y = DVDense.wrap(1, 0);
-        var w0 = DVDense.zeros(1);
+        var x = DMatrixStripe.copy(2, 1, -5, 5);
+        var y = DVectorDense.wrap(1, 0);
+        var w0 = DVectorDense.zeros(1);
 
         var result = BinaryLogisticIRLS.builder()
                 .withX(x)
@@ -139,9 +139,9 @@ public class BinaryLogisticIRLSTest {
         VarDouble lambdas = VarDouble.seq(0, 10, 0.2);
         VarDouble loss = VarDouble.empty().name("loss");
         for (double lambda : lambdas) {
-            var x = rapaio.math.linear.dense.DMStripe.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
-            var y = DVDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-            var w0 = DVDense.zeros(1);
+            var x = DMatrixStripe.copy(10, 1, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5);
+            var y = DVectorDense.wrap(1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
+            var w0 = DVectorDense.zeros(1);
             var result = BinaryLogisticIRLS.builder()
                     .withX(x)
                     .withY(y)
@@ -170,9 +170,9 @@ public class BinaryLogisticIRLSTest {
 
         VarDouble y1 = VarDouble.from(100, row -> row > 50 ? 1. : 0);
 
-        DM x = rapaio.math.linear.dense.DMStripe.copy(x1, x2);
-        DV y = DVDense.from(y1);
-        DV w0 = DVDense.wrap(0, 0);
+        DMatrix x = DMatrixStripe.copy(x1, x2);
+        DVector y = DVectorDense.from(y1);
+        DVector w0 = DVectorDense.wrap(0, 0);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> BinaryLogisticIRLS.builder()
                 .withX(x)

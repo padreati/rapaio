@@ -31,8 +31,8 @@ import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.data.filter.FRefSort;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.clustering.kmeans.KMeansInit;
 import rapaio.printer.Format;
 import rapaio.printer.Printable;
@@ -255,7 +255,7 @@ public class MinkowskiWeightedKMeans implements Printable {
     }
 
     private void weightsUpdate(Frame df) {
-        DMStripe d = rapaio.math.linear.dense.DMStripe.fill(k, inputs.length, 0.0);
+        DMatrixStripe d = DMatrixStripe.fill(k, inputs.length, 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < inputs.length; j++) {
                 int c = arrows.getInt(i);
@@ -275,7 +275,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
         // compute normalizing sums
 
-        DVDense rv = DVDense.fill(k, 0.0);
+        DVectorDense rv = DVectorDense.fill(k, 0.0);
         for (int i = 0; i < d.rowCount(); i++) {
             double sum = 0.0;
             for (int j = 0; j < d.colCount(); j++) {

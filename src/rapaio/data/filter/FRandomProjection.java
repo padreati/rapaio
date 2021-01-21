@@ -26,10 +26,10 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.stream.IntStream;
 
@@ -56,7 +56,7 @@ public class FRandomProjection extends AbstractFFilter {
 
     private final int k;
     private final Method method;
-    private DM rp;
+    private DMatrix rp;
 
     private FRandomProjection(int k, Method method, VRange vRange) {
         super(vRange);
@@ -73,9 +73,9 @@ public class FRandomProjection extends AbstractFFilter {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = DMStripe.empty(varNames.length, k);
+        rp = DMatrixStripe.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
-            DV v = method.projection(varNames.length);
+            DVector v = method.projection(varNames.length);
             for (int j = 0; j < varNames.length; j++) {
                 rp.set(j, i, v.get(j));
             }
@@ -85,8 +85,8 @@ public class FRandomProjection extends AbstractFFilter {
     @Override
     public Frame apply(Frame df) {
 
-        DM X = rapaio.math.linear.dense.DMStripe.copy(df.mapVars(varNames));
-        DM p = X.dot(rp);
+        DMatrix X = DMatrixStripe.copy(df.mapVars(varNames));
+        DMatrix p = X.dot(rp);
 
         Frame non = df.removeVars(VRange.of(varNames));
         Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
@@ -94,13 +94,13 @@ public class FRandomProjection extends AbstractFFilter {
     }
 
     public interface Method {
-        DV projection(int rowCount);
+        DVector projection(int rowCount);
     }
 
     private static Method gaussian(int k) {
         return rowCount -> {
             Normal norm = Normal.std();
-            DV v = DVDense.zeros(rowCount);
+            DVector v = DVectorDense.zeros(rowCount);
             for (int i = 0; i < v.size(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
@@ -119,7 +119,7 @@ public class FRandomProjection extends AbstractFFilter {
 
         return rowCount -> {
             int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
-            DV v = DVDense.zeros(rowCount);
+            DVector v = DVectorDense.zeros(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.set(i, -sqrt);

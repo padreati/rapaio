@@ -26,7 +26,7 @@ import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
 import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
 import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +43,17 @@ public class GradientDescentMinimizer implements Minimizer {
 
     private final LineSearch lineSearch = BacktrackLineSearch.from();
 
-    private final DV x;
+    private final DVector x;
     private final RFunction f;
     private final RDerivative d1f;
 
-    private DV sol;
+    private DVector sol;
 
-    private final List<DV> solutions = new ArrayList<>();
+    private final List<DVector> solutions = new ArrayList<>();
     private VarDouble errors;
     private boolean converged = false;
 
-    public GradientDescentMinimizer(DV x, RFunction f, RDerivative d1f, int maxIt) {
+    public GradientDescentMinimizer(DVector x, RFunction f, RDerivative d1f, int maxIt) {
         this.x = x;
         this.f = f;
         this.d1f = d1f;
@@ -70,7 +70,7 @@ public class GradientDescentMinimizer implements Minimizer {
         sol = x.copy();
         for (int i = 0; i < maxIt; i++) {
             solutions.add(sol.copy());
-            DV delta_x = d1f.apply(sol).mult(-1);
+            DVector delta_x = d1f.apply(sol).mult(-1);
             if (abs(delta_x.norm(2)) < tol) {
                 converged = true;
                 break;
@@ -87,11 +87,11 @@ public class GradientDescentMinimizer implements Minimizer {
         return sb.toString();
     }
 
-    public List<DV> solutions() {
+    public List<DVector> solutions() {
         return solutions;
     }
 
-    public DV solution() {
+    public DVector solution() {
         return sol;
     }
 

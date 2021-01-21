@@ -22,8 +22,8 @@
 package rapaio.math.linear.base;
 
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
@@ -31,10 +31,10 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public class DVBase extends AbstractDV {
+public class DVectorBase extends AbstractDVector {
 
-    public static DVBase wrap(double... values) {
-        return new DVBase(values.length, values);
+    public static DVectorBase wrap(double... values) {
+        return new DVectorBase(values.length, values);
     }
 
     private static final long serialVersionUID = -6444914455097469657L;
@@ -42,7 +42,7 @@ public class DVBase extends AbstractDV {
     protected final int size;
     protected final double[] values;
 
-    protected DVBase(int size, double[] values) {
+    protected DVectorBase(int size, double[] values) {
         this.size = size;
         this.values = values;
     }
@@ -73,14 +73,14 @@ public class DVBase extends AbstractDV {
     }
 
     @Override
-    public DV copy(Type type) {
+    public DVector copy(Type type) {
         double[] copy = new double[size];
         System.arraycopy(values, 0, copy, 0, size);
         switch (type) {
             case BASE:
-                return DVBase.wrap(copy);
+                return DVectorBase.wrap(copy);
             case DENSE:
-                return DVDense.wrap(copy);
+                return DVectorDense.wrap(copy);
             default:
                 throw new IllegalArgumentException("DVType." + type.name() + " cannot be used to create a copy.");
         }

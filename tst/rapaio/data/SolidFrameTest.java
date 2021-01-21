@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +23,7 @@ package rapaio.data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,7 +199,7 @@ public class SolidFrameTest {
 
     @Test
     void testMatrixBuilders() {
-        DMStripe rm = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{
+        DMatrixStripe rm = DMatrixStripe.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 5}
@@ -235,7 +232,7 @@ public class SolidFrameTest {
 
     @Test
     void testAddClearRows() {
-        DMStripe rm = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{
+        DMatrixStripe rm = DMatrixStripe.wrap(new double[][]{
                 {1, 2, 3},
                 {2, 3, 4},
                 {3, 4, 5}

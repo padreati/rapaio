@@ -27,7 +27,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
+import rapaio.experiment.grid.GridData;
 import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionAlpha;
@@ -60,6 +62,7 @@ import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
+import rapaio.graphics.plot.artist.IsoCurves;
 import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.Matrix;
 import rapaio.graphics.plot.artist.Points;
@@ -67,7 +70,7 @@ import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -199,8 +202,38 @@ public final class Plotter {
         return plot().add(new Text(x, y, text, opts));
     }
 
-    public static Plot matrix(DM m, GOption<?>... opts) {
+    public static Plot matrix(DMatrix m, GOption<?>... opts) {
         return plot().add(new Matrix(m, opts));
+    }
+
+    public static Plot isoCurves(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, true, true, gradient, levels, opts));
+    }
+
+    public static Plot isoLines(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, true, false, gradient, levels, opts));
+    }
+
+    public static Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        return plot().add(new IsoCurves(grid, false, true, gradient, levels, opts));
+    }
+
+    public static GridLayer scatters(Frame df, GOption<?>... opts) {
+        var grid = gridLayer(df.varCount(), df.varCount());
+        for (int i = 0; i < df.varCount(); i++) {
+            for (int j = 0; j < df.varCount(); j++) {
+                if (i == j) {
+                    grid.add(hist(df.rvar(i), bins(40)).title(df.rvar(i).name())
+                            .leftMarkers(true).leftThick(true)
+                            .bottomMarkers(true).bottomThick(true)
+                            .yLab(null).xLab(null)
+                    );
+                } else {
+                    grid.add(points(df.rvar(j), df.rvar(i), opts).xLab(null).yLab(null));
+                }
+            }
+        }
+        return grid;
     }
 
     // GRAPHICAL OPTIONS

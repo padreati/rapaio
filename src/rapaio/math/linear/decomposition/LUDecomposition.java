@@ -21,8 +21,8 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -49,7 +49,7 @@ public class LUDecomposition implements Serializable, Printable {
     private static final long serialVersionUID = -4226024886673558685L;
 
     // internal storage of decomposition
-    private DM LU;
+    private DMatrix LU;
     private int rowCount;
     private int colCount;
     // pivot sign
@@ -62,19 +62,19 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @param A input matrix
      */
-    public static LUDecomposition from(DM A) {
+    public static LUDecomposition from(DMatrix A) {
         if (A.rowCount() < A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, Method.GAUSSIAN_ELIMINATION);
     }
 
-    public static LUDecomposition from(DM A, Method method) {
+    public static LUDecomposition from(DMatrix A, Method method) {
         if (A.rowCount() < A.colCount())
             throw new IllegalArgumentException("for LU decomposition, rows must be greater or equal with cols.");
         return new LUDecomposition(A, method);
     }
 
-    private LUDecomposition(DM A, Method method) {
+    private LUDecomposition(DMatrix A, Method method) {
         method.method().accept(this, A);
     }
 
@@ -95,8 +95,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return L lower triangular factor
      */
-    public DM getL() {
-        DM X = DMStripe.empty(rowCount, colCount);
+    public DMatrix getL() {
+        DMatrix X = DMatrixStripe.empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j <= i; j++) {
                 if (i > j) {
@@ -114,8 +114,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return U upper triangular factor
      */
-    public DM getU() {
-        DM U = rapaio.math.linear.dense.DMStripe.empty(colCount, colCount);
+    public DMatrix getU() {
+        DMatrix U = DMatrixStripe.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             for (int j = i; j < colCount; j++) {
                 U.set(i, j, LU.get(i, j));
@@ -158,7 +158,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is singular.
      */
-    public DM solve(DM B) {
+    public DMatrix solve(DMatrix B) {
         if (B.rowCount() != rowCount) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -168,7 +168,7 @@ public class LUDecomposition implements Serializable, Printable {
 
         // Copy right hand side with pivoting
         int nx = B.colCount();
-        DM X = B.mapRows(piv).copy();
+        DMatrix X = B.mapRows(piv).copy();
 
         // Solve L*Y = B(piv,:)
 
@@ -215,7 +215,7 @@ public class LUDecomposition implements Serializable, Printable {
          **/
         CROUT {
             @Override
-            BiConsumer<LUDecomposition, DM> method() {
+            BiConsumer<LUDecomposition, DMatrix> method() {
                 return (lu, A) -> {
                     lu.LU = A.copy();
                     lu.rowCount = A.rowCount();
@@ -287,7 +287,7 @@ public class LUDecomposition implements Serializable, Printable {
          */
         GAUSSIAN_ELIMINATION {
             @Override
-            BiConsumer<LUDecomposition, DM> method() {
+            BiConsumer<LUDecomposition, DMatrix> method() {
                 return (lu, A) -> {
 
                     // Initialize.
@@ -334,6 +334,6 @@ public class LUDecomposition implements Serializable, Printable {
             }
         };
 
-        abstract BiConsumer<LUDecomposition, DM> method();
+        abstract BiConsumer<LUDecomposition, DMatrix> method();
     }
 }

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.VarDouble;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.Map;
 
@@ -50,11 +47,11 @@ public class MatrixMultiplicationTest {
     void basicTestMM() {
 
         Normal normal = Normal.std();
-        DM A = DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
-        DM B = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        DM c1 = A.dot(B);
-        DM c2 = MatrixMultiplication.ikjAlgorithm(A, B);
+        DMatrix c1 = A.dot(B);
+        DMatrix c2 = MatrixMultiplication.ikjAlgorithm(A, B);
 
         assertTrue(c1.deepEquals(c2));
         assertFalse(c1.deepEquals(c2.t()));
@@ -64,10 +61,10 @@ public class MatrixMultiplicationTest {
     void testDifferentMethods() {
 
         Normal normal = Normal.std();
-        DM A = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
-        DM B = rapaio.math.linear.dense.DMStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix A = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
+        DMatrix B = DMatrixStripe.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        DM c = A.dot(B);
+        DMatrix c = A.dot(B);
 
         assertTrue(c.deepEquals(MatrixMultiplication.ijkAlgorithm(A, B), TOL));
         assertTrue(c.deepEquals(MatrixMultiplication.ijkParallel(A, B), TOL));

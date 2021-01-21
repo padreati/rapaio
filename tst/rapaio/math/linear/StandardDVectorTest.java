@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.math.linear;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -6,7 +27,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.util.collection.DoubleArrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,15 +35,15 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public abstract class StandardDVTest {
+public abstract class StandardDVectorTest {
 
     protected static final double TOL = 1e-12;
     protected Normal normal;
     protected double[] values;
     protected static final int N = 100;
 
-    protected DV x;
-    protected DV z;
+    protected DVector x;
+    protected DVector z;
 
     @BeforeEach
     void beforeEach() {
@@ -33,16 +54,16 @@ public abstract class StandardDVTest {
         z = generateFill(100, 10);
     }
 
-    public abstract DV.Type type();
+    public abstract DVector.Type type();
 
-    public abstract DV generateWrap(double[] values);
+    public abstract DVector generateWrap(double[] values);
 
-    public abstract DV generateFill(int size, double fill);
+    public abstract DVector generateFill(int size, double fill);
 
     public abstract String className();
 
-    public DV generateOnesWithMissing() {
-        DV v = generateFill(10, 1);
+    public DVector generateOnesWithMissing() {
+        DVector v = generateFill(10, 1);
         for (int i = 0; i < 10; i++) {
             if (i % 2 == 0) {
                 v.set(i, Double.NaN);
@@ -58,7 +79,7 @@ public abstract class StandardDVTest {
 
     @Test
     void testAddScalar() {
-        DV y = x.copy().add(10);
+        DVector y = x.copy().add(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + 10, y.get(i), TOL);
         }
@@ -66,7 +87,7 @@ public abstract class StandardDVTest {
 
     @Test
     void testAddVector() {
-        DV y = x.copy().add(z);
+        DVector y = x.copy().add(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) + z.get(i), y.get(i), TOL);
         }
@@ -74,13 +95,13 @@ public abstract class StandardDVTest {
 
     @Test
     void testVectorAddNonconformant() {
-        DV y = generateFill(50, 10);
+        DVector y = generateFill(50, 10);
         assertThrows(IllegalArgumentException.class, () -> x.add(y));
     }
 
     @Test
     void testScalarSubtract() {
-        DV y = x.copy().sub(10);
+        DVector y = x.copy().sub(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - 10, y.get(i), TOL);
         }
@@ -88,7 +109,7 @@ public abstract class StandardDVTest {
 
     @Test
     void testVectorSubtract() {
-        DV y = x.copy().sub(z);
+        DVector y = x.copy().sub(z);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) - z.get(i), y.get(i), TOL);
         }
@@ -96,13 +117,13 @@ public abstract class StandardDVTest {
 
     @Test
     void testVectorMinusNonconformant() {
-        DV y = generateFill(50, 0);
+        DVector y = generateFill(50, 0);
         assertThrows(IllegalArgumentException.class, () -> x.sub(y));
     }
 
     @Test
     void testScalarMultiply() {
-        DV y = x.copy().mult(10);
+        DVector y = x.copy().mult(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
         }
@@ -110,7 +131,7 @@ public abstract class StandardDVTest {
 
     @Test
     void testVectorMultiply() {
-        DV y = x.copy().mult(z);
+        DVector y = x.copy().mult(z);
         assertEquals(100, y.size());
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) * 10, y.get(i), TOL);
@@ -120,7 +141,7 @@ public abstract class StandardDVTest {
 
     @Test
     void testScalarDivide() {
-        DV y = x.copy().div(10);
+        DVector y = x.copy().div(10);
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / 10, y.get(i), TOL);
         }
@@ -128,7 +149,7 @@ public abstract class StandardDVTest {
 
     @Test
     void vectorDivTest() {
-        DV y = x.copy().div(z);
+        DVector y = x.copy().div(z);
         assertEquals(100, y.size());
         for (int i = 0; i < y.size(); i++) {
             assertEquals(x.get(i) / 10, y.get(i), TOL);
@@ -176,16 +197,16 @@ public abstract class StandardDVTest {
     void copyTest() {
         var v = generateFill(10, 1);
 
-        var copy1 = v.copy(DV.Type.BASE);
-        var copy2 = v.copy(DV.Type.DENSE);
+        var copy1 = v.copy(DVector.Type.BASE);
+        var copy2 = v.copy(DVector.Type.DENSE);
 
         assertTrue(v.deepEquals(copy1));
         assertTrue(v.deepEquals(copy2));
 
-        assertEquals(DV.Type.BASE, copy1.type());
-        assertEquals(DV.Type.DENSE, copy2.type());
+        assertEquals(DVector.Type.BASE, copy1.type());
+        assertEquals(DVector.Type.DENSE, copy2.type());
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(DV.Type.VIEW));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> v.copy(DVector.Type.VIEW));
         assertNotNull(ex);
         assertEquals("DVType.VIEW cannot be used to create a copy.", ex.getMessage());
     }
@@ -203,7 +224,7 @@ public abstract class StandardDVTest {
     void asMatrixTest() {
 
         var v1 = generateWrap(new double[]{1, 3, 9});
-        var m1 = DMStripe.wrap(new double[][]{{1}, {3}, {9}});
+        var m1 = DMatrixStripe.wrap(new double[][]{{1}, {3}, {9}});
 
         assertTrue(m1.deepEquals(v1.asMatrix()));
     }

@@ -22,8 +22,8 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.experiment.math.optimization.lbfgs.Mcsrch;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
@@ -34,7 +34,7 @@ public class LBFGSOptimizer {
 
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
-        DV x = DVDense.zeros(ndim);
+        DVector x = DVectorDense.zeros(ndim);
         double[] g = new double[ndim];
         double[] diag = new double[ndim];
         double[] w = new double[nwork];
@@ -172,7 +172,7 @@ class LBFGS {
      * of using <tt>x</tt>. When <tt>LBFGS.lbfgs_cimpl</tt> automatically stops,
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
-    public static DV solution_cache;
+    public static DVector solution_cache;
     private static double gnorm = 0;
     private static double stp1 = 0;
     private static double ftol = 0;
@@ -337,7 +337,7 @@ class LBFGS {
      * @throws ExceptionWithIflag
      */
 
-    public static void lbfgs(int n, int m, DV x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
+    public static void lbfgs(int n, int m, DVector x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
         boolean execute_entire_while_loop = false;
 
         if (w == null || w.length != n * (2 * m + 1) + 2 * m) {
@@ -347,7 +347,7 @@ class LBFGS {
         if (iflag[0] == 0) {
             // Initialize.
 
-            solution_cache = DVDense.copy(x);
+            solution_cache = DVectorDense.copy(x);
 
             iter = 0;
 
@@ -568,7 +568,7 @@ class LBFGS {
      * @param stp    Current stepsize.
      * @param finish Whether this method should print the ``we're done'' message.
      */
-    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, DV x, double f, double[] g, double[] stp, boolean finish) {
+    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, DVector x, double f, double[] g, double[] stp, boolean finish) {
         int i;
 
         if (iter == 0) {

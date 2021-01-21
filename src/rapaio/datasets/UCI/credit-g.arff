@@ -33,9 +33,9 @@
 % 
 % Attribute 1:  (qualitative)
 % 	       Status of existing checking account
-%                A11 :      ... <    0 DM
-% 	       A12 : 0 <= ... <  200 DM
-% 	       A13 :      ... >= 200 DM /
+%                A11 :      ... <    0 DMatrix
+% 	       A12 : 0 <= ... <  200 DMatrix
+% 	       A13 :      ... >= 200 DMatrix /
 % 		     salary assignments for at least 1 year
 %                A14 : no checking account
 % 
@@ -71,10 +71,10 @@
 % 
 % Attibute 6:  (qualitative)
 % 	      Savings account/bonds
-% 	      A61 :          ... <  100 DM
-% 	      A62 :   100 <= ... <  500 DM
-% 	      A63 :   500 <= ... < 1000 DM
-% 	      A64 :          .. >= 1000 DM
+% 	      A61 :          ... <  100 DMatrix
+% 	      A62 :   100 <= ... <  500 DMatrix
+% 	      A63 :   500 <= ... < 1000 DMatrix
+% 	      A64 :          .. >= 1000 DMatrix
 %               A65 :   unknown/ no savings account
 % 
 % Attribute 7:  (qualitative)

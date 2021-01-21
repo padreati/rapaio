@@ -23,7 +23,7 @@ package rapaio.ml.clustering.kmeans;
 
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntOpenHashSet;
@@ -39,13 +39,13 @@ import java.util.Arrays;
 public enum KMeansInit implements Serializable {
 
     Forgy {
-        public DM init(DM m, int k) {
+        public DMatrix init(DMatrix m, int k) {
             return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k)).copy();
         }
     },
     PlusPlus {
         @Override
-        public DM init(DM m, int k) {
+        public DMatrix init(DMatrix m, int k) {
 
             int[] rows = IntArrays.newSeq(0, m.rowCount());
             int[] centroids = IntArrays.newFill(k, -1);
@@ -77,9 +77,9 @@ public enum KMeansInit implements Serializable {
                 ids.add(next);
             }
 
-            return m.mapRows(centroids);
+            return m.mapRows(centroids).copy();
         }
     };
 
-    public abstract DM init(DM m, int k);
+    public abstract DMatrix init(DMatrix m, int k);
 }

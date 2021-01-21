@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,8 +29,8 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,7 +79,7 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DV freq = DVDense.fill(counter.size(), 0);
+        final DVector freq = DVectorDense.fill(counter.size(), 0);
         int pos = 0;
         for (int value : counter.values()) {
             freq.set(pos++, value);
@@ -107,7 +104,7 @@ public class VarSelectorTest {
                 counter.put(varName, counter.get(varName) + 1);
             }
         }
-        final DV freq = DVDense.fill(counter.size(), 0);
+        final DVector freq = DVectorDense.fill(counter.size(), 0);
         int pos = 0;
         for (int value : counter.values()) {
             freq.set(pos++, value);

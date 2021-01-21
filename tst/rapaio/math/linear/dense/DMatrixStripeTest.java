@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,21 +27,21 @@ import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.StandardDMTest;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.StandardDMatrixTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DMStripeTest extends StandardDMTest {
+public class DMatrixStripeTest extends StandardDMatrixTest {
 
     @Override
-    protected DM.Type type() {
-        return DM.Type.STRIPE;
+    protected DMatrix.Type type() {
+        return DMatrix.Type.STRIPE;
     }
 
     @Override
-    protected DM generateSequential(int n, int m) {
-        DMStripe matrix = rapaio.math.linear.dense.DMStripe.empty(n, m);
+    protected DMatrix generateSequential(int n, int m) {
+        DMatrixStripe matrix = DMatrixStripe.empty(n, m);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 matrix.set(i, j, i * m + j);
@@ -54,29 +51,29 @@ public class DMStripeTest extends StandardDMTest {
     }
 
     @Override
-    protected DM generateIdentity(int n) {
-        return rapaio.math.linear.dense.DMStripe.identity(n);
+    protected DMatrix generateIdentity(int n) {
+        return DMatrixStripe.identity(n);
     }
 
     @Override
-    protected DM generateFill(int n, int m, double fill) {
-        return rapaio.math.linear.dense.DMStripe.fill(n, m, fill);
+    protected DMatrix generateFill(int n, int m, double fill) {
+        return DMatrixStripe.fill(n, m, fill);
     }
 
     @Override
-    protected DM generateWrap(double[][] values) {
-        return rapaio.math.linear.dense.DMStripe.wrap(values);
+    protected DMatrix generateWrap(double[][] values) {
+        return DMatrixStripe.wrap(values);
     }
 
     @Override
     protected String className() {
-        return "DMStripe";
+        return "DMatrixStripe";
     }
 
     @Test
     void buildersTest() {
 
-        DM i3 = rapaio.math.linear.dense.DMStripe.identity(3);
+        DMatrix i3 = DMatrixStripe.identity(3);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (i == j) {
@@ -87,7 +84,7 @@ public class DMStripeTest extends StandardDMTest {
             }
         }
 
-        DM empty = rapaio.math.linear.dense.DMStripe.empty(3, 4);
+        DMatrix empty = DMatrixStripe.empty(3, 4);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(0, empty.get(i, j), TOL);
@@ -95,14 +92,14 @@ public class DMStripeTest extends StandardDMTest {
         }
 
 
-        DM fill = rapaio.math.linear.dense.DMStripe.fill(3, 4, 12);
+        DMatrix fill = DMatrixStripe.fill(3, 4, 12);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(12, fill.get(i, j), TOL);
             }
         }
 
-        DM fillFun = rapaio.math.linear.dense.DMStripe.fill(3, 4, (i, j) -> Math.sqrt(i * j));
+        DMatrix fillFun = DMatrixStripe.fill(3, 4, (i, j) -> Math.sqrt(i * j));
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(Math.sqrt(i * j), fillFun.get(i, j), TOL);
@@ -110,14 +107,14 @@ public class DMStripeTest extends StandardDMTest {
         }
 
         Frame iris = Datasets.loadIrisDataset().mapVars(VRange.onlyTypes(VType.DOUBLE));
-        DM copy1 = rapaio.math.linear.dense.DMStripe.copy(iris);
+        DMatrix copy1 = DMatrixStripe.copy(iris);
         for (int i = 0; i < iris.varCount(); i++) {
             for (int j = 0; j < iris.rowCount(); j++) {
                 assertEquals(iris.getDouble(j, i), copy1.get(j, i), TOL);
             }
         }
 
-        DM copy2 = rapaio.math.linear.dense.DMStripe.copy(iris.varStream().toArray(Var[]::new));
+        DMatrix copy2 = DMatrixStripe.copy(iris.varStream().toArray(Var[]::new));
         for (int i = 0; i < iris.rowCount(); i++) {
             for (int j = 0; j < iris.varCount(); j++) {
                 assertEquals(copy1.get(i, j), copy2.get(i, j), TOL);
@@ -129,7 +126,7 @@ public class DMStripeTest extends StandardDMTest {
                 5, 6, 7, 8,
                 9, 10, 11, 12
         };
-        DM copy3 = rapaio.math.linear.dense.DMStripe.copy(3, 4, values);
+        DMatrix copy3 = DMatrixStripe.copy(3, 4, values);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(values[i * 4 + j], copy3.get(i, j), TOL);
@@ -141,17 +138,17 @@ public class DMStripeTest extends StandardDMTest {
                 {5, 6, 7, 8},
                 {9, 10, 11, 12}
         };
-        DM copy4 = rapaio.math.linear.dense.DMStripe.copy(m);
+        DMatrix copy4 = DMatrixStripe.copy(m);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
                 assertEquals(m[i][j], copy4.get(i, j), TOL);
             }
         }
 
-        DM copy5 = rapaio.math.linear.dense.DMStripe.copy(m, 1, 3, 1, 4);
-        assertTrue(copy5.deepEquals(rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
+        DMatrix copy5 = DMatrixStripe.copy(m, 1, 3, 1, 4);
+        assertTrue(copy5.deepEquals(DMatrixStripe.wrap(new double[][]{{6, 7, 8}, {10, 11, 12}})));
 
-        DM copy6 = rapaio.math.linear.dense.DMStripe.random(2, 2);
+        DMatrix copy6 = DMatrixStripe.random(2, 2);
         assertEquals(4, copy6.valueStream().filter(Double::isFinite).filter(v -> v != 0).count());
     }
 }

@@ -22,10 +22,10 @@
 package rapaio.experiment.mc;
 
 import rapaio.core.RandomSource;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -47,8 +47,8 @@ public class MarkovChain implements Printable {
 
     private List<String> states;
     private Map<String, Integer> revert;
-    private DV p;
-    private DM m;
+    private DVector p;
+    private DMatrix m;
     private ChainAdapter adapter = new NGram(2);
     //
     private final double smoothEps = 1e-30;
@@ -96,8 +96,8 @@ public class MarkovChain implements Printable {
 
         // clean
 
-        this.p = DVDense.fill(states.size(), smoothEps);
-        this.m = DMStripe.fill(states.size(), states.size(), smoothEps);
+        this.p = DVectorDense.fill(states.size(), smoothEps);
+        this.m = DMatrixStripe.fill(states.size(), states.size(), smoothEps);
 
         List<List<String>> chains = rowChains.stream()
                 .map(chain -> adapter.tokenize(chain))
@@ -146,7 +146,7 @@ public class MarkovChain implements Printable {
         while (true) {
 
             if (!cache.containsKey(last)) {
-                DV ref = m.mapRow(last);
+                DVector ref = m.mapRow(last);
                 double[] index = new double[ref.size()];
                 for (int i = 0; i < ref.size(); i++) {
                     index[i] = ref.get(i);

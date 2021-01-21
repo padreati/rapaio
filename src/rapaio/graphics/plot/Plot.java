@@ -27,8 +27,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
-import rapaio.experiment.grid.MeshGrid;
+import rapaio.experiment.grid.GridData;
 import rapaio.graphics.Figure;
+import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptions;
@@ -39,17 +40,17 @@ import rapaio.graphics.plot.artist.DensityLine;
 import rapaio.graphics.plot.artist.FunctionLine;
 import rapaio.graphics.plot.artist.Histogram;
 import rapaio.graphics.plot.artist.Histogram2D;
+import rapaio.graphics.plot.artist.IsoCurves;
 import rapaio.graphics.plot.artist.Legend;
 import rapaio.graphics.plot.artist.Lines;
 import rapaio.graphics.plot.artist.Matrix;
-import rapaio.graphics.plot.artist.MeshContour;
 import rapaio.graphics.plot.artist.Points;
 import rapaio.graphics.plot.artist.PolyFill;
 import rapaio.graphics.plot.artist.PolyLine;
 import rapaio.graphics.plot.artist.ROCCurve;
 import rapaio.graphics.plot.artist.Segment;
 import rapaio.graphics.plot.artist.Text;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.ml.eval.metric.ROC;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -423,11 +424,6 @@ public class Plot implements Figure {
         return this;
     }
 
-    public Plot meshContour(MeshGrid mg, boolean contour, boolean fill, GOption<?>... opts) {
-        add(new MeshContour(mg, contour, fill, opts));
-        return this;
-    }
-
     public Plot legend(double x, double y, GOption<?>... opts) {
         add(new Legend(x, y, opts));
         return this;
@@ -500,12 +496,28 @@ public class Plot implements Figure {
         return this;
     }
 
+
+    public Plot isoCurves(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, true, true, gradient, levels, opts));
+        return this;
+    }
+
+    public Plot isoLines(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, true, false, gradient, levels, opts));
+        return this;
+    }
+
+    public Plot isoBands(GridData grid, ColorGradient gradient, double[] levels, GOption<?>... opts) {
+        add(new IsoCurves(grid, false, true, gradient, levels, opts));
+        return this;
+    }
+
     public Plot text(double x, double y, String text, GOption<?>... opts) {
         add(new Text(x, y, text, opts));
         return this;
     }
 
-    public Plot matrix(DM m, GOption<?>... opts) {
+    public Plot matrix(DMatrix m, GOption<?>... opts) {
         add(new Matrix(m, opts));
         return this;
     }

@@ -22,8 +22,8 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.math.MTools;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.util.Pair;
 
 /**
@@ -40,8 +40,8 @@ public interface Gradient {
      * @param weights weights/coefficients corresponding to features
      * @return Pair(Vector gradient, Double loss)
      */
-    default Pair<DV, Double> compute(DV data, double label, DV weights) {
-        DV gradient = DVDense.zeros(weights.size());
+    default Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
+        DVector gradient = DVectorDense.zeros(weights.size());
         Double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
@@ -56,7 +56,7 @@ public interface Gradient {
      * @param cumGradient the computed gradient will be added to this vector
      * @return loss
      */
-    Double compute(DV data, double label, DV weights, DV cumGradient);
+    Double compute(DVector data, double label, DVector weights, DVector cumGradient);
 }
 
 /**
@@ -71,16 +71,16 @@ public interface Gradient {
 class LeastSquareGradient implements Gradient {
 
     @Override
-    public Pair<DV, Double> compute(DV data, double label, DV weights) {
+    public Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
         double diff = data.dot(weights) - label;
         double loss = diff * diff / 2.0;
-        DV gradient = data.copy();
+        DVector gradient = data.copy();
         gradient.mult(diff);
         return Pair.from(gradient, loss);
     }
 
     @Override
-    public Double compute(DV data, double label, DV weights, DV cumGradient) {
+    public Double compute(DVector data, double label, DVector weights, DVector cumGradient) {
         double diff = data.dot(weights) - label;
         cumGradient.add(data.copy().mult(diff));
         return diff * diff / 2.0;
@@ -186,14 +186,14 @@ class LogisticGradient implements Gradient {
     }
 
     @Override
-    public Pair<DV, Double> compute(DV data, double label, DV weights) {
-        DV gradient = DVDense.zeros(weights.size());
+    public Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
+        DVector gradient = DVectorDense.zeros(weights.size());
         double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
 
     @Override
-    public Double compute(DV data, double label, DV weights, DV cumGradient) {
+    public Double compute(DVector data, double label, DVector weights, DVector cumGradient) {
         int dataSize = data.size();
 
         // (weights.size / dataSize + 1) is number of classes
@@ -226,7 +226,7 @@ class LogisticGradient implements Gradient {
         double maxMargin = Double.NEGATIVE_INFINITY;
         double maxMarginIndex = 0;
 
-        DV margins = DVDense.zeros(numClasses - 1);
+        DVector margins = DVectorDense.zeros(numClasses - 1);
         for (int i = 0; i < margins.size(); i++) {
             double margin = 0.0;
             for (int j = 0; j < data.size(); j++) {
@@ -295,23 +295,23 @@ class LogisticGradient implements Gradient {
 class HingeGradient implements Gradient {
 
     @Override
-    public Pair<DV, Double> compute(DV data, double label, DV weights) {
+    public Pair<DVector, Double> compute(DVector data, double label, DVector weights) {
         double dotProduct = data.dot(weights);
 
         // Our loss function with {0, 1} labels is max(0, 1 - (2y - 1) (f_w(x)))
         // Therefore the gradient is -(2y - 1)*x
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            DV gradient = data.copy();
+            DVector gradient = data.copy();
             gradient.mult(-labelScaled);
             return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
-            return Pair.from(DVDense.zeros(weights.size()), 0.0);
+            return Pair.from(DVectorDense.zeros(weights.size()), 0.0);
         }
     }
 
     @Override
-    public Double compute(DV data, double label, DV weights, DV cumGradient) {
+    public Double compute(DVector data, double label, DVector weights, DVector cumGradient) {
         double dotProduct = data.dot(weights);
         // Our loss function with {0, 1} labels is max(0, 1 - (2y - 1) (f_w(x)))
         // Therefore the gradient is -(2y - 1)*x

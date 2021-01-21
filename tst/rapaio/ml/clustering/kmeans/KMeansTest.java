@@ -29,7 +29,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,7 +83,7 @@ public class KMeansTest {
 
         Frame c = clustering.getCentroids().refSort("x");
         assertTrue(c.deepEquals(SolidFrame.byVars(VarDouble.copy(0, 1).name("x"))));
-        DM cc = clustering.getCentroidsMatrix();
+        DMatrix cc = clustering.getCentroidsMatrix();
         assertEquals(0, cc.mapCol(0).prod());
         assertEquals(1, cc.mapCol(0).sum());
 
@@ -114,19 +114,19 @@ public class KMeansTest {
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}", model.fullName());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
                 "Model fitted=true\n" +
-                "Inertia:8901.290870880382\n" +
-                "Iterations:9\n" +
+                "Inertia:8901.768720947211\n" +
+                "Iterations:3\n" +
                 "Learned clusters:2\n", model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
                 "Model fitted=true\n" +
-                "Inertia:8901.290870880382\n" +
-                "Iterations:9\n" +
+                "Inertia:8901.768720947211\n" +
+                "Iterations:3\n" +
                 "Learned clusters:2\n" +
                 "Centroids:\n" +
                 "    eruptions  waiting   \n" +
-                "[0] 4.2948012 80.2865497 \n" +
-                "[1] 2.0964646 54.7474747 \n", model.toFullContent());
+                "[0] 4.2979302 80.2848837 \n" +
+                "[1] 2.09433   54.75      \n", model.toFullContent());
 
     }
 }

@@ -21,9 +21,9 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.base.AbstractDM;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
@@ -32,15 +32,15 @@ import java.util.stream.DoubleStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class DMMap extends AbstractDM {
+public class DMatrixMap extends AbstractDMatrix {
 
     private static final long serialVersionUID = -3840785397560969659L;
 
-    private final DM ref;
+    private final DMatrix ref;
     private final int[] rowIndexes;
     private final int[] colIndexes;
 
-    public DMMap(DM ref, boolean byRow, int... indexes) {
+    public DMatrixMap(DMatrix ref, boolean byRow, int... indexes) {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;
@@ -89,8 +89,8 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public DVDense mapCol(int i) {
-        DVDense v = DVDense.zeros(rowIndexes.length);
+    public DVectorDense mapCol(int i) {
+        DVectorDense v = DVectorDense.zeros(rowIndexes.length);
         for (int j = 0; j < rowIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[j], colIndexes[i]));
         }
@@ -98,8 +98,8 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public DV mapRow(int i) {
-        DVDense v = DVDense.zeros(colIndexes.length);
+    public DVector mapRow(int i) {
+        DVectorDense v = DVectorDense.zeros(colIndexes.length);
         for (int j = 0; j < colIndexes.length; j++) {
             v.set(j, ref.get(rowIndexes[i], colIndexes[j]));
         }
@@ -107,7 +107,7 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public DM apply(Double2DoubleFunction fun) {
+    public DMatrix apply(Double2DoubleFunction fun) {
         for (int row : rowIndexes) {
             for (int col : colIndexes) {
                 ref.set(row, col, fun.applyAsDouble(ref.get(row, col)));
@@ -117,8 +117,8 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public DMStripe t() {
-        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(colIndexes.length, rowIndexes.length);
+    public DMatrixStripe t() {
+        DMatrixStripe copy = DMatrixStripe.empty(colIndexes.length, rowIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(j, i, ref.get(rowIndexes[i], colIndexes[j]));
@@ -136,8 +136,8 @@ public class DMMap extends AbstractDM {
     }
 
     @Override
-    public DMStripe copy() {
-        DMStripe copy = rapaio.math.linear.dense.DMStripe.empty(rowIndexes.length, colIndexes.length);
+    public DMatrixStripe copy() {
+        DMatrixStripe copy = DMatrixStripe.empty(rowIndexes.length, colIndexes.length);
         for (int i = 0; i < rowIndexes.length; i++) {
             for (int j = 0; j < colIndexes.length; j++) {
                 copy.set(i, j, ref.get(rowIndexes[i], colIndexes[j]));

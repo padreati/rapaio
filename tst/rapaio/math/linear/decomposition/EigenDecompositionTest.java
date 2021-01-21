@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,8 +25,8 @@ package rapaio.math.linear.decomposition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,12 +43,12 @@ public class EigenDecompositionTest {
     @Test
     void testSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DM a = DMStripe.random(10, 10).scatter();
+            DMatrix a = DMatrixStripe.random(10, 10).scatter();
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            DM v = evd.getV();
-            DM d = evd.getD();
-            DM vt = evd.getV().t();
+            DMatrix v = evd.getV();
+            DMatrix d = evd.getD();
+            DMatrix vt = evd.getV().t();
 
             assertTrue(a.deepEquals(v.dot(d).dot(vt), TOL));
         }
@@ -60,12 +57,12 @@ public class EigenDecompositionTest {
     @Test
     void testNonSymmetric() {
         for (int i = 0; i < TIMES; i++) {
-            DM a = rapaio.math.linear.dense.DMStripe.random(10, 10);
+            DMatrix a = DMatrixStripe.random(10, 10);
 
             EigenDecomposition evd = EigenDecomposition.from(a);
 
-            DM v = evd.getV();
-            DM d = evd.getD();
+            DMatrix v = evd.getV();
+            DMatrix d = evd.getD();
 
             assertTrue(a.dot(v).deepEquals(v.dot(d), TOL));
         }

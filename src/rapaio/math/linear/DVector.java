@@ -22,7 +22,7 @@
 package rapaio.math.linear;
 
 import rapaio.data.VarDouble;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -35,7 +35,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DV extends Serializable, Printable {
+public interface DVector extends Serializable, Printable {
 
     enum Type {
         BASE,
@@ -44,11 +44,11 @@ public interface DV extends Serializable, Printable {
     }
 
     default boolean isDense() {
-        return this instanceof DVDense;
+        return this instanceof DVectorDense;
     }
 
-    default DVDense asDense() {
-        return (DVDense) this;
+    default DVectorDense asDense() {
+        return (DVectorDense) this;
     }
 
     /**
@@ -90,7 +90,7 @@ public interface DV extends Serializable, Printable {
      * @param x value to be incremented with
      * @return same object
      */
-    DV add(double x);
+    DVector add(double x);
 
     /**
      * Adds to to all positions values from the
@@ -104,7 +104,7 @@ public interface DV extends Serializable, Printable {
      * @param B vector which contains values used for increment operation
      * @return same object
      */
-    DV add(DV B);
+    DVector add(DVector B);
 
     /**
      * Substracts from all elements the value of x, it is
@@ -114,7 +114,7 @@ public interface DV extends Serializable, Printable {
      * @param x value to be decremented with
      * @return same object
      */
-    DV sub(double x);
+    DVector sub(double x);
 
     /**
      * Substracts from all positions values from the
@@ -128,7 +128,7 @@ public interface DV extends Serializable, Printable {
      * @param b vector which contains values used for increment operation
      * @return same object
      */
-    DV sub(DV b);
+    DVector sub(DVector b);
 
     /**
      * Scalar multiplication. All the values from vector
@@ -137,7 +137,7 @@ public interface DV extends Serializable, Printable {
      * @param scalar scaar value
      * @return the same object
      */
-    DV mult(double scalar);
+    DVector mult(double scalar);
 
     /**
      * Element wise multiplication between two vectors.
@@ -145,7 +145,7 @@ public interface DV extends Serializable, Printable {
      * @param b factor vector
      * @return element wise multiplication result vector
      */
-    DV mult(DV b);
+    DVector mult(DVector b);
 
     /**
      * Scalar division. All values from vector will be divided by scalar value.
@@ -153,7 +153,7 @@ public interface DV extends Serializable, Printable {
      * @param scalar value
      * @return reference to original vector
      */
-    DV div(double scalar);
+    DVector div(double scalar);
 
     /**
      * Element wise division between two vectors.
@@ -161,7 +161,7 @@ public interface DV extends Serializable, Printable {
      * @param b factor vector
      * @return element wise division result vector
      */
-    DV div(DV b);
+    DVector div(DVector b);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -172,7 +172,7 @@ public interface DV extends Serializable, Printable {
      * @param b the vector used to compute dot product
      * @return same vector object
      */
-    double dot(DV b);
+    double dot(DVector b);
 
     /**
      * Computes the p norm of the vector.
@@ -200,7 +200,7 @@ public interface DV extends Serializable, Printable {
      * @param p order of the p norm used at normalization.
      * @return normalized vector
      */
-    DV normalize(double p);
+    DVector normalize(double p);
 
     /**
      * Computes the sum of all elements in vector. If there is
@@ -223,7 +223,7 @@ public interface DV extends Serializable, Printable {
      *
      * @return original vector with values computed from cumulative sum
      */
-    DV cumsum();
+    DVector cumsum();
 
     /**
      * Computes the product of all elements in vector. If there is
@@ -247,7 +247,7 @@ public interface DV extends Serializable, Printable {
      *
      * @return original vector with updated values
      */
-    DV cumprod();
+    DVector cumprod();
 
     /**
      * Computes count of non missing values
@@ -286,9 +286,9 @@ public interface DV extends Serializable, Printable {
      */
     double nanvariance();
 
-    DV apply(Double2DoubleFunction f);
+    DVector apply(Double2DoubleFunction f);
 
-    DV apply(BiFunction<Integer, Double, Double> f);
+    DVector apply(BiFunction<Integer, Double, Double> f);
 
     /**
      * Creates a new copy of the vector.
@@ -304,11 +304,11 @@ public interface DV extends Serializable, Printable {
      *
      * @return a new solid copy of the vector
      */
-    default DV copy() {
+    default DVector copy() {
         return copy(type());
     }
 
-    DV copy(Type type);
+    DVector copy(Type type);
 
     /**
      * A vector is also a matrix, but for implementation
@@ -318,7 +318,7 @@ public interface DV extends Serializable, Printable {
      *
      * @return a matrix corresponding with the current vector
      */
-    DM asMatrix();
+    DMatrix asMatrix();
 
     /**
      * Creates a stream of values to visit all the elements of the vector
@@ -329,9 +329,9 @@ public interface DV extends Serializable, Printable {
 
     VarDouble asVarDouble();
 
-    default boolean deepEquals(DV v) {
+    default boolean deepEquals(DVector v) {
         return deepEquals(v, 1e-12);
     }
 
-    boolean deepEquals(DV v, double eps);
+    boolean deepEquals(DVector v, double eps);
 }

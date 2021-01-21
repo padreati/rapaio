@@ -32,7 +32,7 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface DM extends Serializable, Printable {
+public interface DMatrix extends Serializable, Printable {
 
     enum Type {
         /**
@@ -100,7 +100,7 @@ public interface DM extends Serializable, Printable {
      * @param row row index
      * @return result vector reference
      */
-    DV mapRow(final int row);
+    DVector mapRow(final int row);
 
     /**
      * Returns a vector build from values of a row
@@ -110,7 +110,7 @@ public interface DM extends Serializable, Printable {
      * @param row row index
      * @return result vector reference
      */
-    DV mapRowCopy(final int row);
+    DVector mapRowCopy(final int row);
 
     /**
      * Creates a new matrix which contains only the rows
@@ -121,7 +121,7 @@ public interface DM extends Serializable, Printable {
      * @param rows row indexes
      * @return result matrix reference
      */
-    DM mapRows(int... rows);
+    DMatrix mapRows(int... rows);
 
     /**
      * Creates a new matrix which contains only the rows
@@ -131,7 +131,7 @@ public interface DM extends Serializable, Printable {
      * @param rows row indexes
      * @return result matrix reference
      */
-    DM mapRowsCopy(int... rows);
+    DMatrix mapRowsCopy(int... rows);
 
     /**
      * Creates a new matrix which contains only rows with
@@ -144,7 +144,7 @@ public interface DM extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DM rangeRows(int start, int end);
+    DMatrix rangeRows(int start, int end);
 
     /**
      * Creates a new matrix which contains only rows with
@@ -156,7 +156,7 @@ public interface DM extends Serializable, Printable {
      * @param end   end row index (exclusive)
      * @return result matrix reference
      */
-    DM rangeRowsCopy(int start, int end);
+    DMatrix rangeRowsCopy(int start, int end);
 
     /**
      * Builds a new matrix having all columns and all the rows not specified by given indexes.
@@ -166,7 +166,7 @@ public interface DM extends Serializable, Printable {
      * @param rows rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DM removeRows(int... rows);
+    DMatrix removeRows(int... rows);
 
     /**
      * Builds a new matrix having all columns and all the rows not specified by given indexes.
@@ -175,7 +175,7 @@ public interface DM extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DM removeRowsCopy(int... indexes);
+    DMatrix removeRowsCopy(int... indexes);
 
     /**
      * Returns a vector build from values of a column in
@@ -187,7 +187,7 @@ public interface DM extends Serializable, Printable {
      * @param col column index
      * @return result vector reference
      */
-    DV mapCol(final int col);
+    DVector mapCol(final int col);
 
     /**
      * Returns a vector build from values of a column
@@ -197,7 +197,7 @@ public interface DM extends Serializable, Printable {
      * @param col column index
      * @return result vector reference
      */
-    DV mapColCopy(final int col);
+    DVector mapColCopy(final int col);
 
     /**
      * Creates a new matrix which contains only the cols
@@ -208,7 +208,7 @@ public interface DM extends Serializable, Printable {
      * @param indexes column indexes
      * @return result matrix reference
      */
-    DM mapCols(int... indexes);
+    DMatrix mapCols(int... indexes);
 
     /**
      * Creates a new matrix which contains only the cols
@@ -218,7 +218,7 @@ public interface DM extends Serializable, Printable {
      * @param cols column indexes
      * @return result matrix reference
      */
-    DM mapColsCopy(int... cols);
+    DMatrix mapColsCopy(int... cols);
 
     /**
      * Creates a new matrix which contains only cols with
@@ -231,7 +231,7 @@ public interface DM extends Serializable, Printable {
      * @param end   end column index (exclusive)
      * @return result matrix reference
      */
-    DM rangeCols(int start, int end);
+    DMatrix rangeCols(int start, int end);
 
     /**
      * Creates a new matrix which contains only columns with
@@ -243,7 +243,7 @@ public interface DM extends Serializable, Printable {
      * @param end   end column index (exclusive)
      * @return result matrix reference
      */
-    DM rangeColsCopy(int start, int end);
+    DMatrix rangeColsCopy(int start, int end);
 
     /**
      * Builds a new matrix having all columns not specified by given indexes.
@@ -253,7 +253,7 @@ public interface DM extends Serializable, Printable {
      * @param cols columns which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DM removeCols(int... cols);
+    DMatrix removeCols(int... cols);
 
     /**
      * Builds a new matrix having all columns not specified by given indexes.
@@ -262,7 +262,7 @@ public interface DM extends Serializable, Printable {
      * @param cols columns which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    DM removeColsCopy(int... cols);
+    DMatrix removeColsCopy(int... cols);
 
     /**
      * Adds a scalar value to all elements of a matrix. If possible,
@@ -271,7 +271,7 @@ public interface DM extends Serializable, Printable {
      * @param x value to be added
      * @return instance of the result matrix
      */
-    DM add(double x);
+    DMatrix add(double x);
 
     /**
      * Add vector values to all rows (axis 0) or vectors (axis 1).
@@ -280,7 +280,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DM add(DV x, int axis);
+    DMatrix add(DVector x, int axis);
 
     /**
      * Adds element wise values from given matrix. If possible,
@@ -289,7 +289,7 @@ public interface DM extends Serializable, Printable {
      * @param b matrix with elements to be added
      * @return instance of the result matrix
      */
-    DM add(DM b);
+    DMatrix add(DMatrix b);
 
     /**
      * Subtract a scalar value to all elements of a matrix. If possible,
@@ -298,7 +298,7 @@ public interface DM extends Serializable, Printable {
      * @param x value to be substracted
      * @return instance of the result matrix
      */
-    DM sub(double x);
+    DMatrix sub(double x);
 
     /**
      * Subtract vector values to all rows (axis 0) or vectors (axis 1).
@@ -307,7 +307,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DM sub(DV x, int axis);
+    DMatrix sub(DVector x, int axis);
 
     /**
      * Subtracts element wise values from given matrix. If possible,
@@ -316,7 +316,7 @@ public interface DM extends Serializable, Printable {
      * @param b matrix with elements to be substracted
      * @return instance of the result matrix
      */
-    DM sub(DM b);
+    DMatrix sub(DMatrix b);
 
     /**
      * Multiply a scalar value to all elements of a matrix. If possible,
@@ -325,7 +325,7 @@ public interface DM extends Serializable, Printable {
      * @param x value to be multiplied with
      * @return instance of the result matrix
      */
-    DM mult(double x);
+    DMatrix mult(double x);
 
     /**
      * Multiply vector values to all rows (axis 0) or columns (axis 1).
@@ -334,7 +334,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DM mult(DV x, int axis);
+    DMatrix mult(DVector x, int axis);
 
     /**
      * Multiplies element wise values from given matrix. If possible,
@@ -343,7 +343,7 @@ public interface DM extends Serializable, Printable {
      * @param b matrix with elements to be multiplied with
      * @return instance of the result matrix
      */
-    DM mult(DM b);
+    DMatrix mult(DMatrix b);
 
     /**
      * Divide a scalar value from all elements of a matrix. If possible,
@@ -352,7 +352,7 @@ public interface DM extends Serializable, Printable {
      * @param x divisor value
      * @return instance of the result matrix
      */
-    DM div(double x);
+    DMatrix div(double x);
 
     /**
      * Divide all rows (axis 0) or columns (axis 1) by elements of the given vector
@@ -361,7 +361,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis addition
      * @return same matrix with added values
      */
-    DM div(DV x, int axis);
+    DMatrix div(DVector x, int axis);
 
     /**
      * Divides element wise values from given matrix. If possible,
@@ -370,7 +370,7 @@ public interface DM extends Serializable, Printable {
      * @param b matrix with division elements
      * @return instance of the result matrix
      */
-    DM div(DM b);
+    DMatrix div(DMatrix b);
 
     /**
      * Apply the given function to all elements of the matrix.
@@ -378,7 +378,7 @@ public interface DM extends Serializable, Printable {
      * @param fun function to be applied
      * @return same instance matrix
      */
-    DM apply(Double2DoubleFunction fun);
+    DMatrix apply(Double2DoubleFunction fun);
 
     /**
      * Computes matrix vector multiplication.
@@ -386,7 +386,7 @@ public interface DM extends Serializable, Printable {
      * @param b vector to be multiplied with
      * @return result vector
      */
-    DV dot(DV b);
+    DVector dot(DVector b);
 
     /**
      * Compute matrix multiplication between the current
@@ -397,7 +397,7 @@ public interface DM extends Serializable, Printable {
      * @param v diagonal vector
      * @return result matrix
      */
-    DM dotDiag(DV v);
+    DMatrix dotDiag(DVector v);
 
     /**
      * Compute matrix multiplication between the current
@@ -408,7 +408,7 @@ public interface DM extends Serializable, Printable {
      * @param v diagonal vector
      * @return result matrix
      */
-    DM dotDiagT(DV v);
+    DMatrix dotDiagT(DVector v);
 
     /**
      * Computes matrix - matrix multiplication.
@@ -416,7 +416,7 @@ public interface DM extends Serializable, Printable {
      * @param b matrix to be multiplied with
      * @return matrix result
      */
-    DM dot(DM b);
+    DMatrix dot(DMatrix b);
 
     /**
      * Trace of the matrix, if the matrix is square. The trace of a squared
@@ -440,19 +440,19 @@ public interface DM extends Serializable, Printable {
      *
      * @return new transposed matrix
      */
-    DM t();
+    DMatrix t();
 
     /**
      * Vector with values from main diagonal
      */
-    DV diag();
+    DVector diag();
 
     /**
      * Computes scatter matrix.
      *
      * @return scatter matrix instance
      */
-    DM scatter();
+    DMatrix scatter();
 
     /**
      * Builds a vector with maximum values from rows/cols.
@@ -463,7 +463,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis for which to compute maximal values
      * @return vector with result values
      */
-    DV amax(int axis);
+    DVector amax(int axis);
 
     /**
      * Builds a vector with indexes of the maximum values from rows/columns.
@@ -484,7 +484,7 @@ public interface DM extends Serializable, Printable {
      * @param axis axis for which to compute maximal values
      * @return vector with result values
      */
-    DV amin(int axis);
+    DVector amin(int axis);
 
     /**
      * Builds a vector with indexes of the minimum value index from rows/columns.
@@ -512,7 +512,7 @@ public interface DM extends Serializable, Printable {
      * @param axis specifies the dimension used for summing
      * @return vector of sums on the given axis
      */
-    DV sum(int axis);
+    DVector sum(int axis);
 
     /**
      * Computes the mean of all elements of the matrix.
@@ -529,7 +529,7 @@ public interface DM extends Serializable, Printable {
      * @param axis 0 for rows,  for columns
      * @return vector of means along axis
      */
-    default DV mean(int axis) {
+    default DVector mean(int axis) {
         return sum(axis).div(axis == 0 ? rowCount() : colCount());
     }
 
@@ -546,7 +546,7 @@ public interface DM extends Serializable, Printable {
      * @param axis 0 for rows, 1 for columns
      * @return vector of variances computed along given axis
      */
-    DV variance(int axis);
+    DVector variance(int axis);
 
     /**
      * Compute the standard deviation of all elements of the matrix
@@ -563,7 +563,7 @@ public interface DM extends Serializable, Printable {
      * @param axis 0 for rows, 1 for columns
      * @return vector of standard deviations computed along given axis
      */
-    default DV sd(int axis) {
+    default DVector sd(int axis) {
         return variance(axis).apply(Math::sqrt);
     }
 
@@ -580,7 +580,7 @@ public interface DM extends Serializable, Printable {
      *
      * @return copy matrix reference
      */
-    DM copy();
+    DMatrix copy();
 
     /**
      * Compares matrices using a tolerance of 1e-12 for values.
@@ -591,7 +591,7 @@ public interface DM extends Serializable, Printable {
      * @param m matrix to compare with
      * @return true if dimensions and elements are equal
      */
-    default boolean deepEquals(DM m) {
+    default boolean deepEquals(DMatrix m) {
         return deepEquals(m, 1e-12);
     }
 
@@ -605,5 +605,5 @@ public interface DM extends Serializable, Printable {
      * @param eps tolerance
      * @return true if dimensions and elements are equal
      */
-    boolean deepEquals(DM m, double eps);
+    boolean deepEquals(DMatrix m, double eps);
 }

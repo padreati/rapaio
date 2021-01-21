@@ -25,9 +25,9 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.base.DMBase;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.base.DMatrixBase;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.function.IntInt2DoubleBiFunction;
 
@@ -38,7 +38,7 @@ import java.util.Arrays;
  * Values are stored in arrays of arrays with first array holding row references
  * and secondary level arrays being the row arrays.
  */
-public class DMStripe extends DMBase {
+public class DMatrixStripe extends DMatrixBase {
 
     private static final long serialVersionUID = -2186520026933442642L;
 
@@ -49,8 +49,8 @@ public class DMStripe extends DMBase {
      * @param colCount number of columns
      * @return a new instance of the matrix object
      */
-    public static DMStripe empty(int rowCount, int colCount) {
-        return new DMStripe(rowCount, colCount);
+    public static DMatrixStripe empty(int rowCount, int colCount) {
+        return new DMatrixStripe(rowCount, colCount);
     }
 
     /**
@@ -61,17 +61,17 @@ public class DMStripe extends DMBase {
      * @param n number of rows and also number of columns
      * @return a new instance of identity matrix of order n
      */
-    public static DMStripe identity(int n) {
-        DMStripe m = new DMStripe(n, n);
+    public static DMatrixStripe identity(int n) {
+        DMatrixStripe m = new DMatrixStripe(n, n);
         for (int i = 0; i < n; i++) {
             m.set(i, i, 1.0);
         }
         return m;
     }
 
-    public static DMStripe random(int rowCount, int colCount) {
+    public static DMatrixStripe random(int rowCount, int colCount) {
         Normal normal = Normal.std();
-        return rapaio.math.linear.dense.DMStripe.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
+        return DMatrixStripe.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
     }
 
     /**
@@ -82,8 +82,8 @@ public class DMStripe extends DMBase {
      * @param fill     value which fills all cells of the matrix
      * @return new matrix filled with value
      */
-    public static DMStripe fill(int rowCount, int colCount, double fill) {
-        DMStripe ret = new DMStripe(rowCount, colCount);
+    public static DMatrixStripe fill(int rowCount, int colCount, double fill) {
+        DMatrixStripe ret = new DMatrixStripe(rowCount, colCount);
         if (fill != 0.0) {
             for (int i = 0; i < rowCount; i++) {
                 Arrays.fill(ret.values[i], fill);
@@ -101,8 +101,8 @@ public class DMStripe extends DMBase {
      * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
-    public static DMStripe fill(int rowCount, int colCount, IntInt2DoubleBiFunction fun) {
-        DMStripe ret = new DMStripe(rowCount, colCount);
+    public static DMatrixStripe fill(int rowCount, int colCount, IntInt2DoubleBiFunction fun) {
+        DMatrixStripe ret = new DMatrixStripe(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
                 ret.set(i, j, fun.applyIntIntAsDouble(i, j));
@@ -122,32 +122,32 @@ public class DMStripe extends DMBase {
      * @param source   value array
      * @return new matrix which contains a copy of the source
      */
-    public static DMStripe copy(int rowCount, int colCount, double... source) {
-        DMStripe m = empty(rowCount, colCount);
+    public static DMatrixStripe copy(int rowCount, int colCount, double... source) {
+        DMatrixStripe m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source, i * colCount, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static DMStripe wrap(double[][] source) {
+    public static DMatrixStripe wrap(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        return new DMStripe(rowCount, colCount, source);
+        return new DMatrixStripe(rowCount, colCount, source);
     }
 
-    public static DMStripe copy(double[][] source) {
+    public static DMatrixStripe copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
-        DMStripe m = empty(rowCount, colCount);
+        DMatrixStripe m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(source[i], 0, m.values[i], 0, colCount);
         }
         return m;
     }
 
-    public static DM copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
-        DM mm = new DMStripe(rowEnd - rowStart, colEnd - colStart);
+    public static DMatrix copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
+        DMatrix mm = new DMatrixStripe(rowEnd - rowStart, colEnd - colStart);
         for (int i = rowStart; i < rowEnd; i++) {
             for (int j = colStart; j < colEnd; j++) {
                 mm.set(i - rowStart, j - colStart, source[i][j]);
@@ -156,8 +156,8 @@ public class DMStripe extends DMBase {
         return mm;
     }
 
-    public static DMStripe copy(Frame df) {
-        DMStripe m = empty(df.rowCount(), df.varCount());
+    public static DMatrixStripe copy(Frame df) {
+        DMatrixStripe m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -166,9 +166,9 @@ public class DMStripe extends DMBase {
         return m;
     }
 
-    public static DMStripe copy(Var... vars) {
+    public static DMatrixStripe copy(Var... vars) {
         Frame df = BoundFrame.byVars(vars);
-        DMStripe m = empty(df.rowCount(), df.varCount());
+        DMatrixStripe m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
                 m.set(i, j, df.getDouble(i, j));
@@ -177,11 +177,11 @@ public class DMStripe extends DMBase {
         return m;
     }
 
-    private DMStripe(int rowCount, int colCount) {
+    private DMatrixStripe(int rowCount, int colCount) {
         super(rowCount, colCount);
     }
 
-    private DMStripe(int rowCount, int colCount, double[][] values) {
+    private DMatrixStripe(int rowCount, int colCount, double[][] values) {
         super(rowCount, colCount, values);
     }
 
@@ -191,8 +191,8 @@ public class DMStripe extends DMBase {
     }
 
     @Override
-    public DM dotDiag(DV v) {
-        if (v instanceof DVDense) {
+    public DMatrix dotDiag(DVector v) {
+        if (v instanceof DVectorDense) {
             var array = v.asDense().elements();
             var len = v.size();
             for (int i = 0; i < rowCount; i++) {
@@ -204,7 +204,7 @@ public class DMStripe extends DMBase {
     }
 
     @Override
-    public DM dotDiagT(DV v) {
+    public DMatrix dotDiagT(DVector v) {
         if (v.isDense()) {
             var array = v.asDense().elements();
             var len = v.size();
@@ -217,8 +217,8 @@ public class DMStripe extends DMBase {
     }
 
     @Override
-    public DM t() {
-        DMStripe t = new DMStripe(colCount, rowCount);
+    public DMatrix t() {
+        DMatrixStripe t = new DMatrixStripe(colCount, rowCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 t.values[j][i] = get(i, j);
@@ -228,8 +228,8 @@ public class DMStripe extends DMBase {
     }
 
     @Override
-    public DMStripe copy() {
-        DMStripe copy = new DMStripe(rowCount, colCount);
+    public DMatrixStripe copy() {
+        DMatrixStripe copy = new DMatrixStripe(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
         }

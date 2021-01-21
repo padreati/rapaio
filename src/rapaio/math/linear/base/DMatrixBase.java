@@ -21,7 +21,7 @@
 
 package rapaio.math.linear.base;
 
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
@@ -44,14 +44,14 @@ import java.util.stream.DoubleStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/9/20.
  */
-public class DMBase extends AbstractDM {
+public class DMatrixBase extends AbstractDMatrix {
 
-    public static DMBase empty(int rowCount, int colCount) {
-        return new DMBase(rowCount, colCount);
+    public static DMatrixBase empty(int rowCount, int colCount) {
+        return new DMatrixBase(rowCount, colCount);
     }
 
-    public static DMBase wrap(double[][] values) {
-        return new DMBase(values.length, (values.length == 0) ? 0 : values[0].length, values);
+    public static DMatrixBase wrap(double[][] values) {
+        return new DMatrixBase(values.length, (values.length == 0) ? 0 : values[0].length, values);
     }
 
     private static final long serialVersionUID = -7586346894985345827L;
@@ -60,13 +60,13 @@ public class DMBase extends AbstractDM {
     protected final int colCount;
     protected final double[][] values;
 
-    protected DMBase(int rowCount, int colCount) {
+    protected DMatrixBase(int rowCount, int colCount) {
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = new double[rowCount][colCount];
     }
 
-    protected DMBase(int rowCount, int colCount, double[][] values) {
+    protected DMatrixBase(int rowCount, int colCount, double[][] values) {
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = values;
@@ -103,7 +103,7 @@ public class DMBase extends AbstractDM {
     }
 
     @Override
-    public DM apply(Double2DoubleFunction fun) {
+    public DMatrix apply(Double2DoubleFunction fun) {
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 values[i][j] = fun.applyAsDouble(values[i][j]);
@@ -113,8 +113,8 @@ public class DMBase extends AbstractDM {
     }
 
     @Override
-    public DM t() {
-        DMBase t = new DMBase(colCount, rowCount);
+    public DMatrix t() {
+        DMatrixBase t = new DMatrixBase(colCount, rowCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 t.set(j, i, get(i, j));
@@ -129,8 +129,8 @@ public class DMBase extends AbstractDM {
     }
 
     @Override
-    public DMBase copy() {
-        DMBase copy = new DMBase(rowCount, colCount);
+    public DMatrixBase copy() {
+        DMatrixBase copy = new DMatrixBase(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             System.arraycopy(values[i], 0, copy.values[i], 0, values[i].length);
         }

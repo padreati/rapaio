@@ -28,9 +28,9 @@ import rapaio.data.Frame;
 import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.sample.RowSampler;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.classifier.AbstractClassifierModel;
 import rapaio.ml.classifier.ClassifierResult;
 import rapaio.ml.common.Capabilities;
@@ -77,9 +77,9 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
     // learning artifacts
 
     private int K;
-    private DM f;
-    private DM p;
-    private DM residual;
+    private DMatrix f;
+    private DMatrix p;
+    private DMatrix residual;
 
     @Getter
     private List<List<RTree>> trees;
@@ -112,15 +112,15 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
         // algorithm described by ESTL pag. 387
 
         K = firstTargetLevels().size() - 1;
-        f = DMStripe.empty(K, df.rowCount());
-        p = rapaio.math.linear.dense.DMStripe.empty(K, df.rowCount());
-        residual = rapaio.math.linear.dense.DMStripe.empty(K, df.rowCount());
+        f = DMatrixStripe.empty(K, df.rowCount());
+        p = DMatrixStripe.empty(K, df.rowCount());
+        residual = DMatrixStripe.empty(K, df.rowCount());
 
         trees = IntStream.range(0, K).mapToObj(i -> new ArrayList<RTree>()).collect(Collectors.toList());
 
         // build individual regression targets for each class
 
-        final DMStripe yk = rapaio.math.linear.dense.DMStripe.fill(K, df.rowCount(), 0.0);
+        final DMatrixStripe yk = DMatrixStripe.fill(K, df.rowCount(), 0.0);
         for (int i = 0; i < df.rowCount(); i++) {
             yk.set(df.getInt(i, firstTargetName()) - 1, i, 1);
         }
@@ -134,11 +134,11 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
         return true;
     }
 
-    private void buildAdditionalTree(Frame df, Var w, DM yk) {
+    private void buildAdditionalTree(Frame df, Var w, DMatrix yk) {
 
         // a) Set p_k(x)
 
-        DV max = f.t().amax(1);
+        DVector max = f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double sum = 0;
@@ -177,7 +177,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
     public ClassifierResult corePredict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierResult cr = ClassifierResult.build(this, df, withClasses, withDistributions);
 
-        DM p_f = rapaio.math.linear.dense.DMStripe.empty(K, df.rowCount());
+        DMatrix p_f = DMatrixStripe.empty(K, df.rowCount());
 
         for (int k = 0; k < K; k++) {
             for (RegressionModel tree : trees.get(k)) {
@@ -190,7 +190,7 @@ public class GBTClassifierModel extends AbstractClassifierModel<GBTClassifierMod
 
         // make probabilities
 
-        DV max = p_f.t().amax(1);
+        DVector max = p_f.t().amax(1);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double t = 0.0;

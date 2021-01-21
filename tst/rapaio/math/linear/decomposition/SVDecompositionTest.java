@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,8 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,13 +48,13 @@ public class SVDecompositionTest {
             int n = RandomSource.nextInt(20) + 1;
             int m = RandomSource.nextInt(20) + n;
 
-            DM a = DMStripe.random(m, n);
+            DMatrix a = DMatrixStripe.random(m, n);
 
             SVDecomposition svd = SVDecomposition.from(a);
 
-            DM u = svd.getU();
-            DM s = svd.getS();
-            DM v = svd.getV();
+            DMatrix u = svd.getU();
+            DMatrix s = svd.getS();
+            DMatrix v = svd.getV();
 
             assertTrue(a.deepEquals(u.dot(s).dot(v.t()), TOL));
 
@@ -74,7 +71,7 @@ public class SVDecompositionTest {
 
     @Test
     void testDimension() {
-        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(rapaio.math.linear.dense.DMStripe.random(10, 50)));
+        assertThrows(IllegalArgumentException.class, () -> SVDecomposition.from(DMatrixStripe.random(10, 50)));
     }
 
     @Test
@@ -83,7 +80,7 @@ public class SVDecompositionTest {
         // for random matrices we expect a low condition number
 
         for (int i = 0; i < ROUNDS; i++) {
-            double c = SVDecomposition.from(rapaio.math.linear.dense.DMStripe.random(10, 10)).cond();
+            double c = SVDecomposition.from(DMatrixStripe.random(10, 10)).cond();
             assertTrue(Math.log10(c) < 4);
         }
 
@@ -92,7 +89,7 @@ public class SVDecompositionTest {
         Normal norm = Normal.of(0, 0.000001);
 
         for (int i = 0; i < 100; i++) {
-            DM a = rapaio.math.linear.dense.DMStripe.random(10, 10);
+            DMatrix a = DMatrixStripe.random(10, 10);
 
             // we create the first column as a slightly modified
             // version of the second column, thus we have linearity

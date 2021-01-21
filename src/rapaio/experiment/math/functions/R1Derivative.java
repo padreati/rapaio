@@ -21,8 +21,8 @@
 
 package rapaio.experiment.math.functions;
 
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.function.Function;
 
@@ -40,12 +40,12 @@ public class R1Derivative implements RDerivative {
     }
 
     @Override
-    public DV apply(double... x) {
-        return DVDense.wrap(f.apply(x[0]));
+    public DVector apply(double... x) {
+        return DVectorDense.wrap(f.apply(x[0]));
     }
 
     @Override
-    public DV apply(DV x) {
-        return DVDense.wrap(f.apply(x.get(0)));
+    public DVector apply(DVector x) {
+        return DVectorDense.wrap(f.apply(x.get(0)));
     }
 }

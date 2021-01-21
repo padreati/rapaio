@@ -21,9 +21,9 @@
 
 package rapaio.math.linear.base;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;
@@ -35,11 +35,11 @@ import java.util.function.BiFunction;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/8/20.
  */
-public abstract class AbstractDV implements DV {
+public abstract class AbstractDVector implements DVector {
 
     private static final long serialVersionUID = 4164614372206348682L;
 
-    protected void checkConformance(DV vector) {
+    protected void checkConformance(DVector vector) {
         if (size() != vector.size()) {
             throw new IllegalArgumentException(
                     String.format("Vectors are not conform for operation: [%d] vs [%d]", size(), vector.size()));
@@ -47,7 +47,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV add(double x) {
+    public DVector add(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + x);
         }
@@ -55,7 +55,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV add(DV b) {
+    public DVector add(DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) + b.get(i));
@@ -64,7 +64,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV sub(double x) {
+    public DVector sub(double x) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - x);
         }
@@ -72,7 +72,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV sub(DV b) {
+    public DVector sub(DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) - b.get(i));
@@ -81,7 +81,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV mult(double scalar) {
+    public DVector mult(double scalar) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * scalar);
         }
@@ -89,7 +89,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV mult(DV b) {
+    public DVector mult(DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) * b.get(i));
@@ -98,7 +98,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV div(double scalar) {
+    public DVector div(double scalar) {
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / scalar);
         }
@@ -106,7 +106,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV div(DV b) {
+    public DVector div(DVector b) {
         checkConformance(b);
         for (int i = 0; i < size(); i++) {
             set(i, get(i) / b.get(i));
@@ -115,7 +115,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public double dot(DV b) {
+    public double dot(DVector b) {
         checkConformance(b);
         double s = 0;
         for (int i = 0; i < size(); i++) {
@@ -148,7 +148,7 @@ public abstract class AbstractDV implements DV {
         return Math.pow(s, 1.0 / p);
     }
 
-    public DV normalize(double p) {
+    public DVector normalize(double p) {
         double norm = norm(p);
         if (norm != 0.0)
             mult(1.0 / norm);
@@ -178,7 +178,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV cumsum() {
+    public DVector cumsum() {
         for (int i = 1; i < size(); i++) {
             inc(i, get(i - 1));
         }
@@ -208,7 +208,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV cumprod() {
+    public DVector cumprod() {
         for (int i = 1; i < size(); i++) {
             set(i, get(i - 1) * get(i));
         }
@@ -281,7 +281,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DV apply(Double2DoubleFunction f) {
+    public DVector apply(Double2DoubleFunction f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.applyAsDouble(get(i)));
         }
@@ -289,7 +289,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public AbstractDV apply(BiFunction<Integer, Double, Double> f) {
+    public AbstractDVector apply(BiFunction<Integer, Double, Double> f) {
         for (int i = 0; i < size(); i++) {
             set(i, f.apply(i, get(i)));
         }
@@ -297,7 +297,7 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public boolean deepEquals(DV v, double eps) {
+    public boolean deepEquals(DVector v, double eps) {
         if (size() != v.size()) {
             return false;
         }
@@ -310,8 +310,8 @@ public abstract class AbstractDV implements DV {
     }
 
     @Override
-    public DM asMatrix() {
-        DMStripe res = rapaio.math.linear.dense.DMStripe.empty(size(), 1);
+    public DMatrix asMatrix() {
+        DMatrixStripe res = DMatrixStripe.empty(size(), 1);
         for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
         }

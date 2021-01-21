@@ -26,9 +26,9 @@ import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -70,8 +70,8 @@ public class LinearRegressionModel extends BaseLinearRegressionModel<LinearRegre
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        DM X = DMStripe.copy(df.mapVars(inputNames()));
-        DM Y = rapaio.math.linear.dense.DMStripe.copy(df.mapVars(targetNames()));
+        DMatrix X = DMatrixStripe.copy(df.mapVars(inputNames()));
+        DMatrix Y = DMatrixStripe.copy(df.mapVars(targetNames()));
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }

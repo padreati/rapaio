@@ -21,10 +21,10 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 
 import java.io.Serializable;
 
@@ -40,19 +40,19 @@ import java.io.Serializable;
  */
 public class QRDecomposition implements Serializable {
 
-    public static QRDecomposition from(DM A) {
+    public static QRDecomposition from(DMatrix A) {
         return new QRDecomposition(A);
     }
 
     private static final long serialVersionUID = -8322866575684242727L;
 
-    private final DM QR;
-    private final DV Rdiag;
+    private final DMatrix QR;
+    private final DVector Rdiag;
 
-    private QRDecomposition(DM A) {
+    private QRDecomposition(DMatrix A) {
         // Initialize.
         QR = A.copy();
-        Rdiag = DVDense.zeros(QR.colCount());
+        Rdiag = DVectorDense.zeros(QR.colCount());
 
         // Main loop.
         for (int k = 0; k < QR.colCount(); k++) {
@@ -106,8 +106,8 @@ public class QRDecomposition implements Serializable {
      *
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
-    public DM getH() {
-        DM H = DMStripe.empty(QR.rowCount(), QR.colCount());
+    public DMatrix getH() {
+        DMatrix H = DMatrixStripe.empty(QR.rowCount(), QR.colCount());
         for (int i = 0; i < QR.rowCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i >= j) {
@@ -125,8 +125,8 @@ public class QRDecomposition implements Serializable {
      *
      * @return R
      */
-    public DM getR() {
-        DM R = rapaio.math.linear.dense.DMStripe.empty(QR.colCount(), QR.colCount());
+    public DMatrix getR() {
+        DMatrix R = DMatrixStripe.empty(QR.colCount(), QR.colCount());
         for (int i = 0; i < QR.colCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i < j) {
@@ -147,8 +147,8 @@ public class QRDecomposition implements Serializable {
      * @return Q
      */
 
-    public DM getQ() {
-        DM Q = rapaio.math.linear.dense.DMStripe.empty(QR.rowCount(), QR.colCount());
+    public DMatrix getQ() {
+        DMatrix Q = DMatrixStripe.empty(QR.rowCount(), QR.colCount());
         for (int k = QR.colCount() - 1; k >= 0; k--) {
             for (int i = 0; i < QR.rowCount(); i++) {
                 Q.set(i, k, 0.0);
@@ -179,7 +179,7 @@ public class QRDecomposition implements Serializable {
      * @throws RuntimeException         Matrix is rank deficient.
      */
 
-    public DM solve(DM B) {
+    public DMatrix solve(DMatrix B) {
         if (B.rowCount() != QR.rowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -188,7 +188,7 @@ public class QRDecomposition implements Serializable {
         }
 
         // Copy right hand side
-        DM X = B.copy();
+        DMatrix X = B.copy();
 
         // Compute Y = transpose(Q)*B
         for (int k = 0; k < QR.colCount(); k++) {

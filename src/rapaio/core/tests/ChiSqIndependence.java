@@ -24,7 +24,7 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DensityTable;
 import rapaio.data.Var;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -55,7 +55,7 @@ public final class ChiSqIndependence implements HTest {
         return new ChiSqIndependence(DensityTable.fromLevelCounts(false, x, y), yates);
     }
 
-    public static ChiSqIndependence from(DM m, boolean yates) {
+    public static ChiSqIndependence from(DMatrix m, boolean yates) {
         List<String> rowLevels = new ArrayList<>();
         List<String> colLevels = new ArrayList<>();
         for (int i = 0; i < m.rowCount(); i++) {
@@ -67,7 +67,7 @@ public final class ChiSqIndependence implements HTest {
         return from(m, rowLevels, colLevels, yates);
     }
 
-    public static ChiSqIndependence from(DM m, List<String> rowLevels, List<String> colLevels, boolean yates) {
+    public static ChiSqIndependence from(DMatrix m, List<String> rowLevels, List<String> colLevels, boolean yates) {
         if (m.rowCount() != rowLevels.size()) {
             throw new IllegalArgumentException("Row levels length is different than matrix rows.");
         }

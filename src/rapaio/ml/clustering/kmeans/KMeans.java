@@ -31,9 +31,9 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.clustering.AbstractClusteringModel;
 import rapaio.ml.clustering.ClusteringModel;
 import rapaio.ml.common.Capabilities;
@@ -68,7 +68,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
 
     // clustering artifacts
 
-    private DM c;
+    private DMatrix c;
     @Getter
     private Frame centroids;
     @Getter
@@ -88,7 +88,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return errors.size() == 0 ? Double.NaN : errors.getDouble(errors.size() - 1);
     }
 
-    public DM getCentroidsMatrix() {
+    public DMatrix getCentroidsMatrix() {
         return c;
     }
 
@@ -104,7 +104,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
                 .build();
     }
 
-    public static double distance(DV v1, DV v2) {
+    public static double distance(DVector v1, DVector v2) {
         int len = Math.min(v1.size(), v2.size());
         double sum = 0.0;
         for (int i = 0; i < len; i++) {
@@ -117,7 +117,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     @Override
     public ClusteringModel coreFit(Frame initialDf, Var weights) {
 
-        DM m = DMStripe.copy(initialDf);
+        DMatrix m = DMatrixStripe.copy(initialDf);
         c = initializeClusters(m);
 
         int[] assignment = IntArrays.newFill(m.rowCount(), -1);
@@ -146,15 +146,15 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return this;
     }
 
-    private DM initializeClusters(DM m) {
-        DM bestCentroids = init.get().init(m, k.get());
+    private DMatrix initializeClusters(DMatrix m) {
+        DMatrix bestCentroids = init.get().init(m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DM nextCentroids = init.get().init(m, k.get());
+            DMatrix nextCentroids = init.get().init(m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -164,10 +164,10 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return bestCentroids;
     }
 
-    private double computeInitError(DM m, DM c) {
+    private double computeInitError(DMatrix m, DMatrix c) {
         double sum = 0;
         for (int i = 0; i < m.rowCount(); i++) {
-            DV mrow = m.mapRow(i);
+            DVector mrow = m.mapRow(i);
             double d = distance(mrow, c.mapRow(0));
             for (int j = 1; j < c.rowCount(); j++) {
                 d = Math.min(d, distance(mrow, c.mapRow(j)));
@@ -177,10 +177,10 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return sum;
     }
 
-    private void assignToCentroids(DM m, int[] assignment) {
+    private void assignToCentroids(DMatrix m, int[] assignment) {
         double totalError = 0.0;
         for (int i = 0; i < m.rowCount(); i++) {
-            DV row = m.mapRow(i);
+            DVector row = m.mapRow(i);
             double d = distance(row, c.mapRow(0));
             int cluster = 0;
             for (int j = 1; j < c.rowCount(); j++) {
@@ -196,7 +196,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         errors.addDouble(totalError);
     }
 
-    private void recomputeCentroids(DM m, int[] assignment) {
+    private void recomputeCentroids(DMatrix m, int[] assignment) {
 
         // we compute mean for each feature separately
         for (int j = 0; j < m.colCount(); j++) {
@@ -213,7 +213,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         }
     }
 
-    private void repairEmptyClusters(DM df, int[] assignment) {
+    private void repairEmptyClusters(DMatrix df, int[] assignment) {
         // check for empty clusters, if any is found then
         // select random points to be new clusters, different than
         // existing clusters
@@ -272,7 +272,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         recomputeCentroids(df, assignment);
     }
 
-    private boolean checkIfEqual(DM centroids, int c, DM df, int i) {
+    private boolean checkIfEqual(DMatrix centroids, int c, DMatrix df, int i) {
         int count = 0;
         for (int j = 0; j < centroids.colCount(); j++) {
             if (centroids.get(c, j) == df.get(i, j)) {
@@ -285,7 +285,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     @Override
     public KMeansResult corePredict(Frame df, boolean withScores) {
         int[] assignment = IntArrays.newFill(df.rowCount(), -1);
-        DM m = DMStripe.copy(df);
+        DMatrix m = DMatrixStripe.copy(df);
         assignToCentroids(m, assignment);
         return KMeansResult.valueOf(this, df, VarInt.wrap(assignment));
     }

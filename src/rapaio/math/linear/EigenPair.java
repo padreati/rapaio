@@ -21,42 +21,34 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.dense.DMStripe;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EigenPair {
 
-    private final DV DV;
-    private final DM DM;
+    private final DVector DVector;
+    private final DMatrix DMatrix;
 
-    public static EigenPair from(DV values, DM vectors) {
+    public static EigenPair from(DVector values, DMatrix vectors) {
         return new EigenPair(values, vectors);
     }
 
-    private EigenPair(DV values, DM vectors) {
-        this.DV = values;
-        this.DM = vectors;
-    }
-
-    public DV getRV() {
-        return DV;
-    }
-
-    public DM getRM() {
-        return DM;
-    }
-
-    public DM expandedValues() {
-        DM expandedRV = DMStripe.empty(DV.size(), DV.size());
-        for (int i = 0; i < DV.size(); i++) {
-            expandedRV.set(i, i, DV.get(i));
+    public DMatrix expandedValues() {
+        DMatrix expandedRV = DMatrixStripe.empty(DVector.size(), DVector.size());
+        for (int i = 0; i < DVector.size(); i++) {
+            expandedRV.set(i, i, DVector.get(i));
         }
         return expandedRV;
     }
 
-    public DV vector(int colNum) {
-        return DM.mapCol(colNum);
+    public DVector vector(int colNum) {
+        return DMatrix.mapCol(colNum);
     }
 }

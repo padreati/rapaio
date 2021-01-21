@@ -102,7 +102,7 @@ public class GridLayer implements Figure {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (assign[i][j] == null) {
-                    return add(i + 1, j + 1, plot);
+                    return add(i, j, plot);
                 }
             }
         }
@@ -123,10 +123,10 @@ public class GridLayer implements Figure {
     }
 
     public GridLayer add(int row, int col, int w, int h, Plot plot) {
-        G g = new G(row - 1, col - 1, w, h, plot);
+        G g = new G(row, col, w, h, plot);
         list.add(g);
-        for (int i = row - 1; i < row - 1 + h; i++) {
-            for (int j = col - 1; j < col - 1 + w; j++) {
+        for (int i = row; i < row + h; i++) {
+            for (int j = col; j < col + w; j++) {
                 assign[i][j] = g;
             }
         }
@@ -175,7 +175,7 @@ public class GridLayer implements Figure {
                     (int) (r.y + DoubleArrays.sum(h, 0, g.row)),
                     (int) (DoubleArrays.sum(w, g.col, g.width)),
                     (int) (DoubleArrays.sum(h, g.row, g.height)));
-            g.plot.paint(g2d, rect);
+            g.plot.paint((Graphics2D) g2d.create(), rect);
         }
     }
 

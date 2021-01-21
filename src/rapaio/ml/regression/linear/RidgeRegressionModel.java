@@ -27,9 +27,9 @@ import lombok.RequiredArgsConstructor;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.common.ValueParam;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
@@ -130,8 +130,8 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
             selNames[pos++] = inputNames[i];
         }
 
-        DM X = DMStripe.empty(df.rowCount(), selNames.length);
-        DM Y = rapaio.math.linear.dense.DMStripe.empty(df.rowCount(), targetNames.length);
+        DMatrix X = DMatrixStripe.empty(df.rowCount(), selNames.length);
+        DMatrix Y = DMatrixStripe.empty(df.rowCount(), targetNames.length);
 
         if (intercept.get()) {
             // scale in values if we have intercept
@@ -168,13 +168,13 @@ public class RidgeRegressionModel extends BaseLinearRegressionModel<RidgeRegress
         }
 
         // solve the scaled system
-        DM l = rapaio.math.linear.dense.DMStripe.identity(X.colCount()).mult(lambda.get());
-        DM A = X.t().dot(X).add(l);
-        DM B = X.t().dot(Y);
-        DM scaledBeta = QRDecomposition.from(A).solve(B);
+        DMatrix l = DMatrixStripe.identity(X.colCount()).mult(lambda.get());
+        DMatrix A = X.t().dot(X).add(l);
+        DMatrix B = X.t().dot(Y);
+        DMatrix scaledBeta = QRDecomposition.from(A).solve(B);
 
         if (intercept.get()) {
-            beta = rapaio.math.linear.dense.DMStripe.fill(scaledBeta.rowCount() + 1, scaledBeta.colCount(), 0);
+            beta = DMatrixStripe.fill(scaledBeta.rowCount() + 1, scaledBeta.colCount(), 0);
 
             for (int i = 0; i < targetNames.length; i++) {
                 String targetName = targetName(i);

@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,8 +29,8 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.metric.Confusion;
 
@@ -96,7 +93,7 @@ public class PCATest {
             assertNotEquals(out1.getDouble(0, i), out2.getDouble(0, i));
         }
 
-        DM xx = DMStripe.copy(df);
+        DMatrix xx = DMatrixStripe.copy(df);
         assertTrue(xx.mean(0).deepEquals(pca1.getMean()));
         assertTrue(xx.sd(0).deepEquals(pca1.getSd()));
     }

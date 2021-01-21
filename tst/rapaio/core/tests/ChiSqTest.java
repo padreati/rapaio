@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -84,7 +81,7 @@ public class ChiSqTest {
     @Test
     void testIndependence() {
 
-        ChiSqIndependence test1 = ChiSqIndependence.from(DMStripe.copy(2, 2, 38, 11, 14, 51), true);
+        ChiSqIndependence test1 = ChiSqIndependence.from(DMatrixStripe.copy(2, 2, 38, 11, 14, 51), true);
         assertEquals("> ChiSqIndependence\n" +
                 "\n" +
                 "Pearson's Chi-squared test with Yates' continuity correction\n" +
@@ -104,7 +101,7 @@ public class ChiSqTest {
                 "total 52         62          114  \n" +
                 "\n", test1.toSummary());
 
-        ChiSqIndependence test2 = ChiSqIndependence.from(rapaio.math.linear.dense.DMStripe.copy(2, 2, 38, 11, 14, 51), false);
+        ChiSqIndependence test2 = ChiSqIndependence.from(DMatrixStripe.copy(2, 2, 38, 11, 14, 51), false);
         assertEquals("> ChiSqIndependence\n" +
                 "\n" +
                 "Pearson's Chi-squared test\n" +

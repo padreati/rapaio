@@ -28,13 +28,13 @@ import rapaio.data.VType;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.stream.FSpot;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -57,27 +57,27 @@ public class LDA implements Printable {
 
     private double tol = 1e-24;
     private int maxRuns = 10_000;
-    protected DV eigenValues;
-    protected DM eigenVectors;
+    protected DVector eigenValues;
+    protected DMatrix eigenVectors;
 
     protected String[] inputNames;
-    protected DV mean;
-    protected DV sd;
+    protected DVector mean;
+    protected DVector sd;
 
     protected final boolean scaling = true;
 
-    public DV getEigenValues() {
+    public DVector getEigenValues() {
         return eigenValues;
     }
 
-    public DM getEigenVectors() {
+    public DMatrix getEigenVectors() {
         return eigenVectors;
     }
 
     private String targetName;
     private List<String> targetLevels;
 
-    private DV[] classMean;
+    private DVector[] classMean;
 
     public LDA withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
@@ -93,12 +93,12 @@ public class LDA implements Printable {
         validate(df, targetVars);
 
         logger.fine("start lda predict");
-        DM xx = DMStripe.copy(df.removeVars(VRange.of(targetName)));
+        DMatrix xx = DMatrixStripe.copy(df.removeVars(VRange.of(targetName)));
 
         // compute mean and sd
 
-        mean = DVDense.zeros(xx.colCount());
-        sd = DVDense.zeros(xx.colCount());
+        mean = DVectorDense.zeros(xx.colCount());
+        sd = DVectorDense.zeros(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean());
             sd.set(i, Math.sqrt(xx.mapCol(i).variance()));
@@ -117,7 +117,7 @@ public class LDA implements Printable {
 
         // compute sliced data for each class
 
-        DM[] x = new DM[targetLevels.size()];
+        DMatrix[] x = new DMatrix[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
             int index = i;
             x[i] = xx.mapRows(df.stream()
@@ -128,9 +128,9 @@ public class LDA implements Printable {
 
         // compute class means
 
-        classMean = new DV[targetLevels.size()];
+        classMean = new DVector[targetLevels.size()];
         for (int i = 0; i < targetLevels.size(); i++) {
-            classMean[i] = DVDense.zeros(x[i].colCount());
+            classMean[i] = DVectorDense.zeros(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean());
             }
@@ -138,32 +138,32 @@ public class LDA implements Printable {
 
         // build within scatter matrix
 
-        DM sw = rapaio.math.linear.dense.DMStripe.empty(inputNames.length, inputNames.length);
+        DMatrix sw = DMatrixStripe.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
             sw.add(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
-        DM sb = rapaio.math.linear.dense.DMStripe.empty(inputNames.length, inputNames.length);
+        DMatrix sb = DMatrixStripe.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.size(); i++) {
-            DM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
+            DMatrix cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().sub(mean.asMatrix());
             sb.add(cm.dot(cm.t()).mult(x[i].rowCount()));
         }
 
         // inverse sw
-        DM swi = QRDecomposition.from(sw).solve(rapaio.math.linear.dense.DMStripe.identity(inputNames.length));
+        DMatrix swi = QRDecomposition.from(sw).solve(DMatrixStripe.identity(inputNames.length));
 //        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
-        DM sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
-        DM sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
+        DMatrix sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
+        DMatrix sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
 
         EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.getRV();
-        eigenVectors = sbminus.dot(p.getRM());
+        eigenValues = p.getDVector();
+        eigenVectors = sbminus.dot(p.getDMatrix());
 //        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");
@@ -180,8 +180,8 @@ public class LDA implements Printable {
         eigenVectors = eigenVectors.mapCols(indexes).copy();
     }
 
-    public Frame predict(Frame df, BiFunction<DV, DM, Integer> kFunction) {
-        DM x = rapaio.math.linear.dense.DMStripe.copy(df.mapVars(inputNames));
+    public Frame predict(Frame df, BiFunction<DVector, DMatrix, Integer> kFunction) {
+        DMatrix x = DMatrixStripe.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -199,7 +199,7 @@ public class LDA implements Printable {
             dim[i] = i;
             names[i] = "lda_" + (i + 1);
         }
-        DM result = x.dot(eigenVectors.mapCols(dim));
+        DMatrix result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(VRange.of(inputNames));
         return rest.varCount() == 0 ?
                 SolidFrame.matrix(result, names) :

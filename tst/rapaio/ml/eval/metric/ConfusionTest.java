@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,8 +26,8 @@ import rapaio.data.Var;
 import rapaio.data.VarBinary;
 import rapaio.data.VarDouble;
 import rapaio.data.VarNominal;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import java.util.Arrays;
 
@@ -53,7 +50,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DM frequency = DMStripe.wrap(new double[][]{
+        DMatrix frequency = DMatrixStripe.wrap(new double[][]{
                 {2, 1, 1},
                 {0, 1, 1},
                 {0, 1, 4}});
@@ -88,7 +85,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrixStripe.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 
@@ -118,7 +115,7 @@ public class ConfusionTest {
 
         Confusion cm = Confusion.from(actual, predict);
 
-        DM frequency = rapaio.math.linear.dense.DMStripe.wrap(new double[][]{{2, 2}, {1, 2}});
+        DMatrix frequency = DMatrixStripe.wrap(new double[][]{{2, 2}, {1, 2}});
         assertTrue(frequency.deepEquals(cm.frequencyMatrix()));
         assertTrue(frequency.copy().mult(1.0 / 7.0).deepEquals(cm.probabilityMatrix()));
 

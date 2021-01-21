@@ -35,6 +35,9 @@ import rapaio.data.VarLong;
 import rapaio.data.VarNominal;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
+import rapaio.ml.classifier.ClassifierModel;
+import rapaio.ml.classifier.ClassifierResult;
+import rapaio.ml.classifier.ensemble.CForest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -212,5 +215,31 @@ public class Datasets {
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
+    }
+
+    public static Frame loadVowelTrain() {
+        return Csv.instance()
+                .skipCols.set(t -> t == 0)
+                .types.add(VType.NOMINAL, "y")
+                .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.train");
+    }
+
+    public static Frame loadVowelTest() {
+        return Csv.instance()
+                .skipCols.set(t -> t == 0)
+                .types.add(VType.NOMINAL, "y")
+                .readUrl("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/vowel.test");
+    }
+
+    public static void main(String[] args) {
+        Frame train = loadVowelTrain();
+        train.printSummary();
+
+        ClassifierModel model = CForest.newModel().runs.set(200);
+        model.fit(train, "y");
+
+        Frame test = Datasets.loadVowelTest();
+        ClassifierResult result = model.predict(test);
+        result.printSummary();
     }
 }

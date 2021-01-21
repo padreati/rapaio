@@ -21,8 +21,8 @@
 
 package rapaio.math.linear.decomposition;
 
-import rapaio.math.linear.DM;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.dense.DMatrixStripe;
 
 import static java.lang.StrictMath.hypot;
 
@@ -44,7 +44,7 @@ public class SVDecomposition implements java.io.Serializable {
 
     private static final long serialVersionUID = -502574786523851631L;
 
-    public static SVDecomposition from(DM A) {
+    public static SVDecomposition from(DMatrix A) {
         return new SVDecomposition(A);
     }
 
@@ -58,11 +58,11 @@ public class SVDecomposition implements java.io.Serializable {
     private static final boolean wantv = true;
     private final int minCount;
 
-    private SVDecomposition(DM Arg) {
+    private SVDecomposition(DMatrix Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
-        DM A = Arg.copy();
+        DMatrix A = Arg.copy();
         rowCount = Arg.rowCount();
         colCount = Arg.colCount();
 
@@ -96,7 +96,7 @@ public class SVDecomposition implements java.io.Serializable {
 
     }
 
-    private void setupFinalBidiagonal(double[] e, DM A) {
+    private void setupFinalBidiagonal(double[] e, DMatrix A) {
         // Set up the final bidiagonal matrix or order p.
         p = Math.min(colCount, rowCount + 1);
         pp = p - 1;
@@ -170,7 +170,7 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
-    private void reduceBidigonalForm(DM A, double[] e, double[] work) {
+    private void reduceBidigonalForm(DMatrix A, double[] e, double[] work) {
         // Reduce A to bidiagonal form, storing the diagonal elements
         // in s and the super-diagonal elements in e.
         for (int k = 0; k < Math.max(nct, nrt); k++) {
@@ -493,8 +493,8 @@ public class SVDecomposition implements java.io.Serializable {
         return k;
     }
 
-    public DM getU() {
-        return DMStripe.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
+    public DMatrix getU() {
+        return DMatrixStripe.copy(u, 0, rowCount, 0, Math.min(rowCount + 1, colCount));
     }
 
     /**
@@ -502,8 +502,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return RV
      */
-    public DM getV() {
-        return rapaio.math.linear.dense.DMStripe.copy(v);
+    public DMatrix getV() {
+        return DMatrixStripe.copy(v);
     }
 
     /**
@@ -520,8 +520,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return S
      */
-    public DM getS() {
-        DM S = rapaio.math.linear.dense.DMStripe.empty(colCount, colCount);
+    public DMatrix getS() {
+        DMatrix S = DMatrixStripe.empty(colCount, colCount);
         for (int i = 0; i < colCount; i++) {
             S.set(i, i, this.s[i]);
         }

@@ -29,11 +29,11 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.data.VType;
 import rapaio.data.Var;
-import rapaio.math.linear.DM;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.DVector;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.dense.DMStripe;
+import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.ml.common.ParamSet;
 import rapaio.ml.common.ValueParam;
 import rapaio.printer.Printable;
@@ -76,19 +76,19 @@ public class PCA extends ParamSet<PCA> implements Printable {
     private String[] inputNames;
 
     @Getter
-    protected DV eigenValues;
+    protected DVector eigenValues;
     @Getter
-    protected DM eigenVectors;
+    protected DMatrix eigenVectors;
     @Getter
-    protected DV mean;
+    protected DVector mean;
     @Getter
-    protected DV sd;
+    protected DVector sd;
 
     public PCA fit(Frame df) {
         preFit(df);
 
         logger.fine("start pca predict");
-        DM x = DMStripe.copy(df);
+        DMatrix x = DMatrixStripe.copy(df);
         logger.fine("compute mean, sd and do scaling");
         if (center.get()) {
             mean = x.mean(0);
@@ -100,12 +100,12 @@ public class PCA extends ParamSet<PCA> implements Printable {
         }
 
         logger.fine("build scatter");
-        DM s = x.scatter();
+        DMatrix s = x.scatter();
 
         logger.fine("compute eigenvalues");
         EigenPair ep = Linear.eigenDecomp(s, maxRuns.get(), eps.get());
-        eigenValues = ep.getRV().div(x.rowCount() - 1);
-        eigenVectors = ep.getRM();
+        eigenValues = ep.getDVector().div(x.rowCount() - 1);
+        eigenVectors = ep.getDMatrix();
 
         logger.fine("sort eigen values and vectors");
 
@@ -132,7 +132,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
 
     public Frame transform(Frame df, int k) {
 
-        DM x = DMStripe.copy(df.mapVars(inputNames));
+        DMatrix x = DMatrixStripe.copy(df.mapVars(inputNames));
 
         if (center.get()) {
             x.sub(mean, 0);
@@ -146,7 +146,7 @@ public class PCA extends ParamSet<PCA> implements Printable {
             names[i] = "pca_" + (i + 1);
         }
 
-        DM result = x.dot(eigenVectors.rangeCols(0, k));
+        DMatrix result = x.dot(eigenVectors.rangeCols(0, k));
 
         Frame rest = df.removeVars(VRange.of(inputNames));
         Frame prediction = SolidFrame.matrix(result, names);

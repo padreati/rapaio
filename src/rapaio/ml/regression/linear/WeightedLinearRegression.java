@@ -24,10 +24,10 @@ package rapaio.ml.regression.linear;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.FIntercept;
-import rapaio.math.linear.DM;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.decomposition.QRDecomposition;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 import rapaio.ml.regression.linear.impl.BaseLinearRegressionModel;
 
 /**
@@ -67,10 +67,10 @@ public class WeightedLinearRegression extends BaseLinearRegressionModel<Weighted
 
     @Override
     protected boolean coreFit(Frame df, Var weights) {
-        var w = DVDense.from(weights);
+        var w = DVectorDense.from(weights);
         w.apply(Math::sqrt);
-        DM X = DMStripe.copy(df.mapVars(inputNames())).dotDiagT(w);
-        DM Y = DMStripe.copy(df.mapVars(targetNames())).dotDiagT(w);
+        DMatrix X = DMatrixStripe.copy(df.mapVars(inputNames())).dotDiagT(w);
+        DMatrix Y = DMatrixStripe.copy(df.mapVars(targetNames())).dotDiagT(w);
         beta = QRDecomposition.from(X).solve(Y);
         return true;
     }

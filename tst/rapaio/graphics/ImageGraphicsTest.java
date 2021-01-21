@@ -191,8 +191,8 @@ public class ImageGraphicsTest {
         Var y = df.rvar(1).name("y");
 
         Figure fig = gridLayer(3, 3)
-                .add(1, 1, 2, 2, points(x, y, sz(2)))
-                .add(3, 2, 2, 1, hist2d(x, y, fill(2)))
+                .add(0, 0, 2, 2, points(x, y, sz(2)))
+                .add(2, 1, 2, 1, hist2d(x, y, fill(2)))
                 .add(lines(x))
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));

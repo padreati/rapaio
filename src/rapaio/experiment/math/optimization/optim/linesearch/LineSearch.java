@@ -23,12 +23,12 @@ package rapaio.experiment.math.optimization.optim.linesearch;
 
 import rapaio.experiment.math.functions.RDerivative;
 import rapaio.experiment.math.functions.RFunction;
-import rapaio.math.linear.DV;
+import rapaio.math.linear.DVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
 public interface LineSearch {
 
-    double find(RFunction f, RDerivative d1f, DV x, DV delta_f);
+    double find(RFunction f, RDerivative d1f, DVector x, DVector delta_f);
 }

@@ -1,19 +1,40 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.math.linear;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
-import rapaio.math.linear.base.DMBase;
-import rapaio.math.linear.base.DVBase;
-import rapaio.math.linear.dense.DMStripe;
-import rapaio.math.linear.dense.DVDense;
+import rapaio.math.linear.base.DMatrixBase;
+import rapaio.math.linear.base.DVectorBase;
+import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DVectorDense;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/14/20.
  */
-public abstract class StandardDMTest {
+public abstract class StandardDMatrixTest {
 
     protected static final double TOL = 1e-15;
 
@@ -22,15 +43,15 @@ public abstract class StandardDMTest {
         RandomSource.setSeed(123);
     }
 
-    protected abstract DM.Type type();
+    protected abstract DMatrix.Type type();
 
-    protected abstract DM generateSequential(int n, int m);
+    protected abstract DMatrix generateSequential(int n, int m);
 
-    protected abstract DM generateIdentity(int n);
+    protected abstract DMatrix generateIdentity(int n);
 
-    protected abstract DM generateFill(int n, int m, double fill);
+    protected abstract DMatrix generateFill(int n, int m, double fill);
 
-    protected abstract DM generateWrap(double[][] values);
+    protected abstract DMatrix generateWrap(double[][] values);
 
     protected abstract String className();
 
@@ -41,9 +62,9 @@ public abstract class StandardDMTest {
 
     @Test
     void testMapRow() {
-        DM m = generateSequential(10, 11);
-        DV vector1 = m.mapRow(3);
-        DV vector2 = m.mapRowCopy(3);
+        DMatrix m = generateSequential(10, 11);
+        DVector vector1 = m.mapRow(3);
+        DVector vector2 = m.mapRowCopy(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(33.0 + i, vector1.get(i), TOL);
             assertEquals(33.0 + i, vector2.get(i), TOL);
@@ -52,10 +73,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testMapRows() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.mapRows(3, 4);
-        DM copy = m.mapRowsCopy(3, 4);
+        DMatrix view = m.mapRows(3, 4);
+        DMatrix copy = m.mapRowsCopy(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -73,10 +94,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testRangeRows() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.rangeRows(3, 5);
-        DM copy = m.rangeRowsCopy(3, 5);
+        DMatrix view = m.rangeRows(3, 5);
+        DMatrix copy = m.rangeRowsCopy(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -94,10 +115,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testRemoveRows() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DM copy = m.removeRowsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix view = m.removeRows(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix copy = m.removeRowsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -115,9 +136,9 @@ public abstract class StandardDMTest {
 
     @Test
     void testMapCol() {
-        DM m = generateSequential(10, 11);
-        DV vector1 = m.mapCol(3);
-        DV vector2 = m.mapColCopy(3);
+        DMatrix m = generateSequential(10, 11);
+        DVector vector1 = m.mapCol(3);
+        DVector vector2 = m.mapColCopy(3);
         for (int i = 0; i < vector1.size(); i++) {
             assertEquals(3.0 + i * 11, vector1.get(i), TOL);
             assertEquals(3.0 + i * 11, vector2.get(i), TOL);
@@ -126,10 +147,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testMapCols() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.mapCols(3, 4);
-        DM copy = m.mapColsCopy(3, 4);
+        DMatrix view = m.mapCols(3, 4);
+        DMatrix copy = m.mapColsCopy(3, 4);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -147,10 +168,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testRangeCols() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.rangeCols(3, 5);
-        DM copy = m.rangeColsCopy(3, 5);
+        DMatrix view = m.rangeCols(3, 5);
+        DMatrix copy = m.rangeColsCopy(3, 5);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -168,10 +189,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testRemoveCols() {
-        DM m = generateSequential(10, 11);
+        DMatrix m = generateSequential(10, 11);
 
-        DM view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
-        DM copy = m.removeColsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix view = m.removeCols(0, 1, 2, 4, 6, 7, 8, 9, 10);
+        DMatrix copy = m.removeColsCopy(0, 1, 2, 4, 6, 7, 8, 9, 10);
 
         for (int i = 0; i < view.rowCount(); i++) {
             for (int j = 0; j < view.colCount(); j++) {
@@ -189,12 +210,12 @@ public abstract class StandardDMTest {
 
     @Test
     void testAdd() {
-        DM m1 = generateSequential(20, 10);
-        DM m2 = generateSequential(20, 10);
+        DMatrix m1 = generateSequential(20, 10);
+        DMatrix m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().add(m2);
-        DM t2 = m1.copy().add(1);
-        DM t3 = m1.add(1).add(m2);
+        DMatrix t1 = m1.copy().add(m2);
+        DMatrix t2 = m1.copy().add(1);
+        DMatrix t3 = m1.add(1).add(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -218,10 +239,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testAddAxis() {
-        DM m1 = generateFill(20, 10, 1);
+        DMatrix m1 = generateFill(20, 10, 1);
 
-        DV v1 = DVDense.fill(10, 1);
-        DV v2 = DVDense.fill(20, 1);
+        DVector v1 = DVectorDense.fill(10, 1);
+        DVector v2 = DVectorDense.fill(20, 1);
 
         assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v1, 0)));
         assertTrue(generateFill(20, 10, 2).deepEquals(m1.copy().add(v2, 1)));
@@ -229,12 +250,12 @@ public abstract class StandardDMTest {
 
     @Test
     void testSubtract() {
-        DM m1 = generateSequential(20, 10);
-        DM m2 = generateSequential(20, 10);
+        DMatrix m1 = generateSequential(20, 10);
+        DMatrix m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().sub(m2);
-        DM t2 = m1.copy().sub(1);
-        DM t3 = m1.sub(1).sub(m2);
+        DMatrix t1 = m1.copy().sub(m2);
+        DMatrix t2 = m1.copy().sub(1);
+        DMatrix t3 = m1.sub(1).sub(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -258,10 +279,10 @@ public abstract class StandardDMTest {
 
     @Test
     void testSubtractAxis() {
-        DM m1 = generateFill(20, 10, 1);
+        DMatrix m1 = generateFill(20, 10, 1);
 
-        DV v1 = DVDense.fill(10, 1);
-        DV v2 = DVDense.fill(20, 1);
+        DVector v1 = DVectorDense.fill(10, 1);
+        DVector v2 = DVectorDense.fill(20, 1);
 
         assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v1, 0)));
         assertTrue(generateFill(20, 10, 0).deepEquals(m1.copy().sub(v2, 1)));
@@ -269,12 +290,12 @@ public abstract class StandardDMTest {
 
     @Test
     void testMultiply() {
-        DM m1 = generateSequential(20, 10);
-        DM m2 = generateSequential(20, 10);
+        DMatrix m1 = generateSequential(20, 10);
+        DMatrix m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().mult(m2);
-        DM t2 = m1.copy().mult(2);
-        DM t3 = m1.mult(2).mult(m2);
+        DMatrix t1 = m1.copy().mult(m2);
+        DMatrix t2 = m1.copy().mult(2);
+        DMatrix t3 = m1.mult(2).mult(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -299,12 +320,12 @@ public abstract class StandardDMTest {
 
     @Test
     void testDivide() {
-        DM m1 = generateSequential(20, 10);
-        DM m2 = generateSequential(20, 10);
+        DMatrix m1 = generateSequential(20, 10);
+        DMatrix m2 = generateSequential(20, 10);
 
-        DM t1 = m1.copy().div(m2);
-        DM t2 = m1.copy().div(2);
-        DM t3 = m1.div(2).div(m2);
+        DMatrix t1 = m1.copy().div(m2);
+        DMatrix t2 = m1.copy().div(2);
+        DMatrix t3 = m1.div(2).div(m2);
 
         assertEquals(20, t1.rowCount());
         assertEquals(10, t1.colCount());
@@ -335,8 +356,8 @@ public abstract class StandardDMTest {
     void testSum() {
         var m1 = generateSequential(5, 3);
         assertEquals(105, m1.sum());
-        assertTrue(DVDense.wrap(30, 35, 40).deepEquals(m1.sum(0)));
-        assertTrue(DVDense.wrap(3, 12, 21, 30, 39).deepEquals(m1.sum(1)));
+        assertTrue(DVectorDense.wrap(30, 35, 40).deepEquals(m1.sum(0)));
+        assertTrue(DVectorDense.wrap(3, 12, 21, 30, 39).deepEquals(m1.sum(1)));
     }
 
     @Test
@@ -350,16 +371,16 @@ public abstract class StandardDMTest {
     @Test
     void testDot() {
 
-        DV v = DVDense.ones(10);
-        DM m = generateSequential(10, 10);
+        DVector v = DVectorDense.ones(10);
+        DMatrix m = generateSequential(10, 10);
 
         var m1 = m.dot(v);
         for (int i = 0; i < m1.size(); i++) {
             assertEquals(45 + 100 * i, m1.get(i), TOL);
         }
 
-        DM n1 = generateSequential(10, 20);
-        DM n2 = generateSequential(20, 30);
+        DMatrix n1 = generateSequential(10, 20);
+        DMatrix n2 = generateSequential(20, 30);
 
         var m2 = n1.dot(n2);
         assertEquals(10, m2.rowCount());
@@ -375,10 +396,10 @@ public abstract class StandardDMTest {
     @Test
     void dotDiagTest() {
         var m = generateFill(10, 3, 1);
-        var v1 = DVDense.wrap(1, 2, 3);
-        var v2 = DVBase.wrap(1, 2, 3);
+        var v1 = DVectorDense.wrap(1, 2, 3);
+        var v2 = DVectorBase.wrap(1, 2, 3);
 
-        var d = DMStripe.wrap(new double[][]{
+        var d = DMatrixStripe.wrap(new double[][]{
                 {1, 0, 0},
                 {0, 2, 0},
                 {0, 0, 3}
@@ -468,10 +489,10 @@ public abstract class StandardDMTest {
 
     @Test
     void deepEqualsTest() {
-        DM m1 = generateIdentity(2);
+        DMatrix m1 = generateIdentity(2);
 
-        DM m2 = DMBase.wrap(new double[][]{{1, 0}, {0, 1}});
-        DMStripe m3 = rapaio.math.linear.dense.DMStripe.identity(2);
+        DMatrix m2 = DMatrixBase.wrap(new double[][]{{1, 0}, {0, 1}});
+        DMatrixStripe m3 = DMatrixStripe.identity(2);
 
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
@@ -482,8 +503,8 @@ public abstract class StandardDMTest {
         assertFalse(m1.deepEquals(m2));
         assertFalse(m1.deepEquals(m3));
 
-        var m4 = rapaio.math.linear.dense.DMStripe.fill(2, 3, 0);
-        var m5 = rapaio.math.linear.dense.DMStripe.fill(3, 2, 0);
+        var m4 = DMatrixStripe.fill(2, 3, 0);
+        var m5 = DMatrixStripe.fill(3, 2, 0);
 
         assertFalse(m4.deepEquals(m1));
         assertFalse(m5.deepEquals(m1));
