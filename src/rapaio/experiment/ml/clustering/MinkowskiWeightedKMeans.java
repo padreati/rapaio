@@ -40,10 +40,11 @@ import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
+import rapaio.util.collection.IntOpenHashSet;
+import rapaio.util.collection.IntSet;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -321,7 +322,7 @@ public class MinkowskiWeightedKMeans implements Printable {
 
             // first find all empty clusters
 
-            HashSet<Integer> emptyCentroids = new HashSet<>();
+            IntSet emptyCentroids = new IntOpenHashSet();
             for (int i = 0; i < clusterCount.length; i++) {
                 if (clusterCount[i] == 0)
                     emptyCentroids.add(i);

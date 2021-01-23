@@ -25,9 +25,10 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.util.collection.IntArrays;
+import rapaio.util.collection.IntOpenHashSet;
+import rapaio.util.collection.IntSet;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Unique value feature for integer values.
@@ -44,17 +45,21 @@ public class UniqueInt extends AbstractUnique {
 
     private UniqueInt(Var var, boolean sorted) {
         super(sorted);
-        HashSet<Integer> keySet = new HashSet<>();
+        IntSet keySet = new IntOpenHashSet();
         for (int i = 0; i < var.size(); i++) {
             keySet.add(var.getInt(i));
         }
-        int[] elements = new int[keySet.size()];
-        int pos = 0;
-        for (int value : keySet) {
-            elements[pos++] = value;
-        }
+        int[] elements = keySet.toIntArray();
         if (sorted) {
-            IntArrays.quickSort(elements, 0, elements.length, Integer::compare);
+            IntArrays.quickSort(elements, 0, elements.length, (k1, k2) -> {
+                if (k1 == VarInt.MISSING_VALUE) {
+                    return -1;
+                }
+                if (k2 == VarInt.MISSING_VALUE) {
+                    return 1;
+                }
+                return Integer.compare(k1, k2);
+            });
         }
         HashMap<Integer, Integer> uniqueKeys = new HashMap<>();
         values = VarInt.wrap(elements);
@@ -111,6 +116,6 @@ public class UniqueInt extends AbstractUnique {
 
     @Override
     protected String stringUniqueValue(int i) {
-        return values.getInt(i) == Integer.MIN_VALUE ? "?" : Integer.toString(values.getInt(i));
+        return values.getInt(i) == VarInt.MISSING_VALUE ? "?" : Integer.toString(values.getInt(i));
     }
 }

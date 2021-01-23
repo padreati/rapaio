@@ -26,10 +26,11 @@ import rapaio.core.SamplingTools;
 import rapaio.math.linear.DMatrix;
 import rapaio.util.collection.DoubleArrays;
 import rapaio.util.collection.IntArrays;
-import rapaio.util.collection.IntOpenHashSet;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Function which produces initial centroids for KMeans algorithm
@@ -51,7 +52,7 @@ public enum KMeansInit implements Serializable {
             int[] centroids = IntArrays.newFill(k, -1);
 
             centroids[0] = RandomSource.nextInt(m.rowCount());
-            IntOpenHashSet ids = new IntOpenHashSet();
+            Set<Integer> ids = new HashSet<>();//new IntOpenHashSet();
             ids.add(centroids[0]);
 
             double[] p = new double[m.rowCount()];

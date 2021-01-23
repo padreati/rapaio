@@ -40,18 +40,21 @@ public class SolidKernelCache implements KernelCache {
 
     @Override
     public Double retrieve(Frame df1, int row1, Frame df2, int row2) {
-        if (df1 != df2)
+        if (cache == null || df1 != df2) {
             return null;
-        if (row1 > row2)
+        }
+        if (row1 > row2) {
             return retrieve(df1, row2, df2, row1);
-        if (df1 == this.df)
+        }
+        if (df1 == this.df) {
             return cache[row1][row2];
+        }
         return null;
     }
 
     @Override
     public void store(Frame df1, int row1, Frame df2, int row2, double value) {
-        if (df1 != df2) {
+        if (cache == null || df1 != df2) {
             return;
         }
         if (row1 > row2) {
@@ -59,9 +62,6 @@ public class SolidKernelCache implements KernelCache {
             return;
         }
         if (df1 == this.df) {
-            if (cache == null) {
-                throw new IllegalArgumentException();
-            }
             cache[row1][row2] = value;
         }
     }

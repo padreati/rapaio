@@ -264,7 +264,7 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
             it.remove();
         }
 
-        // rebuit errors and cluster assignement
+        // rebuilt errors and cluster assignment
         // if empty clusters happens again, then that is it, we did our best
         // the stopping criterion is given by a bound on error or a
         // maximum iteration

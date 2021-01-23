@@ -88,7 +88,7 @@ public enum Pruning implements Serializable {
                 var it = ids.iterator();
                 while (it.hasNext()) {
                     int id = it.nextInt();
-                    if (pruned.contains(id)) {
+                    if (pruned.containsInt(id)) {
                         it.remove();
                         continue;
                     }
@@ -99,7 +99,7 @@ public enum Pruning implements Serializable {
                         found = true;
                     }
                     if (!all && delta < 0) {
-                        pruned.add(id);
+                        pruned.addInt(id);
                     }
                 }
 
@@ -132,7 +132,7 @@ public enum Pruning implements Serializable {
                                  HashMap<Integer, DoublePair> topDown,
                                  HashMap<Integer, DoublePair> bottomUp,
                                  HashMap<Integer, Node> nodes) {
-            pruned.add(node.id);
+            pruned.addInt(node.id);
             if (node.id != id) {
                 topDown.remove(node.id);
                 bottomUp.remove(node.id);

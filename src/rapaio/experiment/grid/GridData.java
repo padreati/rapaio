@@ -40,11 +40,26 @@ import java.util.function.BiFunction;
 public class GridData implements Serializable {
 
     public static GridData fromPrediction(ClassifierModel c, Frame df, String xName, String yName, String labelName, int bins) {
+        return fromPrediction(c, df, xName, yName, labelName, bins, 0.05);
+    }
+
+    public static GridData fromPrediction(ClassifierModel c, Frame df, String xName, String yName, String labelName, int bins, double margin) {
 
         double xMin = Minimum.of(df.rvar(xName)).value();
         double xMax = Maximum.of(df.rvar(xName)).value();
         double yMin = Minimum.of(df.rvar(yName)).value();
         double yMax = Maximum.of(df.rvar(yName)).value();
+
+        if (margin > 0) {
+            double xDelta = Math.abs(xMax - xMin);
+            double yDelta = Math.abs(yMax - yMin);
+
+            xMin -= margin * xDelta;
+            xMax += margin * xDelta;
+
+            yMin -= margin * yDelta;
+            yMax += margin * yDelta;
+        }
 
         VarDouble x = VarDouble.seq(xMin, xMax, (xMax - xMin) / bins).name(xName);
         VarDouble y = VarDouble.seq(yMin, yMax, (yMax - yMin) / bins).name(yName);

@@ -76,7 +76,7 @@ public class UniqueIntTest {
 
     @Test
     void testDuplicatesUnsorted() {
-        int[] sample = new int[]{3, 1, 7, 5, Integer.MIN_VALUE};
+        int[] sample = new int[]{3, 1, 7, 5, VarInt.MISSING_VALUE};
         final int N = 100;
         int[] values = new int[N];
         for (int i = 0; i < N; i++) {
@@ -114,11 +114,9 @@ public class UniqueIntTest {
         int oldTextWidth = WS.getPrinter().getOptions().textWidth();
         WS.getPrinter().withOptions(textWidth(100));
         int[] sample = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, Integer.MIN_VALUE};
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, VarInt.MISSING_VALUE};
         final int N = 200;
         VarInt x1 = VarInt.from(N, row -> sample[RandomSource.nextInt(sample.length)]);
-        int[] values1 = x1.stream().mapToInt().toArray();
-        Arrays.sort(values1);
         UniqueInt ui1 = UniqueInt.of(x1, true);
 
         assertEquals("UniqueInt{count=43, values=[?:6,1:3,2:2,3:5,4:6,5:6,6:4,7:5,8:3,9:1,..]}", ui1.toString());
@@ -148,14 +146,14 @@ public class UniqueIntTest {
         Arrays.sort(values2);
         UniqueInt ui2 = UniqueInt.of(x2, true);
 
-        assertEquals("UniqueInt{count=5, values=[1:43,2:50,3:50,4:31,5:26]}", ui2.toString());
+        assertEquals("UniqueInt{count=5, values=[1:44,2:50,3:50,4:31,5:25]}", ui2.toString());
         assertEquals("Value Count Percentage Value Count Percentage \n" +
-                "    1    43      0.215     4    31      0.155 \n" +
-                "    2    50      0.250     5    26      0.130 \n" +
+                "    1    44      0.220     4    31      0.155 \n" +
+                "    2    50      0.250     5    25      0.125 \n" +
                 "    3    50      0.250 \n", ui2.toContent());
         assertEquals("Value Count Percentage Value Count Percentage \n" +
-                "    1    43      0.215     4    31      0.155 \n" +
-                "    2    50      0.250     5    26      0.130 \n" +
+                "    1    44      0.220     4    31      0.155 \n" +
+                "    2    50      0.250     5    25      0.125 \n" +
                 "    3    50      0.250 \n", ui2.toFullContent());
         assertEquals(ui2.toString(), ui2.toSummary());
     }

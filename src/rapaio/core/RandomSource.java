@@ -59,6 +59,10 @@ public final class RandomSource implements Serializable {
         return rand.nextDouble();
     }
 
+    public static int nextInt() {
+        return rand.nextInt();
+    }
+
     public static int nextInt(int n) {
         return rand.nextInt(n);
     }
