@@ -22,10 +22,12 @@
 package rapaio.util.collection;
 
 import rapaio.core.RandomSource;
+import rapaio.util.IntIterable;
+import rapaio.util.IntIterator;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.stream.IntStream;
 
 import static rapaio.util.hash.Murmur3.murmur3A;
@@ -33,15 +35,15 @@ import static rapaio.util.hash.Murmur3.murmur3A;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/10/20.
  */
-public class IntOpenHashSet implements IntSet {
+public class IntOpenHashSet implements Serializable, IntIterable {
 
     private static final long serialVersionUID = 8709214224656233765L;
 
     public static final double DEFAULT_LOAD_FACTOR = 0.75;
-    public static final int DEFAULT_SIZE = 16;
-    public static final Probing DEFAULT_PROBING = Probing.Quadratic;
+    public static final int DEFAULT_ALLOCATION = 16;
+    public static final Probing DEFAULT_PROBING = Probing.QUADRATIC;
 
-    private static final int MISSING = Integer.MIN_VALUE;
+    public static final int MISSING = Integer.MIN_VALUE;
 
     private final int seed = RandomSource.nextInt();
     private final double loadFactor;
@@ -50,7 +52,7 @@ public class IntOpenHashSet implements IntSet {
     private int[] array;
 
     public IntOpenHashSet() {
-        this(DEFAULT_LOAD_FACTOR, DEFAULT_SIZE, DEFAULT_PROBING);
+        this(DEFAULT_LOAD_FACTOR, DEFAULT_ALLOCATION, DEFAULT_PROBING);
     }
 
     public IntOpenHashSet(double loadFactor, int allocation, Probing probing) {
@@ -66,7 +68,6 @@ public class IntOpenHashSet implements IntSet {
      *
      * @return the number of elements in this set (its cardinality)
      */
-    @Override
     public int size() {
         return size;
     }
@@ -76,21 +77,8 @@ public class IntOpenHashSet implements IntSet {
      *
      * @return {@code true} if this set contains no elements
      */
-    @Override
     public boolean isEmpty() {
         return size == 0;
-    }
-
-    /**
-     * Deprecated in favour of {@link #containsInt(int)}
-     */
-    @Override
-    @Deprecated
-    public boolean contains(Object o) {
-        if (!(o instanceof Integer)) {
-            throw new ClassCastException();
-        }
-        return containsInt((int) o);
     }
 
     /**
@@ -100,15 +88,14 @@ public class IntOpenHashSet implements IntSet {
      * @param value value to be checked
      * @return true if value is in the set, false otherwise
      */
-    @Override
-    public boolean containsInt(int value) {
+    public boolean contains(int value) {
         int hash = murmur3A(value, seed) % array.length;
         if (hash < 0) {
             hash += array.length;
         }
         int step = 0;
         while (true) {
-            hash += probing.equals(Probing.Linear) ? step : step * step;
+            hash += probing.step(step);
             step++;
             hash %= array.length;
             if (array[hash] == MISSING) {
@@ -127,35 +114,16 @@ public class IntOpenHashSet implements IntSet {
      *
      * @return an iterator over the elements in this set
      */
-    @Override
-    public Iterator<Integer> iterator() {
-        return IntStream.of(array).filter(value -> value != MISSING).iterator();
+    public IntIterator iterator() {
+        int[] copy = toArray();
+        return IntArrays.iterator(copy, 0, copy.length);
     }
 
-    @Override
-    public Object[] toArray() {
-        return IntStream.of(array).filter(value -> value != MISSING).boxed().toArray();
-    }
-
-    public int[] toIntArray() {
+    public int[] toArray() {
         return IntStream.of(array).filter(value -> value != MISSING).toArray();
     }
 
-    @Override
-    public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    @Deprecated
-    public boolean add(Integer integer) {
-        if (integer == null) {
-            throw new ClassCastException();
-        }
-        return addInt(integer);
-    }
-
-    public boolean addInt(int value) {
+    public boolean add(int value) {
         if (needsCapacity(1)) {
             ensureCapacity(1);
         }
@@ -165,7 +133,7 @@ public class IntOpenHashSet implements IntSet {
         }
         int step = 0;
         while (true) {
-            hash += probing.equals(Probing.Linear) ? step : step * step;
+            hash += probing.step(step);
             step++;
             hash %= array.length;
             if (array[hash] == value) {
@@ -179,63 +147,6 @@ public class IntOpenHashSet implements IntSet {
         }
     }
 
-    @Override
-    @Deprecated
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns {@code true} if this set contains all of the elements of the
-     * specified collection.  If the specified collection is also a set, this
-     * method returns {@code true} if it is a <i>subset</i> of this set.
-     *
-     * @param c collection to be checked for containment in this set
-     * @return {@code true} if this set contains all of the elements of the
-     * specified collection
-     * @throws ClassCastException   if the types of one or more elements
-     *                              in the specified collection are incompatible with this
-     *                              set
-     *                              (<a href="Collection.html#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified collection contains one
-     *                              or more null elements and this set does not permit null
-     *                              elements
-     *                              (<a href="Collection.html#optional-restrictions">optional</a>),
-     *                              or if the specified collection is null
-     * @see #contains(Object)
-     */
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        for (Object x : c) {
-            if (!(x instanceof Integer) || !containsInt((int) x)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Adds all of the elements in the specified collection to this set if
-     * they're not already present (optional operation).  If the specified
-     * collection is also a set, the {@code addAll} operation effectively
-     * modifies this set so that its value is the <i>union</i> of the two
-     * sets.  The behavior of this operation is undefined if the specified
-     * collection is modified while the operation is in progress.
-     *
-     * @param c collection containing elements to be added to this set
-     * @return {@code true} if this set changed as a result of the call
-     * @throws UnsupportedOperationException if the {@code addAll} operation
-     *                                       is not supported by this set
-     * @throws ClassCastException            if the class of an element of the
-     *                                       specified collection prevents it from being added to this set
-     * @throws NullPointerException          if the specified collection contains one
-     *                                       or more null elements and this set does not permit null
-     *                                       elements, or if the specified collection is null
-     * @throws IllegalArgumentException      if some property of an element of the
-     *                                       specified collection prevents it from being added to this set
-     * @see #add(Object)
-     */
-    @Override
     public boolean addAll(Collection<? extends Integer> c) {
         for (Object o : c) {
             if (!(o instanceof Integer)) {
@@ -248,19 +159,9 @@ public class IntOpenHashSet implements IntSet {
         boolean changed = false;
         for (Object o : c) {
             int i = (int) o;
-            changed |= addInt((int) o);
+            changed |= add((int) o);
         }
         return changed;
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -270,7 +171,6 @@ public class IntOpenHashSet implements IntSet {
      * @throws UnsupportedOperationException if the {@code clear} method
      *                                       is not supported by this set
      */
-    @Override
     public void clear() {
         Arrays.fill(array, MISSING);
         this.size = 0;
@@ -293,7 +193,7 @@ public class IntOpenHashSet implements IntSet {
             }
             int step = 0;
             while (true) {
-                hash += probing.equals(Probing.Linear) ? step : step * step;
+                hash += probing.step(step);
                 step++;
                 hash %= copy.length;
                 if (copy[hash] == MISSING) {
@@ -306,7 +206,19 @@ public class IntOpenHashSet implements IntSet {
     }
 
     public enum Probing {
-        Linear, Quadratic
+        LINEAR {
+            @Override
+            public int step(int round) {
+                return round;
+            }
+        }, QUADRATIC {
+            @Override
+            public int step(int round) {
+                return round * round;
+            }
+        };
+
+        public abstract int step(int round);
     }
 }
 

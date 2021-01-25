@@ -32,7 +32,6 @@ import rapaio.data.VarInt;
 import rapaio.sys.WS;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -77,7 +76,7 @@ public class IntOpenHashSetTest {
 
             start = System.currentTimeMillis();
             for (int value : x) {
-                openSet.addInt(value);
+                openSet.add(value);
             }
             stop = System.currentTimeMillis();
             if (i >= SKIP) {
@@ -107,11 +106,11 @@ public class IntOpenHashSetTest {
         assertTrue(set.isEmpty());
 
         set.add(11);
-        set.addInt(10);
+        set.add(10);
 
         assertEquals(2, set.size());
         assertTrue(set.contains(10));
-        assertTrue(set.containsInt(11));
+        assertTrue(set.contains(11));
         set.clear();
 
         assertEquals(0, set.size());
@@ -131,23 +130,16 @@ public class IntOpenHashSetTest {
 
         for (int x : in) {
             assertTrue(set.contains(x));
-            assertTrue(set.containsInt(x));
         }
         for (int x : out) {
             assertFalse(set.contains(x));
-            assertFalse(set.containsInt(x));
         }
-        assertTrue(set.containsAll(IntStream.of(in).boxed().collect(Collectors.toList())));
-        assertFalse(set.containsAll(IntStream.of(out).boxed().collect(Collectors.toList())));
 
         Set<Integer> inSet = IntStream.of(in).boxed().collect(Collectors.toSet());
         for (int value : set) {
             assertTrue(inSet.contains(value));
         }
-        for (int value : set.toIntArray()) {
-            assertTrue(inSet.contains(value));
-        }
-        for (var value : set.toArray()) {
+        for (int value : set.toArray()) {
             assertTrue(inSet.contains(value));
         }
     }
@@ -155,15 +147,8 @@ public class IntOpenHashSetTest {
     @Test
     void testUnsupported() {
         var set = new IntOpenHashSet();
-        assertThrows(UnsupportedOperationException.class, () -> set.remove(null));
         HashSet<Integer> set1 = new HashSet<>();
         set1.add(null);
         assertThrows(ClassCastException.class, () -> set.addAll(set1));
-        assertThrows(UnsupportedOperationException.class, () -> set.retainAll(List.of(1)));
-        assertThrows(UnsupportedOperationException.class, () -> set.removeAll(List.of(1)));
-        assertThrows(ClassCastException.class, () -> set.add(null));
-        assertThrows(UnsupportedOperationException.class, () -> set.toArray(new Object[]{}));
-        assertThrows(ClassCastException.class, () -> set.contains("a"));
-        assertThrows(ClassCastException.class, () -> set.contains(null));
     }
 }

@@ -26,7 +26,6 @@ import rapaio.data.Var;
 import rapaio.data.VarInt;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.collection.IntOpenHashSet;
-import rapaio.util.collection.IntSet;
 
 import java.util.HashMap;
 
@@ -45,11 +44,11 @@ public class UniqueInt extends AbstractUnique {
 
     private UniqueInt(Var var, boolean sorted) {
         super(sorted);
-        IntSet keySet = new IntOpenHashSet();
+        IntOpenHashSet keySet = new IntOpenHashSet();
         for (int i = 0; i < var.size(); i++) {
             keySet.add(var.getInt(i));
         }
-        int[] elements = keySet.toIntArray();
+        int[] elements = keySet.toArray();
         if (sorted) {
             IntArrays.quickSort(elements, 0, elements.length, (k1, k2) -> {
                 if (k1 == VarInt.MISSING_VALUE) {
