@@ -1,682 +1,699 @@
+
+
+
 <!doctype html>
 <html lang="en" class="no-js">
-<head>
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="https://padreati.github.io/rapaio/complete-library-features/">
+      
+      
+        <meta name="author" content="Aurelian Tutuianu">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+    
+    
+<title>Rapaio documentation site</title>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-
-
-    <link rel="canonical" href="https://padreati.github.io/rapaio/complete-library-features/">
-
-
-    <meta name="author" content="Aurelian Tutuianu">
-
-    <link rel="shortcut icon" href="../assets/images/favicon.png">
-    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
-
-
-    <title>Rapaio documentation site</title>
-
-
-    <link rel="stylesheet" href="../assets/stylesheets/main.4dd2dd8d.min.css">
-
-
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-    <style>body, input {
-        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
-    }
-
-    code, kbd, pre {
-        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
-    }</style>
-
-
-    <link rel="stylesheet" href="../stylesheets/extra.css">
-
-
-</head>
-
-
-<body dir="ltr">
-
-
-<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-<label class="md-overlay" for="__drawer"></label>
-<div data-md-component="skip">
-
-
-    <a href="#complete-list-of-features" class="md-skip">
-        Skip to content
-    </a>
-
-</div>
-<div data-md-component="announce">
-
-</div>
-
-<header class="md-header" data-md-component="header">
-    <nav class="md-header-nav md-grid" aria-label="Header">
-        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
-
-
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-            </svg>
-
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4dd2dd8d.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#complete-list-of-features" class="md-skip">
+          Skip to content
         </a>
-        <label class="md-header-nav__button md-icon" for="__drawer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
-            </svg>
-        </label>
-        <div class="md-header-nav__title" data-md-component="header-title">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
-            <div class="md-header-nav__ellipsis">
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
             Rapaio
           </span>
-                <span class="md-header-nav__topic md-ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
             
               Complete list of features
             
           </span>
-            </div>
-
         </div>
-
-
-    </nav>
+      
+    </div>
+    
+    
+  </nav>
 </header>
-
-<div class="md-container" data-md-component="container">
-
-
-    <main class="md-main" data-md-component="main">
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
-
-
-            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
                 <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-                            <label class="md-nav__title" for="__drawer">
-                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
-                                   aria-label="Rapaio">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Rapaio
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
 
 
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-                                    </svg>
+  <li class="md-nav__item">
+    <a href=".." title="Welcome to Rapaio" class="md-nav__link">
+      Welcome to Rapaio
+    </a>
+  </li>
 
-                                </a>
-                                Rapaio
-                            </label>
+    
+      
+      
+      
 
-                            <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                <li class="md-nav__item">
-                                    <a href=".." title="Welcome to Rapaio" class="md-nav__link">
-                                        Welcome to Rapaio
-                                    </a>
-                                </li>
+  
 
 
-                                <li class="md-nav__item md-nav__item--active">
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Complete list of features
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="Complete list of features" class="md-nav__link md-nav__link--active">
+      Complete list of features
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#definitive-features" class="md-nav__link">
+    Definitive features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experminental-features" class="md-nav__link">
+    Experminental Features
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-
-
-                                    <label class="md-nav__link md-nav__link--active" for="__toc">
-                                        Complete list of features
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-
-                                    <a href="./" title="Complete list of features" class="md-nav__link md-nav__link--active">
-                                        Complete list of features
-                                    </a>
-
-
-                                    <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-
-
-                                        <label class="md-nav__title" for="__toc">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Table of contents
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-                                            <li class="md-nav__item">
-                                                <a href="#definitive-features" class="md-nav__link">
-                                                    Definitive features
-                                                </a>
-
-                                            </li>
-
-                                            <li class="md-nav__item">
-                                                <a href="#experminental-features" class="md-nav__link">
-                                                    Experminental Features
-                                                </a>
-
-                                            </li>
-
-                                        </ul>
-
-                                    </nav>
-
-                                </li>
-
-
-                                <li class="md-nav__item md-nav__item--nested">
-
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
-
-                                    <label class="md-nav__link" for="nav-3">
-                                        Notebooks
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-3">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Notebooks
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
 
 
-                                            <li class="md-nav__item">
-                                                <a href="../notebooks/BriefPreview/" title="Brief preview" class="md-nav__link">
-                                                    Brief preview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Tutorials
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../notebooks/BriefPreview/" title="Brief preview" class="md-nav__link">
+      Brief preview
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../notebooks/tutorials/BuiltinDataSets/" title="Built-in Data sets" class="md-nav__link">
+      Built-in Data sets
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
-
-                                    <label class="md-nav__link" for="nav-4">
-                                        Tutorials
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-4">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Tutorials
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
+        
+          
+          
+          
 
 
-                                            <li class="md-nav__item">
-                                                <a href="../notebooks/tutorials/DataHandlingOverview/" title="Data Handling Overview"
-                                                   class="md-nav__link">
-                                                    Data Handling Overview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item">
+    <a href="../notebooks/tutorials/DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
+      Data Handling Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../notebooks/tutorials/Variables/" title="Variables" class="md-nav__link">
+      Variables
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../notebooks/tutorials/CoreStatisticalTools/" title="Core statistical tools" class="md-nav__link">
+      Core statistical tools
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+        
+      </ul>
+    </nav>
+  </li>
 
-                                    <label class="md-nav__link" for="nav-5">
-                                        About
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="About" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-5">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            About
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                            <li class="md-nav__item">
-                                                <a href="../about/" title="Short story" class="md-nav__link">
-                                                    Short story
-                                                </a>
-                                            </li>
+    
+      
+      
+      
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../about/" title="Short story" class="md-nav__link">
+      Short story
+    </a>
+  </li>
+
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item">
-                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
-                                        Source
-                                    </a>
-                                </li>
+  <li class="md-nav__item">
+    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+      Source
+    </a>
+  </li>
 
-
-                            </ul>
-                        </nav>
-                    </div>
+    
+  </ul>
+</nav>
+                  </div>
                 </div>
-            </div>
-
-
-            <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
                 <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-
-                        <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-
-
-                            <label class="md-nav__title" for="__toc">
-                                <span class="md-nav__icon md-icon"></span>
-                                Table of contents
-                            </label>
-                            <ul class="md-nav__list" data-md-scrollfix>
-
-                                <li class="md-nav__item">
-                                    <a href="#definitive-features" class="md-nav__link">
-                                        Definitive features
-                                    </a>
-
-                                </li>
-
-                                <li class="md-nav__item">
-                                    <a href="#experminental-features" class="md-nav__link">
-                                        Experminental Features
-                                    </a>
-
-                                </li>
-
-                            </ul>
-
-                        </nav>
-                    </div>
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#definitive-features" class="md-nav__link">
+    Definitive features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experminental-features" class="md-nav__link">
+    Experminental Features
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
                 </div>
-            </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="complete-list-of-features">Complete list of features</h1>
+<p>The code is classified in two categories of maturity:</p>
+<ul>
+<li><em>Definitive</em> - This category includes all the code which has a stable API and it was covered carefully with tests, 
+usually with a percentage over 90%</li>
+<li><em>Experimental</em> - All the code found under the package <code>rapaio.experimental</code>. This includes drafts and untested code, 
+which can be used, but production tools cannot rely on this code. Usually, when code migrates outside the experimental 
+package, API can change and sometimes even the philosophy behind the implementation.</li>
+</ul>
+<h3 id="definitive-features">Definitive features</h3>
+<p><strong>Data handling</strong></p>
+<p>Any data library needs a way to structure and handle data. Rapaio library defines a high level API for data handling 
+in form of <em>Var</em> and <em>Frame</em>. Variables and frames are an in-memory data model.   </p>
+<ul>
+<li><em>Variables and frames</em> - the in memory data model. There are 3 flavors of variables and frames: solid, mapped or bind.
+Solid variable and frames defined dense array data type implementations. Mapped or bind variables or arrays are 
+implementations which relays on other data structures for storing data. Those looks like concept of views from 
+relational data bases.  </li>
+<li>Data access using streams is available on variables and frames.</li>
+<li>DensityVector - vector of frequencies</li>
+<li>Unique - data structure to collect and manipulate unique values of a variable</li>
+<li>Group - data structure to build and manipulate group by aggregations</li>
+<li>Index - data structure for transforming value domains into dense indexes</li>
+</ul>
+<p><strong>Core</strong></p>
+<p>Core package contains various basic tools like computing various statistics, various types of random sampling or 
+other sampling strategies for sampling rows.   </p>
+<ul>
+<li><em>Statistics</em>: Maximum, Minimum, Sum, Mean, Variance, Quantiles, GeometricMean, Skewness, Kurtosis</li>
+<li><em>Online Statistics</em>: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis</li>
+<li><em>Op interface</em>: provides simple way to apply mathematical operations or functions on variables or between them</li>
+<li><em>WeightedMean</em>, <em>WeightedOnlineStat</em>: weighted variant of statistics</li>
+<li><em>Pearson product-moment coefficient</em>: linear correlation</li>
+<li><em>Spearman's rank correlation coefficient</em>: linear correlation on rankings</li>
+<li><em>SamplingTools</em><ul>
+<li>generates discrete integer samples with/without replacement, weighted/non-weighted</li>
+<li>offers utility methods for bootstraps, simple random, stratified sampling</li>
+</ul>
+</li>
+<li><em>RowSampler</em> implementations used in machine learning algorithms: bootstrap, identity, subsampling</li>
+<li><em>DensityVector</em> onw way discrete density vector tool</li>
+<li><em>DensityTable</em> two way discrete density table tool</li>
+</ul>
+<p><strong>Distributions</strong></p>
+<p>This package provides access to some very common statistical distributions in an uniform way </p>
+<ul>
+<li>Bernoulli</li>
+<li>Binomial</li>
+<li>ChiSquare</li>
+<li>Discrete Uniform</li>
+<li>Fisher</li>
+<li>Gamma</li>
+<li>Hypergeometric</li>
+<li>Normal/Gaussian</li>
+<li>Poisson</li>
+<li>Student t</li>
+<li>Continuous Uniform</li>
+<li>Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)</li>
+</ul>
+<p><strong>Hypothesis Testing</strong></p>
+<p>Hypothesis testing framework provides implementations for some common hypothesis tests  </p>
+<ul>
+<li><em>z test</em><ul>
+<li>one sample test for testing the sample mean</li>
+<li>two unpaired samples test for testing difference of the sample means</li>
+<li>two paired samples test for testing sample mean of the differences</li>
+</ul>
+</li>
+<li><em>t test</em><ul>
+<li>one sample test for testing the sample mean</li>
+<li>two unpaired samples t test with same variance</li>
+<li>two unpaired samples Welch t test with different variances</li>
+<li>two paired samples test for testing sample mean of differences</li>
+</ul>
+</li>
+<li><em>Kolmogorov Smirnoff</em> KS test<ul>
+<li>one sample test for testing if a sample belongs to a distribution</li>
+<li>two samples test for testing if both samples comes from the same distribution</li>
+</ul>
+</li>
+<li><em>Pearson Chi-Square tests</em><ul>
+<li>goodness of fit </li>
+<li>independence test</li>
+<li>conditional independence test</li>
+</ul>
+</li>
+<li><em>Anderson-Darling goodness of fit</em><ul>
+<li>normality test</li>
+</ul>
+</li>
+</ul>
+<p><strong>Filters</strong></p>
+<p>Data can be manipulated ad hoc or by using various types of APIs they expose (direct methods, streams, ops interface).
+All those methods are useful in different contexts. Some of data transformation operations, however, needs to be 
+applied multiple times or ar too complex to be implemented all over again. Those operations can be collected 
+into a chain of transformations and applied to multiple sets of data many times - this is the concept of filter.
+A filter have two fundamental operations: <em>fit</em> to the data and <em>apply</em> the filter to data. 
+There are filters which can be applied to a single variable or filters which can be applied to multiple variables 
+from a data frame.   </p>
+<p><strong>Frame filters</strong></p>
+<ul>
+<li><em>FApplyDouble</em> - apply a function on the double values of variables</li>
+<li><em>FFillNaDouble</em> - apply a given fill value over missing values</li>
+<li><em>FIntercept</em> - add an intercept variable to a given data frame</li>
+<li><em>FJitter</em> - add jitter to data according with a noise distribution</li>
+<li><em>FMapVars</em> - select some variables according with a VRange pattern</li>
+<li><em>FOneHotEncoding</em> - encodes nominal variables into multiple 0/1 variables</li>
+<li><em>FQuantileDiscrete</em> - splits numeric variables into nominal categories based on quantile intervals</li>
+<li><em>FRandomProjection</em> - project a data frame onto random projections</li>
+<li><em>FRefSort</em> - sort a data frame based on reference comparators</li>
+<li><em>FRemoveVars</em> - removes some variables according with a VRange pattern</li>
+<li><em>FRetainTypes</em> - retain only variables of given types</li>
+<li><em>FShuffle</em> - shuffle rows from a data frame</li>
+<li><em>FStandardize</em> - standardize variables from a given data frame</li>
+<li><em>FToDouble</em> - convert variables to double</li>
+<li><em>FTransformBoxCox</em> - apply box cox transformation</li>
+</ul>
+<p><strong>Var filters</strong></p>
+<ul>
+<li><em>VApply</em> - apply a function over the stream spots</li>
+<li><em>VApplyDouble</em> - apply a function over the double values</li>
+<li><em>VApplyInt</em> - updates a variable using a lambda on int value</li>
+<li><em>VApplyLabel</em> - updates a variable using a lambda on label value</li>
+<li><em>VCumSum</em> - builds a numeric vector with a cumulative sum</li>
+<li><em>VJitter</em> - adds noise to a given numeric vector according with a noise distribution</li>
+<li><em>VQUantileDiscrete</em> - converts a numerical variable into a nominal based on quantile intervals</li>
+<li><em>VRefSort</em> - sorts a variable according with a given set of row comparators</li>
+<li><em>VShuffle</em> - shuffles values from a variable</li>
+<li><em>VSort</em> - sorts a variable according with default comparator</li>
+<li><em>VStandardize</em> - standardize values from a given numeric variable</li>
+<li><em>VToDouble</em> - transforms a variable into double using a lambda</li>
+<li><em>VToInt</em> - transforms a variable into an int type using a lambda</li>
+<li><em>VTransformBoxCox</em> - transform a variable with BoxCox transform</li>
+<li><em>VTransformPower</em> - transform a variable with power transform</li>
+</ul>
+<p><strong>Machine learning</strong>
+There are a lot of various problems which can be solved using methods from 
+the field of machine learning: classification, regression, clustering, time series forecasting, 
+etc.    </p>
+<p><strong>Model selection and evaluation</strong></p>
+<ul>
+<li>Confusion Matrix</li>
+<li>CrossValidation for Classifiers (metrics: Accuracy, LogLoss)</li>
+</ul>
+<p><strong>Classification</strong></p>
+<ul>
+<li>ZeroRule</li>
+<li>OneRule</li>
+<li>Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)</li>
+<li>Linear: BinaryLogistic (optionally L2 penalization)</li>
+<li>Decision Trees - CTree: DecisionStump, ID3, C45, CART</li>
+<li>purity: entropy, infogain, gain ration, gini index</li>
+<li>weight on instances</li>
+<li>split: numeric binary, nominal binary, nominal full</li>
+<li>missing value handling: ignore, random, majority, weighted</li>
+<li>reduced-error pruning</li>
+<li>variable importance: frequency, gain and permutation based</li>
+<li>Ensemble: CForest - Bagging, Random Forests</li>
+<li>Boosting: AdaBoost</li>
+<li>Boosting: GBT Classifier</li>
+<li>SVM: BinarySMO (Platt, Keerthi &amp; all)</li>
+</ul>
+<p><strong>Regression</strong></p>
+<ul>
+<li>Simple: ConstantRegression</li>
+<li>Simple: L1Regression</li>
+<li>Simple: L2Regression</li>
+<li>Simple: RandomValueRegression</li>
+<li>LinearRegression</li>
+<li>RidgeRegression</li>
+<li>WeightedLinearRegression</li>
+<li>Tree: CART (no pruning)</li>
+<li>Tree: C45 (no pruning)</li>
+<li>Tree: DecisionStump</li>
+<li>Ensemble: RForest</li>
+<li>Boost: Gradient Boosting Trees</li>
+</ul>
+<p><strong>Analysis</strong></p>
+<ul>
+<li>Principal Components Analysis</li>
+</ul>
+<p><strong>Clustering</strong></p>
+<ul>
+<li>KMeans clustering</li>
+</ul>
+<p><strong>Graphics</strong></p>
+<ul>
+<li>QQ Plot</li>
+<li>Box Plot</li>
+<li>Bar Plot</li>
+<li>Histogram</li>
+<li>2D Histogram</li>
+<li>Plot function line</li>
+<li>Plot vertical/horizontal/ab line</li>
+<li>Plot lines</li>
+<li>Plot points</li>
+<li>Density line KDE</li>
+<li>ROC Curve</li>
+<li>Segment2D</li>
+<li>Plot legend</li>
+</ul>
+<h3 id="experminental-features">Experminental Features</h3>
+<p>Most of the features contained under this section does not meet the production ready bar. 
+This does not mean that most of them are not usable, and sometimes what is missing
+is only a tiny piece like no complete printing facilities. </p>
+<p>However, due to the high
+likelihood of future changes, they will be kept under this umbrella until enough time 
+and code is spend on improvements and testing to raise those tools to a production 
+ready state. Until that happens, these are the experimental features:  </p>
+<p><strong>Core</strong></p>
+<ul>
+<li>Special Math functions</li>
+</ul>
+<p><strong>Core tools</strong></p>
+<ul>
+<li>Distance Matrix</li>
+</ul>
+<p><strong>Evaluation: metrics</strong></p>
+<ul>
+<li>Receiver Operator Characteristic - ROC curves and ROC Area</li>
+<li>Root Mean Square Error</li>
+<li>Mean Absolute Error</li>
+<li>Gini / Normalized Gini</li>
+</ul>
+<p><strong>Analysis</strong></p>
+<ul>
+<li>Fast Fourier Transform</li>
+<li>Fischer Linear Discriminant Analysis</li>
+</ul>
+<p><strong>Classification</strong></p>
+<ul>
+<li>Ensemble: SplitClassifier</li>
+</ul>
+<p><strong>Regression</strong></p>
+<ul>
+<li>NNet: MultiLayer Perceptron Regressor</li>
+</ul>
+<p><strong>Clustering</strong></p>
+<ul>
+<li>Cluster Silhouette</li>
+<li>Minkowski Weighted KMeans</li>
+</ul>
+<p><strong>Time Series</strong></p>
+<ul>
+<li>Acf (correlation, covariance)</li>
+<li>Pacf </li>
+</ul>
+<p><strong>Matrices and vectors</strong></p>
+<ul>
+<li>Numeric vector operations</li>
+<li>Basic matrix operations and matrix decompositions</li>
+</ul>
+                
+              
+              
+                
 
 
-            <div class="md-content">
-                <article class="md-content__inner md-typeset">
-
-
-                    <h1 id="complete-list-of-features">Complete list of features</h1>
-                    <p>The code is classified in two categories of maturity:</p>
-                    <ul>
-                        <li><em>Definitive</em> - This category includes all the code which has a stable API and it was covered carefully
-                            with tests,
-                            usually with a percentage over 90%
-                        </li>
-                        <li><em>Experimental</em> - All the code found under the package <code>rapaio.experimental</code>. This includes
-                            drafts and untested code,
-                            which can be used, but production tools cannot rely on this code. Usually, when code migrates outside the
-                            experimental
-                            package, API can change and sometimes even the philosophy behind the implementation.
-                        </li>
-                    </ul>
-                    <h3 id="definitive-features">Definitive features</h3>
-                    <p><strong>Data handling</strong></p>
-                    <p>Any data library needs a way to structure and handle data. Rapaio library defines a high level API for data handling
-                        in form of <em>Var</em> and <em>Frame</em>. Variables and frames are an in-memory data model. </p>
-                    <ul>
-                        <li><em>Variables and frames</em> - the in memory data model. There are 3 flavors of variables and frames: solid,
-                            mapped or bind.
-                            Solid variable and frames defined dense array data type implementations. Mapped or bind variables or arrays are
-                            implementations which relays on other data structures for storing data. Those looks like concept of views from
-                            relational data bases.
-                        </li>
-                        <li>Data access using streams is available on variables and frames.</li>
-                        <li>DensityVector - vector of frequencies</li>
-                        <li>Unique - data structure to collect and manipulate unique values of a variable</li>
-                        <li>Group - data structure to build and manipulate group by aggregations</li>
-                        <li>Index - data structure for transforming value domains into dense indexes</li>
-                    </ul>
-                    <p><strong>Core</strong></p>
-                    <p>Core package contains various basic tools like computing various statistics, various types of random sampling or
-                        other sampling strategies for sampling rows. </p>
-                    <ul>
-                        <li><em>Statistics</em>: Maximum, Minimum, Sum, Mean, Variance, Quantiles, GeometricMean, Skewness, Kurtosis</li>
-                        <li><em>Online Statistics</em>: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis</li>
-                        <li><em>Op interface</em>: provides simple way to apply mathematical operations or functions on variables or between
-                            them
-                        </li>
-                        <li><em>WeightedMean</em>, <em>WeightedOnlineStat</em>: weighted variant of statistics</li>
-                        <li><em>Pearson product-moment coefficient</em>: linear correlation</li>
-                        <li><em>Spearman's rank correlation coefficient</em>: linear correlation on rankings</li>
-                        <li><em>SamplingTools</em>
-                            <ul>
-                                <li>generates discrete integer samples with/without replacement, weighted/non-weighted</li>
-                                <li>offers utility methods for bootstraps, simple random, stratified sampling</li>
-                            </ul>
-                        </li>
-                        <li><em>RowSampler</em> implementations used in machine learning algorithms: bootstrap, identity, subsampling</li>
-                        <li><em>DensityVector</em> onw way discrete density vector tool</li>
-                        <li><em>DensityTable</em> two way discrete density table tool</li>
-                    </ul>
-                    <p><strong>Distributions</strong></p>
-                    <p>This package provides access to some very common statistical distributions in an uniform way </p>
-                    <ul>
-                        <li>Bernoulli</li>
-                        <li>Binomial</li>
-                        <li>ChiSquare</li>
-                        <li>Discrete Uniform</li>
-                        <li>Fisher</li>
-                        <li>Gamma</li>
-                        <li>Hypergeometric</li>
-                        <li>Normal/Gaussian</li>
-                        <li>Poisson</li>
-                        <li>Student t</li>
-                        <li>Continuous Uniform</li>
-                        <li>Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)</li>
-                    </ul>
-                    <p><strong>Hypothesis Testing</strong></p>
-                    <p>Hypothesis testing framework provides implementations for some common hypothesis tests </p>
-                    <ul>
-                        <li><em>z test</em>
-                            <ul>
-                                <li>one sample test for testing the sample mean</li>
-                                <li>two unpaired samples test for testing difference of the sample means</li>
-                                <li>two paired samples test for testing sample mean of the differences</li>
-                            </ul>
-                        </li>
-                        <li><em>t test</em>
-                            <ul>
-                                <li>one sample test for testing the sample mean</li>
-                                <li>two unpaired samples t test with same variance</li>
-                                <li>two unpaired samples Welch t test with different variances</li>
-                                <li>two paired samples test for testing sample mean of differences</li>
-                            </ul>
-                        </li>
-                        <li><em>Kolmogorov Smirnoff</em> KS test
-                            <ul>
-                                <li>one sample test for testing if a sample belongs to a distribution</li>
-                                <li>two samples test for testing if both samples comes from the same distribution</li>
-                            </ul>
-                        </li>
-                        <li><em>Pearson Chi-Square tests</em>
-                            <ul>
-                                <li>goodness of fit</li>
-                                <li>independence test</li>
-                                <li>conditional independence test</li>
-                            </ul>
-                        </li>
-                        <li><em>Anderson-Darling goodness of fit</em>
-                            <ul>
-                                <li>normality test</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p><strong>Filters</strong></p>
-                    <p>Data can be manipulated ad hoc or by using various types of APIs they expose (direct methods, streams, ops
-                        interface).
-                        All those methods are useful in different contexts. Some of data transformation operations, however, needs to be
-                        applied multiple times or ar too complex to be implemented all over again. Those operations can be collected
-                        into a chain of transformations and applied to multiple sets of data many times - this is the concept of filter.
-                        A filter have two fundamental operations: <em>fit</em> to the data and <em>apply</em> the filter to data.
-                        There are filters which can be applied to a single variable or filters which can be applied to multiple variables
-                        from a data frame. </p>
-                    <p><strong>Frame filters</strong></p>
-                    <ul>
-                        <li><em>FApplyDouble</em> - apply a function on the double values of variables</li>
-                        <li><em>FFillNaDouble</em> - apply a given fill value over missing values</li>
-                        <li><em>FIntercept</em> - add an intercept variable to a given data frame</li>
-                        <li><em>FJitter</em> - add jitter to data according with a noise distribution</li>
-                        <li><em>FMapVars</em> - select some variables according with a VRange pattern</li>
-                        <li><em>FOneHotEncoding</em> - encodes nominal variables into multiple 0/1 variables</li>
-                        <li><em>FQuantileDiscrete</em> - splits numeric variables into nominal categories based on quantile intervals</li>
-                        <li><em>FRandomProjection</em> - project a data frame onto random projections</li>
-                        <li><em>FRefSort</em> - sort a data frame based on reference comparators</li>
-                        <li><em>FRemoveVars</em> - removes some variables according with a VRange pattern</li>
-                        <li><em>FRetainTypes</em> - retain only variables of given types</li>
-                        <li><em>FShuffle</em> - shuffle rows from a data frame</li>
-                        <li><em>FStandardize</em> - standardize variables from a given data frame</li>
-                        <li><em>FToDouble</em> - convert variables to double</li>
-                        <li><em>FTransformBoxCox</em> - apply box cox transformation</li>
-                    </ul>
-                    <p><strong>Var filters</strong></p>
-                    <ul>
-                        <li><em>VApply</em> - apply a function over the stream spots</li>
-                        <li><em>VApplyDouble</em> - apply a function over the double values</li>
-                        <li><em>VApplyInt</em> - updates a variable using a lambda on int value</li>
-                        <li><em>VApplyLabel</em> - updates a variable using a lambda on label value</li>
-                        <li><em>VCumSum</em> - builds a numeric vector with a cumulative sum</li>
-                        <li><em>VJitter</em> - adds noise to a given numeric vector according with a noise distribution</li>
-                        <li><em>VQUantileDiscrete</em> - converts a numerical variable into a nominal based on quantile intervals</li>
-                        <li><em>VRefSort</em> - sorts a variable according with a given set of row comparators</li>
-                        <li><em>VShuffle</em> - shuffles values from a variable</li>
-                        <li><em>VSort</em> - sorts a variable according with default comparator</li>
-                        <li><em>VStandardize</em> - standardize values from a given numeric variable</li>
-                        <li><em>VToDouble</em> - transforms a variable into double using a lambda</li>
-                        <li><em>VToInt</em> - transforms a variable into an int type using a lambda</li>
-                        <li><em>VTransformBoxCox</em> - transform a variable with BoxCox transform</li>
-                        <li><em>VTransformPower</em> - transform a variable with power transform</li>
-                    </ul>
-                    <p><strong>Machine learning</strong>
-                        There are a lot of various problems which can be solved using methods from
-                        the field of machine learning: classification, regression, clustering, time series forecasting,
-                        etc. </p>
-                    <p><strong>Model selection and evaluation</strong></p>
-                    <ul>
-                        <li>Confusion Matrix</li>
-                        <li>CrossValidation for Classifiers (metrics: Accuracy, LogLoss)</li>
-                    </ul>
-                    <p><strong>Classification</strong></p>
-                    <ul>
-                        <li>ZeroRule</li>
-                        <li>OneRule</li>
-                        <li>Bayesian: NaiveBayes (Gaussian, KernelDensity, Bernoulli, Multinoulli, Multinomial, Poisson)</li>
-                        <li>Linear: BinaryLogistic (optionally L2 penalization)</li>
-                        <li>Decision Trees - CTree: DecisionStump, ID3, C45, CART</li>
-                        <li>purity: entropy, infogain, gain ration, gini index</li>
-                        <li>weight on instances</li>
-                        <li>split: numeric binary, nominal binary, nominal full</li>
-                        <li>missing value handling: ignore, random, majority, weighted</li>
-                        <li>reduced-error pruning</li>
-                        <li>variable importance: frequency, gain and permutation based</li>
-                        <li>Ensemble: CForest - Bagging, Random Forests</li>
-                        <li>Boosting: AdaBoost</li>
-                        <li>Boosting: GBT Classifier</li>
-                        <li>SVM: BinarySMO (Platt, Keerthi &amp; all)</li>
-                    </ul>
-                    <p><strong>Regression</strong></p>
-                    <ul>
-                        <li>Simple: ConstantRegression</li>
-                        <li>Simple: L1Regression</li>
-                        <li>Simple: L2Regression</li>
-                        <li>Simple: RandomValueRegression</li>
-                        <li>LinearRegression</li>
-                        <li>RidgeRegression</li>
-                        <li>WeightedLinearRegression</li>
-                        <li>Tree: CART (no pruning)</li>
-                        <li>Tree: C45 (no pruning)</li>
-                        <li>Tree: DecisionStump</li>
-                        <li>Ensemble: RForest</li>
-                        <li>Boost: Gradient Boosting Trees</li>
-                    </ul>
-                    <p><strong>Analysis</strong></p>
-                    <ul>
-                        <li>Principal Components Analysis</li>
-                    </ul>
-                    <p><strong>Clustering</strong></p>
-                    <ul>
-                        <li>KMeans clustering</li>
-                    </ul>
-                    <h3 id="experminental-features">Experminental Features</h3>
-                    <p>Most of the features contained under this section does not meet the production ready bar.
-                        This does not mean that most of them are not usable, and sometimes what is missing
-                        is only a tiny piece like no complete printing facilities. </p>
-                    <p>However, due to the high
-                        likelihood of future changes, they will be kept under this umbrella until enough time
-                        and code is spend on improvements and testing to raise those tools to a production
-                        ready state. Until that happens, these are the experimental features: </p>
-                    <p><strong>Core</strong></p>
-                    <ul>
-                        <li>Special Math functions</li>
-                    </ul>
-                    <p><strong>Core tools</strong></p>
-                    <ul>
-                        <li>Distance Matrix</li>
-                    </ul>
-                    <p><strong>Evaluation: metrics</strong></p>
-                    <ul>
-                        <li>Receiver Operator Characteristic - ROC curves and ROC Area</li>
-                        <li>Root Mean Square Error</li>
-                        <li>Mean Absolute Error</li>
-                        <li>Gini / Normalized Gini</li>
-                    </ul>
-                    <p><strong>Analysis</strong></p>
-                    <ul>
-                        <li>Fast Fourier Transform</li>
-                        <li>Fischer Linear Discriminant Analysis</li>
-                    </ul>
-                    <p><strong>Classification</strong></p>
-                    <ul>
-                        <li>Ensemble: SplitClassifier</li>
-                    </ul>
-                    <p><strong>Regression</strong></p>
-                    <ul>
-                        <li>NNet: MultiLayer Perceptron Regressor</li>
-                    </ul>
-                    <p><strong>Clustering</strong></p>
-                    <ul>
-                        <li>Cluster Silhouette</li>
-                        <li>Minkowski Weighted KMeans</li>
-                    </ul>
-                    <p><strong>Time Series</strong></p>
-                    <ul>
-                        <li>Acf (correlation, covariance)</li>
-                        <li>Pacf</li>
-                    </ul>
-                    <p><strong>Graphics</strong></p>
-                    <ul>
-                        <li>QQ Plot</li>
-                        <li>Box Plot</li>
-                        <li>Histogram</li>
-                        <li>2d Histogram</li>
-                        <li>Plot function line</li>
-                        <li>Plot vertical/horizontal/ab line</li>
-                        <li>Plot lines</li>
-                        <li>Plot points</li>
-                        <li>Density line KDE</li>
-                        <li>ROC Curve</li>
-                        <li>Discrete Vertical Lines</li>
-                        <li>Segment2D</li>
-                        <li>Plot legend</li>
-                        <li>BarChart</li>
-                    </ul>
-                    <p><strong>Matrices and vectors</strong></p>
-                    <ul>
-                        <li>Numeric vector operations</li>
-                        <li>Basic matrix operations and matrix decompositions</li>
-                    </ul>
-
-
-                </article>
-            </div>
+              
+            </article>
+          </div>
         </div>
-    </main>
-
-
-    <footer class="md-footer">
-
-        <div class="md-footer-nav">
-            <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
-
-                <a href=".." title="Welcome to Rapaio" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-                    <div class="md-footer-nav__button md-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/>
-                        </svg>
-                    </div>
-                    <div class="md-footer-nav__title">
-                        <div class="md-ellipsis">
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href=".." title="Welcome to Rapaio" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                            Welcome to Rapaio
-                        </div>
-                    </div>
-                </a>
-
-
-                <a href="../notebooks/BriefPreview/" title="Brief preview" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-                    <div class="md-footer-nav__title">
-                        <div class="md-ellipsis">
+                Welcome to Rapaio
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../notebooks/BriefPreview/" title="Brief preview" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                            Brief preview
-                        </div>
-                    </div>
-                    <div class="md-footer-nav__button md-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/>
-                        </svg>
-                    </div>
-                </a>
-
-            </nav>
-        </div>
-
-        <div class="md-footer-meta md-typeset">
-            <div class="md-footer-meta__inner md-grid">
-                <div class="md-footer-copyright">
-
-                    Made with
-                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-                        Material for MkDocs
-                    </a>
-                </div>
-
+                Brief preview
+              </div>
             </div>
-        </div>
-    </footer>
-
-</div>
-
-<script src="../assets/javascripts/vendor.3636a4ec.min.js"></script>
-<script src="../assets/javascripts/bundle.e9fe3281.min.js"></script>
-<script id="__lang" type="application/json">{
-    "clipboard.copy": "Copy to clipboard",
-    "clipboard.copied": "Copied to clipboard",
-    "search.config.lang": "en",
-    "search.config.pipeline": "trimmer, stopWordFilter",
-    "search.config.separator": "[\\s\\-]+",
-    "search.result.placeholder": "Type to start searching",
-    "search.result.none": "No matching documents",
-    "search.result.one": "1 matching document",
-    "search.result.other": "# matching documents"
-}</script>
-
-<script>
-    app = initialize({
-        base: "..",
-        features: [],
-        search: Object.assign({
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
             worker: "../assets/javascripts/worker/search.5eca75d3.min.js"
-        }, typeof search !== "undefined" && search)
-    })
-</script>
-
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-
-</body>
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+      
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      
+    
+  </body>
 </html>

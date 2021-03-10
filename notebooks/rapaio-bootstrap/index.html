@@ -1,258 +1,289 @@
+
+
+
 <!doctype html>
 <html lang="en" class="no-js">
-<head>
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/rapaio-bootstrap/">
+      
+      
+        <meta name="author" content="Aurelian Tutuianu">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+    
+    
+<title>Rapaio documentation site</title>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
-
-    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/rapaio-bootstrap/">
-
-
-    <meta name="author" content="Aurelian Tutuianu">
-
-    <link rel="shortcut icon" href="../../assets/images/favicon.png">
-    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
-
-
-    <title>Rapaio documentation site</title>
-
-
-    <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
-
-
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-    <style>body, input {
-        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
-    }
-
-    code, kbd, pre {
-        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
-    }</style>
-
-
-    <link rel="stylesheet" href="../../stylesheets/extra.css">
-
-
-</head>
-
-
-<body dir="ltr">
-
-
-<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-<label class="md-overlay" for="__drawer"></label>
-<div data-md-component="skip">
-
-</div>
-<div data-md-component="announce">
-
-</div>
-
-<header class="md-header" data-md-component="header">
-    <nav class="md-header-nav md-grid" aria-label="Header">
-        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
-
-
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-            </svg>
-
-        </a>
-        <label class="md-header-nav__button md-icon" for="__drawer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
-            </svg>
-        </label>
-        <div class="md-header-nav__title" data-md-component="header-title">
-
-            <div class="md-header-nav__ellipsis">
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
             Rapaio
           </span>
-                <span class="md-header-nav__topic md-ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
             
               Rapaio bootstrap
             
           </span>
-            </div>
-
         </div>
-
-
-    </nav>
+      
+    </div>
+    
+    
+  </nav>
 </header>
-
-<div class="md-container" data-md-component="container">
-
-
-    <main class="md-main" data-md-component="main">
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
-
-
-            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
                 <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-                            <label class="md-nav__title" for="__drawer">
-                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
-                                   aria-label="Rapaio">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Rapaio
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
 
 
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-                                    </svg>
+  <li class="md-nav__item">
+    <a href="../.." title="Welcome to Rapaio" class="md-nav__link">
+      Welcome to Rapaio
+    </a>
+  </li>
 
-                                </a>
-                                Rapaio
-                            </label>
-
-                            <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                <li class="md-nav__item">
-                                    <a href="../.." title="Welcome to Rapaio" class="md-nav__link">
-                                        Welcome to Rapaio
-                                    </a>
-                                </li>
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item">
-                                    <a href="../../complete-library-features/" title="Complete list of features" class="md-nav__link">
-                                        Complete list of features
-                                    </a>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../../complete-library-features/" title="Complete list of features" class="md-nav__link">
+      Complete list of features
+    </a>
+  </li>
+
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item md-nav__item--nested">
-
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
-
-                                    <label class="md-nav__link" for="nav-3">
-                                        Notebooks
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-3">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Notebooks
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                            <li class="md-nav__item">
-                                                <a href="../BriefPreview/" title="Brief preview" class="md-nav__link">
-                                                    Brief preview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Tutorials
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../BriefPreview/" title="Brief preview" class="md-nav__link">
+      Brief preview
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../tutorials/BuiltinDataSets/" title="Built-in Data sets" class="md-nav__link">
+      Built-in Data sets
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
-
-                                    <label class="md-nav__link" for="nav-4">
-                                        Tutorials
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-4">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Tutorials
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
+        
+          
+          
+          
 
 
-                                            <li class="md-nav__item">
-                                                <a href="../tutorials/DataHandlingOverview/" title="Data Handling Overview"
-                                                   class="md-nav__link">
-                                                    Data Handling Overview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item">
+    <a href="../tutorials/DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
+      Data Handling Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../tutorials/Variables/" title="Variables" class="md-nav__link">
+      Variables
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../tutorials/CoreStatisticalTools/" title="Core statistical tools" class="md-nav__link">
+      Core statistical tools
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+        
+      </ul>
+    </nav>
+  </li>
 
-                                    <label class="md-nav__link" for="nav-5">
-                                        About
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="About" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-5">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            About
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                            <li class="md-nav__item">
-                                                <a href="../../about/" title="Short story" class="md-nav__link">
-                                                    Short story
-                                                </a>
-                                            </li>
+    
+      
+      
+      
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../../about/" title="Short story" class="md-nav__link">
+      Short story
+    </a>
+  </li>
+
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item">
-                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
-                                        Source
-                                    </a>
-                                </li>
+  <li class="md-nav__item">
+    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+      Source
+    </a>
+  </li>
 
-
-                            </ul>
-                        </nav>
-                    </div>
+    
+  </ul>
+</nav>
+                  </div>
                 </div>
-            </div>
-
-
-            <div class="md-content">
-                <article class="md-content__inner md-typeset">
-
-
-                    <h1>Rapaio bootstrap</h1>
-
-                    <p>This notebook is used to bootstrap rapaio library usage in jupyter notebooks. The activities included are:</p>
-                    <ul>
-                        <li>include maved dependency on rapaio library</li>
-                        <li>inlcude an extensive list of imports from rapaio library to make life easier</li>
-                        <li>include a list of useful imports from java jdk</li>
-                        <li>set up printer with default values for printer (text width and image sizes)</li>
-                    </ul>
-                    <div class="highlight"><pre><span></span><code><span class="c1">// repositories for beta versions</span>
+              </div>
+            
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                  <h1>Rapaio bootstrap</h1>
+                
+                <p>This notebook is used to bootstrap rapaio library usage in jupyter notebooks. The activities included are:</p>
+<ul>
+<li>include maved dependency on rapaio library</li>
+<li>inlcude an extensive list of imports from rapaio library to make life easier</li>
+<li>include a list of useful imports from java jdk</li>
+<li>set up printer with default values for printer (text width and image sizes)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1">// repositories for beta versions</span>
 <span class="c1">//%mavenRepo oss-sonatype-snapshots https://oss.sonatype.org/content/repositories/snapshots/</span>
 
 <span class="c1">// maven central</span>
-<span class="o">%</span><span class="n">maven</span> <span class="n">io</span><span class="p">.</span><span class="na">github</span><span
-                                class="p">.</span><span class="na">padreati</span><span class="p">:</span><span class="n">rapaio</span><span
-                                class="p">:</span><span class="mf">2.4.0</span>
+<span class="c1">// %maven io.github.padreati:rapaio:2.5.0</span>
 
 <span class="c1">// local jars</span>
-<span class="c1">//%jars /home/ati/work/out/artifacts/rapaio.jar</span>
-</code></pre>
-                    </div>
+<span class="o">%</span><span class="n">jars</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ati</span><span class="o">/</span><span class="n">work</span><span class="o">/</span><span class="n">out</span><span class="o">/</span><span class="n">artifacts</span><span class="o">/</span><span class="n">rapaio</span><span class="p">.</span><span class="na">jar</span>
+</code></pre></div>
 
-                    <div class="highlight"><pre><span></span><code><span
-                            class="c1">// extensive list of useful imports from rapaio library</span>
+<div class="highlight"><pre><span></span><code><span class="c1">// extensive list of useful imports from rapaio library</span>
 
 <span class="kn">import</span> <span class="nn">rapaio.core.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.core.correlation.*</span><span class="p">;</span>
@@ -265,6 +296,7 @@
 <span class="kn">import</span> <span class="nn">rapaio.data.filter.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.data.group.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.data.unique.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.data.stream.*</span><span class="p">;</span>
 
 <span class="kn">import</span> <span class="nn">rapaio.datasets.*</span><span class="p">;</span>
 
@@ -277,14 +309,14 @@
 <span class="kn">import</span> <span class="nn">rapaio.math.linear.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.math.linear.dense.*</span><span class="p">;</span>
 
+<span class="kn">import</span> <span class="nn">rapaio.sys.*</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">rapaio.printer.*</span><span class="p">;</span>
+<span class="kn">import static</span> <span class="nn">rapaio.printer.Printer.*</span><span class="p">;</span>
+
 <span class="kn">import</span> <span class="nn">rapaio.ml.eval.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.ml.eval.metric.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.ml.eval.split.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.ml.common.*</span><span class="p">;</span>
-
-<span class="kn">import</span> <span class="nn">rapaio.sys.*</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">rapaio.printer.*</span><span class="p">;</span>
-<span class="kn">import static</span> <span class="nn">rapaio.printer.Printer.*</span><span class="p">;</span>
 
 <span class="kn">import</span> <span class="nn">rapaio.ml.classifier.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.ml.classifier.bayes.*</span><span class="p">;</span>
@@ -308,94 +340,79 @@
 <span class="kn">import</span> <span class="nn">rapaio.util.collection.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.util.function.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">rapaio.util.hash.*</span><span class="p">;</span>
-</code></pre>
-                    </div>
+</code></pre></div>
 
-                    <div class="highlight"><pre><span></span><code><span class="c1">// list of useful imports from jdk</span>
+<div class="highlight"><pre><span></span><code><span class="c1">// list of useful imports from jdk</span>
 
 <span class="kn">import</span> <span class="nn">java.util.function.*</span><span class="p">;</span>
 <span class="kn">import</span> <span class="nn">java.util.stream.*</span><span class="p">;</span>
-</code></pre>
-                    </div>
+</code></pre></div>
 
-                    <div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span
-                            class="p">().</span><span class="na">withOptions</span><span class="p">(</span><span
-                            class="n">textWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">));</span>
-<span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span class="p">().</span><span class="na">withGraphicShape</span><span
-                                class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">400</span><span
-                                class="p">);</span>
-</code></pre>
-                    </div>
+<div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span class="p">().</span><span class="na">withOptions</span><span class="p">(</span><span class="n">textWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">));</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">getPrinter</span><span class="p">().</span><span class="na">withGraphicShape</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</code></pre></div>
 
-                    <div class="highlight"><pre><span></span><code>rapaio.printer.standard.StandardPrinter@25987dc3
-</code></pre>
-                    </div>
+<div class="highlight"><pre><span></span><code>rapaio.printer.standard.StandardPrinter@414c8b19
+</code></pre></div>
 
-                    <div class="highlight"><pre><span></span><code>
-</code></pre>
-                    </div>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+                
+              
+              
+                
 
 
-                </article>
-            </div>
+              
+            </article>
+          </div>
         </div>
-    </main>
-
-
-    <footer class="md-footer">
-
-        <div class="md-footer-meta md-typeset">
-            <div class="md-footer-meta__inner md-grid">
-                <div class="md-footer-copyright">
-
-                    Made with
-                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-                        Material for MkDocs
-                    </a>
-                </div>
-
-            </div>
-        </div>
-    </footer>
-
-</div>
-
-<script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
-<script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script>
-<script id="__lang" type="application/json">{
-    "clipboard.copy": "Copy to clipboard",
-    "clipboard.copied": "Copied to clipboard",
-    "search.config.lang": "en",
-    "search.config.pipeline": "trimmer, stopWordFilter",
-    "search.config.separator": "[\\s\\-]+",
-    "search.result.placeholder": "Type to start searching",
-    "search.result.none": "No matching documents",
-    "search.result.one": "1 matching document",
-    "search.result.other": "# matching documents"
-}</script>
-
-<script>
-    app = initialize({
-        base: "../..",
-        features: [],
-        search: Object.assign({
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
             worker: "../../assets/javascripts/worker/search.5eca75d3.min.js"
-        }, typeof search !== "undefined" && search)
-    })
-</script>
-
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-
-</body>
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+      
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      
+    
+  </body>
 </html>

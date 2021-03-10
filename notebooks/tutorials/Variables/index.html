@@ -1,305 +1,955 @@
+
+
+
 <!doctype html>
 <html lang="en" class="no-js">
-<head>
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/Variables/">
+      
+      
+        <meta name="author" content="Aurelian Tutuianu">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+    
+    
+<title>Rapaio documentation site</title>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-
-
-    <link rel="canonical" href="https://padreati.github.io/rapaio/notebooks/tutorials/Variables/">
-
-
-    <meta name="author" content="Aurelian Tutuianu">
-
-    <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-    <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
-
-
-    <title>Rapaio documentation site</title>
-
-
-    <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
-
-
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-    <style>body, input {
-        font-family: "Roboto", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif
-    }
-
-    code, kbd, pre {
-        font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace
-    }</style>
-
-
-    <link rel="stylesheet" href="../../../stylesheets/extra.css">
-
-
-</head>
-
-
-<body dir="ltr">
-
-
-<input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-<input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-<label class="md-overlay" for="__drawer"></label>
-<div data-md-component="skip">
-
-</div>
-<div data-md-component="announce">
-
-</div>
-
-<header class="md-header" data-md-component="header">
-    <nav class="md-header-nav md-grid" aria-label="Header">
-        <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
-
-
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-            </svg>
-
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd2dd8d.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#variables" class="md-skip">
+          Skip to content
         </a>
-        <label class="md-header-nav__button md-icon" for="__drawer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
-            </svg>
-        </label>
-        <div class="md-header-nav__title" data-md-component="header-title">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-header-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
-            <div class="md-header-nav__ellipsis">
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
             Rapaio
           </span>
-                <span class="md-header-nav__topic md-ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
             
               Variables
             
           </span>
-            </div>
-
         </div>
-
-
-    </nav>
+      
+    </div>
+    
+    
+  </nav>
 </header>
-
-<div class="md-container" data-md-component="container">
-
-
-    <main class="md-main" data-md-component="main">
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
-
-
-            <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
                 <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                        <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-                            <label class="md-nav__title" for="__drawer">
-                                <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo"
-                                   aria-label="Rapaio">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://padreati.github.io/rapaio/" title="Rapaio" class="md-nav__button md-logo" aria-label="Rapaio">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Rapaio
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
 
 
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/>
-                                    </svg>
+  <li class="md-nav__item">
+    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
+      Welcome to Rapaio
+    </a>
+  </li>
 
-                                </a>
-                                Rapaio
-                            </label>
-
-                            <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                <li class="md-nav__item">
-                                    <a href="../../.." title="Welcome to Rapaio" class="md-nav__link">
-                                        Welcome to Rapaio
-                                    </a>
-                                </li>
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item">
-                                    <a href="../../../complete-library-features/" title="Complete list of features" class="md-nav__link">
-                                        Complete list of features
-                                    </a>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../../../complete-library-features/" title="Complete list of features" class="md-nav__link">
+      Complete list of features
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
 
 
-                                <li class="md-nav__item md-nav__item--nested">
-
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
-
-                                    <label class="md-nav__link" for="nav-3">
-                                        Notebooks
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Notebooks" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-3">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Notebooks
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                            <li class="md-nav__item">
-                                                <a href="../../BriefPreview/" title="Brief preview" class="md-nav__link">
-                                                    Brief preview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Tutorials
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../../BriefPreview/" title="Brief preview" class="md-nav__link">
+      Brief preview
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../BuiltinDataSets/" title="Built-in Data sets" class="md-nav__link">
+      Built-in Data sets
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
-
-                                    <label class="md-nav__link" for="nav-4">
-                                        Tutorials
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-4">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            Tutorials
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
+        
+          
+          
+          
 
 
-                                            <li class="md-nav__item">
-                                                <a href="../DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
-                                                    Data Handling Overview
-                                                </a>
-                                            </li>
+  <li class="md-nav__item">
+    <a href="../DataHandlingOverview/" title="Data Handling Overview" class="md-nav__link">
+      Data Handling Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Variables
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="Variables" class="md-nav__link md-nav__link--active">
+      Variables
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vardouble" class="md-nav__link">
+    VarDouble
+  </a>
+  
+    <nav class="md-nav" aria-label="VarDouble">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#various-builders" class="md-nav__link">
+    Various builders
+  </a>
+  
+    <nav class="md-nav" aria-label="Various builders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#printing-variables" class="md-nav__link">
+    Printing variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#varop-interface" class="md-nav__link">
+    VarOp interface
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nominal-variables" class="md-nav__link">
+    Nominal variables
+  </a>
+  
+    <nav class="md-nav" aria-label="Nominal variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#various-builders_1" class="md-nav__link">
+    Various builders
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-variable-types" class="md-nav__link">
+    Overview of variable types
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview of variable types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-values" class="md-nav__link">
+    Missing values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-iterators" class="md-nav__link">
+    Var Iterators
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
 
 
-                                <li class="md-nav__item md-nav__item--nested">
+  <li class="md-nav__item">
+    <a href="../CoreStatisticalTools/" title="Core statistical tools" class="md-nav__link">
+      Core statistical tools
+    </a>
+  </li>
 
-                                    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+        
+      </ul>
+    </nav>
+  </li>
 
-                                    <label class="md-nav__link" for="nav-5">
-                                        About
-                                        <span class="md-nav__icon md-icon"></span>
-                                    </label>
-                                    <nav class="md-nav" aria-label="About" data-md-level="1">
-                                        <label class="md-nav__title" for="nav-5">
-                                            <span class="md-nav__icon md-icon"></span>
-                                            About
-                                        </label>
-                                        <ul class="md-nav__list" data-md-scrollfix>
-
-
-                                            <li class="md-nav__item">
-                                                <a href="../../../about/" title="Short story" class="md-nav__link">
-                                                    Short story
-                                                </a>
-                                            </li>
+    
+      
+      
+      
 
 
-                                        </ul>
-                                    </nav>
-                                </li>
+  <li class="md-nav__item">
+    <a href="../../../about/" title="Short story" class="md-nav__link">
+      Short story
+    </a>
+  </li>
+
+    
+      
+      
+      
 
 
-                                <li class="md-nav__item">
-                                    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
-                                        Source
-                                    </a>
-                                </li>
+  <li class="md-nav__item">
+    <a href="https://github.com/padreati/rapaio" title="Source" class="md-nav__link">
+      Source
+    </a>
+  </li>
 
-
-                            </ul>
-                        </nav>
-                    </div>
+    
+  </ul>
+</nav>
+                  </div>
                 </div>
-            </div>
-
-
-            <div class="md-content">
-                <article class="md-content__inner md-typeset">
-
-
-                    <h1>Variables</h1>
-
-                    <div class="highlight"><pre><span></span><code>
-</code></pre>
-                    </div>
-
-                    <div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span
-                            class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
-</code></pre>
-                    </div>
-
-
-                </article>
-            </div>
-        </div>
-    </main>
-
-
-    <footer class="md-footer">
-
-        <div class="md-footer-meta md-typeset">
-            <div class="md-footer-meta__inner md-grid">
-                <div class="md-footer-copyright">
-
-                    Made with
-                    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-                        Material for MkDocs
-                    </a>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vardouble" class="md-nav__link">
+    VarDouble
+  </a>
+  
+    <nav class="md-nav" aria-label="VarDouble">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#various-builders" class="md-nav__link">
+    Various builders
+  </a>
+  
+    <nav class="md-nav" aria-label="Various builders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#printing-variables" class="md-nav__link">
+    Printing variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#varop-interface" class="md-nav__link">
+    VarOp interface
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nominal-variables" class="md-nav__link">
+    Nominal variables
+  </a>
+  
+    <nav class="md-nav" aria-label="Nominal variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#various-builders_1" class="md-nav__link">
+    Various builders
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-variable-types" class="md-nav__link">
+    Overview of variable types
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview of variable types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-values" class="md-nav__link">
+    Missing values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var-iterators" class="md-nav__link">
+    Var Iterators
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
                 </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="variables">Variables</h1>
+<div class="highlight"><pre><span></span><code><span class="o">%</span><span class="n">load</span> <span class="p">..</span><span class="o">/</span><span class="n">rapaio</span><span class="o">-</span><span class="n">bootstrap</span>
+</code></pre></div>
 
-            </div>
+<p>Variable represents unidimensional sets of observations which comes from the same random variable (hence the name). Because the values of a variable are supposed to be generated from the same process, they have the same type and semantic. Variables have names and are of some given types. <code>Var</code> implementations can be categorized as storage variables and view variables. Storage variables are those variables which directly contains and maintain data. View variables are higher constructs obtained by filtering and/or merging other variables. View variables does not contain data directly, but maintain refferences to storage variables it wrap and allows reading and updating operations in the same way as storage variables. </p>
+<p>Strorage variables implemented have different storage types and representations. We have <code>VarDouble</code>, <code>VarInt</code>, <code>VarNominal</code>, <code>VarBinary</code>, <code>VarLong</code>, <code>VarString</code> and <code>VarInstant</code>.</p>
+<h2 id="vardouble">VarDouble</h2>
+<p>Numeric double variables are implemented by <code>VarDouble</code> and are used to handle discrete or continuous numerical values. Double variables offers value and label representations. All other representations can be used, but with caution since it can alter the content. For example int representation truncates floating point values to the biggest integer values, however the int setter sets a correct value since an integer can be converted to a double with no information loss.</p>
+<h3 id="various-builders">Various builders</h3>
+<p>Double variables can be built in various was and there are handy shortcuts for various scenarios.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// builds a variable with no data</span>
+<span class="n">Var</span> <span class="n">empty1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">();</span>
+
+<span class="c1">// builds a variable of a given size which contains only missing data</span>
+<span class="n">Var</span> <span class="n">empty2</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">empty</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers, starting from 0, ending with 5 with step 1</span>
+<span class="n">Var</span> <span class="n">seq1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers, starting from 1, ending with 5 with step 1</span>
+<span class="n">Var</span> <span class="n">seq2</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// a sequence of numbers starting at 0, ending at 1 with step 0.1</span>
+<span class="n">Var</span> <span class="n">seq3</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">);</span>
+
+<span class="c1">// build a variable of a given size which contains only zeros</span>
+<span class="n">Var</span> <span class="n">fill1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+<span class="c1">// builds a variable of a given size which contains only ones</span>
+<span class="n">Var</span> <span class="n">fill2</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable which contains the values copied from another variable</span>
+<span class="n">Var</span> <span class="n">copy1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">seq1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from a collection</span>
+<span class="n">Normal</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span class="p">();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Double</span><span class="o">&gt;</span> <span class="n">list1</span> <span class="o">=</span> <span class="n">DoubleStream</span><span class="p">.</span><span class="na">generate</span><span class="p">(</span><span class="n">normal</span><span class="p">::</span><span class="n">sampleNext</span><span class="p">).</span><span class="na">limit</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="na">boxed</span><span class="p">().</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span>
+<span class="n">Var</span> <span class="n">copy2</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="n">list1</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from a double array</span>
+<span class="n">Var</span> <span class="n">copy3</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values copied from an int array</span>
+<span class="n">Var</span> <span class="n">copy4</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span>
+
+<span class="c1">// numeric variables with values generated as the sqrt of the row number</span>
+<span class="n">Var</span> <span class="n">from1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">Math</span><span class="p">::</span><span class="n">sqrt</span><span class="p">);</span>
+
+<span class="c1">// numeric variable with values generated using a function which receives a row value</span>
+<span class="c1">// as parameter and outputs a double value; in this case we generate values as</span>
+<span class="c1">// a sum of the values of other two variables</span>
+<span class="n">Var</span> <span class="n">from2</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">row</span> <span class="o">-&gt;</span> <span class="n">copy3</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span> <span class="n">copy4</span><span class="p">.</span><span class="na">getDouble</span><span class="p">(</span><span class="n">row</span><span class="p">));</span>
+
+<span class="c1">// numeric variable with values generated from values of another variable using</span>
+<span class="c1">// a transformation provided via a lambda function</span>
+<span class="n">Var</span> <span class="n">from3</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">from1</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+
+<p><strong>Wrapper around a double array</strong>
+This builder creates a new numeric variable instance as a wrapper around a double array of values. Notice that it is not the same as the copy builder, since in the wrapper case any change in the new numerical variable is reflected also in the original array of numbers. In the case of the copy builder this is not true, since the copy builder <span class="arithmatex">\(as its name implies\)</span> creates an internal copy of the array.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">double</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="n">DoubleArrays</span><span class="p">.</span><span class="na">newFrom</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">);</span>
+<span class="n">Var</span> <span class="n">wrap1</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+<span class="n">wrap1</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+<span class="n">array</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="mi">17</span><span class="p">;</span>
+<span class="n">wrap1</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;?&quot;, rowCount:4, values: 1.0, 4.0, 9.0, 16.0]
+VarDouble [name:&quot;?&quot;, rowCount:4, values: 1.0, 4.0, 17.0, 16.0]
+</code></pre></div>
+
+<h4 id="printing-variables">Printing variables</h4>
+<p>Most of the objects which contains information implements the <code>Printable</code> interface. This interface allows one to display a summary of the content of the given object. This is the case also with the numerical variables. Additionally, the numerical variables implements also two other methods, one which displays all the values and another one which displays only the first values.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// build a numerical variable with values as the sqrt</span>
+<span class="c1">// of the first 200 integer values</span>
+<span class="n">Var</span> <span class="n">x</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">Math</span><span class="p">::</span><span class="n">sqrt</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+
+<span class="c1">// prints the text produced by toString </span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// print a reasonable part of value</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printContent</span><span class="p">();</span>
+
+<span class="c1">// print all values of the variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printFullContent</span><span class="p">();</span>
+
+<span class="c1">// print a summary of the content of the variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printSummary</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;x&quot;, rowCount:200, values: 0.0, 1.0, 1.4142135623730951, 1.7320508075688772, 2.0, 2.23606797749979, 2.449489742783178, 2.6457513110645907, 2.8284271247461903, 3.0, ..., 14.071247279470288, 14.106735979665885]
+VarDouble [name:&quot;x&quot;, rowCount:200]
+ row    value     row    value     row    value     row    value     row    value    
+  [0]  0          [21]  4.5825757  [42]  6.4807407  [63]  7.9372539 [184] 13.56466   
+  [1]  1          [22]  4.6904158  [43]  6.5574385  [64]  8         [185] 13.6014705 
+  [2]  1.4142136  [23]  4.7958315  [44]  6.6332496  [65]  8.0622577 [186] 13.6381817 
+  [3]  1.7320508  [24]  4.8989795  [45]  6.7082039  [66]  8.1240384 [187] 13.6747943 
+  [4]  2          [25]  5          [46]  6.78233    [67]  8.1853528 [188] 13.7113092 
+  [5]  2.236068   [26]  5.0990195  [47]  6.8556546  [68]  8.2462113 [189] 13.7477271 
+  [6]  2.4494897  [27]  5.1961524  [48]  6.9282032  [69]  8.3066239 [190] 13.7840488 
+  [7]  2.6457513  [28]  5.2915026  [49]  7          [70]  8.3666003 [191] 13.820275  
+  [8]  2.8284271  [29]  5.3851648  [50]  7.0710678  [71]  8.4261498 [192] 13.8564065 
+  [9]  3          [30]  5.4772256  [51]  7.1414284  [72]  8.4852814 [193] 13.892444  
+ [10]  3.1622777  [31]  5.5677644  [52]  7.2111026  [73]  8.5440037 [194] 13.9283883 
+ [11]  3.3166248  [32]  5.6568542  [53]  7.2801099  [74]  8.6023253 [195] 13.96424   
+ [12]  3.4641016  [33]  5.7445626  [54]  7.3484692  [75]  8.660254  [196] 14         
+ [13]  3.6055513  [34]  5.8309519  [55]  7.4161985  [76]  8.7177979 [197] 14.0356688 
+ [14]  3.7416574  [35]  5.9160798  [56]  7.4833148  [77]  8.7749644 [198] 14.0712473 
+ [15]  3.8729833  [36]  6          [57]  7.5498344  [78]  8.8317609 [199] 14.106736  
+ [16]  4          [37]  6.0827625  [58]  7.6157731  ...     ...                      
+ [17]  4.1231056  [38]  6.164414   [59]  7.6811457 [180] 13.4164079 
+ [18]  4.2426407  [39]  6.244998   [60]  7.7459667 [181] 13.453624  
+ [19]  4.3588989  [40]  6.3245553  [61]  7.8102497 [182] 13.4907376 
+ [20]  4.472136   [41]  6.4031242  [62]  7.8740079 [183] 13.5277493
+
+VarDouble [name:&quot;x&quot;, rowCount:200]
+ row    value     row    value     row    value     row    value     row    value    
+  [0]  0          [40]  6.3245553  [80]  8.9442719 [120] 10.9544512 [160] 12.6491106 
+  [1]  1          [41]  6.4031242  [81]  9         [121] 11         [161] 12.6885775 
+  [2]  1.4142136  [42]  6.4807407  [82]  9.0553851 [122] 11.045361  [162] 12.7279221 
+  [3]  1.7320508  [43]  6.5574385  [83]  9.1104336 [123] 11.0905365 [163] 12.7671453 
+  [4]  2          [44]  6.6332496  [84]  9.1651514 [124] 11.1355287 [164] 12.8062485 
+  [5]  2.236068   [45]  6.7082039  [85]  9.2195445 [125] 11.1803399 [165] 12.8452326 
+  [6]  2.4494897  [46]  6.78233    [86]  9.2736185 [126] 11.2249722 [166] 12.8840987 
+  [7]  2.6457513  [47]  6.8556546  [87]  9.3273791 [127] 11.2694277 [167] 12.922848  
+  [8]  2.8284271  [48]  6.9282032  [88]  9.3808315 [128] 11.3137085 [168] 12.9614814 
+  [9]  3          [49]  7          [89]  9.4339811 [129] 11.3578167 [169] 13         
+ [10]  3.1622777  [50]  7.0710678  [90]  9.486833  [130] 11.4017543 [170] 13.0384048 
+ [11]  3.3166248  [51]  7.1414284  [91]  9.539392  [131] 11.4455231 [171] 13.0766968 
+ [12]  3.4641016  [52]  7.2111026  [92]  9.591663  [132] 11.4891253 [172] 13.114877  
+ [13]  3.6055513  [53]  7.2801099  [93]  9.6436508 [133] 11.5325626 [173] 13.1529464 
+ [14]  3.7416574  [54]  7.3484692  [94]  9.6953597 [134] 11.5758369 [174] 13.190906  
+ [15]  3.8729833  [55]  7.4161985  [95]  9.7467943 [135] 11.61895   [175] 13.2287566 
+ [16]  4          [56]  7.4833148  [96]  9.797959  [136] 11.6619038 [176] 13.2664992 
+ [17]  4.1231056  [57]  7.5498344  [97]  9.8488578 [137] 11.7046999 [177] 13.3041347 
+ [18]  4.2426407  [58]  7.6157731  [98]  9.8994949 [138] 11.7473401 [178] 13.3416641 
+ [19]  4.3588989  [59]  7.6811457  [99]  9.9498744 [139] 11.7898261 [179] 13.3790882 
+ [20]  4.472136   [60]  7.7459667 [100] 10         [140] 11.8321596 [180] 13.4164079 
+ [21]  4.5825757  [61]  7.8102497 [101] 10.0498756 [141] 11.8743421 [181] 13.453624  
+ [22]  4.6904158  [62]  7.8740079 [102] 10.0995049 [142] 11.9163753 [182] 13.4907376 
+ [23]  4.7958315  [63]  7.9372539 [103] 10.1488916 [143] 11.9582607 [183] 13.5277493 
+ [24]  4.8989795  [64]  8         [104] 10.198039  [144] 12         [184] 13.56466   
+ [25]  5          [65]  8.0622577 [105] 10.2469508 [145] 12.0415946 [185] 13.6014705 
+ [26]  5.0990195  [66]  8.1240384 [106] 10.2956301 [146] 12.083046  [186] 13.6381817 
+ [27]  5.1961524  [67]  8.1853528 [107] 10.3440804 [147] 12.1243557 [187] 13.6747943 
+ [28]  5.2915026  [68]  8.2462113 [108] 10.3923048 [148] 12.1655251 [188] 13.7113092 
+ [29]  5.3851648  [69]  8.3066239 [109] 10.4403065 [149] 12.2065556 [189] 13.7477271 
+ [30]  5.4772256  [70]  8.3666003 [110] 10.4880885 [150] 12.2474487 [190] 13.7840488 
+ [31]  5.5677644  [71]  8.4261498 [111] 10.5356538 [151] 12.2882057 [191] 13.820275  
+ [32]  5.6568542  [72]  8.4852814 [112] 10.5830052 [152] 12.328828  [192] 13.8564065 
+ [33]  5.7445626  [73]  8.5440037 [113] 10.6301458 [153] 12.3693169 [193] 13.892444  
+ [34]  5.8309519  [74]  8.6023253 [114] 10.6770783 [154] 12.4096736 [194] 13.9283883 
+ [35]  5.9160798  [75]  8.660254  [115] 10.7238053 [155] 12.4498996 [195] 13.96424   
+ [36]  6          [76]  8.7177979 [116] 10.7703296 [156] 12.489996  [196] 14         
+ [37]  6.0827625  [77]  8.7749644 [117] 10.8166538 [157] 12.5299641 [197] 14.0356688 
+ [38]  6.164414   [78]  8.8317609 [118] 10.8627805 [158] 12.5698051 [198] 14.0712473 
+ [39]  6.244998   [79]  8.8881944 [119] 10.9087121 [159] 12.6095202 [199] 14.106736
+
+&gt; summary(name: x, type: DOUBLE)
+rows: 200, complete: 200, missing: 0
+        x [dbl]      
+   Min. :  0.0000000 
+1st Qu. :  7.0533009 
+ Median :  9.9749372 
+   Mean :  9.3917104 
+2nd Qu. : 12.2167789 
+   Max. : 14.1067360
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">image</span><span class="p">(</span><span class="n">points</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">size</span><span class="p">(),</span> <span class="n">Normal</span><span class="p">.</span><span class="na">std</span><span class="p">()::</span><span class="n">sampleNext</span><span class="p">),</span> <span class="n">color</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">pch</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">300</span><span class="p">);</span>
+</code></pre></div>
+
+<p><img alt="png" src="output_13_0.png" /></p>
+<h4 id="varop-interface">VarOp interface</h4>
+<p>There are various mathemaical operations available under VarOp interface. The interface to those operators can be called using <code>op()</code> method on any variable. The fllowing examples uses some of those operators.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// computes the sum of all values in variable</span>
+<span class="n">x</span><span class="p">.</span><span class="na">op</span><span class="p">().</span><span class="na">nansum</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>1878.3420754046178
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// apply a lambda function on a copy of the varialble</span>
+<span class="n">x</span><span class="p">.</span><span class="na">copy</span><span class="p">().</span><span class="na">op</span><span class="p">().</span><span class="na">apply</span><span class="p">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="n">Math</span><span class="p">.</span><span class="na">sqrt</span><span class="p">(</span><span class="n">v</span> <span class="o">+</span> <span class="mf">3.</span><span class="o">/</span><span class="mi">8</span><span class="p">)).</span><span class="na">printContent</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;x&quot;, rowCount:200]
+ row    value    row    value    row    value    row    value    row    value   
+  [0] 0.6123724  [21] 2.2265614  [42] 2.6183469  [63] 2.883098  [184] 3.7335854 
+  [1] 1.1726039  [22] 2.2506479  [43] 2.6329524  [64] 2.8939592 [185] 3.7385118 
+  [2] 1.3376149  [23] 2.2739462  [44] 2.6473099  [65] 2.9046958 [186] 3.7434185 
+  [3] 1.4515684  [24] 2.2965146  [45] 2.6614289  [66] 2.915311  [187] 3.7483055 
+  [4] 1.5411035  [25] 2.3184046  [46] 2.6753187  [67] 2.9258081 [188] 3.7531732 
+  [5] 1.6158799  [26] 2.3396623  [47] 2.6889877  [68] 2.9361899 [189] 3.7580217 
+  [6] 1.6806218  [27] 2.3603289  [48] 2.7024439  [69] 2.9464595 [190] 3.7628511 
+  [7] 1.7380309  [28] 2.3804417  [49] 2.7156951  [70] 2.9566197 [191] 3.7676617 
+  [8] 1.789812   [29] 2.4000343  [50] 2.7287484  [71] 2.9666732 [192] 3.7724536 
+  [9] 1.8371173  [30] 2.4191374  [51] 2.7416106  [72] 2.9766225 [193] 3.777227  
+ [10] 1.8807652  [31] 2.4377786  [52] 2.754288   [73] 2.9864701 [194] 3.7819821 
+ [11] 1.9213601  [32] 2.4559834  [53] 2.7667869  [74] 2.9962185 [195] 3.7867189 
+ [12] 1.9593626  [33] 2.473775   [54] 2.779113   [75] 3.0058699 [196] 3.7914377 
+ [13] 1.9951319  [34] 2.4911748  [55] 2.7912718  [76] 3.0154267 [197] 3.7961387 
+ [14] 2.0289548  [35] 2.5082025  [56] 2.8032686  [77] 3.0248908 [198] 3.8008219 
+ [15] 2.0610636  [36] 2.5248762  [57] 2.8151082  [78] 3.0342645 [199] 3.8054876 
+ [16] 2.0916501  [37] 2.5412128  [58] 2.8267956  ...     ...                    
+ [17] 2.1208738  [38] 2.5572278  [59] 2.838335  [180] 3.7136785 
+ [18] 2.1488696  [39] 2.5729357  [60] 2.849731  [181] 3.7186858 
+ [19] 2.1757525  [40] 2.5883499  [61] 2.8609875 [182] 3.7236726 
+ [20] 2.2016212  [41] 2.6034831  [62] 2.8721086 [183] 3.7286391
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// add a constant to all values of a copy</span>
+<span class="n">x</span><span class="p">.</span><span class="na">copy</span><span class="p">().</span><span class="na">op</span><span class="p">().</span><span class="na">plus</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="na">E</span><span class="p">);</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;x&quot;, rowCount:200, values: 2.718281828459045, 3.718281828459045, 4.1324953908321405, 4.450332636027922, 4.718281828459045, 4.9543498059588345, 5.167771571242223, 5.364033139523636, 5.546708953205235, 5.718281828459045, ..., 16.789529107929333, 16.82501780812493]
+</code></pre></div>
+
+<h2 id="nominal-variables">Nominal variables</h2>
+<p>Nominal variables are defined by<code>VarNominal</code>and contains string valued categories. Nominal variables offers integer and label representations. The label representation describes the categories as labels or texts, while integer representation is an integer indexe on categories. The index representation does not imply an order between categories/labels. </p>
+<h3 id="various-builders_1">Various builders</h3>
+<p>Nominal variables can be built in various was and are handy shortcuts for various scenarios.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// creates an empty nominal variable with provided levels</span>
+<span class="kd">var</span> <span class="n">nom1</span> <span class="o">=</span> <span class="n">VarNominal</span><span class="p">.</span><span class="na">empty</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">);</span>
+<span class="c1">// note the first label which is a placeholder for missing values</span>
+<span class="n">nom1</span><span class="p">.</span><span class="na">levels</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>[?, a, b]
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">VarNominal</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">row</span> <span class="o">-&gt;</span> <span class="n">row</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="s">&quot;even&quot;</span> <span class="p">:</span> <span class="s">&quot;odd&quot;</span><span class="p">).</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarNominal [name:&quot;?&quot;, rowCount:10, values: even, odd, even, odd, even, odd, even, odd, even, odd]
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">).</span><span class="na">printContent</span><span class="p">()</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarNominal [name:&quot;?&quot;, rowCount:4]
+row value 
+[0]   a   
+[1]   b   
+[2]   c   
+[3]   b
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="n">Unique</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="s">&quot;b&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>UniqueLabel{count=3, values=[a:1,b:2,c:1]}
+</code></pre></div>
+
+<h2 id="overview-of-variable-types">Overview of variable types</h2>
+<p>All variables implements a common API making easy the manipulation of it's content in a generic way. However, depending on type, some variables might not implement some operations or rely back on specific implementations which makes sense for that variable type. For example, for a numeric variable it makes sense to set the value at some specific index in order to change it. For nominal variables, the same operation would not make sense. Instead of the meaning 'change numerical value at some given position' will have the following semantic 'change the string value to that category associated with the rounded integer value of the double parameter'. Let's see an example:  </p>
+<div class="highlight"><pre><span></span><code><span class="c1">// we create a nominal value with label `a` of first position and label `b` on the second position</span>
+<span class="kd">var</span> <span class="n">nom</span> <span class="o">=</span> <span class="n">VarNominal</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;b&quot;</span><span class="p">);</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+
+<span class="c1">// set the value from the first position to the label which corresponds to indexed label 2, which is `b`</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">setDouble</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">);</span>
+<span class="c1">// let&#39;s see the result</span>
+<span class="n">nom</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarNominal [name:&quot;?&quot;, rowCount:2, values: a, b]
+VarNominal [name:&quot;?&quot;, rowCount:2, values: b, b]
+</code></pre></div>
+
+<h3 id="missing-values">Missing values</h3>
+<p>All variables offers API for missing values. A missing value is a special value which is used as placeholder for an unspecified value. We can have missing values for various reasons. There are cases when the data set does not contains some values because the experimenter did not collect it. Sometimes having a value does not make sense, for example a male cannot be pregnant, so measuring any metric related with pregnancy have missing value for male subjects. Also, missing values can appear as an effect of data manipulation operations, like joining two data frames which does not present a one-to-one presence relation.</p>
+<p>Missing values are different for each representation, which makes sense since a double value have a different type than a String. </p>
+<div class="highlight"><pre><span></span><code><span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarDouble</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarNominal</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">VarInt</span><span class="p">.</span><span class="na">MISSING_VALUE</span><span class="p">);</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>NaN
+?
+2.147483647E9
+</code></pre></div>
+
+<p>Most of time we do not have to deals directly with the missing value placeholders, since <code>Var</code> and <code>Frame</code> interfaces offers a way to handle gracefully missing value operations. Below is an illustrative example:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="n">x</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;x&quot;, rowCount:11, values: 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// put missing on values from indexes 2,4 and 6</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">setMissing</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+<span class="n">x</span><span class="p">.</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarDouble [name:&quot;x&quot;, rowCount:11, values: 0.0, 1.0, ?, 3.0, ?, 5.0, ?, 7.0, 8.0, 9.0, 10.0]
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// count the number of non missing values</span>
+<span class="n">x</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">complete</span><span class="p">().</span><span class="na">count</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>8
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// compute the sum of all non missing values</span>
+<span class="n">x</span><span class="p">.</span><span class="na">op</span><span class="p">().</span><span class="na">nansum</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>43.0
+</code></pre></div>
+
+<h3 id="var-iterators">Var Iterators</h3>
+<p>Each <code>Var</code> allows easy data manipulation through iterators. There is a generic construct available for each variable implementation which under the form of <code>VSpot</code>. In the terminology used in <code>rapaio</code> a spot is a position in a variable which can contain a value. Since that value can have different reporesentation, the <code>VSpot</code> interface is used to manipulate what happen in a given position. Additionally there are various iterators which can be used for other data representations. The example below are illustrative:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">var</span> <span class="n">d</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">seq</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">);</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// iterate through double values, we can do this because we have the specific type VarDouble</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">double</span> <span class="n">value</span> <span class="p">:</span> <span class="n">d</span><span class="p">)</span> <span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>0.0
+1.0
+2.0
+3.0
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// for each spot print the string representation</span>
+<span class="n">d</span><span class="p">.</span><span class="na">forEachSpot</span><span class="p">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">getLabel</span><span class="p">()))</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>0.0
+1.0
+2.0
+3.0
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// compute the sum using spot iterator and streaming API</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">mapToDouble</span><span class="p">(</span><span class="n">VSpot</span><span class="p">::</span><span class="n">getDouble</span><span class="p">).</span><span class="na">sum</span><span class="p">());</span>
+<span class="n">WS</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">op</span><span class="p">().</span><span class="na">nansum</span><span class="p">());</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>6.0
+6.0
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// display the row indexes of all values which are missing</span>
+<span class="kd">var</span> <span class="n">y</span> <span class="o">=</span> <span class="n">VarDouble</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Double</span><span class="p">.</span><span class="na">NaN</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Double</span><span class="p">.</span><span class="na">NaN</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<span class="c1">// collect indexes to an int array</span>
+<span class="kt">int</span><span class="o">[]</span> <span class="n">indexes</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">s</span><span class="p">.</span><span class="na">isMissing</span><span class="p">()).</span><span class="na">mapToInt</span><span class="p">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">s</span><span class="p">.</span><span class="na">row</span><span class="p">()).</span><span class="na">toArray</span><span class="p">();</span>
+<span class="c1">// create a var int wrapper to see the content</span>
+<span class="n">VarInt</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="n">indexes</span><span class="p">).</span><span class="na">printString</span><span class="p">();</span>
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>VarInt [name:&quot;?&quot;, rowCount:3, values: 0, 2, 4]
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
         </div>
-    </footer>
-
-</div>
-
-<script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
-<script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script>
-<script id="__lang" type="application/json">{
-    "clipboard.copy": "Copy to clipboard",
-    "clipboard.copied": "Copied to clipboard",
-    "search.config.lang": "en",
-    "search.config.pipeline": "trimmer, stopWordFilter",
-    "search.config.separator": "[\\s\\-]+",
-    "search.result.placeholder": "Type to start searching",
-    "search.result.none": "No matching documents",
-    "search.result.one": "1 matching document",
-    "search.result.other": "# matching documents"
-}</script>
-
-<script>
-    app = initialize({
-        base: "../../..",
-        features: [],
-        search: Object.assign({
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../DataHandlingOverview/" title="Data Handling Overview" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Data Handling Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../CoreStatisticalTools/" title="Core statistical tools" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Core statistical tools
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../../..",
+          features: [],
+          search: Object.assign({
             worker: "../../../assets/javascripts/worker/search.5eca75d3.min.js"
-        }, typeof search !== "undefined" && search)
-    })
-</script>
-
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-
-</body>
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"></script>
+      
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      
+    
+  </body>
 </html>
