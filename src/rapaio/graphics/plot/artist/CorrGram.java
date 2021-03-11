@@ -23,7 +23,7 @@ package rapaio.graphics.plot.artist;
 
 import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
-import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.opt.GOptionFill;

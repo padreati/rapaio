@@ -23,11 +23,11 @@ package rapaio.graphics.plot;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
+import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.filter.VSort;
-import rapaio.experiment.grid.GridData;
 import rapaio.graphics.Figure;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.ColorPalette;

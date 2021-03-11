@@ -19,17 +19,18 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim;
+package rapaio.experiment.math.optimization;
 
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.functions.RDerivative;
-import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.functions.RHessian;
-import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
-import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
+import rapaio.math.functions.RHessian;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.decomposition.CholeskyDecomposition;
+import rapaio.math.optimization.Minimize;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LineSearch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,12 @@ import static java.lang.Math.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public class NewtonRaphsonMinimizer implements Minimizer {
+public class NewtonRaphsonMinimize implements Minimize {
 
     private final double tol = 1e-3;
     private final int maxIt;
 
-    private final LineSearch lineSearch = BacktrackLineSearch.from();
+    private final LineSearch lineSearch = BacktrackLineSearch.fromDefaults();
 
     private final DVector x;
     private final RFunction f;
@@ -57,7 +58,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
     private VarDouble errors;
     private boolean converged = false;
 
-    public NewtonRaphsonMinimizer(
+    public NewtonRaphsonMinimize(
             DVector x,
             RFunction f,
             RDerivative d1f,
@@ -105,7 +106,7 @@ public class NewtonRaphsonMinimizer implements Minimizer {
                 break;
             }
 
-            double t = lineSearch.find(f, d1f, x, delta_x);
+            double t = lineSearch.search(f, d1f, x, delta_x);
             sol.add(delta_x.mult(t));
         }
     }

@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.functions;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;

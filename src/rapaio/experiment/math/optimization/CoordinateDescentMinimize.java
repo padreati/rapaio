@@ -19,15 +19,18 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim;
+package rapaio.experiment.math.optimization;
 
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.functions.RDerivative;
-import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
-import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;
+import rapaio.math.optimization.Minimize;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LineSearch;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +42,16 @@ import static java.lang.Math.*;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
  */
-public class CoordinateDescentMinimizer implements Minimizer {
+public class CoordinateDescentMinimize extends ParamSet<CoordinateDescentMinimize> implements Minimize {
 
-    private final double tol = 1e-10;
-    private final int maxIt;
+    private static final long serialVersionUID = 6285470727505415422L;
 
-    private final LineSearch lineSearch = BacktrackLineSearch.from();
+    public final ValueParam<Double, CoordinateDescentMinimize> tol = new ValueParam<>(this, 1e-10,
+            "tol", "Tolerance on errors for determining convergence");
+    public final ValueParam<Integer, CoordinateDescentMinimize> maxIt = new ValueParam<>(this, 100,
+            "maxIt", "Maximum number of iterations");
+    public final ValueParam<LineSearch, CoordinateDescentMinimize> lineSearch = new ValueParam<>(this,
+            BacktrackLineSearch.fromDefaults(), "lineSearch", "Line search algorithm");
 
     private final DVector x;
     private final RFunction f;
@@ -60,11 +67,10 @@ public class CoordinateDescentMinimizer implements Minimizer {
         return errors;
     }
 
-    public CoordinateDescentMinimizer(DVector x, RFunction f, RDerivative d1f, int maxInt) {
+    public CoordinateDescentMinimize(DVector x, RFunction f, RDerivative d1f) {
         this.x = x;
         this.f = f;
         this.d1f = d1f;
-        this.maxIt = maxInt;
     }
 
     @Override
@@ -72,7 +78,7 @@ public class CoordinateDescentMinimizer implements Minimizer {
 
         converged = false;
         sol = x.copy();
-        for (int i = 0; i < maxIt; i++) {
+        for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
             DVector d1fx = d1f.apply(sol);
             double max = abs(d1fx.get(0));
@@ -86,11 +92,11 @@ public class CoordinateDescentMinimizer implements Minimizer {
             DVector deltaX = DVectorDense.fill(d1fx.size(), 0);
             deltaX.set(index, -signum(d1fx.get(index)));
 
-            if (abs(deltaX.norm(2)) < tol) {
+            if (abs(deltaX.norm(2)) < tol.get()) {
                 converged = true;
                 break;
             }
-            double t = lineSearch.find(f, d1f, x, deltaX);
+            double t = lineSearch.get().search(f, d1f, x, deltaX);
             sol.add(deltaX.mult(t));
         }
     }

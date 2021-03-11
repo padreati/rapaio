@@ -19,22 +19,29 @@
  *
  */
 
-package rapaio.experiment.math.functions;
-
-import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
-
-import java.io.Serializable;
+package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/3/21.
  */
-@FunctionalInterface
-public interface RDerivative extends Serializable {
+public
+enum SOrder {
+    R(true, false),
+    C(false, true);
 
-    default DVector apply(double... x) {
-        return apply(DVectorDense.wrap(x));
+    final boolean rowMajor;
+    final boolean colMajor;
+
+    SOrder(boolean rowMajor, boolean colMajor) {
+        this.rowMajor = rowMajor;
+        this.colMajor = colMajor;
     }
 
-    DVector apply(DVector x);
+    public boolean isRowMajor() {
+        return rowMajor;
+    }
+
+    public boolean isColMajor() {
+        return colMajor;
+    }
 }

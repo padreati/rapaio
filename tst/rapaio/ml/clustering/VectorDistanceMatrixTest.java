@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.experiment.ml.clustering.DistanceMatrix;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.dense.DMatrixStripe;
 

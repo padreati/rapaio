@@ -34,24 +34,7 @@ import java.util.stream.DoubleStream;
  */
 public interface DMatrix extends Serializable, Printable {
 
-    enum Type {
-        /**
-         * Base implementation using only the set/get API used as reference for
-         * performance benchmarks and as a starting point for new implementations
-         */
-        BASE,
-        /**
-         * Array of arrays implementation of a matrix. I can use row major or column
-         * major ordering.
-         */
-        STRIPE,
-        /**
-         * Mapped view over dense array
-         */
-        MAP
-    }
-
-    Type type();
+    SOrder order();
 
     /**
      * @return number of rows of the matrix

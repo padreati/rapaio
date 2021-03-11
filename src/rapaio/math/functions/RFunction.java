@@ -19,34 +19,24 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
-import java.util.function.BiFunction;
+import java.io.Serializable;
 
 /**
- * Function in one dimension.
+ * Interface which describes an n-dimensional real valued function.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
  */
-public class R2Function implements RFunction {
+@FunctionalInterface
+public interface RFunction extends Serializable {
 
-    private static final long serialVersionUID = -2881307255778321959L;
-
-    public final BiFunction<Double, Double, Double> f;
-
-    public R2Function(BiFunction<Double, Double, Double> f) {
-        this.f = f;
+    default double apply(double... x) {
+        return apply(DVectorDense.wrap(x));
     }
 
-    @Override
-    public double apply(double... x) {
-        return f.apply(x[0], x[1]);
-    }
-
-    @Override
-    public double apply(DVector x) {
-        return f.apply(x.get(0), x.get(1));
-    }
+    double apply(DVector x);
 }

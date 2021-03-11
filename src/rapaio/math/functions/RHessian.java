@@ -19,16 +19,23 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim.linesearch;
+package rapaio.math.functions;
 
-import rapaio.experiment.math.functions.RDerivative;
-import rapaio.experiment.math.functions.RFunction;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
+
+import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
  */
-public interface LineSearch {
+@FunctionalInterface
+public interface RHessian extends Serializable {
 
-    double find(RFunction f, RDerivative d1f, DVector x, DVector delta_f);
+    default DMatrix apply(double... x) {
+        return apply(DVectorDense.wrap(x));
+    }
+
+    DMatrix apply(DVector x);
 }

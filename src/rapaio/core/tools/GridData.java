@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.grid;
+package rapaio.core.tools;
 
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;

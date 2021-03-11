@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.functions;
 
 import rapaio.math.linear.DVector;
 import rapaio.math.linear.dense.DVectorDense;

@@ -210,6 +210,21 @@ public class DVectorDense extends DVectorBase {
     }
 
     @Override
+    public DVector caxpy(double a, DVector y) {
+        checkConformance(y);
+        if (y instanceof DVectorDense) {
+            double[] copy = new double[size];
+            DoubleArrays.axpyTo(a, values, y.asDense().values, copy, 0, size);
+            return DVectorDense.wrap(copy);
+        }
+        DVector copy = DVectorDense.wrap(new double[size]);
+        for (int i = 0; i < size(); i++) {
+            copy.set(i, a * values[i] + y.get(i));
+        }
+        return copy;
+    }
+
+    @Override
     public double dot(DVector b) {
         checkConformance(b);
         double s = 0;

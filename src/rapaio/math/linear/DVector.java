@@ -117,13 +117,10 @@ public interface DVector extends Serializable, Printable {
     DVector sub(double x);
 
     /**
-     * Substracts from all positions values from the
-     * corresponding positions of the vector B.
-     * The resulted vectors will have values:
-     * this[i] <- this[i] + B[i].
+     * Subtracts from all positions values from the corresponding positions of the vector {@code b}.
+     * The resulted vectors will have values:  {@code this[i] <- this[i] + B[i]}.
      * <p>
-     * Vectors must be conformant for addition, which means
-     * that they have to have the same size.
+     * Vectors must be conformant for addition, which means that they have to have the same size.
      *
      * @param b vector which contains values used for increment operation
      * @return same object
@@ -162,6 +159,18 @@ public interface DVector extends Serializable, Printable {
      * @return element wise division result vector
      */
     DVector div(DVector b);
+
+    /**
+     * Creates a new {@link DVector} which contains the result of {@code a*this+y},
+     * where {@code a} is a double scalar and {@code this} and {@code y} are conformant
+     * double vectors. The {@code this} vector in expresion is the vector on which
+     * the operation is called.
+     *
+     * @param a scalar
+     * @param y vector added to the result
+     * @return new vector which contains the result of {@code a*this+y}
+     */
+    DVector caxpy(double a, DVector y);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -310,6 +319,10 @@ public interface DVector extends Serializable, Printable {
 
     DVector copy(Type type);
 
+    default DMatrix asMatrix() {
+        return asMatrix(SOrder.R);
+    }
+
     /**
      * A vector is also a matrix, but for implementation
      * reasons the objects are not the same. This method
@@ -318,7 +331,7 @@ public interface DVector extends Serializable, Printable {
      *
      * @return a matrix corresponding with the current vector
      */
-    DMatrix asMatrix();
+    DMatrix asMatrix(SOrder order);
 
     /**
      * Creates a stream of values to visit all the elements of the vector

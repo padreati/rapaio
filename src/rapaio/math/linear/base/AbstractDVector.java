@@ -23,6 +23,7 @@ package rapaio.math.linear.base;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.SOrder;
 import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
@@ -112,6 +113,16 @@ public abstract class AbstractDVector implements DVector {
             set(i, get(i) / b.get(i));
         }
         return this;
+    }
+
+    @Override
+    public DVector caxpy(double a, DVector y) {
+        checkConformance(y);
+        DVector copy = DVectorBase.wrap(new double[size()]);
+        for (int i = 0; i < size(); i++) {
+            copy.set(i, a * get(i) + y.get(i));
+        }
+        return copy;
     }
 
     @Override
@@ -310,8 +321,8 @@ public abstract class AbstractDVector implements DVector {
     }
 
     @Override
-    public DMatrix asMatrix() {
-        DMatrixStripe res = DMatrixStripe.empty(size(), 1);
+    public DMatrix asMatrix(SOrder order) {
+        DMatrixStripe res = DMatrixStripe.empty(order, size(), 1);
         for (int i = 0; i < size(); i++) {
             res.set(i, 0, get(i));
         }

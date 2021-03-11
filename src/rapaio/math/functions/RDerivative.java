@@ -19,33 +19,22 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.functions;
 
-import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.dense.DVectorDense;
 
-import java.util.function.BiFunction;
+import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
  */
-public class R2Hessian implements RHessian {
+@FunctionalInterface
+public interface RDerivative extends Serializable {
 
-    private static final long serialVersionUID = -7499515114017044967L;
-
-    private final BiFunction<Double, Double, DMatrix> f;
-
-    public R2Hessian(BiFunction<Double, Double, DMatrix> f) {
-        this.f = f;
+    default DVector apply(double... x) {
+        return apply(DVectorDense.wrap(x));
     }
 
-    @Override
-    public DMatrix apply(double... x) {
-        return f.apply(x[0], x[1]);
-    }
-
-    @Override
-    public DMatrix apply(DVector x) {
-        return f.apply(x.get(0), x.get(1));
-    }
+    DVector apply(DVector x);
 }

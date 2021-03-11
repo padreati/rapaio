@@ -19,7 +19,7 @@
  *
  */
 
-package rapaio.experiment.ml.clustering;
+package rapaio.core.tools;
 
 import java.io.Serializable;
 

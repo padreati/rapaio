@@ -22,6 +22,7 @@
 package rapaio.math.linear.base;
 
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.SOrder;
 import rapaio.util.function.Double2DoubleFunction;
 
 import java.util.Arrays;
@@ -73,8 +74,8 @@ public class DMatrixBase extends AbstractDMatrix {
     }
 
     @Override
-    public Type type() {
-        return Type.BASE;
+    public SOrder order() {
+        return SOrder.R;
     }
 
     @Override

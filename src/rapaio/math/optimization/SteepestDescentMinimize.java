@@ -19,14 +19,16 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim;
+package rapaio.math.optimization;
 
 import rapaio.data.VarDouble;
-import rapaio.experiment.math.functions.RDerivative;
-import rapaio.experiment.math.functions.RFunction;
-import rapaio.experiment.math.optimization.optim.linesearch.BacktrackLineSearch;
-import rapaio.experiment.math.optimization.optim.linesearch.LineSearch;
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
+import rapaio.math.optimization.linesearch.BacktrackLineSearch;
+import rapaio.math.optimization.linesearch.LineSearch;
+import rapaio.ml.common.ParamSet;
+import rapaio.ml.common.ValueParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +36,24 @@ import java.util.List;
 import static java.lang.Math.abs;
 
 /**
+ * Implements the gradient descend optimization algorithm. Gradient descent is an optimization
+ * algorithm which finds local minimum of a function using the gradient of the function.
+ * Since this is a minimization algorithm, with each iteration it advances in the direction
+ * of negative gradient to improve the function.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public class GradientDescentMinimizer implements Minimizer {
+public class SteepestDescentMinimize extends ParamSet<SteepestDescentMinimize> implements Minimize {
 
-    private final double tol = 1e-10;
-    private final int maxIt;
+    private static final long serialVersionUID = 6935528214774334177L;
 
-    private final LineSearch lineSearch = BacktrackLineSearch.from();
+    public final ValueParam<Double, SteepestDescentMinimize> tol = new ValueParam<>(this,
+            1e-10, "tol", "Tolerance error admissible for accepting a convergent solution");
+    public final ValueParam<Integer, SteepestDescentMinimize> maxIt = new ValueParam<>(this,
+            10, "maxIt", "Maximum number of iterations");
+
+    public final ValueParam<LineSearch, SteepestDescentMinimize> lineSearch = new ValueParam<>(this,
+            BacktrackLineSearch.fromDefaults(), "lineSearch", "Line search algorithm");
 
     private final DVector x;
     private final RFunction f;
@@ -53,11 +65,10 @@ public class GradientDescentMinimizer implements Minimizer {
     private VarDouble errors;
     private boolean converged = false;
 
-    public GradientDescentMinimizer(DVector x, RFunction f, RDerivative d1f, int maxIt) {
+    public SteepestDescentMinimize(DVector x, RFunction f, RDerivative d1f) {
         this.x = x;
         this.f = f;
         this.d1f = d1f;
-        this.maxIt = maxIt;
     }
 
     public VarDouble getErrors() {
@@ -68,14 +79,14 @@ public class GradientDescentMinimizer implements Minimizer {
     public void compute() {
         converged = false;
         sol = x.copy();
-        for (int i = 0; i < maxIt; i++) {
+        for (int i = 0; i < maxIt.get(); i++) {
             solutions.add(sol.copy());
             DVector delta_x = d1f.apply(sol).mult(-1);
-            if (abs(delta_x.norm(2)) < tol) {
+            if (abs(delta_x.norm(2)) < tol.get()) {
                 converged = true;
                 break;
             }
-            double t = lineSearch.find(f, d1f, x, delta_x);
+            double t = lineSearch.get().search(f, d1f, x, delta_x);
             sol.add(delta_x.mult(t));
         }
     }

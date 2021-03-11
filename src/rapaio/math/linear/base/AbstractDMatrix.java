@@ -688,7 +688,7 @@ public abstract class AbstractDMatrix implements DMatrix {
                     continue;
                 }
                 if (j == ttCols + extraCol + 1) {
-                    tt.textCenter(i, j, " ]" + ((i != ttRows + extraRow) ? ',' : ""));
+                    tt.textCenter(i, j, "]" + ((i != ttRows + extraRow) ? ',' : ""));
                     continue;
                 }
                 if (extraCol == 1 && j == ttCols + extraCol) {

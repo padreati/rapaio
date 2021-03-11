@@ -136,8 +136,8 @@ public final class DoubleArrays {
     }
 
     public static void add(double[] a, int aStart, double s, int len) {
-        for (int i = 0; i < len; i++) {
-            a[aStart++] += s;
+        for (int i = aStart; i < len + aStart; i++) {
+            a[i] += s;
         }
     }
 
@@ -228,6 +228,12 @@ public final class DoubleArrays {
     public static void divTo(double[] a, int aStart, double[] b, int bStart, double[] to, int toStart, int len) {
         for (int i = 0; i < len; i++) {
             to[toStart++] = a[aStart++] / b[bStart++];
+        }
+    }
+
+    public static void axpyTo(double a, double[] x, double[] y, double[] to, int start, int len) {
+        for (int i = start; i < len; i++) {
+            to[i] = a * x[i] + y[i];
         }
     }
 

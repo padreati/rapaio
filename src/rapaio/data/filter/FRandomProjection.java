@@ -28,7 +28,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.math.linear.dense.DVectorDense;
 
 import java.util.stream.IntStream;
@@ -73,7 +73,7 @@ public class FRandomProjection extends AbstractFFilter {
     public void coreFit(Frame df) {
         // build k random projections
 
-        rp = DMatrixStripe.empty(varNames.length, k);
+        rp = DMatrixDense.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
             DVector v = method.projection(varNames.length);
             for (int j = 0; j < varNames.length; j++) {
@@ -85,7 +85,7 @@ public class FRandomProjection extends AbstractFFilter {
     @Override
     public Frame apply(Frame df) {
 
-        DMatrix X = DMatrixStripe.copy(df.mapVars(varNames));
+        DMatrix X = DMatrixDense.copy(df.mapVars(varNames));
         DMatrix p = X.dot(rp);
 
         Frame non = df.removeVars(VRange.of(varNames));

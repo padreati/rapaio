@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.math.linear.base.DMatrixBase;
-import rapaio.math.linear.base.DVectorBase;
 import rapaio.math.linear.dense.DMatrixStripe;
 import rapaio.math.linear.dense.DVectorDense;
 
@@ -43,7 +42,7 @@ public abstract class StandardDMatrixTest {
         RandomSource.setSeed(123);
     }
 
-    protected abstract DMatrix.Type type();
+    protected abstract SOrder order();
 
     protected abstract DMatrix generateSequential(int n, int m);
 
@@ -51,13 +50,13 @@ public abstract class StandardDMatrixTest {
 
     protected abstract DMatrix generateFill(int n, int m, double fill);
 
-    protected abstract DMatrix generateWrap(double[][] values);
+    protected abstract DMatrix generateCopy(double[][] values);
 
     protected abstract String className();
 
     @Test
     void typeTest() {
-        assertEquals(type(), generateSequential(10, 3).type());
+        assertEquals(order(), generateSequential(10, 3).order());
     }
 
     @Test
@@ -397,7 +396,6 @@ public abstract class StandardDMatrixTest {
     void dotDiagTest() {
         var m = generateFill(10, 3, 1);
         var v1 = DVectorDense.wrap(1, 2, 3);
-        var v2 = DVectorBase.wrap(1, 2, 3);
 
         var d = DMatrixStripe.wrap(new double[][]{
                 {1, 0, 0},
@@ -405,7 +403,7 @@ public abstract class StandardDMatrixTest {
                 {0, 0, 3}
         });
         var r1 = m.copy().dot(d);
-        var r2 = m.copy().dot(d);
+
 
         assertTrue(r1.deepEquals(m.copy().dotDiag(v1)));
     }
@@ -450,7 +448,7 @@ public abstract class StandardDMatrixTest {
         assertEquals(1, generateFill(10, 10, 1).rank());
         assertEquals(2, generateSequential(7, 3).rank());
         assertEquals(1, generateSequential(2, 1).rank());
-        assertEquals(3, generateWrap(new double[][]{
+        assertEquals(3, generateCopy(new double[][]{
                 {1, 1, 1},
                 {1, 2, 4},
                 {3, 2, 1}
@@ -459,7 +457,7 @@ public abstract class StandardDMatrixTest {
 
     @Test
     void maxValues() {
-        var m = generateWrap(new double[][]{
+        var m = generateCopy(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8}
         });
@@ -480,11 +478,11 @@ public abstract class StandardDMatrixTest {
                 {2, 2, 1}
         };
 
-        assertArrayEquals(new int[]{1, 2, 0}, generateWrap(m).argmax(0));
-        assertArrayEquals(new int[]{2, 0, 1, 0}, generateWrap(m).argmax(1));
+        assertArrayEquals(new int[]{1, 2, 0}, generateCopy(m).argmax(0));
+        assertArrayEquals(new int[]{2, 0, 1, 0}, generateCopy(m).argmax(1));
 
-        assertArrayEquals(new int[]{0, 0, 1}, generateWrap(m).argmin(0));
-        assertArrayEquals(new int[]{1, 1, 0, 2}, generateWrap(m).argmin(1));
+        assertArrayEquals(new int[]{0, 0, 1}, generateCopy(m).argmin(0));
+        assertArrayEquals(new int[]{1, 1, 0, 2}, generateCopy(m).argmin(1));
     }
 
     @Test
@@ -492,7 +490,7 @@ public abstract class StandardDMatrixTest {
         DMatrix m1 = generateIdentity(2);
 
         DMatrix m2 = DMatrixBase.wrap(new double[][]{{1, 0}, {0, 1}});
-        DMatrixStripe m3 = DMatrixStripe.identity(2);
+        DMatrix m3 = DMatrixStripe.identity(2);
 
         assertTrue(m1.deepEquals(m2));
         assertTrue(m2.deepEquals(m3));
@@ -509,11 +507,11 @@ public abstract class StandardDMatrixTest {
         assertFalse(m4.deepEquals(m1));
         assertFalse(m5.deepEquals(m1));
 
-        m1 = generateWrap(new double[][]{
+        m1 = generateCopy(new double[][]{
                 {1, 1, 2},
                 {1, 2, 4}
         });
-        m2 = generateWrap(new double[][]{
+        m2 = generateCopy(new double[][]{
                 {1d + 0x1.0p-47, 1, 2},
                 {1, 2, 4}
         });

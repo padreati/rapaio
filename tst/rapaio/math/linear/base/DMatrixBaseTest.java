@@ -23,6 +23,7 @@ package rapaio.math.linear.base;
 
 import org.junit.jupiter.api.Test;
 import rapaio.math.linear.DMatrix;
+import rapaio.math.linear.SOrder;
 import rapaio.math.linear.StandardDMatrixTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DMatrixBaseTest extends StandardDMatrixTest {
 
     @Override
-    protected DMatrix.Type type() {
-        return DMatrix.Type.BASE;
+    protected SOrder order() {
+        return SOrder.R;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class DMatrixBaseTest extends StandardDMatrixTest {
     }
 
     @Override
-    protected DMatrix generateWrap(double[][] values) {
+    protected DMatrix generateCopy(double[][] values) {
         return DMatrixBase.wrap(values);
     }
 

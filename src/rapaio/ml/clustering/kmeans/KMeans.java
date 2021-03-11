@@ -60,11 +60,14 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
 
     private static final long serialVersionUID = -1046184364541391871L;
 
-    public final ValueParam<Integer, KMeans> k = new ValueParam<>(this, 2, "k", "number of clusters");
-    public final ValueParam<Integer, KMeans> nstart = new ValueParam<>(this, 1, "nstart", "Number of restarts", n -> n != null && n > 0);
-    public final ValueParam<KMeansInit, KMeans> init = new ValueParam<>(this, KMeansInit.Forgy,
-            "init", "Initialization algorithm");
-    public final ValueParam<Double, KMeans> eps = new ValueParam<>(this, 1e-20, "eps", "Tolerance for convergence measures");
+    public final ValueParam<Integer, KMeans> k = new ValueParam<>(this,
+            2, "k", "number of clusters");
+    public final ValueParam<Integer, KMeans> nstart = new ValueParam<>(this,
+            1, "nstart", "Number of restarts", n -> n != null && n > 0);
+    public final ValueParam<KMeansInit, KMeans> init = new ValueParam<>(this,
+            KMeansInit.Forgy, "init", "Initialization algorithm");
+    public final ValueParam<Double, KMeans> eps = new ValueParam<>(this,
+            1e-20, "eps", "Tolerance for convergence measures");
 
     // clustering artifacts
 

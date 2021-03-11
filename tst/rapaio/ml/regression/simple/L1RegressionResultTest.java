@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.regression.simple;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,10 +68,9 @@ public class L1RegressionResultTest {
                 "Model instance: L1Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nom \n" +
-                "2. TV        dbl \n" +
-                "3. Radio     dbl \n" +
-                "4. Newspaper dbl \n" +
+                "1. TV        dbl \n" +
+                "2. Radio     dbl \n" +
+                "3. Newspaper dbl \n" +
                 "> target variables: \n" +
                 "1. Sales dbl \n" +
                 "\n" +
@@ -66,10 +86,9 @@ public class L1RegressionResultTest {
                 "Model instance: L1Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nom \n" +
-                "2. TV        dbl \n" +
-                "3. Radio     dbl \n" +
-                "4. Newspaper dbl \n" +
+                "1. TV        dbl \n" +
+                "2. Radio     dbl \n" +
+                "3. Newspaper dbl \n" +
                 "> target variables: \n" +
                 "1. Sales dbl \n" +
                 "\n" +
@@ -85,10 +104,9 @@ public class L1RegressionResultTest {
                 "Model instance: L1Regression{}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
-                "1. ID        nom \n" +
-                "2. TV        dbl \n" +
-                "3. Radio     dbl \n" +
-                "4. Newspaper dbl \n" +
+                "1. TV        dbl \n" +
+                "2. Radio     dbl \n" +
+                "3. Newspaper dbl \n" +
                 "> target variables: \n" +
                 "1. Sales dbl \n" +
                 "\n" +

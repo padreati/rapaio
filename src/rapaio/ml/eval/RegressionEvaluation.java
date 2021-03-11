@@ -37,10 +37,12 @@ import rapaio.ml.regression.RegressionResult;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/6/19.
@@ -61,7 +63,7 @@ public class RegressionEvaluation {
     private final SplitStrategy splitStrategy;
 
     @Builder.Default
-    private final int threads = 1;
+    private final int threads = Runtime.getRuntime().availableProcessors() - 1;
 
     @Singular
     private final List<RegressionMetric> metrics;
@@ -70,47 +72,62 @@ public class RegressionEvaluation {
     private final boolean debug = false;
 
     public RegressionEvaluationResult run() {
-        ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        List<Future<RegressionEvaluation.Run>> futures = new LinkedList<>();
+        List<Task> tasks = new LinkedList<>();
 
         // create features for parallel execution
 
         List<Split> splits = splitStrategy.generateSplits(df, weights);
 
         for (Split split : splits) {
-            Future<RegressionEvaluation.Run> futureRun = executorService.submit(() -> {
-                var m = model.newInstance();
-                m.fit(split.getTrainDf(), targetName);
-                var trainResult = m.predict(split.getTrainDf());
-                var testResult = m.predict(split.getTestDf());
-                return new RegressionEvaluation.Run(split, trainResult, testResult);
-            });
-            futures.add(futureRun);
+            tasks.add(new Task(model, targetName, split));
         }
 
         RegressionEvaluationResult result = new RegressionEvaluationResult(this);
 
-        // collect results
 
-        while (!futures.isEmpty()) {
-            Iterator<Future<RegressionEvaluation.Run>> iterator = futures.iterator();
-            while (iterator.hasNext()) {
-                Future<RegressionEvaluation.Run> future = iterator.next();
-                if (future.isDone()) {
-                    try {
-                        var run = future.get();
-                        result.appendRun(run.getSplit(), run.getTrainResult(), run.getTestResult());
-                        iterator.remove();
-                    } catch (InterruptedException | ExecutionException e) {
-                        // do nothing
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+        List<Future<Run>> futures = null;
+        try {
+            futures = pool.invokeAll(tasks);
+
+            // collect results
+
+            while (!futures.isEmpty()) {
+                Iterator<Future<RegressionEvaluation.Run>> iterator = futures.iterator();
+                while (iterator.hasNext()) {
+                    Future<RegressionEvaluation.Run> future = iterator.next();
+                    if (future.isDone()) {
+                        try {
+                            var run = future.get();
+                            result.appendRun(run.getSplit(), run.getTrainResult(), run.getTestResult());
+                            iterator.remove();
+                        } catch (InterruptedException | ExecutionException e) {
+                            // do nothing
+                            iterator.remove();
+                        }
                     }
                 }
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            shutdownAndAwaitTermination(pool);
         }
 
-        // shut down executor
-        executorService.shutdownNow();
+        shutdownAndAwaitTermination(pool);
+
         return result;
+    }
+
+    void shutdownAndAwaitTermination(ExecutorService executorService) {
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
     }
 
     @AllArgsConstructor
@@ -120,5 +137,22 @@ public class RegressionEvaluation {
         private final Split split;
         private final RegressionResult trainResult;
         private final RegressionResult testResult;
+    }
+
+    @AllArgsConstructor
+    private static class Task implements Callable<RegressionEvaluation.Run> {
+
+        private final RegressionModel model;
+        private final String targetName;
+        private final Split split;
+
+        @Override
+        public Run call() throws Exception {
+            var m = model.newInstance();
+            m.fit(split.getTrainDf(), targetName);
+            var trainResult = m.predict(split.getTrainDf());
+            var testResult = m.predict(split.getTestDf());
+            return new RegressionEvaluation.Run(split, trainResult, testResult);
+        }
     }
 }

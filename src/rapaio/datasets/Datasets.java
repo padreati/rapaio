@@ -166,12 +166,18 @@ public class Datasets {
                 .read(Datasets.class.getResourceAsStream("life_science.csv"));
     }
 
-    public static Frame loadISLAdvertising() throws IOException {
-        return Csv.instance()
-                .quotes.set(true)
-                .defaultTypes.set(VType.DOUBLE)
-                .types.add(VType.NOMINAL, "ID")
-                .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));
+    public static Frame loadISLAdvertising() {
+        try {
+            return Csv.instance()
+                    .quotes.set(true)
+                    .defaultTypes.set(VType.DOUBLE)
+                    .types.add(VType.NOMINAL, "ID")
+                    .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"))
+                    .removeVars("ID")
+                    .copy();
+        } catch (IOException e) {
+            throw new RuntimeException("Dataset could not be load.", e);
+        }
     }
 
     public static Frame loadRandom() {

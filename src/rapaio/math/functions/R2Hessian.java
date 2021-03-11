@@ -19,29 +19,33 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim.linesearch;
+package rapaio.math.functions;
 
-import rapaio.experiment.math.functions.RDerivative;
-import rapaio.experiment.math.functions.RFunction;
+import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
 
+import java.util.function.BiFunction;
+
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-public class FixedLineSearch implements LineSearch {
+public class R2Hessian implements RHessian {
 
-    public static FixedLineSearch from(double fixedValue) {
-        return new FixedLineSearch(fixedValue);
-    }
+    private static final long serialVersionUID = -7499515114017044967L;
 
-    private final double fixedValue;
+    private final BiFunction<Double, Double, DMatrix> f;
 
-    public FixedLineSearch(double fixedValue) {
-        this.fixedValue = fixedValue;
+    public R2Hessian(BiFunction<Double, Double, DMatrix> f) {
+        this.f = f;
     }
 
     @Override
-    public double find(RFunction f, RDerivative d1f, DVector x, DVector delta_f) {
-        return fixedValue;
+    public DMatrix apply(double... x) {
+        return f.apply(x[0], x[1]);
+    }
+
+    @Override
+    public DMatrix apply(DVector x) {
+        return f.apply(x.get(0), x.get(1));
     }
 }

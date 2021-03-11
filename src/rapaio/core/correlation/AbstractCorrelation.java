@@ -21,8 +21,8 @@
 
 package rapaio.core.correlation;
 
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.Var;
-import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.printer.Format;
 import rapaio.printer.Printer;
 import rapaio.printer.TextTable;

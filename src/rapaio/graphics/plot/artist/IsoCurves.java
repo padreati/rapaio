@@ -21,8 +21,8 @@
 
 package rapaio.graphics.plot.artist;
 
+import rapaio.core.tools.GridData;
 import rapaio.data.Var;
-import rapaio.experiment.grid.GridData;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.GOption;
 import rapaio.graphics.plot.Artist;

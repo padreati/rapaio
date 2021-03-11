@@ -23,6 +23,7 @@ package rapaio.math.linear.dense;
 
 import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
+import rapaio.math.linear.SOrder;
 import rapaio.math.linear.base.AbstractDMatrix;
 import rapaio.util.function.Double2DoubleFunction;
 
@@ -59,8 +60,8 @@ public class DMatrixMap extends AbstractDMatrix {
     }
 
     @Override
-    public Type type() {
-        return Type.MAP;
+    public SOrder order() {
+        return ref.order();
     }
 
     @Override

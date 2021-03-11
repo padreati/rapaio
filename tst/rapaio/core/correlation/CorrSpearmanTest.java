@@ -25,12 +25,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
+import rapaio.core.tools.DistanceMatrix;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
-import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.math.linear.DMatrix;
-import rapaio.math.linear.dense.DMatrixStripe;
+import rapaio.math.linear.dense.DMatrixDense;
 import rapaio.sys.WS;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,7 +120,7 @@ public class CorrSpearmanTest {
         VarDouble y = VarDouble.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).name("y");
         VarDouble z = VarDouble.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).name("z");
 
-        DMatrix exp = DMatrixStripe.copy(3, 3,
+        DMatrix exp = DMatrixDense.copy(true, 3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
                 0.8789432182134321, 1, 0.999999997876,
                 0.8789431613694316, 0.999999997876, 1);

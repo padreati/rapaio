@@ -19,22 +19,27 @@
  *
  */
 
-package rapaio.experiment.math.optimization.optim;
+package rapaio.math.optimization.linesearch;
 
+import rapaio.math.functions.RDerivative;
+import rapaio.math.functions.RFunction;
 import rapaio.math.linear.DVector;
 
-import java.util.List;
-
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/19/17.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/18/17.
  */
-public interface Minimizer {
+public interface LineSearch {
 
-    void compute();
-
-    List<DVector> solutions();
-
-    DVector solution();
-
-    boolean hasConverged();
+    /**
+     * Computes a positive step size that adequately reduces the objective function {@code f} in the direction {@code p}.
+     * <p>
+     * In other words, it computes a factor {@code alpha} such as {@code f(x + alpha*p) < f(x)}.
+     *
+     * @param f  objective function
+     * @param df objective function derivative
+     * @param x  starting position
+     * @param p  search direction
+     * @return computed step size {@code alpha}
+     */
+    double search(RFunction f, RDerivative df, DVector x, DVector p);
 }

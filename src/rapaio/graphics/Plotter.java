@@ -23,12 +23,12 @@ package rapaio.graphics;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
+import rapaio.core.tools.DistanceMatrix;
+import rapaio.core.tools.GridData;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarDouble;
 import rapaio.data.VarInt;
-import rapaio.experiment.grid.GridData;
-import rapaio.experiment.ml.clustering.DistanceMatrix;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOption;

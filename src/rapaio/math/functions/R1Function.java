@@ -19,23 +19,34 @@
  *
  */
 
-package rapaio.experiment.math.functions;
+package rapaio.math.functions;
 
-import rapaio.math.linear.DMatrix;
 import rapaio.math.linear.DVector;
-import rapaio.math.linear.dense.DVectorDense;
 
-import java.io.Serializable;
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/25/17.
+ * Function in one dimension.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/27/17.
  */
-@FunctionalInterface
-public interface RHessian extends Serializable {
+public class R1Function implements RFunction {
 
-    default DMatrix apply(double... x) {
-        return apply(DVectorDense.wrap(x));
+    private static final long serialVersionUID = -2881307255778321959L;
+
+    public final Function<Double, Double> f;
+
+    public R1Function(Function<Double, Double> f) {
+        this.f = f;
     }
 
-    DMatrix apply(DVector x);
+    @Override
+    public double apply(double... x) {
+        return f.apply(x[0]);
+    }
+
+    @Override
+    public double apply(DVector x) {
+        return f.apply(x.get(0));
+    }
 }
