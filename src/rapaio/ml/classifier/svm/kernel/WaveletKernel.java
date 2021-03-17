@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 import java.util.function.Function;
@@ -82,6 +83,21 @@ public class WaveletKernel extends AbstractKernel {
             } else {
                 result *= wavelet.apply((df1.getDouble(row1, varName) - translation) / dilation);
                 result *= wavelet.apply((df2.getDouble(row2, varName) - translation) / dilation);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double result = 1;
+        for (int i = 0; i < v.size(); i++) {
+            if (invariant) {
+                double diff = v.get(i) - u.get(i);
+                result *= wavelet.apply(diff / dilation);
+            } else {
+                result *= wavelet.apply((v.get(i) - translation) / dilation);
+                result *= wavelet.apply((u.get(i) - translation) / dilation);
             }
         }
         return result;

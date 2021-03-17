@@ -161,8 +161,8 @@ public class SmoothRTree extends AbstractRegressionModel<SmoothRTree, Regression
     }
 
     @Override
-    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
-        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals, final double... quantiles) {
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < df.rowCount(); i++) {
             prediction.firstPrediction().setDouble(i, root.predict(df, i, this, 1.0));
         }

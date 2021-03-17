@@ -23,6 +23,7 @@ package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 import rapaio.math.MTools;
+import rapaio.math.linear.DVector;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -30,12 +31,12 @@ import static rapaio.printer.Format.floatFlex;
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
  * are well suited for problems where all the training data is normalized.
  * <p>
- * k(x, y) = (\alpha x^T y + c)^d
+ * k(x, y) = (slope * x^T y + bias)^exponent
  * <p>
  * Adjustable parameters are the slope alpha, the constant term c and the
  * polynomial degree d.
  * <p>
- * A special case is the linear kernel (d=1).
+ * A special case is the linear kernel (exponent=1, slope=1,bias=0).
  * <p>
  * The Linear kernel is the simplest kernel function. It is given by the
  * inner product <x,y> plus an optional constant c. Kernel algorithms
@@ -91,11 +92,17 @@ public class PolyKernel extends AbstractKernel {
         if (varNames == null) {
             throw new IllegalArgumentException("This kernel is not build with var names");
         }
-
-        double result = dotProd(df1, row1, df2, row2);
-        if (exponent != 1.0) {
-            result = Math.pow(slope * result + bias, exponent);
+        if (isLinear()) {
+            return slope * dotProd(df1, row1, df2, row2) + bias;
         }
-        return result;
+        return Math.pow(slope * dotProd(df1, row1, df2, row2) + bias, exponent);
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        if (isLinear()) {
+            return slope * v.dot(u) + bias;
+        }
+        return Math.pow(slope * v.dot(u) + bias, exponent);
     }
 }

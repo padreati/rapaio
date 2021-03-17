@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 
 /**
  * The Chi-Square kernel comes from the Chi-Square distribution.
@@ -40,7 +41,18 @@ public class ChiSquareKernel extends AbstractKernel {
         for (String varName : varNames) {
             double sum = df1.getDouble(row1, varName) + df2.getDouble(row2, varName);
             double diff = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
-            result = 2 * Math.pow(diff, 2) / sum;
+            result = 2 * diff * diff / sum;
+        }
+        return 1 - result;
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double result = 0;
+        for (int i = 0; i < u.size(); i++) {
+            double sum = u.get(i) + v.get(i);
+            double diff = u.get(i) - v.get(i);
+            result = 2 * diff * diff / sum;
         }
         return 1 - result;
     }

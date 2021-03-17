@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.regression.tree.rtree;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -51,12 +72,11 @@ public class SearchTest {
         Candidate c = cs.get();
         assertEquals(NOM_TEST, c.getTestName());
 
-        assertEquals(3, c.getGroupNames().size());
         assertEquals(3, c.getGroupPredicates().size());
 
-        assertEquals("outlook = 'sunny'", c.getGroupNames().get(0));
-        assertEquals("outlook = 'overcast'", c.getGroupNames().get(1));
-        assertEquals("outlook = 'rain'", c.getGroupNames().get(2));
+        assertEquals("outlook = 'sunny'", c.getGroupPredicates().get(0).toString());
+        assertEquals("outlook = 'overcast'", c.getGroupPredicates().get(1).toString());
+        assertEquals("outlook = 'rain'", c.getGroupPredicates().get(2).toString());
 
         assertEquals(4.432653061224499, c.getScore(), 1e-20);
     }
@@ -71,7 +91,7 @@ public class SearchTest {
     void nominalBinaryTest() {
         Optional<Candidate> cs = Search.NominalBinary.computeCandidate(tree, df, w, NOM_TEST, TARGET);
         assertTrue(cs.isPresent());
-        assertEquals("Candidate{score=4.318367346938771, testName='outlook', groupNames=[outlook = 'overcast', outlook != 'overcast']}",
+        assertEquals("Candidate{score=4.318367346938771, testName='outlook', predicates=[outlook='overcast', outlook!='overcast']}",
                 cs.get().toString());
     }
 
@@ -86,9 +106,9 @@ public class SearchTest {
         assertTrue(c.isPresent());
         assertEquals(32.657653061224515, c.get().getScore(), 1e-12);
         assertEquals("temp", c.get().getTestName());
-        assertEquals(2, c.get().getGroupNames().size());
-        assertEquals("temp <= 69.5", c.get().getGroupNames().get(0));
-        assertEquals("temp > 69.5", c.get().getGroupNames().get(1));
+        assertEquals(2, c.get().getGroupPredicates().size());
+        assertEquals("temp <= 69.5", c.get().getGroupPredicates().get(0).toString());
+        assertEquals("temp > 69.5", c.get().getGroupPredicates().get(1).toString());
     }
 
 }

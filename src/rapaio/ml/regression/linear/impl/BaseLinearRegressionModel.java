@@ -78,14 +78,14 @@ public abstract class BaseLinearRegressionModel<M extends BaseLinearRegressionMo
     }
 
     @Override
-    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
+    protected PredSetup preparePredict(Frame df, boolean withResiduals, final double[] quantiles) {
         Frame transformed = intercept.get() ? FIntercept.filter().apply(df) : df;
-        return super.preparePredict(transformed, withResiduals);
+        return super.preparePredict(transformed, withResiduals, quantiles);
     }
 
     @Override
-    protected LinearRegressionResult corePredict(Frame df, boolean withResiduals) {
-        LinearRegressionResult result = new LinearRegressionResult(this, df, withResiduals);
+    protected LinearRegressionResult corePredict(Frame df, boolean withResiduals, final double[] quantiles) {
+        LinearRegressionResult result = new LinearRegressionResult(this, df, withResiduals, quantiles);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             for (int j = 0; j < result.prediction(target).size(); j++) {

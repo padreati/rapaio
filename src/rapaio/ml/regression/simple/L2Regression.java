@@ -88,8 +88,8 @@ public class L2Regression extends AbstractRegressionModel<L2Regression, Regressi
     }
 
     @Override
-    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
             Var v = fit.prediction(targetName(i));

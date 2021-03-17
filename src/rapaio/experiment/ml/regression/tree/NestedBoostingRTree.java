@@ -169,8 +169,8 @@ public class NestedBoostingRTree extends AbstractRegressionModel<NestedBoostingR
     }
 
     @Override
-    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
-        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals, double[] quantiles) {
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < df.rowCount(); i++) {
             double y_true = 0.0;
             NBRTreeNode node = root;

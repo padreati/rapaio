@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
@@ -53,6 +54,18 @@ public class GeneralizedMinKernel extends AbstractKernel {
             sum += Math.min(
                     Math.pow(Math.abs(df1.getDouble(row1, varName)), alpha),
                     Math.pow(Math.abs(df2.getDouble(row2, varName)), beta)
+            );
+        }
+        return sum;
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double sum = 0;
+        for (int i = 0; i < u.size(); i++) {
+            sum += Math.min(
+                    Math.pow(Math.abs(v.get(i)), alpha),
+                    Math.pow(Math.abs(u.get(i)), beta)
             );
         }
         return sum;

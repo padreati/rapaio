@@ -274,7 +274,7 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
         }
 
         if (bestCandidate == null
-                || bestCandidate.getGroupNames().isEmpty()
+                || bestCandidate.getGroupPredicates().isEmpty()
                 || bestCandidate.getScore() <= minScore.get()) {
             return;
         }
@@ -283,8 +283,8 @@ public class RTree extends AbstractRegressionModel<RTree, RegressionResult> impl
     }
 
     @Override
-    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
-        RegressionResult prediction = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals, final double... quantiles) {
+        RegressionResult prediction = RegressionResult.build(this, df, withResiduals, quantiles);
 
         for (int i = 0; i < df.rowCount(); i++) {
             DoublePair result = predict(i, df, root);

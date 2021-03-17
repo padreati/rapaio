@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 
 /**
  * The Histogram Intersection Kernel is also known as the Min Kernel
@@ -40,6 +41,15 @@ public class MinKernel extends AbstractKernel {
         double sum = 0;
         for (String varName : varNames) {
             sum += Math.min(df1.getDouble(row1, varName), df2.getDouble(row2, varName));
+        }
+        return sum;
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double sum = 0;
+        for (int i = 0; i < v.size(); i++) {
+            sum += Math.min(v.get(i), u.get(i));
         }
         return sum;
     }

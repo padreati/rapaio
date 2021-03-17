@@ -87,8 +87,8 @@ public class RandomValueRegression extends AbstractRegressionModel<RandomValueRe
     }
 
     @Override
-    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals, quantiles);
         for (String targetName : targetNames()) {
             pred.prediction(targetName).stream().forEach(s -> s.setDouble(distribution.get().sampleNext()));
         }

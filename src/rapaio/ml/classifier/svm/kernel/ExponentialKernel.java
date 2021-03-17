@@ -22,10 +22,12 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
- * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out. It is also a radial basis function kernel.
+ * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out.
+ * It is also a radial basis function kernel.
  * <p>
  * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
  * <p>
@@ -44,13 +46,19 @@ public class ExponentialKernel extends AbstractKernel {
 
     public ExponentialKernel(double sigma) {
         this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
+        this.factor = -1.0 / (2.0 * sigma * sigma);
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value);
+        double value = deltaSumSquares(df1, row1, df2, row2);
+        return Math.exp(factor * value);
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double value = deltaSumSquares(v, u);
+        return Math.exp(factor * value);
     }
 
     @Override

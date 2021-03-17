@@ -25,6 +25,7 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarDouble;
+import rapaio.printer.Format;
 import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import rapaio.printer.opt.POption;
@@ -44,26 +45,30 @@ import static java.util.Collections.nCopies;
  */
 public class RegressionResult implements Printable {
 
-    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals) {
-        return new RegressionResult(model, df, withResiduals);
+    public static RegressionResult build(RegressionModel model, Frame df, boolean withResiduals, double[] quantiles) {
+        return new RegressionResult(model, df, withResiduals, quantiles);
     }
 
     protected final RegressionModel model;
     protected final Frame df;
     protected final boolean withResiduals;
+    protected final double[] quantiles;
     protected final Map<String, VarDouble> prediction;
+    protected final Map<String, VarDouble[]> predictionQuantiles;
     protected final Map<String, VarDouble> residuals;
     protected final Map<String, Double> tss;
     protected final Map<String, Double> ess;
     protected final Map<String, Double> rss;
     protected final Map<String, Double> rsquare;
 
-    protected RegressionResult(final RegressionModel model, final Frame df, final boolean withResiduals) {
+    protected RegressionResult(final RegressionModel model, final Frame df, final boolean withResiduals, final double[] quantiles) {
         this.df = df;
         this.model = model;
         this.withResiduals = withResiduals;
+        this.quantiles = quantiles != null ? quantiles : new double[0];
 
         this.prediction = new HashMap<>();
+        this.predictionQuantiles = new HashMap<>();
         this.residuals = new HashMap<>();
         this.tss = new HashMap<>();
         this.ess = new HashMap<>();
@@ -71,6 +76,11 @@ public class RegressionResult implements Printable {
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
             prediction.put(targetName, VarDouble.empty(df.rowCount()).name(targetName));
+            VarDouble[] pq = new VarDouble[this.quantiles.length];
+            for (int i = 0; i < this.quantiles.length; i++) {
+                pq[i] = VarDouble.empty(df.rowCount()).name(targetName + "_q" + Format.floatFlexShort(this.quantiles[i]));
+            }
+            predictionQuantiles.put(targetName, pq);
             residuals.put(targetName, VarDouble.empty(df.rowCount()).name(targetName));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
@@ -146,6 +156,50 @@ public class RegressionResult implements Printable {
      */
     public VarDouble prediction(String targetVar) {
         return prediction.get(targetVar);
+    }
+
+    /**
+     * Returns predicted quantile target predict for each target variable name
+     *
+     * @return map with numeric variables as predicted values
+     */
+    public Map<String, VarDouble[]> predictionQuantilesMap() {
+        return predictionQuantiles;
+    }
+
+    /**
+     * Returns predicted quantiles target predict for all target variable name
+     *
+     * @return frame with fitted variables as columns
+     */
+    public Frame predictionQuantilesFrame() {
+        VarDouble[] array = new VarDouble[targetNames().length * quantiles.length];
+        int pos = 0;
+        for (int i = 0; i < targetNames().length; i++) {
+            for (int j = 0; j < quantiles.length; j++) {
+                array[pos++] = predictionQuantiles.get(targetNames()[i])[j];
+            }
+        }
+        return SolidFrame.byVars(array);
+    }
+
+    /**
+     * Returns fitted quantiles target var for first target variable name
+     *
+     * @return numeric variable with predicted values
+     */
+    public VarDouble[] firstPredictionQuantiles() {
+        return predictionQuantiles.get(firstTargetName());
+    }
+
+    /**
+     * Returns fitted quantiles target values for given target variable name
+     *
+     * @param targetVar given target variable name
+     * @return numeric variable with predicted values
+     */
+    public VarDouble[] predictionQuantiles(String targetVar) {
+        return predictionQuantiles.get(targetVar);
     }
 
     public double firstRSquare() {

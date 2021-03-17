@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 
 import java.io.Serializable;
 
@@ -41,6 +42,8 @@ public interface Kernel extends Serializable {
     void buildKernelCache(String[] varNames, Frame df);
 
     double compute(Frame df1, int row1, Frame df2, int row2);
+
+    double compute(DVector v, DVector u);
 
     default void clean() {
     }

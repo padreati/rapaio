@@ -177,8 +177,8 @@ public interface RegressionModel extends Printable, Serializable {
      * @param df input data frame
      * @return regression predict result
      */
-    default <R extends RegressionResult> R predict(final Frame df) {
-        return predict(df, false);
+    default <R extends RegressionResult> R predict(final Frame df, double... quantiles) {
+        return predict(df, false, quantiles);
     }
 
     /**
@@ -186,8 +186,9 @@ public interface RegressionModel extends Printable, Serializable {
      *
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
+     * @param quantiles     prediction quantiles if the model allows a prediction distribution, ignored otherwise
      */
-    <R extends RegressionResult> R predict(Frame df, boolean withResiduals);
+    <R extends RegressionResult> R predict(Frame df, boolean withResiduals, double... quantiles);
 
     String headerSummary();
 }

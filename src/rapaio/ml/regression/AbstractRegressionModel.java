@@ -160,22 +160,22 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
     protected abstract boolean coreFit(Frame df, Var weights);
 
     @Override
-    public R predict(Frame df, boolean withResiduals) {
-        PredSetup setup = preparePredict(df, withResiduals);
-        return corePredict(setup.df, setup.withResiduals);
+    public R predict(Frame df, boolean withResiduals, double... quantiles) {
+        PredSetup setup = preparePredict(df, withResiduals, quantiles);
+        return corePredict(setup.df, setup.withResiduals, quantiles);
     }
 
     @Override
-    public R predict(Frame df) {
-        PredSetup setup = preparePredict(df, false);
-        return corePredict(setup.df, setup.withResiduals);
+    public R predict(Frame df, double... quantiles) {
+        PredSetup setup = preparePredict(df, false, quantiles);
+        return corePredict(setup.df, setup.withResiduals, quantiles);
     }
 
-    protected PredSetup preparePredict(Frame df, boolean withResiduals) {
-        return PredSetup.valueOf(df, withResiduals);
+    protected PredSetup preparePredict(Frame df, boolean withResiduals, double[] quantiles) {
+        return PredSetup.valueOf(df, withResiduals, quantiles);
     }
 
-    protected abstract R corePredict(Frame df, boolean withResiduals);
+    protected abstract R corePredict(Frame df, boolean withResiduals, double[] quantiles);
 
     protected static class FitSetup {
         public Frame df;
@@ -199,11 +199,13 @@ public abstract class AbstractRegressionModel<M extends AbstractRegressionModel<
 
         public Frame df;
         public boolean withResiduals;
+        public double[] quantiles;
 
-        public static PredSetup valueOf(Frame df, boolean withResiduals) {
+        public static PredSetup valueOf(Frame df, boolean withResiduals, double... quantiles) {
             PredSetup setup = new PredSetup();
             setup.df = df;
             setup.withResiduals = withResiduals;
+            setup.quantiles = quantiles;
             return setup;
         }
     }

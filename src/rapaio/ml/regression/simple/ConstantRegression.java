@@ -80,8 +80,8 @@ public class ConstantRegression extends AbstractRegressionModel<ConstantRegressi
     }
 
     @Override
-    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals, quantiles);
         for (String targetName : targetNames) {
             fit.prediction(targetName).stream().forEach(s -> s.setDouble(constant.get()));
         }

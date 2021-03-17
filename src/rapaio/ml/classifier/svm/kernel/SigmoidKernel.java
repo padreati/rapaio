@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
@@ -62,6 +63,11 @@ public class SigmoidKernel extends AbstractKernel {
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         return Math.atan(alpha * dotProd(df1, row1, df2, row2) + c);
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        return Math.atan(alpha * u.dot(v) + c);
     }
 
     @Override

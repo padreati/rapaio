@@ -146,6 +146,15 @@ public class DVectorDense extends DVectorBase {
     }
 
     @Override
+    public DVector mapCopy(int... indexes) {
+        double[] copy = new double[indexes.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = values[indexes[i]];
+        }
+        return DVectorDense.wrap(copy);
+    }
+
+    @Override
     public DVectorBase add(double x) {
         DoubleArrays.add(values, 0, x, size);
         return this;

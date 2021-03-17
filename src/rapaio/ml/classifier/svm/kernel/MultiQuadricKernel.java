@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
@@ -38,15 +39,23 @@ public class MultiQuadricKernel extends AbstractKernel {
     private static final long serialVersionUID = -4215277675823113044L;
 
     private final double c;
+    private final double c_square;
 
     public MultiQuadricKernel(double c) {
         this.c = c;
+        this.c_square = c * c;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaDotProd(df1, row1, df2, row2);
-        return Math.sqrt(dot * dot + c * c);
+        double dot = deltaSumSquares(df1, row1, df2, row2);
+        return Math.sqrt(dot * dot + c_square);
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(u, v);
+        return Math.sqrt(dot * dot + c_square);
     }
 
     @Override
@@ -56,6 +65,6 @@ public class MultiQuadricKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "MultiQuadratic(c=" + Format.floatFlex(c) + ")";
+        return "MultiQuadric(c=" + Format.floatFlex(c) + ")";
     }
 }

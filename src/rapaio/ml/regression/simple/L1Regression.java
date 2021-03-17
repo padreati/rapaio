@@ -98,8 +98,8 @@ public class L1Regression extends AbstractRegressionModel<L1Regression, Regressi
     }
 
     @Override
-    public RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+    public RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];

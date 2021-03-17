@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 
 import static rapaio.printer.Format.floatFlex;
 
@@ -52,13 +53,19 @@ public class RBFKernel extends AbstractKernel {
 
     public RBFKernel(double sigma) {
         this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
+        this.factor = -1.0 / (2.0 * sigma * sigma);
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value * value);
+        double value = deltaSumSquares(df1, row1, df2, row2);
+        return Math.exp(factor * value * value);
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double value = deltaSumSquares(v, u);
+        return Math.exp(factor * value * value);
     }
 
     @Override

@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
@@ -47,11 +48,20 @@ public class SphericalKernel extends AbstractKernel {
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaDotProd(df1, row1, df2, row2);
+        double dot = deltaSumSquares(df1, row1, df2, row2);
         if (dot < sigma)
             return 0;
         double f = dot / sigma;
-        return 1 - 3 * f / 2 + Math.pow(f, 3) / 2;
+        return 1 - 3 * f / 2 + f * f * f / 2;
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(u, v);
+        if (dot < sigma)
+            return 0;
+        double f = dot / sigma;
+        return 1 - 3 * f / 2 + f * f * f / 2;
     }
 
     @Override

@@ -49,8 +49,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -121,12 +120,11 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     protected boolean coreFit(Frame df, Var weights) {
         regressions.clear();
         int threads = poolSize.get() < 0 ? Runtime.getRuntime().availableProcessors() - 1 : poolSize.get();
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
         Queue<Future<RegressionModel>> futures = new LinkedList<>();
         for (int i = 0; i < runs.get(); i++) {
             RowSampler.Sample sample = rowSampler.get().nextSample(df, weights);
             RegressionModel m = model.get().newInstance();
-            Future<RegressionModel> future = pool.submit(new FitTask(sample, m, targetNames));
+            Future<RegressionModel> future = ForkJoinPool.commonPool().submit(new FitTask(sample, m, targetNames));
             futures.add(future);
         }
 
@@ -154,8 +152,8 @@ public class RForest extends AbstractRegressionModel<RForest, RegressionResult> 
     }
 
     @Override
-    protected RegressionResult corePredict(Frame df, boolean withResiduals) {
-        RegressionResult fit = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(Frame df, boolean withResiduals, final double[] quantiles) {
+        RegressionResult fit = RegressionResult.build(this, df, withResiduals, quantiles);
         List<VarDouble> results = regressions
                 .parallelStream()
                 .map(r -> r.predict(df, false).firstPrediction())

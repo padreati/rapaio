@@ -28,8 +28,6 @@ import rapaio.util.IntComparator;
 import rapaio.util.collection.IntArrays;
 import rapaio.util.function.Double2DoubleFunction;
 
-import java.util.Arrays;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 8/5/19.
  */
@@ -178,8 +176,15 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
 
     @Override
     public int[] sortedCompleteRows(boolean asc) {
-        int[] rows = new int[source.size()];
         int len = 0;
+        for (int i = 0; i < source.size(); i++) {
+            if (source.isMissing(i)) {
+                continue;
+            }
+            len++;
+        }
+        int[] rows = new int[len];
+        len = 0;
         for (int i = 0; i < source.size(); i++) {
             if (source.isMissing(i)) {
                 continue;
@@ -187,7 +192,7 @@ public final class DefaultDVarOp<T extends Var> implements DVarOp<T> {
             rows[len++] = i;
         }
         IntArrays.quickSort(rows, 0, len, source.refComparator(asc));
-        return Arrays.copyOf(rows, len);
+        return rows;
     }
 
     @Override

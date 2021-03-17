@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -38,7 +35,7 @@ import rapaio.ml.classifier.svm.kernel.ChiSquareKernel;
 import rapaio.ml.classifier.svm.kernel.ExponentialKernel;
 import rapaio.ml.classifier.svm.kernel.GeneralizedMinKernel;
 import rapaio.ml.classifier.svm.kernel.GeneralizedStudentTKernel;
-import rapaio.ml.classifier.svm.kernel.InverseMultiQuadraticKernel;
+import rapaio.ml.classifier.svm.kernel.InverseMultiQuadricKernel;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.LogKernel;
 import rapaio.ml.classifier.svm.kernel.MinKernel;
@@ -112,7 +109,7 @@ public class BinarySMOTest {
         kernels.add(new ExponentialKernel());
         kernels.add(new GeneralizedMinKernel(1, 1));
         kernels.add(new GeneralizedStudentTKernel(1));
-        kernels.add(new InverseMultiQuadraticKernel(1));
+        kernels.add(new InverseMultiQuadricKernel(1));
         kernels.add(new SphericalKernel(1));
         kernels.add(new SigmoidKernel(1, 1));
         kernels.add(new MultiQuadricKernel(1));

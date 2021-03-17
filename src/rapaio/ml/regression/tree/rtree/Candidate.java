@@ -26,6 +26,7 @@ import rapaio.experiment.ml.common.predicate.RowPredicate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/1/17.
@@ -35,7 +36,6 @@ public class Candidate implements Serializable {
     private static final long serialVersionUID = 6698766675237089849L;
     private final double score;
     private final String testName;
-    private final List<String> groupNames = new ArrayList<>();
     private final List<RowPredicate> groupPredicates = new ArrayList<>();
 
     public Candidate(double score, String testName) {
@@ -44,16 +44,10 @@ public class Candidate implements Serializable {
     }
 
     public void addGroup(RowPredicate predicate) {
-        String name = predicate.toString();
-        if (groupNames.contains(name)) {
-            throw new IllegalArgumentException("group name already defined");
+        if (groupPredicates.contains(predicate)) {
+            throw new IllegalArgumentException("group already defined");
         }
-        groupNames.add(name);
         groupPredicates.add(predicate);
-    }
-
-    public List<String> getGroupNames() {
-        return groupNames;
     }
 
     public List<RowPredicate> getGroupPredicates() {
@@ -73,7 +67,7 @@ public class Candidate implements Serializable {
         return "Candidate{" +
                 "score=" + score +
                 ", testName='" + testName + '\'' +
-                ", groupNames=" + groupNames +
-                '}';
+                ", predicates=[" + groupPredicates.stream().map(RowPredicate::toString).collect(Collectors.joining(", ")) +
+                "]}";
     }
 }

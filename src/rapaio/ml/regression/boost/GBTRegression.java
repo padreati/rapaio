@@ -169,8 +169,8 @@ public class GBTRegression extends AbstractRegressionModel<GBTRegression, Regres
     }
 
     @Override
-    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult result = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals, double[] quantiles) {
+        RegressionResult result = RegressionResult.build(this, df, withResiduals, quantiles);
         var prediction = result.firstPrediction();
 
         prediction.op().fill(0);

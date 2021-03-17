@@ -22,6 +22,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.ml.classifier.svm.kernel.cache.KernelCache;
 import rapaio.ml.classifier.svm.kernel.cache.MapKernelCache;
 import rapaio.ml.classifier.svm.kernel.cache.SolidKernelCache;
@@ -61,10 +62,20 @@ public abstract class AbstractKernel implements Kernel {
         return result;
     }
 
-    protected double deltaDotProd(Frame df1, int row1, Frame df2, int row2) {
+    protected double deltaSumSquares(Frame df1, int row1, Frame df2, int row2) {
         double result = 0;
         for (String varName : varNames) {
-            result += Math.pow(df1.getDouble(row1, varName) - df2.getDouble(row2, varName), 2);
+            double delta = df1.getDouble(row1, varName) - df2.getDouble(row2, varName);
+            result += delta * delta;
+        }
+        return result;
+    }
+
+    protected double deltaSumSquares(DVector u, DVector v) {
+        double result = 0;
+        for (int i = 0; i < u.size(); i++) {
+            double delta = u.get(i) - v.get(i);
+            result += delta * delta;
         }
         return result;
     }

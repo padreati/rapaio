@@ -21,6 +21,7 @@
 
 package rapaio.experiment.ml.common.predicate;
 
+import lombok.EqualsAndHashCode;
 import rapaio.data.Frame;
 import rapaio.printer.Format;
 
@@ -93,6 +94,7 @@ final class All implements RowPredicate {
     }
 }
 
+@EqualsAndHashCode
 final class NumLessEqual implements RowPredicate {
 
     private static final long serialVersionUID = 8215441575970091295L;
@@ -111,10 +113,11 @@ final class NumLessEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " <= " + Format.floatFlex(testValue);
+        return testName + "<=" + Format.floatFlex(testValue);
     }
 }
 
+@EqualsAndHashCode
 final class NumGreaterEqual implements RowPredicate {
 
     private static final long serialVersionUID = 8904590203760623732L;
@@ -135,10 +138,11 @@ final class NumGreaterEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " >= " + Format.floatFlex(testValue);
+        return testName + ">=" + Format.floatFlex(testValue);
     }
 }
 
+@EqualsAndHashCode
 final class NumLess implements RowPredicate {
 
     private static final long serialVersionUID = -8274469785632211359L;
@@ -160,10 +164,11 @@ final class NumLess implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " < " + Format.floatFlex(testValue);
+        return testName + "<" + Format.floatFlex(testValue);
     }
 }
 
+@EqualsAndHashCode
 final class NumGreater implements RowPredicate {
 
     private static final long serialVersionUID = 5664720893373938432L;
@@ -185,10 +190,11 @@ final class NumGreater implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " > " + Format.floatFlex(testValue);
+        return testName + ">" + Format.floatFlex(testValue);
     }
 }
 
+@EqualsAndHashCode
 final class BinaryEqual implements RowPredicate {
 
     private static final long serialVersionUID = 830863153933290391L;
@@ -210,10 +216,11 @@ final class BinaryEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " = " + testValue;
+        return testName + "=" + testValue;
     }
 }
 
+@EqualsAndHashCode
 final class BinaryNotEqual implements RowPredicate {
 
     private static final long serialVersionUID = 830863153933290391L;
@@ -235,10 +242,11 @@ final class BinaryNotEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " != " + testValue;
+        return testName + "!=" + testValue;
     }
 }
 
+@EqualsAndHashCode
 final class NominalEqual implements RowPredicate {
 
 
@@ -260,10 +268,11 @@ final class NominalEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " = '" + testValue + "'";
+        return testName + "='" + testValue + "'";
     }
 }
 
+@EqualsAndHashCode
 final class NominalNotEqual implements RowPredicate {
 
 
@@ -285,6 +294,6 @@ final class NominalNotEqual implements RowPredicate {
 
     @Override
     public String toString() {
-        return testName + " != '" + testValue + "'";
+        return testName + "!='" + testValue + "'";
     }
 }

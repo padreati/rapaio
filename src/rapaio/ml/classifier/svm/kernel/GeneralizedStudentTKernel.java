@@ -22,11 +22,12 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.math.linear.DVector;
 import rapaio.printer.Format;
 
 /**
  * The Generalized T-Student Kernel has been proven to be a
- * Mercel Kernel, thus having a positive semi-definite Kernel
+ * Mercer Kernel, thus having a positive semi-definite Kernel
  * matrix (Boughorbel, 2004).
  * It is given by:
  * <p>
@@ -46,7 +47,13 @@ public class GeneralizedStudentTKernel extends AbstractKernel {
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaDotProd(df1, row1, df2, row2);
+        double dot = deltaSumSquares(df1, row1, df2, row2);
+        return 1.0 / (1.0 + Math.pow(dot, degree));
+    }
+
+    @Override
+    public double compute(DVector v, DVector u) {
+        double dot = deltaSumSquares(u, v);
         return 1.0 / (1.0 + Math.pow(dot, degree));
     }
 

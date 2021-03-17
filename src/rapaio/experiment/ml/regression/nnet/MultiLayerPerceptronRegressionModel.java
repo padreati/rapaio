@@ -228,8 +228,8 @@ public class MultiLayerPerceptronRegressionModel extends AbstractRegressionModel
     }
 
     @Override
-    protected RegressionResult corePredict(final Frame df, final boolean withResiduals) {
-        RegressionResult pred = RegressionResult.build(this, df, withResiduals);
+    protected RegressionResult corePredict(final Frame df, final boolean withResiduals, final double[] quantiles) {
+        RegressionResult pred = RegressionResult.build(this, df, withResiduals, quantiles);
         for (int pos = 0; pos < df.rowCount(); pos++) {
 
             // set inputs

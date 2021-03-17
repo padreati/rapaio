@@ -58,6 +58,15 @@ public class DVectorBase extends AbstractDVector {
     }
 
     @Override
+    public DVector mapCopy(int... indexes) {
+        double[] copy = new double[indexes.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = values[indexes[i]];
+        }
+        return DVectorBase.wrap(copy);
+    }
+
+    @Override
     public double get(int i) {
         return values[i];
     }

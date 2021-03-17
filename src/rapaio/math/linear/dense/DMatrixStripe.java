@@ -511,6 +511,11 @@ public abstract class DMatrixStripe extends AbstractDMatrix {
         }
 
         @Override
+        public DVector mapRow(final int row) {
+            return DVectorDense.wrap(values[row]);
+        }
+
+        @Override
         public DMatrix add(double x) {
             for (double[] row : values) {
                 for (int i = 0; i < row.length; i++) {

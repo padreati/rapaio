@@ -55,8 +55,8 @@ public class LinearRegressionResult extends RegressionResult {
     protected DMatrix beta_p_value;
     protected String[][] beta_significance;
 
-    public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals) {
-        super(model, df, withResiduals);
+    public LinearRegressionResult(BaseLinearRegressionModel<?> model, Frame df, boolean withResiduals, double[] quantiles) {
+        super(model, df, withResiduals, quantiles);
         this.lm = model;
     }
 

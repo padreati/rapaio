@@ -64,6 +64,14 @@ public interface DVector extends Serializable, Printable {
     int size();
 
     /**
+     * Creates a new vector copy retaining only the values from specified indexes
+     *
+     * @param indexes of the values to keep
+     * @return reduced instance vector
+     */
+    DVector mapCopy(int... indexes);
+
+    /**
      * Gets value from zero-based position index
      *
      * @param i given position
@@ -178,10 +186,10 @@ public interface DVector extends Serializable, Printable {
      * <p>
      * sum_{i=1}^{n}a_i*b_i
      *
-     * @param b the vector used to compute dot product
+     * @param y the vector used to compute dot product
      * @return same vector object
      */
-    double dot(DVector b);
+    double dot(DVector y);
 
     /**
      * Computes the p norm of the vector.
@@ -228,7 +236,7 @@ public interface DVector extends Serializable, Printable {
     double nansum();
 
     /**
-     * Compute cumulative sum of the elements from begining to end.
+     * Compute cumulative sum of the elements from beginning to end.
      *
      * @return original vector with values computed from cumulative sum
      */
