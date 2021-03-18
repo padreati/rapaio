@@ -3,10 +3,7 @@
  * Version 2.0, January 2004
  * http://www.apache.org/licenses/
  *
- *    Copyright 2013 Aurelian Tutuianu
- *    Copyright 2014 Aurelian Tutuianu
- *    Copyright 2015 Aurelian Tutuianu
- *    Copyright 2016 Aurelian Tutuianu
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -62,7 +59,7 @@ public class SearchTest {
                 null, play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
 
         assertEquals("temp", candidate.testName);
-        assertEquals("temp <= 75", candidate.groupPredicates.get(0).toString());
+        assertEquals("temp<=75", candidate.groupPredicates.get(0).toString());
     }
 
     @Test
@@ -72,9 +69,8 @@ public class SearchTest {
                 CTree.newDecisionStump().minCount.set(2),
                 play, VarDouble.fill(play.rowCount(), 1.0), "temp", "class", Purity.GiniGain);
 
-//        play.mapVars("temp,class").refSort("temp").printFullContent();
         assertEquals("temp", candidate.testName);
-        assertEquals("temp <= 70.5", candidate.groupPredicates.get(0).toString());
+        assertEquals("temp<=70.5", candidate.groupPredicates.get(0).toString());
     }
 
     @Test
@@ -88,7 +84,7 @@ public class SearchTest {
                 df, null, "x", "y", Purity.GiniGain);
 
         assertEquals("x", candidate.testName);
-        assertEquals("x = 1", candidate.groupPredicates.get(0).toString());
+        assertEquals("x=1", candidate.groupPredicates.get(0).toString());
     }
 
     @Test
@@ -97,9 +93,9 @@ public class SearchTest {
                 play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
 
         assertEquals("outlook", candidate.testName);
-        assertEquals("outlook = 'sunny'", candidate.groupPredicates.get(0).toString());
-        assertEquals("outlook = 'overcast'", candidate.groupPredicates.get(1).toString());
-        assertEquals("outlook = 'rain'", candidate.groupPredicates.get(2).toString());
+        assertEquals("outlook='sunny'", candidate.groupPredicates.get(0).toString());
+        assertEquals("outlook='overcast'", candidate.groupPredicates.get(1).toString());
+        assertEquals("outlook='rain'", candidate.groupPredicates.get(2).toString());
     }
 
     @Test
@@ -110,7 +106,7 @@ public class SearchTest {
                 play, VarDouble.fill(play.rowCount(), 1), "outlook", "class", Purity.GiniGain);
 
         assertEquals("outlook", candidate.testName);
-        assertEquals("outlook = 'rain'", candidate.groupPredicates.get(0).toString());
-        assertEquals("outlook != 'rain'", candidate.groupPredicates.get(1).toString());
+        assertEquals("outlook='rain'", candidate.groupPredicates.get(0).toString());
+        assertEquals("outlook!='rain'", candidate.groupPredicates.get(1).toString());
     }
 }

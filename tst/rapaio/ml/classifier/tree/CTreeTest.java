@@ -1,3 +1,24 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 - 2021 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package rapaio.ml.classifier.tree;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -57,12 +78,12 @@ public class CTreeTest {
         String testName = root.bestCandidate.testName;
         if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.bestCandidate.testName);
-            assertEquals("petal-width <= 0.8", root.bestCandidate.groupPredicates.get(0).toString());
-            assertEquals("petal-width > 0.8", root.bestCandidate.groupPredicates.get(1).toString());
+            assertEquals("petal-width<=0.8", root.bestCandidate.groupPredicates.get(0).toString());
+            assertEquals("petal-width>0.8", root.bestCandidate.groupPredicates.get(1).toString());
         } else {
             assertEquals("petal-length", root.bestCandidate.testName);
-            assertEquals("petal-length <= 2.45", root.bestCandidate.groupPredicates.get(0).toString());
-            assertEquals("petal-length > 2.45", root.bestCandidate.groupPredicates.get(1).toString());
+            assertEquals("petal-length<=2.45", root.bestCandidate.groupPredicates.get(0).toString());
+            assertEquals("petal-length>2.45", root.bestCandidate.groupPredicates.get(1).toString());
         }
     }
 
@@ -113,24 +134,24 @@ public class CTreeTest {
                 "split, n/err, classes (densities) [* if is leaf / purity if not]\n" +
                 "\n" +
                 "|- 0. root    150/100 virginica (0.333 0.333 0.333 ) [0.3234323]\n" +
-                "|   |- 1. petal-width <= 0.8    50/0 setosa (1 0 0 ) *\n" +
-                "|   |- 2. petal-width > 0.8    100/50 versicolor (0 0.5 0.5 ) [0.3878205]\n" +
-                "|   |   |- 3. petal-width <= 1.75    54/5 versicolor (0 0.907 0.093 ) [0.0577325]\n" +
-                "|   |   |   |- 5. petal-length <= 4.95    48/1 versicolor (0 0.979 0.021 ) [0.0130208]\n" +
-                "|   |   |   |   |- 9. petal-width <= 1.65    47/0 versicolor (0 1 0 ) *\n" +
-                "|   |   |   |   |- 10. petal-width > 1.65    1/0 virginica (0 0 1 ) *\n" +
-                "|   |   |   |- 6. petal-length > 4.95    6/2 virginica (0 0.333 0.667 ) [0.0444444]\n" +
-                "|   |   |   |   |- 11. sepal-width <= 2.65    2/0 virginica (0 0 1 ) *\n" +
-                "|   |   |   |   |- 12. sepal-width > 2.65    4/2 versicolor (0 0.5 0.5 ) [0.1666667]\n" +
-                "|   |   |   |   |   |- 15. petal-width <= 1.65    3/1 virginica (0 0.333 0.667 ) [0]\n" +
-                "|   |   |   |   |   |   |- 17. sepal-length <= 6.15    1/0 versicolor (0 1 0 ) *\n" +
-                "|   |   |   |   |   |   |- 18. sepal-length > 6.15    2/0 virginica (0 0 1 ) *\n" +
-                "|   |   |   |   |   |- 16. petal-width > 1.65    1/0 versicolor (0 1 0 ) *\n" +
-                "|   |   |- 4. petal-width > 1.75    46/1 virginica (0 0.022 0.978 ) [0.0014703]\n" +
-                "|   |   |   |- 7. sepal-width <= 3.15    32/0 virginica (0 0 1 ) *\n" +
-                "|   |   |   |- 8. sepal-width > 3.15    14/1 virginica (0 0.071 0.929 ) [0]\n" +
-                "|   |   |   |   |- 13. sepal-length <= 6.05    1/0 versicolor (0 1 0 ) *\n" +
-                "|   |   |   |   |- 14. sepal-length > 6.05    13/0 virginica (0 0 1 ) *\n", model.toSummary());
+                "|   |- 1. petal-width<=0.8    50/0 setosa (1 0 0 ) *\n" +
+                "|   |- 2. petal-width>0.8    100/50 versicolor (0 0.5 0.5 ) [0.3878205]\n" +
+                "|   |   |- 3. petal-width<=1.75    54/5 versicolor (0 0.907 0.093 ) [0.0577325]\n" +
+                "|   |   |   |- 5. petal-length<=4.95    48/1 versicolor (0 0.979 0.021 ) [0.0130208]\n" +
+                "|   |   |   |   |- 9. petal-width<=1.65    47/0 versicolor (0 1 0 ) *\n" +
+                "|   |   |   |   |- 10. petal-width>1.65    1/0 virginica (0 0 1 ) *\n" +
+                "|   |   |   |- 6. petal-length>4.95    6/2 virginica (0 0.333 0.667 ) [0.0444444]\n" +
+                "|   |   |   |   |- 11. sepal-width<=2.65    2/0 virginica (0 0 1 ) *\n" +
+                "|   |   |   |   |- 12. sepal-width>2.65    4/2 versicolor (0 0.5 0.5 ) [0.1666667]\n" +
+                "|   |   |   |   |   |- 15. petal-width<=1.65    3/1 virginica (0 0.333 0.667 ) [0]\n" +
+                "|   |   |   |   |   |   |- 17. sepal-length<=6.15    1/0 versicolor (0 1 0 ) *\n" +
+                "|   |   |   |   |   |   |- 18. sepal-length>6.15    2/0 virginica (0 0 1 ) *\n" +
+                "|   |   |   |   |   |- 16. petal-width>1.65    1/0 versicolor (0 1 0 ) *\n" +
+                "|   |   |- 4. petal-width>1.75    46/1 virginica (0 0.022 0.978 ) [0.0014703]\n" +
+                "|   |   |   |- 7. sepal-width<=3.15    32/0 virginica (0 0 1 ) *\n" +
+                "|   |   |   |- 8. sepal-width>3.15    14/1 virginica (0 0.071 0.929 ) [0]\n" +
+                "|   |   |   |   |- 13. sepal-length<=6.05    1/0 versicolor (0 1 0 ) *\n" +
+                "|   |   |   |   |- 14. sepal-length>6.05    13/0 virginica (0 0 1 ) *\n", model.toSummary());
 
         assertEquals(model.toContent(), model.toSummary());
         assertEquals(model.toFullContent(), model.toSummary());

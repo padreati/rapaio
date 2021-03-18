@@ -74,9 +74,9 @@ public class SearchTest {
 
         assertEquals(3, c.getGroupPredicates().size());
 
-        assertEquals("outlook = 'sunny'", c.getGroupPredicates().get(0).toString());
-        assertEquals("outlook = 'overcast'", c.getGroupPredicates().get(1).toString());
-        assertEquals("outlook = 'rain'", c.getGroupPredicates().get(2).toString());
+        assertEquals("outlook='sunny'", c.getGroupPredicates().get(0).toString());
+        assertEquals("outlook='overcast'", c.getGroupPredicates().get(1).toString());
+        assertEquals("outlook='rain'", c.getGroupPredicates().get(2).toString());
 
         assertEquals(4.432653061224499, c.getScore(), 1e-20);
     }
@@ -107,8 +107,8 @@ public class SearchTest {
         assertEquals(32.657653061224515, c.get().getScore(), 1e-12);
         assertEquals("temp", c.get().getTestName());
         assertEquals(2, c.get().getGroupPredicates().size());
-        assertEquals("temp <= 69.5", c.get().getGroupPredicates().get(0).toString());
-        assertEquals("temp > 69.5", c.get().getGroupPredicates().get(1).toString());
+        assertEquals("temp<=69.5", c.get().getGroupPredicates().get(0).toString());
+        assertEquals("temp>69.5", c.get().getGroupPredicates().get(1).toString());
     }
 
 }
