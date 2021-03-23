@@ -135,6 +135,84 @@ public abstract class AbstractDVector implements DVector {
         return s;
     }
 
+    @Override
+    public double dotBilinear(DMatrix m, DVector y) {
+        if (m.rowCount() != size() || m.colCount() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix and vector are not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < y.size(); j++) {
+                sum += get(i) * m.get(i, j) * y.get(j);
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinear(DMatrix m) {
+        if (m.rowCount() != size() || m.colCount() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < size(); j++) {
+                sum += get(i) * m.get(i, j) * get(j);
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DMatrix m, DVector y) {
+        if (m.rowCount() != size() || m.colCount() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix and vector are not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += get(i) * m.get(i, i) * y.get(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DVector m, DVector y) {
+        if (m.size() != size() || m.size() != y.size()) {
+            throw new IllegalArgumentException("Bilinear matrix and vector are not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum += get(i) * m.get(i) * y.get(i);
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DMatrix m) {
+        if (m.rowCount() != size() || m.colCount() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix is not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            double xi = get(i);
+            sum += xi * m.get(i, i) * xi;
+        }
+        return sum;
+    }
+
+    @Override
+    public double dotBilinearDiag(DVector m) {
+        if (m.size() != size() || m.size() != size()) {
+            throw new IllegalArgumentException("Bilinear matrix and vector are not conformat for multiplication.");
+        }
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            double xi = get(i);
+            sum += xi * m.get(i) * xi;
+        }
+        return sum;
+    }
+
     public double norm(double p) {
         if (p <= 0) {
             return size();

@@ -192,6 +192,63 @@ public interface DVector extends Serializable, Printable {
     double dot(DVector y);
 
     /**
+     * Computes bilinear dot product through a matrix {@code x^t m y}. Matrix {@code m} have to be conformat for multiplication.
+     *
+     * @param m bilinear matrix
+     * @param y bilinear vector
+     * @return bilinear dot product scalar value
+     */
+    double dotBilinear(DMatrix m, DVector y);
+
+    /**
+     * Computes self bilinear dot product through a matrix {@code x^t m x}.Matrix {@code m} must be squared and conformant
+     * to multiplication.
+     *
+     * @param m bilinear matrix
+     * @return bilinear dot product scalar value
+     */
+    double dotBilinear(DMatrix m);
+
+    /**
+     * Computes bilinear dot product through a diagonal matrix {@code x^t diag(m) y}.
+     * Matrix {@code m} have to be conformat for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
+     *
+     * @param m bilinear matrix
+     * @param y bilinear vector
+     * @return bilinear diagonal dot product
+     */
+    double dotBilinearDiag(DMatrix m, DVector y);
+
+    /**
+     * Computes self bilinear dot product through a diagonal matrix {@code x^t diag(m) x}.
+     * Matrix {@code m} have to be conformat for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
+     *
+     * @param m bilinear matrix
+     * @return bilinear diagonal dot product
+     */
+    double dotBilinearDiag(DMatrix m);
+
+    /**
+     * Computes bilinear dot product through a diagonal matrix {@code x^t diag(m) y}.
+     * Vector {@code m} have to be conformat for multiplication. If the matrix {@code diag(m)} is the matrix with elements on the main
+     * diagonal set to elements of vector {@code m} and other elements equals {@code 0}.
+     *
+     * @param m bilinear matrix
+     * @param y bilinear vector
+     * @return bilinear diagonal dot product
+     */
+    double dotBilinearDiag(DVector m, DVector y);
+
+    /**
+     * Computes self bilinear dot product through a diagonal matrix {@code x^t diag(m) x}.
+     * Matrix {@code m} have to be conformat for multiplication. If the matrix is not diagonal, only the diagonal elements are used.
+     *
+     * @param m bilinear matrix
+     * @return bilinear diagonal dot product
+     */
+    double dotBilinearDiag(DVector m);
+
+    /**
      * Computes the p norm of the vector.
      * <ul>
      * <li>if <b>p == 1</b> it returns the absolute value norm (L1 norm)</li>

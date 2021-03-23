@@ -40,13 +40,13 @@ import java.util.Set;
 public enum KMeansInit implements Serializable {
 
     Forgy {
-        public DMatrix init(DMatrix m, int k) {
+        public DMatrix init(KMeans.Space space, DMatrix m, int k) {
             return m.mapRows(SamplingTools.sampleWOR(m.rowCount(), k)).copy();
         }
     },
     PlusPlus {
         @Override
-        public DMatrix init(DMatrix m, int k) {
+        public DMatrix init(KMeans.Space space, DMatrix m, int k) {
 
             int[] rows = IntArrays.newSeq(0, m.rowCount());
             int[] centroids = IntArrays.newFill(k, -1);
@@ -64,9 +64,9 @@ public enum KMeansInit implements Serializable {
                     if (ids.contains(j)) {
                         continue;
                     }
-                    p[j] = KMeans.distance(m.mapRow(centroids[0]), m.mapRow(j));
+                    p[j] = space.distance(m.mapRow(centroids[0]), m.mapRow(j));
                     for (int l = 1; l < i; l++) {
-                        p[j] = Math.min(p[j], KMeans.distance(m.mapRow(centroids[l]), m.mapRow(j)));
+                        p[j] = Math.min(p[j], space.distance(m.mapRow(centroids[l]), m.mapRow(j)));
                     }
                 }
                 // normalize the weights
@@ -82,5 +82,5 @@ public enum KMeansInit implements Serializable {
         }
     };
 
-    public abstract DMatrix init(DMatrix m, int k);
+    public abstract DMatrix init(KMeans.Space space, DMatrix m, int k);
 }

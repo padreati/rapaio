@@ -104,7 +104,7 @@ public class MatrixMultiplication {
                 if (A.get(i, k) == 0)
                     continue;
                 for (int j = 0; j < B.colCount(); j++) {
-                    C.set(i, j, C.get(i, j) + A.get(i, k) * B.get(k, j));
+                    C.inc(i, j, A.get(i, k) * B.get(k, j));
                 }
             }
         });

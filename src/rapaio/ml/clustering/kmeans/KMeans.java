@@ -58,16 +58,58 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         return new KMeans();
     }
 
+    public interface Space {
+
+        /**
+         * Computes the distance between two observation vectors
+         *
+         * @param u first vector
+         * @param v second vector
+         * @return distance between vectors
+         */
+        double distance(DVector u, DVector v);
+
+        /**
+         * Computes the error contribution of the observation v
+         * when assigned to cluster with centroid c
+         *
+         * @param c cluster centroid
+         * @param v observation vector
+         * @return error contributed by this observation
+         */
+        double observationError(DVector c, DVector v);
+    }
+
+    public static class L2 implements Space {
+
+        @Override
+        public double distance(DVector u, DVector v) {
+            double distance = 0;
+            for (int i = 0; i < u.size(); i++) {
+                double delta = u.get(i) - v.get(i);
+                distance += delta * delta;
+            }
+            return Math.sqrt(distance);
+        }
+
+        @Override
+        public double observationError(DVector c, DVector v) {
+            double distance = 0;
+            for (int i = 0; i < c.size(); i++) {
+                double delta = c.get(i) - v.get(i);
+                distance += delta * delta;
+            }
+            return distance;
+        }
+    }
+
     private static final long serialVersionUID = -1046184364541391871L;
 
-    public final ValueParam<Integer, KMeans> k = new ValueParam<>(this,
-            2, "k", "number of clusters");
-    public final ValueParam<Integer, KMeans> nstart = new ValueParam<>(this,
-            1, "nstart", "Number of restarts", n -> n != null && n > 0);
-    public final ValueParam<KMeansInit, KMeans> init = new ValueParam<>(this,
-            KMeansInit.Forgy, "init", "Initialization algorithm");
-    public final ValueParam<Double, KMeans> eps = new ValueParam<>(this,
-            1e-20, "eps", "Tolerance for convergence measures");
+    public final ValueParam<Integer, KMeans> k = new ValueParam<>(this, 2, "k", "number of clusters");
+    public final ValueParam<Integer, KMeans> nstart = new ValueParam<>(this, 1, "nstart", "Number of restarts", n -> n != null && n > 0);
+    public final ValueParam<KMeansInit, KMeans> init = new ValueParam<>(this, KMeansInit.Forgy, "init", "Initialization algorithm");
+    public final ValueParam<Space, KMeans> space = new ValueParam<>(this, new L2(), "L2 space", "L2 space");
+    public final ValueParam<Double, KMeans> eps = new ValueParam<>(this, 1e-20, "eps", "Tolerance for convergence measures");
 
     // clustering artifacts
 
@@ -107,16 +149,6 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
                 .build();
     }
 
-    public static double distance(DVector v1, DVector v2) {
-        int len = Math.min(v1.size(), v2.size());
-        double sum = 0.0;
-        for (int i = 0; i < len; i++) {
-            double d = v1.get(i) - v2.get(i);
-            sum += d * d;
-        }
-        return Math.sqrt(sum);
-    }
-
     @Override
     public ClusteringModel coreFit(Frame initialDf, Var weights) {
 
@@ -150,14 +182,14 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
     }
 
     private DMatrix initializeClusters(DMatrix m) {
-        DMatrix bestCentroids = init.get().init(m, k.get());
+        DMatrix bestCentroids = init.get().init(space.get(), m, k.get());
         double bestError = computeInitError(m, bestCentroids);
 
         // compute initial restarts if nstart is greater than 1
         // the best restart is kept as initial centroids
 
         for (int i = 1; i < nstart.get(); i++) {
-            DMatrix nextCentroids = init.get().init(m, k.get());
+            DMatrix nextCentroids = init.get().init(space.get(), m, k.get());
             double nextError = computeInitError(m, nextCentroids);
             if (nextError < bestError) {
                 bestCentroids = nextCentroids;
@@ -171,11 +203,16 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         double sum = 0;
         for (int i = 0; i < m.rowCount(); i++) {
             DVector mrow = m.mapRow(i);
-            double d = distance(mrow, c.mapRow(0));
+            int cluster = 0;
+            double d = space.get().distance(mrow, c.mapRow(0));
             for (int j = 1; j < c.rowCount(); j++) {
-                d = Math.min(d, distance(mrow, c.mapRow(j)));
+                double dd = space.get().distance(mrow, c.mapRow(j));
+                if (d > dd) {
+                    d = dd;
+                    cluster = j;
+                }
             }
-            sum += Math.pow(d, 2);
+            sum += space.get().observationError(c.mapRow(cluster), mrow);
         }
         return sum;
     }
@@ -184,16 +221,16 @@ public class KMeans extends AbstractClusteringModel<KMeans, KMeansResult> {
         double totalError = 0.0;
         for (int i = 0; i < m.rowCount(); i++) {
             DVector row = m.mapRow(i);
-            double d = distance(row, c.mapRow(0));
+            double d = space.get().distance(row, c.mapRow(0));
             int cluster = 0;
             for (int j = 1; j < c.rowCount(); j++) {
-                double dd = distance(row, c.mapRow(j));
+                double dd = space.get().distance(row, c.mapRow(j));
                 if (dd < d) {
                     d = dd;
                     cluster = j;
                 }
             }
-            totalError += d * d;
+            totalError += space.get().observationError(c.mapRow(cluster), row);
             assignment[i] = cluster;
         }
         errors.addDouble(totalError);

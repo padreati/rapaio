@@ -516,6 +516,18 @@ public abstract class DMatrixStripe extends AbstractDMatrix {
         }
 
         @Override
+        public DMatrix mapRows(int... indexes) {
+            if (indexes.length == 0) {
+                throw new IllegalArgumentException("Cannot map rows with empty indexes.");
+            }
+            double[][] wrap = new double[indexes.length][colCount];
+            for (int i = 0; i < indexes.length; i++) {
+                wrap[i] = values[indexes[i]];
+            }
+            return DMatrixStripeR.wrap(wrap);
+        }
+
+        @Override
         public DMatrix add(double x) {
             for (double[] row : values) {
                 for (int i = 0; i < row.length; i++) {

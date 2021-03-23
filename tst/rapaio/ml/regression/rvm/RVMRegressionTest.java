@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.svm.kernel.LinearKernel;
 import rapaio.ml.classifier.svm.kernel.RBFKernel;
 import rapaio.ml.regression.RegressionResult;
 import rapaio.ml.regression.linear.LinearRegressionModel;
@@ -47,7 +46,7 @@ public class RVMRegressionTest {
     void testBuilders() {
         RVMRegression model = RVMRegression.newModel();
         assertEquals(true, model.intercept.get());
-        assertEquals(new LinearKernel().name(), model.kernel.get().name());
+        assertEquals(new RBFKernel(1).name(), model.kernel.get().name());
         assertEquals("RVMRegression", model.name());
 
         model.kernel.set(new RBFKernel(10));
@@ -76,18 +75,18 @@ public class RVMRegressionTest {
         Frame df = Datasets.loadISLAdvertising();
         final String target = "Sales";
 
-        RVMRegression rvm = RVMRegression.newModel();
+        RVMRegression rvm = RVMRegression.newModel().kernel.set(new RBFKernel(400));
 
-        assertEquals("RVMRegression{}; fitted=false", rvm.toString());
+        assertEquals("RVMRegression{kernel=RBF(sigma=400)}; fitted=false", rvm.toString());
 
         RegressionResult rvmResult = rvm.fit(df, target).predict(df, true);
 
-        assertEquals("RVMRegression{}; fitted=true, rvm count=3", rvm.toString());
+        assertEquals("RVMRegression{kernel=RBF(sigma=400)}; fitted=true, rvm count=57", rvm.toString());
 
         assertEquals("Regression predict summary\n" +
                 "=======================\n" +
                 "Model class: RVMRegression\n" +
-                "Model instance: RVMRegression{}\n" +
+                "Model instance: RVMRegression{kernel=RBF(sigma=400)}\n" +
                 "> model is trained.\n" +
                 "> input variables: \n" +
                 "1. TV        dbl \n" +
@@ -99,18 +98,35 @@ public class RVMRegressionTest {
                 "Fit and residuals for Sales\n" +
                 "===========================\n" +
                 "* summary: \n" +
-                "    Sales [dbl]          Sales [dbl]         Mean : 13.5922670    Mean :  0.4302330 \n" +
-                "   Min. :  1.3986109    Min. : -7.5969764 2nd Qu. : 17.9819851 2nd Qu. :  1.5054285 \n" +
-                "1st Qu. :  9.0039990 1st Qu. : -0.5430484    Max. : 26.1414107    Max. :  4.8419865 \n" +
-                " Median : 13.6087185  Median :  0.4649531                                           \n" +
+                "    Sales [dbl]          Sales [dbl]         Mean : 13.6143239    Mean :  0.4081761 \n" +
+                "   Min. :  1.0205857    Min. : -4.0513838 2nd Qu. : 17.1194427 2nd Qu. :  1.2808171 \n" +
+                "1st Qu. :  9.9663868 1st Qu. : -0.4797786    Max. : 28.4687762    Max. :  6.5281341 \n" +
+                " Median : 12.9114577  Median :  0.2398231                                           \n" +
                 "Total sum of squares     (TSS) : 5417.149\n" +
-                "Explained sum of squares (ESS) : 6704.446\n" +
-                "Residual sum of squares  (RSS) :  738.984\n" +
+                "Explained sum of squares (ESS) : 5749.542\n" +
+                "Residual sum of squares  (RSS) :  444.871\n" +
                 "\n" +
-                "Coeff. of determination  (R^2) :    0.864\n" +
+                "Coeff. of determination  (R^2) :    0.918\n" +
                 "\n", rvmResult.toSummary());
 
         assertEquals(rvm.toContent(), rvm.toSummary());
-        assertEquals(rvm.toFullContent(), rvm.toSummary());
+    }
+
+    @Test
+    void testMethods() {
+        Frame df = Datasets.loadISLAdvertising();
+        final String target = "Sales";
+
+        RVMRegression rvm1 = RVMRegression.newModel()
+                .kernel.set(new RBFKernel(1000))
+                .method.set(RVMRegression.Method.EVIDENCE_APPROXIMATION);
+        RVMRegression rvm2 = RVMRegression.newModel()
+                .kernel.set(new RBFKernel(1000))
+                .method.set(RVMRegression.Method.FAST_TIPPING);
+
+        RegressionResult result1 = rvm1.fit(df, target).predict(df, true);
+        RegressionResult result2 = rvm2.fit(df, target).predict(df, true);
+
+        assertTrue(Math.abs(result1.firstRSquare() - result2.firstRSquare()) < 0.1);
     }
 }

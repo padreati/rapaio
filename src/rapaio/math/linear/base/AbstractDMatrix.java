@@ -385,11 +385,21 @@ public abstract class AbstractDMatrix implements DMatrix {
 
     @Override
     public DMatrix dot(DMatrix B) {
+        if (colCount() != B.rowCount()) {
+            throw new IllegalArgumentException(
+                    String.format("Matrices not conformant for multiplication: (%d,%d) x (%d,%d)",
+                            rowCount(), colCount(), B.rowCount(), B.colCount()));
+        }
         return MatrixMultiplication.ikjParallel(this, B);
     }
 
     @Override
     public DVector dot(DVector b) {
+        if (colCount() != b.size()) {
+            throw new IllegalArgumentException(
+                    String.format("Matrices not conformant for multiplication: (%d,%d) x (%d,%d)",
+                            rowCount(), colCount(), b.size(), 1));
+        }
         return MatrixMultiplication.ikjParallel(this, b);
     }
 

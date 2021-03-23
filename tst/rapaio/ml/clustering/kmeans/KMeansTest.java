@@ -114,13 +114,13 @@ public class KMeansTest {
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}", model.fullName());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
                 "Model fitted=true\n" +
-                "Inertia:8901.768720947211\n" +
+                "Inertia:8901.768720947213\n" +
                 "Iterations:3\n" +
                 "Learned clusters:2\n", model.toSummary());
         assertEquals(model.toContent(), model.toSummary());
         assertEquals("KMeans{init=PlusPlus,nstart=100,runs=100}\n" +
                 "Model fitted=true\n" +
-                "Inertia:8901.768720947211\n" +
+                "Inertia:8901.768720947213\n" +
                 "Iterations:3\n" +
                 "Learned clusters:2\n" +
                 "Centroids:\n" +
